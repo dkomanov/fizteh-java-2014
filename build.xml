@@ -1,4 +1,4 @@
-<project name="fizteh-java-2013" default="compile">
+<project name="fizteh-java-2014" default="compile">
 
     <property name="out" location="${basedir}/out"/>
     <property name="jars" location="${basedir}/jars"/>
