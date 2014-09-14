@@ -5,6 +5,7 @@ import java.util.*;
 public class Shell {
 	public static void main(String[] args) {
 		if (args.length > 0) {
+			//package
 			StringBuilder buff = new StringBuilder();
 			for (int i = 0; i < args.length; i++) {
 				buff.append(args[i]);
@@ -20,9 +21,27 @@ public class Shell {
 		}
 		else {
 			//interactive
-			System.setProperty("user.dir", System.getProperty("user.home"));
+			try {
+				System.setProperty("user.dir", System.getProperty("user.home"));
+			}
+			catch(SecurityException e) {
+				System.out.println("cannot open home directory: access denied");
+				System.exit(1);
+			}
+			
 			Scanner in = new Scanner(System.in);
-			in.close();
+			try {
+				while (true) {
+					System.out.print("$ ");
+					String[] cmds = in.nextLine().split(";");
+					for (int j = 0; j < cmds.length; j++)
+						if (!ShellParser.parse(cmds[j]))
+							break;
+				}
+			}
+			finally {
+				in.close();
+			}
 		}
 	}
 }

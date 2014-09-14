@@ -1,10 +1,7 @@
 package ru.fizteh.fivt.students.vadim_mazaev.shell;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.InvalidPathException;
+import java.io.*;
+import java.nio.file.*;
 
 public abstract class ShellParser {
 	public static boolean parse(String cmd) {
@@ -30,9 +27,10 @@ public abstract class ShellParser {
 			return mkdir(cmdArgs);
 		case "cat":
 			return cat(cmdArgs);
-		};
-		
-		return true;
+		default:
+			System.out.println(cmdWithoutArgs + ": no such command");
+			return false;
+		}
 	}
 	
 	private static boolean pwd() {
@@ -45,6 +43,7 @@ public abstract class ShellParser {
 		}
 		return false;
 	}
+	
 	private static boolean ls() {
 		try {
 			String[] fileNamesList = new File(System.getProperty("user.dir")).list();
@@ -57,13 +56,17 @@ public abstract class ShellParser {
 		}
 		return false;
 	}
+	
 	private static boolean cd(String cmdArgs) {
 		if (cmdArgs.isEmpty()) {
 			System.out.println("cd: missing operand");
 			return false;
 		}
 		try {
-			File newWorkingDir = FileSystems.getDefault().getPath(System.getProperty("user.dir"), cmdArgs).normalize().toFile();
+			Path path = FileSystems.getDefault().getPath(cmdArgs);
+			if (!path.isAbsolute())
+				path = FileSystems.getDefault().getPath(System.getProperty("user.dir"), cmdArgs);
+			File newWorkingDir = path.normalize().toFile();
 			if (newWorkingDir.exists()) {
 				System.setProperty("user.dir", newWorkingDir.getPath());
 				return true;
@@ -79,6 +82,7 @@ public abstract class ShellParser {
 		}
 		return false;
 	}
+	
 	private static boolean mkdir(String cmdArgs) {
 		if (cmdArgs.isEmpty()) {
 			System.out.println("mkdir: missing operand");
@@ -100,6 +104,7 @@ public abstract class ShellParser {
 		}
 		return false;
 	}
+	
 	private static boolean cat(String cmdArgs) {
 		if (cmdArgs.isEmpty()) {
 			System.out.println("cat: missing operand");
@@ -109,15 +114,16 @@ public abstract class ShellParser {
 			File cattedFile = FileSystems.getDefault().getPath(System.getProperty("user.dir"), cmdArgs).toFile();
 			if (cattedFile.exists()) {
 				if (cattedFile.isFile()) {
-					try (FileInputStream a = new FileInputStream(cattedFile)) {
-						int ch = a.read();
-						while(ch != -1) {
-							System.out.print((char) ch);
-							ch = a.read();
+					try (BufferedReader reader = new BufferedReader(
+			                new InputStreamReader(new FileInputStream(cattedFile)));) {
+						String line;
+						while((line = reader.readLine()) != null) {
+							System.out.println(line);
 						}
+						System.out.println();
 					}
 					catch (IOException e) {
-						System.out.println("cat: cannot read file");
+						System.out.println("cat " + cmdArgs + ": cannot read file");
 						return false;
 					}
 					return true;
