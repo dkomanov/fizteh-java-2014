@@ -6,7 +6,7 @@
 ## Семинары
 В папке [tasks](tasks) находятся описания заданий на
 семинары. Для написания программ необходимо руководствоваться [соглашениями
-по оформлению кода](http://www.oracle.com/technetwork/java/codeconv-138413.html)
+по оформлению кода](http://www.oracle.com/technetwork/java/codeconvtoc-136057.html)
 от Oracle (Code Conventions).
 
 В документе [github-workflow](github-workflow.md) описаны
