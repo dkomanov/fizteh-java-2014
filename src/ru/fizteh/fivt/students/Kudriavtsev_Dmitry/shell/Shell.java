@@ -13,39 +13,51 @@ public class Shell {
 
     private static void remove(String whatDelete, String directory, boolean r) {
         File f = new File(directory + "/" + whatDelete);
-        if (!f.exists())
+        if (!f.exists()) {
             System.out.println("rm: cannot remove \"" + f.getName() + "\": No such file or directory");
-        if (f.isFile())
-            if (!f.delete())
+        }
+        if (f.isFile()) {
+            if (!f.delete()) {
                 System.out.println("rm: cannot remove \"" + f.getName() + "\"");
+            }
+        }
         if (f.isDirectory()) {
             if (r == true) {
                 String[] list;
                 list = f.list();
-                if (list.length == 0)
+                if (list.length == 0) {
                     System.out.println("rm: " + f.getName() + " is a directory");
-                for (String value : list)
+                }
+                for (String value : list) {
                     remove(value, directory + "/" + whatDelete, r);
-            } else
+                }
+            } else {
                 System.out.println("rm: " + f.getName() + " is a directory");
+            }
         }
     }
 
     private static void copy(File f1, File f2, boolean r) {
         try {
-            if (f1.isFile())
+            if (f1.isFile()) {
                 Files.copy(f1.toPath(), f2.toPath(), REPLACE_EXISTING);
-            else {
+            } else {
                 if (r == true) {
-                    if (!f2.exists())
-                        if (!f2.mkdir())
+                    if (!f2.exists()) {
+                        if (!f2.mkdir()) {
                             System.out.println("mkdir: Cannot create new directory " + f2.getName());
+                        }
+                    }
                     String[] list = f1.list();
-                    if (list.length == 0)
+                    if (list.length == 0) {
                         System.out.println("cp: " + f1.getName() + "is a directory (not copied).");
-                    for (String aList : list) copy(new File(f1, aList), new File(f2, aList), r);
-                } else
+                    }
+                    for (String aList : list) {
+                        copy(new File(f1, aList), new File(f2, aList), r);
+                    }
+                } else {
                     System.out.println("cp: " + f1.getName() + "is a directory (not copied).");
+                }
             }
 
         } catch (IOException e) {
@@ -55,14 +67,16 @@ public class Shell {
 
     public static void main(String[] args) {
         int i = 0;
-        String directory = "C:\\";
+        String directory = System.getProperty("user.home");
         String[] s;
         if (args.length == 0) {
             System.out.print("$ ");
             Scanner sc = new Scanner(System.in);
             String s1 = sc.nextLine();
             s = s1.split(" ");
-        } else s = args;
+        } else {
+            s = args;
+        }
 
         while (!s[i].equals("exit")) {
             while (i < s.length) {
@@ -73,10 +87,11 @@ public class Shell {
                             ++i;
                             String what;
                             int j = s[i].indexOf(';');
-                            if (j != -1)
+                            if (j != -1) {
                                 what = s[i].substring(0, s[i].length() - 1);
-                            else
+                            } else {
                                 what = s[i];
+                            }
                             if (what.equals(".")) {
                                 ++i;
                                 break;
@@ -86,13 +101,14 @@ public class Shell {
                                 ++i;
                                 break;
                             }
-                            if (new File(what).exists())
+                            if (new File(what).exists()) {
                                 directory = what;
-                            else {
-                                if (new File(directory + "/" + what).exists())
+                            } else {
+                                if (new File(directory + "/" + what).exists()) {
                                     directory = directory + "\\" + what;
-                                else
+                                } else {
                                     System.out.println("cd: \'" + what + "\': No such file or directory");
+                                }
                             }
                             ++i;
                             break;
@@ -125,13 +141,15 @@ public class Shell {
                             ++i;
                             String dirname;
                             int j = s[i].indexOf(';');
-                            if (j != -1)
+                            if (j != -1) {
                                 dirname = s[i].substring(0, s[i].length() - 1);
-                            else
+                            } else {
                                 dirname = s[i];
+                            }
                             File newDir = new File(directory + "/" + dirname);
-                            if (!newDir.mkdir())
+                            if (!newDir.mkdir()) {
                                 System.out.println("mkdir: Cannot create new directory " + directory + "\\" + dirname);
+                            }
                             ++i;
                             break;
                         }
@@ -151,20 +169,26 @@ public class Shell {
                             source = s[i];
                             ++i;
                             int j = s[i].indexOf(';');
-                            if (j != -1)
+                            if (j != -1) {
                                 destination = s[i].substring(0, s[i].length() - 1);
-                            else
+                            } else {
                                 destination = s[i];
+                            }
                             File f1 = new File(directory + "/" + source);
                             File f2 = new File(directory + "/" + destination);
-                            if ((f1.isDirectory() && f2.isDirectory() && f1.getCanonicalPath().equals(f2.getCanonicalPath()))
-                                    || (f1.isFile() && f2.isFile() && f1.getCanonicalPath().equals(f2.getCanonicalPath()))
-                                    || (f1.isDirectory() && f2.isFile() && f1.getAbsolutePath().equals(f2.getCanonicalPath()))
-                                    || (f1.isFile() && f2.isDirectory() && f1.getCanonicalPath().equals(f2.getAbsolutePath()))
-                                    )
+                            if ((f1.isDirectory() && f2.isDirectory() &&
+                                    f1.getCanonicalPath().equals(f2.getCanonicalPath()))
+                                    ||
+                                    (f1.isFile() && f2.isFile() && f1.getCanonicalPath().equals(f2.getCanonicalPath()))
+                                    || (f1.isDirectory() && f2.isFile() &&
+                                    f1.getAbsolutePath().equals(f2.getCanonicalPath()))
+                                    || (f1.isFile() && f2.isDirectory() &&
+                                    f1.getCanonicalPath().equals(f2.getAbsolutePath()))
+                                    ) {
                                 f1.renameTo(f2);
-                            else
+                            } else {
                                 Files.move(f1.toPath(), f2.toPath());
+                            }
                             ++i;
                             break;
                         }
@@ -178,10 +202,11 @@ public class Shell {
                             }
                             String whatDelete;
                             int j = s[i].indexOf(';');
-                            if (j != -1)
+                            if (j != -1) {
                                 whatDelete = s[i].substring(0, s[i].length() - 1);
-                            else
+                            } else {
                                 whatDelete = s[i];
+                            }
                             remove(whatDelete, directory, flag);
                             ++i;
                             break;
@@ -198,10 +223,11 @@ public class Shell {
                             source = s[i];
                             ++i;
                             int j = s[i].indexOf(';');
-                            if (j != -1)
+                            if (j != -1) {
                                 destination = s[i].substring(0, s[i].length() - 1);
-                            else
+                            } else {
                                 destination = s[i];
+                            }
                             File f1 = new File(directory + "/" + source);
                             File f2 = new File(directory + "/" + destination);
                             copy(f1, f2, flag);
@@ -214,10 +240,11 @@ public class Shell {
                             ++i;
                             String name;
                             int j = s[i].indexOf(';');
-                            if (j != -1)
+                            if (j != -1) {
                                 name = s[i].substring(0, s[i].length() - 1);
-                            else
+                            } else {
                                 name = s[i];
+                            }
                             File f = new File(directory + "/" + name);
                             if (!f.exists()) {
                                 System.out.println("cat: " + f.getName() + ": no such file");
@@ -231,8 +258,9 @@ public class Shell {
                             }
                             BufferedReader fin = new BufferedReader(new FileReader(f));
                             String line;
-                            while ((line = fin.readLine()) != null)
+                            while ((line = fin.readLine()) != null) {
                                 System.out.println(line);
+                            }
                             ++i;
                             break;
                         }
