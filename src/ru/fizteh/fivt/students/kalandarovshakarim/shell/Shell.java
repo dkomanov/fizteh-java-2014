@@ -5,95 +5,131 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell;
  * and open the template in the editor.
  */
 import java.io.*;
-import java.util.Vector;
+import java.util.List;
 
 /**
  *
  * @author shakarim
  */
-class Path {
-    Vector<String> path;
-    
-}
 
 public class Shell {
 
-    /**
-     * @param args the command line argumentsr
-     */
-    public static void cd() {
-        
+    public static void printStrArray(String[] list) {
+        for (String output : list) {
+            System.out.println(output);
+        }
     }
     
-    public static void pwd() {
-        
+    public static void readAndWrite(InputStream in, OutputStream out) {
+        int symbolRead;
+        byte[] buffer = new byte[256];
+        try {
+            while ((symbolRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, symbolRead);
+            }
+            out.flush();
+        } catch (Exception e) {}
     }
     
-    public static void mkdir(String dirName) {
+    public static String[] ls() {
+        String curDir = System.getProperty("user.dir");
+        File file = new File(curDir);
+        
+        return file.list();
+    }
+    
+    public static String pwd() {
+        return System.getProperty("user.dir");
+    }
+    
+    public static boolean mkdir(String dirName) {
         File dir;
         boolean isCreated = false;
         
         try {
-            dir = new File(dirName);
+            dir = new File(pwd() + "/" + dirName);
             isCreated = dir.mkdir();
         } catch (Exception e) {
             System.out.print("Is dir created:" + isCreated);
         }
+        
+        return isCreated;
     }
     
-    public static void cp() {
+    public static boolean cd(String destination) {
+        File dirToGo = new File(destination);;
         
-    }
-    
-    public static void mv() {
-        
-    }
-    
-    
-    public static void ls() {
-        String curDir = System.getProperty("user.dir");
-        String[] paths;
-        File file = new File(curDir);
-        
-        paths = file.list();
-        
-        for (String path : paths) {
-            System.out.println(path);
+        if (dirToGo.exists() == true && dirToGo.isDirectory() == true) {
+            String newPath;
+            try {
+                newPath = dirToGo.getCanonicalPath();
+                System.setProperty("user.dir", newPath);
+            } catch (Exception e) {}
+            
+            return true;
+        } else {
+            return false;
         }
     }
     
-    public static void cat() {
-        
-    }
-    
-    public static void parseCommand() {
-        
-    }
-    
-    //public static void 
-    
-    public static void main(String[] args) {
-        // TODO code application logic here
-        for (int i = 0; i < args.length; ++i) {
-            System.out.println(args[i]); 
-        }
-      
-        String curDir = System.getProperty("user.dir"); 
-        System.out.println(curDir);
-        
-        
-            File f = new File("/");
-        
+    public static boolean cp(String source, String destination) {
+        File srcFile = new File(source);
+        File destFile = new File(destination);
         
         try {
-        //f.mkdir();
-            f.createNewFile();
-        } catch(Exception e) {
+            if (srcFile.exists() == true && destFile.createNewFile() == true) {
+                InputStream in = 
+                        new BufferedInputStream(new FileInputStream(srcFile));
+                OutputStream out = 
+                        new BufferedOutputStream(
+                                new FileOutputStream(destFile));
+                readAndWrite(in, out);
+                out.close();
+                in.close();
+                return true;
+            }
             
+        } catch (Exception e) {}
+        return false;
+    }
+    
+    public static boolean mv(String source, String destination) {
+        if (cp(source,destination) == true) {
+            File srcFile = new File(source);
+            srcFile.delete();
+            return true;
+        } else {
+            return false;
         }
         
-        //System.setProperty("user.dir","");
-        ls();
-
+    }
+    
+    public static boolean cat(String source) {
+        File srcFile = new File(source);
+        
+        if (srcFile.exists() == true) {
+            try {
+                InputStream in = 
+                        new BufferedInputStream(new FileInputStream(srcFile));
+                
+                readAndWrite(in, System.out);
+                
+                in.close();
+                return true;
+            } catch (Exception e) {}
+        }
+        return false;
+    }
+    
+    public static void main(String[] args) {
+        /*
+        printStrArray(ls());
+        cp("nbbuild.xml","mani2.mf");
+        cat("nbbuild.xml");
+        System.out.println(pwd());
+        System.out.println(cd("../sjkadj/../askdjakdj/.."));
+        System.out.println(pwd());
+         * 
+         */
     }
 }
