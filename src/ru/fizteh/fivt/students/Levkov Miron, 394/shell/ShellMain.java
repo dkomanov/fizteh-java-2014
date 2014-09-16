@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.test.shell;
 
 /**
- * @author test
+ Левков Мирон, 394 группа
  */
 public class ShellMain {
 
