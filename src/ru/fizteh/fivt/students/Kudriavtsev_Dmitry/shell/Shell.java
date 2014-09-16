@@ -12,7 +12,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class Shell {
 
     private static void remove(String whatDelete, String directory, boolean r) {
-        File f = new File(directory + "/" + whatDelete);
+        File f = new File(directory + "\\" + whatDelete);
         if (!f.exists()) {
             System.out.println("rm: cannot remove \"" + f.getName() + "\": No such file or directory");
         }
@@ -29,7 +29,7 @@ public class Shell {
                     System.out.println("rm: " + f.getName() + " is a directory");
                 }
                 for (String value : list) {
-                    remove(value, directory + "/" + whatDelete, r);
+                    remove(value, directory + "\\" + whatDelete, r);
                 }
             } else {
                 System.out.println("rm: " + f.getName() + " is a directory");
@@ -79,7 +79,7 @@ public class Shell {
         }
 
         while (!s[i].equals("exit")) {
-            while (i < s.length) {
+            while (i < s.length && !s[i].equals("exit")) {
                 try {
                     switch (s[i]) {
 
@@ -96,15 +96,17 @@ public class Shell {
                                 ++i;
                                 break;
                             }
-                            if (what.equals("..") && !directory.equals("C:\\")) {
+                            if (what.equals("..") ) {
+                                if(!directory.equals("C:\\")) {
                                 directory = new File(directory).getParent();
+                                }
                                 ++i;
                                 break;
                             }
                             if (new File(what).exists()) {
                                 directory = what;
                             } else {
-                                if (new File(directory + "/" + what).exists()) {
+                                if (new File(directory + "\\" + what).exists()) {
                                     directory = directory + "\\" + what;
                                 } else {
                                     System.out.println("cd: \'" + what + "\': No such file or directory");
@@ -266,7 +268,7 @@ public class Shell {
                         }
 
                         default: {
-                            System.out.println("Error request");
+                            //System.out.println("Error request");
                             ++i;
                             break;
                         }
@@ -274,6 +276,9 @@ public class Shell {
                 } catch (IOException e) {
                     System.out.println("Exception on coping : " + e.getMessage());
                 }
+            }
+            if(s[i].equals("exit")){
+                break;
             }
             i = 0;
             System.out.print("$ ");
