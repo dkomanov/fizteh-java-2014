@@ -29,7 +29,6 @@ public abstract class Shell {
 		System.out.println("$ " + builder.toString().trim());
 		ShellParser.parse(cmdWithArgs.
 				toArray(new String[cmdWithArgs.size()]));
-		//System.exit(0);
 	}
 	
 	public static void interactiveMode() {

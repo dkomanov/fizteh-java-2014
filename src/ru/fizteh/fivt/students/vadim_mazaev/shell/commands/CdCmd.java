@@ -19,7 +19,10 @@ public final class CdCmd {
 		}
 		try {
 			File newWorkingDir = Paths.get(cmdWithArgs[1]).normalize().toFile();
-			newWorkingDir = toAbsolute(newWorkingDir);
+			if (!newWorkingDir.isAbsolute()) {
+				newWorkingDir = Paths.get(System.getProperty("user.dir"),
+								newWorkingDir.getPath()).normalize().toFile();
+			}
 			if (newWorkingDir.exists()) {
 				if (newWorkingDir.isDirectory()) {
 					System.setProperty("user.dir", newWorkingDir.getPath());
@@ -39,14 +42,6 @@ public final class CdCmd {
 			throw new SecurityException(getName()
 					+ ": cannot change directory: access denied");
 		}
-	}
-	
-	public static File toAbsolute(final File file) {
-		if (!file.isAbsolute()) {
-			return Paths.get(System.getProperty("user.dir"), file.getPath())
-				.normalize().toFile();
-		}
-		return file;
 	}
 	
 	public static String getName() {

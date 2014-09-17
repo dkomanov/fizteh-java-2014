@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.vadim_mazaev.shell;
 
 import ru.fizteh.fivt.students.vadim_mazaev.shell.commands.LsCmd;
 import ru.fizteh.fivt.students.vadim_mazaev.shell.commands.CatCmd;
+import ru.fizteh.fivt.students.vadim_mazaev.shell.commands.MvCmd;
 import ru.fizteh.fivt.students.vadim_mazaev.shell.commands.PwdCmd;
 import ru.fizteh.fivt.students.vadim_mazaev.shell.commands.CdCmd;
 import ru.fizteh.fivt.students.vadim_mazaev.shell.commands.CpCmd;
@@ -35,6 +36,9 @@ public abstract class ShellParser {
 					break;
 				case "cp":
 					CpCmd.run(cmdWithArgs);
+					break;
+				case "mv":
+					MvCmd.run(cmdWithArgs);
 					break;
 				default:
 					System.out.println(cmdWithArgs[0] + ": no such command");

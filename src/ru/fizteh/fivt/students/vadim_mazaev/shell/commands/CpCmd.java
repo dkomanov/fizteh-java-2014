@@ -38,55 +38,52 @@ public final class CpCmd {
 						+ cmdWithArgs[afterKeyIndex]
 						+ ": No such file or directory");
 			}
-				File destinationFile = Paths.get(cmdWithArgs[afterKeyIndex])
-													.normalize().toFile();
-				if (!destinationFile.isAbsolute()) {
-					destinationFile = Paths.get(System.getProperty("user.dir"),
-						cmdWithArgs[afterKeyIndex + 1]).normalize().toFile();
+			File destinationFile = Paths.get(cmdWithArgs[afterKeyIndex])
+												.normalize().toFile();
+			if (!destinationFile.isAbsolute()) {
+				destinationFile = Paths.get(System.getProperty("user.dir"),
+					cmdWithArgs[afterKeyIndex + 1]).normalize().toFile();
+			}
+			
+			String compare = destinationFile.toPath()
+					.relativize(copiedFile.toPath()).toString();
+			
+			if (compare.equals("") || compare.matches("[\\/\\.]+")) {
+				throw new IllegalArgumentException(getName()
+						+ ": cannot copy file to its child directory");
+			}
+			
+			if (copiedFile.isFile()) {
+				if (destinationFile.isDirectory()) {
+					destinationFile = Paths.get(destinationFile.getPath(),
+										copiedFile.getName()).toFile();
 				}
-				
-				String compare = destinationFile.toPath()
-						.relativize(copiedFile.toPath()).toString();
-				
-				if (compare.equals("") || compare.matches("[\\/\\.]+")) {
-					throw new IllegalArgumentException(getName()
-							+ ": cannot copy file to its child directory");
+				Files.copy(copiedFile.toPath(), destinationFile.toPath(),
+						StandardCopyOption.REPLACE_EXISTING,
+						StandardCopyOption.COPY_ATTRIBUTES);
+			} else {
+				if (!cpRec(copiedFile, destinationFile)) {
+					throw new FileSystemException(getName() + ": "
+						+ "cannot copy file '"
+						+ cmdWithArgs[afterKeyIndex] + "' to '"
+						+ cmdWithArgs[afterKeyIndex + 1] + "'");
 				}
-				
-				if (copiedFile.isFile()) {
-					if (destinationFile.isDirectory()) {
-						destinationFile = Paths.get(destinationFile.getPath(),
-											copiedFile.getName()).toFile();
-					}
-					Files.copy(copiedFile.toPath(), destinationFile.toPath(),
-							StandardCopyOption.REPLACE_EXISTING,
-							StandardCopyOption.COPY_ATTRIBUTES);
-				} else {
-					if (destinationFile.isDirectory()) {
-						throw new IllegalArgumentException(getName()
-								+ ": cannot copy file to directory");
-					}
-					if (!cpRec(copiedFile, destinationFile)) {
-						throw new FileSystemException(getName() + ": "
-							+ "cannot copy file '"
-							+ cmdWithArgs[afterKeyIndex] + "' to file '"
-							+ cmdWithArgs[afterKeyIndex + 1] + "'");
-					}
-				}
+			}
 		} catch (IOException e) {
 			throw new FileSystemException(getName()
-					+ ": cannot create file '"
+					+ ": cannot copy file '"
+					+ cmdWithArgs[afterKeyIndex] + "' to '"
 					+ cmdWithArgs[afterKeyIndex + 1] + "'");
 		} catch (InvalidPathException e) {
 			throw new IllegalArgumentException(getName()
 					+ ": cannot copy file '"
-					+ cmdWithArgs[afterKeyIndex] + "' to file '"
+					+ cmdWithArgs[afterKeyIndex] + "' to '"
 					+ cmdWithArgs[afterKeyIndex + 1]
 					+ "': illegal character in name");
 		} catch (SecurityException e) {
 			throw new SecurityException(getName()
 					+ ": cannot copy file '"
-					+ cmdWithArgs[afterKeyIndex] + "' to file '"
+					+ cmdWithArgs[afterKeyIndex] + "' to '"
 					+ cmdWithArgs[afterKeyIndex  + 1]
 					+ "': access denied");
 		}
@@ -94,15 +91,19 @@ public final class CpCmd {
 	
 	private static boolean cpRec(final File copied, final File destination) {
 		if (copied.isDirectory()) {
+			destination.mkdir();
 			for (File f : copied.listFiles()) {
 				cpRec(f, Paths.get(destination.getAbsolutePath(),
 						f.getName()).toFile());
 			}
-		}
-		try {
-			Files.copy(copied.toPath(), destination.toPath());
-		} catch (IOException e) {
-			return false;
+		} else {
+			try {
+				Files.copy(copied.toPath(), destination.toPath(),
+						StandardCopyOption.REPLACE_EXISTING,
+						StandardCopyOption.COPY_ATTRIBUTES);
+			} catch (IOException e) {
+				return false;
+			}
 		}
 		return true;
 	}
