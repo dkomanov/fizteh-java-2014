@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.vadim_mazaev.shell.commands;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -20,10 +19,10 @@ public final class CpCmd {
 		}
 		if (cmdWithArgs.length <= 2
 				|| (cmdWithArgs.length <= 3 && cmdWithArgs[1] == "-r")) {
-			throw new IllegalArgumentException(getName() + ": missing operand");
+			throw new Exception(getName() + ": missing operand");
 		} else if (cmdWithArgs.length > 3
 				|| (cmdWithArgs.length > 4 && cmdWithArgs[1] != "-r")) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 					+ ": two much arguments");
 		}
 		try {
@@ -34,7 +33,7 @@ public final class CpCmd {
 					cmdWithArgs[afterKeyIndex]).normalize().toFile();
 			}
 			if (!copiedFile.exists()) {
-				throw new FileSystemException(getName() + ": "
+				throw new Exception(getName() + ": "
 						+ cmdWithArgs[afterKeyIndex]
 						+ ": No such file or directory");
 			}
@@ -49,7 +48,7 @@ public final class CpCmd {
 					.relativize(copiedFile.toPath()).toString();
 			
 			if (compare.equals("") || compare.matches("[\\/\\.]+")) {
-				throw new IllegalArgumentException(getName()
+				throw new Exception(getName()
 						+ ": cannot copy file to its child directory");
 			}
 			
@@ -63,25 +62,25 @@ public final class CpCmd {
 						StandardCopyOption.COPY_ATTRIBUTES);
 			} else {
 				if (!cpRec(copiedFile, destinationFile)) {
-					throw new FileSystemException(getName() + ": "
+					throw new Exception(getName() + ": "
 						+ "cannot copy file '"
 						+ cmdWithArgs[afterKeyIndex] + "' to '"
 						+ cmdWithArgs[afterKeyIndex + 1] + "'");
 				}
 			}
 		} catch (IOException e) {
-			throw new FileSystemException(getName()
+			throw new Exception(getName()
 					+ ": cannot copy file '"
 					+ cmdWithArgs[afterKeyIndex] + "' to '"
 					+ cmdWithArgs[afterKeyIndex + 1] + "'");
 		} catch (InvalidPathException e) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 					+ ": cannot copy file '"
 					+ cmdWithArgs[afterKeyIndex] + "' to '"
 					+ cmdWithArgs[afterKeyIndex + 1]
 					+ "': illegal character in name");
 		} catch (SecurityException e) {
-			throw new SecurityException(getName()
+			throw new Exception(getName()
 					+ ": cannot copy file '"
 					+ cmdWithArgs[afterKeyIndex] + "' to '"
 					+ cmdWithArgs[afterKeyIndex  + 1]

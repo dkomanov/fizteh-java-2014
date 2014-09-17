@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.vadim_mazaev.shell.commands;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -15,9 +14,9 @@ public final class MvCmd {
 	
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		if (cmdWithArgs.length <= 2) {
-			throw new IllegalArgumentException(getName() + ": missing operand");
+			throw new Exception(getName() + ": missing operand");
 		} else if (cmdWithArgs.length > 3) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 					+ ": two much arguments");
 		}
 		try {
@@ -28,7 +27,7 @@ public final class MvCmd {
 										cmdWithArgs[1]).normalize().toFile();
 			}
 			if (!movedFile.exists()) {
-				throw new FileSystemException(getName() + ": "
+				throw new Exception(getName() + ": "//IOException!!!
 						+ cmdWithArgs[1] + ": No such file or directory");
 			}
 			File destinationFile = Paths.get(cmdWithArgs[1])
@@ -50,24 +49,24 @@ public final class MvCmd {
 						StandardCopyOption.REPLACE_EXISTING);
 			} else {
 				if (!mvRec(movedFile, destinationFile)) {
-					throw new FileSystemException(getName() + ": "
+					throw new Exception(getName() + ": "
 						+ "cannot move file '"
 						+ cmdWithArgs[1] + "' to '"
 						+ cmdWithArgs[2] + "'");
 				}
 			}
 		} catch (IOException e) {
-			throw new FileSystemException(getName()
+			throw new Exception(getName()
 					+ ": cannot move file '"
 					+ cmdWithArgs[1] + "' to '"
 					+ cmdWithArgs[2] + "'");
 		} catch (InvalidPathException e) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 					+ ": cannot move file '"
 					+ cmdWithArgs[1] + "' to '"
 					+ cmdWithArgs[2] + "': illegal character in name");
 		} catch (SecurityException e) {
-			throw new SecurityException(getName()
+			throw new Exception(getName()
 					+ ": cannot move file '"
 					+ cmdWithArgs[1] + "' to '"
 					+ cmdWithArgs[2] + "': access denied");

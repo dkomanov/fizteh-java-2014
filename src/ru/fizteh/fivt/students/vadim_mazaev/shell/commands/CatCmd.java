@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
@@ -16,9 +15,9 @@ public final class CatCmd {
 	
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		if (cmdWithArgs.length == 1) {
-			throw new IllegalArgumentException(getName() + ": missing operand");
+			throw new Exception(getName() + ": missing operand");
 		} else if (cmdWithArgs.length > 2) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 					+ ": two much arguments");
 		}
 		try {
@@ -34,22 +33,22 @@ public final class CatCmd {
 						}
 					}
 					catch (IOException e) {
-						throw new IOException(getName() + ": "
+						throw new Exception(getName() + ": "
 							+ cmdWithArgs[1] + ": cannot read file");
 					}
 				} else {
-					throw new FileSystemException(getName() + ": "
-						+ cmdWithArgs[1] + ": This is a directory");
+					throw new Exception(getName() + ": "
+						+ cmdWithArgs[1] + ": is a directory");
 				}
 			} else {
-				throw new FileSystemException(getName() + ": "
+				throw new Exception(getName() + ": "
 					+ cmdWithArgs[1] + ": No such file or directory");
 			}
 		} catch (SecurityException e) {
-			throw new SecurityException(getName()
+			throw new Exception(getName()
 				+ ": cannot open file '" + cmdWithArgs[1] + "': access denied");
 		} catch (InvalidPathException e) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 				+ ": cannot open file '"
 				+ cmdWithArgs[1] + "': illegal character in name");
 		}

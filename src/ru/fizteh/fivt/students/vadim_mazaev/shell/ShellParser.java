@@ -9,8 +9,13 @@ import ru.fizteh.fivt.students.vadim_mazaev.shell.commands.CpCmd;
 import ru.fizteh.fivt.students.vadim_mazaev.shell.commands.MkdirCmd;
 import ru.fizteh.fivt.students.vadim_mazaev.shell.commands.RmCmd;
 
-public abstract class ShellParser {
-	public static void parse(final String[] cmdWithArgs) {
+public final class ShellParser {
+	private ShellParser() {
+		//not called
+	}
+	
+	public static void parse(final String[] cmdWithArgs,
+									final boolean isCmdMode) {
 		try {
 			if (cmdWithArgs.length > 0) {
 				switch (cmdWithArgs[0]) {
@@ -42,12 +47,16 @@ public abstract class ShellParser {
 					break;
 				default:
 					System.out.println(cmdWithArgs[0] + ": no such command");
-					System.exit(1);
+					if (isCmdMode) {
+						System.exit(1);
+					}
 				}
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			System.exit(1);
+			if (isCmdMode) {
+				System.exit(1);
+			}
 		}
 	}
 }

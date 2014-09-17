@@ -9,7 +9,7 @@ public final class LsCmd {
 	
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		if (cmdWithArgs.length > 1) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 				+ ": two much arguments");
 		}
 		try {
@@ -19,7 +19,7 @@ public final class LsCmd {
 				System.out.println(fileName);
 			}
 		} catch (SecurityException e) {
-			throw new SecurityException(getName()
+			throw new Exception(getName()
 				+ ": cannot get the list of files: access denied");
 		}
 	}

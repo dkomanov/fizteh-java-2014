@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.vadim_mazaev.shell.commands;
 
 import java.io.File;
-import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
@@ -12,9 +11,9 @@ public final class CdCmd {
 	
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		if (cmdWithArgs.length == 1) {
-			throw new IllegalArgumentException(getName() + ": missing operand");
+			throw new Exception(getName() + ": missing operand");
 		} else if (cmdWithArgs.length > 2) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 					+ ": two much arguments");
 		}
 		try {
@@ -27,19 +26,19 @@ public final class CdCmd {
 				if (newWorkingDir.isDirectory()) {
 					System.setProperty("user.dir", newWorkingDir.getPath());
 				} else {
-					throw new FileSystemException(getName() + ": '"
-						+ cmdWithArgs[1] + "': This is not a directory");
+					throw new Exception(getName() + ": '"
+						+ cmdWithArgs[1] + "': is not a directory");
 				}
 			} else {
-				throw new FileSystemException(getName() + ": '"
+				throw new Exception(getName() + ": '"
 					+ cmdWithArgs[1] + "': No such file or directory");
 			}
 		} catch (InvalidPathException e) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 					+ ": cannot change directory to '"
 					+ cmdWithArgs[1] + "': illegal character in path");
 		} catch (SecurityException e) {
-			throw new SecurityException(getName()
+			throw new Exception(getName()
 					+ ": cannot change directory: access denied");
 		}
 	}

@@ -7,13 +7,13 @@ public final class PwdCmd {
 	
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		if (cmdWithArgs.length > 1) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 				+ ": two much arguments");
 		}
 		try {
 			System.out.println(System.getProperty("user.dir"));
 		} catch (SecurityException e) {
-			throw new SecurityException(getName()
+			throw new Exception(getName()
 				+ ": cannot read current working directory: access denied");
 		}
 	}

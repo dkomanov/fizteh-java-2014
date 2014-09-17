@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.vadim_mazaev.shell.commands;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
@@ -18,10 +17,10 @@ public final class RmCmd {
 		}
 		if (cmdWithArgs.length == 1
 				|| (cmdWithArgs.length == 2 && cmdWithArgs[1] == "-r")) {
-			throw new IllegalArgumentException(getName() + ": missing operand");
+			throw new Exception(getName() + ": missing operand");
 		} else if (cmdWithArgs.length > 2
 				|| (cmdWithArgs.length > 3 && cmdWithArgs[1] != "-r")) {
-			throw new IllegalArgumentException(getName()
+			throw new Exception(getName()
 											+ ": two much arguments");
 		}
 		try {
@@ -32,42 +31,43 @@ public final class RmCmd {
 					cmdWithArgs[afterKeyIndex]).normalize().toFile();
 			}
 			if (!removedFile.exists()) {
-				throw new FileSystemException(getName() + ": "
-					+ cmdWithArgs[afterKeyIndex]
-					+ ": No such file or directory");
+				throw new Exception(getName()
+						+ ": cannot remove '"
+						+ cmdWithArgs[afterKeyIndex]
+						+ "': No such file or directory");
 			}
 			if (removedFile.isFile()) {
 				if (!removedFile.delete()) {
-					throw new FileSystemException(getName() + ": "
+					throw new Exception(getName() + ": "
 						+ cmdWithArgs[afterKeyIndex]
-						+ ": cannot delete file");
+						+ ": cannot remove");
 				}
 			} else {
 				if (afterKeyIndex == 1) {
-					throw new FileSystemException(getName() + ": "
+					throw new Exception(getName() + ": "
 							+ cmdWithArgs[afterKeyIndex]
 							+ ": is a directory");
 				}
 				try {
 					if (!rmRec(removedFile)) {
-						throw new FileSystemException(getName() + ": "
+						throw new Exception(getName() + ": "
 								+ cmdWithArgs[afterKeyIndex]
-								+ ": cannot delete file");
+								+ ": cannot remove file");
 					}
 				} catch (IOException e) {
-					throw new FileSystemException(getName() + ": "
+					throw new Exception(getName() + ": "
 							+ cmdWithArgs[afterKeyIndex]
-							+ ": cannot delete file");
+							+ ": cannot remove file");
 				}
 			}
 		} catch (InvalidPathException e) {
-			throw new IllegalArgumentException(getName()
-					+ ": cannot delete file '"
+			throw new Exception(getName()
+					+ ": cannot remove file '"
 					+ cmdWithArgs[afterKeyIndex]
 					+ "': illegal character in name");
 		} catch (SecurityException e) {
-			throw new SecurityException(getName()
-					+ ": cannot delete file '"
+			throw new Exception(getName()
+					+ ": cannot remove file '"
 					+ cmdWithArgs[afterKeyIndex]
 					+ "': access denied");
 		}
