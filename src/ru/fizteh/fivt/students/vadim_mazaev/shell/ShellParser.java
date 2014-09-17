@@ -5,40 +5,39 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
 public abstract class ShellParser {
-	private static final String REC_PARAM = "-r";
-	
-	public static boolean parse(final String cmd) {
-		String cmdArgs = "";
-		String cmdWithoutArgs = cmd.trim();
-		int cmdWithoutArgsEnds = cmd.trim().indexOf(" ");
-		if (cmdWithoutArgsEnds != -1) {
-			cmdArgs = cmd.trim().substring(cmdWithoutArgsEnds + 1);
-			cmdWithoutArgs = cmd.trim().substring(0, cmdWithoutArgsEnds);
-		}
-		
-		switch (cmdWithoutArgs) {
+	public static boolean parse(final String[] cmdWithArgs) {
+		switch (cmdWithArgs[0]) {
 		case "exit":
 			System.exit(0);
 		case "pwd":
+			if (cmdWithArgs.length > 1) {
+				System.out.println("pwd: two much arguments");
+				return false;
+			}
 			return pwd();
 		case "ls":
+			if (cmdWithArgs.length > 1) {
+				System.out.println("ls: two much arguments");
+				return false;
+			}
 			return ls();
 		case "cd":
-			return cd(cmdArgs);
+			return cd(cmdWithArgs);
 		case "mkdir":
-			return mkdir(cmdArgs);
+			return mkdir(cmdWithArgs);
 		case "cat":
-			return cat(cmdArgs);
+			return cat(cmdWithArgs);
 		case "rm":
-			return rm(cmdArgs);
+			return rm(cmdWithArgs);
 		case "cp":
-			return cp(cmdArgs);
+			return cp(cmdWithArgs);
 		default:
-			System.out.println(cmdWithoutArgs + ": no such command");
+			System.out.println(cmdWithArgs[0] + ": no such command");
 			return false;
 		}
 	}
@@ -69,16 +68,19 @@ public abstract class ShellParser {
 		return false;
 	}
 	
-	private static boolean cd(final String cmdArgs) {
-		if (cmdArgs.isEmpty()) {
+	private static boolean cd(final String[] cmd) {
+		if (cmd.length == 1) {
 			System.out.println("cd: missing operand");
+			return false;
+		} else if (cmd.length > 2) {
+			System.out.println("cd: two much arguments");
 			return false;
 		}
 		try {
-			File newWorkingDir = Paths.get(cmdArgs).normalize().toFile();
+			File newWorkingDir = Paths.get(cmd[1]).normalize().toFile();
 			if (!newWorkingDir.isAbsolute()) {
 				newWorkingDir = Paths.get(
-						System.getProperty("user.dir"), cmdArgs)
+						System.getProperty("user.dir"), cmd[1])
 							.normalize().toFile();
 			}
 			if (newWorkingDir.exists()) {
@@ -103,41 +105,47 @@ public abstract class ShellParser {
 		return false;
 	}
 	
-	private static boolean mkdir(final String cmdArgs) {
-		if (cmdArgs.isEmpty()) {
+	private static boolean mkdir(final String[] cmd) {
+		if (cmd.length == 1) {
 			System.out.println("mkdir: missing operand");
+			return false;
+		} else if (cmd.length > 2) {
+			System.out.println("mkdir: two much arguments");
 			return false;
 		}
 		try {	
 			File makedDir = Paths.get(
-					System.getProperty("user.dir"), cmdArgs).toFile();
+					System.getProperty("user.dir"), cmd[1]).toFile();
 			if (!makedDir.mkdir()) {
 				System.out.println(
 						"mkdir: cannot create directory '"
-								+ cmdArgs + "': File exists");
+								+ cmd[1] + "': File exists");
 				return false;
 			}
 			return true;
 		} catch (InvalidPathException e) {
 			System.out.println(
 					"mkdir: cannot create directory '"
-						+ cmdArgs + "': illegal character in name");
+						+ cmd[1] + "': illegal character in name");
 		} catch (SecurityException e) {
 			System.out.println(
 					"mkdir: cannot create directory '"
-						+ cmdArgs + "': access denied");
+						+ cmd[1] + "': access denied");
 		}
 		return false;
 	}
 	
-	private static boolean cat(final String cmdArgs) {
-		if (cmdArgs.isEmpty()) {
+	private static boolean cat(final String[] cmd) {
+		if (cmd.length == 1) {
 			System.out.println("cat: missing operand");
+			return false;
+		} else if (cmd.length > 2) {
+			System.out.println("cat: two much arguments");
 			return false;
 		}
 		try {
 			File cattedFile = Paths.get(
-					System.getProperty("user.dir"), cmdArgs).toFile();
+					System.getProperty("user.dir"), cmd[1]).toFile();
 			if (cattedFile.exists()) {
 				if (cattedFile.isFile()) {
 					try (BufferedReader reader = new BufferedReader(
@@ -149,70 +157,80 @@ public abstract class ShellParser {
 					}
 					catch (IOException e) {
 						System.out.println(
-								"cat " + cmdArgs + ": cannot read file");
+								"cat " + cmd[1] + ": cannot read file");
 						return false;
 					}
 					return true;
 				} else {
 					System.out.println(
-						"cat: " + cmdArgs + ": This is a directory");
+						"cat: " + cmd[1] + ": This is a directory");
 				}
 			} else {
 				System.out.println(
-					"cat: " + cmdArgs + ": No such file or directory");
+					"cat: " + cmd[1] + ": No such file or directory");
 			}
 		} catch (SecurityException e) {
 			System.out.println(
-				"cat: cannot open file '" + cmdArgs + "': access denied");
+				"cat: cannot open file '" + cmd[1] + "': access denied");
 		} catch (InvalidPathException e) {
 			System.out.println(
 				"cat: cannot open file '"
-					+ cmdArgs + "': illegal character in name");
+					+ cmd[1] + "': illegal character in name");
 		}
 		return false;
 	}
 	
-	private static boolean rm(final String cmdArgs) {
-		String cmdArgsWithoutParam = removeParam(cmdArgs, "-r");
+	private static boolean rm(final String[] cmd) {
+		int keyIndex = 0;
+		if (cmd[1] == "-r") {
+			keyIndex = 1;
+		}
+		if (cmd.length == 1 || (cmd.length == 2 && cmd[1] == "-r")) {
+			System.out.println("rm: missing operand");
+			return false;
+		} else if (cmd.length > 2 || (cmd.length > 3 && cmd[1] != "-r")) {
+			System.out.println("rm: two much arguments");
+			return false;
+		}
 		try {
-			File removedFile = Paths.get(
-					cmdArgsWithoutParam).normalize().toFile();
+			File removedFile = Paths.get(cmd[keyIndex + 1])
+					.normalize().toFile();
 			if (!removedFile.isAbsolute()) {
 				removedFile = Paths.get(System.getProperty("user.dir"),
-							cmdArgsWithoutParam).normalize().toFile();
+					cmd[keyIndex + 1]).normalize().toFile();
 			}
 			if (!removedFile.exists()) {
 				System.out.println("rm: "
-					+ cmdArgsWithoutParam + ": No such file or directory");
+					+ cmd[keyIndex + 1] + ": No such file or directory");
 				return false;
 			}
 			if (removedFile.isFile()) {
 				if (!removedFile.delete()) {
-					System.out.println("rm: " + cmdArgsWithoutParam
+					System.out.println("rm: " + cmd[keyIndex + 1]
 							+ ": cannot delete file");
 					return false;
 				}
 				return true;
 			} else {
-				if (cmdArgsWithoutParam.length() == cmdArgs.length()) {
-					System.out.println("rm: " + cmdArgsWithoutParam
+				if (keyIndex == 0) {
+					System.out.println("rm: " + cmd[keyIndex + 1]
 							+ ": is a directory");
 					return false;
 				}
 				if (!rmRec(removedFile)) {
-					System.out.println("rm: " + cmdArgsWithoutParam
+					System.out.println("rm: " + cmd[keyIndex + 1]
 							+ ": cannot delete file");
 					return false;
 				}
 			}
 		} catch (InvalidPathException e) {
 			System.out.println(
-					"rm: cannot remove directory '"
-						+ cmdArgsWithoutParam + "': illegal character in name");
+					"rm: cannot delete file '"
+						+ cmd[keyIndex + 1] + "': illegal character in name");
 		} catch (SecurityException e) {
 			System.out.println(
-					"rm: cannot remove directory '"
-						+ cmdArgsWithoutParam + "': access denied");
+					"rm: cannot delete file '"
+						+ cmd[keyIndex + 1] + "': access denied");
 		}
 		return false;
 	}
@@ -226,23 +244,86 @@ public abstract class ShellParser {
 		return removed.delete();
 	}
 	
-	private static String removeParam(final String cmdArgs, final String key) {
-		int recIndex = cmdArgs.indexOf(REC_PARAM + " ");
-		if (cmdArgs.isEmpty() || (recIndex == 0
-			&& cmdArgs.length() < REC_PARAM.length() + 1)) {
-			System.out.println("rm: missing operand");
-			return "";
+	private static boolean cp(final String[] cmd) {
+		int keyIndex = 0;
+		if (cmd[1] == "-r") {
+			keyIndex = 1;
 		}
-		if (recIndex == 0) {
-			return cmdArgs.substring(REC_PARAM.length() + 1);
+		if (cmd.length <= 2 || (cmd.length <= 3 && cmd[1] == "-r")) {
+			System.out.println("cp: missing operand");
+			return false;
+		} else if (cmd.length > 3 || (cmd.length > 4 && cmd[1] != "-r")) {
+			System.out.println("cp: two much arguments");
+			return false;
 		}
-		return cmdArgs;
+		try {
+			File copiedFile = Paths.get(cmd[keyIndex + 1])
+					.normalize().toFile();
+			if (!copiedFile.isAbsolute()) {
+				copiedFile = Paths.get(System.getProperty("user.dir"),
+					cmd[keyIndex + 1]).normalize().toFile();
+			}
+			if (!copiedFile.exists()) {
+				System.out.println("cp: "
+					+ cmd[keyIndex + 1] + ": No such file or directory");
+				return false;
+			}
+			try {
+				File destinationFile = Paths.get(cmd[keyIndex + 1])
+						.normalize().toFile();
+				if (!destinationFile.isAbsolute()) {
+					destinationFile = Paths
+							.get(System.getProperty("user.dir"),
+								cmd[keyIndex + 1]).normalize().toFile();
+				}
+				if (copiedFile.isFile()) {
+					destinationFile.createNewFile();
+				} else {
+					if (keyIndex == 0) {
+						System.out.println("cp: " + cmd[keyIndex + 1]
+								+ ": is a directory");
+						return false;
+					}
+					destinationFile.mkdir();
+				}
+				if (!cpRec(copiedFile, destinationFile)) {
+					System.out.println(
+							"cp: cannot copy file '"
+								+ cmd[keyIndex + 1] + "' to file '"
+								+ cmd[keyIndex + 2] + "'");
+				}
+				return true;
+			} catch (IOException e) {
+				System.out.println(
+						"cp: cannot create file '"
+							+ cmd[keyIndex + 2] + "': access denied");
+			}
+		} catch (InvalidPathException e) {
+			System.out.println(
+					"cp: cannot copy file '"
+						+ cmd[keyIndex + 1] + "' to file '"
+						+ cmd[keyIndex + 2] + "': illegal character in name");
+		} catch (SecurityException e) {
+			System.out.println(
+					"cp: cannot copy file '"
+						+ cmd[keyIndex + 1] + "' to file '"
+						+ cmd[keyIndex + 2] + "': access denied");
+		}
+		return false;
 	}
 	
-	private static boolean cp(final String cmdArgs) {
-		String cmdArgsWithoutParam = removeParam(cmdArgs, "-r");
-		//String cmdArg1 = cmdArgsWithoutParam.indexOf(" ");
-		
-		return false;
+	private static boolean cpRec(final File copied, final File destination) {
+		if (copied.isDirectory()) {
+			for (File f : copied.listFiles()) {
+				cpRec(f, Paths.get(destination.getAbsolutePath(),
+						f.getName()).toFile());
+			}
+		}
+		try {
+			Files.copy(copied.toPath(), destination.toPath(), REPLACE_EXISTING);
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
 	}
 }

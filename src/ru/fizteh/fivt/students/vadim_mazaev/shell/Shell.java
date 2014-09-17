@@ -1,46 +1,52 @@
 package ru.fizteh.fivt.students.vadim_mazaev.shell;
 
-import java.util.Scanner;
+import java.util.ArrayList;
+//import java.util.Scanner;
 
 public abstract class Shell {
 	public static void main(final String[] args) {
 		if (args.length > 0) {
 			//package
-			StringBuilder buff = new StringBuilder();
+			ArrayList<String> buffer = new ArrayList<String>();
 			for (int i = 0; i < args.length; i++) {
-				buff.append(args[i]);
-				buff.append(" ");
-			}
-			String[] cmds = buff.toString().split(";");
-			for (int j = 0; j < cmds.length; j++) {
-				System.out.println("$ " + cmds[j].trim());
-				if (!ShellParser.parse(cmds[j])) {
-					System.exit(1);
+				int separatorIndex = args[i].indexOf(";");
+				if (separatorIndex != -1) {
+					String part = args[i].substring(0, separatorIndex);
+					if (!part.isEmpty()) {
+						buffer.add(part.trim());
+					}
+					parserStarter(buffer);
+				} else {
+					buffer.add(args[i]);
 				}
 			}
+			parserStarter(buffer);
 			System.exit(0);
 		} else {
 			//interactive
-			try {
-				System.setProperty("user.dir", System.getProperty("user.home"));
-			} catch (SecurityException e) {
-				System.out.println("cannot open home directory: access denied");
-				System.exit(1);
+		}
+	}
+	
+	private static void parserStarter(final ArrayList<String> buffer) {
+		StringBuilder builder = new StringBuilder();
+		String[] cmdWithArgs = new String[buffer.size()];
+		int j = 0;
+		for (String str : buffer) {
+			cmdWithArgs[j++] = str;
+			if (str.indexOf(" ") != -1) {
+				builder.append("\"");
 			}
-			Scanner in = new Scanner(System.in);
-			try {
-				while (true) {
-					System.out.print("$ ");
-					String[] cmds = in.nextLine().split(";");
-					for (int j = 0; j < cmds.length; j++) {
-						if (!ShellParser.parse(cmds[j])) {
-							break;
-						}
-					}
-				}
-			} finally {
-				in.close();
+			builder.append(str);
+			if (str.indexOf(" ") != -1) {
+				builder.append("\"");
 			}
+			builder.append(" ");
+		}
+		buffer.clear();
+		builder.deleteCharAt(builder.length() - 1);
+		System.out.println("$ " + builder.toString());
+		if (!ShellParser.parse(cmdWithArgs)) {
+			System.exit(1);
 		}
 	}
 }
