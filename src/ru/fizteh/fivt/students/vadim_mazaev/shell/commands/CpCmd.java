@@ -61,6 +61,10 @@ public final class CpCmd {
 						StandardCopyOption.REPLACE_EXISTING,
 						StandardCopyOption.COPY_ATTRIBUTES);
 			} else {
+				if (destinationFile.isDirectory()) {
+					destinationFile = Paths.get(destinationFile.getPath(),
+							copiedFile.getName()).toFile();
+				}
 				if (!cpRec(copiedFile, destinationFile)) {
 					throw new Exception(getName() + ": "
 						+ "cannot copy file '"
@@ -92,8 +96,10 @@ public final class CpCmd {
 		if (copied.isDirectory()) {
 			destination.mkdir();
 			for (File f : copied.listFiles()) {
-				cpRec(f, Paths.get(destination.getAbsolutePath(),
-						f.getName()).toFile());
+				if (!cpRec(f, Paths.get(destination.getAbsolutePath(),
+						f.getName()).toFile())) {
+					return false;
+				}
 			}
 		} else {
 			try {

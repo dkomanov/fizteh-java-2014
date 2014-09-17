@@ -36,11 +36,17 @@ public final class MvCmd {
 				destinationFile = Paths.get(System.getProperty("user.dir"),
 							cmdWithArgs[2]).normalize().toFile();
 			}
-			if (movedFile.getParent().equals(destinationFile.getParent())) {
-				movedFile.renameTo(destinationFile);
-				return;
-			}
 			if (movedFile.isFile()) {
+				if (movedFile.getParent().equals(destinationFile.getParent())
+						&& destinationFile.isFile()) {
+					if ((!destinationFile.exists() || destinationFile.delete())
+							&& movedFile.renameTo(destinationFile)) {
+						throw new Exception(getName() + ": "
+								+ "cannot rename file '"
+								+ cmdWithArgs[1] + "' to '"
+								+ cmdWithArgs[2] + "'");
+					}
+				}
 				if (destinationFile.isDirectory()) {
 					destinationFile = Paths.get(destinationFile.getPath(),
 								movedFile.getName()).toFile();
@@ -48,6 +54,10 @@ public final class MvCmd {
 				Files.move(movedFile.toPath(), destinationFile.toPath(),
 						StandardCopyOption.REPLACE_EXISTING);
 			} else {
+				if (destinationFile.isDirectory()) {
+					destinationFile = Paths.get(destinationFile.getPath(),
+							movedFile.getName()).toFile();
+				}
 				if (!mvRec(movedFile, destinationFile)) {
 					throw new Exception(getName() + ": "
 						+ "cannot move file '"
@@ -77,10 +87,14 @@ public final class MvCmd {
 		if (copied.isDirectory()) {
 			destination.mkdir();
 			for (File f : copied.listFiles()) {
-				mvRec(f, Paths.get(destination.getAbsolutePath(),
-						f.getName()).toFile());
+				if (!mvRec(f, Paths.get(destination.getAbsolutePath(),
+						f.getName()).toFile())) {
+					return false;
+				}
 			}
-			copied.delete();
+			if (!copied.delete()) {
+				return false;
+			}
 		} else {
 			try {
 				Files.move(copied.toPath(), destination.toPath(),
