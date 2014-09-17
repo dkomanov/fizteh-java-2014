@@ -27,7 +27,7 @@ public final class CpCmd {
 		}
 		try {
 			File copiedFile = Paths.get(cmdWithArgs[afterKeyIndex])
-													.normalize().toFile();
+									.normalize().toFile();
 			if (!copiedFile.isAbsolute()) {
 				copiedFile = Paths.get(System.getProperty("user.dir"),
 					cmdWithArgs[afterKeyIndex]).normalize().toFile();
@@ -38,7 +38,7 @@ public final class CpCmd {
 						+ ": No such file or directory");
 			}
 			File destinationFile = Paths.get(cmdWithArgs[afterKeyIndex])
-												.normalize().toFile();
+									.normalize().toFile();
 			if (!destinationFile.isAbsolute()) {
 				destinationFile = Paths.get(System.getProperty("user.dir"),
 					cmdWithArgs[afterKeyIndex + 1]).normalize().toFile();
@@ -55,7 +55,7 @@ public final class CpCmd {
 			if (copiedFile.isFile()) {
 				if (destinationFile.isDirectory()) {
 					destinationFile = Paths.get(destinationFile.getPath(),
-										copiedFile.getName()).toFile();
+								copiedFile.getName()).toFile();
 				}
 				Files.copy(copiedFile.toPath(), destinationFile.toPath(),
 						StandardCopyOption.REPLACE_EXISTING,

@@ -21,11 +21,11 @@ public final class RmCmd {
 		} else if (cmdWithArgs.length > 2
 				|| (cmdWithArgs.length > 3 && cmdWithArgs[1] != "-r")) {
 			throw new Exception(getName()
-											+ ": two much arguments");
+						+ ": two much arguments");
 		}
 		try {
 			File removedFile = Paths.get(cmdWithArgs[afterKeyIndex])
-									.normalize().toFile();
+							.normalize().toFile();
 			if (!removedFile.isAbsolute()) {
 				removedFile = Paths.get(System.getProperty("user.dir"),
 					cmdWithArgs[afterKeyIndex]).normalize().toFile();

@@ -15,7 +15,7 @@ public final class ShellParser {
 	}
 	
 	public static void parse(final String[] cmdWithArgs,
-									final boolean isCmdMode) {
+					final boolean isCmdMode) {
 		try {
 			if (cmdWithArgs.length > 0) {
 				switch (cmdWithArgs[0]) {

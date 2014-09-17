@@ -21,20 +21,20 @@ public final class MvCmd {
 		}
 		try {
 			File movedFile = Paths.get(cmdWithArgs[1])
-													.normalize().toFile();
+							.normalize().toFile();
 			if (!movedFile.isAbsolute()) {
 				movedFile = Paths.get(System.getProperty("user.dir"),
-										cmdWithArgs[1]).normalize().toFile();
+							cmdWithArgs[1]).normalize().toFile();
 			}
 			if (!movedFile.exists()) {
-				throw new Exception(getName() + ": "//IOException!!!
-						+ cmdWithArgs[1] + ": No such file or directory");
+				throw new Exception(getName() + ": "
+					+ cmdWithArgs[1] + ": No such file or directory");
 			}
 			File destinationFile = Paths.get(cmdWithArgs[1])
-											.normalize().toFile();
+								.normalize().toFile();
 			if (!destinationFile.isAbsolute()) {
 				destinationFile = Paths.get(System.getProperty("user.dir"),
-										cmdWithArgs[2]).normalize().toFile();
+							cmdWithArgs[2]).normalize().toFile();
 			}
 			if (movedFile.getParent().equals(destinationFile.getParent())) {
 				movedFile.renameTo(destinationFile);
@@ -43,7 +43,7 @@ public final class MvCmd {
 			if (movedFile.isFile()) {
 				if (destinationFile.isDirectory()) {
 					destinationFile = Paths.get(destinationFile.getPath(),
-												movedFile.getName()).toFile();
+								movedFile.getName()).toFile();
 				}
 				Files.move(movedFile.toPath(), destinationFile.toPath(),
 						StandardCopyOption.REPLACE_EXISTING);
