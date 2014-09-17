@@ -14,16 +14,16 @@ public final class CpCmd {
 	
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		int afterKeyIndex = 1;
-		if (cmdWithArgs[1] == "-r") {
+		if (cmdWithArgs[1].equals("-r")) {
 			afterKeyIndex = 2;
 		}
 		if (cmdWithArgs.length <= 2
-				|| (cmdWithArgs.length <= 3 && cmdWithArgs[1] == "-r")) {
+				|| (cmdWithArgs.length <= 3 && cmdWithArgs[1].equals("-r"))) {
 			throw new Exception(getName() + ": missing operand");
-		} else if (cmdWithArgs.length > 3
-				|| (cmdWithArgs.length > 4 && cmdWithArgs[1] != "-r")) {
+		} else if (cmdWithArgs.length > 4
+				|| (cmdWithArgs.length > 3 && !cmdWithArgs[1].equals("-r"))) {
 			throw new Exception(getName()
-					+ ": two much arguments");
+					+ ": too much arguments");
 		}
 		try {
 			File copiedFile = Paths.get(cmdWithArgs[afterKeyIndex])
@@ -32,7 +32,7 @@ public final class CpCmd {
 				copiedFile = Paths.get(System.getProperty("user.dir"),
 					cmdWithArgs[afterKeyIndex]).normalize().toFile();
 			}
-			if (!copiedFile.exists()) {
+			if (cmdWithArgs[1].isEmpty() || !copiedFile.exists()) {
 				throw new Exception(getName() + ": "
 						+ cmdWithArgs[afterKeyIndex]
 						+ ": No such file or directory");
@@ -43,16 +43,17 @@ public final class CpCmd {
 				destinationFile = Paths.get(System.getProperty("user.dir"),
 					cmdWithArgs[afterKeyIndex + 1]).normalize().toFile();
 			}
-			
-			String compare = destinationFile.toPath()
-					.relativize(copiedFile.toPath()).toString();
-			
-			if (compare.equals("") || compare.matches("[\\/\\.]+")) {
-				throw new Exception(getName()
-						+ ": cannot copy file to its child directory");
+			if (cmdWithArgs[afterKeyIndex + 1].isEmpty()) {
+				throw new Exception(getName() + ": "
+						+ cmdWithArgs[afterKeyIndex + 1]
+						+ ": No such file or directory");
 			}
-			
 			if (copiedFile.isFile()) {
+				if (!destinationFile.getParentFile().exists()) {
+					throw new Exception(getName() + ": cannot create '"
+							+ cmdWithArgs[afterKeyIndex + 1]
+							+ "': is not a directory");
+				}
 				if (destinationFile.isDirectory()) {
 					destinationFile = Paths.get(destinationFile.getPath(),
 								copiedFile.getName()).toFile();
@@ -61,7 +62,23 @@ public final class CpCmd {
 						StandardCopyOption.REPLACE_EXISTING,
 						StandardCopyOption.COPY_ATTRIBUTES);
 			} else {
-				if (destinationFile.isDirectory()) {
+				if (afterKeyIndex == 1) {
+					throw new Exception(getName()
+							+ ": " + cmdWithArgs[afterKeyIndex]
+							+ " is a directory (not copied)");
+				}
+				String compare = destinationFile.toPath()
+						.relativize(copiedFile.toPath()).toString();
+				if (compare.equals("") || compare.matches("[\\/\\.]+")) {
+					throw new Exception(getName()
+							+ ": cannot copy directory into itself");
+				}
+				if (!destinationFile.getParentFile().exists()) {
+					throw new Exception(getName() + ": cannot create '"
+							+ cmdWithArgs[afterKeyIndex + 1]
+							+ "': No such file or directory");
+				}
+				if (destinationFile.exists()) {
 					destinationFile = Paths.get(destinationFile.getPath(),
 							copiedFile.getName()).toFile();
 				}
@@ -74,9 +91,7 @@ public final class CpCmd {
 			}
 		} catch (IOException e) {
 			throw new Exception(getName()
-					+ ": cannot copy file '"
-					+ cmdWithArgs[afterKeyIndex] + "' to '"
-					+ cmdWithArgs[afterKeyIndex + 1] + "'");
+					+ ": cannot read or write files");
 		} catch (InvalidPathException e) {
 			throw new Exception(getName()
 					+ ": cannot copy file '"

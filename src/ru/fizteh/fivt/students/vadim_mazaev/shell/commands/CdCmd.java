@@ -14,7 +14,7 @@ public final class CdCmd {
 			throw new Exception(getName() + ": missing operand");
 		} else if (cmdWithArgs.length > 2) {
 			throw new Exception(getName()
-					+ ": two much arguments");
+					+ ": too much arguments");
 		}
 		try {
 			File newWorkingDir = Paths.get(cmdWithArgs[1]).normalize().toFile();

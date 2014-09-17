@@ -17,7 +17,7 @@ public final class MvCmd {
 			throw new Exception(getName() + ": missing operand");
 		} else if (cmdWithArgs.length > 3) {
 			throw new Exception(getName()
-					+ ": two much arguments");
+					+ ": too much arguments");
 		}
 		try {
 			File movedFile = Paths.get(cmdWithArgs[1])
@@ -26,7 +26,7 @@ public final class MvCmd {
 				movedFile = Paths.get(System.getProperty("user.dir"),
 							cmdWithArgs[1]).normalize().toFile();
 			}
-			if (!movedFile.exists()) {
+			if (cmdWithArgs[1].isEmpty() || !movedFile.exists()) {
 				throw new Exception(getName() + ": "
 					+ cmdWithArgs[1] + ": No such file or directory");
 			}
@@ -36,7 +36,20 @@ public final class MvCmd {
 				destinationFile = Paths.get(System.getProperty("user.dir"),
 							cmdWithArgs[2]).normalize().toFile();
 			}
+			if (cmdWithArgs[2].isEmpty()) {
+				throw new Exception(getName()
+						+ ": cannot move '"
+						+ cmdWithArgs[1]
+						+ "' to '"
+						+ cmdWithArgs[2]
+						+ "': No such file or directory");
+			}
 			if (movedFile.isFile()) {
+				if (!destinationFile.getParentFile().exists()) {
+					throw new Exception(getName() + ": cannot create '"
+							+ cmdWithArgs[2]
+							+ "': No such file or directory");
+				}
 				if (movedFile.getParent().equals(destinationFile.getParent())
 						&& destinationFile.isFile()) {
 					if ((!destinationFile.exists() || destinationFile.delete())
@@ -44,7 +57,7 @@ public final class MvCmd {
 						throw new Exception(getName() + ": "
 								+ "cannot rename file '"
 								+ cmdWithArgs[1] + "' to '"
-								+ cmdWithArgs[2] + "'");
+								+ cmdWithArgs[2] + "': smth went wrong");
 					}
 				}
 				if (destinationFile.isDirectory()) {
@@ -62,14 +75,12 @@ public final class MvCmd {
 					throw new Exception(getName() + ": "
 						+ "cannot move file '"
 						+ cmdWithArgs[1] + "' to '"
-						+ cmdWithArgs[2] + "'");
+						+ cmdWithArgs[2] + "': smth went wrong");
 				}
 			}
 		} catch (IOException e) {
 			throw new Exception(getName()
-					+ ": cannot move file '"
-					+ cmdWithArgs[1] + "' to '"
-					+ cmdWithArgs[2] + "'");
+					+ ": cannot read or write files");
 		} catch (InvalidPathException e) {
 			throw new Exception(getName()
 					+ ": cannot move file '"
@@ -83,7 +94,8 @@ public final class MvCmd {
 		}
 	}
 	
-	private static boolean mvRec(final File copied, final File destination) {
+	private static boolean mvRec(final File copied, final File destination)
+										throws IOException {
 		if (copied.isDirectory()) {
 			destination.mkdir();
 			for (File f : copied.listFiles()) {
@@ -96,12 +108,8 @@ public final class MvCmd {
 				return false;
 			}
 		} else {
-			try {
-				Files.move(copied.toPath(), destination.toPath(),
-						StandardCopyOption.REPLACE_EXISTING);
-			} catch (IOException e) {
-				return false;
-			}
+			Files.move(copied.toPath(), destination.toPath(),
+							StandardCopyOption.REPLACE_EXISTING);
 		}
 		return true;
 	}

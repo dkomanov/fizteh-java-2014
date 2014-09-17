@@ -14,9 +14,13 @@ public final class MkdirCmd {
 			throw new Exception(getName() + ": missing operand");
 		} else if (cmdWithArgs.length > 2) {
 			throw new Exception(getName()
-					+ ": two much arguments");
+					+ ": too much arguments");
 		}
-		try {	
+		try {
+			if (cmdWithArgs[1].isEmpty()) {
+				throw new Exception(getName() + ": cannot create '"
+					+ "': no such file or directory");
+			}
 			File makedDir = Paths
 				.get(System.getProperty("user.dir"), cmdWithArgs[1]).toFile();
 			if (!makedDir.mkdir()) {

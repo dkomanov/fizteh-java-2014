@@ -12,16 +12,16 @@ public final class RmCmd {
 	
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		int afterKeyIndex = 1;
-		if (cmdWithArgs[1] == "-r") {
+		if (cmdWithArgs[1].equals("-r")) {
 			afterKeyIndex = 2;
 		}
 		if (cmdWithArgs.length == 1
-				|| (cmdWithArgs.length == 2 && cmdWithArgs[1] == "-r")) {
+				|| (cmdWithArgs.length == 2 && cmdWithArgs[1].equals("-r"))) {
 			throw new Exception(getName() + ": missing operand");
-		} else if (cmdWithArgs.length > 2
-				|| (cmdWithArgs.length > 3 && cmdWithArgs[1] != "-r")) {
+		} else if (cmdWithArgs.length > 3
+				|| (cmdWithArgs.length > 2 && !cmdWithArgs[1].equals("-r"))) {
 			throw new Exception(getName()
-						+ ": two much arguments");
+						+ ": too much arguments");
 		}
 		try {
 			File removedFile = Paths.get(cmdWithArgs[afterKeyIndex])
@@ -30,7 +30,7 @@ public final class RmCmd {
 				removedFile = Paths.get(System.getProperty("user.dir"),
 					cmdWithArgs[afterKeyIndex]).normalize().toFile();
 			}
-			if (!removedFile.exists()) {
+			if (cmdWithArgs[1].isEmpty() || !removedFile.exists()) {
 				throw new Exception(getName()
 						+ ": cannot remove '"
 						+ cmdWithArgs[afterKeyIndex]
@@ -38,26 +38,23 @@ public final class RmCmd {
 			}
 			if (removedFile.isFile()) {
 				if (!removedFile.delete()) {
-					throw new Exception(getName() + ": "
+					throw new Exception(getName()
+						+ ": cannot remove '"
 						+ cmdWithArgs[afterKeyIndex]
-						+ ": cannot remove");
+						+ "': smth went wrong");
 				}
 			} else {
 				if (afterKeyIndex == 1) {
-					throw new Exception(getName() + ": "
+					throw new Exception(getName()
+							+ ": cannot remove '"
 							+ cmdWithArgs[afterKeyIndex]
-							+ ": is a directory");
+							+ "': is a directory");
 				}
-				try {
-					if (!rmRec(removedFile)) {
-						throw new Exception(getName() + ": "
-								+ cmdWithArgs[afterKeyIndex]
-								+ ": cannot remove file");
-					}
-				} catch (IOException e) {
-					throw new Exception(getName() + ": "
+				if (!rmRec(removedFile)) {
+					throw new Exception(getName()
+							+ ": cannot remove '"
 							+ cmdWithArgs[afterKeyIndex]
-							+ ": cannot remove file");
+							+ "': smth went wrong");
 				}
 			}
 		} catch (InvalidPathException e) {
@@ -76,7 +73,9 @@ public final class RmCmd {
 	private static boolean rmRec(final File removed) throws IOException {
 		if (removed.isDirectory()) {
 			for (File f : removed.listFiles()) {
-				rmRec(f);
+				if (!rmRec(f)) {
+					return false;
+				}
 			}
 		}
 		return removed.delete();

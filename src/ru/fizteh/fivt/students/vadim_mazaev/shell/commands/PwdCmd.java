@@ -8,7 +8,7 @@ public final class PwdCmd {
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		if (cmdWithArgs.length > 1) {
 			throw new Exception(getName()
-				+ ": two much arguments");
+				+ ": too much arguments");
 		}
 		try {
 			System.out.println(System.getProperty("user.dir"));

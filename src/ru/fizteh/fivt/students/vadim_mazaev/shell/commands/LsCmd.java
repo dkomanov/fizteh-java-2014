@@ -10,7 +10,7 @@ public final class LsCmd {
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		if (cmdWithArgs.length > 1) {
 			throw new Exception(getName()
-				+ ": two much arguments");
+				+ ": too much arguments");
 		}
 		try {
 			String[] fileNamesList =

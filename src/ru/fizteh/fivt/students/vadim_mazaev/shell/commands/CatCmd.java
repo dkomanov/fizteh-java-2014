@@ -18,12 +18,12 @@ public final class CatCmd {
 			throw new Exception(getName() + ": missing operand");
 		} else if (cmdWithArgs.length > 2) {
 			throw new Exception(getName()
-					+ ": two much arguments");
+					+ ": too much arguments");
 		}
 		try {
 			File cattedFile = Paths.get(
 					System.getProperty("user.dir"), cmdWithArgs[1]).toFile();
-			if (cattedFile.exists()) {
+			if (!cmdWithArgs[1].isEmpty() && cattedFile.exists()) {
 				if (cattedFile.isFile()) {
 					try (BufferedReader reader = new BufferedReader(
 					new InputStreamReader(new FileInputStream(cattedFile)));) {

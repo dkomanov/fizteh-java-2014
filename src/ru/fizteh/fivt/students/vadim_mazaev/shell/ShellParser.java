@@ -17,7 +17,7 @@ public final class ShellParser {
 	public static void parse(final String[] cmdWithArgs,
 					final boolean isCmdMode) {
 		try {
-			if (cmdWithArgs.length > 0) {
+			if (cmdWithArgs.length > 0 && !cmdWithArgs[0].isEmpty()) {
 				switch (cmdWithArgs[0]) {
 				case "exit":
 					System.exit(0);
