@@ -14,6 +14,10 @@
 [checkstyle](http://checkstyle.sourceforge.net/), которая проверяет код на соответствие
 Code Conventions.
 
+## Лекции
+1. [Java, JVM, примитивные типы](https://yadi.sk/d/_ZgbGf9NbXraZ)
+2. [Object, String, исключения](https://yadi.sk/d/MCu6krbtbXrgZ)
+
 ## Список литературы
 * Брюс Эккель &mdash; Философия Java  (Thinking in Java)
 * Brian Goetz &mdash; Java Concurrency in Practive (продвинутая книжка
