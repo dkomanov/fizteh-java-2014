@@ -40,9 +40,12 @@ public final class Shell {
 					char[] currentCmd = str.trim().toCharArray();
 					boolean quoteOpened = false;
 					for (int i = 0; i < currentCmd.length; i++) {
-						if (currentCmd[i] == ' ' && !quoteOpened) {
-							cmdWithArgs.add(builder.toString());
-							builder.setLength(0);
+						if (Character.isWhitespace(currentCmd[i])
+								&& !quoteOpened) {
+							if (builder.length() != 0) {
+								cmdWithArgs.add(builder.toString());
+								builder.setLength(0);
+							}
 						} else if (currentCmd[i] == '\"') {
 							quoteOpened = !quoteOpened;
 						} else {

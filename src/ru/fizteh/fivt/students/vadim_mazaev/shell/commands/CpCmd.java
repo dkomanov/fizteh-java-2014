@@ -58,6 +58,11 @@ public final class CpCmd {
 					destinationFile = Paths.get(destinationFile.getPath(),
 								copiedFile.getName()).toFile();
 				}
+				if (destinationFile.toPath().toString()
+						.equals(copiedFile.toPath().toString())) {
+					throw new Exception(getName()
+							+ ": cannot copy file into itself");
+				}
 				Files.copy(copiedFile.toPath(), destinationFile.toPath(),
 						StandardCopyOption.REPLACE_EXISTING,
 						StandardCopyOption.COPY_ATTRIBUTES);
