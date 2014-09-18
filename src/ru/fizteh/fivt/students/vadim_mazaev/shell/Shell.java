@@ -10,27 +10,20 @@ public final class Shell {
 	
 	public static void commandMode(final String[] args) {
 		ArrayList<String> cmdWithArgs = new ArrayList<String>();
-		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < args.length; i++) {
 			int separatorIndex = args[i].indexOf(";");
 			if (separatorIndex != -1) {
 				String part = args[i].substring(0, separatorIndex);
 				if (!part.isEmpty()) {
 					cmdWithArgs.add(part);
-					builder.append(part);
 				}
-				System.out.println("$ " + builder.toString().trim());
 				ShellParser.parse(cmdWithArgs.
 						toArray(new String[cmdWithArgs.size()]), true);
 				cmdWithArgs.clear();
-				builder.setLength(0);
 			} else {
 				cmdWithArgs.add(args[i]);
-				builder.append(args[i]);
-				builder.append(" ");
 			}
 		}
-		System.out.println("$ " + builder.toString().trim());
 		ShellParser.parse(cmdWithArgs.
 				toArray(new String[cmdWithArgs.size()]), true);
 	}
