@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.test.shell;
+package ru.fizteh.fivt.students.ilivanov.shell;
 
 /**
  * @author test
