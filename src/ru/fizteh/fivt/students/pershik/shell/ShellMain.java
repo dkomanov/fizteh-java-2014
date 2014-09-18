@@ -3,12 +3,14 @@ package ru.fizteh.fivt.students.pershik.shell;
 /**
  * @author pershik
  */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Scanner;
 
 class InvalidCommandException extends Exception {
     public InvalidCommandException(String message) {
@@ -19,6 +21,8 @@ class InvalidCommandException extends Exception {
 public class ShellMain {
 
     private static String workingDirectory;
+    private static boolean batchMode = false;
+    private static boolean exited = false;
 
     private static boolean checkArguments(int min, int max, int real) {
         return min <= real && real <= max;
@@ -59,6 +63,11 @@ public class ShellMain {
         throw new InvalidCommandException(command + ": cannot perform this operation");
     }
 
+    private static void errorUnknownCommand(String command)
+            throws InvalidCommandException {
+        throw new InvalidCommandException(command + ": unknown command");
+    }
+
     private static void pwd(String[] args) throws InvalidCommandException {
         if (!checkArguments(0, 0, args.length - 1))
             errorCntArguments("pwd");
@@ -68,7 +77,11 @@ public class ShellMain {
     private static void cd(String[] args) throws InvalidCommandException {
         if (!checkArguments(1, 1, args.length - 1))
             errorCntArguments("cd");
-        File curFile = new File(args[1]);
+        File curFile;
+        if (args[1].charAt(0) == '/')
+            curFile = new File(args[1]);
+        else
+            curFile = new File(workingDirectory + "/" + args[1]);
         try {
             if (curFile.exists() && curFile.isDirectory()) {
                 System.setProperty("user.dir", curFile.getCanonicalPath());
@@ -190,7 +203,7 @@ public class ShellMain {
         if (!fromFile.exists())
             errorNoFile("cp", fromFile.getName());
         if (fromFile.isDirectory() && !recursive)
-            errorIsDirectory("rm", fromFile.getName());
+            errorIsDirectory("cp", fromFile.getName());
         copy(fromFile, toFile);
     }
 
@@ -214,7 +227,13 @@ public class ShellMain {
         }
     }
 
-    private static boolean execute(String command) {
+    private static void exit(String[] args) throws InvalidCommandException {
+        if (!checkArguments(0, 0, args.length - 1))
+            errorCntArguments("exit");
+        exited = true;
+    }
+
+    private static void execute(String command) {
         command = command.trim();
         String tokens[] = command.split("\\s+");
         try {
@@ -244,25 +263,65 @@ public class ShellMain {
                     mv(tokens);
                     break;
                 case "exit":
-                    // TODO
+                    exit(tokens);
+                    break;
+                case "":
+                    break;
+                default:
+                    errorUnknownCommand(tokens[0]);
                     break;
             }
         } catch (InvalidCommandException e) {
             System.err.println(e.getMessage());
-            return false;
+            if (batchMode)
+                System.exit(-1);
         }
-        return true;
     }
 
     public static void runCommands(String[] commands) {
         for (String command: commands) {
             execute(command);
+            if (exited)
+                break;
         }
     }
 
-    public static void main(String[] args) {
+    private static void execLine(String line) {
+        String[] commands = line.trim().split(";");
+        runCommands(commands);
+    }
+
+    private static void runBatch(String[] args) {
+        String allCommands = "";
+        for (String arg: args)
+            allCommands += " " + arg;
+        execLine(allCommands);
+    }
+
+    private static void runInteractive() {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.print("$ ");
+            String allCommands = sc.nextLine();
+            execLine(allCommands);
+            if (exited)
+                break;
+        }
+        sc.close();
+    }
+
+    private static void init(String[] args) {
+        if (args.length > 0)
+            batchMode = true;
         workingDirectory = System.getProperty("user.dir");
-        runCommands(args);
+    }
+
+    public static void main(String[] args) {
+        init(args);
+        if (batchMode)
+            runBatch(args);
+        else
+            runInteractive();
     }
 }
 
