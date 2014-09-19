@@ -46,14 +46,14 @@ public final class ShellParser {
 					MvCmd.run(cmdWithArgs);
 					break;
 				default:
-					System.out.println(cmdWithArgs[0] + ": no such command");
+					System.err.println(cmdWithArgs[0] + ": no such command");
 					if (isCmdMode) {
 						System.exit(1);
 					}
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 			if (isCmdMode) {
 				System.exit(1);
 			}

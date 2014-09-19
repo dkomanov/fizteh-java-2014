@@ -12,7 +12,7 @@ public final class RmCmd {
 	
 	public static void run(final String[] cmdWithArgs) throws Exception {
 		int afterKeyIndex = 1;
-		if (cmdWithArgs[1].equals("-r")) {
+		if (cmdWithArgs.length > 2 && cmdWithArgs[1].equals("-r")) {
 			afterKeyIndex = 2;
 		}
 		if (cmdWithArgs.length == 1
