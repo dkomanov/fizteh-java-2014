@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.vadim_mazaev.shell;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public final class Shell {
@@ -40,9 +41,9 @@ public final class Shell {
 			while (true) {
 				System.out.print("$ ");
 				String line = "";
-				if (in.hasNext()) {
+				try {
 					 line = in.nextLine();
-				} else {
+				} catch (NoSuchElementException e) {
 					System.exit(0);
 				}
 				String[] commands = line.split(";");
