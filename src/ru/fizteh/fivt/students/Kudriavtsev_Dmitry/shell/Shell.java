@@ -12,7 +12,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class Shell {
 
     private static void remove(String whatDelete, String directory, boolean r) {
-        File f = new File(directory + "\\" + whatDelete);
+        File f = new File(directory + File.separator + whatDelete);
         if (!f.exists()) {
             System.out.println("rm: cannot remove \"" + f.getName() + "\": No such file or directory");
         }
@@ -29,7 +29,7 @@ public class Shell {
                     System.out.println("rm: " + f.getName() + " is a directory");
                 }
                 for (String value : list) {
-                    remove(value, directory + "\\" + whatDelete, r);
+                    remove(value, directory + File.separator + whatDelete, r);
                 }
             } else {
                 System.out.println("rm: " + f.getName() + " is a directory");
@@ -40,6 +40,11 @@ public class Shell {
     private static void copy(File f1, File f2, boolean r) {
         try {
             if (f1.isFile()) {
+                if (!f2.exists()) {
+                    if (!f2.mkdir()) {
+                        System.out.println("mkdir: Cannot create new directory " + f2.getName());
+                    }
+                }
                 Files.copy(f1.toPath(), f2.toPath(), REPLACE_EXISTING);
             } else {
                 if (r == true) {
@@ -48,12 +53,14 @@ public class Shell {
                             System.out.println("mkdir: Cannot create new directory " + f2.getName());
                         }
                     }
+                    File newDir = new File(f2.getCanonicalPath() + File.separator + f1.getName());
+                    newDir.mkdir();
                     String[] list = f1.list();
-                    if (list.length == 0) {
+                    /*if (list.length == 0) {
                         System.out.println("cp: " + f1.getName() + "is a directory (not copied).");
-                    }
+                    }*/
                     for (String aList : list) {
-                        copy(new File(f1, aList), new File(f2, aList), r);
+                        copy(new File(f1, aList), newDir, r);
                     }
                 } else {
                     System.out.println("cp: " + f1.getName() + "is a directory (not copied).");
@@ -97,7 +104,7 @@ public class Shell {
                                 break;
                             }
                             if (what.equals("..") ) {
-                                if(!directory.equals("C:\\")) {
+                                if(!directory.equals("C:\\") && !directory.equals("/")) {
                                 directory = new File(directory).getParent();
                                 }
                                 ++i;
@@ -106,8 +113,8 @@ public class Shell {
                             if (new File(what).exists()) {
                                 directory = what;
                             } else {
-                                if (new File(directory + "\\" + what).exists()) {
-                                    directory = directory + "\\" + what;
+                                if (new File(directory + File.separator + what).exists()) {
+                                    directory = directory + File.separator + what;
                                 } else {
                                     System.out.println("cd: \'" + what + "\': No such file or directory");
                                 }
@@ -128,9 +135,7 @@ public class Shell {
                                 String[] list;
                                 list = path.list();
                                 for (String value : list) {
-                                    File f = new File(directory + "/" + value);
-                                    System.out.println(f.getName());
-                                    //System.out.println(value);
+                                    System.out.println(value);
                                 }
                             } else {
                                 System.out.println("It is not a directory");
@@ -148,9 +153,9 @@ public class Shell {
                             } else {
                                 dirname = s[i];
                             }
-                            File newDir = new File(directory + "/" + dirname);
+                            File newDir = new File(directory + File.separator + dirname);
                             if (!newDir.mkdir()) {
-                                System.out.println("mkdir: Cannot create new directory " + directory + "\\" + dirname);
+                                System.out.println("mkdir: Cannot create new directory " + directory + File.separator + dirname);
                             }
                             ++i;
                             break;
@@ -176,8 +181,8 @@ public class Shell {
                             } else {
                                 destination = s[i];
                             }
-                            File f1 = new File(directory + "/" + source);
-                            File f2 = new File(directory + "/" + destination);
+                            File f1 = new File(directory + File.separator + source);
+                            File f2 = new File(directory + File.separator + destination);
                             if ((f1.isDirectory() && f2.isDirectory() &&
                                     f1.getCanonicalPath().equals(f2.getCanonicalPath()))
                                     ||
@@ -230,8 +235,8 @@ public class Shell {
                             } else {
                                 destination = s[i];
                             }
-                            File f1 = new File(directory + "/" + source);
-                            File f2 = new File(directory + "/" + destination);
+                            File f1 = new File(directory + File.separator+ source);
+                            File f2 = new File(directory + File.separator + destination);
                             copy(f1, f2, flag);
 
                             ++i;
@@ -247,7 +252,7 @@ public class Shell {
                             } else {
                                 name = s[i];
                             }
-                            File f = new File(directory + "/" + name);
+                            File f = new File(directory + File.separator + name);
                             if (!f.exists()) {
                                 System.out.println("cat: " + f.getName() + ": no such file");
                                 ++i;
@@ -277,7 +282,7 @@ public class Shell {
                     System.out.println("Exception on coping : " + e.getMessage());
                 }
             }
-            if(s[i].equals("exit")){
+            if(i < s.length && s[i].equals("exit")){
                 break;
             }
             i = 0;
