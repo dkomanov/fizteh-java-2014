@@ -77,7 +77,7 @@ public class Shell
         Scanner sc = new Scanner(System.in);
         while(true)
         {
-            System.out.print("$");
+            System.out.print(current_Directory.get_Current_directory() + "$");
             String current_string = sc.nextLine();
             String[] functions = current_string.split(";");
             for(int i = 0; i < functions.length; ++i)
