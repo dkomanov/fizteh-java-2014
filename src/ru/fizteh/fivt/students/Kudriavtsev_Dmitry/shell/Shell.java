@@ -1,12 +1,14 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.shell;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Scanner;
 
+import java.io.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Scanner;
+//import  java.nio.channels.FileChannel;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class Shell {
@@ -31,6 +33,7 @@ public class Shell {
                 for (String value : list) {
                     remove(value, directory + File.separator + whatDelete, r);
                 }
+                f.delete();
             } else {
                 System.out.println("rm: " + f.getName() + " is a directory");
             }
@@ -45,7 +48,26 @@ public class Shell {
                         System.out.println("mkdir: Cannot create new directory " + f2.getName());
                     }
                 }
-                Files.copy(f1.toPath(), f2.toPath(), REPLACE_EXISTING);
+                InputStream is = null;
+                OutputStream os = null;
+                try {
+                    is = new FileInputStream(f1);
+                    File dest = new File(f2.getCanonicalPath() + File.separator + f1.getName());
+                    if(dest.exists()) {
+                        System.out.println(dest.getName() + "File exists.");
+                        return;
+                    }
+                    os = new FileOutputStream(dest);
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = is.read(buffer)) > 0) {
+                        os.write(buffer, 0, length);
+                    }
+                } finally {
+                    is.close();
+                    os.close();
+                }
+                //Files.copy(f1.toPath(), f2.toPath(),);
             } else {
                 if (r == true) {
                     if (!f2.exists()) {
@@ -54,16 +76,13 @@ public class Shell {
                         }
                     }
                     File newDir = new File(f2.getCanonicalPath() + File.separator + f1.getName());
-                    newDir.mkdir();
+                    Files.createDirectory(newDir.toPath());
                     String[] list = f1.list();
-                    /*if (list.length == 0) {
-                        System.out.println("cp: " + f1.getName() + "is a directory (not copied).");
-                    }*/
                     for (String aList : list) {
                         copy(new File(f1, aList), newDir, r);
                     }
                 } else {
-                    System.out.println("cp: " + f1.getName() + "is a directory (not copied).");
+                    System.out.println("cp: " + f1.getName() + " is a directory (not copied).");
                 }
             }
 
@@ -154,9 +173,7 @@ public class Shell {
                                 dirname = s[i];
                             }
                             File newDir = new File(directory + File.separator + dirname);
-                            if (!newDir.mkdir()) {
-                                System.out.println("mkdir: Cannot create new directory " + directory + File.separator + dirname);
-                            }
+                            Files.createDirectory(newDir.toPath());
                             ++i;
                             break;
                         }
@@ -280,6 +297,9 @@ public class Shell {
                     }
                 } catch (IOException e) {
                     System.out.println("Exception on coping : " + e.getMessage());
+                }
+                catch(Exception e) {
+                    System.out.println("Exception: " + e.getMessage());
                 }
             }
             if(i < s.length && s[i].equals("exit")){
