@@ -24,7 +24,7 @@ public class LsCommand implements Command {
             File dir = new File(sh.getState());
             File[] arr = dir.listFiles();
             for (File f : arr) {
-                    System.out.println(f.getName());
+                System.out.println(f.getName());
             }
         }
     }

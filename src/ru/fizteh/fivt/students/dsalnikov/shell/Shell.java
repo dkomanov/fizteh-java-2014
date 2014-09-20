@@ -67,7 +67,7 @@ public class Shell<State extends ShellState> {
             String cmd[] = new String[1];
 
             cmd[0] = sc.nextLine();
-            if(cmd[0].isEmpty()) {
+            if (cmd[0].isEmpty()) {
                 continue;
             }
             try {

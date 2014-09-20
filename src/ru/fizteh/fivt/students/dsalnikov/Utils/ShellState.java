@@ -8,9 +8,7 @@ public class ShellState {
     Object object;
 
     public ShellState() {
-        File wd = new File("");
-        wd.getAbsoluteFile();
-        state = wd.getAbsolutePath();
+        state = System.getProperty("user.home");
     }
 
     public ShellState(String s) {

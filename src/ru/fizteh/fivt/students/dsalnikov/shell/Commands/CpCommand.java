@@ -78,12 +78,12 @@ public class CpCommand implements Command {
                         destination = new File(destination.getAbsolutePath(), source.getName());
                         Files.copy(source.toPath(), destination.toPath());
                     }
-                        File newDir = new File(destination, str[2]);
-                        newDir = newDir.toPath().normalize().toFile();
-                        if  (!newDir.getAbsoluteFile().mkdirs()) {
-                            throw new Exception("Can not create directory: " + destination.getName());
-                        }
-                        recursiveCopy(source, newDir);
+                    File newDir = new File(destination, str[2]);
+                    newDir = newDir.toPath().normalize().toFile();
+                    if (!newDir.getAbsoluteFile().mkdirs()) {
+                        throw new Exception("Can not create directory: " + destination.getName());
+                    }
+                    recursiveCopy(source, newDir);
 
                 } else {
                     throw new IllegalArgumentException("Flag " + str[1] + " is not supported in this command");

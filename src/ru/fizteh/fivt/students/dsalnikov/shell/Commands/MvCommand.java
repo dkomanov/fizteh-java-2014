@@ -18,17 +18,17 @@ public class MvCommand implements Command {
         if (st.length != 3) {
             throw new IllegalArgumentException("Incorrect usage of Command mv : wrong amount of arguments");
         }
-            String[] rmstr = new String[3];
-            String[] cpstr = new String[4];
-            cpstr[1] = "-r";
-            cpstr[2] = st[1];
-            cpstr[3] = st[2];
-            rmstr[2] = st[1];
-            rmstr[1] = "-r";
-            CpCommand cp = new CpCommand(link);
-            RmCommand rm = new RmCommand(link);
-            cp.execute(cpstr);
-            rm.execute(rmstr);
+        String[] rmstr = new String[3];
+        String[] cpstr = new String[4];
+        cpstr[1] = "-r";
+        cpstr[2] = st[1];
+        cpstr[3] = st[2];
+        rmstr[2] = st[1];
+        rmstr[1] = "-r";
+        CpCommand cp = new CpCommand(link);
+        RmCommand rm = new RmCommand(link);
+        cp.execute(cpstr);
+        rm.execute(rmstr);
     }
 
     public MvCommand(Shell s) {
