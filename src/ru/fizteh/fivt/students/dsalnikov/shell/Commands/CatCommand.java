@@ -20,6 +20,8 @@ public class CatCommand implements Command {
     public void execute(String[] args) throws IOException {
         if (args.length != 2) {
             throw new IllegalArgumentException("Wrong amount of arguments");
+        } else if(StringUtils.ProcessFile(link.getState().getState(), args[1]).isDirectory()) {
+            throw new IllegalArgumentException("can't cat directory");
         } else {
             try (BufferedReader br = new BufferedReader(new FileReader(StringUtils.ProcessFile(link.getState().getState(),
                     args[1])))) {

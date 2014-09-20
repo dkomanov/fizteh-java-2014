@@ -24,14 +24,7 @@ public class LsCommand implements Command {
             File dir = new File(sh.getState());
             File[] arr = dir.listFiles();
             for (File f : arr) {
-                if (f.isDirectory()) {
-                    System.out.println(f.getName() + " <DIR>");
-                }
-            }
-            for (File f : arr) {
-                if (!f.isDirectory()) {
                     System.out.println(f.getName());
-                }
             }
         }
     }

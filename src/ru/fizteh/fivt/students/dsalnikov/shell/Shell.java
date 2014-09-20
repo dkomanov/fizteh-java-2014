@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.dsalnikov.shell;
 
-import com.sun.corba.se.impl.io.TypeMismatchException;
 import ru.fizteh.fivt.students.dsalnikov.shell.Commands.Command;
 import ru.fizteh.fivt.students.dsalnikov.Utils.ShellState;
 
@@ -68,6 +67,9 @@ public class Shell<State extends ShellState> {
             String cmd[] = new String[1];
 
             cmd[0] = sc.nextLine();
+            if(cmd[0].isEmpty()) {
+                continue;
+            }
             try {
                 this.execute(cmd);
             } catch (FileAlreadyExistsException fae) {
@@ -78,8 +80,8 @@ public class Shell<State extends ShellState> {
                 System.err.println(ioe.getMessage());
             } catch (IllegalArgumentException iae) {
                 System.err.println(iae.getMessage());
-            } catch (TypeMismatchException tme) {
-                System.err.println(tme.getMessage());
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
             }
         }
     }
@@ -99,8 +101,8 @@ public class Shell<State extends ShellState> {
         } catch (IllegalArgumentException iae) {
             System.err.println(iae.getMessage());
             System.exit(1);
-        } catch (TypeMismatchException tme) {
-            System.err.println(tme.getMessage());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
     }
 
