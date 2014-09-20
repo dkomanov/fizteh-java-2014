@@ -35,6 +35,11 @@ public class Change_directory
                 if(!f.isAbsolute())
                 {
                     f = new File(cd.get_Current_directory(), current_args[1]);
+                    if(!f.exists())
+                    {
+                        System.err.println("this derictory doesn't exist");
+                        System.exit(4);
+                    }
                 }
                 try
                 {
@@ -43,6 +48,7 @@ public class Change_directory
                 catch (IOException e)
                 {
                     System.err.println("problem with directory");
+                    System.exit(1);
                 }
              }
         }
