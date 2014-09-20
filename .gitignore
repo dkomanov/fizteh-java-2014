@@ -21,3 +21,4 @@ jars
 .project
 
 .settings
+/.checkstyle
