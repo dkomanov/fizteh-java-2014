@@ -17,6 +17,10 @@ public class Mkdir
             System.exit(1);
 
         }
-         File f = new File(cd.get_Current_directory() + current_args[1]);
+         File f = new File(cd.get_Current_directory(), current_args[1]);
+         if(!f.mkdirs())
+         {
+             System.err.println("I can't create the directory");
+         }
     }
 }
