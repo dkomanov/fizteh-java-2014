@@ -10,19 +10,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
-
-class InvalidCommandException extends Exception {
-    public InvalidCommandException(String message) {
-        super(message);
-    }
-}
 
 public class ShellMain {
 
     private static String workingDirectory;
-    private static boolean batchMode = false;
-    private static boolean exited = false;
+    private static boolean batchMode;
+    private static boolean exited;
 
     private static boolean checkArguments(int min, int max, int real) {
         return min <= real && real <= max;
@@ -133,13 +128,14 @@ public class ShellMain {
             errorIsDirectory("cat", args[1]);
         }
         try {
-            BufferedReader reader = new BufferedReader(
-                    new FileReader(curFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+            try (BufferedReader reader = new BufferedReader(
+                    new FileReader(curFile))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+                reader.close();
             }
-            reader.close();
         } catch (IOException e) {
             errorNoFile("cat", args[1]);
         }
@@ -351,24 +347,27 @@ public class ShellMain {
     }
 
     private static void runBatch(String[] args) {
-        String allCommands = "";
+        StringBuilder allCommands = new StringBuilder();
         for (String arg: args) {
-            allCommands += " " + arg;
+            allCommands.append(arg);
         }
-        execLine(allCommands);
+        execLine(allCommands.toString());
     }
 
     private static void runInteractive() {
-        Scanner sc = new Scanner(System.in);
-        while (true) {
-            System.out.print("$ ");
-            String allCommands = sc.nextLine();
-            execLine(allCommands);
-            if (exited) {
-                break;
+        try (Scanner sc = new Scanner(System.in)) {
+            while (true) {
+                System.out.print("$ ");
+                String allCommands = sc.nextLine();
+                execLine(allCommands);
+                if (exited) {
+                    break;
+                }
             }
+        } catch (NoSuchElementException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
-        sc.close();
     }
 
     private static void init(String[] args) {
@@ -379,12 +378,22 @@ public class ShellMain {
     }
 
     public static void main(String[] args) {
-        init(args);
-        if (batchMode) {
-            runBatch(args);
-        } else {
-            runInteractive();
+        try {
+            init(args);
+            if (batchMode) {
+                runBatch(args);
+            } else {
+                runInteractive();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
         }
     }
 }
 
+class InvalidCommandException extends Exception {
+    public InvalidCommandException(String message) {
+        super(message);
+    }
+}
