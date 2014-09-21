@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.gudkov394.shell;
 
-
-import java.io.File;
+//проверено работает
 
 public class Pwd
 {

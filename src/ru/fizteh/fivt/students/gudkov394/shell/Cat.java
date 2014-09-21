@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.gudkov394.shell;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-
+/*проверено, работает*/
 public class Cat
 {
     public Cat(String[] current_args, CurrentDirectory cd)
@@ -14,7 +14,7 @@ public class Cat
             System.exit(1);
         }
         String read = "";
-        File f = new File(cd.get_Current_directory() + current_args[1]);
+        File f = new File(cd.get_Current_directory(),current_args[1]);
         if(!f.exists())
         {
             System.err.println("File is not exists" + current_args[1]);

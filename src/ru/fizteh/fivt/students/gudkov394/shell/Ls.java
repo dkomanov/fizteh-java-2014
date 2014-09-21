@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.gudkov394.shell;
 
 import java.io.File;
-
+//работает
 public class Ls
 {
     public Ls(String[] current_args, CurrentDirectory cd)
