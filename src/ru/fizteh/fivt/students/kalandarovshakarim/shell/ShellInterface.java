@@ -88,7 +88,7 @@ public class ShellInterface {
             while (input.hasNextLine() == true) {
                 try {
                     String cmd = input.nextLine();
-                    switchCommand(parseCommand(cmd));
+                    switchCommand(parseCommand(cmd + "\n"));
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
