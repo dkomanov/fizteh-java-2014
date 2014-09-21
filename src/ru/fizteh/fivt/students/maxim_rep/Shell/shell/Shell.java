@@ -19,7 +19,31 @@ public class Shell {
 	}
 
 	public static void commandMode(String[] args) throws IOException {
-		//todo
+		String commandline = "";
+		for (int i = 0; i < args.length; i++)
+			commandline = commandline + args[i];
+
+		CurrentPath = System.getProperty("user.home");
+		String ConvertedString = CurrentPath;
+		if (CurrentPath.startsWith(System.getProperty("user.home"))) {
+			ConvertedString = "~"
+					+ CurrentPath.substring(System.getProperty("user.home")
+							.length());
+		}
+		System.out
+				.print(System.getProperty("user.name") + "@"
+						+ System.getProperty("os.name") + " " + ConvertedString
+						+ " $ ");
+		String[] commandsString = shell.Parser.DevideByChar(commandline, ";");
+		for (String commandsString1 : commandsString) {
+			ShellCommand command = shell.Parser
+					.GetCommandFromString(commandsString1);
+			boolean exit = !command.execute();
+			if (exit) {
+				return;
+			}
+		}
+		return;
 	}
 
 	public static void interactiveMode() throws IOException {
