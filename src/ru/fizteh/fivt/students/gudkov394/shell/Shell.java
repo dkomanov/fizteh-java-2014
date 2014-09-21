@@ -82,7 +82,8 @@ public class Shell
             String[] functions = current_string.split(";");
             for(int i = 0; i < functions.length; ++i)
             {
-                run(functions[i].split(" "), current_Directory);
+                functions[i] = functions[i].trim();
+                run(functions[i].split("\\s+"), current_Directory);
             }
         }
 
