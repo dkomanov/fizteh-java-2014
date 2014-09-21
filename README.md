@@ -24,3 +24,6 @@ Code Conventions.
 по многопоточности в Java)
 * [Спецификации по JVM и JLS](http://docs.oracle.com/javase/specs/index.html)
 * [Code Conventions](http://www.oracle.com/technetwork/java/codeconv-138413.html)
+
+## Таблица успеваемости
+[Таблица на Google Docs](https://docs.google.com/spreadsheet/ccc?key=0Ag7dwrMmZBKedGk1Q1RfSXh1RzZyeEJhaE94dW1CaGc&usp=sharing)
