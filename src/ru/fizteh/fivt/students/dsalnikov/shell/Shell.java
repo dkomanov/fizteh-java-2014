@@ -105,8 +105,10 @@ public class Shell<State extends ShellState> {
             System.exit(1);
         } catch (RuntimeException e) {
             e.getMessage();
+            System.exit(1);
         } catch (Exception e) {
             System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 
