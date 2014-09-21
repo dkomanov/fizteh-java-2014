@@ -2,11 +2,12 @@ package shell.commands;
 
 public class Exit implements ShellCommand {
 
-    public Exit() {}
+	public Exit() {
+	}
 
-    @Override
-    public boolean execute() {
-        return false;
-    }
+	@Override
+	public boolean execute() {
+		return false;
+	}
 
 }

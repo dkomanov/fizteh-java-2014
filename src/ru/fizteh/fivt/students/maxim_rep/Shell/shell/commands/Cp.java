@@ -15,25 +15,25 @@ public class Cp implements ShellCommand {
 			boolean Recursive) {
 		this.CurrentPath = CurrentPath;
 		this.Source = shell.Parser.PathConverter(Source, CurrentPath);
-		this.Destination = shell.Parser.PathConverter(Destination,
-				CurrentPath);
+		this.Destination = shell.Parser.PathConverter(Destination, CurrentPath);
 		this.Recursive = Recursive;
 	}
 
 	public static void copyDirectory(String Source, String Destination) {
 		File fileToCopy = new File(Source);
 		File fileNew = new File(Destination);
-	
-		if (!fileToCopy.exists()){
-			System.out.println("cp: '" + Source	+ "': No such file or directory!");
+
+		if (!fileToCopy.exists()) {
+			System.out.println("cp: '" + Source
+					+ "': No such file or directory!");
 			return;
 		}
-		
-		if (fileToCopy.isFile()){
+
+		if (fileToCopy.isFile()) {
 			copyFile(Source, Destination);
 			return;
 		}
-		
+
 		if (fileNew.exists()) {
 			if (fileNew.isFile())
 				try {
@@ -58,7 +58,7 @@ public class Cp implements ShellCommand {
 				System.out.println("cp: Error " + e.getMessage());
 			}
 		}
-		
+
 	}
 
 	private static void copyRecursive(File fileToCopy, File fileDestination) {
@@ -87,17 +87,18 @@ public class Cp implements ShellCommand {
 	public static void copyFile(String Source, String Destination) {
 		File fileToCopy = new File(Source);
 		File fileNew = new File(Destination);
-	
-		if (!fileToCopy.exists()){
-			System.out.println("cp: '" + Source	+ "': No such file or directory!");
+
+		if (!fileToCopy.exists()) {
+			System.out.println("cp: '" + Source
+					+ "': No such file or directory!");
 			return;
 		}
-		
-		if (fileToCopy.isDirectory()){
-			System.out.println("cp: '" + Source	+ "': Is a directory!");
+
+		if (fileToCopy.isDirectory()) {
+			System.out.println("cp: '" + Source + "': Is a directory!");
 			return;
 		}
-		
+
 		if (fileNew.exists()) {
 			if (fileNew.isFile())
 				try {
