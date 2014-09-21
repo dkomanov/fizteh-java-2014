@@ -11,7 +11,7 @@ import java.util.Stack;
 public class CommandCd extends Command {
     public CommandCd(){
         name = "cd";
-        numberOfArguments = 1;
+        numberOfArguments = 2;
     }
     public boolean run(String[] arguments){
         if (arguments.length == 1){

@@ -9,25 +9,21 @@ import java.nio.file.Paths;
 public class CommandMv extends Command{
     public CommandMv(){
         name = "mv";
-        numberOfArguments = 2;
+        numberOfArguments = 3;
     }
     public boolean run(String[] arguments){
-        if (arguments.length - 1 != numberOfArguments)
+        if (arguments.length != numberOfArguments)
             return false;
-        String startPath;
-        String destinationPath;
+        String startPath = arguments[1];
+        String destinationPath = arguments[2];
         String[] parsedFile = arguments[1].split("/");
         String fileName = parsedFile[parsedFile.length - 1];
 
-        if (arguments[1].charAt(0) == '/')
-            startPath = arguments[1];
-        else
-            startPath = System.getProperty("user.dir") + "/" + arguments[1];
+        if (arguments[1].charAt(0) != '/')
+            startPath = System.getProperty("user.dir") + "/" + startPath;
 
-        if (arguments[2].charAt(0) == '/')
-            destinationPath = arguments[2];
-        else
-            destinationPath = System.getProperty("user.dir") + "/" + arguments[2];
+        if (arguments[2].charAt(0) != '/')
+            destinationPath = System.getProperty("user.dir") + "/" + destinationPath;
 
         if (!Files.exists(Paths.get(startPath))){
             System.out.println(name + ": cannot stat \'" + fileName + "\': No such file or directory");

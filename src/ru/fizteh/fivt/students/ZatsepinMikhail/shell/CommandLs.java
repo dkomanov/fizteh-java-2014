@@ -9,7 +9,7 @@ import java.io.File;
 public class CommandLs extends Command {
     public CommandLs(){
         name = "ls";
-        numberOfArguments = 0;
+        numberOfArguments = 1;
     }
     public boolean run(String[] arguments){
         String[] listOfFiles = new File(System.getProperty("user.dir")).list();

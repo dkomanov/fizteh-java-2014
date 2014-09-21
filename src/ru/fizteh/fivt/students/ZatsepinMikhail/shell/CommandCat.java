@@ -10,11 +10,11 @@ public class CommandCat extends Command{
     public CommandCat()
     {
         name = "cat";
-        numberOfArguments = 1;
+        numberOfArguments = 2;
     }
     public boolean run(String[] arguments)
     {
-        if (arguments.length - 1 != numberOfArguments)
+        if (arguments.length != numberOfArguments)
             return false;
         try{
             //System.out.println("*      " + arguments[0]);

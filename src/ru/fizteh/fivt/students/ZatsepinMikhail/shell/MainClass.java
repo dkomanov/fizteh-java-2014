@@ -12,6 +12,8 @@ public class MainClass{
             myShell.addCommand(new CommandCd());
             myShell.addCommand(new CommandLs());
             myShell.addCommand(new CommandMv());
+            myShell.addCommand(new CommandRm());
+            myShell.addCommand(new CommandCp());
             if (args.length > 0){
                 myShell.packetMode(args);
             }
@@ -20,3 +22,8 @@ public class MainClass{
             }
         }
 }
+
+
+/*
+заменить пердолинг на проверку isAbsolutePath()
+ */

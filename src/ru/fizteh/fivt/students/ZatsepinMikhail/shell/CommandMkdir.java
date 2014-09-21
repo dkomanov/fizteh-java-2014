@@ -13,14 +13,13 @@ import java.nio.file.Paths;
 public class CommandMkdir extends Command{
     public CommandMkdir(){
         name = "mkdir";
-        numberOfArguments = 1;
+        numberOfArguments = 2;
     }
     public boolean run(String[] arguments){
-        if (arguments.length - 1 != numberOfArguments)
+        if (arguments.length != numberOfArguments)
             return false;
         try{
-            Files.createDirectory(Paths.get(new File("").getAbsolutePath() + "/" + arguments[1]));
-            System.out.println(Paths.get(new File("").getAbsolutePath() + "/" + arguments[1]));
+            Files.createDirectory(Paths.get(System.getProperty("user.dir") + "/" + arguments[1]));
         }
         catch (Exception e)
         {

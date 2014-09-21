@@ -10,13 +10,13 @@ import java.nio.file.Paths;
 public class CommandPwd extends Command{
     public CommandPwd(){
         name = "pwd";
-        numberOfArguments = 0;
+        numberOfArguments = 1;
     }
     public boolean run(String[] args){
-        if (args.length - 1 != numberOfArguments)
+        if (args.length != numberOfArguments)
             return false;
         try{
-            System.out.println(Paths.get(new File("").getAbsolutePath()));
+            System.out.println(System.getProperty("user.dir"));
         }
         catch (Exception e)
         {
