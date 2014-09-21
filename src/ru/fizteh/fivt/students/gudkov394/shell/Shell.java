@@ -71,7 +71,7 @@ public class Shell
         }
     }
 
-    public void interactive(String[] args)
+    public void interactive()
     {
         CurrentDirectory current_Directory = new CurrentDirectory();
         Scanner sc = new Scanner(System.in);
@@ -114,7 +114,7 @@ public class Shell
     {
          if(args.length == 0)
          {
-             interactive(args);
+             interactive();
          }
          else
          {

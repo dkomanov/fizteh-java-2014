@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.gudkov394.shell;
 
 import java.io.File;
-
+//работает
 public class Mkdir
 {
     public Mkdir(String[] current_args, CurrentDirectory cd)
@@ -21,6 +21,7 @@ public class Mkdir
          if(!f.mkdirs())
          {
              System.err.println("I can't create the directory");
+             System.exit(1);
          }
     }
 }

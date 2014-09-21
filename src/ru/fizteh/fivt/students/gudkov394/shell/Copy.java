@@ -13,7 +13,7 @@ public class Copy
             input = new FileInputStream(from);
             output = new FileOutputStream(to);
             byte[] buffer = new byte[1000];
-            int flag = 0;
+            int flag;
             try
             {
                 while ((flag = input.read(buffer)) > 0)
@@ -40,16 +40,17 @@ public class Copy
                 input.close();
                 output.close();
             }
-            catch (IOException e)
-            {
-                System.err.println("close file is failed in copy");
-                System.exit(1);
-            }
             catch (NullPointerException e1)
             {
                 System.err.println("I can't close stream. sorry");
                 System.exit(3);
             }
+            catch (IOException e)
+            {
+                System.err.println("close file is failed in copy");
+                System.exit(1);
+            }
+
         }
     }
 
@@ -66,7 +67,8 @@ public class Copy
                 }
                 try
                 {
-                    for (File f : from.listFiles()) {
+                    for (File f : from.listFiles())
+                    {
                         copy_recursive(f, fromNew);
                     }
                 }
@@ -84,7 +86,7 @@ public class Copy
         }
         try
         {
-            to = new File(to.getCanonicalPath() + File.separator + from.getName());
+            to = new File(to.getCanonicalPath(), from.getName());
             if (!to.exists()) {
                 to.createNewFile();
             }
@@ -123,7 +125,7 @@ public class Copy
             else
             if(from.isFile() && to.isDirectory())
             {
-                File tmp = new File(cd.get_home() + cd.get_Current_directory() + from.getName());  // не забудь проверить, что эта хрень работает
+                File tmp = new File(cd.get_Current_directory(),from.getName());  // не забудь проверить, что эта хрень работает
                 copy_file(tmp, to);
             }
             else

@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.gudkov394.shell;
 
 import java.io.File;
-
+//работает
 public class Remove_derictory
 {
     private void recursive_delete(File f)
@@ -18,6 +18,7 @@ public class Remove_derictory
                 {
                     recursive_delete(tmp);
                 }
+                f.delete();
             }
             catch (NullPointerException e2)
             {
@@ -37,13 +38,23 @@ public class Remove_derictory
          else
          if(current_args.length == 2)
          {
-             File f = new File(cd.get_Current_directory() + current_args[1]);
+             File f = new File(cd.get_Current_directory(), current_args[1]);
+             if(!f.exists())
+             {
+                 System.err.println("This directory doesn't exist");
+                 System.exit(3);
+             }
              f.delete();
          }
          else
          if(current_args[1].equals("-r"))
          {
-             File f = new File(cd.get_Current_directory() + current_args[2]);
+             File f = new File(cd.get_Current_directory(), current_args[2]);
+             if(!f.exists())
+             {
+                 System.err.println("This directory doesn't exist");
+                 System.exit(3);
+             }
              recursive_delete(f);
          }
          else
