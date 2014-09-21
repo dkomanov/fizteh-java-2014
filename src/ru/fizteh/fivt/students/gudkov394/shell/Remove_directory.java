@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.gudkov394.shell;
 
 import java.io.File;
 //работает
-public class Remove_derictory
+public class Remove_directory
 {
     private void recursive_delete(File f)
     {
@@ -29,7 +29,7 @@ public class Remove_derictory
         }
     }
 
-    public Remove_derictory(String[] current_args, CurrentDirectory cd)
+    public Remove_directory(String[] current_args, CurrentDirectory cd)
     {
          if(current_args.length > 3)
          {
