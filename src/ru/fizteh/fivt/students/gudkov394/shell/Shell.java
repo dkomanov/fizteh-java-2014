@@ -36,7 +36,7 @@ public class Shell
         else
         if(current_args[0].equals("rm"))
         {
-            Remove_derictory remove_derictory = new Remove_derictory(current_args, cd);
+            Remove_directory remove_derictory = new Remove_directory(current_args, cd);
         }
         else
         if(current_args[0].equals("cp"))

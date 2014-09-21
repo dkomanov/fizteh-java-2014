@@ -37,7 +37,7 @@ public class Change_directory
                     f = new File(cd.get_Current_directory(), current_args[1]);
                     if(!f.exists())
                     {
-                        System.err.println("this derictory doesn't exist");
+                        System.err.println("this directory doesn't exist");
                         System.exit(4);
                     }
                 }
