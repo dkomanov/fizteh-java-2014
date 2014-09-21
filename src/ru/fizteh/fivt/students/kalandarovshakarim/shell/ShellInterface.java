@@ -4,28 +4,13 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.shell;
 
-import java.io.InputStream;
+import java.util.Scanner;
 
 /**
  *
  * @author shakarim
  */
 public class ShellInterface {
-
-    private static String readStr(InputStream in) throws Exception {
-        byte[] buff = new byte[4096];
-        int length = 0;
-
-        try {
-            length = System.in.read(buff);
-        } catch (Exception e) {
-            throw new Exception("Shell: cannot read from stdin");
-        }
-
-        String retVal = new String(buff, 0, length - 1);
-
-        return retVal;
-    }
 
     private static String[] parseArgs(String[] args) {
         String command;
@@ -74,8 +59,8 @@ public class ShellInterface {
                 System.exit(0);
             default:
                 if (cmd[0].length() > 0) {
-                    throw new Exception("Shell : "
-                            + cmd[0] + " No such command");
+                    throw new Exception("Shell : '"
+                            + cmd[0] + "' No such command");
                 }
         }
     }
@@ -96,15 +81,24 @@ public class ShellInterface {
     }
 
     public static void interMode() {
-        do {
+        Scanner input = null;
+        try {
+            input = new Scanner(System.in);
             System.out.print("$ ");
-            try {
-                String cmd;
-                cmd = readStr(System.in);
-                switchCommand(parseCommand(cmd));
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            while (input.hasNextLine() == true) {
+                try {
+                    String cmd = input.nextLine();
+                    switchCommand(parseCommand(cmd));
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+                System.out.print("$ ");
             }
-        } while (true);
+        } finally {
+            if (input != null) {
+                System.out.println();
+                input.close();
+            }
+        }
     }
 }

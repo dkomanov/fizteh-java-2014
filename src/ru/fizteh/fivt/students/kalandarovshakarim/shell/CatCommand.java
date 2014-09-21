@@ -46,17 +46,12 @@ public class CatCommand {
 
         int lengthRead;
         byte[] buffer = new byte[4096];
-        try {
-            while ((lengthRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, lengthRead);
-            }
-        } catch (Exception e) {
-            throw new Exception(getName() + ": Cannot read File");
+        while ((lengthRead = in.read(buffer)) != -1) {
+            out.write(buffer, 0, lengthRead);
         }
     }
-    
+
     public static String getName() {
         return "cat";
     }
 }
-

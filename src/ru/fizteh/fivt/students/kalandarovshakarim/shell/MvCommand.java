@@ -13,11 +13,11 @@ public class MvCommand {
     public static void run(String[] args) throws Exception {
         if (args.length < 3) {
             throw new Exception(getName() + ": few arguments");
-        } 
+        }
         if (args.length > 3) {
             throw new Exception(getName() + ": too much arguments");
         }
-        
+
         try {
             String[] newArgs = new String[4];
             newArgs[0] = args[0];
