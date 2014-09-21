@@ -30,7 +30,7 @@ public class CpCommand implements Command {
                     File newDir = new File(destination, file.getName());
                     newDir = newDir.toPath().normalize().toFile();
                     if (!newDir.getCanonicalFile().mkdirs()) {
-                        throw new Exception("Can not create directory");
+                        throw new Exception("subdirectory can't be created due to absence of parent");
                     }
                     recursiveCopy(file, newDir);
                 }
@@ -80,8 +80,8 @@ public class CpCommand implements Command {
                     }
                     File newDir = new File(destination, str[2]);
                     newDir = newDir.toPath().normalize().toFile();
-                    if (!newDir.getAbsoluteFile().mkdirs()) {
-                        throw new Exception("Can not create directory: " + destination.getName());
+                    if (!newDir.getAbsoluteFile().mkdir()) {
+                        throw new Exception("subdirectory can't be created due to absence of parent");
                     }
                     recursiveCopy(source, newDir);
 
@@ -102,6 +102,7 @@ public class CpCommand implements Command {
                         dir.mkdirs();
                     }
                 } else {
+                    checkPaths(source, destination);
                     copyFile(source, destination);
                 }
             }

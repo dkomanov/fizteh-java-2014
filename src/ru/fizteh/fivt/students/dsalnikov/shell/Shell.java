@@ -80,6 +80,8 @@ public class Shell<State extends ShellState> {
                 System.err.println(ioe.getMessage());
             } catch (IllegalArgumentException iae) {
                 System.err.println(iae.getMessage());
+            } catch (RuntimeException e) {
+                System.err.println(e.getMessage());
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
@@ -101,6 +103,8 @@ public class Shell<State extends ShellState> {
         } catch (IllegalArgumentException iae) {
             System.err.println(iae.getMessage());
             System.exit(1);
+        } catch (RuntimeException e) {
+            e.getMessage();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }

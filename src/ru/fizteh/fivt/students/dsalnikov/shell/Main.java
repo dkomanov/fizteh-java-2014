@@ -38,13 +38,13 @@ public class Main {
             try {
                 shell.batchMode();
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         } else {
             try {
                 shell.commandMode(args);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
     }
