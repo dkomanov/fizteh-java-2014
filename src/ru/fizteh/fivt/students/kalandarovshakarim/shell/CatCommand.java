@@ -27,6 +27,7 @@ public class CatCommand {
                 try {
                     in = new FileInputStream(file);
                     readWrite(in, System.out);
+                    in.close();
                 } catch (Exception e) {
                     throw new Exception(getName() + ": Cannot read File");
                 }

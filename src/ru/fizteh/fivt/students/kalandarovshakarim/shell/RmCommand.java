@@ -26,31 +26,31 @@ public class RmCommand {
                 ++index;
             }
         }
-        
+
         if (index < 2) {
             throw new Exception(getName() + ": few arguments");
         }
-        
+
         if (index > 2) {
             throw new Exception(getName() + ": too much arguments");
         }
-        
+
         File toDelete = CdCommand.newPath(newArgs[1]);
-        
+
         if (recFlag == false && toDelete.isDirectory() == true) {
             throw new Exception(getName() + ": '"
                     + newArgs[1] + "' is Directory");
         }
-        
+
         if (toDelete.exists() == false) {
             throw new Exception(getName() + ": '"
                     + newArgs[1] + "' No such File or Directory");
         }
-        
+
         rm(toDelete);
-        
+
     }
-    
+
     public static void rm(File file) throws Exception {
         boolean isDeleted = false;
         if (file.isFile() == true) {
@@ -67,7 +67,7 @@ public class RmCommand {
                     + file.getCanonicalPath() + "'");
         }
     }
-        
+
     public static String getName() {
         return "rm";
     }

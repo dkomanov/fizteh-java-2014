@@ -44,7 +44,7 @@ public class ShellInterface {
         return command.split("\\s+");
     }
 
-    public static void switchCommand(String[] cmd) throws Exception {
+    private static void switchCommand(String[] cmd) throws Exception {
         switch (cmd[0]) {
             case "cat":
                 CatCommand.run(cmd);

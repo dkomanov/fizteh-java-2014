@@ -24,16 +24,14 @@ public class CdCommand {
                 System.setProperty("user.dir", newPath);
             } else if (dirToGo.exists() == true) {
                 throw new Exception(getName() + ": '"
-                        + dirToGo.getName()
-                        + "' is not a Directory");
+                        + args[1] + "' is not a Directory");
             } else {
                 throw new Exception(getName() + ": '"
-                        + dirToGo.getName()
-                        + "' No such File or Directory");
+                        + args[1] + "' No such File or Directory");
             }
         }
     }
-    
+
     public static File newPath(String file) {
         if (file.charAt(0) == '/') {
             return new File(file);

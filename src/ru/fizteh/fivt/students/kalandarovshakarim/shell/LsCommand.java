@@ -22,7 +22,7 @@ public class LsCommand {
             }
         }
     }
-    
+
     public static String getName() {
         return "ls";
     }

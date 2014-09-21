@@ -46,14 +46,14 @@ public class CpCommand {
 
             if (target.exists() == false) {
                 if (source.isDirectory() == true && target.mkdir() == false) {
-                    
+
                     throw new Exception(getName() + ": '"
                             + newArgs[2] + "' No such File or Directory");
                 }
 
-                if (source.isFile() == true 
+                if (source.isFile() == true
                         && target.createNewFile() == false) {
-                    
+
                     throw new Exception(getName() + ": '"
                             + newArgs[2] + "' No such File or Directory");
                 }

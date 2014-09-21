@@ -11,6 +11,9 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell;
 public class Shell {
 
     public static void main(String[] args) {
+        String homeDir = System.getProperty("user.home");
+        System.setProperty("user.dir", homeDir);
+                
         if (args.length == 0) {
             ShellInterface.interMode();
         } else {

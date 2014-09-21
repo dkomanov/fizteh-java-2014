@@ -20,13 +20,13 @@ public class MkdirCommand {
         } else {
             File newDir = CdCommand.newPath(args[1]);
             if (newDir.mkdir() == false) {
-                throw new Exception(getName() 
+                throw new Exception(getName()
                         + ": Cannot create directory '"
                         + args[1] + "'");
             }
         }
     }
-    
+
     private static String getName() {
         return "mkdir";
     }
