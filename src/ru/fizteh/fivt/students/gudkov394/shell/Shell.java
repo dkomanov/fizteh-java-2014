@@ -67,7 +67,7 @@ public class Shell
         else
         {
             System.err.println("wrong command");
-            System.exit(228);
+            //System.exit(228);
         }
     }
 
