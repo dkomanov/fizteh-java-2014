@@ -1,75 +1,34 @@
 package ru.fizteh.fivt.students.gudkov394.shell;
 
 import java.io.*;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+/*работает*/
 
 public class Copy
 {
-    private void copy_file(File from, File to)
-    {
-        FileInputStream input = null;
-        FileOutputStream output = null;
-        try
-        {
-            input = new FileInputStream(from);
-            output = new FileOutputStream(to);
-            byte[] buffer = new byte[1000];
-            int flag;
-            try
-            {
-                while ((flag = input.read(buffer)) > 0)
-                {
-                    output.write(buffer, 0, flag);
-                }
-            }
-            catch (IOException e)
-            {
-                System.err.println("problem in copy with reading");
-                System.exit(1);
-            }
-
-        }
-        catch (FileNotFoundException e)
-        {
-            System.err.println("Problem with streams in cp");
-            System.exit(1);
-        }
-        finally
-        {
-            try
-            {
-                input.close();
-                output.close();
-            }
-            catch (NullPointerException e1)
-            {
-                System.err.println("I can't close stream. sorry");
-                System.exit(3);
-            }
-            catch (IOException e)
-            {
-                System.err.println("close file is failed in copy");
-                System.exit(1);
-            }
-
-        }
-    }
-
     private void copy_recursive(File from, File to)
     {
+        try
+        {
+            CopyOption[] options = new CopyOption[]{ StandardCopyOption.REPLACE_EXISTING};
+            Files.copy(from.toPath(), to.toPath(), options);
+        }
+        catch (IOException e2)
+        {
+            System.err.println("problem with copy");
+            System.exit(3);
+        }
+
         if (from.isDirectory())
         {
-            try
-            {
-                File fromNew = new File(to.getCanonicalPath(), from.getName());
-                if (!fromNew.mkdirs())
-                {
-                     throw new IOException("Unable to create this directory - " + fromNew.getCanonicalPath());
-                }
                 try
                 {
                     for (File f : from.listFiles())
                     {
-                        copy_recursive(f, fromNew);
+                        File new_to = new File(to.getAbsolutePath(), f.getName());
+                        copy_recursive(f, new_to);
                     }
                 }
                 catch (NullPointerException e1)
@@ -77,26 +36,7 @@ public class Copy
                     System.err.println("Sorry, problem with ListFiles in copy_recursive");
                     System.exit(3);
                 }
-            }
-            catch (IOException e)
-            {
-                System.err.println("problem with getCanonicalPath in copy_recursive");
-                System.exit(1);
-            }
         }
-        try
-        {
-            to = new File(to.getCanonicalPath(), from.getName());
-            if (!to.exists()) {
-                to.createNewFile();
-            }
-        }
-        catch (IOException e)
-        {
-            System.err.println("problem in copy recursive");
-            System.exit(1);
-        }
-        copy_file(from, to);
     }
 
     public Copy(String[] current_args, CurrentDirectory cd)
@@ -118,21 +58,67 @@ public class Copy
         }
         if(current_args.length == 3)
         {
-            if (from.isFile() && to.isFile())
-            {
-                copy_file(from, to);
-            }
-            else
             if(from.isFile() && to.isDirectory())
             {
-                File tmp = new File(cd.get_Current_directory(),from.getName());  // не забудь проверить, что эта хрень работает
-                copy_file(tmp, to);
+                try
+                {
+                    File new_to = new File(to.getAbsolutePath(), from.getName());
+                    Files.copy(from.toPath(), new_to.toPath());
+                }
+                catch (IOException e2)
+                {
+                    System.err.println("problem with copy");
+                    System.exit(3);
+                }
             }
             else
-            if(from.isDirectory())
+            if(from.isDirectory() && to.isDirectory())
             {
-                copy_recursive(from, to);
+                File new_to = new File(to.getAbsolutePath(), from.getName());
+                try
+                {
+                    CopyOption[] options = new CopyOption[]{ StandardCopyOption.REPLACE_EXISTING};
+                    Files.copy(from.toPath(), new_to.toPath(), options);
+                }
+                catch (IOException e2)
+                {
+                    System.err.println("problem with copy");
+                    System.exit(3);
+                }
             }
+            else
+            {
+                System.err.println("fail with copy directory");
+                System.exit(2);
+            }
+        }
+        else
+        if(current_args.length == 4 && current_args[1].equals("-r"))
+        {
+            if(from.isDirectory() && to.isDirectory())
+            {
+                File new_to = new File(to.getAbsolutePath(), from.getName());
+                try
+                {
+                    CopyOption[] options = new CopyOption[]{ StandardCopyOption.REPLACE_EXISTING};
+                    Files.copy(from.toPath(), new_to.toPath(), options);
+                }
+                catch (IOException e2)
+                {
+                    System.err.println("problem with copy");
+                    System.exit(3);
+                }
+                copy_recursive(from, new_to);
+            }
+            else
+            {
+                System.err.println("fail with copy directory maybe -r is excess");
+                System.exit(2);
+            }
+        }
+        else
+        {
+            System.err.println("wrong argument to copy");
         }
     }
 }

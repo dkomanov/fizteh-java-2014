@@ -6,11 +6,7 @@ public class Remove_derictory
 {
     private void recursive_delete(File f)
     {
-        if(!f.isDirectory())
-        {
-            f.delete();
-        }
-        else
+        if(f.isDirectory())
         {
             try
             {
@@ -25,6 +21,11 @@ public class Remove_derictory
                 System.err.println("Sorry, problem with ListFiles in delete_recursive");
                 System.exit(3);
             }
+        }
+        f.delete();
+        if(f.exists())
+        {
+            System.err.println("sorry I can't remove this");
         }
     }
 
