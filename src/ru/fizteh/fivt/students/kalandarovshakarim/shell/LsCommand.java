@@ -12,7 +12,10 @@ import java.io.File;
  */
 public class LsCommand {
 
-    public static void run() {
+    public static void run(String[] args) throws Exception {
+        if (args.length > 1) {
+            throw new Exception(getName() + ": too much arguments");
+        }
         File curDir = new File(PwdCommand.getCurPath());
         String[] list = curDir.list();
 

@@ -41,7 +41,7 @@ public class ShellInterface {
                 CpCommand.run(cmd);
                 break;
             case "ls":
-                LsCommand.run();
+                LsCommand.run(cmd);
                 break;
             case "mkdir":
                 MkdirCommand.run(cmd);
@@ -50,7 +50,7 @@ public class ShellInterface {
                 MvCommand.run(cmd);
                 break;
             case "pwd":
-                PwdCommand.run();
+                PwdCommand.run(cmd);
                 break;
             case "rm":
                 RmCommand.run(cmd);

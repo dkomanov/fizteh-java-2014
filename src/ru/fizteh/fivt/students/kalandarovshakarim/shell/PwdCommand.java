@@ -10,7 +10,10 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell;
  */
 public class PwdCommand {
 
-    public static void run() {
+    public static void run(String[] args) throws Exception {
+        if (args.length > 1) {
+            throw new Exception(getName() + ": too much arguments");
+        }
         System.out.println(getCurPath());
     }
 

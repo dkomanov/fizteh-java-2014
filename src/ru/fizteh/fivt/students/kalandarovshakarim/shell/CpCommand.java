@@ -39,6 +39,12 @@ public class CpCommand {
             File source = CdCommand.newPath(newArgs[1]);
             File target = CdCommand.newPath(newArgs[2]);
 
+            if (source.equals(target) == true) {
+                throw new Exception(getName() + ": '"
+                        + newArgs[1] + "' and '" + newArgs[1]
+                        + "' are the same");
+            }
+
             if (source.exists() == false) {
                 throw new Exception(getName() + ": '"
                         + newArgs[1] + "' No such File or Directory");
@@ -84,7 +90,7 @@ public class CpCommand {
     private static void CopyFile(File source, File target) throws Exception {
         InputStream in = null;
         OutputStream out = null;
-        
+
         try {
             in = new FileInputStream(source);
             out = new FileOutputStream(target);
