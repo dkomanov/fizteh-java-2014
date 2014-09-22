@@ -26,16 +26,16 @@ public class Shell<State extends ShellState> {
         if (cs == null) {
             throw new IllegalArgumentException("this is madness");
         }
-        for (Command Command : cs) {
-            commandMap.put(Command.getName(), Command);
+        for (Command command : cs) {
+            commandMap.put(command.getName(), command);
         }
     }
 
     public void execute(String args[]) throws Exception {
         String concatenatedcmds = join(Arrays.asList(args), " ");
         String[] commands = concatenatedcmds.split("\\s*;\\s*");
-        for (String Command : commands) {
-            String[] cmdArgs = Command.split("\\s+");
+        for (String command : commands) {
+            String[] cmdArgs = command.split("\\s+");
             Command c = commandMap.get(cmdArgs[0]);
             if (c == null) {
                 throw new IllegalArgumentException("no such Command declared: " + cmdArgs[0]);
