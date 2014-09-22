@@ -4,14 +4,14 @@ import ru.fizteh.fivt.students.maxim_rep.shell.*;
 import java.io.File;
 import java.io.IOException;
 
-public class cd implements shellCommand {
+public class Cd implements ShellCommand {
 
-	private String CurrentPath;
-	private String Destination;
+	private String currentPath;
+	private String destination;
 
-	public cd(String CurrentPath, String Destination) {
-		this.CurrentPath = CurrentPath;
-		this.Destination = parser.PathConverter(Destination, this.CurrentPath);
+	public Cd(String currentPath, String destination) {
+		this.currentPath = currentPath;
+		this.destination = Parser.pathConverter(destination, this.currentPath);
 	}
 
 	/**
@@ -20,15 +20,15 @@ public class cd implements shellCommand {
 	 */
 	@Override
 	public boolean execute() {
-		File f = new File(Destination);
+		File f = new File(destination);
 
 		if (!f.exists()) {
-			System.out.println("cd: " + Destination
+			System.out.println("cd: " + destination
 					+ ": No such file or directory");
 			return false;
 		} else {
 			try {
-				shell.CurrentPath = f.getCanonicalPath();
+				Shell.currentPath = f.getCanonicalPath();
 			} catch (IOException e) {
 				System.out.println("cd: Error: " + e.getMessage());
 				return false;

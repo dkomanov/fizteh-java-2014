@@ -6,33 +6,33 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class cp implements shellCommand {
+public class Cp implements ShellCommand {
 
-	String CurrentPath;
-	String Source;
-	String Destination;
-	boolean Recursive;
+	String currentPath;
+	String source;
+	String destination;
+	boolean recursive;
 
-	public cp(String CurrentPath, String Source, String Destination,
-			boolean Recursive) {
-		this.CurrentPath = CurrentPath;
-		this.Source = parser.PathConverter(Source, CurrentPath);
-		this.Destination = parser.PathConverter(Destination, CurrentPath);
-		this.Recursive = Recursive;
+	public Cp(String currentPath, String source, String destination,
+			boolean recursive) {
+		this.currentPath = currentPath;
+		this.source = Parser.pathConverter(source, currentPath);
+		this.destination = Parser.pathConverter(destination, currentPath);
+		this.recursive = recursive;
 	}
 
-	public static boolean copyDirectory(String Source, String Destination) {
-		File fileToCopy = new File(Source);
-		File fileNew = new File(Destination);
+	public static boolean copyDirectory(String source, String destination) {
+		File fileToCopy = new File(source);
+		File fileNew = new File(destination);
 
 		if (!fileToCopy.exists()) {
-			System.out.println("cp: '" + Source
+			System.out.println("cp: '" + source
 					+ "': No such file or directory!");
 			return false;
 		}
 
 		if (fileToCopy.isFile()) {
-			return copyFile(Source, Destination);
+			return copyFile(source, destination);
 
 		}
 
@@ -40,16 +40,16 @@ public class cp implements shellCommand {
 			if (fileNew.isFile())
 				try {
 					fileNew.mkdir();
-					copyRecursive(fileToCopy, fileNew);
+					copyrecursive(fileToCopy, fileNew);
 				} catch (Exception e) {
 					System.out.println("cp: Error " + e.getMessage());
 					return false;
 				}
 			else if (fileNew.isDirectory())
-				fileNew = new File(Destination + "/" + fileToCopy.getName());
+				fileNew = new File(destination + "/" + fileToCopy.getName());
 			try {
 				fileNew.mkdir();
-				copyRecursive(fileToCopy, fileNew);
+				copyrecursive(fileToCopy, fileNew);
 			} catch (Exception e) {
 				System.out.println("cp: Error " + e.getMessage());
 				return false;
@@ -57,7 +57,7 @@ public class cp implements shellCommand {
 		} else {
 			try {
 				fileNew.mkdir();
-				copyRecursive(fileToCopy, fileNew);
+				copyrecursive(fileToCopy, fileNew);
 			} catch (Exception e) {
 				System.out.println("cp: Error " + e.getMessage());
 				return false;
@@ -67,7 +67,7 @@ public class cp implements shellCommand {
 
 	}
 
-	private static void copyRecursive(File fileToCopy, File fileDestination) {
+	private static void copyrecursive(File fileToCopy, File filedestination) {
 
 		String[] filesInDir = fileToCopy.list();
 		for (int i = 0; i < filesInDir.length; ++i) {
@@ -75,33 +75,33 @@ public class cp implements shellCommand {
 					+ filesInDir[i]);
 			if (current.isFile()) {
 				copyFile(fileToCopy.getAbsolutePath() + "/" + filesInDir[i],
-						fileDestination.getAbsolutePath());
+						filedestination.getAbsolutePath());
 			} else {
-				File tmp = new File(fileDestination.getAbsoluteFile() + "/"
+				File tmp = new File(filedestination.getAbsoluteFile() + "/"
 						+ filesInDir[i]);
 				tmp.mkdir();
 
-				File push = new File(fileDestination.getAbsolutePath() + "/"
+				File push = new File(filedestination.getAbsolutePath() + "/"
 						+ filesInDir[i]);
 				File ctpush = new File(fileToCopy.getAbsolutePath() + "/"
 						+ filesInDir[i]);
-				copyRecursive(ctpush, push);
+				copyrecursive(ctpush, push);
 			}
 		}
 	}
 
-	public static boolean copyFile(String Source, String Destination) {
-		File fileToCopy = new File(Source);
-		File fileNew = new File(Destination);
+	public static boolean copyFile(String source, String destination) {
+		File fileToCopy = new File(source);
+		File fileNew = new File(destination);
 
 		if (!fileToCopy.exists()) {
-			System.out.println("cp: '" + Source
+			System.out.println("cp: '" + source
 					+ "': No such file or directory!");
 			return false;
 		}
 
 		if (fileToCopy.isDirectory()) {
-			System.out.println("cp: '" + Source + "': Is a directory!");
+			System.out.println("cp: '" + source + "': Is a directory!");
 			return false;
 		}
 
@@ -114,7 +114,7 @@ public class cp implements shellCommand {
 					return false;
 				}
 			else if (fileNew.isDirectory())
-				fileNew = new File(Destination + "/" + fileToCopy.getName());
+				fileNew = new File(destination + "/" + fileToCopy.getName());
 			try {
 				Files.copy(fileToCopy.toPath(), fileNew.toPath());
 			} catch (IOException e) {
@@ -135,9 +135,9 @@ public class cp implements shellCommand {
 
 	@Override
 	public boolean execute() {
-		if (Recursive)
-			return copyDirectory(Source, Destination);
+		if (recursive)
+			return copyDirectory(source, destination);
 		else
-			return copyFile(Source, Destination);
+			return copyFile(source, destination);
 	}
 }

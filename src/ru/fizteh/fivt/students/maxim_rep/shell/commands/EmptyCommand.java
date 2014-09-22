@@ -1,8 +1,8 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-public class emptyCommand implements shellCommand {
+public class EmptyCommand implements ShellCommand {
 
-	public emptyCommand() {
+	public EmptyCommand() {
 	}
 
 	@Override

@@ -4,36 +4,36 @@ import java.io.*;
 
 import ru.fizteh.fivt.students.maxim_rep.shell.commands.*;
 
-public class shell {
+public class Shell {
 
-	public static String CurrentPath;
+	public static String currentPath;
 
 	public static void main(String[] args) throws IOException {
-		CurrentPath = System.getProperty("user.home");
+		currentPath = System.getProperty("user.home");
 
 		if (args.length == 0) {
-			shell.interactiveMode();
+			Shell.interactiveMode();
 		} else {
-			shell.commandMode(args);
+			Shell.commandMode(args);
 		}
 	}
 
 	public static int commandMode(String[] args) throws IOException {
-		String commandline = parser.makeStringCommand(args);
+		String commandline = Parser.makeStringCommand(args);
 
-		CurrentPath = System.getProperty("user.home");
-		String[] commandsString = parser.DevideByChar(commandline, ";");
+		currentPath = System.getProperty("user.home");
+		String[] commandsString = Parser.divideByChar(commandline, ";");
 		for (String commandsString1 : commandsString) {
-			String ConvertedString = CurrentPath;
-			if (CurrentPath.startsWith(System.getProperty("user.home"))) {
+			String ConvertedString = currentPath;
+			if (currentPath.startsWith(System.getProperty("user.home"))) {
 				ConvertedString = "~"
-						+ CurrentPath.substring(System.getProperty("user.home")
+						+ currentPath.substring(System.getProperty("user.home")
 								.length());
 			}
 			System.out.println(System.getProperty("user.name") + "@"
 					+ System.getProperty("os.name") + " " + ConvertedString
 					+ " $ " + commandsString1);
-			shellCommand command = parser.GetCommandFromString(commandsString1);
+			ShellCommand command = Parser.getCommandFromString(commandsString1);
 			if (!command.execute()) {
 				System.exit(-1);
 				return -1;
@@ -44,12 +44,12 @@ public class shell {
 	}
 
 	public static void interactiveMode() throws IOException {
-		CurrentPath = System.getProperty("user.home");
+		currentPath = System.getProperty("user.home");
 		for (int i = 0; i == 0;) {
-			String ConvertedString = CurrentPath;
-			if (CurrentPath.startsWith(System.getProperty("user.home"))) {
+			String ConvertedString = currentPath;
+			if (currentPath.startsWith(System.getProperty("user.home"))) {
 				ConvertedString = "~"
-						+ CurrentPath.substring(System.getProperty("user.home")
+						+ currentPath.substring(System.getProperty("user.home")
 								.length());
 			}
 			System.out.print(System.getProperty("user.name") + "@"
@@ -60,11 +60,11 @@ public class shell {
 					System.in));
 			String line = in.readLine();
 
-			String[] commandsString = parser.DevideByChar(line, ";");
+			String[] commandsString = Parser.divideByChar(line, ";");
 			for (String commandsString1 : commandsString) {
-				shellCommand command = parser
-						.GetCommandFromString(commandsString1);
-				if (command.getClass() == exit.class)
+				ShellCommand command = Parser
+						.getCommandFromString(commandsString1);
+				if (command.getClass() == Exit.class)
 					System.exit(0);
 				command.execute();
 			}

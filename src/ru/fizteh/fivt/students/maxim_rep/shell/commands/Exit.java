@@ -1,8 +1,8 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-public class exit implements shellCommand {
+public class Exit implements ShellCommand {
 
-	public exit() {
+	public Exit() {
 	}
 
 	@Override

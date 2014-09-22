@@ -1,18 +1,18 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-import ru.fizteh.fivt.students.maxim_rep.shell.parser;
+import ru.fizteh.fivt.students.maxim_rep.shell.Parser;
 import java.io.*;
 
-public class run implements shellCommand {
+public class Run implements ShellCommand {
 
-	String CurrentPath;
-	String Destination;
-	boolean Recursive;
+	String currentPath;
+	String destination;
+	boolean recursive;
 
-	public run(String CurrentPath, String Destination, boolean Recursive) {
-		this.CurrentPath = CurrentPath;
-		this.Destination = parser.PathConverter(Destination, CurrentPath);
-		this.Recursive = Recursive;
+	public Run(String currentPath, String destination, boolean recursive) {
+		this.currentPath = currentPath;
+		this.destination = Parser.pathConverter(destination, currentPath);
+		this.recursive = recursive;
 	}
 
 	public static void recursiveRm(File f, String Path) {
@@ -30,18 +30,18 @@ public class run implements shellCommand {
 
 	@Override
 	public boolean execute() {
-		File f = new File(Destination);
+		File f = new File(destination);
 		if (f.isFile()) {
 			f.delete();
 			return true;
 		} else if (f.isDirectory()) {
-			if (Recursive) {
-				recursiveRm(f, Destination);
+			if (recursive) {
+				recursiveRm(f, destination);
 			} else {
 				f.delete();
 			}
 		} else {
-			System.out.println("rm: cannot remove '" + Destination
+			System.out.println("rm: cannot remove '" + destination
 					+ "': No such file or directory");
 			return false;
 		}

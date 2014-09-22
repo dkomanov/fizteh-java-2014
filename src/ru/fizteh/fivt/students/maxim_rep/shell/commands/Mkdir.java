@@ -2,20 +2,20 @@ package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 import java.io.*;
 
-public class mkdir implements shellCommand {
+public class Mkdir implements ShellCommand {
 
-	String CurrentPath;
+	String currentPath;
 	String FileName;
 
-	public mkdir(String CurrentPath, String FileName) {
+	public Mkdir(String currentPath, String FileName) {
 		this.FileName = FileName;
-		this.CurrentPath = CurrentPath;
+		this.currentPath = currentPath;
 	}
 
 	@Override
 	public boolean execute() {
 
-		File f = new File(CurrentPath + "/" + FileName);
+		File f = new File(currentPath + "/" + FileName);
 		if (f.mkdir()) {
 			System.out.println("Directory " + FileName + " created!");
 		} else {

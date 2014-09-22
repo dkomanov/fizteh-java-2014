@@ -1,10 +1,10 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-public class unknownCommand implements shellCommand {
+public class UnknownCommand implements ShellCommand {
 
 	private String args;
 
-	public unknownCommand(String args) {
+	public UnknownCommand(String args) {
 		this.args = args;
 	}
 

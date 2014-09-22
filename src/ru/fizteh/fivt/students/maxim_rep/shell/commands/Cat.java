@@ -1,16 +1,16 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-import ru.fizteh.fivt.students.maxim_rep.shell.parser;
+import ru.fizteh.fivt.students.maxim_rep.shell.Parser;
 import java.io.*;
 
-public class cat implements shellCommand {
+public class Cat implements ShellCommand {
 
-	String CurrentPath;
+	String currentPath;
 	String FileName;
 
-	public cat(String CurrentPath, String FileName) {
-		this.FileName = parser.PathConverter(FileName, CurrentPath);
-		this.CurrentPath = CurrentPath;
+	public Cat(String currentPath, String FileName) {
+		this.FileName = Parser.pathConverter(FileName, currentPath);
+		this.currentPath = currentPath;
 	}
 
 	@Override

@@ -1,14 +1,14 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-import ru.fizteh.fivt.students.maxim_rep.shell.shell;
+import ru.fizteh.fivt.students.maxim_rep.shell.Shell;
 import java.io.File;
 
-public class ls implements shellCommand {
+public class Ls implements ShellCommand {
 
-	private String CurrentPath;
+	private String currentPath;
 
-	public ls(String CurrentPath) {
-		this.CurrentPath = CurrentPath;
+	public Ls(String currentPath) {
+		this.currentPath = currentPath;
 	}
 
 	/**
@@ -17,11 +17,11 @@ public class ls implements shellCommand {
 	 */
 	@Override
 	public boolean execute() {
-		File f = new File(CurrentPath);
+		File f = new File(currentPath);
 		if (!f.exists()) {
 			System.err
 					.println("Current directory doesn't exists, returning to root.");
-			shell.CurrentPath = "/";
+			Shell.currentPath = "/";
 			return false;
 		} else {
 			String[] filelist = f.list();
