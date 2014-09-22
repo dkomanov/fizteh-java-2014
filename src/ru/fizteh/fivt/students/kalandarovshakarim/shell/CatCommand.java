@@ -22,16 +22,19 @@ public class CatCommand {
             throw new Exception(getName() + ": too much arguments");
         } else {
             File file = CdCommand.newPath(args[1]);
-            if (file.isFile() == true) {
-                InputStream in;
+            if (file.isFile()) {
+                InputStream in = null;
                 try {
                     in = new FileInputStream(file);
                     readWrite(in, System.out);
-                    in.close();
                 } catch (Exception e) {
                     throw new Exception(getName() + ": Cannot read File");
+                } finally {
+                    if (in != null) {
+                        in.close();
+                    }
                 }
-            } else if (file.isDirectory() == true) {
+            } else if (file.isDirectory()) {
                 throw new Exception(getName() + ": '"
                         + args[1] + "' is Directory");
             } else {

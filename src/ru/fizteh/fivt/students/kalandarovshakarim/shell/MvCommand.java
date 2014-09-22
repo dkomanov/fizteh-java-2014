@@ -35,7 +35,8 @@ public class MvCommand {
             RmCommand.run(newArgs);
         } catch (Exception e) {
             String newException = e.getMessage();
-            newException = newException.replaceFirst("(cp|rm):", getName() + ":");
+            newException = newException.replaceFirst("(cp|rm):",
+                    getName() + ":");
             throw new Exception(newException);
         }
     }

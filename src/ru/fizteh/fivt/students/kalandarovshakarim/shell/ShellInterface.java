@@ -85,7 +85,7 @@ public class ShellInterface {
         try {
             input = new Scanner(System.in);
             System.out.print("$ ");
-            while (input.hasNextLine() == true) {
+            while (input.hasNextLine()) {
                 try {
                     String cmd = input.nextLine();
                     switchCommand(parseCommand(cmd));

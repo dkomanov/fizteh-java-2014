@@ -18,7 +18,7 @@ public class RmCommand {
         int index = 0;
 
         for (String opt : args) {
-            if (opt.equals("-r") == true) {
+            if (opt.equals("-r")) {
                 recFlag = true;
             } else {
 
@@ -37,7 +37,7 @@ public class RmCommand {
 
         File toDelete = CdCommand.newPath(newArgs[1]);
 
-        if (recFlag == false && toDelete.isDirectory() == true) {
+        if (recFlag == false && toDelete.isDirectory()) {
             throw new Exception(getName() + ": '"
                     + newArgs[1] + "' is Directory");
         }
@@ -53,7 +53,7 @@ public class RmCommand {
 
     public static void rm(File file) throws Exception {
         boolean isDeleted = false;
-        if (file.isFile() == true) {
+        if (file.isFile()) {
             isDeleted = file.delete();
         } else {
             String[] list = file.list();

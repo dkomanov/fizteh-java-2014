@@ -19,10 +19,10 @@ public class CdCommand {
             throw new Exception(getName() + ": too much arguments");
         } else {
             File dirToGo = newPath(args[1]);
-            if (dirToGo.isDirectory() == true) {
+            if (dirToGo.isDirectory()) {
                 String newPath = dirToGo.getCanonicalPath();
                 System.setProperty("user.dir", newPath);
-            } else if (dirToGo.exists() == true) {
+            } else if (dirToGo.exists()) {
                 throw new Exception(getName() + ": '"
                         + args[1] + "' is not a Directory");
             } else {
@@ -33,10 +33,11 @@ public class CdCommand {
     }
 
     public static File newPath(String file) {
-        if (file.charAt(0) == '/') {
+        if (file.charAt(0) == File.separatorChar) {
+
             return new File(file);
         } else {
-            return new File(PwdCommand.getCurPath() + "/" + file);
+            return new File(PwdCommand.getCurPath() + File.separator + file);
         }
     }
 

@@ -22,7 +22,7 @@ public class CpCommand {
         int index = 0;
 
         for (String opt : args) {
-            if (opt.equals("-r") == true) {
+            if (opt.equals("-r")) {
                 recFlag = true;
             } else {
 
@@ -39,7 +39,7 @@ public class CpCommand {
             File source = CdCommand.newPath(newArgs[1]);
             File target = CdCommand.newPath(newArgs[2]);
 
-            if (source.equals(target) == true) {
+            if (source.equals(target)) {
                 throw new Exception(getName() + ": '"
                         + newArgs[1] + "' and '" + newArgs[1]
                         + "' are the same");
@@ -50,44 +50,40 @@ public class CpCommand {
                         + newArgs[1] + "' No such File or Directory");
             }
 
-            if (source.isDirectory() == true && recFlag == false) {
+            if (source.isDirectory() && recFlag == false) {
                 throw new Exception(getName() + ": '"
                         + newArgs[1] + "' is Directory");
             }
 
-            if (target.isDirectory() == true
-                    && target.exists() == true) {
+            if (target.isDirectory() && target.exists()) {
                 target = new File(target, source.getName());
             }
 
-            if (target.exists() == false) {
-                if (source.isDirectory() == true && target.mkdir() == false) {
-
+            if (!target.exists() == false) {
+                if (source.isDirectory() && target.mkdir() == false) {
                     throw new Exception(getName() + ": '"
                             + newArgs[2] + "' No such File or Directory");
                 }
 
-                if (source.isFile() == true
-                        && target.createNewFile() == false) {
-
+                if (source.isFile() && target.createNewFile() == false) {
                     throw new Exception(getName() + ": '"
                             + newArgs[2] + "' No such File or Directory");
                 }
             }
 
-            Copy(source, target);
+            copy(source, target);
         }
     }
 
-    public static void Copy(File source, File target) throws Exception {
-        if (source.isFile() == true) {
-            CopyFile(source, target);
+    public static void copy(File source, File target) throws Exception {
+        if (source.isFile()) {
+            copyFile(source, target);
         } else {
             copyDir(source, target);
         }
     }
 
-    private static void CopyFile(File source, File target) throws Exception {
+    private static void copyFile(File source, File target) throws Exception {
         InputStream in = null;
         OutputStream out = null;
 
@@ -111,7 +107,7 @@ public class CpCommand {
         target.mkdir();
         String[] files = source.list();
         for (String file : files) {
-            Copy(new File(source, file), new File(target, file));
+            copy(new File(source, file), new File(target, file));
         }
     }
 
