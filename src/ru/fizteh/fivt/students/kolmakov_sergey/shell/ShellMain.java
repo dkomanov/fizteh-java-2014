@@ -160,14 +160,14 @@ public class ShellMain {
             copy(from, to);
         } catch (ShellException e) {
             String msg = e.getMessage();
-            msg = msg.replace("cp", "mv");
+            msg = msg.replaceFirst("cp", "mv");
             throw new ShellException(msg);
         }
         try {
             delete(from);
         } catch (ShellException e) {
             String msg = e.getMessage();
-            msg = msg.replace("rm", "mv");
+            msg = msg.replaceFirst("rm", "mv");
             throw new ShellException(msg);
         }
     }
