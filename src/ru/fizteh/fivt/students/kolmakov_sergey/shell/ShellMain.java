@@ -302,6 +302,7 @@ public class ShellMain {
         StringBuilder commands = new StringBuilder();
         for (String arg: args) {
             commands.append(arg);
+            commands.append(' ');
         }
         execLine(commands.toString());
     }
