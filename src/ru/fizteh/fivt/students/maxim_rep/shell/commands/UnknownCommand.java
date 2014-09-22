@@ -1,4 +1,4 @@
-package shell.commands;
+package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 public class UnknownCommand implements ShellCommand {
 
@@ -10,8 +10,8 @@ public class UnknownCommand implements ShellCommand {
 
 	@Override
 	public boolean execute() {
-		System.out.println(args + ": Command not found");
-		return true;
+		System.err.println(args + ": Command not found");
+		return false;
 	}
 
 }

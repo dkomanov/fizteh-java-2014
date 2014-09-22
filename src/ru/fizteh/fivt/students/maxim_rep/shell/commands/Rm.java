@@ -1,4 +1,4 @@
-package shell.commands;
+package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 import java.io.*;
 
@@ -10,7 +10,7 @@ public class Rm implements ShellCommand {
 
 	public Rm(String CurrentPath, String Destination, boolean Recursive) {
 		this.CurrentPath = CurrentPath;
-		this.Destination = shell.Parser.PathConverter(Destination, CurrentPath);
+		this.Destination = ru.fizteh.fivt.students.maxim_rep.shell.Parser.PathConverter(Destination, CurrentPath);
 		this.Recursive = Recursive;
 	}
 
@@ -40,8 +40,9 @@ public class Rm implements ShellCommand {
 				f.delete();
 			}
 		} else {
-			System.out.println("rm: cannot remove '" + Destination
+			System.err.println("rm: cannot remove '" + Destination
 					+ "': No such file or directory");
+			return false;
 		}
 		return true;
 	}

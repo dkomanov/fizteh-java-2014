@@ -1,4 +1,4 @@
-package shell.commands;
+package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,24 +14,24 @@ public class Cp implements ShellCommand {
 	public Cp(String CurrentPath, String Source, String Destination,
 			boolean Recursive) {
 		this.CurrentPath = CurrentPath;
-		this.Source = shell.Parser.PathConverter(Source, CurrentPath);
-		this.Destination = shell.Parser.PathConverter(Destination, CurrentPath);
+		this.Source = ru.fizteh.fivt.students.maxim_rep.shell.Parser.PathConverter(Source, CurrentPath);
+		this.Destination = ru.fizteh.fivt.students.maxim_rep.shell.Parser.PathConverter(Destination, CurrentPath);
 		this.Recursive = Recursive;
 	}
 
-	public static void copyDirectory(String Source, String Destination) {
+	public static boolean copyDirectory(String Source, String Destination) {
 		File fileToCopy = new File(Source);
 		File fileNew = new File(Destination);
 
 		if (!fileToCopy.exists()) {
-			System.out.println("cp: '" + Source
+			System.err.println("cp: '" + Source
 					+ "': No such file or directory!");
-			return;
+			return false;
 		}
 
 		if (fileToCopy.isFile()) {
-			copyFile(Source, Destination);
-			return;
+			return copyFile(Source, Destination);
+
 		}
 
 		if (fileNew.exists()) {
@@ -40,7 +40,8 @@ public class Cp implements ShellCommand {
 					fileNew.mkdir();
 					copyRecursive(fileToCopy, fileNew);
 				} catch (Exception e) {
-					System.out.println("cp: Error " + e.getMessage());
+					System.err.println("cp: Error " + e.getMessage());
+					return false;
 				}
 			else if (fileNew.isDirectory())
 				fileNew = new File(Destination + "/" + fileToCopy.getName());
@@ -48,16 +49,19 @@ public class Cp implements ShellCommand {
 				fileNew.mkdir();
 				copyRecursive(fileToCopy, fileNew);
 			} catch (Exception e) {
-				System.out.println("cp: Error " + e.getMessage());
+				System.err.println("cp: Error " + e.getMessage());
+				return false;
 			}
 		} else {
 			try {
 				fileNew.mkdir();
 				copyRecursive(fileToCopy, fileNew);
 			} catch (Exception e) {
-				System.out.println("cp: Error " + e.getMessage());
+				System.err.println("cp: Error " + e.getMessage());
+				return false;
 			}
 		}
+		return true;
 
 	}
 
@@ -84,19 +88,19 @@ public class Cp implements ShellCommand {
 		}
 	}
 
-	public static void copyFile(String Source, String Destination) {
+	public static boolean copyFile(String Source, String Destination) {
 		File fileToCopy = new File(Source);
 		File fileNew = new File(Destination);
 
 		if (!fileToCopy.exists()) {
-			System.out.println("cp: '" + Source
+			System.err.println("cp: '" + Source
 					+ "': No such file or directory!");
-			return;
+			return false;
 		}
 
 		if (fileToCopy.isDirectory()) {
-			System.out.println("cp: '" + Source + "': Is a directory!");
-			return;
+			System.err.println("cp: '" + Source + "': Is a directory!");
+			return false;
 		}
 
 		if (fileNew.exists()) {
@@ -104,31 +108,34 @@ public class Cp implements ShellCommand {
 				try {
 					Files.copy(fileToCopy.toPath(), fileNew.toPath());
 				} catch (IOException e) {
-					System.out.println("cp: Error " + e.getMessage());
+					System.err.println("cp: Error " + e.getMessage());
+					return false;
 				}
 			else if (fileNew.isDirectory())
 				fileNew = new File(Destination + "/" + fileToCopy.getName());
 			try {
 				Files.copy(fileToCopy.toPath(), fileNew.toPath());
 			} catch (IOException e) {
-				System.out.println("cp: Error " + e.getMessage());
+				System.err.println("cp: Error " + e.getMessage());
+				return false;
 			}
 		} else {
 			try {
 				Files.copy(fileToCopy.toPath(), fileNew.toPath());
 			} catch (IOException e) {
-				System.out.println("cp: Error " + e.getMessage());
+				System.err.println("cp: Error " + e.getMessage());
+				return false;
 			}
 		}
+		return true;
 
 	}
 
 	@Override
 	public boolean execute() {
 		if (Recursive)
-			copyDirectory(Source, Destination);
+			return copyDirectory(Source, Destination);
 		else
-			copyFile(Source, Destination);
-		return true;
+			return copyFile(Source, Destination);
 	}
 }

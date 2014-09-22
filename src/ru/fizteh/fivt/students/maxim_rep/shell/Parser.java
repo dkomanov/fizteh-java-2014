@@ -1,8 +1,8 @@
-package shell;
+package ru.fizteh.fivt.students.maxim_rep.shell;
 
 import java.io.File;
 
-import shell.commands.*;
+import ru.fizteh.fivt.students.maxim_rep.shell.commands.*;
 
 public class Parser {
 
@@ -39,7 +39,7 @@ public class Parser {
 	}
 
 	public static ShellCommand GetCommandFromString(String str) {
-		String[] comArgs = shell.Parser.DevideByChar(str, " ");
+		String[] comArgs = ru.fizteh.fivt.students.maxim_rep.shell.Parser.DevideByChar(str, " ");
 		String comName = comArgs[0];
 
 		try {
@@ -47,31 +47,31 @@ public class Parser {
 			case "exit":
 				return new Exit();
 			case "cd":
-				return new Cd(shell.Shell.CurrentPath, comArgs[1]);
+				return new Cd(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath, comArgs[1]);
 			case "cat":
-				return new Cat(shell.Shell.CurrentPath, comArgs[1]);
+				return new Cat(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath, comArgs[1]);
 			case "mv":
-				return new Mv(shell.Shell.CurrentPath, comArgs[1], comArgs[2]);
+				return new Mv(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath, comArgs[1], comArgs[2]);
 			case "cp":
 				if (comArgs[1].equals("-r"))
-					return new Cp(shell.Shell.CurrentPath, comArgs[2],
+					return new Cp(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath, comArgs[2],
 							comArgs[3], true);
 				else
-					return new Cp(shell.Shell.CurrentPath, comArgs[1],
+					return new Cp(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath, comArgs[1],
 							comArgs[2], false);
 			case "rm":
 				if (comArgs[1].equals("-r"))
-					return new Rm(shell.Shell.CurrentPath, comArgs[2], true);
+					return new Rm(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath, comArgs[2], true);
 				else
-					return new Rm(shell.Shell.CurrentPath, comArgs[1], false);
+					return new Rm(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath, comArgs[1], false);
 			case "mkdir":
-				return new Mkdir(shell.Shell.CurrentPath, comArgs[1]);
+				return new Mkdir(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath, comArgs[1]);
 			case "":
 				return new EmptyCommand();
 			case "ls":
-				return new Ls(shell.Shell.CurrentPath);
+				return new Ls(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath);
 			case "pwd":
-				return new Pwd(shell.Shell.CurrentPath);
+				return new Pwd(ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath);
 			default:
 				return new UnknownCommand(str);
 			}

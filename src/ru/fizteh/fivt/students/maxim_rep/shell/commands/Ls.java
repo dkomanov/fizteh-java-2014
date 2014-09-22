@@ -1,4 +1,4 @@
-package shell.commands;
+package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 import java.io.File;
 
@@ -18,9 +18,10 @@ public class Ls implements ShellCommand {
 	public boolean execute() {
 		File f = new File(CurrentPath);
 		if (!f.exists()) {
-			System.out
+			System.err
 					.println("Current directory doesn't exists, returning to root.");
-			shell.Shell.CurrentPath = "/";// System.getProperty("user.name");
+			ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath = "/";// System.getProperty("user.name");
+			return false;
 		} else {
 			String[] filelist = f.list();
 			for (String filelist1 : filelist) {

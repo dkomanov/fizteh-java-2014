@@ -1,8 +1,8 @@
-package shell;
+package ru.fizteh.fivt.students.maxim_rep.shell;
 
 import java.io.*;
 
-import shell.commands.*;
+import ru.fizteh.fivt.students.maxim_rep.shell.commands.*;
 
 public class Shell {
 
@@ -18,7 +18,7 @@ public class Shell {
 		}
 	}
 
-	public static void commandMode(String[] args) throws IOException {
+	public static int commandMode(String[] args) throws IOException {
 		String commandline = "";
 		for (int i = 0; i < args.length; i++)
 			commandline = commandline + args[i];
@@ -34,16 +34,17 @@ public class Shell {
 				.print(System.getProperty("user.name") + "@"
 						+ System.getProperty("os.name") + " " + ConvertedString
 						+ " $ ");
-		String[] commandsString = shell.Parser.DevideByChar(commandline, ";");
+		String[] commandsString = ru.fizteh.fivt.students.maxim_rep.shell.Parser.DevideByChar(commandline, ";");
 		for (String commandsString1 : commandsString) {
-			ShellCommand command = shell.Parser
+			ShellCommand command = ru.fizteh.fivt.students.maxim_rep.shell.Parser
 					.GetCommandFromString(commandsString1);
-			boolean exit = !command.execute();
-			if (exit) {
-				return;
+			if (!command.execute()) {
+				System.exit(-1);
+				return -1;
 			}
 		}
-		return;
+		System.exit(0);
+		return 0;
 	}
 
 	public static void interactiveMode() throws IOException {
@@ -62,14 +63,13 @@ public class Shell {
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					System.in));
 			String line = in.readLine();
-			String[] commandsString = shell.Parser.DevideByChar(line, ";");
+			String[] commandsString = ru.fizteh.fivt.students.maxim_rep.shell.Parser.DevideByChar(line, ";");
 			for (String commandsString1 : commandsString) {
-				ShellCommand command = shell.Parser
+				ShellCommand command = ru.fizteh.fivt.students.maxim_rep.shell.Parser
 						.GetCommandFromString(commandsString1);
-				boolean exit = !command.execute();
-				if (exit) {
-					return;
-				}
+				if (command.getClass() == Exit.class)
+					System.exit(0);
+				command.execute();
 			}
 
 		}

@@ -1,4 +1,4 @@
-package shell.commands;
+package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,10 +10,8 @@ public class Cd implements ShellCommand {
 
 	public Cd(String CurrentPath, String Destination) {
 		this.CurrentPath = CurrentPath;
-		// this.Destination = Destination;
-		this.Destination = shell.Parser.PathConverter(Destination, CurrentPath);
-		System.out.println("DEBUG 3: " + this.CurrentPath + " AND "
-				+ this.Destination);
+		this.Destination = ru.fizteh.fivt.students.maxim_rep.shell.Parser.PathConverter(Destination,
+				this.CurrentPath);
 	}
 
 	/**
@@ -25,12 +23,15 @@ public class Cd implements ShellCommand {
 		File f = new File(Destination);
 
 		if (!f.exists()) {
-			System.out.println("cd: " + Destination
+			System.err.println("cd: " + Destination
 					+ ": No such file or directory");
+			return false;
 		} else {
 			try {
-				shell.Shell.CurrentPath = f.getCanonicalPath();
+				ru.fizteh.fivt.students.maxim_rep.shell.Shell.CurrentPath = f.getCanonicalPath();
 			} catch (IOException e) {
+				System.err.println("cd: Error: " + e.getMessage());
+				return false;
 			}
 		}
 		return true;

@@ -1,4 +1,4 @@
-package shell.commands;
+package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 public class Exit implements ShellCommand {
 
@@ -7,7 +7,7 @@ public class Exit implements ShellCommand {
 
 	@Override
 	public boolean execute() {
-		return false;
+		return true;
 	}
 
 }

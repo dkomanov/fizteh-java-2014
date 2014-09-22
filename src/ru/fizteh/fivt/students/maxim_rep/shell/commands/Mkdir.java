@@ -1,4 +1,4 @@
-package shell.commands;
+package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 import java.io.*;
 
@@ -19,7 +19,8 @@ public class Mkdir implements ShellCommand {
 		if (f.mkdir()) {
 			System.out.println("Directory " + FileName + " created!");
 		} else {
-			System.out.println("Couldn't create new directory!");
+			System.err.println("Couldn't create new directory!");
+			return false;
 		}
 		return true;
 	}

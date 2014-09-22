@@ -1,8 +1,6 @@
-package shell.commands;
+package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Cat implements ShellCommand {
 
@@ -10,7 +8,7 @@ public class Cat implements ShellCommand {
 	String FileName;
 
 	public Cat(String CurrentPath, String FileName) {
-		this.FileName = shell.Parser.PathConverter(FileName, CurrentPath);
+		this.FileName = ru.fizteh.fivt.students.maxim_rep.shell.Parser.PathConverter(FileName, CurrentPath);
 		this.CurrentPath = CurrentPath;
 	}
 
@@ -19,16 +17,15 @@ public class Cat implements ShellCommand {
 		File f = new File(FileName);
 
 		if (!f.exists() || !f.isFile()) {
-			System.out.println("cat: " + FileName + ": No such file");
-			return true;
+			System.err.println("cat: " + FileName + ": No such file");
+			return false;
 		} else {
 			FileReader in;
 			try {
 				in = new FileReader(f);
 			} catch (FileNotFoundException ex) {
-				Logger.getLogger(Cat.class.getName()).log(Level.SEVERE, null,
-						ex);
-				return true;
+				System.err.println("cat: " + FileName + ": No such file");
+				return false;
 			}
 
 			char[] buffer = new char[4096];
@@ -39,16 +36,14 @@ public class Cat implements ShellCommand {
 					System.out.println(s);
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(Cat.class.getName()).log(Level.SEVERE, null,
-						ex);
-				return true;
+				System.err.println("cat: Error: " + ex.getMessage() + "\"");
+				return false;
 			}
 			try {
 				in.close();
 			} catch (IOException ex) {
-				Logger.getLogger(Cat.class.getName()).log(Level.SEVERE, null,
-						ex);
-				return true;
+				System.err.println("cat: Error: " + ex.getMessage() + "\"");
+				return false;
 			}
 
 		}
