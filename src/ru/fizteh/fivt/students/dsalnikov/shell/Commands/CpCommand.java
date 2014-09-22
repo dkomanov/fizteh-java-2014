@@ -52,7 +52,7 @@ public class CpCommand implements Command {
             }
             throw new IOException("Can not copy directory to existing file");
         }
-        if  (!destination.getParentFile().equals(source.getParentFile())) {
+        if (!destination.getParentFile().equals(source.getParentFile())) {
             throw new IOException("Incorrect destination path");
         }
     }
@@ -80,7 +80,7 @@ public class CpCommand implements Command {
                     if (source.isFile() && destination.isDirectory()) {
                         destination = new File(destination.getAbsolutePath(), source.getName());
                         Files.copy(source.toPath(), destination.toPath());
-                    } else if(source.isFile()) {
+                    } else if (source.isFile()) {
                         copyFile(source, destination);
                     } else {
                         File newDir = new File(destination, str[2]);

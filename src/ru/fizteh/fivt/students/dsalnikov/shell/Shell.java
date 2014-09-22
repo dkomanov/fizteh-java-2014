@@ -20,23 +20,23 @@ public class Shell<State extends ShellState> {
         state = o;
     }
 
-    private Map<String, Command> CommandMap = new HashMap<String, Command>();
+    private Map<String, Command> commandMap = new HashMap<String, Command>();
 
     public void setCommands(List<Command> cs) throws IllegalArgumentException {
         if (cs == null) {
             throw new IllegalArgumentException("this is madness");
         }
         for (Command Command : cs) {
-            CommandMap.put(Command.getName(), Command);
+            commandMap.put(Command.getName(), Command);
         }
     }
 
     public void execute(String args[]) throws Exception {
         String concatenatedcmds = join(Arrays.asList(args), " ");
-        String[] Commands = concatenatedcmds.split("\\s*;\\s*");
-        for (String Command : Commands) {
+        String[] commands = concatenatedcmds.split("\\s*;\\s*");
+        for (String Command : commands) {
             String[] cmdArgs = Command.split("\\s+");
-            Command c = CommandMap.get(cmdArgs[0]);
+            Command c = commandMap.get(cmdArgs[0]);
             if (c == null) {
                 throw new IllegalArgumentException("no such Command declared: " + cmdArgs[0]);
             }
