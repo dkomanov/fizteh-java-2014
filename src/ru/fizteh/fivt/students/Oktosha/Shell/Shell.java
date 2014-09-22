@@ -14,11 +14,11 @@ public final class Shell {
 
     /**
      *
-     * @param args are treated as shell commands
-     *             if no arguments are given
-     *             Shell runs in interactive mode
+     * @param args command line arguments are treated as shell commands
+     *             if no arguments are given Shell runs in interactive mode
      */
     public static void main(final String[] args) {
         System.out.println("Hello, world!");
     }
 }
+
