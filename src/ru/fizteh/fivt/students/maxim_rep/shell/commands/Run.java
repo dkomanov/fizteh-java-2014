@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-import ru.fizteh.fivt.students.maxim_rep.shell.Parser;
 import java.io.*;
+import ru.fizteh.fivt.students.maxim_rep.shell.*;
 
 public class Run implements ShellCommand {
 
@@ -18,7 +18,8 @@ public class Run implements ShellCommand {
 	public static void recursiveRm(File f, String Path) {
 		String[] files = f.list();
 		for (int i = 0; i < files.length; ++i) {
-			File currentFile = new File(f.getPath() + "/" + files[i]);
+			File currentFile = new File(f.getPath() + OsData.backslash
+					+ files[i]);
 			if (currentFile.isDirectory()) {
 				recursiveRm(currentFile, currentFile.getPath());
 			}

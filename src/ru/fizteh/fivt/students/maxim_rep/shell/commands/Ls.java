@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-import ru.fizteh.fivt.students.maxim_rep.shell.Shell;
+import ru.fizteh.fivt.students.maxim_rep.shell.*;
 import java.io.File;
 
 public class Ls implements ShellCommand {
@@ -21,7 +21,7 @@ public class Ls implements ShellCommand {
 		if (!f.exists()) {
 			System.err
 					.println("Current directory doesn't exists, returning to root.");
-			Shell.currentPath = "/";
+			Shell.currentPath = OsData.root;
 			return false;
 		} else {
 			String[] filelist = f.list();

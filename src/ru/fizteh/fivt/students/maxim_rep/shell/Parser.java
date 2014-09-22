@@ -18,27 +18,53 @@ public class Parser {
 	public static String pathConverter(String Path, String currentPath) {
 		File f = new File(currentPath);
 
-		if (Path.equals("/"))
-			return "/";
-		else if (Path.startsWith("~"))
-			return System.getProperty("user.home") + Path.substring(1);
-		else if (Path.equals("") || Path.equals(" "))
-			return System.getProperty("user.home");
-		else if (Path.length() >= 2 && Path.substring(0, 2).equals("..")) {
-			if (f.getParent() == null) {
-				return "/" + Path.substring(2);
-			}
-			return f.getParent() + Path.substring(2);
-		} else if (Path.startsWith("."))
-			return currentPath + Path.substring(1);
+		if (OsData.getOsType().equals("nix")) {
 
-		if (!(Path.startsWith("/", 0))) {
-			if (currentPath.equals("/")) {
-				Path = currentPath + Path;
-			} else {
-				Path = currentPath + "/" + Path;
+			if (Path.equals("/"))
+				return "/";
+			else if (Path.startsWith("~"))
+				return System.getProperty("user.home") + Path.substring(1);
+			else if (Path.equals("") || Path.equals(" "))
+				return System.getProperty("user.home");
+			else if (Path.length() >= 2 && Path.substring(0, 2).equals("..")) {
+				if (f.getParent() == null) {
+					return "/" + Path.substring(2);
+				}
+				return f.getParent() + Path.substring(2);
+			} else if (Path.startsWith("."))
+				return currentPath + Path.substring(1);
+
+			if (!(Path.startsWith("/", 0))) {
+				if (currentPath.equals("/")) {
+					Path = currentPath + Path;
+				} else {
+					Path = currentPath + "/" + Path;
+				}
 			}
+
+		} else {
+			if (Path.equals("/") || Path.equals("\\"))
+				return "C:\\";
+			else if (Path.startsWith("~"))
+				return System.getProperty("user.home") + Path.substring(1);
+			else if (Path.equals("") || Path.equals(" "))
+				return System.getProperty("user.home");
+			else if (Path.length() >= 2 && Path.substring(0, 2).equals("..")) {
+				if (f.getParent() == null) {
+					return "C:\\" + Path.substring(2);
+				}
+				return f.getParent() + Path.substring(2);
+			} else if (Path.startsWith("."))
+				return currentPath + Path.substring(1);
+
+			if (Path.startsWith("\\", 0) || Path.startsWith("/", 0)) {
+				Path = "C:" + Path;
+			} else if (!(Path.startsWith(":", 1))) {
+				Path = currentPath + "\\" + Path;
+			}
+
 		}
+
 		return Path;
 	}
 

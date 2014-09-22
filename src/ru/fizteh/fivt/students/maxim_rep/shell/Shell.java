@@ -7,8 +7,10 @@ import ru.fizteh.fivt.students.maxim_rep.shell.commands.*;
 public class Shell {
 
 	public static String currentPath;
+	public static String currentDrive = "/";
 
 	public static void main(String[] args) throws IOException {
+		OsData.setOsSettings();
 		currentPath = System.getProperty("user.home");
 
 		if (args.length == 0) {
@@ -45,6 +47,7 @@ public class Shell {
 
 	public static void interactiveMode() throws IOException {
 		currentPath = System.getProperty("user.home");
+
 		for (int i = 0; i == 0;) {
 			String ConvertedString = currentPath;
 			if (currentPath.startsWith(System.getProperty("user.home"))) {
