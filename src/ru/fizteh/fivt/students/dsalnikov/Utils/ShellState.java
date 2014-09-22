@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.dsalnikov.Utils;
 
 
-import java.io.File;
-
 public class ShellState {
     String state;
     Object object;
