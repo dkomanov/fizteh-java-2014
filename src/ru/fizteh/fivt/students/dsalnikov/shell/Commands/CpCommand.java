@@ -30,7 +30,7 @@ public class CpCommand implements Command {
                     File newDir = new File(destination, file.getName());
                     newDir = newDir.toPath().normalize().toFile();
                     if (!newDir.getCanonicalFile().mkdirs()) {
-                        throw new Exception("subdirectory can't be created due to absence of parent");
+                        throw new Exception("error creating directory");
                     }
                     recursiveCopy(file, newDir);
                 }
@@ -51,6 +51,9 @@ public class CpCommand implements Command {
                 throw new IOException("Can not copy file to existing file");
             }
             throw new IOException("Can not copy directory to existing file");
+        }
+        if  (!destination.getParentFile().equals(source.getParentFile())) {
+            throw new IOException("Incorrect destination path");
         }
     }
 
@@ -77,14 +80,16 @@ public class CpCommand implements Command {
                     if (source.isFile() && destination.isDirectory()) {
                         destination = new File(destination.getAbsolutePath(), source.getName());
                         Files.copy(source.toPath(), destination.toPath());
+                    } else if(source.isFile()) {
+                        copyFile(source, destination);
+                    } else {
+                        File newDir = new File(destination, str[2]);
+                        newDir = newDir.toPath().normalize().toFile();
+                        if (!newDir.getAbsoluteFile().mkdirs()) {
+                            throw new Exception("error creating directory");
+                        }
+                        recursiveCopy(source, newDir);
                     }
-                    File newDir = new File(destination, str[2]);
-                    newDir = newDir.toPath().normalize().toFile();
-                    if (!newDir.getAbsoluteFile().mkdir()) {
-                        throw new Exception("subdirectory can't be created due to absence of parent");
-                    }
-                    recursiveCopy(source, newDir);
-
                 } else {
                     throw new IllegalArgumentException("Flag " + str[1] + " is not supported in this command");
                 }
@@ -99,7 +104,7 @@ public class CpCommand implements Command {
                     } else {
                         File dir = new File(destination, str[1]);
                         checkPaths(source, new File(destination, str[2]));
-                        dir.mkdirs();
+                        dir.mkdir();
                     }
                 } else {
                     checkPaths(source, destination);
