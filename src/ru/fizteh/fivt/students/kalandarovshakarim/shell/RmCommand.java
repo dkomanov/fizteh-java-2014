@@ -37,12 +37,12 @@ public class RmCommand {
 
         File toDelete = CdCommand.newPath(newArgs[1]);
 
-        if (recFlag == false && toDelete.isDirectory()) {
+        if (!recFlag && toDelete.isDirectory()) {
             throw new Exception(getName() + ": '"
                     + newArgs[1] + "' is Directory");
         }
 
-        if (toDelete.exists() == false) {
+        if (!toDelete.exists()) {
             throw new Exception(getName() + ": '"
                     + newArgs[1] + "' No such File or Directory");
         }
@@ -62,7 +62,7 @@ public class RmCommand {
             }
             isDeleted = file.delete();
         }
-        if (isDeleted == false) {
+        if (!isDeleted) {
             throw new Exception(getName() + ": Cannot delete '"
                     + file.getCanonicalPath() + "'");
         }

@@ -45,12 +45,12 @@ public class CpCommand {
                         + "' are the same");
             }
 
-            if (source.exists() == false) {
+            if (!source.exists()) {
                 throw new Exception(getName() + ": '"
                         + newArgs[1] + "' No such File or Directory");
             }
 
-            if (source.isDirectory() && recFlag == false) {
+            if (source.isDirectory() && !recFlag) {
                 throw new Exception(getName() + ": '"
                         + newArgs[1] + "' is Directory");
             }
@@ -59,13 +59,13 @@ public class CpCommand {
                 target = new File(target, source.getName());
             }
 
-            if (!target.exists() == false) {
-                if (source.isDirectory() && target.mkdir() == false) {
+            if (!target.exists()) {
+                if (source.isDirectory() && !target.mkdir()) {
                     throw new Exception(getName() + ": '"
                             + newArgs[2] + "' No such File or Directory");
                 }
 
-                if (source.isFile() && target.createNewFile() == false) {
+                if (source.isFile() && !target.createNewFile()) {
                     throw new Exception(getName() + ": '"
                             + newArgs[2] + "' No such File or Directory");
                 }

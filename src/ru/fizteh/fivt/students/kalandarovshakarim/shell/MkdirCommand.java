@@ -19,7 +19,7 @@ public class MkdirCommand {
             throw new Exception(getName() + ": too much arguments");
         } else {
             File newDir = CdCommand.newPath(args[1]);
-            if (newDir.mkdir() == false) {
+            if (!newDir.mkdir()) {
                 throw new Exception(getName()
                         + ": Cannot create directory '"
                         + args[1] + "'");
