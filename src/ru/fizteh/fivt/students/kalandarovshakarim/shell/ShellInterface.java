@@ -30,38 +30,38 @@ public class ShellInterface {
     }
 
     private static void switchCommand(String[] cmd) throws Exception {
-        switch (cmd[0]) {
-            case "cat":
-                CatCommand.run(cmd);
-                break;
-            case "cd":
-                CdCommand.run(cmd);
-                break;
-            case "cp":
-                CpCommand.run(cmd);
-                break;
-            case "ls":
-                LsCommand.run(cmd);
-                break;
-            case "mkdir":
-                MkdirCommand.run(cmd);
-                break;
-            case "mv":
-                MvCommand.run(cmd);
-                break;
-            case "pwd":
-                PwdCommand.run(cmd);
-                break;
-            case "rm":
-                RmCommand.run(cmd);
-                break;
-            case "exit":
-                System.exit(0);
-            default:
-                if (cmd[0].length() > 0) {
+        if (cmd.length > 0 && cmd[0].length() > 0) {
+            switch (cmd[0]) {
+                case "cat":
+                    CatCommand.run(cmd);
+                    break;
+                case "cd":
+                    CdCommand.run(cmd);
+                    break;
+                case "cp":
+                    CpCommand.run(cmd);
+                    break;
+                case "ls":
+                    LsCommand.run(cmd);
+                    break;
+                case "mkdir":
+                    MkdirCommand.run(cmd);
+                    break;
+                case "mv":
+                    MvCommand.run(cmd);
+                    break;
+                case "pwd":
+                    PwdCommand.run(cmd);
+                    break;
+                case "rm":
+                    RmCommand.run(cmd);
+                    break;
+                case "exit":
+                    System.exit(0);
+                default:
                     throw new Exception("Shell : '"
                             + cmd[0] + "' No such command");
-                }
+            }
         }
     }
 
@@ -88,7 +88,7 @@ public class ShellInterface {
             while (input.hasNextLine() == true) {
                 try {
                     String cmd = input.nextLine();
-                    switchCommand(parseCommand(cmd + "\n"));
+                    switchCommand(parseCommand(cmd));
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
