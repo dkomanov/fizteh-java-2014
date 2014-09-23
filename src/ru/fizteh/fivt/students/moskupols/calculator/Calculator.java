@@ -7,7 +7,6 @@ import ru.fizteh.fivt.students.moskupols.calculator.lexemes.ParenthesisOpenOpera
 
 import java.io.IOError;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
