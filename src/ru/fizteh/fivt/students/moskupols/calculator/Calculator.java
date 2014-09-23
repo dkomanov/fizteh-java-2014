@@ -54,7 +54,12 @@ class Calculator {
             try {
                 op = Operator.fromString(t, emptyParentheses);
             } catch (Exception e) {
-                operand = Operand.valueOf(t);
+                try {
+                    operand = Operand.valueOf(t);
+                }
+                catch (NumberFormatException e2) {
+                    throw new Exception("Unusual token: " + t);
+                }
             }
             if (op != null) {
                 if (op instanceof ParenthesisOpenOperator) {

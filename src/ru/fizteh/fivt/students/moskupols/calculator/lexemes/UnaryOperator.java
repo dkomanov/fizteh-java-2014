@@ -16,7 +16,7 @@ abstract public class UnaryOperator extends Operator {
             Operand o = operands.pop();
             operands.push(apply(o));
         } catch (EmptyStackException e) {
-            throw new Exception("Not enough arguments for binary operation " + this.toString());
+            throw new Exception("Not enough arguments for unary operation " + this.toString());
         }
     }
 }
