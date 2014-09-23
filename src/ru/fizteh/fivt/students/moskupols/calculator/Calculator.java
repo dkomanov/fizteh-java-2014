@@ -23,7 +23,7 @@ class Calculator {
             line = args[0];
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Too few arguments: I expect the expression to be the first argument");
-            return;
+            System.exit(1);
         }
 
         try {
@@ -34,8 +34,10 @@ class Calculator {
                 System.out.println(result);
         } catch (IOError e) {
             System.err.println("Error while printing to stdout: " + e.getMessage());
+            System.exit(2);
         } catch (Exception e) {
             System.err.println(e.getMessage());
+            System.exit(3);
         }
     }
 
