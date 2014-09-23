@@ -5,6 +5,12 @@ import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
 public class MvCommand implements Command {
 
+    private Shell link;
+
+    public MvCommand(Shell s) {
+        link = s;
+    }
+
     public String getName() {
         return "mv";
     }
@@ -29,10 +35,4 @@ public class MvCommand implements Command {
         cp.execute(cpstr);
         rm.execute(rmstr);
     }
-
-    public MvCommand(Shell s) {
-        link = s;
-    }
-
-    private Shell link;
 }

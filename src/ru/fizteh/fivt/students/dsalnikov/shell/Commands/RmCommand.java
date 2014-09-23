@@ -8,6 +8,13 @@ import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 
 public class RmCommand implements Command {
+
+    private Shell link;
+
+    public RmCommand(Shell s) {
+        link = s;
+    }
+
     public String getName() {
         return "rm";
     }
@@ -63,10 +70,4 @@ public class RmCommand implements Command {
             }
         }
     }
-
-    public RmCommand(Shell s) {
-        link = s;
-    }
-
-    private Shell link;
 }

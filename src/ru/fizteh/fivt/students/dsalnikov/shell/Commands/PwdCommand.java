@@ -4,6 +4,12 @@ import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
 public class PwdCommand implements Command {
 
+    private Shell link;
+
+    public PwdCommand(Shell s) {
+        link = s;
+    }
+
     public String getName() {
         return "pwd";
     }
@@ -19,10 +25,4 @@ public class PwdCommand implements Command {
             System.out.println(link.getState().getState());
         }
     }
-
-    public PwdCommand(Shell s) {
-        link = s;
-    }
-
-    private Shell link;
 }

@@ -8,6 +8,13 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 
 public class MkdirCommand implements Command {
+
+    private Shell link;
+
+    public MkdirCommand(Shell s) {
+        link = s;
+    }
+
     public String getName() {
         return "mkdir";
     }
@@ -34,11 +41,5 @@ public class MkdirCommand implements Command {
             }
         }
     }
-
-    public MkdirCommand(Shell s) {
-        link = s;
-    }
-
-    private Shell link;
 }
 

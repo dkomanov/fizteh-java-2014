@@ -3,6 +3,13 @@ package ru.fizteh.fivt.students.dsalnikov.shell.Commands;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
 public class ExitCommand implements Command {
+
+    private Shell link;
+
+    public ExitCommand(Shell s) {
+        link = s;
+    }
+
     public String getName() {
         return "exit";
     }
@@ -18,10 +25,4 @@ public class ExitCommand implements Command {
             System.exit(0);
         }
     }
-
-    public ExitCommand(Shell s) {
-        link = s;
-    }
-
-    private Shell link;
 }

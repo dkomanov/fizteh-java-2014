@@ -8,6 +8,13 @@ import java.io.IOException;
 
 
 public class LsCommand implements Command {
+
+    private Shell link;
+
+    public LsCommand(Shell s) {
+        link = s;
+    }
+
     public String getName() {
         return "ls";
     }
@@ -28,11 +35,4 @@ public class LsCommand implements Command {
             }
         }
     }
-
-    public LsCommand(Shell s) {
-        link = s;
-    }
-
-    private Shell link;
-
 }

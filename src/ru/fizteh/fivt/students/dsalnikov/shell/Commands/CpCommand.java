@@ -10,6 +10,13 @@ import java.nio.file.Files;
 
 
 public class CpCommand implements Command {
+
+    private Shell link;
+
+    public CpCommand(Shell s) {
+        link = s;
+    }
+
     public String getName() {
         return "cp";
     }
@@ -112,11 +119,4 @@ public class CpCommand implements Command {
             }
         }
     }
-
-
-    public CpCommand(Shell s) {
-        link = s;
-    }
-
-    private Shell link;
 }

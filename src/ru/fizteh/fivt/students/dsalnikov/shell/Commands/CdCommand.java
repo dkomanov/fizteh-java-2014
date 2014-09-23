@@ -8,6 +8,13 @@ import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 
 public class CdCommand implements Command {
+
+    private Shell link;
+    
+    public CdCommand(Shell s) {
+        link = s;
+    }
+
     public String getName() {
         return "cd";
     }
@@ -35,10 +42,4 @@ public class CdCommand implements Command {
             }
         }
     }
-
-    public CdCommand(Shell s) {
-        link = s;
-    }
-
-    private Shell link;
 }
