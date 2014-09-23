@@ -12,6 +12,7 @@ public class CommandRm extends Command {
         name = "rm";
         numberOfArguments = 3;
     }
+    @Override
     public boolean run(String[] arguments){
         if (arguments.length != 3 & arguments.length != 2)
             return false;
@@ -24,9 +25,7 @@ public class CommandRm extends Command {
 
     }
     private boolean generalDelete(String[] arguments){
-        String filePath = arguments[1];
-        if (filePath.charAt(0) != '/')
-            filePath = System.getProperty("user.dir") + "/" + filePath;
+        String filePath = FilesFunction.toAbsolutePathString(arguments[1]);
         try {
             if (!Files.deleteIfExists(Paths.get(filePath)))
                 System.out.println(name + ": cannot remove \'" + arguments[1] + "\'" +
@@ -44,9 +43,7 @@ public class CommandRm extends Command {
     }
 
     private boolean recursiveDelete(String[] arguments){
-        String filePath = arguments[2];
-        if (arguments[2].charAt(0) != '/')
-            filePath = System.getProperty("user.dir") + "/" + arguments[2];
+        String filePath = FilesFunction.toAbsolutePathString(arguments[2]);
 
         FileVisitorDelete myFileVisitorDelete;
         myFileVisitorDelete = new FileVisitorDelete();

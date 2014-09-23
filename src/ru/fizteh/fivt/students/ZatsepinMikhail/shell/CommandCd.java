@@ -13,21 +13,13 @@ public class CommandCd extends Command {
         numberOfArguments = 2;
     }
 
+    @Override
     public boolean run(String[] arguments) {
         if (arguments.length == 1) {
             System.setProperty("user.dir", "/");
             return true;
         }
-        String fileSeparator = System.getProperty("file.separator");
-        Path newWorkDirectory;
-        if (Paths.get(arguments[1]).isAbsolute()){
-            newWorkDirectory = Paths.get(arguments[1]);
-        }
-        else{
-            newWorkDirectory = Paths.get(System.getProperty("user.dir") +
-                    fileSeparator + arguments[1]).normalize();
-        }
-        newWorkDirectory = newWorkDirectory.normalize();
+        Path newWorkDirectory = Paths.get(FilesFunction.toAbsolutePathString(arguments[1]));
         if (Files.isDirectory(newWorkDirectory)){
             System.setProperty("user.dir", newWorkDirectory.toString());
             return true;

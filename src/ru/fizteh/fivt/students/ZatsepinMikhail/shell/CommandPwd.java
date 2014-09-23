@@ -8,6 +8,7 @@ public class CommandPwd extends Command{
         name = "pwd";
         numberOfArguments = 1;
     }
+    @Override
     public boolean run(String[] args){
         if (args.length != numberOfArguments)
             return false;

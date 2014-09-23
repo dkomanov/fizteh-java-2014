@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Created by mikhail on 21.09.14.
@@ -13,69 +15,68 @@ public class CommandCp extends Command {
         numberOfArguments = 4;
     }
 
+    @Override
     public boolean run(String[] arguments) {
         if (arguments.length != 4 & arguments.length != 3)
             return false;
         boolean recursive = (arguments.length == numberOfArguments & arguments[1].equals("-r"));
         if (!recursive)
-            generalCopy(arguments);
+            return generalCopy(arguments);
         else
-            recursiveCopy(arguments);
-        return true;
+            return recursiveCopy(arguments);
     }
 
     private boolean generalCopy(String[] arguments) {
-        String filePath = arguments[1];
-        String destinationPath = arguments[2];
+        String startPath = FilesFunction.toAbsolutePathString(arguments[1]);
+        String destinationPath = FilesFunction.toAbsolutePathString(arguments[2]);
         String[] parsedFileName = arguments[1].split("/");
         String fileName = parsedFileName[parsedFileName.length - 1];
-        if (filePath.charAt(0) != '/')
-            filePath = System.getProperty("user.dir") + "/" + filePath;
-        if (destinationPath.charAt(0) != '/')
-            destinationPath = System.getProperty("user.dir") + "/" + destinationPath;
-        if (!Files.exists(Paths.get(filePath))) {
-            System.out.println(filePath);
+
+        if (Files.isDirectory(Paths.get(startPath))){
+            System.out.println(name + ": omitting directory \'" + arguments[1] + "\'");
+            return false;
+        }
+
+        if (!Files.exists(Paths.get(startPath))) {
             System.out.println(name + ": cannot copy \'" + arguments[1] + "\'" +
                     ": No such file or directory");
             return false;
         }
 
-        if (Files.isDirectory(Paths.get(destinationPath)))
-            destinationPath = destinationPath + "/" + fileName;
+        if (Files.isDirectory(Paths.get(destinationPath))){
+            destinationPath = destinationPath + System.getProperty("file.separator") + fileName;
+        }
         else if (destinationPath.charAt(destinationPath.length() - 1) == '/') {
             System.out.println(name + ": cannot copy \'" + fileName + "\' to \'" +
                     arguments[2] + "\': Not a directory");
             return false;
         }
+
         try {
-            System.out.println(filePath + "\n" + destinationPath);
-            Files.copy(Paths.get(filePath), Paths.get(destinationPath));
-        } catch (Exception e) {
-            if (!Files.exists(Paths.get(destinationPath)) &
-                    arguments[2].charAt(arguments[2].length() - 1) == '/') {
-                System.out.println(name + "; cannot create regular file \'" + arguments[2] + "\'" +
+            Files.copy(Paths.get(startPath), Paths.get(destinationPath), StandardCopyOption.REPLACE_EXISTING);
+        }
+        catch (Exception e) {
+            System.out.println(name + "; cannot create regular file \'" + arguments[2] + "\'" +
                         ": Not a directory");
-            } else
-                System.out.println("IOException");
             return false;
         }
         return true;
     }
 
     private boolean recursiveCopy(String[] arguments) {
-        String filePath = arguments[2];
-        String destinationPath = arguments[3];
-        if (arguments[2].charAt(0) != '/')
-            filePath = System.getProperty("user.dir") + "/" + filePath;
-        if (arguments[3].charAt(0) != '/')
-            destinationPath = System.getProperty("user.dir") + "/" + destinationPath;
+        Path startPath = Paths.get(FilesFunction.toAbsolutePathString(arguments[2]));
+        Path destinationPath = Paths.get(FilesFunction.toAbsolutePathString(arguments[3]));
 
+        destinationPath = destinationPath.resolve(startPath.getFileName()).normalize();
+
+        System.out.println(destinationPath.toString());
         FileVisitorCopy myFileVisitorCopy;
-        myFileVisitorCopy = new FileVisitorCopy();
-        myFileVisitorCopy.setDestinationPath(destinationPath);
+        myFileVisitorCopy = new FileVisitorCopy(startPath, destinationPath);
+
         if (myFileVisitorCopy != null){
             try {
-                Files.walkFileTree(Paths.get(filePath), myFileVisitorCopy);
+                Files.createDirectory(destinationPath);
+                Files.walkFileTree(startPath, myFileVisitorCopy);
             }
             catch(IOException e) {
                 System.out.println("Error while walkingFileTree");

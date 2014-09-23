@@ -11,11 +11,12 @@ public class CommandMkdir extends Command{
         name = "mkdir";
         numberOfArguments = 2;
     }
+    @Override
     public boolean run(String[] arguments){
         if (arguments.length != numberOfArguments)
             return false;
         try{
-            Files.createDirectory(Paths.get(System.getProperty("user.dir") + "/" + arguments[1]));
+            Files.createDirectory(Paths.get(FilesFunction.toAbsolutePathString(arguments[1])));
         }
         catch (Exception e){
             System.out.println("IOException");

@@ -15,24 +15,19 @@ public class CommandMv extends Command{
     public boolean run(String[] arguments){
         if (arguments.length != numberOfArguments)
             return false;
-        String startPath = arguments[1];
-        String destinationPath = arguments[2];
-        String[] parsedFile = arguments[1].split("/");
+        String startPath = FilesFunction.toAbsolutePathString(arguments[1]);
+        String destinationPath = FilesFunction.toAbsolutePathString(arguments[2]);
+        String[] parsedFile = arguments[1].split(System.getProperty("file.separator"));
         String fileName = parsedFile[parsedFile.length - 1];
-
-        if (arguments[1].charAt(0) != '/')
-            startPath = System.getProperty("user.dir") + "/" + startPath;
-
-        if (arguments[2].charAt(0) != '/')
-            destinationPath = System.getProperty("user.dir") + "/" + destinationPath;
 
         if (!Files.exists(Paths.get(startPath))){
             System.out.println(name + ": cannot stat \'" + fileName + "\': No such file or directory");
             return false;
         }
 
-        if (Files.isDirectory(Paths.get(destinationPath)))
-            destinationPath = destinationPath + "/" + fileName;
+        if (Files.isDirectory(Paths.get(destinationPath))) {
+            destinationPath = destinationPath + System.getProperty("file.separator") + fileName;
+        }
         else if(destinationPath.charAt(destinationPath.length() - 1) == '/'){
             System.out.println(name + ": cannot move \'" + fileName + "\' to \'" +
                                arguments[2] + "\': Not a directory");
