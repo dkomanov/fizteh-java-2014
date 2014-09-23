@@ -6,7 +6,8 @@ package ru.fizteh.fivt.students.test.shell;
 public class ShellMain {
 
     public static void main(String[] args) {
-        System.out.println("not working");
+        System.out.println("It works!");
+
         System.exit(1);
     }
 }
