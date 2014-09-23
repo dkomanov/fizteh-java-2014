@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.dsalnikov.shell.Commands;
 
-import ru.fizteh.fivt.students.dsalnikov.Utils.ShellState;
+import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
 import java.io.File;

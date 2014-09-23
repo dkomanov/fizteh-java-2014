@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.dsalnikov.shell.Commands;
 
-import ru.fizteh.fivt.students.dsalnikov.Utils.StringUtils;
+import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
 import java.io.File;
