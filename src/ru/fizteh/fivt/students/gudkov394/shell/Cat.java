@@ -6,15 +6,15 @@ import java.util.Scanner;
 
 /*проверено, работает*/
 public class Cat {
-    public Cat(String[] current_args, CurrentDirectory cd) {
-        if (current_args.length > 2) {
+    public Cat(String[] currentArgs, CurrentDirectory cd) {
+        if (currentArgs.length > 2) {
             System.err.println("extra arguments for Cat");
             System.exit(1);
         }
         String read = "";
-        File f = new File(cd.getCurrentDirectory(), current_args[1]);
+        File f = new File(cd.getCurrentDirectory(), currentArgs[1]);
         if (!f.exists()) {
-            System.err.println("File is not exists" + current_args[1]);
+            System.err.println("File is not exists" + currentArgs[1]);
             System.exit(2);
         }
         try {

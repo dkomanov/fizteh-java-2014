@@ -9,19 +9,19 @@ import java.nio.file.StandardCopyOption;
 /*работает*/
 
 public class MoveFile {
-    public MoveFile(String[] current_args, CurrentDirectory cd) {
-        if (current_args.length > 3) {
+    public MoveFile(String[] currentArgs, CurrentDirectory cd) {
+        if (currentArgs.length > 3) {
             System.err.println("extra arguments for mv");
             System.exit(1);
         }
         CopyOption[] options = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
-        File from = new File(current_args[1]);
-        File to = new File(current_args[2]);
+        File from = new File(currentArgs[1]);
+        File to = new File(currentArgs[2]);
         if (!from.isAbsolute()) {
-            from = new File(cd.getCurrentDirectory(), current_args[1]);
+            from = new File(cd.getCurrentDirectory(), currentArgs[1]);
         }
         if (!to.isAbsolute()) {
-            to = new File(cd.getCurrentDirectory(), current_args[2]);
+            to = new File(cd.getCurrentDirectory(), currentArgs[2]);
         }
         to = new File(to.getAbsolutePath(), from.getName());
         try {

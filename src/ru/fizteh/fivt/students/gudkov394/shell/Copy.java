@@ -7,7 +7,7 @@ import java.nio.file.StandardCopyOption;
 /*работает*/
 
 public class Copy {
-    private void copy_recursive(File from, File to) {
+    private void copyRecursive(File from, File to) {
         try {
             CopyOption[] options = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
             Files.copy(from.toPath(), to.toPath(), options);
@@ -19,8 +19,8 @@ public class Copy {
         if (from.isDirectory()) {
             try {
                 for (File f : from.listFiles()) {
-                    File new_to = new File(to.getAbsolutePath(), f.getName());
-                    copy_recursive(f, new_to);
+                    File newTo = new File(to.getAbsolutePath(), f.getName());
+                    copyRecursive(f, newTo);
                 }
             } catch (NullPointerException e1) {
                 System.err.println("Sorry, problem with ListFiles in copy_recursive");
@@ -29,33 +29,33 @@ public class Copy {
         }
     }
 
-    public Copy(String[] current_args, CurrentDirectory cd) {
-        if (current_args.length > 4) {
+    public Copy(String[] currentArgs, CurrentDirectory cd) {
+        if (currentArgs.length > 4) {
             System.out.println("more than 4 arguments to cp");
             System.exit(1);
         }
-        File from = new File(current_args[1]);
-        File to = new File(current_args[2]);
+        File from = new File(currentArgs[1]);
+        File to = new File(currentArgs[2]);
         if (!from.isAbsolute()) {
-            from = new File(cd.getCurrentDirectory(), current_args[1]);
+            from = new File(cd.getCurrentDirectory(), currentArgs[1]);
         }
         if (!to.isAbsolute()) {
-            to = new File(cd.getCurrentDirectory(), current_args[2]);
+            to = new File(cd.getCurrentDirectory(), currentArgs[2]);
         }
-        if (current_args.length == 3) {
+        if (currentArgs.length == 3) {
             if (from.isFile() && to.isDirectory()) {
                 try {
-                    File new_to = new File(to.getAbsolutePath(), from.getName());
-                    Files.copy(from.toPath(), new_to.toPath());
+                    File newTo = new File(to.getAbsolutePath(), from.getName());
+                    Files.copy(from.toPath(), newTo.toPath());
                 } catch (IOException e2) {
                     System.err.println("problem with copy");
                     System.exit(3);
                 }
             } else if (from.isDirectory() && to.isDirectory()) {
-                File new_to = new File(to.getAbsolutePath(), from.getName());
+                File newTo = new File(to.getAbsolutePath(), from.getName());
                 try {
                     CopyOption[] options = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
-                    Files.copy(from.toPath(), new_to.toPath(), options);
+                    Files.copy(from.toPath(), newTo.toPath(), options);
                 } catch (IOException e2) {
                     System.err.println("problem with copy");
                     System.exit(3);
@@ -64,17 +64,17 @@ public class Copy {
                 System.err.println("fail with copy directory");
                 System.exit(2);
             }
-        } else if (current_args.length == 4 && current_args[1].equals("-r")) {
+        } else if (currentArgs.length == 4 && currentArgs[1].equals("-r")) {
             if (from.isDirectory() && to.isDirectory()) {
-                File new_to = new File(to.getAbsolutePath(), from.getName());
+                File newTo = new File(to.getAbsolutePath(), from.getName());
                 try {
                     CopyOption[] options = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
-                    Files.copy(from.toPath(), new_to.toPath(), options);
+                    Files.copy(from.toPath(), newTo.toPath(), options);
                 } catch (IOException e2) {
                     System.err.println("problem with copy");
                     System.exit(3);
                 }
-                copy_recursive(from, new_to);
+                copyRecursive(from, newTo);
             } else {
                 System.err.println("fail with copy directory maybe -r is excess");
                 System.exit(2);

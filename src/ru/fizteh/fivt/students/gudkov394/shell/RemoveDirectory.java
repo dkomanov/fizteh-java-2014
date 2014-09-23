@@ -22,19 +22,19 @@ public class RemoveDirectory {
         }
     }
 
-    public RemoveDirectory(String[] current_args, CurrentDirectory cd) {
-        if (current_args.length > 3) {
+    public RemoveDirectory(String[] currentArgs, CurrentDirectory cd) {
+        if (currentArgs.length > 3) {
             System.err.println("more then 3 arguments to rm");
             System.exit(1);
-        } else if (current_args.length == 2) {
-            File f = new File(cd.getCurrentDirectory(), current_args[1]);
+        } else if (currentArgs.length == 2) {
+            File f = new File(cd.getCurrentDirectory(), currentArgs[1]);
             if (!f.exists()) {
                 System.err.println("This directory doesn't exist");
                 System.exit(3);
             }
             f.delete();
-        } else if (current_args[1].equals("-r")) {
-            File f = new File(cd.getCurrentDirectory(), current_args[2]);
+        } else if (currentArgs[1].equals("-r")) {
+            File f = new File(cd.getCurrentDirectory(), currentArgs[2]);
             if (!f.exists()) {
                 System.err.println("This directory doesn't exist");
                 System.exit(3);
