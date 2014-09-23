@@ -35,12 +35,16 @@ public class Shell<State extends ShellState> {
         String concatenatedcmds = join(Arrays.asList(args), " ");
         String[] commands = concatenatedcmds.split("\\s*;\\s*");
         for (String command : commands) {
-            String[] cmdArgs = command.split("\\s+");
-            Command c = commandMap.get(cmdArgs[0]);
-            if (c == null) {
-                throw new IllegalArgumentException("no such Command declared: " + cmdArgs[0]);
+            String[] cmdArgs = command.trim().split("\\s+");
+            if(cmdArgs.length == 0 || cmdArgs[0].equals("")) {
+                continue;
+            } else {
+                Command c = commandMap.get(cmdArgs[0]);
+                if (c == null) {
+                    throw new IllegalArgumentException("no such Command declared: " + cmdArgs[0]);
+                }
+                c.execute(cmdArgs);
             }
-            c.execute(cmdArgs);
         }
     }
 
