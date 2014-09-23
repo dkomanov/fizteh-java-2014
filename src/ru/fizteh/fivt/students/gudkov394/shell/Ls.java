@@ -4,8 +4,8 @@ import java.io.File;
 
 //работает
 public class Ls {
-    public Ls(String[] current_args, CurrentDirectory cd) {
-        if (current_args.length > 1) {
+    public Ls(String[] currentArgs, CurrentDirectory cd) {
+        if (currentArgs.length > 1) {
             System.err.println("extra arguments for ls");
             System.exit(1);
         }
