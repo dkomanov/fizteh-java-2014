@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.dsalnikov.Utils;
+package ru.fizteh.fivt.students.dsalnikov.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;

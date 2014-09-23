@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.dsalnikov.shell.Commands;
+package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 

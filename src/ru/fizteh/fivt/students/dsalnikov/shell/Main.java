@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.dsalnikov.shell;
 
-import ru.fizteh.fivt.students.dsalnikov.shell.Commands.*;
+import ru.fizteh.fivt.students.dsalnikov.shell.commands.*;
 import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 
 import java.io.IOException;
@@ -13,26 +13,26 @@ public class Main {
         ShellState s = new ShellState();
         Shell<ShellState> shell = new Shell<ShellState>(s);
 
-        ArrayList<Command> Commands = new ArrayList();
+        ArrayList<Command> commands = new ArrayList();
         RmCommand rm = new RmCommand(shell);
-        Commands.add(rm);
+        commands.add(rm);
         CpCommand cp = new CpCommand(shell);
-        Commands.add(cp);
+        commands.add(cp);
         LsCommand dir = new LsCommand(shell);
-        Commands.add(dir);
+        commands.add(dir);
         ExitCommand exit = new ExitCommand(shell);
-        Commands.add(exit);
+        commands.add(exit);
         MvCommand mv = new MvCommand(shell);
-        Commands.add(mv);
+        commands.add(mv);
         CdCommand cd = new CdCommand(shell);
-        Commands.add(cd);
+        commands.add(cd);
         PwdCommand pwd = new PwdCommand(shell);
-        Commands.add(pwd);
+        commands.add(pwd);
         MkdirCommand mkdir = new MkdirCommand(shell);
-        Commands.add(mkdir);
+        commands.add(mkdir);
         CatCommand cat = new CatCommand(shell);
-        Commands.add(cat);
-        shell.setCommands(Commands);
+        commands.add(cat);
+        shell.setCommands(commands);
 
         if (args.length == 0) {
             try {

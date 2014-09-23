@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.dsalnikov.shell;
 
-import ru.fizteh.fivt.students.dsalnikov.shell.Commands.Command;
+import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 
 import java.io.FileNotFoundException;

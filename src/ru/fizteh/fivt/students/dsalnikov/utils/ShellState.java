@@ -1,9 +1,8 @@
-package ru.fizteh.fivt.students.dsalnikov.Utils;
+package ru.fizteh.fivt.students.dsalnikov.utils;
 
 
 public class ShellState {
-    String state;
-    Object object;
+    private String state;
 
     public ShellState() {
         state = System.getProperty("user.home");
