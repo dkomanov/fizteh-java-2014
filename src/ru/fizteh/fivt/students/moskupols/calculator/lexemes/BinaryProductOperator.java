@@ -16,6 +16,6 @@ final public class BinaryProductOperator extends BinaryOperator {
 
     @Override
     public String toString() {
-        return "+";
+        return "*";
     }
 }

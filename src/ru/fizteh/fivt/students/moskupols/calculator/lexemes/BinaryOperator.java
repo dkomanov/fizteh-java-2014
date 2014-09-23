@@ -11,7 +11,7 @@ abstract public class BinaryOperator extends Operator {
     protected abstract Operand apply(Operand left, Operand right) throws Exception;
 
     @Override
-    public void apply(Stack<Operand> operands) throws Exception {
+    public final void apply(Stack<Operand> operands) throws Exception {
         try {
             Operand right = operands.pop();
             Operand left = operands.pop();

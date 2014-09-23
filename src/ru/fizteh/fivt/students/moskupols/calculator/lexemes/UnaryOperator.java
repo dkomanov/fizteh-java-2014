@@ -11,7 +11,7 @@ abstract public class UnaryOperator extends Operator {
     protected abstract Operand apply(Operand o);
 
     @Override
-    public void apply(Stack<Operand> operands) throws Exception {
+    public final void apply(Stack<Operand> operands) throws Exception {
         try {
             Operand o = operands.pop();
             operands.push(apply(o));
