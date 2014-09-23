@@ -9,7 +9,9 @@ import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
 
 public class Shell<State extends ShellState> {
+
     private ShellState state;
+    private Map<String, Command> commandMap = new HashMap<String, Command>();
 
     //годный шелл
     public Shell() {
@@ -19,8 +21,6 @@ public class Shell<State extends ShellState> {
     public Shell(State o) {
         state = o;
     }
-
-    private Map<String, Command> commandMap = new HashMap<String, Command>();
 
     public void setCommands(List<Command> cs) throws IllegalArgumentException {
         if (cs == null) {
@@ -36,7 +36,7 @@ public class Shell<State extends ShellState> {
         String[] commands = concatenatedcmds.split("\\s*;\\s*");
         for (String command : commands) {
             String[] cmdArgs = command.trim().split("\\s+");
-            if(cmdArgs.length == 0 || cmdArgs[0].equals("")) {
+            if (cmdArgs.length == 0 || cmdArgs[0].equals("")) {
                 continue;
             } else {
                 Command c = commandMap.get(cmdArgs[0]);

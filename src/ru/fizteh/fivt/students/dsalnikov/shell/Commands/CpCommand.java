@@ -33,7 +33,7 @@ public class CpCommand implements Command {
                     File tempDestination = new File(destination.getAbsolutePath(), file.getName());
                     Files.copy(file.toPath(), tempDestination.toPath());
                 } else {
-                    File newDir = new File(destination, file.getName());
+                    File newDir = new File(destination, file.getName()).toPath().normalize().toFile();
                     newDir = newDir.toPath().normalize().toFile();
                     if (!newDir.getCanonicalFile().mkdirs()) {
                         throw new Exception("error creating directory");

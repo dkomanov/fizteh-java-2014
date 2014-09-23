@@ -10,7 +10,7 @@ import java.nio.file.NoSuchFileException;
 public class CdCommand implements Command {
 
     private Shell link;
-    
+
     public CdCommand(Shell s) {
         link = s;
     }
