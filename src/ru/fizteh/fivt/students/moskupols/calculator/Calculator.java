@@ -17,8 +17,14 @@ import java.util.StringTokenizer;
 class Calculator {
 
     public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-        String line = scan.nextLine();
+//        Scanner scan = new Scanner(System.in);
+        String line = null;
+        try {
+            line = args[0];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Too few arguments: I expect the expression to be the first argument");
+            return;
+        }
 
         try {
             double result = calculate(line);
