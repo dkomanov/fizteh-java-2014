@@ -12,7 +12,7 @@ final public class BinaryPlusOperator extends BinaryOperator {
 
     @Override
     public Operand apply(Operand left, Operand right) throws Exception {
-        return new Operand(left.value + right.value);
+        return new Operand(left.value.add(right.value));
     }
 
     @Override

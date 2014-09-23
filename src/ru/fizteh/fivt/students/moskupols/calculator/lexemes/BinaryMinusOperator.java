@@ -11,7 +11,7 @@ final public class BinaryMinusOperator extends BinaryOperator {
 
     @Override
     public Operand apply(Operand left, Operand right) throws Exception {
-        return new Operand(left.value - right.value);
+        return new Operand(left.value.subtract(right.value));
     }
 
     @Override

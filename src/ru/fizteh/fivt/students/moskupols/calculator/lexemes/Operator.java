@@ -11,13 +11,13 @@ abstract public class Operator {
     private final static HashMap<String, Operator> unaries, binaries, parentheses;
 
     static {
-        unaries = new HashMap<String, Operator>();
+        unaries = new HashMap<>();
         unaries.put("+", new UnaryPlusOperator());
         unaries.put("-", new UnaryMinusOperator());
     }
 
     static {
-        binaries = new HashMap<String, Operator>();
+        binaries = new HashMap<>();
         binaries.put("+", new BinaryPlusOperator());
         binaries.put("-", new BinaryMinusOperator());
         binaries.put("*", new BinaryProductOperator());
@@ -25,7 +25,7 @@ abstract public class Operator {
     }
 
     static {
-        parentheses = new HashMap<String, Operator>();
+        parentheses = new HashMap<>();
         parentheses.put("(", new ParenthesisOpenOperator("("));
 
         parentheses.put(")", new ParenthesisCloseOperator(")"));

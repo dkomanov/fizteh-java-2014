@@ -12,7 +12,7 @@ final public class UnaryMinusOperator extends UnaryOperator {
 
     @Override
     public Operand apply(Operand o) {
-        return new Operand(-o.value);
+        return new Operand(o.value.negate());
     }
 
     @Override
