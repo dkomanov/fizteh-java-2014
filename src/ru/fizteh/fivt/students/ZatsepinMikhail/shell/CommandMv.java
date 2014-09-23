@@ -11,6 +11,7 @@ public class CommandMv extends Command{
         name = "mv";
         numberOfArguments = 3;
     }
+    @Override
     public boolean run(String[] arguments){
         if (arguments.length != numberOfArguments)
             return false;

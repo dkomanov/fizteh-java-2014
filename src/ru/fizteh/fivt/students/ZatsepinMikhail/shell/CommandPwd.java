@@ -1,9 +1,5 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 /**
  * Created by mikhail on 20.09.14.
  */
@@ -18,8 +14,7 @@ public class CommandPwd extends Command{
         try{
             System.out.println(System.getProperty("user.dir"));
         }
-        catch (Exception e)
-        {
+        catch (Exception e){
             System.out.println("IOException");
         }
         return true;

@@ -1,9 +1,5 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 
-import sun.management.FileSystem;
-
-import java.io.File;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -21,8 +17,7 @@ public class CommandMkdir extends Command{
         try{
             Files.createDirectory(Paths.get(System.getProperty("user.dir") + "/" + arguments[1]));
         }
-        catch (Exception e)
-        {
+        catch (Exception e){
             System.out.println("IOException");
         }
         return true;

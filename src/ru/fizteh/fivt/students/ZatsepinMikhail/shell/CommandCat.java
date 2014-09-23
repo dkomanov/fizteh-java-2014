@@ -12,13 +12,12 @@ public class CommandCat extends Command{
         name = "cat";
         numberOfArguments = 2;
     }
+    @Override
     public boolean run(String[] arguments)
     {
         if (arguments.length != numberOfArguments)
             return false;
         try{
-            //System.out.println("*      " + arguments[0]);
-            //System.out.println("*      " + arguments[1]);
             Files.copy(FileSystems.getDefault().getPath(arguments[1]), System.out);
         }
         catch(Exception e){
@@ -26,7 +25,5 @@ public class CommandCat extends Command{
         }
         return true;
     }
-
-
 }
 

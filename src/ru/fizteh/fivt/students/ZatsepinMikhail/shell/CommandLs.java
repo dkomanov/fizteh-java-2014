@@ -11,6 +11,7 @@ public class CommandLs extends Command {
         name = "ls";
         numberOfArguments = 1;
     }
+    @Override
     public boolean run(String[] arguments){
         String[] listOfFiles = new File(System.getProperty("user.dir")).list();
         for (String oneFileName: listOfFiles){
