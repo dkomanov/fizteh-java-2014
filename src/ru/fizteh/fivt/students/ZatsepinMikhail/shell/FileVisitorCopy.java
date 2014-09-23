@@ -14,13 +14,14 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class FileVisitorCopy extends SimpleFileVisitor<Path> {
     private final Path startPath;
     private final Path destinationPath;
-    public FileVisitorCopy(Path newStartPath, Path newDestinationPath){
+
+    public FileVisitorCopy(Path newStartPath, Path newDestinationPath) {
         startPath = newStartPath;
         destinationPath = newDestinationPath;
     }
 
     @Override
-    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attr){
+    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attr) {
         Path newFilePath = destinationPath.resolve(startPath.relativize(filePath));
         try {
             Files.copy(filePath, newFilePath);
@@ -29,36 +30,22 @@ public class FileVisitorCopy extends SimpleFileVisitor<Path> {
         }
         return CONTINUE;
     }
+
     @Override
-    public FileVisitResult visitFileFailed(Path filePath, IOException exc){
+    public FileVisitResult visitFileFailed(Path filePath, IOException exc) {
         System.err.println("Error occuried while visitтпg file");
         return CONTINUE;
     }
 
     @Override
-    public FileVisitResult preVisitDirectory(Path dirPath, BasicFileAttributes attr){
+    public FileVisitResult preVisitDirectory(Path dirPath, BasicFileAttributes attr) {
         System.out.println(dirPath.toString() + " - pre");
         Path newDirPath = destinationPath.resolve(startPath.relativize(dirPath));
-        try{
+        try {
             Files.createDirectory(newDirPath);
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             System.out.println("IOException " + newDirPath.toString());
         }
         return CONTINUE;
     }
-
-    /*public FileVisitResult postVisitDirectory(Path directoryPath, BasicFileAttributes attr){
-        System.out.println(directoryPath.toString() + " - post");
-        destinationPath = Paths.get(destinationPath).getParent().toString();
-        try{
-            System.out.println(destinationPath + " - creating directory (Before)");
-            Files.createDirectory(Paths.get(destinationPath));
-            System.out.println(destinationPath + " - creating directory (After)");
-        }
-        catch(IOException e){
-            System.out.println("IOException " + directoryPath.toAbsolutePath().toString());
-        }
-        return CONTINUE;
-    }*/
 }

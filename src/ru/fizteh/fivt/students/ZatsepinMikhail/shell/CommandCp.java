@@ -27,33 +27,32 @@ public class CommandCp extends Command {
     }
 
     private boolean generalCopy(String[] arguments) {
-        String startPath = FilesFunction.toAbsolutePathString(arguments[1]);
-        String destinationPath = FilesFunction.toAbsolutePathString(arguments[2]);
-        String[] parsedFileName = arguments[1].split("/");
-        String fileName = parsedFileName[parsedFileName.length - 1];
+        Path startPath = FilesFunction.toAbsolutePathString(arguments[1]);
+        Path destinationPath = FilesFunction.toAbsolutePathString(arguments[2]);
+        Path fileName = Paths.get(arguments[1]).getFileName();
 
-        if (Files.isDirectory(Paths.get(startPath))){
+        if (Files.isDirectory(startPath)){
             System.out.println(name + ": omitting directory \'" + arguments[1] + "\'");
             return false;
         }
 
-        if (!Files.exists(Paths.get(startPath))) {
+        if (!Files.exists(startPath)) {
             System.out.println(name + ": cannot copy \'" + arguments[1] + "\'" +
                     ": No such file or directory");
             return false;
         }
 
-        if (Files.isDirectory(Paths.get(destinationPath))){
-            destinationPath = destinationPath + System.getProperty("file.separator") + fileName;
+        if (Files.isDirectory(destinationPath)){
+            destinationPath = destinationPath.resolve(fileName);
         }
-        else if (destinationPath.charAt(destinationPath.length() - 1) == '/') {
+        else if (destinationPath.toString().charAt(destinationPath.toString().length() - 1) == '/') {
             System.out.println(name + ": cannot copy \'" + fileName + "\' to \'" +
                     arguments[2] + "\': Not a directory");
             return false;
         }
 
         try {
-            Files.copy(Paths.get(startPath), Paths.get(destinationPath), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(startPath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (Exception e) {
             System.out.println(name + "; cannot create regular file \'" + arguments[2] + "\'" +
@@ -64,12 +63,10 @@ public class CommandCp extends Command {
     }
 
     private boolean recursiveCopy(String[] arguments) {
-        Path startPath = Paths.get(FilesFunction.toAbsolutePathString(arguments[2]));
-        Path destinationPath = Paths.get(FilesFunction.toAbsolutePathString(arguments[3]));
-
+        Path startPath = FilesFunction.toAbsolutePathString(arguments[2]);
+        Path destinationPath = FilesFunction.toAbsolutePathString(arguments[3]);
         destinationPath = destinationPath.resolve(startPath.getFileName()).normalize();
 
-        System.out.println(destinationPath.toString());
         FileVisitorCopy myFileVisitorCopy;
         myFileVisitorCopy = new FileVisitorCopy(startPath, destinationPath);
 

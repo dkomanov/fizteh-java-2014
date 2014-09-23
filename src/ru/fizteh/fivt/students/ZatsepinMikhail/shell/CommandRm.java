@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 /**
  * Created by mikhail on 20.09.14.
@@ -25,14 +25,14 @@ public class CommandRm extends Command {
 
     }
     private boolean generalDelete(String[] arguments){
-        String filePath = FilesFunction.toAbsolutePathString(arguments[1]);
+        Path filePath = FilesFunction.toAbsolutePathString(arguments[1]);
         try {
-            if (!Files.deleteIfExists(Paths.get(filePath)))
+            if (!Files.deleteIfExists(filePath))
                 System.out.println(name + ": cannot remove \'" + arguments[1] + "\'" +
                     ": No such file or directory");
         }
         catch(Exception e){
-            if (Files.isDirectory(Paths.get(filePath)))
+            if (Files.isDirectory(filePath))
                 System.out.println(name + "; cannot remove \'" + arguments[1] + "\'" +
                      ": Is a directory");
             else
@@ -43,14 +43,14 @@ public class CommandRm extends Command {
     }
 
     private boolean recursiveDelete(String[] arguments){
-        String filePath = FilesFunction.toAbsolutePathString(arguments[2]);
+        Path dirPath = FilesFunction.toAbsolutePathString(arguments[2]);
 
         FileVisitorDelete myFileVisitorDelete;
         myFileVisitorDelete = new FileVisitorDelete();
 
         if (myFileVisitorDelete != null){
             try {
-                Files.walkFileTree(Paths.get(filePath), myFileVisitorDelete);
+                Files.walkFileTree(dirPath, myFileVisitorDelete);
             }
             catch(IOException e) {
                 System.out.println("Error while walkingFileTree");

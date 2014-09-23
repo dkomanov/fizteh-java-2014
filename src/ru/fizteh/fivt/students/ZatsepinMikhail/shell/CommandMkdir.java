@@ -16,7 +16,7 @@ public class CommandMkdir extends Command{
         if (arguments.length != numberOfArguments)
             return false;
         try{
-            Files.createDirectory(Paths.get(FilesFunction.toAbsolutePathString(arguments[1])));
+            Files.createDirectory(FilesFunction.toAbsolutePathString(arguments[1]));
         }
         catch (Exception e){
             System.out.println("IOException");

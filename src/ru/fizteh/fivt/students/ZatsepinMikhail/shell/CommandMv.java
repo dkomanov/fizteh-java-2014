@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.Path;
 
 /**
  * Created by mikhail on 20.09.14.
@@ -15,27 +16,26 @@ public class CommandMv extends Command{
     public boolean run(String[] arguments){
         if (arguments.length != numberOfArguments)
             return false;
-        String startPath = FilesFunction.toAbsolutePathString(arguments[1]);
-        String destinationPath = FilesFunction.toAbsolutePathString(arguments[2]);
-        String[] parsedFile = arguments[1].split(System.getProperty("file.separator"));
-        String fileName = parsedFile[parsedFile.length - 1];
+        Path startPath = FilesFunction.toAbsolutePathString(arguments[1]);
+        Path destinationPath = FilesFunction.toAbsolutePathString(arguments[2]);
+        Path fileName = startPath.getFileName();
 
-        if (!Files.exists(Paths.get(startPath))){
-            System.out.println(name + ": cannot stat \'" + fileName + "\': No such file or directory");
+        if (!Files.exists(startPath)){
+            System.out.println(name + ": cannot stat \'" + arguments[1] + "\': No such file or directory");
             return false;
         }
 
-        if (Files.isDirectory(Paths.get(destinationPath))) {
-            destinationPath = destinationPath + System.getProperty("file.separator") + fileName;
+        if (Files.isDirectory(destinationPath)) {
+            destinationPath = destinationPath.resolve(fileName);
         }
-        else if(destinationPath.charAt(destinationPath.length() - 1) == '/'){
-            System.out.println(name + ": cannot move \'" + fileName + "\' to \'" +
+        else if(destinationPath.toString().charAt(destinationPath.toString().length() - 1) == '/'){
+            System.out.println(name + ": cannot move \'" + arguments[1] + "\' to \'" +
                                arguments[2] + "\': Not a directory");
             return false;
         }
 
         try{
-            Files.move(Paths.get(startPath), Paths.get(destinationPath));
+            Files.move(startPath, destinationPath);
         }
         catch(Exception e){
             System.out.println("IOException");

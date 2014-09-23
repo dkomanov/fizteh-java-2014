@@ -19,7 +19,7 @@ public class CommandCd extends Command {
             System.setProperty("user.dir", "/");
             return true;
         }
-        Path newWorkDirectory = Paths.get(FilesFunction.toAbsolutePathString(arguments[1]));
+        Path newWorkDirectory = FilesFunction.toAbsolutePathString(arguments[1]);
         if (Files.isDirectory(newWorkDirectory)){
             System.setProperty("user.dir", newWorkDirectory.toString());
             return true;
