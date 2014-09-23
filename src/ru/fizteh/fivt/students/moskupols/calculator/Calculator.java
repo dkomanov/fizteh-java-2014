@@ -79,7 +79,7 @@ class Calculator {
             }
         }
         if (!operators.isEmpty())
-            throw new Exception("Opening parenthesis '" + operators.peek().toString() + "' has no complement");
+            throw new Exception("Opening parenthesis '(' has no complement");
         if (operands.size() > 1)
             throw new Exception("Some of the numbers are not used in operations");
         if (operands.isEmpty())
