@@ -2,17 +2,13 @@ package ru.fizteh.fivt.students.maxim_rep.shell;
 
 public class OsData {
 
-	public static String backslash = "/";
 	public static String root = "/";
 
 	public static void setOsSettings() {
 		String os = getOsType();
 		if (os.equals("win")) {
-			backslash = "\\";
 			root = "C:\\";
-			Shell.currentDrive = "C";
 		} else {
-			backslash = "/";
 			root = "/";
 		}
 	}

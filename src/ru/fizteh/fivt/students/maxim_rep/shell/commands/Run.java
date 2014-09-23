@@ -18,8 +18,8 @@ public class Run implements ShellCommand {
 	public static void recursiveRm(File f, String Path) {
 		String[] files = f.list();
 		for (int i = 0; i < files.length; ++i) {
-			File currentFile = new File(f.getPath() + OsData.backslash
-					+ files[i]);
+			File currentFile = new File(f.getPath()
+					+ System.getProperty("file.separator") + files[i]);
 			if (currentFile.isDirectory()) {
 				recursiveRm(currentFile, currentFile.getPath());
 			}

@@ -46,7 +46,8 @@ public class Cp implements ShellCommand {
 					return false;
 				}
 			else if (fileNew.isDirectory())
-				fileNew = new File(destination + OsData.backslash
+				fileNew = new File(destination
+						+ System.getProperty("file.separator")
 						+ fileToCopy.getName());
 			try {
 				fileNew.mkdir();
@@ -73,19 +74,22 @@ public class Cp implements ShellCommand {
 		String[] filesInDir = fileToCopy.list();
 		for (int i = 0; i < filesInDir.length; ++i) {
 			File current = new File(fileToCopy.getAbsoluteFile()
-					+ OsData.backslash + filesInDir[i]);
+					+ System.getProperty("file.separator") + filesInDir[i]);
 			if (current.isFile()) {
-				copyFile(fileToCopy.getAbsolutePath() + OsData.backslash
-						+ filesInDir[i], filedestination.getAbsolutePath());
+				copyFile(
+						fileToCopy.getAbsolutePath()
+								+ System.getProperty("file.separator")
+								+ filesInDir[i],
+						filedestination.getAbsolutePath());
 			} else {
 				File tmp = new File(filedestination.getAbsoluteFile()
-						+ OsData.backslash + filesInDir[i]);
+						+ System.getProperty("file.separator") + filesInDir[i]);
 				tmp.mkdir();
 
 				File push = new File(filedestination.getAbsolutePath()
-						+ OsData.backslash + filesInDir[i]);
+						+ System.getProperty("file.separator") + filesInDir[i]);
 				File ctpush = new File(fileToCopy.getAbsolutePath()
-						+ OsData.backslash + filesInDir[i]);
+						+ System.getProperty("file.separator") + filesInDir[i]);
 				copyrecursive(ctpush, push);
 			}
 		}
@@ -115,7 +119,8 @@ public class Cp implements ShellCommand {
 					return false;
 				}
 			else if (fileNew.isDirectory())
-				fileNew = new File(destination + OsData.backslash
+				fileNew = new File(destination
+						+ System.getProperty("file.separator")
 						+ fileToCopy.getName());
 			try {
 				Files.copy(fileToCopy.toPath(), fileNew.toPath());

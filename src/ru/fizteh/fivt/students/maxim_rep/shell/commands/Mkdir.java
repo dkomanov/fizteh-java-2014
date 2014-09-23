@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-import ru.fizteh.fivt.students.maxim_rep.shell.*;
-
 import java.io.*;
 
 public class Mkdir implements ShellCommand {
@@ -17,7 +15,8 @@ public class Mkdir implements ShellCommand {
 	@Override
 	public boolean execute() {
 
-		File f = new File(currentPath + OsData.backslash + FileName);
+		File f = new File(currentPath + System.getProperty("file.separator")
+				+ FileName);
 		if (f.mkdir()) {
 			System.out.println("Directory " + FileName + " created!");
 		} else {

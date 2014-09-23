@@ -7,7 +7,6 @@ import ru.fizteh.fivt.students.maxim_rep.shell.commands.*;
 public class Shell {
 
 	public static String currentPath;
-	public static String currentDrive = "/";
 
 	public static void main(String[] args) throws IOException {
 		OsData.setOsSettings();
