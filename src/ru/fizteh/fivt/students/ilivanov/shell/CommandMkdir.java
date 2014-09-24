@@ -7,12 +7,13 @@ import java.util.ArrayList;
 public class CommandMkdir implements Command {
     private ArrayList<String> parameters;
 
-    CommandMkdir(ArrayList<String> parameters) throws Exception{
+    CommandMkdir(ArrayList<String> parameters) throws Exception {
         if (parameters.size() != 2)
             throw new Exception("wrong number of parameters");
         else
             this.parameters = new ArrayList<>(parameters);
     }
+
     @Override
     public int execute() {
         try {
@@ -20,11 +21,11 @@ public class CommandMkdir implements Command {
             path = path.resolve(parameters.get(1));
             File newDir = path.toFile();
             if (!newDir.mkdir()) {
-                System.err.println("mkdir: \""+parameters.get(1)+"\": hasn't been created");
+                System.err.println("mkdir: \"" + parameters.get(1) + "\": hasn't been created");
                 return -1;
             }
         } catch (Exception e) {
-            System.err.println("mkdir: \""+parameters.get(1)+"\": "+e.getMessage());
+            System.err.println("mkdir: \"" + parameters.get(1) + "\": " + e.getMessage());
             return -1;
         }
         return 0;

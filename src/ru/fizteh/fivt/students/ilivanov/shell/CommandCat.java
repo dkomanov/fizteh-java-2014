@@ -16,7 +16,7 @@ public class CommandCat implements Command {
     }
 
     @Override
-    public int execute(){
+    public int execute() {
         File file;
         try {
             Path path = Paths.get(Shell.currentDirectory.getCanonicalPath());
@@ -26,11 +26,11 @@ public class CommandCat implements Command {
                 System.err.println("cat: \"" + parameters.get(1) + "\": no such file");
                 return -1;
             }
-        } catch (Exception e){
-            System.err.println("cat: "+e.getMessage());
+        } catch (Exception e) {
+            System.err.println("cat: " + e.getMessage());
             return -1;
         }
-        try( BufferedReader br = new BufferedReader(new FileReader(file)) ) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while (true) {
                 line = br.readLine();
@@ -39,7 +39,7 @@ public class CommandCat implements Command {
                 else
                     break;
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             System.err.println(e.getMessage());
         }
 

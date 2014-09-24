@@ -4,15 +4,16 @@ import java.util.ArrayList;
 
 public class CommandPwd implements Command {
 
-    CommandPwd(ArrayList<String> parameters) throws Exception{
+    CommandPwd(ArrayList<String> parameters) throws Exception {
         if (parameters.size() != 1)
             throw new Exception("wrong number of parameters");
     }
+
     @Override
     public int execute() {
-        try{
+        try {
             System.out.println(Shell.currentDirectory);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.err.println("Current directory error");
             return -1;
         }

@@ -13,7 +13,7 @@ class Shell {
     public static File currentDirectory = new File(System.getProperty("user.home"));
     private int exitCode = 0;
 
-    private ArrayList<Command> parseCommands(StringBuilder source){
+    private ArrayList<Command> parseCommands(StringBuilder source) {
         for (int i = 0; i < source.length(); i++) {
             if (source.charAt(i) == ';') {
                 source.insert(i, ' ');
@@ -22,7 +22,7 @@ class Shell {
         }
         String src = source.toString();
         src = src.replaceAll("\\s+$", "");
-        if (!src.isEmpty() && src.charAt(src.length()-1) != ';')
+        if (!src.isEmpty() && src.charAt(src.length() - 1) != ';')
             src = src + " ;";
 
         String[] subs;
@@ -31,11 +31,11 @@ class Shell {
         ArrayList<Command> commands = new ArrayList<>();
         ArrayList<String> command = new ArrayList<>();
         String name;
-        for (String sub: subs) {
+        for (String sub : subs) {
             if (sub.equals(";")) {
                 try {
                     name = command.get(0);
-                } catch (IndexOutOfBoundsException e){
+                } catch (IndexOutOfBoundsException e) {
                     System.err.println("Empty command");
                     exitCode = -1;
                     continue;
@@ -79,28 +79,27 @@ class Shell {
                     exitCode = -1;
                 }
                 command.clear();
-            }
-            else
+            } else
                 command.add(sub);
         }
         return commands;
     }
 
-    private void executeCommands(ArrayList<Command> commands){
+    private void executeCommands(ArrayList<Command> commands) {
         for (Command command : commands)
             exitCode = command.execute();
     }
 
     public void runPackage(String[] args) {
         StringBuilder summarize = new StringBuilder("");
-        for (String arg: args)
+        for (String arg : args)
             summarize.append(arg).append(" ");
         executeCommands(parseCommands(summarize));
         System.exit(exitCode);
     }
 
     public void runInteractive() {
-        try( BufferedReader br = new BufferedReader(new InputStreamReader(System.in)) ) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             String line;
             while (true) {
                 System.out.print("shell$ ");
@@ -110,12 +109,12 @@ class Shell {
                 else
                     break;
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    public static void exit(){
+    public static void exit() {
         System.exit(0);
     }
 }

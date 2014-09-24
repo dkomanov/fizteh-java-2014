@@ -14,11 +14,12 @@ public class CommandRm implements Command {
             throw new Exception("wrong number of parameters");
         else if (parameters.size() == 3 && !parameters.get(1).equals("-r"))
             throw new Exception("wrong parameters");
-        else{
+        else {
             this.parameters = new ArrayList<>(parameters);
             recursively = (parameters.size() == 3);
         }
     }
+
     @Override
     public int execute() {
         String filename;
@@ -39,28 +40,27 @@ public class CommandRm implements Command {
                         System.err.println("rm: \"" + filename + "\": can't delete");
                         return -1;
                     }
-                }
-                else {
-                    if (!deleteFileRecursively(file)){
+                } else {
+                    if (!deleteFileRecursively(file)) {
                         System.err.println("rm: \"" + filename + "\": can't delete some file inside");
                         return -1;
                     }
                 }
             }
         } catch (Exception e) {
-            System.err.println("rm: \""+ filename +"\": "+e.getMessage());
+            System.err.println("rm: \"" + filename + "\": " + e.getMessage());
             return -1;
         }
         return 0;
     }
 
-    private boolean deleteFileRecursively(File file){
+    private boolean deleteFileRecursively(File file) {
         boolean result = true;
         if (file.isDirectory()) {
-            File[] Content = file.listFiles();
-            if (Content == null)
+            File[] content = file.listFiles();
+            if (content == null)
                 return false;
-            for (File f : Content)
+            for (File f : content)
                 result = result && deleteFileRecursively(f);
         }
         return file.delete() && result;

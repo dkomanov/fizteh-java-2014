@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class CommandLs implements Command {
 
-    CommandLs(ArrayList<String> parameters) throws Exception{
+    CommandLs(ArrayList<String> parameters) throws Exception {
         if (parameters.size() != 1)
             throw new Exception("wrong number of parameters");
     }
@@ -15,7 +15,7 @@ public class CommandLs implements Command {
         try {
             File currDir = Shell.currentDirectory;
             File[] Content = currDir.listFiles();
-            if (Content == null){
+            if (Content == null) {
                 System.err.println("ls: current directory error");
                 return -1;
             }
@@ -27,7 +27,7 @@ public class CommandLs implements Command {
                 System.out.println(f.getName());
             }
         } catch (Exception e) {
-            System.err.println("ls: "+e.getMessage());
+            System.err.println("ls: " + e.getMessage());
             return -1;
         }
         return 0;
