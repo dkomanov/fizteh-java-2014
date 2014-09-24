@@ -19,7 +19,7 @@ public class Shell {
     }
 
     private static List<ParsedCommand> parseCommand(String input) throws ShellException {
-        List<CommandToken> tokensByQuote = splitCommandByQuote(" " + input.replace("\" \"", "\"  \"") + " ");
+        List<CommandToken> tokensByQuote = splitCommandByQuote(input);
         ArrayList<ArrayList<CommandToken>> commandsTokens = splitCommands(tokensByQuote);
         return getParsedCommands(commandsTokens);
     }
@@ -31,7 +31,7 @@ public class Shell {
             if (tokensByQuote.get(i).isWasInQuotes()) {
                 commandsTokens.get(commandsTokens.size() - 1).add(tokensByQuote.get(i));
             } else {
-                String[] tokens = tokensByQuote.get(i).getValue().split(";", -1);
+                String[] tokens = tokensByQuote.get(i).getValue().split("; ", -1);
                 for (int j = 0; j < tokens.length; ++j) {
                     if (j > 0)
                         commandsTokens.add(new ArrayList<CommandToken>());
@@ -43,26 +43,31 @@ public class Shell {
     }
 
     private static List<CommandToken> splitCommandByQuote(String input) throws CannotParseCommandException {
-        String[] tokensByQuote = input.split(" \"", -1);
-        List<CommandToken> result = new ArrayList<CommandToken>();
-        if (tokensByQuote[0].split("\" ", -1).length != 1)
-            throw new CannotParseCommandException(WrongQuoteStructureMessage);
-        result.add(new CommandToken(tokensByQuote[0], false));
-        for (int i = 1; i < tokensByQuote.length; ++i) {
-            String[] parts = tokensByQuote[i].split("\"[; ]", -1);
-            if (parts.length != 2) {
-                throw new CannotParseCommandException(WrongQuoteStructureMessage);
+        List<CommandToken> result = new ArrayList<>();
+        int startIndex = 0;
+        while (startIndex >= 0) {
+            int index = input.indexOf('"', startIndex);
+            if (index < 0) {
+                result.add(new CommandToken(input.substring(startIndex), false));
+            } else {
+                result.add(new CommandToken(input.substring(startIndex, index), false));
+                startIndex = index + 1;
+                index = input.indexOf('"', startIndex);
+                if (index < 0)
+                    throw new CannotParseCommandException(WrongQuoteStructureMessage);
+                else
+                    result.add(new CommandToken(input.substring(startIndex, index), true));
             }
-            result.add(new CommandToken(parts[0], true));
-            if (tokensByQuote[i].charAt(parts[0].length() + 1) == ';')
-                parts[1] = ';' + parts[1];
-            if (!parts[1].equals(""))
-                result.add(new CommandToken(parts[1], false));
+            startIndex = index;
+            if (startIndex > 0)
+                ++startIndex;
         }
         return result;
     }
 
-    private static List<ParsedCommand> getParsedCommands(ArrayList<ArrayList<CommandToken>> commandsTokens) {
+
+    private static List<ParsedCommand> getParsedCommands(ArrayList<ArrayList<CommandToken>> commandsTokens)
+            throws CannotParseCommandException {
         List<ParsedCommand> commands = new ArrayList<ParsedCommand>(commandsTokens.size());
         for (ArrayList<CommandToken> currentCommand : commandsTokens) {
             ArrayList<String> arguments = splitArguments(currentCommand);
@@ -90,13 +95,20 @@ public class Shell {
         return commands;
     }
 
-    private static ArrayList<String> splitArguments(ArrayList<CommandToken> currentCommand) {
+    private static ArrayList<String> splitArguments(ArrayList<CommandToken> currentCommand)
+            throws CannotParseCommandException {
         ArrayList<String> arguments = new ArrayList<String>();
-        for (CommandToken token : currentCommand) {
+        for (int i = 0; i < currentCommand.size(); ++i) {
+            CommandToken token = currentCommand.get(i);
             if (token.isWasInQuotes()) {
                 arguments.add(token.getValue());
+                if (i + 1 < currentCommand.size() && (!currentCommand.get(i + 1).isWasInQuotes()))
+                    currentCommand.get(i + 1).setValue(TrimOneStartSpace(currentCommand.get(i + 1).getValue()));
             } else {
-                arguments.addAll(Arrays.asList(token.getValue().split(" ", -1)));
+                if (i + 1 < currentCommand.size() && currentCommand.get(i + 1).isWasInQuotes())
+                    currentCommand.get(i).setValue(TrimOneEndSpace(currentCommand.get(i).getValue()));
+                if (token.getValue().length() > 0)
+                    arguments.addAll(Arrays.asList(token.getValue().split(" ", -1)));
             }
         }
         while (arguments.size() > 0 && (arguments.get(arguments.size() - 1).equals(""))) {
@@ -110,6 +122,27 @@ public class Shell {
         for (int i = 0; i < trimStartIndex; ++i)
             arguments.remove(arguments.size() - 1);
         return arguments;
+    }
+
+    private static String TrimOneEndSpace(String line) throws CannotParseCommandException {
+        if (line.length() != 0) {
+            if (line.charAt(line.length() - 1) == ' ')
+                return line.substring(0, line.length() - 1);
+            else
+                throw new CannotParseCommandException("Where is no space between to arguments.");
+        } else
+            return line;
+    }
+
+    private static String TrimOneStartSpace(String line) throws CannotParseCommandException {
+        if (line.length() == 0)
+            return line;
+        else {
+            if (line.charAt(0) == ' ')
+                return line.substring(1);
+            else
+                throw new CannotParseCommandException("Where is no space between to arguments.");
+        }
     }
 
     public boolean isCorrectTerminated() {
@@ -221,6 +254,10 @@ public class Shell {
 
         String getValue() {
             return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
         }
 
         boolean isWasInQuotes() {
