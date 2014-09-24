@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.Path;
 
 /**
@@ -28,7 +27,7 @@ public class CommandMv extends Command{
         if (Files.isDirectory(destinationPath)) {
             destinationPath = destinationPath.resolve(fileName);
         }
-        else if(destinationPath.toString().charAt(destinationPath.toString().length() - 1) == '/'){
+        else if(destinationPath.toString().endsWith("/")){
             System.out.println(name + ": cannot move \'" + arguments[1] + "\' to \'" +
                                arguments[2] + "\': Not a directory");
             return false;

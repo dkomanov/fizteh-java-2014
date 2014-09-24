@@ -23,7 +23,6 @@ public class MainClass{
         }
 }
 
-
 /*
-заменить пердолинг на проверку isAbsolutePath()
+ проверка на директорию в рекурсивных copy и remove
  */

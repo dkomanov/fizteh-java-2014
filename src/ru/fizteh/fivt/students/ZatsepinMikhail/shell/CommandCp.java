@@ -45,7 +45,7 @@ public class CommandCp extends Command {
         if (Files.isDirectory(destinationPath)){
             destinationPath = destinationPath.resolve(fileName);
         }
-        else if (destinationPath.toString().charAt(destinationPath.toString().length() - 1) == '/') {
+        else if (destinationPath.toString().endsWith("/")) {
             System.out.println(name + ": cannot copy \'" + fileName + "\' to \'" +
                     arguments[2] + "\': Not a directory");
             return false;

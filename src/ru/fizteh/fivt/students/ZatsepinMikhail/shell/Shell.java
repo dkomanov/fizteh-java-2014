@@ -4,19 +4,23 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
  * @author test
  */
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Shell{
-    ArrayList<Command> arrayOfCommands;
-    public Shell(){
-        arrayOfCommands = new ArrayList<Command>();
+
+    private HashMap<String, Command> shellCommands;
+
+    public Shell() {
+        shellCommands = new HashMap();
     }
-    void addCommand(Command newCommand){
-        arrayOfCommands.add(newCommand);
+
+    public void addCommand(Command newCommand){
+        shellCommands.put(newCommand.toString(), newCommand);
     }
     public boolean interactiveMode(){
         //System.out.println("In interactive mode now");
+
         System.out.print("$ ");
         boolean ended = false;
         boolean errorOccuried = false;
@@ -35,29 +39,49 @@ public class Shell{
                     ended = true;
                     break;
                 }
-
-                boolean rightCommand = false;
-                for (Command shellCommand: arrayOfCommands){
-                    if (shellCommand.getName().equals(parsedArguments[0])) {
-                        rightCommand = true;
-                        if (!shellCommand.run(parsedArguments))
-                            errorOccuried = true;
-                        break;
+                Command commandToExecute = shellCommands.get(parsedArguments[0]);
+                if (commandToExecute != null){
+                    if (!commandToExecute.run(parsedArguments)){
+                        errorOccuried = true;
                     }
                 }
-                if (!rightCommand){
+                else{
                     System.out.println(parsedArguments[0] + ": command not found");
                 }
             }
             if (!ended)
                 System.out.print("$ ");
         }
-        if (errorOccuried)
-            return true;
-        else
-            return false;
+        return  !errorOccuried;
     }
-    public void packetMode(String[] arguments){
-        System.out.println("In packet mode now");
+
+    public boolean packetMode(String[] arguments) {
+
+        String[] parsedCommands;
+        String[] parsedArguments;
+        String commandLine = arguments[0];
+        boolean errorOccuried = false;
+
+        for (int i = 1; i < arguments.length; ++i) {
+            commandLine = commandLine + " " + arguments[i];
+        }
+
+       //System.out.println(commandLine);
+        parsedCommands = commandLine.split(";|\n");
+        for (String oneCommand : parsedCommands) {
+            parsedArguments = oneCommand.trim().split("\\s+");
+            if (parsedArguments[0].equals("exit")) {
+                return true;
+            }
+            Command commandToExecute = shellCommands.get(parsedArguments[0]);
+            if (commandToExecute != null) {
+                if (!commandToExecute.run(parsedArguments)) {
+                    errorOccuried = true;
+                }
+            } else {
+                System.out.println(parsedArguments[0] + ": command not found");
+            }
+        }
+        return !errorOccuried;
     }
 }
