@@ -1,20 +1,17 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 
-/**
- * Created by mikhail on 20.09.14.
- */
-
 import java.io.File;
 
 public class CommandLs extends Command {
-    public CommandLs(){
+    public CommandLs() {
         name = "ls";
         numberOfArguments = 1;
     }
+
     @Override
-    public boolean run(String[] arguments){
+    public boolean run(final String[] arguments) {
         String[] listOfFiles = new File(System.getProperty("user.dir")).list();
-        for (String oneFileName: listOfFiles){
+        for (String oneFileName : listOfFiles) {
             System.out.println(oneFileName);
         }
         return true;

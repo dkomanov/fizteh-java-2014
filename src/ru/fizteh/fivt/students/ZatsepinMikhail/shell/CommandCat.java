@@ -3,27 +3,22 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 
-/**
- * Created by mikhail on 19.09.14.
- */
-public class CommandCat extends Command{
-    public CommandCat()
-    {
+public class CommandCat extends Command {
+    public CommandCat() {
         name = "cat";
         numberOfArguments = 2;
     }
+
     @Override
-    public boolean run(String[] arguments)
-    {
+    public boolean run(final String[] arguments) {
         if (arguments.length != numberOfArguments)
             return false;
-        try{
+        try {
             Files.copy(FileSystems.getDefault().getPath(arguments[1]), System.out);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.out.println(name + ": " + arguments[1] + ": No such file in directory");
+            return false;
         }
         return true;
     }
 }
-

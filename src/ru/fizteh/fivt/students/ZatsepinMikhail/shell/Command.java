@@ -1,17 +1,17 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 
-/**
- * Created by mikhail on 19.09.14.
- */
 abstract public class Command {
-    String name;
-    int numberOfArguments;
-    abstract public boolean run(String[] arguments);
-    public String getName(){
+    protected String name;
+    protected int numberOfArguments;
+
+    abstract public boolean run(final String[] arguments);
+
+    final public String getName() {
         return name;
     }
+
     @Override
-    public String toString(){
+    final public String toString() {
         return name;
     }
 }

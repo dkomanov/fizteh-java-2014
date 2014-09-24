@@ -4,58 +4,58 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * Created by mikhail on 20.09.14.
- */
 public class CommandRm extends Command {
-    public CommandRm(){
+    public CommandRm() {
         name = "rm";
         numberOfArguments = 3;
     }
+
     @Override
-    public boolean run(String[] arguments){
-        if (arguments.length != 3 & arguments.length != 2)
+    public boolean run(final String[] arguments) {
+        if (arguments.length != numberOfArguments
+                & arguments.length != numberOfArguments - 1) {
             return false;
-        boolean recursive = (arguments.length == numberOfArguments & arguments[1].equals("-r"));
-        if (!recursive)
-            generalDelete(arguments);
-        else
-            recursiveDelete(arguments);
-        return true;
-
+        }
+        boolean recursive =
+                (arguments.length == numberOfArguments & arguments[1].equals("-r"));
+        boolean result;
+        if (!recursive) {
+            result = generalDelete(arguments);
+        }
+        else {
+            result = recursiveDelete(arguments);
+        }
+        return result;
     }
-    private boolean generalDelete(String[] arguments){
-        Path filePath = FilesFunction.toAbsolutePathString(arguments[1]);
+
+    private boolean generalDelete(final String[] arguments) {
+        Path filePath = PathsFunction.toAbsolutePathString(arguments[1]);
         try {
-            if (!Files.deleteIfExists(filePath))
-                System.out.println(name + ": cannot remove \'" + arguments[1] + "\'" +
-                    ": No such file or directory");
-        }
-        catch(Exception e){
-            if (Files.isDirectory(filePath))
-                System.out.println(name + "; cannot remove \'" + arguments[1] + "\'" +
-                     ": Is a directory");
-            else
-                System.out.println("IOException");
+            if (!Files.deleteIfExists(filePath)) {
+                System.out.println(name + ": cannot remove \'" + arguments[1] + "\'"
+                                   + ": No such file or directory");
+            }
+        } catch (Exception e) {
+            if (Files.isDirectory(filePath)) {
+                System.out.println(name + ": " + arguments[1] + ": is a directory");
+            }
             return false;
         }
         return true;
     }
 
-    private boolean recursiveDelete(String[] arguments){
-        Path dirPath = FilesFunction.toAbsolutePathString(arguments[2]);
+    private boolean recursiveDelete(final String[] arguments) {
+        Path dirPath = PathsFunction.toAbsolutePathString(arguments[2]);
+        if (!Files.isDirectory(dirPath)) {
+            return false;
+        }
 
-        FileVisitorDelete myFileVisitorDelete;
-        myFileVisitorDelete = new FileVisitorDelete();
+        FileVisitorDelete myFileVisitorDelete = new FileVisitorDelete();
 
-        if (myFileVisitorDelete != null){
-            try {
-                Files.walkFileTree(dirPath, myFileVisitorDelete);
-            }
-            catch(IOException e) {
-                System.out.println("Error while walkingFileTree");
-                return false;
-            }
+        try {
+            Files.walkFileTree(dirPath, myFileVisitorDelete);
+        } catch (IOException e) {
+            return false;
         }
         return true;
     }

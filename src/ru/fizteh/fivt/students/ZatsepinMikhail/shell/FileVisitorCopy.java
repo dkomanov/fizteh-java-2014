@@ -4,47 +4,45 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.SimpleFileVisitor;
+
 import static java.nio.file.FileVisitResult.*;
+
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
-/**
- * Created by mikhail on 21.09.14.
- */
 public class FileVisitorCopy extends SimpleFileVisitor<Path> {
     private final Path startPath;
     private final Path destinationPath;
 
-    public FileVisitorCopy(Path newStartPath, Path newDestinationPath) {
+    public FileVisitorCopy(final Path newStartPath, final Path newDestinationPath) {
         startPath = newStartPath;
         destinationPath = newDestinationPath;
     }
 
     @Override
-    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attr) {
+    public FileVisitResult visitFile(final Path filePath, final BasicFileAttributes attr) {
         Path newFilePath = destinationPath.resolve(startPath.relativize(filePath));
         try {
             Files.copy(filePath, newFilePath);
         } catch (IOException e) {
-            System.out.println("IOException: " + filePath.toAbsolutePath());
+            System.err.println("IOException: " + filePath.toAbsolutePath());
         }
         return CONTINUE;
     }
 
     @Override
-    public FileVisitResult visitFileFailed(Path filePath, IOException exc) {
+    public FileVisitResult visitFileFailed(final Path filePath, IOException exc) {
         System.err.println("Error occuried while visitтпg file");
         return CONTINUE;
     }
 
     @Override
-    public FileVisitResult preVisitDirectory(Path dirPath, BasicFileAttributes attr) {
-        System.out.println(dirPath.toString() + " - pre");
+    public FileVisitResult preVisitDirectory(final Path dirPath, BasicFileAttributes attr) {
         Path newDirPath = destinationPath.resolve(startPath.relativize(dirPath));
         try {
             Files.createDirectory(newDirPath);
         } catch (IOException e) {
-            System.out.println("IOException " + newDirPath.toString());
+            System.err.println("IOException " + newDirPath.toString());
         }
         return CONTINUE;
     }
