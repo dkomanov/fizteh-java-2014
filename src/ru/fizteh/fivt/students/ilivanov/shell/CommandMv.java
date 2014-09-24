@@ -9,11 +9,12 @@ import java.util.ArrayList;
 public class CommandMv implements Command {
     private ArrayList<String> parameters;
 
-    CommandMv(ArrayList<String> parameters) throws Exception {
-        if (parameters.size() != 3)
+    CommandMv(final ArrayList<String> parameters) throws Exception {
+        if (parameters.size() != 3) {
             throw new Exception("wrong number of parameters");
-        else
+        } else {
             this.parameters = new ArrayList<>(parameters);
+        }
     }
 
     @Override
@@ -43,8 +44,9 @@ public class CommandMv implements Command {
                 }
                 if (new File(destFile, source).exists()) {
                     source = source + "_copy";
-                    while (new File(destFile, source).exists())
+                    while (new File(destFile, source).exists()) {
                         source = source + "_";
+                    }
                 }
                 if (!srcFile.renameTo(new File(destFile, source))) {
                     System.err.println("mv: can't move: \"" + source + "\"");

@@ -9,24 +9,27 @@ public class CommandRm implements Command {
     private ArrayList<String> parameters;
     private boolean recursively;
 
-    CommandRm(ArrayList<String> parameters) throws Exception {
-        if (parameters.size() != 2 && parameters.size() != 3)
+    CommandRm(final ArrayList<String> parameters) throws Exception {
+        if (parameters.size() != 2 && parameters.size() != 3) {
             throw new Exception("wrong number of parameters");
-        else if (parameters.size() == 3 && !parameters.get(1).equals("-r"))
-            throw new Exception("wrong parameters");
-        else {
-            this.parameters = new ArrayList<>(parameters);
-            recursively = (parameters.size() == 3);
+        } else {
+            if (parameters.size() == 3 && !parameters.get(1).equals("-r")) {
+                throw new Exception("wrong parameters");
+            } else {
+                this.parameters = new ArrayList<>(parameters);
+                recursively = (parameters.size() == 3);
+            }
         }
     }
 
     @Override
     public int execute() {
         String filename;
-        if (!recursively)
+        if (!recursively) {
             filename = parameters.get(1);
-        else
+        } else {
             filename = parameters.get(2);
+        }
         try {
             Path path = Paths.get(Shell.currentDirectory.getCanonicalPath());
             path = path.resolve(filename);
@@ -58,10 +61,12 @@ public class CommandRm implements Command {
         boolean result = true;
         if (file.isDirectory()) {
             File[] content = file.listFiles();
-            if (content == null)
+            if (content == null) {
                 return false;
-            for (File f : content)
+            }
+            for (File f : content) {
                 result = result && deleteFileRecursively(f);
+            }
         }
         return file.delete() && result;
     }

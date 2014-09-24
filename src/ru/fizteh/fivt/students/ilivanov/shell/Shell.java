@@ -13,7 +13,7 @@ class Shell {
     public static File currentDirectory = new File(System.getProperty("user.home"));
     private int exitCode = 0;
 
-    private ArrayList<Command> parseCommands(StringBuilder source) {
+    private ArrayList<Command> parseCommands(final StringBuilder source) {
         for (int i = 0; i < source.length(); i++) {
             if (source.charAt(i) == ';') {
                 source.insert(i, ' ');
@@ -22,8 +22,9 @@ class Shell {
         }
         String src = source.toString();
         src = src.replaceAll("\\s+$", "");
-        if (!src.isEmpty() && src.charAt(src.length() - 1) != ';')
+        if (!src.isEmpty() && src.charAt(src.length() - 1) != ';') {
             src = src + " ;";
+        }
 
         String[] subs;
         subs = src.split(" +");
@@ -79,21 +80,24 @@ class Shell {
                     exitCode = -1;
                 }
                 command.clear();
-            } else
+            } else {
                 command.add(sub);
+            }
         }
         return commands;
     }
 
-    private void executeCommands(ArrayList<Command> commands) {
-        for (Command command : commands)
+    private void executeCommands(final ArrayList<Command> commands) {
+        for (Command command : commands) {
             exitCode = command.execute();
+        }
     }
 
-    public void runPackage(String[] args) {
+    public void runPackage(final String[] args) {
         StringBuilder summarize = new StringBuilder("");
-        for (String arg : args)
+        for (String arg : args) {
             summarize.append(arg).append(" ");
+        }
         executeCommands(parseCommands(summarize));
         System.exit(exitCode);
     }
@@ -104,10 +108,11 @@ class Shell {
             while (true) {
                 System.out.print("shell$ ");
                 line = br.readLine();
-                if (line != null)
+                if (line != null) {
                     executeCommands(parseCommands(new StringBuilder(line)));
-                else
+                } else {
                     break;
+                }
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());

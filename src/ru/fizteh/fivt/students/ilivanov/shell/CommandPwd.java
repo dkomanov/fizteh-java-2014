@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 public class CommandPwd implements Command {
 
-    CommandPwd(ArrayList<String> parameters) throws Exception {
-        if (parameters.size() != 1)
+    CommandPwd(final ArrayList<String> parameters) throws Exception {
+        if (parameters.size() != 1) {
             throw new Exception("wrong number of parameters");
+        }
     }
 
     @Override

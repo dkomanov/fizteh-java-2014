@@ -1,6 +1,9 @@
 package ru.fizteh.fivt.students.ilivanov.shell;
 
-import java.io.*;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -8,11 +11,12 @@ import java.util.ArrayList;
 public class CommandCat implements Command {
     private ArrayList<String> parameters;
 
-    CommandCat(ArrayList<String> parameters) throws Exception {
-        if (parameters.size() != 2)
+    CommandCat(final ArrayList<String> parameters) throws Exception {
+        if (parameters.size() != 2) {
             throw new Exception("wrong number of parameters");
-        else
+        } else {
             this.parameters = new ArrayList<>(parameters);
+        }
     }
 
     @Override
@@ -34,10 +38,11 @@ public class CommandCat implements Command {
             String line;
             while (true) {
                 line = br.readLine();
-                if (line != null)
+                if (line != null) {
                     System.out.println(line);
-                else
+                } else {
                     break;
+                }
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());

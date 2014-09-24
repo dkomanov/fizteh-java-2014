@@ -8,11 +8,12 @@ import java.util.ArrayList;
 public class CommandCd implements Command {
     private ArrayList<String> parameters;
 
-    CommandCd(ArrayList<String> parameters) throws Exception {
-        if (parameters.size() != 2)
+    CommandCd(final ArrayList<String> parameters) throws Exception {
+        if (parameters.size() != 2) {
             throw new Exception("wrong number of parameters");
-        else
+        } else {
             this.parameters = new ArrayList<>(parameters);
+        }
     }
 
     @Override

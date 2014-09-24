@@ -7,11 +7,12 @@ import java.util.ArrayList;
 public class CommandMkdir implements Command {
     private ArrayList<String> parameters;
 
-    CommandMkdir(ArrayList<String> parameters) throws Exception {
-        if (parameters.size() != 2)
+    CommandMkdir(final ArrayList<String> parameters) throws Exception {
+        if (parameters.size() != 2) {
             throw new Exception("wrong number of parameters");
-        else
+        } else {
             this.parameters = new ArrayList<>(parameters);
+        }
     }
 
     @Override

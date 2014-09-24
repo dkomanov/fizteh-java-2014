@@ -10,14 +10,16 @@ public class CommandCp implements Command {
     private ArrayList<String> parameters;
     private boolean recursively;
 
-    CommandCp(ArrayList<String> parameters) throws Exception {
-        if (parameters.size() != 3 && parameters.size() != 4)
+    CommandCp(final ArrayList<String> parameters) throws Exception {
+        if (parameters.size() != 3 && parameters.size() != 4) {
             throw new Exception("wrong number of parameters");
-        else if (parameters.size() == 4 && !parameters.get(1).equals("-r"))
-            throw new Exception("wrong parameters");
-        else {
-            this.parameters = new ArrayList<>(parameters);
-            recursively = (parameters.size() == 4);
+        } else {
+            if (parameters.size() == 4 && !parameters.get(1).equals("-r")) {
+                throw new Exception("wrong parameters");
+            } else {
+                this.parameters = new ArrayList<>(parameters);
+                recursively = (parameters.size() == 4);
+            }
         }
     }
 
@@ -57,15 +59,18 @@ public class CommandCp implements Command {
                     return -1;
                 }
 
-                if (srcFile.isDirectory() && recursively)
+                if (srcFile.isDirectory() && recursively) {
                     copyRecursively(srcFile, new File(destFile, source));
-                else if (srcFile.isDirectory()) {
-                    if (!new File(destFile, source).mkdir()) {
-                        System.err.println("cp: can't copy");
-                        return -1;
+                } else {
+                    if (srcFile.isDirectory()) {
+                        if (!new File(destFile, source).mkdir()) {
+                            System.err.println("cp: can't copy");
+                            return -1;
+                        }
+                    } else {
+                        copyFile(srcFile, new File(destFile, source));
                     }
-                } else
-                    copyFile(srcFile, new File(destFile, source));
+                }
 
             }
         } catch (Exception e) {
@@ -75,7 +80,7 @@ public class CommandCp implements Command {
         return 0;
     }
 
-    void copyRecursively(File source, File destination) throws IOException {
+    void copyRecursively(final File source, final File destination) throws IOException {
         if (source.isDirectory()) {
             copyDirectory(source, destination);
         } else {
@@ -83,17 +88,18 @@ public class CommandCp implements Command {
         }
     }
 
-    private void copyDirectory(File source, File destination) throws IOException {
+    private void copyDirectory(final File source, final File destination) throws IOException {
         if (!destination.exists()) {
-            if (!destination.mkdir())
+            if (!destination.mkdir()) {
                 return;
+            }
         }
         for (String f : source.list()) {
             copyRecursively(new File(source, f), new File(destination, f));
         }
     }
 
-    private void copyFile(File source, File destination) throws IOException {
+    private void copyFile(final File source, final File destination) throws IOException {
         try (InputStream in = new FileInputStream(source);
              OutputStream out = new FileOutputStream(destination)) {
             byte[] buf = new byte[1024];
