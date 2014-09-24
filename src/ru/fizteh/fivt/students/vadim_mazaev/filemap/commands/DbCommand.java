@@ -2,16 +2,25 @@ package ru.fizteh.fivt.students.vadim_mazaev.filemap.commands;
 
 import ru.fizteh.fivt.students.vadim_mazaev.filemap.DbConnector;
 
-public abstract class DbCommand implements Command<DbConnector> {
+public abstract class DbCommand implements Command {
+    public DbCommand(final DbConnector link) {
+        connector = link;
+    }
 
-	@Override
-	public abstract String getName();
+    @Override
+    public final String getName() {
+        return this.getClass().getSimpleName();
+    }
 
-	@Override
-	public abstract boolean checkArgs() throws Exception;
+    public final DbConnector getConnector() {
+        return connector;
+    }
 
-	@Override
-	public abstract void execute(DbConnector link,
-			String[] cmdWithArgs) throws Exception;
+    @Override
+    public abstract boolean checkArgs(int argLen);
 
+    @Override
+    public abstract void execute(String[] cmdWithArgs);
+
+    private DbConnector connector;
 }
