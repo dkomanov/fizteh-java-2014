@@ -30,7 +30,7 @@ public class RmCommand implements Command {
             if (f.list().length == 0) {
                 deleteFile(f);
             } else {
-                String files[] = f.list();
+                String[] files = f.list();
                 for (String s : files) {
                     File fileDelete = new File(f, s);
                     delete(fileDelete);
@@ -55,16 +55,16 @@ public class RmCommand implements Command {
         if (s.length != 2 && s.length != 3) {
             throw new IllegalArgumentException("wrong ammount of args. should be called with one arg");
         } else if (s.length == 2) {
-            File f = StringUtils.ProcessFile(link.getState().getState(), s[1]);
+            File f = StringUtils.processFile(link.getState().getState(), s[1]);
             if (f.isDirectory() && f.list().length != 0) {
                 throw new DirectoryNotEmptyException("Directory isn't empty. Use -r flag");
             } else {
                 delete(f);
             }
         } else {
-            File f = StringUtils.ProcessFile(link.getState().getState(), s[2]);
+            File f = StringUtils.processFile(link.getState().getState(), s[2]);
             if (s[1].equals("-r")) {
-                delete(StringUtils.ProcessFile(link.getState().getState(), s[2]));
+                delete(StringUtils.processFile(link.getState().getState(), s[2]));
             } else {
                 throw new IllegalArgumentException("rm command: " + s[2] + "flag not supported");
             }

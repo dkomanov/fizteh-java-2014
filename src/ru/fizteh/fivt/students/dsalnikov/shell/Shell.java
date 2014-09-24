@@ -31,7 +31,7 @@ public class Shell<State extends ShellState> {
         }
     }
 
-    public void execute(String args[]) throws Exception {
+    public void execute(String[] args) throws Exception {
         String concatenatedcmds = join(Arrays.asList(args), " ");
         String[] commands = concatenatedcmds.split("\\s*;\\s*");
         for (String command : commands) {
@@ -68,7 +68,7 @@ public class Shell<State extends ShellState> {
         while (flag) {
             System.out.print("$ ");
 
-            String cmd[] = new String[1];
+            String[] cmd = new String[1];
 
             cmd[0] = sc.nextLine();
             if (cmd[0].isEmpty()) {
