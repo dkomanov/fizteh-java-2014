@@ -8,11 +8,11 @@ import java.io.IOException;
  */
 public class MkdirCommand implements Command {
     @Override
-    public void execute(String[] args) throws IOException {
-        if (args.length < 2) return;
-        if (args[1] == null) return;
+    public int execute(String[] args) throws IOException {
+        if (args.length < 2) return 0;
         File directory = new File(Shell.currentPath + File.separator + args[1]);
-        if (!directory.mkdirs()) return;
+        if (!directory.mkdirs()) return 1;
+        return 0;
     }
 
     @Override

@@ -7,8 +7,9 @@ import java.io.IOException;
  */
 public class PwdCommand implements Command {
     @Override
-    public void execute(String[] args) throws IOException {
+    public int execute(String[] args) throws IOException {
         System.out.println(Shell.currentPath);
+        return 0;
     }
 
     @Override

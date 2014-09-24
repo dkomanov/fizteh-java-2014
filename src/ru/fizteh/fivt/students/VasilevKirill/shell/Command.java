@@ -7,5 +7,6 @@ import java.io.IOException;
  */
 public interface Command {
     String toString();
-    void execute(String[] args) throws IOException;
+
+    int execute(String[] args) throws IOException;
 }

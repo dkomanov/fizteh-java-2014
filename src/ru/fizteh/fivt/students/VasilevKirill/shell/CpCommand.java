@@ -9,48 +9,47 @@ import java.nio.file.Files;
  */
 public class CpCommand implements Command {
     @Override
-    public void execute(String[] args) throws IOException{
-        if (args.length < 2) return;
-        if (args[1] == null) return;
-        if (args[1].equals("-r")){
+    public int execute(String[] args) throws IOException {
+        if (args.length < 2) return 0;
+        if (args[1].equals("-r")) {
             File source = new File(Shell.currentPath + File.separator + args[2]);
             if (!source.exists()) {
                 System.out.println("cp: cannot copy '" + args[2] + "': No such file or directory");
-                return;
+                return 1;
             }
             File destination = new File(Shell.currentPath + File.separator + args[3] + File.separator + args[2]);
             if (destination.exists()) {
                 String prevPath = Shell.currentPath;
                 String[] cdArgs = {"cd", Shell.currentPath + File.separator + args[3]};
                 new CdCommand().execute(cdArgs);
-                String[] rmArgs = {"rm","-r",destination.getName()};
+                String[] rmArgs = {"rm", "-r", destination.getName()};
                 new RmCommand().execute(rmArgs);
                 String[] cdArgs2 = {"cd", prevPath};
                 new CdCommand().execute(cdArgs2);
             }
             File destinationDirectory = new File(Shell.currentPath + File.separator + args[3]);
-            if (!destinationDirectory.exists()){
-                if (!destinationDirectory.mkdir()) return;
+            if (!destinationDirectory.exists()) {
+                if (!destinationDirectory.mkdir()) return 1;
             }
             if (!source.isDirectory()) {
                 Files.copy(source.toPath(), destination.toPath());
-                return;
+                return 0;
             }
             Files.copy(source.toPath(), destination.toPath());
             File[] listFiles = source.listFiles();
-            for (File f : listFiles){
-                String[] new_args = {"cp","-r",f.getName(),destination.getAbsolutePath()};
-                cp_recursive(new_args, source.getAbsolutePath());
+            for (File f : listFiles) {
+                String[] new_args = {"cp", "-r", f.getName(), destination.getAbsolutePath()};
+                if (cp_recursive(new_args, source.getAbsolutePath()) != 0) return 1;
             }
         } else {
             File source = new File(Shell.currentPath + File.separator + args[1]);
             if (!source.exists()) {
                 System.out.println("cp: cannot copy '" + args[1] + "': No such file or directory");
-                return;
+                return 1;
             }
-            if (source.isDirectory()){
-                System.out.println("cp: " + args[2] + " is a directory (not copied).");
-                return;
+            if (source.isDirectory()) {
+                System.out.println("cp: " + args[1] + " is a directory (not copied).");
+                return 1;
             }
             File destination = new File(Shell.currentPath + File.separator + args[2] + File.separator + args[1]);
             if (destination.exists()) {
@@ -58,33 +57,32 @@ public class CpCommand implements Command {
             }
             Files.copy(source.toPath(), destination.toPath());
         }
+        return 0;
     }
 
-    private void cp_recursive(String[] args, String directory) throws IOException
-    {
-        if (args.length < 2) return;
-        if (args[1] == null) return;
+    private int cp_recursive(String[] args, String directory) throws IOException {
+        if (args.length < 2) return 1;
         File source = new File(directory + File.separator + args[2]);
-        if (!source.exists()) return;
+        if (!source.exists()) return 1;
         File destination = new File(args[3] + File.separator + args[2]);
-        if (destination.exists()){
-            String[] rmArgs = {"rm","-r",destination.getName()};
+        if (destination.exists()) {
+            String[] rmArgs = {"rm", "-r", destination.getName()};
             new RmCommand().execute(rmArgs);
         }
-        if (!source.isDirectory()){
-            Files.copy(source.toPath(),destination.toPath());
-            return;
+        if (!source.isDirectory()) {
+            Files.copy(source.toPath(), destination.toPath());
+            return 0;
         }
         Files.copy(source.toPath(), destination.toPath());
         File[] listFiles = source.listFiles();
-        if (listFiles.length == 0){
-            return;
+        if (listFiles.length == 0) {
+            return 0;
         }
-        for (File f : listFiles)
-        {
-            String[] new_args = {"cp","-r",f.getName(),destination.getAbsolutePath()};
-            cp_recursive(new_args,source.getAbsolutePath());
+        for (File f : listFiles) {
+            String[] new_args = {"cp", "-r", f.getName(), destination.getAbsolutePath()};
+            cp_recursive(new_args, source.getAbsolutePath());
         }
+        return 0;
     }
 
     @Override

@@ -8,14 +8,13 @@ import java.io.IOException;
  */
 public class RmCommand implements Command {
     @Override
-    public void execute(String[] args) throws IOException {
-        if (args.length < 2) return;
-        if (args[1] == null) return;
+    public int execute(String[] args) throws IOException {
+        if (args.length < 2) return 0;
         if (args[1].equals("-r")) {
             File file = new File(Shell.currentPath + File.separator + args[2]);
             if (!file.exists()) {
                 System.out.println("rm: cannot remove '" + args[2] + "': No such file or directory\"");
-                return;
+                return 1;
             }
             if (file.isDirectory()) {
                 File[] listFiles = file.listFiles();
@@ -24,63 +23,66 @@ public class RmCommand implements Command {
                 else {
                     for (File f : listFiles) {
                         String[] new_args = {"rm", "-r", f.getName()};
-                        rm_recursive(new_args, Shell.currentPath + File.separator + file.getName());
+                        if (rm_recursive(new_args, Shell.currentPath + File.separator + file.getName()) != 0) return 1;
                     }
                 }
-                if (!file.delete()) return;
+                if (!file.delete()) return 1;
             } else {
-                if (!file.delete()) return;
+                if (!file.delete()) return 1;
             }
         } else {
             File file = new File(Shell.currentPath + File.separator + args[1]);
             if (!file.exists()) {
                 System.out.println("rm: cannot remove '" + args[1] + "': No such file or directory");
-                return;
+                return 1;
             }
             if (file.isDirectory()) {
                 System.out.println("rm: " + args[1] + ": is a directory");
-                return;
+                return 1;
             }
-            if (!file.delete()) return;
+            if (!file.delete()) return 1;
         }
+        return 0;
     }
 
-    private void rm_recursive(String[] args, String directory)
-    {
-        if (args.length < 2) return;
-        if (args[1] == null) return;
+    private int rm_recursive(String[] args, String directory) {
+        if (args.length < 2) return 0;
         if (args[1].equals("-r")) {
             File file = new File(directory + File.separator + args[2]);
             if (!file.exists()) {
                 System.out.println("rm: cannot remove '" + args[2] + "': No such file or directory\"");
-                return;
+                return 1;
             }
             if (file.isDirectory()) {
                 File[] listFiles = file.listFiles();
                 if (listFiles.length == 0)
-                    if (!file.delete()) return;
+                    if (!file.delete()) return 1;
+                    else return 0;
                 else {
                     for (File f : listFiles) {
                         String[] new_args = {"rm", "-r", f.getName()};
                         rm_recursive(new_args, directory + File.separator + file.getName());
                     }
                 }
-                if(!file.delete()) return;
+                if (!file.delete()) return 1;
+                return 0;
             } else {
-                if (!file.delete()) return ;
+                if (!file.delete()) return 1;
+                return 0;
             }
         } else {
             File file = new File(Shell.currentPath + File.separator + args[1]);
             if (!file.exists()) {
                 System.out.println("rm: cannot remove '" + args[1] + "': No such file or directory");
-                return;
+                return 1;
             }
             if (file.isDirectory()) {
                 System.out.println("rm: " + args[1] + ": is a directory");
-                return;
+                return 1;
             }
-            file.delete();
+            if (!file.delete()) return 1;
         }
+        return 0;
     }
 
     @Override
