@@ -9,8 +9,7 @@ import java.nio.file.Path;
 
 public class CatCommand extends AbstractCommand {
     CatCommand(Shell shell) {
-        super(shell);
-        identifier = "cat";
+        super("cat", shell);
     }
 
     @Override
@@ -21,7 +20,7 @@ public class CatCommand extends AbstractCommand {
         }
         Path path = shell.getWd().resolve(args[1]);
         try (InputStream in = Files.newInputStream(path);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 shell.output(line);

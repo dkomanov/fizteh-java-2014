@@ -2,8 +2,7 @@ package ru.fizteh.fivt.students.andreyzakharov.shell;
 
 public class ExitCommand extends AbstractCommand {
     ExitCommand(Shell shell) {
-        super(shell);
-        identifier = "exit";
+        super("exit", shell);
     }
 
     @Override

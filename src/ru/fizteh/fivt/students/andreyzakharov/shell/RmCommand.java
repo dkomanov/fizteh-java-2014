@@ -1,15 +1,11 @@
 package ru.fizteh.fivt.students.andreyzakharov.shell;
 
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
+import java.nio.file.*;
 
 public class RmCommand extends AbstractCommand {
     RmCommand(Shell shell) {
-        super(shell);
-        identifier = "rm";
+        super("rm", shell);
     }
 
     @Override
@@ -20,8 +16,31 @@ public class RmCommand extends AbstractCommand {
             return;
         }
 
-        for (int i = 1; i < args.length; ++i) {
+        for (int i = (recursive ? 2 : 1); i < args.length; ++i) {
             Path path = shell.wd.resolve(args[i]);
+            if (Files.isDirectory(path)) {
+                if (!recursive) {
+                    shell.error("rm: " + args[i] + ": is a directory");
+                    return;
+                }
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+                    for (Path file : stream) {
+                        if (Files.isDirectory(file)) {
+                            execute("rm", "-r", file.toString());
+                        } else {
+                            try {
+                                Files.delete(file);
+                            } catch (IOException e) {
+                                shell.error("rm: i/o error");
+                                return;
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    shell.error("rm: i/o error");
+                    return;
+                }
+            }
             try {
                 Files.delete(path);
             } catch (NoSuchFileException e) {

@@ -5,8 +5,7 @@ import java.nio.file.Path;
 
 public class MvCommand extends AbstractCommand {
     MvCommand(Shell shell) {
-        super(shell);
-        identifier = "mv";
+        super("mv", shell);
     }
 
     @Override
@@ -16,9 +15,14 @@ public class MvCommand extends AbstractCommand {
             return;
         }
         Path src = shell.getWd().resolve(args[1]);
-        Path dest = shell.getWd().resolve(args[2]);
-        if (Files.isDirectory(dest)) {
-            // TODO: NIY
+        Path target = shell.getWd().resolve(args[2]);
+        if (!Files.exists(src)) {
+            // note: we do not actually call stat
+            shell.error("mv: cannot stat '"+args[1]+"': No such file or directory");
+            return;
+        }
+        if (Files.isDirectory(target)) {
+//            Files.move(src, target);
         }
     }
 }

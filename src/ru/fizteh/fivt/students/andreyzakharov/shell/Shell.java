@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Shell {
-    // System.getProperty("user.dir");
     Path wd = null;
     boolean interactive;
     private final Map<String, AbstractCommand> commandMap = new HashMap<>();

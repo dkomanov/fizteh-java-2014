@@ -7,8 +7,7 @@ import java.nio.file.Path;
 
 public class LsCommand extends AbstractCommand {
     LsCommand(Shell shell) {
-        super(shell);
-        identifier = "ls";
+        super("ls", shell);
     }
 
     @Override

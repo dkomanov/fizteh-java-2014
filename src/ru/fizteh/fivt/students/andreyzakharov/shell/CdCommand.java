@@ -5,8 +5,7 @@ import java.nio.file.Path;
 
 public class CdCommand extends AbstractCommand {
     CdCommand(Shell shell) {
-        super(shell);
-        identifier = "cd";
+        super("cd", shell);
     }
 
     @Override

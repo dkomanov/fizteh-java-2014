@@ -1,10 +1,11 @@
 package ru.fizteh.fivt.students.andreyzakharov.shell;
 
 public abstract class AbstractCommand {
-    Shell shell;
     String identifier;
+    Shell shell;
 
-    public AbstractCommand(Shell shell) {
+    public AbstractCommand(String identifier, Shell shell) {
+        this.identifier = identifier;
         this.shell = shell;
     }
 

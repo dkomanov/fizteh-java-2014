@@ -7,8 +7,7 @@ import java.nio.file.Path;
 
 public class MkdirCommand extends AbstractCommand {
     MkdirCommand(Shell shell) {
-        super(shell);
-        identifier = "mkdir";
+        super("mkdir", shell);
     }
 
     @Override
