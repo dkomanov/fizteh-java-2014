@@ -10,13 +10,17 @@ public class Ls {
             System.exit(1);
         }
         File f = new File(cd.getCurrentDirectory());
+        File[] s = null;
         try {
-            for (File tmp : f.listFiles()) {
-                System.out.println(tmp.getName());
-            }
+            s = f.listFiles();
         } catch (NullPointerException e2) {
             System.err.println("problem with listFiles in Ls");
             System.exit(2);
+        }
+        if (s != null) {
+            for (File tmp : s) {
+                System.out.println(tmp.getName());
+            }
         }
     }
 }
