@@ -18,7 +18,7 @@ public class MvCommand extends AbstractCommand {
         Path target = shell.getWd().resolve(args[2]);
         if (!Files.exists(src)) {
             // note: we do not actually call stat
-            shell.error("mv: cannot stat '"+args[1]+"': No such file or directory");
+            shell.error("mv: cannot stat '" + args[1] + "': No such file or directory");
             return;
         }
         if (Files.isDirectory(target)) {
