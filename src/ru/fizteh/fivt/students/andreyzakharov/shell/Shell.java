@@ -96,7 +96,9 @@ public class Shell {
             for (String s : args) {
                 argsc += s + " ";
             }
-            if (argsc == null) {return;}
+            if (argsc == null) {
+                return;
+            }
             String[] cmds = argsc.split(";");
             Shell shell = new Shell(false);
 
