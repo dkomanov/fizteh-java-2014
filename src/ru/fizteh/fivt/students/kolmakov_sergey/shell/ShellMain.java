@@ -307,7 +307,7 @@ public class ShellMain {
         execLine(commands.toString());
     }
 
-    private static void Interactive() {
+    private static void interactive() {
         try (Scanner scan = new Scanner(System.in)) {
             while (true) {
                 System.out.print("$ ");
@@ -329,7 +329,7 @@ public class ShellMain {
             if (packageMode) {
                 packageAppender(args);
             } else {
-                Interactive();
+                interactive();
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
