@@ -64,7 +64,7 @@ public class Shell {
         AbstractCommand command = commandMap.get(cmd[0]);
         if (command != null) {
             command.execute(cmd);
-        } else {
+        } else if (!cmd[0].equals("")) {
             error("Shell: " + cmd[0] + ": command not found");
         }
     }
@@ -92,14 +92,12 @@ public class Shell {
 
     public static void main(String[] args) {
         if (args.length > 0) {
-            String argsc = null;
+            StringBuilder sb = new StringBuilder();
             for (String s : args) {
-                argsc += s + " ";
+                sb.append(s.trim());
+                sb.append(' ');
             }
-            if (argsc == null) {
-                return;
-            }
-            String[] cmds = argsc.split(";");
+            String[] cmds = sb.toString().split(";");
             Shell shell = new Shell(false);
 
             for (String s : cmds) {
