@@ -70,7 +70,7 @@ public class Shell {
     }
 
     /**
-     * Output a message ot stdout.
+     * Output a message to stdout.
      *
      * @param msg A message to display
      */
@@ -96,6 +96,7 @@ public class Shell {
             for (String s : args) {
                 argsc += s + " ";
             }
+            if (argsc == null) return;
             String[] cmds = argsc.split(";");
             Shell shell = new Shell(false);
 
