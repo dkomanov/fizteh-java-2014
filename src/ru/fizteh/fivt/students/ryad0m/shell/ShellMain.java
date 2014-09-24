@@ -6,7 +6,10 @@ package ru.fizteh.fivt.students.ryad0m.shell;
 public class ShellMain {
 
     public static void main(String[] args) {
-        System.out.println("not working");
-        System.exit(0);
+        while ()
+        {
+
+        }
+
     }
 }
