@@ -6,38 +6,43 @@ import java.util.Stack;
 /**
  * Created by moskupols on 23.09.14.
  */
-abstract public class Operator {
+public abstract class Operator {
 
-    private final static HashMap<String, Operator> unaries, binaries, parentheses;
+    private static final HashMap<String, Operator> UNARIES;
+    private static final HashMap<String, Operator> BINARIES;
+    private static final HashMap<String, Operator> PARENTHESES;
 
     static {
-        unaries = new HashMap<>();
-        unaries.put("+", new UnaryPlusOperator());
-        unaries.put("-", new UnaryMinusOperator());
+        UNARIES = new HashMap<>();
+        UNARIES.put("+", new UnaryPlusOperator());
+        UNARIES.put("-", new UnaryMinusOperator());
     }
 
     static {
-        binaries = new HashMap<>();
-        binaries.put("+", new BinaryPlusOperator());
-        binaries.put("-", new BinaryMinusOperator());
-        binaries.put("*", new BinaryProductOperator());
-        binaries.put("/", new BinaryDivideOperator());
+        BINARIES = new HashMap<>();
+        BINARIES.put("+", new BinaryPlusOperator());
+        BINARIES.put("-", new BinaryMinusOperator());
+        BINARIES.put("*", new BinaryProductOperator());
+        BINARIES.put("/", new BinaryDivideOperator());
     }
 
     static {
-        parentheses = new HashMap<>();
-        parentheses.put("(", new ParenthesisOpenOperator("("));
+        PARENTHESES = new HashMap<>();
+        PARENTHESES.put("(", new ParenthesisOpenOperator("("));
 
-        parentheses.put(")", new ParenthesisCloseOperator(")"));
+        PARENTHESES.put(")", new ParenthesisCloseOperator(")"));
     }
 
-    static public Operator fromString(String s, boolean unaryPreferred) throws Exception {
-        if (unaryPreferred && unaries.containsKey(s))
-            return unaries.get(s);
-        if (binaries.containsKey(s))
-            return binaries.get(s);
-        if (parentheses.containsKey(s))
-            return parentheses.get(s);
+    public static Operator fromString(String s, boolean unaryPreferred) throws Exception {
+        if (unaryPreferred && UNARIES.containsKey(s)) {
+            return UNARIES.get(s);
+        }
+        if (BINARIES.containsKey(s)) {
+            return BINARIES.get(s);
+        }
+        if (PARENTHESES.containsKey(s)) {
+            return PARENTHESES.get(s);
+        }
         throw new Exception("The given lexeme '" + s + "' is not an operator");
     }
 

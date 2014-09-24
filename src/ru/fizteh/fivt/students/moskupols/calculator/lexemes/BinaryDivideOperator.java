@@ -6,7 +6,7 @@ import java.math.BigDecimal;
  * Created by moskupols on 23.09.14.
  * A binary '/' wrapper.
  */
-final public class BinaryDivideOperator extends BinaryOperator{
+public final class BinaryDivideOperator extends BinaryOperator{
     @Override
     public int priority() {
         return 10;

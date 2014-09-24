@@ -4,7 +4,7 @@ package ru.fizteh.fivt.students.moskupols.calculator.lexemes;
  * Created by moskupols on 23.09.14.
  * A binary '+' wrapper.
  */
-final public class BinaryPlusOperator extends BinaryOperator {
+public final class BinaryPlusOperator extends BinaryOperator {
     @Override
     public int priority() {
         return 5;

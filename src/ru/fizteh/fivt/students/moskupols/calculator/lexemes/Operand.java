@@ -11,7 +11,7 @@ public class Operand {
         this.value = value;
     }
 
-    static public Operand valueOf(String s) {
+    public static Operand valueOf(String s) {
         return new Operand(BigDecimal.valueOf(Double.valueOf(s)));
     }
 

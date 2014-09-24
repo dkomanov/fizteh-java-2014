@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.moskupols.calculator.lexemes;
 /**
  * Created by moskupols on 23.09.14.
  */
-final public class BinaryMinusOperator extends BinaryOperator {
+public final class BinaryMinusOperator extends BinaryOperator {
     @Override
     public int priority() {
         return 5;

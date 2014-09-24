@@ -65,27 +65,29 @@ class Calculator {
             if (op != null) {
                 if (op instanceof ParenthesisOpenOperator) {
                     emptyParentheses = true;
-                }
-                else if (emptyParentheses && op instanceof ParenthesisCloseOperator) {
-                    throw new Exception("Empty parentheses");
-                }
-                else {
-                    emptyParentheses = false;
+                } else {
+                    if (emptyParentheses && op instanceof ParenthesisCloseOperator) {
+                        throw new Exception("Empty parentheses");
+                    } else {
+                        emptyParentheses = false;
+                    }
                 }
 
                 op.affectExpression(operands, operators);
-            }
-            else {
+            } else {
                 operands.push(operand);
                 emptyParentheses = false;
             }
         }
-        if (!operators.isEmpty())
+        if (!operators.isEmpty()) {
             throw new Exception("Opening parenthesis '(' has no complement");
-        if (operands.size() > 1)
+        }
+        if (operands.size() > 1) {
             throw new Exception("Some of the numbers are not used in operations");
-        if (operands.isEmpty())
+        }
+        if (operands.isEmpty()) {
             throw new Exception("There are no numbers in the given string");
+        }
         return operands.peek().value;
     }
 
@@ -94,8 +96,9 @@ class Calculator {
         ArrayList<String> tokens = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
             String t = tokenizer.nextToken();
-            if (!t.trim().isEmpty())
+            if (!t.trim().isEmpty()) {
                 tokens.add(t);
+            }
         }
         return tokens;
     }
