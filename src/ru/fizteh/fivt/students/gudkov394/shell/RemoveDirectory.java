@@ -33,7 +33,7 @@ public class RemoveDirectory {
                 System.exit(3);
             }
             f.delete();
-        } else if (currentArgs[1].equals("-r")) {
+        } else if ("-r".equals(currentArgs[1])) {
             File f = new File(cd.getCurrentDirectory(), currentArgs[2]);
             if (!f.exists()) {
                 System.err.println("This directory doesn't exist");

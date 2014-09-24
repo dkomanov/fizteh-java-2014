@@ -14,9 +14,9 @@ public class ChangeDirectory {
         if (currentArgs.length == 1) {
             cd.changeCurrentDirectory(cd.getHome());
         } else {
-            if (currentArgs[1].equals(".")) {
+            if (".".equals(currentArgs[1])) {
 
-            } else if (currentArgs[1].equals("..")) {
+            } else if ("..".equals(currentArgs[1])) {
                 File f = new File(cd.getCurrentDirectory());
                 cd.changeCurrentDirectory(f.getParent());
             } else {

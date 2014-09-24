@@ -16,21 +16,21 @@ public class Shell {
     public void run(String[] currentArgs, CurrentDirectory cd) {
         if (currentArgs[0].equals("pwd")) {
             Pwd pwd = new Pwd(currentArgs, cd);
-        } else if (currentArgs[0].equals("mkdir")) {
+        } else if ("mkdir".equals(currentArgs[0])) {
             Mkdir mkdir = new Mkdir(currentArgs, cd);
-        } else if (currentArgs[0].equals("cd")) {
+        } else if ("cd".equals(currentArgs[0])) {
             ChangeDirectory changeDirectory = new ChangeDirectory(currentArgs, cd);
-        } else if (currentArgs[0].equals("rm")) {
+        } else if ("rm".equals(currentArgs[0])) {
             RemoveDirectory removeDerictory = new RemoveDirectory(currentArgs, cd);
-        } else if (currentArgs[0].equals("cp")) {
+        } else if ("cp".equals(currentArgs[0])) {
             Copy copy = new Copy(currentArgs, cd);
-        } else if (currentArgs[0].equals("mv")) {
+        } else if ("mv".equals(currentArgs[0])) {
             MoveFile moveFile = new MoveFile(currentArgs, cd);
-        } else if (currentArgs[0].equals("ls")) {
+        } else if ("ls".equals(currentArgs[0])) {
             Ls ls = new Ls(currentArgs, cd);
-        } else if (currentArgs[0].equals("exit")) {
+        } else if ("exit".equals(currentArgs[0])) {
             Exit exit = new Exit(currentArgs);
-        } else if (currentArgs[0].equals("cat")) {
+        } else if ("cat".equals(currentArgs[0])) {
             Cat cat = new Cat(currentArgs, cd);
 
         } else {
