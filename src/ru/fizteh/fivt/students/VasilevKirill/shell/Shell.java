@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by Vasilev Kirill on 22.09.2014.
  */
 public class Shell {
-    static String currentPath = "C:";
+    static String currentPath = "/home";
     private static Map<String, Command> commandMap = new HashMap<>();
 
     static {
