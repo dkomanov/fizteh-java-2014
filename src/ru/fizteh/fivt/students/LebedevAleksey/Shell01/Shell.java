@@ -6,190 +6,43 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class Shell {
-    private static String WrongQuoteStructureMessage = "Wrong quote structure.";
-    private boolean hasCorrectTerminated = false;
-
-    static String GetCurrentFolder() {
+public class Shell extends CommandParser {
+    static String getCurrentFolder() {
         return System.getProperty("user.dir");
     }
 
-    private static List<ParsedCommand> parseCommand(String input) throws ShellException {
-        List<CommandToken> tokensByQuote = splitCommandByQuote(input);
-        ArrayList<ArrayList<CommandToken>> commandsTokens = splitCommands(tokensByQuote);
-        return getParsedCommands(commandsTokens);
-    }
-
-    private static ArrayList<ArrayList<CommandToken>> splitCommands(List<CommandToken> tokensByQuote) {
-        ArrayList<ArrayList<CommandToken>> commandsTokens = new ArrayList<ArrayList<CommandToken>>(tokensByQuote.size());
-        commandsTokens.add(new ArrayList<CommandToken>());
-        for (int i = 0; i < tokensByQuote.size(); ++i) {
-            if (tokensByQuote.get(i).isWasInQuotes()) {
-                commandsTokens.get(commandsTokens.size() - 1).add(tokensByQuote.get(i));
-            } else {
-                String[] tokens = tokensByQuote.get(i).getValue().split("; ", -1);
-                for (int j = 0; j < tokens.length; ++j) {
-                    if (j > 0)
-                        commandsTokens.add(new ArrayList<CommandToken>());
-                    commandsTokens.get(commandsTokens.size() - 1).add(new CommandToken(tokens[j], false));
+    @Override
+    protected boolean invokeCommands(List<ParsedCommand> commands) throws ParserException {
+        for (ParsedCommand command : commands) {
+            if (command.getCommandName() != null) {
+                //command.getCommandName()!=null -> empty command - ignored
+                CommandNames commandType = CommandNames.getCommand(command.getCommandName());
+                Command action;
+                switch (commandType) {
+                    case CMD_LS:
+                        action = new CommandLs();
+                        break;
+                    case CMD_PWD:
+                        action = new CommandPwd();
+                        break;
+                    case CMD_EXIT:
+                        return exit();
+                    case CMD_CD:
+                        action = new CommandCd(command.getArguments());
+                        break;
+                    case CMD_CAT:
+                        action = new CommandCat(command.getArguments());
+                        break;
+                    case CMD_MKDIR:
+                        action = new CommandMkdir(command.getArguments());
+                        break;
+                    default:
+                        throw new CannotParseCommandException("Unknown command");
                 }
+                action.invoke();
             }
-        }
-        return commandsTokens;
-    }
-
-    private static List<CommandToken> splitCommandByQuote(String input) throws CannotParseCommandException {
-        List<CommandToken> result = new ArrayList<>();
-        int startIndex = 0;
-        while (startIndex >= 0) {
-            int index = input.indexOf('"', startIndex);
-            if (index < 0) {
-                result.add(new CommandToken(input.substring(startIndex), false));
-            } else {
-                result.add(new CommandToken(input.substring(startIndex, index), false));
-                startIndex = index + 1;
-                index = input.indexOf('"', startIndex);
-                if (index < 0)
-                    throw new CannotParseCommandException(WrongQuoteStructureMessage);
-                else
-                    result.add(new CommandToken(input.substring(startIndex, index), true));
-            }
-            startIndex = index;
-            if (startIndex > 0)
-                ++startIndex;
-        }
-        return result;
-    }
-
-
-    private static List<ParsedCommand> getParsedCommands(ArrayList<ArrayList<CommandToken>> commandsTokens)
-            throws CannotParseCommandException {
-        List<ParsedCommand> commands = new ArrayList<ParsedCommand>(commandsTokens.size());
-        for (ArrayList<CommandToken> currentCommand : commandsTokens) {
-            ArrayList<String> arguments = splitArguments(currentCommand);
-            ParsedCommand result = new ParsedCommand();
-            result.setCommandName(((arguments.size() > 0) ? arguments.get(0) : null));
-            String[] realArguments = new String[(arguments.size() > 0) ? arguments.size() - 1 : 0];
-            for (int i = 1; i < arguments.size(); ++i)
-                realArguments[i - 1] = arguments.get(i);
-            result.setArguments(realArguments);
-            commands.add(result);
-        }
-        System.out.println();
-
-        //TODO Remove
-        Log.println("--------------------");
-        for (int i = 0; i < commands.size(); i++) {
-            ParsedCommand command = commands.get(i);
-            Log.print(command.getCommandName() + " | ");
-            for (String str : command.getArguments()) {
-                Log.print("'" + str + "' ");
-            }
-            Log.println();
-        }
-
-        return commands;
-    }
-
-    private static ArrayList<String> splitArguments(ArrayList<CommandToken> currentCommand)
-            throws CannotParseCommandException {
-        ArrayList<String> arguments = new ArrayList<String>();
-        for (int i = 0; i < currentCommand.size(); ++i) {
-            CommandToken token = currentCommand.get(i);
-            if (token.isWasInQuotes()) {
-                arguments.add(token.getValue());
-                if (i + 1 < currentCommand.size() && (!currentCommand.get(i + 1).isWasInQuotes()))
-                    currentCommand.get(i + 1).setValue(TrimOneStartSpace(currentCommand.get(i + 1).getValue()));
-            } else {
-                if (i + 1 < currentCommand.size() && currentCommand.get(i + 1).isWasInQuotes())
-                    currentCommand.get(i).setValue(TrimOneEndSpace(currentCommand.get(i).getValue()));
-                if (token.getValue().length() > 0)
-                    arguments.addAll(Arrays.asList(token.getValue().split(" ", -1)));
-            }
-        }
-        while (arguments.size() > 0 && (arguments.get(arguments.size() - 1).equals(""))) {
-            arguments.remove(arguments.size() - 1);
-        }
-        int trimStartIndex = 0;
-        while (trimStartIndex < arguments.size() && (arguments.get(trimStartIndex).equals("")))
-            ++trimStartIndex;
-        for (int i = trimStartIndex; i < arguments.size(); ++i)
-            arguments.set(i - trimStartIndex, arguments.get(i));
-        for (int i = 0; i < trimStartIndex; ++i)
-            arguments.remove(arguments.size() - 1);
-        return arguments;
-    }
-
-    private static String TrimOneEndSpace(String line) throws CannotParseCommandException {
-        if (line.length() != 0) {
-            if (line.charAt(line.length() - 1) == ' ')
-                return line.substring(0, line.length() - 1);
-            else
-                throw new CannotParseCommandException("Where is no space between to arguments.");
-        } else
-            return line;
-    }
-
-    private static String TrimOneStartSpace(String line) throws CannotParseCommandException {
-        if (line.length() == 0)
-            return line;
-        else {
-            if (line.charAt(0) == ' ')
-                return line.substring(1);
-            else
-                throw new CannotParseCommandException("Where is no space between to arguments.");
-        }
-    }
-
-    public boolean isCorrectTerminated() {
-        return hasCorrectTerminated;
-    }
-
-    public boolean invokeCommand(String input) {
-        try {
-            List<ParsedCommand> commands = parseCommand(input);
-            //return invokeCommands(commands);
-            return false;//TODO
-        } catch (ShellException ex) {
-            System.err.println("Error: " + ex.getMessage());
-            return false;
-        }
-    }
-
-    private boolean invokeCommands(List<ParsedCommand> commands) throws ShellException {
-        try {
-            for (ParsedCommand command : commands) {
-                if (command.getCommandName() != null) {
-                    //command.getCommandName()!=null -> empty command - ignored
-                    CommandNames commandType = CommandNames.getCommand(command.getCommandName());
-                    switch (commandType) {
-                        case CMD_LS:
-                            new CommandLs().invoke();
-                            break;
-                        case CMD_PWD:
-                            new CommandPwd().invoke();
-                            break;
-                        case CMD_EXIT:
-                            this.hasCorrectTerminated = true;
-                            return false;
-                        case CMD_CD:
-                            new CommandCd(command.getArguments()).invoke();
-                            break;
-                        case CMD_CAT:
-                            new CommandCat(command.getArguments()).invoke();
-                            break;
-                        case CMD_MKDIR:
-                            new CommandMkdir(command.getArguments()).invoke();
-                            break;
-                    }
-                }
-            }
-        } catch (CommandInvokeException ex) {
-            System.err.println(new StringBuilder().append(ex.commandName).append(": ") + ex.getMessage());
         }
         return true;
     }
@@ -207,7 +60,7 @@ public class Shell {
             typeValue = type;
         }
 
-        static public CommandNames getCommand(String pType) throws CannotParseCommandException {
+        public static CommandNames getCommand(String pType) throws CannotParseCommandException {
             for (CommandNames type : CommandNames.values()) {
                 if (type.getName().equals(pType)) {
                     return type;
@@ -222,76 +75,8 @@ public class Shell {
 
     }
 
-    static private class ParsedCommand {
-        private String[] Arguments;
-        private String CommandName;
-
-        public String getCommandName() {
-            return CommandName;
-        }
-
-        public void setCommandName(String commandName) {
-            CommandName = commandName;
-        }
-
-        public String[] getArguments() {
-            return Arguments;
-        }
-
-        public void setArguments(String[] arguments) {
-            Arguments = arguments;
-        }
-    }
-
-    static private class CommandToken {
-        private String value;
-        private boolean wasInQuotes;
-
-        CommandToken(String value, boolean wasInQuotes) {
-            this.value = value;
-            this.wasInQuotes = wasInQuotes;
-        }
-
-        String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        boolean isWasInQuotes() {
-            return wasInQuotes;
-        }
-
-    }
-
-    private static class CannotParseCommandException extends ShellException {
-        CannotParseCommandException(String message) {
-            super(message);
-        }
-    }
-
-    private class CommandInvokeException extends ShellException {
-        private String commandName;
-
-        CommandInvokeException(String message, String commandName) {
-            super(message);
-            this.commandName = commandName;
-        }
-
-        CommandInvokeException(String message, String commandName, Throwable ex) {
-            super(message, ex);
-            this.commandName = commandName;
-        }
-
-        public String getCommandName() {
-            return commandName;
-        }
-    }
-
-    abstract private class Command {
-        protected final static String FileNotFoundMessage = "': No such file or directory";
+    private abstract class Command {
+        protected static final String FILE_NOT_FOUND_MESSAGE = "': No such file or directory";
         private String[] arguments;
 
         protected Command(String[] args) {
@@ -304,7 +89,7 @@ public class Shell {
 
         abstract void invoke() throws CommandInvokeException;
 
-        protected String GetFirstArgument() throws CommandInvokeException {
+        protected String getFirstArgument() throws CommandInvokeException {
             if (arguments.length == 1) {
                 return arguments[0];
             } else {
@@ -316,7 +101,7 @@ public class Shell {
     private class CommandLs extends Command {
         @Override
         void invoke() throws CommandInvokeException {
-            File[] files = new File(Shell.GetCurrentFolder()).listFiles();
+            File[] files = new File(Shell.getCurrentFolder()).listFiles();
             if (files == null) {
                 throw new CommandInvokeException("Can't found current directory.", CommandNames.CMD_LS.getName());
             } else {
@@ -334,8 +119,8 @@ public class Shell {
 
         @Override
         void invoke() throws CommandInvokeException {
-            String arg = GetFirstArgument();
-            String currentPath = Shell.GetCurrentFolder();
+            String arg = getFirstArgument();
+            String currentPath = Shell.getCurrentFolder();
             Path path = new File(currentPath).toPath();
             File newPath = path.resolve(arg).toAbsolutePath().toFile();
             if (newPath.exists() && newPath.isDirectory()) {
@@ -346,7 +131,7 @@ public class Shell {
                             CommandNames.CMD_CD.getName(), ex);
                 }
             } else {
-                throw new CommandInvokeException("'" + arg + FileNotFoundMessage,
+                throw new CommandInvokeException("'" + arg + FILE_NOT_FOUND_MESSAGE,
                         CommandNames.CMD_CD.getName());
             }
         }
@@ -359,7 +144,7 @@ public class Shell {
 
         @Override
         void invoke() throws CommandInvokeException {
-            String filename = GetFirstArgument();
+            String filename = getFirstArgument();
             try (FileInputStream stream = new FileInputStream(filename)) {
                 try (InputStreamReader reader = new InputStreamReader(stream)) {
                     boolean canRead = true;
@@ -374,7 +159,8 @@ public class Shell {
                     System.out.println();
                 }
             } catch (Throwable ex) {
-                throw new CommandInvokeException("'" + filename + FileNotFoundMessage, CommandNames.CMD_CAT.getName());
+                throw new CommandInvokeException("'" + filename + FILE_NOT_FOUND_MESSAGE,
+                        CommandNames.CMD_CAT.getName());
             }
         }
     }
@@ -386,11 +172,12 @@ public class Shell {
 
         @Override
         void invoke() throws CommandInvokeException {
-            String filename = GetFirstArgument();
+            String filename = getFirstArgument();
             try {
-                Files.createDirectory(new File(Shell.GetCurrentFolder()).toPath().resolve(filename));
+                Files.createDirectory(new File(Shell.getCurrentFolder()).toPath().resolve(filename));
             } catch (Throwable ex) {
-                throw new CommandInvokeException("'" + filename + FileNotFoundMessage, CommandNames.CMD_CAT.getName());
+                throw new CommandInvokeException("'" + filename + FILE_NOT_FOUND_MESSAGE,
+                        CommandNames.CMD_CAT.getName());
             }
         }
     }
@@ -398,32 +185,7 @@ public class Shell {
     private class CommandPwd extends Command {
         @Override
         void invoke() throws CommandInvokeException {
-            System.out.println(Shell.GetCurrentFolder());
+            System.out.println(Shell.getCurrentFolder());
         }
-    }
-}
-
-class ShellException extends Exception {
-    ShellException(String message) {
-        super(message);
-    }
-
-    ShellException(String message, Throwable ex) {
-        super(message, ex);
-    }
-
-}
-
-class Log {
-    static void println() {
-        println("");
-    }
-
-    static void println(String line) {
-        System.out.println(line);
-    }
-
-    static void print(String line) {
-        System.out.print(line);
     }
 }
