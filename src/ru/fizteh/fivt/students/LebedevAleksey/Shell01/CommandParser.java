@@ -3,10 +3,7 @@ package ru.fizteh.fivt.students.LebedevAleksey.Shell01;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public abstract class CommandParser {
     private boolean hasCorrectTerminated = false;
@@ -76,6 +73,25 @@ public abstract class CommandParser {
         return getParsedCommands(commandsTokens);
     }
 
+    private List<ParsedCommand> parseCommand(String[] input) throws ParserException {
+        ArrayList<ArrayList<CommandToken>> commandsTokens = new ArrayList<>();
+        commandsTokens.add(new ArrayList<CommandToken>());
+        for (String arg : input) {
+            int length = arg.length();
+            if (length > 0 && arg.charAt(length - 1) == ';') {
+                addAtEnd(commandsTokens, arg.substring(0, length - 1));
+                commandsTokens.add(new ArrayList<CommandToken>());
+            } else {
+                addAtEnd(commandsTokens, arg);
+            }
+        }
+        return getParsedCommands(commandsTokens);
+    }
+
+    private void addAtEnd(ArrayList<ArrayList<CommandToken>> commandsTokens, String arg) {
+        commandsTokens.get(commandsTokens.size() - 1).add(new CommandToken(arg, false));
+    }
+
     private ArrayList<ArrayList<CommandToken>> splitCommands(List<CommandToken> tokensByQuote) {
         ArrayList<ArrayList<CommandToken>> commandsTokens = new ArrayList<>(tokensByQuote.size());
         commandsTokens.add(new ArrayList<CommandToken>());
@@ -88,7 +104,7 @@ public abstract class CommandParser {
                     if (j > 0) {
                         commandsTokens.add(new ArrayList<CommandToken>());
                     }
-                    commandsTokens.get(commandsTokens.size() - 1).add(new CommandToken(tokens[j], false));
+                    addAtEnd(commandsTokens, tokens[j]);
                 }
             }
         }
@@ -158,10 +174,21 @@ public abstract class CommandParser {
             Scanner scanner = new Scanner(System.in);
             String command;
             do {
-                System.out.print("$ ");
-                command = scanner.nextLine();
-                invokeCommand(command);
+                try {
+                    System.out.print("$ ");
+                    command = scanner.nextLine();
+                    invokeCommand(command);
+                } catch (NoSuchElementException ex) {
+                    System.err.println("Error: Can not read");
+                    break;
+                } catch (Throwable ex) {
+                    System.err.println("Something really bad happened: " + ex.getMessage());
+                }
             } while (!isCorrectTerminated());
+        } else {
+            if (invokeCommand(args)) {
+                hasCorrectTerminated = true;
+            }
         }
         if (!isCorrectTerminated()) {
             System.exit(1);
@@ -169,6 +196,23 @@ public abstract class CommandParser {
     }
 
     public boolean invokeCommand(String input) {
+        try {
+            List<ParsedCommand> commands = parseCommand(input);
+            return invokeCommands(commands);
+        } catch (CommandInvokeException ex) {
+            printInvokeError(ex);
+        } catch (ParserException ex) {
+            System.err.println("Error: " + ex.getMessage());
+        }
+        System.err.flush();
+        return false;
+    }
+
+    private void printInvokeError(CommandInvokeException ex) {
+        System.err.println(new StringBuilder().append(ex.getCommandName()).append(": ").append(ex.getMessage()));
+    }
+
+    public boolean invokeCommand(String[] input) {
         try {
             List<ParsedCommand> commands = parseCommand(input);
             return invokeCommands(commands);
