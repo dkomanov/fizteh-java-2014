@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption;
 /*работает*/
 
 public class MoveFile {
-    public MoveFile(String[] currentArgs, CurrentDirectory cd) {
+    public MoveFile(final String[] currentArgs, final CurrentDirectory cd) {
         if (currentArgs.length > 3) {
             System.err.println("extra arguments for mv");
             System.exit(1);
