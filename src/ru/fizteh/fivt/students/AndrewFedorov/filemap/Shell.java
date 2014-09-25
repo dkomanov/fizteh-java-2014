@@ -128,11 +128,14 @@ public class Shell {
 
 	// setting db file name
 	dbFileName = System.getProperty(DB_FILE_PROPERTY_NAME);
-
+	
 	// reading map from db
 	databaseMap = new HashMap<>();
 
 	try {
+	    if (dbFileName == null) {
+		Utility.handleError("Please specify database file path");
+	    }
 	    Path dbPath = Paths.get(dbFileName);
 
 	    if (!Files.exists(dbPath)) {
