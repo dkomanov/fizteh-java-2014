@@ -28,5 +28,4 @@ public final class UnaryMinusOperator extends Lexeme {
     public void addLexeme(Stack<NumberLexeme> results, Stack<Lexeme> operations) throws Exception {
         operations.push(this);
     }
-    
 }
