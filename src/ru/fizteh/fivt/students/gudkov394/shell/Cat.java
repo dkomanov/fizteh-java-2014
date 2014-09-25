@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 /*проверено, работает*/
 public class Cat {
-    public Cat(String[] currentArgs, CurrentDirectory cd) {
+    public Cat(final String[] currentArgs, final CurrentDirectory cd) {
         if (currentArgs.length > 2) {
             System.err.println("extra arguments for Cat");
             System.exit(1);

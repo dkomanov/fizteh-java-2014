@@ -17,9 +17,9 @@ public class CurrentDirectory {
         return (new File("").getAbsolutePath());
     }
 
-    public void changeCurrentDirectory(String s) {
+    public void changeCurrentDirectory(final String s) {
         currentDirectory = s;
     }
 
-    
+
 }

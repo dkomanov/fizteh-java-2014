@@ -7,7 +7,7 @@ import java.nio.file.StandardCopyOption;
 /*работает*/
 
 public class Copy {
-    private void copyRecursive(File from, File to) {
+    private void copyRecursive(final File from, final File to) {
         try {
             CopyOption[] options = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
             Files.copy(from.toPath(), to.toPath(), options);
@@ -15,21 +15,25 @@ public class Copy {
             System.err.println("problem with copy");
             System.exit(3);
         }
-
+        File[] arrayOfFile = null;
         if (from.isDirectory()) {
             try {
-                for (File f : from.listFiles()) {
-                    File newTo = new File(to.getAbsolutePath(), f.getName());
-                    copyRecursive(f, newTo);
-                }
+                arrayOfFile = from.listFiles();
             } catch (NullPointerException e1) {
                 System.err.println("Sorry, problem with ListFiles in copy_recursive");
                 System.exit(3);
             }
+            if (arrayOfFile != null) {
+                for (File f : arrayOfFile) {
+                    File newTo = new File(to.getAbsolutePath(), f.getName());
+                    copyRecursive(f, newTo);
+                }
+            }
+
         }
     }
 
-    public Copy(String[] currentArgs, CurrentDirectory cd) {
+    public Copy(final String[] currentArgs, final CurrentDirectory cd) {
         if (currentArgs.length > 4) {
             System.out.println("more than 4 arguments to cp");
             System.exit(1);

@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.gudkov394.shell;
 import java.util.Scanner;
 
 public class Shell {
-    public Boolean checkName(String name) {
+    public Boolean checkName(final String name) {
         String[] s = {"ls", "pwd", "cd", "mkdir", "rm", "cp", "mv", "cat", "exit"};
         for (int i = 0; i < s.length; ++i) {
             if (name.equals(s[i])) {
@@ -13,7 +13,7 @@ public class Shell {
         return false;
     }
 
-    public void run(String[] currentArgs, CurrentDirectory cd) {
+    public void run(final String[] currentArgs, final CurrentDirectory cd) {
         if (currentArgs[0].equals("pwd")) {
             Pwd pwd = new Pwd(currentArgs, cd);
         } else if ("mkdir".equals(currentArgs[0])) {
@@ -54,7 +54,7 @@ public class Shell {
 
     }
 
-    public void packageMode(String[] args) {
+    public void packageMode(final String[] args) {
         CurrentDirectory currentDirectory = new CurrentDirectory();
         int i = 0;
         while (i < args.length) {
@@ -72,7 +72,7 @@ public class Shell {
     }
 
 
-    public Shell(String[] args) {
+    public Shell(final String[] args) {
         if (args.length == 0) {
             interactive();
         } else {

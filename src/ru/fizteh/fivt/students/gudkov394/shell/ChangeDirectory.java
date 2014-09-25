@@ -6,7 +6,7 @@ import java.io.IOException;
 
 //работает
 public class ChangeDirectory {
-    public ChangeDirectory(String[] currentArgs, CurrentDirectory cd) {
+    public ChangeDirectory(final String[] currentArgs, final CurrentDirectory cd) {
         if (currentArgs.length > 2) {
             System.err.println("extra arguments for cd");
             System.exit(1);

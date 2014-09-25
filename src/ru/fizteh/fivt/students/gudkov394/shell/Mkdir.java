@@ -4,7 +4,7 @@ import java.io.File;
 
 //работает
 public class Mkdir {
-    public Mkdir(String[] currentArgs, CurrentDirectory cd) {
+    public Mkdir(final String[] currentArgs, final CurrentDirectory cd) {
         if (currentArgs.length > 2) {
             System.err.println("extra arguments for mkdir");
             System.exit(1);
