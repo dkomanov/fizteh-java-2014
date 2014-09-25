@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class ListCommand implements Command {
 
-    Table db;
+    private Table db;
 
     public ListCommand(Table t) {
         db = t;
