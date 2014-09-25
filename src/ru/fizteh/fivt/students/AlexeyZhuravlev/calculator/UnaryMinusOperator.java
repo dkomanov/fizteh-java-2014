@@ -8,6 +8,7 @@ import java.util.Stack;
  */
 
 public final class UnaryMinusOperator extends Lexeme {
+    
     @Override
     protected int priority() {
         return 3;

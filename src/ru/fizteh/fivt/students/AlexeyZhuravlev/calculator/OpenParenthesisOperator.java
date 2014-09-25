@@ -6,6 +6,7 @@ import java.util.Stack;
  * @author AlexeyZhuravlev
  */
 public final class OpenParenthesisOperator extends Lexeme {
+
     @Override
     protected int priority() {
         return 0;
@@ -20,4 +21,5 @@ public final class OpenParenthesisOperator extends Lexeme {
     public void addLexeme(Stack<NumberLexeme> results, Stack<Lexeme> operations) throws Exception {
         operations.push(this);
     }
+
 }

@@ -8,6 +8,7 @@ import java.util.Stack;
  */
 
 public abstract class Lexeme {
+
     public static Lexeme fromString(String s) throws Exception {
         if (s.length() < 1)
             throw new Exception("Empty string is not a lexeme");

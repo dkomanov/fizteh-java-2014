@@ -8,6 +8,7 @@ import java.util.EmptyStackException;
  */
 
 public final class DivideOperator extends Lexeme {
+
     @Override
     protected int priority() {
         return 2;

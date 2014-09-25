@@ -8,6 +8,7 @@ import java.util.Stack;
  */
 
 public final class PlusOperator extends Lexeme {
+
     @Override
     protected int priority() {
         return 1;
@@ -23,4 +24,5 @@ public final class PlusOperator extends Lexeme {
             throw new Exception("Not enough arguments for plus operation");
         }
     }
+
 }

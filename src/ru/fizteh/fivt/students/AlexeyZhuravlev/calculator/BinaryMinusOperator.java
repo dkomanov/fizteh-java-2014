@@ -8,6 +8,7 @@ import java.util.Stack;
  */
 
 public final class BinaryMinusOperator extends Lexeme {
+
     @Override
     protected int priority() {
         return 1;

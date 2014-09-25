@@ -8,6 +8,7 @@ import java.util.Stack;
  */
 
 public final class CloseParenthesisOperator extends Lexeme {
+
     @Override
     protected int priority() throws Exception {
         throw new Exception("Logical error: close parenthesis is never checked for priority");
