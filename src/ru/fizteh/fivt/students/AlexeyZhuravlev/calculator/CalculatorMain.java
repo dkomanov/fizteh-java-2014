@@ -23,17 +23,16 @@ public class CalculatorMain {
         }
     }
 
-    private static double calculate(String input_string) throws Exception
-    {
-        input_string = "(" + input_string.replaceAll(" ", "") + ")";
-        input_string = mark_unary_minuses(input_string, '~');
-        StringTokenizer tokenizer = new StringTokenizer(input_string, "+-*/()~", true);
+    private static double calculate(String inputString) throws Exception {
+        inputString = "(" + inputString.replaceAll(" ", "") + ")";
+        inputString = markUnaryMinuses(inputString, '~');
+        StringTokenizer tokenizer = new StringTokenizer(inputString, "+-*/()~", true);
         Stack<NumberLexeme> results = new Stack<NumberLexeme>();
         Stack<Lexeme> operations = new Stack<Lexeme>();
         while (tokenizer.hasMoreTokens()) {
             String t = tokenizer.nextToken();
             Lexeme lex = Lexeme.fromString(t);
-            lex.add_lexeme(results, operations);
+            lex.addLexeme(results, operations);
         }
         if (!operations.isEmpty())
             throw new Exception("No parenthesis balance");
@@ -44,20 +43,18 @@ public class CalculatorMain {
         return results.peek().value;
     }
 
-    private static String mark_unary_minuses(String s, char new_symbol) throws Exception
-    {
+    private static String markUnaryMinuses(String s, char newSymbol) throws Exception {
         String result = "(";
-        String correct_symbols = "01234567890.+-*/()";
-        for (int i = 1; i < s.length(); i++)
-        {
+        String correctSymbols = "01234567890.+-*/()";
+        for (int i = 1; i < s.length(); i++) {
             char current = s.charAt(i);
             char previous = s.charAt(i - 1);
-            if (correct_symbols.indexOf(current) == -1)
+            if (correctSymbols.indexOf(current) == -1)
                 throw new Exception("Incorrect symbol in equation");
             if (current == ')' && previous == '(')
                 throw new Exception("Empty parenthesis");
             if (current == '-' && previous != ')' && !Character.isDigit(previous))
-                current = new_symbol;
+                current = newSymbol;
             result = result + current;
         }
         return result;

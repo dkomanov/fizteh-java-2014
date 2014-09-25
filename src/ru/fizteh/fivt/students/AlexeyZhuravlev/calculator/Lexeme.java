@@ -7,9 +7,8 @@ import java.util.Stack;
  * @author AlexeyZhuravlev
  */
 
-abstract public class Lexeme {
-    static public Lexeme fromString(String s) throws Exception
-    {
+public abstract class Lexeme {
+    public static Lexeme fromString(String s) throws Exception {
         if (s.length() < 1)
             throw new Exception("Empty string is not a lexeme");
         switch(s.charAt(0)) {
@@ -29,16 +28,15 @@ abstract public class Lexeme {
         }
     }
 
-    abstract protected int priority() throws Exception;
+    protected abstract int priority() throws Exception;
 
-    protected abstract void make_operation(Stack<NumberLexeme> results) throws Exception;
+    protected abstract void makeOperation(Stack<NumberLexeme> results) throws Exception;
 
-    public void add_lexeme(Stack<NumberLexeme> results, Stack<Lexeme> operations) throws Exception
-    {
+    public void addLexeme(Stack<NumberLexeme> results, Stack<Lexeme> operations) throws Exception {
         try {
             while (operations.peek().priority() >= this.priority()) {
                 Lexeme operation = operations.pop();
-                operation.make_operation(results);
+                operation.makeOperation(results);
             }
             operations.push(this);
         } catch (EmptyStackException e) {

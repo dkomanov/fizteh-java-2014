@@ -7,17 +7,14 @@ import java.util.Stack;
  * @author AlexeyZhuravlev
  */
 
-public class UnaryMinusOperator extends Lexeme
-{
+public final class UnaryMinusOperator extends Lexeme {
     @Override
-    protected int priority()
-    {
+    protected int priority() {
         return 3;
     }
 
     @Override
-    protected void make_operation(Stack<NumberLexeme> results) throws Exception
-    {
+    protected void makeOperation(Stack<NumberLexeme> results) throws Exception {
         try {
             NumberLexeme item = results.pop();
             results.push(new NumberLexeme(-item.value));
@@ -27,8 +24,7 @@ public class UnaryMinusOperator extends Lexeme
     }
 
     @Override
-    public void add_lexeme(Stack<NumberLexeme> results, Stack<Lexeme> operations) throws Exception
-    {
+    public void addLexeme(Stack<NumberLexeme> results, Stack<Lexeme> operations) throws Exception {
         operations.push(this);
     }
 

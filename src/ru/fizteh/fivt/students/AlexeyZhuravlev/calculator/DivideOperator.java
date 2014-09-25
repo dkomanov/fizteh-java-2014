@@ -7,16 +7,14 @@ import java.util.EmptyStackException;
  * @author AlexeyZhuravlev
  */
 
-public class DivideOperator extends Lexeme{
+public final class DivideOperator extends Lexeme {
     @Override
-    protected int priority()
-    {
+    protected int priority() {
         return 2;
     }
 
     @Override
-    protected void make_operation(Stack<NumberLexeme> results) throws Exception
-    {
+    protected void makeOperation(Stack<NumberLexeme> results) throws Exception {
         try {
             NumberLexeme second = results.pop();
             NumberLexeme first = results.pop();
