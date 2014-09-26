@@ -37,7 +37,7 @@ public class Cp implements ShellCommand {
 		}
 
 		if (fileNew.exists()) {
-			if (fileNew.isFile())
+			if (fileNew.isFile()) {
 				try {
 					fileNew.mkdir();
 					copyrecursive(fileToCopy, fileNew);
@@ -45,10 +45,11 @@ public class Cp implements ShellCommand {
 					System.out.println("cp: Error " + e.getMessage());
 					return false;
 				}
-			else if (fileNew.isDirectory())
+			} else if (fileNew.isDirectory()) {
 				fileNew = new File(destination
 						+ System.getProperty("file.separator")
 						+ fileToCopy.getName());
+			}
 			try {
 				fileNew.mkdir();
 				copyrecursive(fileToCopy, fileNew);
@@ -111,17 +112,18 @@ public class Cp implements ShellCommand {
 		}
 
 		if (fileNew.exists()) {
-			if (fileNew.isFile())
+			if (fileNew.isFile()) {
 				try {
 					Files.copy(fileToCopy.toPath(), fileNew.toPath());
 				} catch (IOException e) {
 					System.out.println("cp: Error " + e.getMessage());
 					return false;
 				}
-			else if (fileNew.isDirectory())
+			} else if (fileNew.isDirectory()) {
 				fileNew = new File(destination
 						+ System.getProperty("file.separator")
 						+ fileToCopy.getName());
+			}
 			try {
 				Files.copy(fileToCopy.toPath(), fileNew.toPath());
 			} catch (IOException e) {
@@ -142,9 +144,10 @@ public class Cp implements ShellCommand {
 
 	@Override
 	public boolean execute() {
-		if (recursive)
+		if (recursive) {
 			return copyDirectory(source, destination);
-		else
+		} else {
 			return copyFile(source, destination);
+		}
 	}
 }

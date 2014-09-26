@@ -18,51 +18,32 @@ public class Parser {
 	public static String pathConverter(String Path, String currentPath) {
 		File f = new File(currentPath);
 
-		if (OsData.getOsType().equals("nix")) {
-
-			if (Path.equals("/"))
-				return "/";
-			else if (Path.startsWith("~"))
-				return System.getProperty("user.home") + Path.substring(1);
-			else if (Path.equals("") || Path.equals(" "))
-				return System.getProperty("user.home");
-			else if (Path.length() >= 2 && Path.substring(0, 2).equals("..")) {
-				if (f.getParent() == null) {
-					return "/" + Path.substring(2);
-				}
-				return f.getParent() + Path.substring(2);
-			} else if (Path.startsWith("."))
-				return currentPath + Path.substring(1);
-
-			if (!(Path.startsWith("/", 0))) {
-				if (currentPath.equals("/")) {
-					Path = currentPath + Path;
-				} else {
-					Path = currentPath + "/" + Path;
-				}
+		if (Path.equals("/") || Path.equals("\\")) {
+			return "/";
+		} else if (Path.startsWith("~")) {
+			return System.getProperty("user.home") + Path.substring(1);
+		} else if (Path.equals("") || Path.equals(" ")) {
+			return System.getProperty("user.home");
+		} else if (Path.length() >= 2 && Path.substring(0, 2).equals("..")) {
+			if (f.getParent() == null) {
+				return "/" + Path.substring(2);
 			}
+			return f.getParent() + Path.substring(2);
+		} else if (Path.startsWith(".")) {
+			return currentPath + Path.substring(1);
+		}
+		if (Path.startsWith("\\", 0) || Path.startsWith("/", 0)) {
+			Path = "C:" + Path;
+		} else if (!(Path.startsWith(":", 1))) {
+			Path = currentPath + "\\" + Path;
+		}
 
-		} else {
-			if (Path.equals("/") || Path.equals("\\"))
-				return "C:\\";
-			else if (Path.startsWith("~"))
-				return System.getProperty("user.home") + Path.substring(1);
-			else if (Path.equals("") || Path.equals(" "))
-				return System.getProperty("user.home");
-			else if (Path.length() >= 2 && Path.substring(0, 2).equals("..")) {
-				if (f.getParent() == null) {
-					return "C:\\" + Path.substring(2);
-				}
-				return f.getParent() + Path.substring(2);
-			} else if (Path.startsWith("."))
-				return currentPath + Path.substring(1);
-
-			if (Path.startsWith("\\", 0) || Path.startsWith("/", 0)) {
-				Path = "C:" + Path;
-			} else if (!(Path.startsWith(":", 1))) {
-				Path = currentPath + "\\" + Path;
+		if (!(Path.startsWith("/", 0) || Path.startsWith(":", 1))) {
+			if (currentPath.equals("/")) {
+				Path = currentPath + Path;
+			} else {
+				Path = currentPath + "/" + Path;
 			}
-
 		}
 
 		return Path;
@@ -78,13 +59,15 @@ public class Parser {
 					for (int j = i + 1; j < temp.length; j++) {
 						if (temp[j] != ' ') {
 							if (temp[j] == '"') {
-								for (int k = i; k <= j; k++)
+								for (int k = i; k <= j; k++) {
 									temp[k] = (char) -11;
+								}
 								temp[i] = (char) -10;
 								temp[j] = (char) -10;
 								break;
-							} else
+							} else {
 								break;
+							}
 						}
 					}
 				}
@@ -103,8 +86,9 @@ public class Parser {
 	}
 
 	public static String brakedString(String line) {
-		if (line.startsWith("\"") && line.endsWith("\""))
+		if (line.startsWith("\"") && line.endsWith("\"")) {
 			line = line.substring(1, line.length() - 1);
+		}
 		return line;
 	}
 
@@ -123,17 +107,19 @@ public class Parser {
 			case "mv":
 				return new Mv(Shell.currentPath, comArgs[1], comArgs[2]);
 			case "cp":
-				if (comArgs[1].equals("-r"))
+				if (comArgs[1].equals("-r")) {
 					return new Cp(Shell.currentPath, comArgs[2], comArgs[3],
 							true);
-				else
+				} else {
 					return new Cp(Shell.currentPath, comArgs[1], comArgs[2],
 							false);
+				}
 			case "rm":
-				if (comArgs[1].equals("-r"))
+				if (comArgs[1].equals("-r")) {
 					return new Run(Shell.currentPath, comArgs[2], true);
-				else
+				} else {
 					return new Run(Shell.currentPath, comArgs[1], false);
+				}
 			case "mkdir":
 				return new Mkdir(Shell.currentPath, comArgs[1]);
 			case "":
@@ -147,8 +133,9 @@ public class Parser {
 			}
 
 		} catch (ArrayIndexOutOfBoundsException e) {
-			if (comName.equals("cd"))
+			if (comName.equals("cd")) {
 				return new Cd(Shell.currentPath, "");
+			}
 
 			System.out.println(str + ": Wrong command syntax");
 			return new EmptyCommand();

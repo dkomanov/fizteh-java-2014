@@ -9,7 +9,6 @@ public class Shell {
 	public static String currentPath;
 
 	public static void main(String[] args) throws IOException {
-		OsData.setOsSettings();
 		currentPath = System.getProperty("user.home");
 
 		if (args.length == 0) {
@@ -66,8 +65,9 @@ public class Shell {
 			for (String commandsString1 : commandsString) {
 				ShellCommand command = Parser
 						.getCommandFromString(commandsString1);
-				if (command.getClass() == Exit.class)
+				if (command.getClass() == Exit.class) {
 					System.exit(0);
+				}
 				command.execute();
 			}
 

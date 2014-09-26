@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
-import ru.fizteh.fivt.students.maxim_rep.shell.*;
 import java.io.File;
 
 public class Ls implements ShellCommand {
@@ -19,9 +18,7 @@ public class Ls implements ShellCommand {
 	public boolean execute() {
 		File f = new File(currentPath);
 		if (!f.exists()) {
-			System.err
-					.println("Current directory doesn't exists, returning to root.");
-			Shell.currentPath = OsData.root;
+			System.err.println("Current directory doesn't exists.");
 			return false;
 		} else {
 			String[] filelist = f.list();
