@@ -28,6 +28,7 @@ public class Shell {
             System.exit(1);
         }
     }
+
     void interactiveMode() {
 
         Scanner scanner = new Scanner(System.in);
@@ -47,36 +48,55 @@ public class Shell {
 
     void runCommands(String str) throws Exception {
         ArrayList<ArrayList<String>> commands = new ArrayList<ArrayList<String>>();
-        ArrayList<String> tempStr = new ArrayList<String>(Arrays.asList(str.split(";")));
+        ArrayList<String> tempStr = new ArrayList<String>(Arrays.asList(str.trim().split(";")));
 
         for (String it : tempStr) {
-            ArrayList<String> t = new ArrayList<String>(Arrays.asList(it.split(" ")));
+            ArrayList<String> t = new ArrayList<String>(Arrays.asList(it.trim().split("\\s+")));
             commands.add(t);
         }
 
         for (ArrayList<String> it : commands) {
 
             String cmd = it.get(0);
-            if (cmd.equals("exit"))
+
+            if (cmd.equals("exit")) {
+                if (it.size() > 1) {
+                    throw new Exception(cmd + ": too much arguments");
+                }
                 System.exit(0);
-            else if (cmd.equals("pwd"))
+            } else if (cmd.equals("pwd")) {
+                if (it.size() > 1) {
+                    throw new Exception(cmd + ": too much arguments");
+                }
                 pwdCommand();
-            else if (cmd.equals("ls"))
+            } else if (cmd.equals("ls")) {
+                if (it.size() > 1) {
+                    throw new Exception(cmd + ": too much arguments");
+                }
                 lsCommand();
-            else if (cmd.equals("cd")) {
+            } else if (cmd.equals("cd")) {
                 try {
+                    if (it.size() > 2) {
+                        throw new Exception(cmd + ": too much arguments");
+                    }
                     cdCommand(it.get(1));
                 } catch (IndexOutOfBoundsException e) {
                     throw new Exception("usage: cd <dirname>");
                 }
             } else if (cmd.equals("cat")) {
                 try {
+                    if (it.size() > 2) {
+                        throw new Exception(cmd + ": too much arguments");
+                    }
                     catCommand(it.get(1));
                 } catch (IndexOutOfBoundsException e) {
                     throw new Exception("usage: cat <filename>");
                 }
             } else if (cmd.equals("mkdir")) {
                 try {
+                    if (it.size() > 2) {
+                        throw new Exception(cmd + ": too much arguments");
+                    }
                     mkdirCommand(it.get(1));
                 } catch (IndexOutOfBoundsException e) {
                     throw new Exception("usage: mkdir <dirname>");
@@ -85,8 +105,14 @@ public class Shell {
             } else if (cmd.equals("rm")) {
                 try {
                     if (it.get(1).equals("-r")) {
+                        if (it.size() > 3) {
+                            throw new Exception(cmd + ": too much arguments");
+                        }
                         rmCommand(it.get(2), true);
                     } else {
+                        if (it.size() > 2) {
+                            throw new Exception(cmd + ": too much arguments");
+                        }
                         rmCommand(it.get(1), false);
                     }
                 } catch (IndexOutOfBoundsException e) {
@@ -95,8 +121,14 @@ public class Shell {
             } else if (cmd.equals("cp")) {
                 try {
                     if (it.get(1).equals("-r")) {
+                        if (it.size() > 4) {
+                            throw new Exception(cmd + ": too much arguments");
+                        }
                         cpCommand(it.get(2), it.get(3), true);
                     } else {
+                        if (it.size() > 3) {
+                            throw new Exception(cmd + ": too much arguments");
+                        }
                         cpCommand(it.get(1), it.get(2), false);
                     }
                 } catch (IndexOutOfBoundsException e) {
@@ -105,13 +137,21 @@ public class Shell {
             } else if (cmd.equals("mv")) {
                 try {
                     if (it.get(1).equals("-r")) {
+                        if (it.size() > 4) {
+                            throw new Exception(cmd + ": too much arguments");
+                        }
                         mvCommand(it.get(2), it.get(3), true);
                     } else {
+                        if (it.size() > 3) {
+                            throw new Exception(cmd + ": too much arguments");
+                        }
                         mvCommand(it.get(1), it.get(2), false);
                     }
                 } catch (IndexOutOfBoundsException e) {
                     throw new Exception("usage: mv [-r] <source> <destination>");
                 }
+            } else if (cmd.length() != 0) {
+                throw new Exception(cmd + ": not found");
             }
         }
 
@@ -121,7 +161,6 @@ public class Shell {
     private void pwdCommand() {
         System.out.println(currPath);
     }
-
 
     private void lsCommand() throws Exception {
         File f = new File(currPath);
@@ -181,13 +220,13 @@ public class Shell {
 
     private void mkdirCommand(String dirName) throws Exception {
 
-        Path path = new File(currPath).toPath();
-        Path newPath = path.resolve(dirName).toAbsolutePath();
+        File newPath = new File(currPath + File.separator + dirName);
         try {
-            Files.createDirectories(newPath);
+            Files.createDirectory(newPath.toPath());
         } catch (FileAlreadyExistsException e) {
-            throw new Exception("directory '" + dirName + "' is already exist");
+            System.err.println(dirName + ": already exists");
         }
+
     }
 
     private void delete(File toDelete) throws Exception {
