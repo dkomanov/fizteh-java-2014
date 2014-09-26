@@ -1,0 +1,14 @@
+package ru.fizteh.fivt.students.anastasia_ermolaeva.shell;
+
+import static ru.fizteh.fivt.students.anastasia_ermolaeva.shell.Shell.*;
+
+
+public class ShellMajor
+{
+    public static void main(String args[]) throws Exception {
+        if( args.length == 0 )
+            Shell.User();
+        else
+           Shell.Batch(args);
+    }
+}
