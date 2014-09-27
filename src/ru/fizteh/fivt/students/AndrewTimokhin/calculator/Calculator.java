@@ -1,6 +1,6 @@
 import java.util.*;
 //Author: Timokhin Andrew 295 Group
-//грамматика построени€ стандартна€
+ 
 
 class Errors extends Exception {
 	String err_msg;
@@ -10,7 +10,7 @@ class Errors extends Exception {
 	}
 }
  class Parser {  
-	final int SINTERROR=0; //коды ошибок
+	final int SINTERROR=0; // error code
 	final int DIVIDEDBYZEROERROR=1;
 	final int EMPTYERROR=2;
 	final int UBSKOBKIERROR=3;
@@ -20,12 +20,12 @@ class Errors extends Exception {
 	final int LITERAL=1;
 	final int DIGITAL=2;
 	
-	//данные необходимые дл€ получени€ очередной лексеммы
+	 
 	
-	private String exp; //заданна€ на парсер искома€ строка
-	private String token; //текущ€€ распознанна€ лексемма
-	private int expldx; //позици€ текущей лексеммы в строке
-	private int tokType; //тип текущей лексеммы
+	private String exp;  
+	private String token;  
+	private int expldx;  
+	private int tokType;  
 private void control (int error_code) throws Errors
 
 {
@@ -33,21 +33,21 @@ String []msg= 	 {">>Syntax error : code 0",">>Divide by Zero : code 1", ">>>Empt
 throw new Errors(msg[error_code]);
 }
 private void getToken () throws Errors{ 
-	tokType=UNKNOW;  //тип начальной лексеммы неизвестен 
-	token=""; // занул€ем каждый раз т.к. мы используем рекурсивно-последовательный синтаксический анализатор 
-	if (expldx==exp.length()) {   //если мы указываем на последний элемент строки => парсер уже все распарсил
+	tokType=UNKNOW;   
+	token="";  
+	if (expldx==exp.length()) {    
 		token = "\0";
 		return;
 	}
-	if ( (check(exp.charAt(expldx)))) { //если у нас разграничители=> то мы провер€ем входит ли данный символ в множество разграничителей
-		token+=exp.charAt(expldx); //запоминаем текущую лексемму 
-		expldx++; //итерируем на 1, дл€ указани€ на следующую лексемму 
-		tokType= LITERAL; //тип лексеммы- литеральна€
+	if ( (check(exp.charAt(expldx)))) {  
+		token+=exp.charAt(expldx);  
+		expldx++;  
+		tokType= LITERAL;  
  
 	} else if (Character.isDigit(exp.charAt(expldx))){
-		while ( (!check(exp.charAt(expldx)))) { //аналогично 1 пункту, только здесь мы будем анализировать число 
+		while ( (!check(exp.charAt(expldx)))) {  
 			
-			   //если очередна€ цифра достигла конца строки => парсер закончил свою работу
+			   
 			
 			 
 			
@@ -56,7 +56,7 @@ private void getToken () throws Errors{
 		expldx++;
 		if (expldx>=exp.length()) break;
 		 
-		} tokType= DIGITAL;  //тип лексеммы, разумеетс€ цифровой
+		} tokType= DIGITAL;   
 		
 		 
 	}
@@ -67,15 +67,15 @@ private void getToken () throws Errors{
 
 double eval (String str) throws Errors{
 	double result ;
-	exp=str;  //запоминаем нашу строку, котора€ подлежит парсингу в переменной exp
-	 expldx=0; //устанавливаем начальное значение просмотренной лексеммы в 0
-	 getToken (); //получаем лексемму 
+	exp=str;   
+	 expldx=0;  
+	 getToken (); 
 	 if (token=="\0")
 		 control (2);
-	 result= Step1(); //запускаем рекурсивный разбор
+	 result= Step1();  
 	 if (token!="\0")
 		 control (0);
-	 return result; //возращаем наш результат
+	 return result;  
 	 
 	
 	
@@ -87,7 +87,7 @@ private double Step1 () throws Errors{
 	 
 	
  
-			 result= Step2( ); //передаем дальше 
+			 result= Step2( );  
 	char ch;   
 	while (  (ch=token.charAt(0))=='+' || ch=='-') {
 		getToken ();    localresult=Step2();
@@ -110,7 +110,7 @@ private double Step2 () throws Errors {
 	 
 	 
 	double result; double localresult; 
-	result= StepUnary( ); //передаем дальше 
+	result= StepUnary( );  
 	char ch;
 	while (  (ch=token.charAt(0))=='*' || ch=='/') {
 		getToken (); localresult=StepUnary();
@@ -190,7 +190,7 @@ private double prost()throws Errors {
 	
 }
 private boolean check (char c ) throws Errors{
-if (" ()+-*/".indexOf(c)!=-1)	 //станадртный метод indexOf €вл€етс€ методом класса String, в данном случае определ€ет вхождение символа в строку, и возращает индекс этого вхождени€
+if (" ()+-*/".indexOf(c)!=-1)	  
 	
 	return true; else return false;
 }
