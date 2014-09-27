@@ -37,6 +37,7 @@ public class MyMap {
     public void interactive() {
         Scanner sc = new Scanner(System.in);
         Map currentTable = new HashMap<String, String>();
+        Init init = new Init(currentTable, System.getProperty("db.file"));
         while (true) {
             String currentString = sc.nextLine();
             currentString = currentString.trim();
@@ -48,6 +49,7 @@ public class MyMap {
     public void packageMode(final String[] args) {
         int i = 0;
         Map currentTable = new HashMap<String, String>();
+        Init init = new Init(currentTable, System.getProperty("db.file"));
         while (i < args.length) {
             int first = i;
             ++i;
