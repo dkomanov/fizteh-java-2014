@@ -22,8 +22,7 @@ public class CommandCp extends Command {
                 (arguments.length == numberOfArguments & arguments[1].equals("-r"));
         if (!recursive) {
             return generalCopy(arguments);
-        }
-        else {
+        } else {
             return recursiveCopy(arguments);
         }
     }

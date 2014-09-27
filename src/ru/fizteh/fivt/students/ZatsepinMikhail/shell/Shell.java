@@ -26,8 +26,7 @@ public class Shell {
             while (!ended) {
                 if (inStream.hasNextLine()) {
                     parsedCommands = inStream.nextLine().split(";|\n");
-                }
-                else {
+                } else {
                     continue;
                 }
                 for (String oneCommand : parsedCommands) {
@@ -78,6 +77,7 @@ public class Shell {
                 }
             } else {
                 System.out.println(parsedArguments[0] + ": command not found");
+                errorOccuried = true;
             }
         }
         return !errorOccuried;

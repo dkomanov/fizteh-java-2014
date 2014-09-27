@@ -21,8 +21,7 @@ public class CommandRm extends Command {
         boolean result;
         if (!recursive) {
             result = generalDelete(arguments);
-        }
-        else {
+        } else {
             result = recursiveDelete(arguments);
         }
         return result;

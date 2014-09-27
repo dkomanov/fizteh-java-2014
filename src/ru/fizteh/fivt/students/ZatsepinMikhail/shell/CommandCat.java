@@ -11,8 +11,9 @@ public class CommandCat extends Command {
 
     @Override
     public boolean run(final String[] arguments) {
-        if (arguments.length != numberOfArguments)
+        if (arguments.length != numberOfArguments) {
             return false;
+        }
         try {
             Files.copy(FileSystems.getDefault().getPath(arguments[1]), System.out);
         } catch (Exception e) {
