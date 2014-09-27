@@ -31,6 +31,7 @@ public final class CommandParser {
         String[] cmds;
         try (Scanner in = new Scanner(System.in)) {
             while (true) {
+                System.out.print("$ ");
                 cmds = in.nextLine().trim().split(";");
                 for (String current : cmds) {
                     parse(link, current.trim().split("\\s+"), false);
@@ -44,7 +45,7 @@ public final class CommandParser {
     public static void parse(final DbConnector link,
         final String[] command, final boolean exitOnError) throws ThrowExit {
         try {
-            if (command.length != 0) {
+            if (command.length > 0 && !command[0].isEmpty()) {
                 switch(command[0]) {
                 case "put":
                     PutCommand put = new PutCommand(link);

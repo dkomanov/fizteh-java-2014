@@ -24,7 +24,6 @@ public final class DbConnector implements AutoCloseable {
                     readDbFromFile(dbFile);
                 }
             } catch (FileNotFoundException e) {
-                //TODO whether it is necessary to create a file here?
                 dbFilePath.toFile().createNewFile();
             }
         } catch (Exception e) {
@@ -34,12 +33,11 @@ public final class DbConnector implements AutoCloseable {
     }
 
     public void close() {
-        System.err.println("<debug> DbConnector close method was called");
+        //System.err.println("<debug> DbConnector close method was called");
         try (RandomAccessFile dbFile
                     = new RandomAccessFile(dbFilePath.toString(), "rw")) {
             writeDbToFile(dbFile);
         } catch (Exception e) {
-            //TODO what should I do?
             System.err.println("Error writing database to file");
         }
     }
@@ -50,7 +48,6 @@ public final class DbConnector implements AutoCloseable {
 
     private void readDbFromFile(final RandomAccessFile dbFile)
             throws IOException {
-        //TODO check or rewrite method
         ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
         List<Integer> offsets = new LinkedList<Integer>();
         List<String> keys = new LinkedList<String>();
