@@ -37,12 +37,13 @@ public final class ParenthesisCloseOperator extends Operator {
         } catch (EmptyStackException e) {
             throw new Exception("Closing parenthesis '" + type + "' has no complement");
         }
-        ParenthesisOpenOperator opener = (ParenthesisOpenOperator)operators.peek();
-        if (this.closes(opener))
+        ParenthesisOpenOperator opener = (ParenthesisOpenOperator) operators.peek();
+        if (this.closes(opener)) {
             operators.pop();
-        else
+        } else {
             throw new Exception("Closing parenthesis '" + type
                     + "' is not complement to '" + opener.type + "'");
+        }
     }
 
     @Override
