@@ -3,8 +3,8 @@ package ru.fizteh.fivt.students.AndrewFedorov.filemap;
 import static ru.fizteh.fivt.students.AndrewFedorov.filemap.Utility.handleError;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class Commands {
     static class Exit implements Command {
@@ -36,8 +36,7 @@ public class Commands {
 	    }
 	    String key = args[1];
 
-	    Map<String, String> map = shell.getDatabaseMap();
-	    String value = map.get(key);
+	    String value = shell.getActiveFilemap().get(key);
 
 	    if (value == null) {
 		System.out.println("not found");
@@ -59,10 +58,6 @@ public class Commands {
     }
 
     static class Help implements Command {
-	public Help() {
-	    // TODO Auto-generated constructor stub
-	}
-
 	@Override
 	public void execute(Shell shell, String[] args) throws HandledException {
 	    Iterator<Entry<String, Class<?>>> commands = shell.listCommands();
@@ -111,12 +106,12 @@ public class Commands {
 	    if (args.length != 1) {
 		handleError("Wrong arguments number; invocation: list");
 	    }
-	    Map<String, String> map = shell.getDatabaseMap();
+	    Set<String> keySet = shell.getActiveFilemap().keySet();
 	    StringBuilder sb = new StringBuilder();
 
 	    boolean comma = false;
 
-	    for (String key : map.keySet()) {
+	    for (String key : keySet) {
 		sb.append(comma ? ", " : "").append(key);
 		comma = true;
 	    }
@@ -145,8 +140,7 @@ public class Commands {
 	    String key = args[1];
 	    String value = args[2];
 
-	    Map<String, String> map = shell.getDatabaseMap();
-	    String oldValue = map.put(key, value);
+	    String oldValue = shell.getActiveFilemap().put(key, value);
 
 	    if (oldValue == null) {
 		System.out.println("new");
@@ -174,11 +168,10 @@ public class Commands {
 		handleError("Wrong arguments number; invocation: remove <key>");
 	    }
 
-	    Map<String, String> map = shell.getDatabaseMap();
-
 	    String key = args[1];
+	    String oldValue = shell.getActiveFilemap().remove(key);
 
-	    if (map.remove(key) == null) {
+	    if (oldValue == null) {
 		System.out.println("not found");
 	    } else {
 		System.out.println("removed");

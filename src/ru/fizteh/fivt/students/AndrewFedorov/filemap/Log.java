@@ -11,7 +11,7 @@ import java.nio.file.Paths;
  * @author phoenix
  * 
  */
-public class Log {
+class Log {
     /**
      * If logging is disabled, no messages are output
      */

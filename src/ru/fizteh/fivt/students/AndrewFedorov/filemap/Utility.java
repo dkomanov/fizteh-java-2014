@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.AndrewFedorov.filemap;
 
-public class Utility {
+class Utility {
     /**
      * Handles an occured exception.<br/>
      * Equivalent to handleError(null, message, true);

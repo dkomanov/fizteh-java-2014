@@ -1,24 +1,14 @@
 package ru.fizteh.fivt.students.AndrewFedorov.filemap;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 //java -Ddb.file=/home/phoenix/test/db.dat ru.fizteh.fivt.students.AndrewFedorov.filemap.Shell
 
@@ -44,19 +34,11 @@ public class Shell {
     }
 
     /**
-     * Database file location given as environment property.
-     */
-    private String dbFileName;
-
-    /**
      * Available commands for invocation.
      */
     private Map<String, Class<?>> classesMap;
 
-    /**
-     * Map that represents stored file map.
-     */
-    private HashMap<String, String> databaseMap;
+    private FileMap activeFileMap;
 
     /**
      * If the user is entering commands or it is package mode.
@@ -108,16 +90,19 @@ public class Shell {
 	}
     }
 
-    public String get(String key) {
-	return databaseMap.get(key);
-    }
-
-    Map<String, String> getDatabaseMap() {
-	return databaseMap;
-    }
-
-    public String getDbFileName() {
-	return dbFileName;
+    /**
+     * Returns active file map object.<br/>
+     * If no file map object in use {@link NullPointerException} is thrown.
+     * 
+     * @return active {@link FileMap} object.
+     * @throws NullPointerException
+     *             if active object is null
+     */
+    public FileMap getActiveFilemap() throws NullPointerException {
+	if (activeFileMap == null) {
+	    throw new NullPointerException("No active file map in use");
+	}
+	return activeFileMap;
     }
 
     /**
@@ -126,26 +111,9 @@ public class Shell {
     private void init() {
 	Log.log(Shell.class, "Shell starting");
 
-	// setting db file name
-	dbFileName = System.getProperty(DB_FILE_PROPERTY_NAME);
-	
-	// reading map from db
-	databaseMap = new HashMap<>();
-
 	try {
-	    if (dbFileName == null) {
-		Utility.handleError("Please specify database file path");
-	    }
-	    Path dbPath = Paths.get(dbFileName);
-
-	    if (!Files.exists(dbPath)) {
-		try {
-		    Files.createFile(dbPath);
-		} catch (IOException exc) {
-		    Utility.handleError(exc,
-			    "Cannot establish proper db connection", true);
-		}
-	    }
+	    activeFileMap = new FileMap(
+		    System.getProperty(DB_FILE_PROPERTY_NAME));
 
 	    readDatabaseMap();
 	} catch (HandledException exc) {
@@ -185,14 +153,14 @@ public class Shell {
     }
 
     /**
-     * Reads database from given file. Any exception is wrapped into
-     * {@link HandledException}.
+     * Reads database for the active file map from given file. Any exception is
+     * wrapped into {@link HandledException}.
      * 
      * @throws HandledException
      */
     void readDatabaseMap() throws HandledException {
 	try {
-	    readDatabaseMap(dbFileName);
+	    getActiveFilemap().readDatabaseMap();
 	} catch (Throwable exc) {
 	    if (exc instanceof HandledException) {
 		throw (HandledException) exc;
@@ -203,123 +171,10 @@ public class Shell {
     }
 
     /**
-     * Reads database from given file
-     * 
-     * @param filename
-     * @throws Exception
-     */
-    void readDatabaseMap(String filename) throws Exception {
-	try (DataInputStream stream = new DataInputStream(new FileInputStream(
-		filename))) {
-	    /*
-	     * structure: (no spaces or newlines) <key 1 bytes>00<4
-	     * bytes:offset> <key 2 bytes>00<4 bytes:offset> ... <value 1 bytes>
-	     * <value 2 bytes>...
-	     */
-
-	    byte[] buffer = new byte[1024];
-	    int bufferSize = 0;
-
-	    byte[] temporaryBuffer = new byte[READ_BUFFER_SIZE];
-
-	    while (true) {
-		int read = stream.read(temporaryBuffer);
-		if (read < 0) {
-		    break;
-		}
-
-		buffer = Utility.insertArray(temporaryBuffer, 0, read, buffer,
-			bufferSize);
-		bufferSize += read;
-	    }
-
-	    TreeMap<Integer, String> offsets = new TreeMap<>();
-
-	    int bufferOffset = 0;
-
-	    int nextValue = Integer.MAX_VALUE;
-
-	    // reading keys and value shift information
-	    for (int i = 0; i < bufferSize;) {
-		if (i == nextValue) {
-		    throw new Exception(
-			    String.format(
-				    "DB file is corrupt: attempt to read key part from %s to %s, but value should start here",
-				    bufferOffset, i));
-		}
-		if (buffer[i] == 0) {
-		    String currentKey = new String(buffer, bufferOffset, i
-			    - bufferOffset, "UTF-8");
-		    bufferOffset = i + 1;
-		    if (i + 4 >= bufferSize) {
-			throw new Exception(
-				String.format(
-					"DB file is corrupt: there is no value offset for key '%s' after byte %s",
-					currentKey, i));
-		    }
-		    int valueShift = 0;
-		    for (int j = 0; j < 4; j++, i++) {
-			valueShift = (valueShift << 8) | (buffer[i] & 0xFF);
-		    }
-		    bufferOffset = i;
-
-		    offsets.put(valueShift, currentKey);
-
-		    nextValue = offsets.firstKey();
-
-		    if (i > nextValue) {
-			throw new Exception(
-				String.format(
-					"DB file is corrupt: value shift for key '%s' is to early: %s; current position: %s",
-					currentKey, valueShift, i));
-		    } else if (i == nextValue) {
-			break;
-		    }
-		} else {
-		    i++;
-		}
-	    }
-
-	    // empty map
-	    if (offsets.isEmpty()) {
-		return;
-	    }
-
-	    // reading values
-	    String currentKey = offsets.get(nextValue); // value matching this
-							// key is now being
-							// built
-	    offsets.remove(nextValue); // next value start boundary
-
-	    // reading up to the last value (exclusive)
-	    while (!offsets.isEmpty()) {
-		nextValue = offsets.firstKey();
-
-		String value = new String(buffer, bufferOffset, nextValue
-			- bufferOffset);
-		databaseMap.put(currentKey, value);
-
-		bufferOffset = nextValue;
-		currentKey = offsets.get(nextValue);
-
-		offsets.remove(nextValue);
-	    }
-
-	    // putting the last value
-	    String value = new String(buffer, bufferOffset, bufferSize
-		    - bufferOffset);
-	    databaseMap.put(currentKey, value);
-	} catch (Exception exc) {
-	    throw exc;
-	}
-    }
-
-    /**
-     * Execute commands from input stream. Commands are awaited forever.
+     * Execute commands from input stream. Commands are awaited until the-end-of-stream.
      * 
      * @param stream
      */
-    @SuppressWarnings("unchecked")
     public void run(InputStream stream) {
 	interactive = true;
 
@@ -327,7 +182,8 @@ public class Shell {
 		new InputStreamReader(stream), READ_BUFFER_SIZE);
 	try {
 	    while (true) {
-		System.out.print(String.format("FileMap: %s $ ", dbFileName));
+		System.out.print(String.format("FileMap: %s $ ",
+			getActiveFilemap().getDbFileName()));
 
 		String str = reader.readLine();
 
@@ -337,16 +193,15 @@ public class Shell {
 		}
 
 		// clone of the map before modifications
-		HashMap<String, String> mapClone = (HashMap<String, String>) databaseMap
-			.clone();
+		FileMap fmapClone = activeFileMap.clone();
 
 		String[] commands = str.split(";");
 		for (int i = 0, len = commands.length; i < len; i++) {
 		    boolean correct = execute(commands[i]);
 		    if (!correct) {
-			databaseMap = mapClone;
+			activeFileMap = fmapClone;
 			try {
-			    writeDatabaseMap(dbFileName);
+			    activeFileMap.writeDatabaseMap();
 			} catch (Exception exc) {
 			    System.exit(1);
 			}
@@ -397,19 +252,24 @@ public class Shell {
 	Log.close();
     }
 
-    void setDatabaseMap(HashMap<String, String> databaseMap) {
-	this.databaseMap = databaseMap;
+    /**
+     * Sets active file map object.
+     * 
+     * @param fmap
+     */
+    public void setActiveFileMap(FileMap fmap) {
+	activeFileMap = fmap;
     }
 
     /**
-     * Writes database to given file. Any exception is wrapped into
-     * {@link HandledException}.
+     * Writes database of the active file map to given file. Any exception is
+     * wrapped into {@link HandledException}.
      * 
      * @throws HandledException
      */
     void writeDatabaseMap() throws HandledException {
 	try {
-	    writeDatabaseMap(dbFileName);
+	    getActiveFilemap().writeDatabaseMap();
 	} catch (Throwable exc) {
 	    if (exc instanceof HandledException) {
 		throw (HandledException) exc;
@@ -419,50 +279,4 @@ public class Shell {
 	}
     }
 
-    void writeDatabaseMap(String filename) throws IOException {
-	ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
-	Iterator<String> keyIterator = databaseMap.keySet().iterator();
-
-	Charset UTF8 = Charset.forName("UTF-8");
-
-	int[] shiftPositions = new int[databaseMap.size()];
-
-	byte[] int_zero = new byte[] { 0, 0, 0, 0 };
-
-	int keyID = 0;
-
-	while (keyIterator.hasNext()) {
-	    stream.write(keyIterator.next().getBytes(UTF8));
-	    shiftPositions[keyID] = stream.size();
-	    keyID++;
-	    stream.write(int_zero);
-	}
-
-	int[] links = new int[databaseMap.size()];
-
-	keyID = 0;
-	keyIterator = databaseMap.keySet().iterator();
-	while (keyIterator.hasNext()) {
-	    links[keyID] = stream.size();
-	    keyID++;
-	    stream.write(databaseMap.get(keyIterator.next()).getBytes(UTF8));
-	}
-
-	byte[] bytes = stream.toByteArray();
-
-	for (int i = 0, len = links.length; i < len; i++) {
-	    int pos = shiftPositions[i];
-	    int value = links[i];
-
-	    bytes[pos] = (byte) ((value >>> 24) & 0xFF);
-	    bytes[pos + 1] = (byte) ((value >>> 16) & 0xFF);
-	    bytes[pos + 2] = (byte) ((value >>> 8) & 0xFF);
-	    bytes[pos + 3] = (byte) (value & 0xFF);
-	}
-
-	try (DataOutputStream output = new DataOutputStream(
-		new FileOutputStream(filename))) {
-	    output.write(bytes);
-	}
-    }
 }

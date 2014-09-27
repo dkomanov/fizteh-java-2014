@@ -44,7 +44,6 @@ public class Test {
     private void performReadWriteFileMapTest(int keysMin, int keysMax,
 	    int keyMinLength, int keyMaxLength, int valueMinLength,
 	    int valueMaxLength) throws Exception {
-	Shell sh = new Shell();
 	HashMap<String, String> map = new HashMap<>();
 
 	int keysCount = randInt(keysMin, keysMax);
@@ -56,15 +55,16 @@ public class Test {
 	    map.put(key, value);
 	}
 
-	sh.setDatabaseMap((HashMap<String, String>) map.clone());
-
 	String testFile = "/home/phoenix/test/java_test.dat";
+	FileMap testFileMap = new FileMap(testFile);
 
-	sh.writeDatabaseMap(testFile);
-	sh.setDatabaseMap(new HashMap<String, String>());
-	sh.readDatabaseMap(testFile);
+	testFileMap.setDatabaseMap((HashMap<String, String>) map.clone());
 
-	Map<String, String> checkMap = sh.getDatabaseMap();
+	testFileMap.writeDatabaseMap();
+	testFileMap.setDatabaseMap(new HashMap<String, String>());
+	testFileMap.readDatabaseMap();
+
+	Map<String, String> checkMap = testFileMap.getDatabaseMap();
 
 	assertEquals("Map sizes do not match", map.size(), checkMap.size());
 
