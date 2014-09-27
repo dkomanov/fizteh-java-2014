@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Shell {
@@ -15,7 +16,7 @@ public class Shell {
         currPath = System.getProperty("user.dir");
     }
 
-    void packageMode(String[] str) {
+    public void packageMode(String[] str) {
         String commands = new String();
         for (String it : str) {
             it += " ";
@@ -29,24 +30,28 @@ public class Shell {
         }
     }
 
-    void interactiveMode() {
+    public void interactiveMode() {
 
-        Scanner scanner = new Scanner(System.in);
         String str;
         System.out.print("$ ");
-        do {
-            str = scanner.nextLine();
-            try {
-                runCommands(str);
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-            }
-            System.out.print("$ ");
-
-        } while (true);
+        try (Scanner scanner = new Scanner(System.in)) {
+            do {
+                str = scanner.nextLine();
+                try {
+                    runCommands(str);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
+                System.out.print("$ ");
+            } while (true);
+        } catch (NoSuchElementException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
     }
 
-    void runCommands(String str) throws Exception {
+
+    public void runCommands(String str) throws Exception {
         ArrayList<ArrayList<String>> commands = new ArrayList<ArrayList<String>>();
         ArrayList<String> tempStr = new ArrayList<String>(Arrays.asList(str.trim().split(";")));
 
@@ -178,12 +183,13 @@ public class Shell {
         Path path = new File(currPath).toPath();
 
         File newPath = path.resolve(argPath).toAbsolutePath().toFile();
-        if (newPath.exists() == true && newPath.isDirectory() == true) {
+        if (newPath.exists() && newPath.isDirectory()) {
             System.setProperty("user.dir", newPath.getCanonicalPath());
-        } else if (newPath.exists() == false)
+        } else if (!newPath.exists()) {
             throw new Exception("path '" + newPath.toString() + "' doesn't exist");
-        else
+        } else {
             throw new Exception(argPath + " is not a directory");
+        }
         currPath = System.getProperty("user.dir");
     }
 
@@ -208,12 +214,15 @@ public class Shell {
         } catch (FileNotFoundException e) {
             throw new Exception("cat: '" + fileName + "': no such file");
         } finally {
-            if (fis != null)
+            if (fis != null) {
                 fis.close();
-            if (bis != null)
+            }
+            if (bis != null) {
                 bis.close();
-            if (dis != null)
+            }
+            if (dis != null) {
                 dis.close();
+            }
         }
 
     }
@@ -224,7 +233,7 @@ public class Shell {
         try {
             Files.createDirectory(newPath.toPath());
         } catch (FileAlreadyExistsException e) {
-            System.err.println(dirName + ": already exists");
+            throw new Exception(dirName + ": already exists");
         }
 
     }
@@ -234,8 +243,9 @@ public class Shell {
 
         if (toDelete.isFile()) {
             isDeleted = toDelete.delete();
-            if (!isDeleted)
+            if (!isDeleted) {
                 throw new Exception(toDelete.toString() + ":" + " cannot remove file or directory");
+            }
         } else {
             String[] files = toDelete.list();
             for (String it : files) {
@@ -268,8 +278,9 @@ public class Shell {
 
         if (toDelete.isFile() && !isRec) {
             isDeleted = toDelete.delete();
-            if (!isDeleted)
+            if (!isDeleted) {
                 throw new Exception(fileName + ":" + " cannot remove file or directory");
+            }
             return;
         }
         delete(toDelete);
