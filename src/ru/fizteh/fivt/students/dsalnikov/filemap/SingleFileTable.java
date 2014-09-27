@@ -15,10 +15,12 @@ public class SingleFileTable extends ShellState implements Table {
     private Map<String, String> storage;
     private File dbfile;
 
-    //read from file to map
+    //readToMap from file to map
     public SingleFileTable() {
         try {
-            FileMapUtils.readToMap();
+            String path = System.getProperty("db.file");
+            dbfile = new File(path);
+            storage = FileMapUtils.readToMap(dbfile);
         } catch (Throwable exc) {
             System.err.println("file processing failed. Paths might be incorrect");
             System.exit(1);
