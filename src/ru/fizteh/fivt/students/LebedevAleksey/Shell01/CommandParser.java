@@ -151,9 +151,6 @@ public abstract class CommandParser {
             commands.add(result);
         }
 
-        //TODO Remove
-        logParsedResults(commands);
-
         return commands;
     }
 
