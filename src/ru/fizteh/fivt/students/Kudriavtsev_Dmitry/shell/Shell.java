@@ -20,10 +20,12 @@ public class Shell {
         File f = new File(directory + File.separator + whatDelete);
         if (!f.exists()) {
             System.err.println("rm: cannot remove \"" + f.getName() + "\": No such file or directory");
+            System.exit(-1);
         }
         if (f.isFile()) {
             if (!f.delete()) {
                 System.err.println("rm: cannot remove \"" + f.getName() + "\"");
+                System.exit(-1);
             }
         }
         if (f.isDirectory()) {
@@ -32,15 +34,18 @@ public class Shell {
                 list = f.list();
                 if (list.length == 0) {
                     System.err.println("rm: " + f.getName() + " is a directory");
+                    System.exit(-1);
                 }
                 for (String value : list) {
                     remove(value, directory + File.separator + whatDelete, r);
                 }
                 if (!f.delete()) {
                     System.err.println("rm: cannot remove \"" + f.getName() + "\"");
+                    System.exit(-1);
                 }
             } else {
                 System.err.println("rm: " + f.getName() + " is a directory");
+                System.exit(-1);
             }
         }
     }
@@ -51,6 +56,7 @@ public class Shell {
                 if (!f2.exists()) {
                     if (!f2.mkdir()) {
                         System.err.println("mkdir: Cannot create new directory " + f2.getName());
+                        System.exit(-1);
                     }
                 }
                 InputStream is = null;
@@ -60,6 +66,7 @@ public class Shell {
                     File dest = new File(f2.getCanonicalPath() + File.separator + f1.getName());
                     if (dest.exists()) {
                         System.err.println(dest.getName() + "File exists.");
+                        System.exit(-1);
                         return;
                     }
                     os = new FileOutputStream(dest);
@@ -78,6 +85,7 @@ public class Shell {
                     if (!f2.exists()) {
                         if (!f2.mkdir()) {
                             System.err.println("mkdir: Cannot create new directory " + f2.getName());
+                            System.exit(-1);
                         }
                     }
                     File newDir = new File(f2.getCanonicalPath() + File.separator + f1.getName());
@@ -88,11 +96,13 @@ public class Shell {
                     }
                 } else {
                     System.err.println("cp: " + f1.getName() + " is a directory (not copied).");
+                    System.exit(-1);
                 }
             }
 
         } catch (IOException e) {
             System.err.println("Exception on coping");
+            System.exit(-1);
         }
     }
 
@@ -110,6 +120,7 @@ public class Shell {
                 s = s1.split(" ");
                 } catch (Exception e) {
                     System.err.println("Exception: " + e.getMessage());
+                    System.exit(-1);
                     s = new String[1];
                     s[0] = "";
                 };
@@ -125,6 +136,7 @@ public class Shell {
                     s = s1.split(" ");
                 } catch (Exception e) {
                     System.err.println("Exception: " + e.getMessage());
+                    System.exit(-1);
                     s = new String[1];
                     s[0] = "";
                 };
@@ -165,11 +177,13 @@ public class Shell {
                                         temp = temp + File.separator + what;
                                     } else {
                                         System.err.println("cd: \'" + what + "\': No such file or directory");
+                                        System.exit(-1);
                                     }
                                 }
                                 File dir = new File(temp);
                                 if (!dir.isDirectory()) {
                                     System.err.println("It is not a directory");
+                                    System.exit(-1);
                                 } else {
                                     directory = temp;
                                 }
@@ -181,6 +195,7 @@ public class Shell {
                             case "ls;": {
                                 if (directory == null) {
                                     System.err.println("Bad directory");
+                                    System.exit(-1);
                                     ++i;
                                     break;
                                 }
@@ -193,6 +208,7 @@ public class Shell {
                                     }
                                 } else {
                                     System.err.println("It is not a directory");
+                                    System.exit(-1);
                                 }
                                 ++i;
                                 break;
@@ -334,11 +350,13 @@ public class Shell {
                                 File f = new File(directory + File.separator + name);
                                 if (!f.exists()) {
                                     System.err.println("cat: " + f.getName() + ": no such file");
+                                    System.exit(-1);
                                     ++i;
                                     break;
                                 }
                                 if (f.isDirectory()) {
                                     System.err.println("cat: " + f.getName() + ": it is a directory");
+                                    System.exit(-1);
                                     ++i;
                                     break;
                                 }
@@ -359,8 +377,10 @@ public class Shell {
                         }
                     } catch (IOException e) {
                         System.err.println("Exception on coping : " + e.getMessage());
+                        System.exit(-1);
                     } catch (Exception e) {
                         System.err.println("Exception: " + e.getMessage());
+                        System.exit(-1);
                     }
                 }
                 if (i < s.length) {
@@ -379,6 +399,7 @@ public class Shell {
             }
         } catch (Exception e) {
             System.err.println("Exception: " + e.getMessage());
+            System.exit(-1);
         }
     }
 }
