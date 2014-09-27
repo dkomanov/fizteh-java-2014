@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.gudkov394.map;
 
+import ru.fizteh.fivt.students.gudkov394.shell.Exit;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,6 @@ public class MyMap {
         return false;
     }
 
-
     public void run(final String[] currentArgs, final Map ct) {
         if (currentArgs[0].equals("put")) {
             Put put = new Put(currentArgs, ct);
@@ -27,7 +27,7 @@ public class MyMap {
         } else if ("list".equals(currentArgs[0])) {
             ListTable listTable = new ListTable(currentArgs, ct);
         } else if ("exit".equals(currentArgs[0])) {
-            Exit exit = new Exit(currentArgs, ct);
+            Exit exit = new Exit(currentArgs);
         } else {
             System.err.println("wrong command");
             System.exit(22);
@@ -37,11 +37,10 @@ public class MyMap {
     public void interactive() {
         Scanner sc = new Scanner(System.in);
         Map currentTable = new HashMap<String, String>();
-        Init init = new Init(currentTable, System.getProperty("db.file"));
         while (true) {
             String currentString = sc.nextLine();
             currentString = currentString.trim();
-            run(currentString.split("\\s+"), currentTable);
+                run(currentString.split("\\s+"), currentTable);
         }
 
     }
@@ -49,7 +48,6 @@ public class MyMap {
     public void packageMode(final String[] args) {
         int i = 0;
         Map currentTable = new HashMap<String, String>();
-        Init init = new Init(currentTable, System.getProperty("db.file"));
         while (i < args.length) {
             int first = i;
             ++i;
@@ -63,6 +61,7 @@ public class MyMap {
             run(s, currentTable);
         }
     }
+
 
     public MyMap(final String[] args) {
         if (args.length == 0) {
