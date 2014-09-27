@@ -27,13 +27,13 @@ final class Shell {
 	 *
 	 */
 	private static final int THE_BEGINNING_OF_ARGS = 6;
-
+	private static final boolean FUNCTION_ERROR = false;
+	private static final boolean FUNCTION_SUCCESS = true;
 	/**
 	 * just stupid constructor.
 	 */
 	private Shell() {
 	}
-
 	/**
 	 * main method.
 	 *
@@ -41,10 +41,13 @@ final class Shell {
 	 */
 	public static void main(final String[] args) {
 		if (args.length > 0) {
+			int status = 0;
 			String[] funcs = parseCommandsFromArray(args);
 			for (int i = 0; i < funcs.length; i++) {
-				run(funcs[i]);
+				if(!run(funcs[i]))
+					status = 1;
 			}
+			System.exit(status);
 		} else {
 			Scanner scanner = new Scanner(System.in);
 			String newcommands = new String();
@@ -63,10 +66,8 @@ final class Shell {
 			}
 		}
 	}
-
 	/**
 	 * parses commands,given in array.
-	 *
 	 * @param commands - array of commands and their arguments, which are split by whitespace.
 	 * @return - array of commands with their arguments, which are now correctly split by semicolon.
 	 */
@@ -83,62 +84,60 @@ final class Shell {
 		}
 		return funcs;
 	}
-
 	/**
 	 * method,which runs all functions.
-	 *
 	 * @param func
 	 */
-	private static void run(final String func) {
+	private static boolean run(final String func) {
 		if (Pattern.matches("cd .*", func)) {
 			String dir = func.substring(THE_VERY_BEGINNING_OF_THE_PATH);
-			cd(dir);
+			return cd(dir);
 		} else if (func.equals("ls")) {
-			ls();
+			return ls();
 		} else if (Pattern.matches("mkdir .*", func)) {
 			String dir = func.substring(6);
-			mkdir(dir);
+			return mkdir(dir);
 		} else if (func.equals("pwd")) {
-			pwd();
+			return pwd();
 		} else if (Pattern.matches("cp .*", func) && !Pattern.matches("cp -r .*", func)) {
 			String args = func.substring(THE_VERY_BEGINNING_OF_THE_PATH);
 			String[] arrgs = args.split(" ");
-			copy(arrgs[0], arrgs[1]);
+			return copy(arrgs[0], arrgs[1]);
 		} else if (Pattern.matches("cp -r .*", func)) {
 			String args = func.substring(THE_BEGINNING_OF_ARGS);
 			String[] arrgs = args.split(" ");
-			copyRecursive(arrgs[0], arrgs[1]);
-
+			return copyRecursive(arrgs[0], arrgs[1]);
 		} else if (Pattern.matches("rm .*", func) && !Pattern.matches("rm -r .*", func)) {
 			String arg = func.substring(THE_BEGINNING_OF_FILENAME);
-			remove(arg);
+			return remove(arg);
 		} else if (Pattern.matches("rm -r .*", func)) {
 			String arg = func.substring(THE_BEGINNING_OF_ARGS);
-			removeRecursive(arg);
+			return removeRecursive(arg);
 		} else if (Pattern.matches("cat .*", func)) {
 			String file = func.substring(THE_BEGINNING_OF_FILENAME);
-			cat(file);
+			return cat(file);
 		} else if (Pattern.matches("mv .*", func)) {
 			String[] args = func.substring(THE_VERY_BEGINNING_OF_THE_PATH).split(" ");
-			move(args[0], args[1]);
+			return move(args[0], args[1]);
 		} else if (Pattern.matches("exit", func)) {
 			System.exit(0);
 		} else if (!func.equals("")) {
 			System.err.println("I don't know this function");
+			return FUNCTION_ERROR;
 		}
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * copy for directory.
-	 *
 	 * @param sourceDir -source directory.
 	 * @param destDir   - destination directory.
 	 */
-	private static void copyRecursive(final String sourceDir, final String destDir) {
+	private static boolean copyRecursive(final String sourceDir, final String destDir) {
 		File source = new File(sourceDir);
 		File dest = new File(destDir);
 		if (!source.isDirectory() || !dest.isDirectory()) {
 			System.err.println("Source or destination is not a directory");
+			return FUNCTION_ERROR;
 		}
 		File[] listOfFiles = source.listFiles();
 		dest = new File(dest.getAbsolutePath(), source.getName());
@@ -151,15 +150,14 @@ final class Shell {
 				copy(listOfFiles[i].getAbsolutePath(), destDir);
 			}
 		}
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * move file or directory.
-	 *
 	 * @param source - source.
 	 * @param dest   - destination.
 	 */
-	private static void move(final String source, final String dest) {
+	private static boolean move(final String source, final String dest) {
 		File src;
 		File dst;
 		if (!Pattern.matches(File.separator + ".*", source)) {
@@ -184,11 +182,13 @@ final class Shell {
 			if (src.isDirectory()) {
 				System.err.println("mv error: "
 						+ source + "is directory and" + dest + " is regular file");
+			    return FUNCTION_ERROR;
 			} else if (src.isFile()) {
 				if (src.getParent().equals(dst.getParent())) {
 					if (!src.renameTo(dst)) {
 						System.err.println("mv error: cannot rename "
 								+ source + "to" + dest + ",file already exists");
+						return FUNCTION_ERROR;
 					}
 				} else {
 					copy(source, dst.getParent());
@@ -197,18 +197,18 @@ final class Shell {
 					if (!newCopy.renameTo(dst)) {
 						System.err.println("mv error: cannot rename "
 								+ source + "to" + dest + ",file already exists");
+						return  FUNCTION_ERROR;
 					}
 				}
 			}
 		}
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * print file content.
-	 *
 	 * @param file - file.
 	 */
-	private static void cat(final String file) {
+	private static boolean cat(final String file) {
 		File f;
 		if (!Pattern.matches(File.separator + ".*", file)) {
 			f = new File(System.getProperty("user.dir"), file);
@@ -216,13 +216,12 @@ final class Shell {
 			f = new File(file);
 		}
 		if (f.exists()) {
-			Scanner scanner;
+			Scanner scanner = null;
 			try {
 				scanner = new Scanner(f);
 			} catch (FileNotFoundException e) {
 				System.err.println("Caught FileNotFoundException " + e.getMessage());
 				System.exit(1);
-				return;
 			}
 			String nextString = new String();
 			while (scanner.hasNext()) {
@@ -231,15 +230,15 @@ final class Shell {
 			}
 		} else {
 			System.err.println("No such file");
+			return FUNCTION_ERROR;
 		}
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * remove for regular file.
-	 *
 	 * @param file - file.
 	 */
-	private static void remove(final String file) {
+	private static boolean remove(final String file) {
 		File f;
 		if (!Pattern.matches(File.separator + ".*", file)) {
 			f = new File(System.getProperty("user.dir"), file);
@@ -250,15 +249,15 @@ final class Shell {
 			f.delete();
 		} else {
 			System.out.println("Can't remove " + f.getName() + "No such file or directory");
+			return FUNCTION_ERROR;
 		}
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * remove for directory.
-	 *
 	 * @param dir - directory.
 	 */
-	private static void removeRecursive(final String dir) {
+	private static boolean removeRecursive(final String dir) {
 		File dIr;
 		if (!Pattern.matches(File.separator + ".*", dir)) {
 			dIr = new File(System.getProperty("user.dir"), dir);
@@ -280,16 +279,16 @@ final class Shell {
 			dIr.delete();
 		} else {
 			System.out.println(dir + " is not a directory");
+			return FUNCTION_ERROR;
 		}
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * copy for regular file.
-	 *
 	 * @param file - file.
 	 * @param dir  - directory.
 	 */
-	private static void copy(final String file, final String dir) {
+	private static boolean copy(final String file, final String dir) {
 		File oldFile;
 		File newFile;
 		if (Pattern.matches(File.separator + ".*", file)) {
@@ -305,22 +304,21 @@ final class Shell {
 		} catch (IOException e) {
 			System.err.println("Caught IOException " + e.getMessage());
 		}
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * print working directory.
 	 */
-	private static void pwd() {
+	private static boolean pwd() {
 		String currentdir = System.getProperty("user.dir");
 		System.out.println(currentdir);
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * make directory.
-	 *
 	 * @param dir - directory.
 	 */
-	private static void mkdir(final String dir) {
+	private static boolean mkdir(final String dir) {
 		File newDir;
 		if (!Pattern.matches(File.separator + ".*", dir)) {
 			newDir = new File(System.getProperty("user.dir"), dir);
@@ -329,26 +327,26 @@ final class Shell {
 		}
 		if (!newDir.mkdirs()) {
 			System.err.println("Can't make this directory or it already exists");
+			return FUNCTION_ERROR;
 		}
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * list contents of current directory.
 	 */
-	private static void ls() {
+	private static boolean ls() {
 		File currentDir = new File(System.getProperty("user.dir"));
 		File[] contents = currentDir.listFiles();
 		for (int i = 0; i < contents.length; i++) {
 			System.out.println(contents[i].getName());
 		}
+		return FUNCTION_SUCCESS;
 	}
-
 	/**
 	 * change directory.
-	 *
 	 * @param dir - new directory.
 	 */
-	private static void cd(final String dir) {
+	private static boolean cd(final String dir) {
 		File newWorkingDir = new File(dir);
 		if (Pattern.matches(File.separator + ".*", dir) && newWorkingDir.isDirectory()) {
 			String canonicalPath = new String();
@@ -370,7 +368,9 @@ final class Shell {
 				System.setProperty("user.dir", canonicalPath);
 			} else {
 				System.err.println("Directory does not exist");
+				return FUNCTION_ERROR;
 			}
 		}
+		return FUNCTION_SUCCESS;
 	}
 }
