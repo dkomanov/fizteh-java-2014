@@ -3,9 +3,6 @@ package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
-/**
- * Created by Dmitriy on 9/24/2014.
- */
 public class GetCommand implements Command {
 
     private Table db;

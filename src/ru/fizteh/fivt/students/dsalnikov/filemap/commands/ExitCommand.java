@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
-import ru.fizteh.fivt.students.dsalnikov.utils.FileMapUtils;
 
 public class ExitCommand implements Command {
 
@@ -18,6 +17,7 @@ public class ExitCommand implements Command {
             throw new IllegalArgumentException("wrong amount of arguments");
         } else {
             db.exit();
+            System.exit(0);
         }
     }
 

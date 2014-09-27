@@ -5,9 +5,6 @@ import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
 import java.util.Set;
 
-/**
- * Created by Dmitriy on 9/24/2014.
- */
 public class ListCommand implements Command {
 
     private Table db;
