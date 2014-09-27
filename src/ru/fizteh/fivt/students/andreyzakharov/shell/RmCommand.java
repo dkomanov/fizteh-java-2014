@@ -15,6 +15,10 @@ public class RmCommand extends AbstractCommand {
             shell.error("rm: missing operand");
             return;
         }
+        if ((!recursive && args.length > 3) || (recursive && args.length > 4)) {
+            shell.error("rm: too many arguments");
+            return;
+        }
 
         for (int i = (recursive ? 2 : 1); i < args.length; ++i) {
             Path path = shell.wd.resolve(args[i]);

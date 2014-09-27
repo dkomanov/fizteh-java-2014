@@ -10,6 +10,10 @@ public class CdCommand extends AbstractCommand {
 
     @Override
     public void execute(String... args) {
+        if (args.length > 2) {
+            shell.error("cd: too many arguments");
+            return;
+        }
         String pathString = (args.length < 2) ? System.getProperty("user.home") : args[1];
         try {
             Path newWd = shell.getWd().resolve(pathString).toRealPath();

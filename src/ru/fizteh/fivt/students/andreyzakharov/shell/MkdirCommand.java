@@ -16,6 +16,10 @@ public class MkdirCommand extends AbstractCommand {
             shell.error("mkdir: missing operand");
             return;
         }
+        if (args.length > 2) {
+            shell.error("mkdir: too many arguments");
+            return;
+        }
         Path path = shell.getWd().resolve(args[1]);
         try {
             Files.createDirectory(path);

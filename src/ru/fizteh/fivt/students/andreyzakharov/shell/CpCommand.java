@@ -19,6 +19,10 @@ public class CpCommand extends AbstractCommand {
             shell.error("cp: missing file operand");
             return;
         }
+        if ((!recursive && args.length > 3) || (recursive && args.length > 4)) {
+            shell.error("cp: too many arguments");
+            return;
+        }
 
         Path src;
         try {

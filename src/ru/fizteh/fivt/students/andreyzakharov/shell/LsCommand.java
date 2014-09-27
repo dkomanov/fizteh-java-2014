@@ -12,6 +12,10 @@ public class LsCommand extends AbstractCommand {
 
     @Override
     public void execute(String... args) {
+        if (args.length > 1) {
+            shell.error("ls: too many arguments");
+            return;
+        }
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(shell.getWd())) {
             for (Path file : stream) {
                 shell.output(file.getFileName().toString());

@@ -18,6 +18,10 @@ public class CatCommand extends AbstractCommand {
             shell.error("cat: missing file operand");
             return;
         }
+        if (args.length > 1) {
+            shell.error("cat: too many arguments");
+            return;
+        }
         Path path = shell.getWd().resolve(args[1]);
         try (InputStream in = Files.newInputStream(path);
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {

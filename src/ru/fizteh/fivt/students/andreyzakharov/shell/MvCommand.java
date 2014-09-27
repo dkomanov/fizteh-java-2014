@@ -18,6 +18,10 @@ public class MvCommand extends AbstractCommand {
             shell.error("mv: missing file operand");
             return;
         }
+        if (args.length > 3) {
+            shell.error("cat: too many arguments");
+            return;
+        }
         Path src = shell.getWd().resolve(args[1]);
         Path target = shell.getWd().resolve(args[2]);
         if (!Files.exists(src)) {
