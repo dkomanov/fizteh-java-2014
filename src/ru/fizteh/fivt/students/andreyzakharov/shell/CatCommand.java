@@ -18,7 +18,7 @@ public class CatCommand extends AbstractCommand {
             shell.error("cat: missing file operand");
             return;
         }
-        if (args.length > 1) {
+        if (args.length > 2) {
             shell.error("cat: too many arguments");
             return;
         }
