@@ -6,8 +6,8 @@ import java.io.IOException;
 
 public class Cd implements ShellCommand {
 
-	private String currentPath;
-	private String destination;
+String currentPath;
+String destination;
 
 	public Cd(String currentPath, String destination) {
 		this.currentPath = currentPath;

@@ -3,19 +3,19 @@ package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 import java.io.*;
 import ru.fizteh.fivt.students.maxim_rep.shell.*;
 
-public class Run implements ShellCommand {
+public class Rm implements ShellCommand {
 
-	String currentPath;
-	String destination;
-	boolean recursive;
+String currentPath;
+String destination;
+boolean recursive;
 
-	public Run(String currentPath, String destination, boolean recursive) {
+	public Rm(String currentPath, String destination, boolean recursive) {
 		this.currentPath = currentPath;
 		this.destination = Parser.pathConverter(destination, currentPath);
 		this.recursive = recursive;
 	}
 
-	public static void recursiveRm(File f, String Path) {
+	public static void recursiveRm(File f, String path) {
 		String[] files = f.list();
 		for (int i = 0; i < files.length; ++i) {
 			File currentFile = new File(f.getPath()

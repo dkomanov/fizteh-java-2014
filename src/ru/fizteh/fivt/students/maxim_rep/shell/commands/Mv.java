@@ -5,9 +5,9 @@ import java.io.File;
 
 public class Mv implements ShellCommand {
 
-	String currentPath;
-	String source;
-	String destination;
+String currentPath;
+String source;
+String destination;
 
 	public Mv(String currentPath, String source, String destination) {
 		this.currentPath = currentPath;
@@ -18,7 +18,7 @@ public class Mv implements ShellCommand {
 	@Override
 	public boolean execute() {
 		Cp.copyDirectory(source, destination);
-		Run.recursiveRm((new File(source)), source);
+		Rm.recursiveRm((new File(source)), source);
 		return true;
 	}
 }

@@ -5,8 +5,8 @@ import java.io.*;
 
 public class Cat implements ShellCommand {
 
-	String currentPath;
-	String fileName;
+String currentPath;
+String fileName;
 
 	public Cat(String currentPath, String fileName) {
 		this.fileName = Parser.pathConverter(fileName, currentPath);

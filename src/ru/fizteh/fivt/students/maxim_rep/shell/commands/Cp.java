@@ -8,9 +8,9 @@ import java.nio.file.Files;
 
 public class Cp implements ShellCommand {
 
-	String currentPath;
-	String source;
-	String destination;
+String currentPath;
+String source;
+String destination;
 	boolean recursive;
 
 	public Cp(String currentPath, String source, String destination,

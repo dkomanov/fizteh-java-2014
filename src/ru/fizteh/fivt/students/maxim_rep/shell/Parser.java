@@ -16,34 +16,34 @@ public class Parser {
 		return commandLine;
 	}
 
-	public static String pathConverter(String Path, String currentPath) {
+	public static String pathConverter(String path, String currentPath) {
 		File f = new File(currentPath);
 
-		if (Path.equals("/") || Path.equals("\\")) {
+		if (path.equals("/") || path.equals("\\")) {
 			return "/";
-		} else if (Path.startsWith("~")) {
-			return System.getProperty("user.home") + Path.substring(1);
-		} else if (Path.equals("")) {
+		} else if (path.startsWith("~")) {
+			return System.getProperty("user.home") + path.substring(1);
+		} else if (path.equals("")) {
 			return System.getProperty("user.home");
-		} else if (Path.length() >= 2 && Path.substring(0, 2).equals("..")) {
+		} else if (path.length() >= 2 && path.substring(0, 2).equals("..")) {
 			if (f.getParent() == null) {
-				return "/" + Path.substring(2);
+				return "/" + path.substring(2);
 			}
-			return f.getParent() + Path.substring(2);
-		} else if (Path.startsWith(".")) {
-			return currentPath + Path.substring(1);
+			return f.getParent() + path.substring(2);
+		} else if (path.startsWith(".")) {
+			return currentPath + path.substring(1);
 		}
 
-		if (!(Path.startsWith("/", 0) || Path.startsWith("\\", 0) || Path
+		if (!(path.startsWith("/", 0) || path.startsWith("\\", 0) || path
 				.startsWith(":", 1))) {
 			if (currentPath.equals("/")) {
-				Path = currentPath + Path;
+				path = currentPath + path;
 			} else {
-				Path = currentPath + "/" + Path;
+				path = currentPath + "/" + path;
 			}
 		}
 
-		return Path;
+		return path;
 	}
 
 	public static String[] commandToArguments(String command) {
@@ -118,9 +118,9 @@ public class Parser {
 				}
 			case "rm":
 				if (comArgs[1].equals("-r")) {
-					return new Run(Shell.currentPath, comArgs[2], true);
+					return new Rm(Shell.currentPath, comArgs[2], true);
 				} else {
-					return new Run(Shell.currentPath, comArgs[1], false);
+					return new Rm(Shell.currentPath, comArgs[1], false);
 				}
 			case "mkdir":
 				return new Mkdir(Shell.currentPath, comArgs[1]);
