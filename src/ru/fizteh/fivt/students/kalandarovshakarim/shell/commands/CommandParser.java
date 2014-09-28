@@ -25,7 +25,6 @@ public class CommandParser {
     }
 
     public static String[] getParams(String command) {
-        System.out.println(command);
         int index = command.indexOf(' ');
         int opt = command.indexOf("-r");
 

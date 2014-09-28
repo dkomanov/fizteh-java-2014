@@ -47,6 +47,7 @@ public class Shell<State> {
             System.out.print("$ ");
         }
         System.out.println();
+        processCommand("exit");
     }
 
     public void packageMode() {
@@ -66,7 +67,7 @@ public class Shell<State> {
         if (command.length() > 0) {
             String cmdName = CommandParser.getCmdName(command);
             if (!supportedCmds.containsKey(cmdName)) {
-                System.err.printf("Shell: '%s' Unknown command\n", cmdName);
+                System.err.printf("'%s' Unknown command\n", cmdName);
                 return false;
             }
             try {
