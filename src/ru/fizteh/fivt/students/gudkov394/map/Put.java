@@ -19,5 +19,6 @@ public class Put {
             System.err.println("problem with put");
             System.exit(2);
         }
+        Write write = new Write(ct);
     }
 }

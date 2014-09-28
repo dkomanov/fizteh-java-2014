@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.gudkov394.map;
 
-import ru.fizteh.fivt.students.gudkov394.shell.Exit;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class MyMap {
         } else if ("list".equals(currentArgs[0])) {
             ListTable listTable = new ListTable(currentArgs, ct);
         } else if ("exit".equals(currentArgs[0])) {
-            Exit exit = new Exit(currentArgs);
+            Exit exit = new Exit(currentArgs, ct);
         } else {
             System.err.println("wrong command");
             System.exit(22);
