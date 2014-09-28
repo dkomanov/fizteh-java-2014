@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
+package ru.fizteh.fivt.students.andreyzakharov.filemap;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
