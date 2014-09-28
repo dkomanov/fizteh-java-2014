@@ -14,12 +14,11 @@ public class ChangeDirectory {
         if (currentArgs.length == 1) {
             cd.changeCurrentDirectory(cd.getHome());
         } else {
-            if (".".equals(currentArgs[1])) {
-
-            } else if ("..".equals(currentArgs[1])) {
+         if ("..".equals(currentArgs[1])) {
                 File f = new File(cd.getCurrentDirectory());
                 cd.changeCurrentDirectory(f.getParent());
-            } else {
+            } else
+         if (!".".equals(currentArgs[1])) {
                 File f = new File(currentArgs[1]);
                 if (!f.isAbsolute()) {
                     f = new File(cd.getCurrentDirectory(), currentArgs[1]);
