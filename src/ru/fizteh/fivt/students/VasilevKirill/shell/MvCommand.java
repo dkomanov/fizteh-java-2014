@@ -9,7 +9,9 @@ import java.io.IOException;
 public class MvCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
-        if (args.length < 2) return 0;
+        if (args.length < 2) {
+            return 0;
+        }
         File source = new File(Shell.currentPath + File.separator + args[1]);
         if (!source.exists()) {
             System.out.println("mv: '" + args[1] + "': No such file or directory");
@@ -18,7 +20,9 @@ public class MvCommand implements Command {
         File[] listFiles = new File(Shell.currentPath).listFiles();
         boolean isContain = false;
         for (File f : listFiles) {
-            if (f.getName().equals(args[2])) isContain = true;
+            if (f.getName().equals(args[2])) {
+                isContain = true;
+            }
         }
         if (!args[2].contains(File.separator) && !isContain) {
             source.renameTo(new File(Shell.currentPath + File.separator + args[2]));

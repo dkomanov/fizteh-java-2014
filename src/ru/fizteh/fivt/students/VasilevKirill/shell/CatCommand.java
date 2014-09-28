@@ -8,7 +8,9 @@ import java.io.*;
 public class CatCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
-        if (args.length < 2) return 0;
+        if (args.length < 2) {
+            return 0;
+        }
         File file = new File(Shell.currentPath + File.separator + args[1]);
         if (!file.exists()) {
             System.out.println("cat: " + args[1] + ": No such file or directory");

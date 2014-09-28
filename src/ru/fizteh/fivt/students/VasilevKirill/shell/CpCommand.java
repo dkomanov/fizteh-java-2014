@@ -10,7 +10,9 @@ import java.nio.file.Files;
 public class CpCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
-        if (args.length < 2) return 0;
+        if (args.length < 2) {
+            return 0;
+        }
         if (args[1].equals("-r")) {
             File source = new File(Shell.currentPath + File.separator + args[2]);
             if (!source.exists()) {
@@ -29,7 +31,9 @@ public class CpCommand implements Command {
             }
             File destinationDirectory = new File(Shell.currentPath + File.separator + args[3]);
             if (!destinationDirectory.exists()) {
-                if (!destinationDirectory.mkdir()) return 1;
+                if (!destinationDirectory.mkdir()) {
+                    return 1;
+                }
             }
             if (!source.isDirectory()) {
                 Files.copy(source.toPath(), destination.toPath());
@@ -38,8 +42,10 @@ public class CpCommand implements Command {
             Files.copy(source.toPath(), destination.toPath());
             File[] listFiles = source.listFiles();
             for (File f : listFiles) {
-                String[] new_args = {"cp", "-r", f.getName(), destination.getAbsolutePath()};
-                if (cp_recursive(new_args, source.getAbsolutePath()) != 0) return 1;
+                String[] newArgs = {"cp", "-r", f.getName(), destination.getAbsolutePath()};
+                if (cpRecursive(newArgs, source.getAbsolutePath()) != 0) {
+                    return 1;
+                }
             }
         } else {
             File source = new File(Shell.currentPath + File.separator + args[1]);
@@ -60,10 +66,14 @@ public class CpCommand implements Command {
         return 0;
     }
 
-    private int cp_recursive(String[] args, String directory) throws IOException {
-        if (args.length < 2) return 1;
+    private int cpRecursive(String[] args, String directory) throws IOException {
+        if (args.length < 2) {
+            return 1;
+        }
         File source = new File(directory + File.separator + args[2]);
-        if (!source.exists()) return 1;
+        if (!source.exists()) {
+            return 1;
+        }
         File destination = new File(args[3] + File.separator + args[2]);
         if (destination.exists()) {
             String[] rmArgs = {"rm", "-r", destination.getName()};
@@ -79,8 +89,8 @@ public class CpCommand implements Command {
             return 0;
         }
         for (File f : listFiles) {
-            String[] new_args = {"cp", "-r", f.getName(), destination.getAbsolutePath()};
-            cp_recursive(new_args, source.getAbsolutePath());
+            String[] newArgs = {"cp", "-r", f.getName(), destination.getAbsolutePath()};
+            cpRecursive(newArgs, source.getAbsolutePath());
         }
         return 0;
     }

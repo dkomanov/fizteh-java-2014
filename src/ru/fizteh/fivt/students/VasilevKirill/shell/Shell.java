@@ -8,10 +8,11 @@ import java.util.Map;
  * Created by Vasilev Kirill on 22.09.2014.
  */
 public class Shell {
-    static String currentPath = "/home";
+    static String currentPath;
     private static Map<String, Command> commandMap = new HashMap<>();
 
     static {
+        currentPath = new File("").getAbsolutePath();
         commandMap.put(new CdCommand().toString(), new CdCommand());
         commandMap.put(new MkdirCommand().toString(), new MkdirCommand());
         commandMap.put(new PwdCommand().toString(), new PwdCommand());
@@ -53,7 +54,9 @@ public class Shell {
 
     private int handle(String[] args) {
         int status = 0;
-        if (args.length == 0) return 0;
+        if (args.length == 0) {
+            return 0;
+        }
         String[] currentArgs = new String[4];
         int argIterator = 0;
         try {
@@ -63,7 +66,9 @@ public class Shell {
                     currentArgs[argIterator++] = args[i];
                 } else {
                     if ((currentCommand = commandMap.get(currentArgs[0])) != null) {
-                        if (currentCommand.execute(currentArgs) == 1) status = 1;
+                        if (currentCommand.execute(currentArgs) == 1) {
+                            status = 1;
+                        }
                     }
                     currentArgs = new String[4];
                     argIterator = 0;
