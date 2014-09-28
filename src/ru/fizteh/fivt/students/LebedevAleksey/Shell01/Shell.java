@@ -176,12 +176,23 @@ public class Shell extends CommandParser {
         @Override
         void invoke() throws CommandInvokeException {
             File[] files = getCurrentFolderAsFile().listFiles();
-            if (files == null) {
-                throw new CommandInvokeException("Can't found current directory.", CommandNames.CMD_LS.getName());
-            } else {
-                for (File file : files) {
-                    System.out.println(file.getName());
+            try {
+                if (files == null) {
+                    throw new CommandInvokeException("Can't found current directory.", CommandNames.CMD_LS.getName());
+                } else {
+                    for (File file : files) {
+                        if (file.isDirectory()) {
+                            System.out.println(file.getName());
+                        }
+                    }
+                    for (File file : files) {
+                        if (!file.isDirectory()) {
+                            System.out.println(file.getName());
+                        }
+                    }
                 }
+            } catch (SecurityException ex) {
+                throw new CommandInvokeException("Access denied", CommandNames.CMD_LS.getName(), ex);
             }
         }
     }
@@ -253,13 +264,13 @@ public class Shell extends CommandParser {
                 Files.createDirectory(resolvePath(filename, CommandNames.CMD_MKDIR));
             } catch (FileAlreadyExistsException ex) {
                 throw new CommandInvokeException("Can't create directory '" + filename + "': it already exists",
-                        CommandNames.CMD_CAT.getName(), ex);
+                        CommandNames.CMD_MKDIR.getName(), ex);
             } catch (SecurityException ex) {
                 throw new CommandInvokeException("Can't create directory '" + filename + "': access denied",
-                        CommandNames.CMD_CAT.getName(), ex);
+                        CommandNames.CMD_MKDIR.getName(), ex);
             } catch (IOException | UnsupportedOperationException ex) {
                 throw new CommandInvokeException("Can't create directory '" + filename + "': access denied",
-                        CommandNames.CMD_CAT.getName(), ex);
+                        CommandNames.CMD_MKDIR.getName(), ex);
             }
         }
     }
@@ -287,8 +298,18 @@ public class Shell extends CommandParser {
             String[] args = getArguments();
             if (args.length == 2) {
                 try {
-                    Files.move(resolvePath(args[0], CommandNames.CMD_MV), resolvePath(args[1], CommandNames.CMD_MV),
-                            StandardCopyOption.ATOMIC_MOVE);
+                    Path target = resolvePath(args[1], CommandNames.CMD_MV);
+                    File destination = target.toFile();
+                    Path source = resolvePath(args[0], CommandNames.CMD_MV);
+                    if (destination.exists()) {
+                        if (destination.isDirectory()) {
+                            target = target.resolve(source.toFile().getName());
+                        } else {
+                            throw new CommandInvokeException("'" + target + "' already exists",
+                                    CommandNames.CMD_MV.getName());
+                        }
+                    }
+                    Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
                 } catch (FileAlreadyExistsException | DirectoryNotEmptyException ex) {
                     throw new CommandInvokeException("Can't move to '" + args[1] + "': wrong target"
                             , CommandNames.CMD_MV.getName(), ex);
@@ -317,17 +338,12 @@ public class Shell extends CommandParser {
                 Path source = resolvePath(args.getArg1(), CommandNames.CMD_CP);
                 Path target = resolvePath(args.getArg2(), CommandNames.CMD_CP);
                 if (source.toFile().exists()) {
-                    if (target.toFile().exists()) {
-                        throw new CommandInvokeException("'" + target + "' already exists",
-                                CommandNames.CMD_CP.getName());
+                    boolean canCopy = ((!source.toFile().isDirectory()) || args.isRecursive());
+                    if (canCopy) {
+                        copy(args, source.toFile(), target, target.toFile().exists());
                     } else {
-                        boolean canCopy = ((!source.toFile().isDirectory()) || args.isRecursive());
-                        if (canCopy) {
-                            copy(args, source.toFile(), target);
-                        } else {
-                            throw new CommandInvokeException("'" + source + "' is a directory (not copied).",
-                                    CommandNames.CMD_CP.getName());
-                        }
+                        throw new CommandInvokeException("'" + source + "' is a directory (not copied).",
+                                CommandNames.CMD_CP.getName());
                     }
                 } else {
                     throw new CommandInvokeException("'" + source + FILE_NOT_FOUND_MESSAGE,
@@ -338,8 +354,12 @@ public class Shell extends CommandParser {
             }
         }
 
-        private void copy(ResultOfGetting2Args args, File source, Path target) throws CommandInvokeException {
+        private void copy(ResultOfGetting2Args args, File source, Path target, boolean resolve)
+                throws CommandInvokeException {
             try {
+                if (resolve) {
+                    target = target.resolve(source.getName());
+                }
                 if (source.isDirectory()) {
                     Files.createDirectory(target);
                     File[] files = source.listFiles();
@@ -348,7 +368,7 @@ public class Shell extends CommandParser {
                                 CommandNames.CMD_CP.getName());
                     } else {
                         for (File file : files) {
-                            copy(args, file, target.resolve(file.getName()));
+                            copy(args, file, target, true);
                         }
                     }
                 } else {
@@ -383,7 +403,7 @@ public class Shell extends CommandParser {
                     path = args[1];
                     recursive = true;
                 } else {
-                    throw new CommandInvokeException(WRONG_ARGUMENTS, CommandNames.CMD_MV.getName());
+                    throw new CommandInvokeException(WRONG_ARGUMENTS, CommandNames.CMD_RM.getName());
                 }
             }
             try {
@@ -393,11 +413,11 @@ public class Shell extends CommandParser {
                     if (canRemove) {
                         remove(source.toFile());
                     } else {
-                        throw new CommandInvokeException("'" + source + "' is a directory (not removed).",
+                        throw new CommandInvokeException("'" + path + "' is a directory (not removed).",
                                 CommandNames.CMD_RM.getName());
                     }
                 } else {
-                    throw new CommandInvokeException("'" + source + FILE_NOT_FOUND_MESSAGE,
+                    throw new CommandInvokeException("cannot remove '" + path + FILE_NOT_FOUND_MESSAGE,
                             CommandNames.CMD_RM.getName());
                 }
             } catch (SecurityException ex) {
