@@ -9,6 +9,9 @@ public class PutCommand implements Command {
         if (args.length > 3) {
             throw new CommandInterruptException("put: too many arguments");
         }
+        if (connector.db == null) {
+            throw new CommandInterruptException("no table");
+        }
         String value = connector.db.get(args[1]);
         connector.db.put(args[1], args[2]);
         return value == null ? "new" : "overwrite\n" + value;

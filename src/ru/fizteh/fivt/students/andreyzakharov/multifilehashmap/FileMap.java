@@ -10,9 +10,8 @@ import java.util.HashMap;
 public class FileMap extends HashMap<String, String> {
     Path dbPath;
 
-    public FileMap(Path path) throws ConnectionInterruptException {
+    public FileMap(Path path) {
         dbPath = path;
-        load();
     }
 
     public void load() throws ConnectionInterruptException {

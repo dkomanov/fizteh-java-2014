@@ -9,7 +9,7 @@ public class DbMain {
     Path dbPath;
 
     public DbMain(String[] args) {
-        dbPath = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("db.file"));
+        dbPath = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("fizteh.db.dir"));
         batch = args.length > 0;
         run(args);
     }

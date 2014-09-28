@@ -6,6 +6,9 @@ public class ListCommand implements Command {
         if (args.length > 1) {
             throw new CommandInterruptException("list: too many arguments");
         }
+        if (connector.db == null) {
+            throw new CommandInterruptException("no table");
+        }
         if (connector.db.isEmpty()) {
             return "";
         } else {
