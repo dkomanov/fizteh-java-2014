@@ -44,10 +44,11 @@ final class Shell {
 			int status = 0;
 			String[] funcs = parseCommandsFromArray(args);
 			for (int i = 0; i < funcs.length; i++) {
-				if(!run(funcs[i]))
+				if(!run(funcs[i])) {
 					status = 1;
+					System.exit(status);
+				}
 			}
-			System.exit(status);
 		} else {
 			Scanner scanner = new Scanner(System.in);
 			String newcommands = new String();
@@ -288,9 +289,11 @@ final class Shell {
 	 * @param file - file.
 	 * @param dir  - directory.
 	 */
-	private static boolean copy(final String file, final String dir) {
+	private static boolean copy(final String file,String dir) {
 		File oldFile;
 		File newFile;
+		File dIr = new File(dir);
+		if(dIr.isDirectory()) {
 		if (Pattern.matches(File.separator + ".*", file)) {
 			String[] folders = file.split(File.separator);
 			oldFile = new File(file);
@@ -298,6 +301,22 @@ final class Shell {
 		} else {
 			oldFile = new File(System.getProperty("user.dir"), file);
 			newFile = new File(dir, file);
+		}
+		} else if(dIr.exists()) {
+			System.err.println("File" + dir +" already exists");
+			return FUNCTION_ERROR;
+		} else {
+			if(Pattern.matches(File.separator + ".*",dir)) {
+				String[] foldrs = dir.split(File.separator);
+				dir = foldrs[foldrs.length-1];
+			}
+			oldFile = new File(file);
+			newFile = new File(oldFile.getParent(),dir);
+			try{
+			newFile.createNewFile();
+			} catch (IOException e) {
+				System.err.println("Caught IOException " + e.getMessage());
+			}
 		}
 		try {
 			Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
