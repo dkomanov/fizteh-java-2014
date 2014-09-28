@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.maxim_rep.shell.commands;
 
 public class Pwd implements ShellCommand {
 
-String currentPath;
+	String currentPath;
 
 	public Pwd(String currentPath) {
 		this.currentPath = currentPath;

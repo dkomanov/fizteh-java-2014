@@ -5,9 +5,9 @@ import ru.fizteh.fivt.students.maxim_rep.shell.*;
 
 public class Rm implements ShellCommand {
 
-String currentPath;
-String destination;
-boolean recursive;
+	String currentPath;
+	String destination;
+	boolean recursive;
 
 	public Rm(String currentPath, String destination, boolean recursive) {
 		this.currentPath = currentPath;

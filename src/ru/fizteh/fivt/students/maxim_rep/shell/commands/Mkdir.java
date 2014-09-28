@@ -4,8 +4,8 @@ import java.io.*;
 
 public class Mkdir implements ShellCommand {
 
-String currentPath;
-String fileName;
+	String currentPath;
+	String fileName;
 
 	public Mkdir(String currentPath, String fileName) {
 		this.fileName = fileName;

@@ -5,9 +5,9 @@ import java.io.File;
 
 public class Mv implements ShellCommand {
 
-String currentPath;
-String source;
-String destination;
+	String currentPath;
+	String source;
+	String destination;
 
 	public Mv(String currentPath, String source, String destination) {
 		this.currentPath = currentPath;

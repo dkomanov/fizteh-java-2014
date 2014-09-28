@@ -24,14 +24,14 @@ public class Shell {
 		currentPath = System.getProperty("user.home");
 		String[] commandsString = Parser.divideByChar(commandline, ";");
 		for (String commandsString1 : commandsString) {
-			String ConvertedString = currentPath;
+			String convertedString = currentPath;
 			if (currentPath.startsWith(System.getProperty("user.home"))) {
-				ConvertedString = "~"
+				convertedString = "~"
 						+ currentPath.substring(System.getProperty("user.home")
 								.length());
 			}
 			System.out.println(System.getProperty("user.name") + "@"
-					+ System.getProperty("os.name") + " " + ConvertedString
+					+ System.getProperty("os.name") + " " + convertedString
 					+ " $ " + commandsString1);
 			ShellCommand command = Parser.getCommandFromString(commandsString1);
 			if (!command.execute()) {
@@ -46,15 +46,15 @@ public class Shell {
 	public static void interactiveMode() throws IOException {
 		currentPath = System.getProperty("user.home");
 
-		for (int i = 0; i == 0;) {
-			String ConvertedString = currentPath;
+		for (;;) {
+			String convertedString = currentPath;
 			if (currentPath.startsWith(System.getProperty("user.home"))) {
-				ConvertedString = "~"
+				convertedString = "~"
 						+ currentPath.substring(System.getProperty("user.home")
 								.length());
 			}
 			System.out.print(System.getProperty("user.name") + "@"
-					+ System.getProperty("os.name") + " " + ConvertedString
+					+ System.getProperty("os.name") + " " + convertedString
 					+ " $ ");
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(

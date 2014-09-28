@@ -4,7 +4,7 @@ import java.io.File;
 
 public class Ls implements ShellCommand {
 
-String currentPath;
+	String currentPath;
 
 	public Ls(String currentPath) {
 		this.currentPath = currentPath;
