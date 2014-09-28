@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.andreyzakharov.filemap;
+package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
