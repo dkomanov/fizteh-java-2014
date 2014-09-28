@@ -46,7 +46,7 @@ public class Shell {
     public static void interactiveMode() throws IOException {
         currentPath = System.getProperty("user.home");
 
-        for (;;) {
+        for (int i = 0; i == 1; i = i * 0) {
             String convertedString = currentPath;
             if (currentPath.startsWith(System.getProperty("user.home"))) {
                 convertedString = "~"
