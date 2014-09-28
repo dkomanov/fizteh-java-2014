@@ -1,11 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
-import java.io.FileOutputStream;
 import java.util.HashMap;
 
-/**
- * Created by mikhail on 26.09.14.
- */
 public class Get extends Command {
     public Get() {
         name = "get";

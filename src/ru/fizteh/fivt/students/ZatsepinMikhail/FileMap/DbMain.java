@@ -1,8 +1,11 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
 /**
- * Created by mikhail on 26.09.14.
+ * FileMap
+ * Version from 28.09.2014
+ * Created by Mikhail Zatsepin, 395
  */
+
 public class DbMain {
     public static void main(String[] args) {
         FileMap myFileMap = new FileMap(System.getProperty("db.file"));
@@ -11,16 +14,22 @@ public class DbMain {
         myFileMap.addCommand(new List());
         myFileMap.addCommand(new Remove());
         boolean errorOcuried = false;
-        errorOcuried = !myFileMap.init();
+        if (!myFileMap.init()) {
+            errorOcuried = true;
+        }
         if (args.length > 0) {
-            errorOcuried = !myFileMap.packetMode(args);
+            if (!myFileMap.packetMode(args)) {
+                errorOcuried = true;
+            }
         } else {
-            errorOcuried = !myFileMap.interactiveMode();
+            if (!myFileMap.interactiveMode()) {
+                errorOcuried = true;
+            }
         }
         if (errorOcuried) {
-            System.exit(0);
+            System.exit(2);
         } else {
-            System.exit(3);
+            System.exit(0);
         }
     }
 }

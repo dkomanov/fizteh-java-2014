@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Scanner;
 
-/**
- * Created by mikhail on 28.09.14.
- */
 public class FileMap {
     private HashMap<String, String> dataBase;
     private HashMap<String, Command> fileMapCommands;
@@ -20,22 +17,20 @@ public class FileMap {
         fileMapCommands = new HashMap<>();
         diskFile = newDiskFile;
     }
-    public String getDiskFile() {
-        return diskFile;
-    }
+
     public void addCommand(Command newCommand) {
         fileMapCommands.put(newCommand.toString(), newCommand);
     }
 
     public boolean init() {
-        FileChannel inputChannel = null;
+        FileChannel inputChannel;
         try {
             inputChannel = new FileInputStream(diskFile).getChannel();
         } catch (FileNotFoundException e) {
             System.out.println("file not found");
             return false;
         }
-        ByteBuffer bufferFromDisk = null;
+        ByteBuffer bufferFromDisk;
         try {
             bufferFromDisk =
                     inputChannel.map(MapMode.READ_ONLY, 0, inputChannel.size());
@@ -68,7 +63,7 @@ public class FileMap {
     }
 
     public boolean load() {
-        try(FileOutputStream outputStream = new FileOutputStream(diskFile)) {
+        try (FileOutputStream outputStream = new FileOutputStream(diskFile)) {
             Set<String> keySet = dataBase.keySet();
             ByteBuffer bufferForSize = ByteBuffer.allocate(4);
             for (String key: keySet) {

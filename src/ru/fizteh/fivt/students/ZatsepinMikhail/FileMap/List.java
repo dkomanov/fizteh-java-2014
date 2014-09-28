@@ -1,13 +1,9 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- * Created by mikhail on 26.09.14.
- */
 public class List extends Command {
     public List() {
         name = "list";
