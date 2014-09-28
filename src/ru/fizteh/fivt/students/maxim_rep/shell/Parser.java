@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.maxim_rep.shell;
 import ru.fizteh.fivt.students.maxim_rep.shell.commands.*;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Parser {
 
@@ -22,7 +23,7 @@ public class Parser {
 			return "/";
 		} else if (Path.startsWith("~")) {
 			return System.getProperty("user.home") + Path.substring(1);
-		} else if (Path.equals("") || Path.equals(" ")) {
+		} else if (Path.equals("")) {
 			return System.getProperty("user.home");
 		} else if (Path.length() >= 2 && Path.substring(0, 2).equals("..")) {
 			if (f.getParent() == null) {
@@ -32,13 +33,9 @@ public class Parser {
 		} else if (Path.startsWith(".")) {
 			return currentPath + Path.substring(1);
 		}
-		if (Path.startsWith("\\", 0) || Path.startsWith("/", 0)) {
-			Path = "C:" + Path;
-		} else if (!(Path.startsWith(":", 1))) {
-			Path = currentPath + "\\" + Path;
-		}
 
-		if (!(Path.startsWith("/", 0) || Path.startsWith(":", 1))) {
+		if (!(Path.startsWith("/", 0) || Path.startsWith("\\", 0) || Path
+				.startsWith(":", 1))) {
 			if (currentPath.equals("/")) {
 				Path = currentPath + Path;
 			} else {
@@ -49,39 +46,44 @@ public class Parser {
 		return Path;
 	}
 
-	public static String[] divideByChar(String args, String parseBy) {
-		args = args.trim();
+	public static String[] commandToArguments(String command) {
+		StringBuilder newLine = new StringBuilder("");
+		ArrayList<String> tbl = new ArrayList<String>();
 
-		if (parseBy.equals(" ")) {
-			char[] temp = args.toCharArray();
-			for (int i = 0; i < temp.length - 1; i++) {
-				if (temp[i] == '"') {
-					for (int j = i + 1; j < temp.length; j++) {
-						if (temp[j] != ' ') {
-							if (temp[j] == '"') {
-								for (int k = i; k <= j; k++) {
-									temp[k] = (char) -11;
-								}
-								temp[i] = (char) -10;
-								temp[j] = (char) -10;
-								break;
-							} else {
-								break;
-							}
-						}
+		boolean quoted = false;
+		for (char curChar : command.toCharArray()) {
+			if (curChar == '"') {
+				quoted = !quoted;
+				continue;
+			}
+			if (Character.isWhitespace(curChar)) {
+				if (quoted) {
+					newLine.append(curChar);
+					continue;
+				} else {
+					if (!newLine.toString().equals("")) {
+						tbl.add(newLine.toString());
 					}
+					newLine = new StringBuilder("");
+					continue;
 				}
 
 			}
-			String[] splited = (new String(temp).split(" "));
-			for (int i = 0; i < splited.length; i++) {
-				char[] test_temp = { (char) -10 };
-				splited[i] = splited[i].replaceAll((new String(test_temp)), "");
-				splited[i] = splited[i].replace((char) -11, ' ');
-			}
-			return splited;
+			newLine.append(curChar);
 		}
 
+		if (!newLine.toString().equals(" ")) {
+			tbl.add(newLine.toString());
+		}
+		String[] resultArr = new String[tbl.size()];
+		resultArr = tbl.toArray(resultArr);
+
+		return resultArr;
+
+	}
+
+	public static String[] divideByChar(String args, String parseBy) {
+		args = args.trim();
 		return args.split(parseBy);
 	}
 
@@ -93,7 +95,7 @@ public class Parser {
 	}
 
 	public static ShellCommand getCommandFromString(String str) {
-		String[] comArgs = Parser.divideByChar(str, " ");
+		String[] comArgs = Parser.commandToArguments(str);
 		String comName = comArgs[0];
 
 		try {
