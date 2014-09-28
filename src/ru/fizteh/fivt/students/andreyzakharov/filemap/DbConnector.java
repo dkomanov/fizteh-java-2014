@@ -2,16 +2,35 @@ package ru.fizteh.fivt.students.andreyzakharov.filemap;
 
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DbConnector implements AutoCloseable {
-    Database db;
+    Map<String, Command> commands = new HashMap<>();
+    FileMap db;
 
     DbConnector(Path dbPath) {
-        db = new Database(dbPath);
+        db = new FileMap(dbPath);
+
+        commands.put("put", new PutCommand());
+        commands.put("get", new GetCommand());
+        commands.put("list", new ListCommand());
+        commands.put("remove", new RemoveCommand());
+        commands.put("exit", new ExitCommand());
     }
 
     @Override
     public void close() throws Exception {
         db.unload();
+    }
+
+    public String run(String argString) throws CommandInterruptException, ConnectionInterruptException {
+        String[] args = argString.trim().split("\\s+");
+        Command command = commands.get(args[0]);
+        if (command != null) {
+            return command.execute(this, args);
+        } else if (!args[0].equals("")) {
+            throw new CommandInterruptException(args[0] + ": command not found");
+        }
+        return null;
     }
 }

@@ -3,14 +3,14 @@ package ru.fizteh.fivt.students.andreyzakharov.filemap;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;`
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 
-public class Database extends HashMap<String, String> {
+public class FileMap extends HashMap<String, String> {
     Path dbPath;
 
-    public Database(Path path) {
+    public FileMap(Path path) {
         dbPath = path;
         load();
     }
