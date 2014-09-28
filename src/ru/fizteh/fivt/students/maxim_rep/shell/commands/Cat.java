@@ -6,26 +6,26 @@ import java.io.*;
 public class Cat implements ShellCommand {
 
 	String currentPath;
-	String FileName;
+	String fileName;
 
-	public Cat(String currentPath, String FileName) {
-		this.FileName = Parser.pathConverter(FileName, currentPath);
+	public Cat(String currentPath, String fileName) {
+		this.fileName = Parser.pathConverter(fileName, currentPath);
 		this.currentPath = currentPath;
 	}
 
 	@Override
 	public boolean execute() {
-		File f = new File(FileName);
+		File f = new File(fileName);
 
 		if (!f.exists() || !f.isFile()) {
-			System.out.println("cat: " + FileName + ": No such file");
+			System.out.println("cat: " + fileName + ": No such file");
 			return false;
 		} else {
 			FileReader in;
 			try {
 				in = new FileReader(f);
 			} catch (FileNotFoundException ex) {
-				System.out.println("cat: " + FileName + ": No such file");
+				System.out.println("cat: " + fileName + ": No such file");
 				return false;
 			}
 

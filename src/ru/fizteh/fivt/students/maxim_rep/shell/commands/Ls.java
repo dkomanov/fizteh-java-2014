@@ -10,10 +10,6 @@ public class Ls implements ShellCommand {
 		this.currentPath = currentPath;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	@Override
 	public boolean execute() {
 		File f = new File(currentPath);
