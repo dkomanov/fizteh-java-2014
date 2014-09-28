@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.andreyzakharov.filemap;
+package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
 
 public class RemoveCommand implements Command {
     @Override
