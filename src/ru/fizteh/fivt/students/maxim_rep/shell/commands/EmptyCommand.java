@@ -5,5 +5,4 @@ public class EmptyCommand implements ShellCommand {
     public boolean execute() {
         return true;
     }
-
 }
