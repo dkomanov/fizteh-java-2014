@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.andreyzakharov.filemap;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +9,13 @@ public class DbConnector implements AutoCloseable {
     Map<String, Command> commands = new HashMap<>();
     FileMap db;
 
-    DbConnector(Path dbPath) {
+    DbConnector(Path dbPath) throws ConnectionInterruptException {
+        if (!Files.exists(dbPath)) {
+            throw new ConnectionInterruptException("connection: file does not exist");
+        }
+        if (Files.isDirectory(dbPath)) {
+            throw new ConnectionInterruptException("connection: destination is a directory");
+        }
         db = new FileMap(dbPath);
 
         commands.put("put", new PutCommand());
@@ -19,8 +26,12 @@ public class DbConnector implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
-        db.unload();
+    public void close() {
+        try {
+            db.unload();
+        } catch (ConnectionInterruptException e) {
+            // suppress the exception
+        }
     }
 
     public String run(String argString) throws CommandInterruptException, ConnectionInterruptException {

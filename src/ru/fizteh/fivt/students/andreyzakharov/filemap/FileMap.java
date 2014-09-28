@@ -10,12 +10,12 @@ import java.util.HashMap;
 public class FileMap extends HashMap<String, String> {
     Path dbPath;
 
-    public FileMap(Path path) {
+    public FileMap(Path path) throws ConnectionInterruptException {
         dbPath = path;
         load();
     }
 
-    public void load() {
+    public void load() throws ConnectionInterruptException {
         try (DataInputStream is = new DataInputStream(Files.newInputStream(dbPath))) {
             clear();
 
@@ -29,11 +29,11 @@ public class FileMap extends HashMap<String, String> {
                 put(new String(key, "UTF-8"), new String(value, "UTF-8"));
             }
         } catch (IOException e) {
-            //
+            throw new ConnectionInterruptException("database: reading from disk failed");
         }
     }
 
-    public void unload() {
+    public void unload() throws ConnectionInterruptException {
         try (DataOutputStream os = new DataOutputStream(Files.newOutputStream(dbPath))) {
             for (HashMap.Entry<String, String> entry : entrySet()) {
                 byte[] key = entry.getKey().getBytes("UTF-8");
@@ -44,7 +44,7 @@ public class FileMap extends HashMap<String, String> {
                 os.write(value);
             }
         } catch (IOException e) {
-//            throw new DbWriteException();
+            throw new ConnectionInterruptException("database: writing to dist failed");
         }
     }
 }

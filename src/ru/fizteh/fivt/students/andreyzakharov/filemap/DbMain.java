@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 public class DbMain {
     boolean batch;
-    DbConnector connector;
     Path dbPath;
 
     public DbMain(String[] args) {
@@ -16,33 +15,37 @@ public class DbMain {
     }
 
     void run(String[] args) {
-        connector = new DbConnector(dbPath);
+        try (DbConnector connector = new DbConnector(dbPath)) {
+            if (batch) {
+                StringBuilder sb = new StringBuilder();
+                for (String s : args) {
+                    sb.append(s.trim());
+                    sb.append(' ');
+                }
+                String[] cmds = sb.toString().split(";");
 
-        if (batch) {
-            StringBuilder sb = new StringBuilder();
-            for (String s : args) {
-                sb.append(s.trim());
-                sb.append(' ');
-            }
-            String[] cmds = sb.toString().split(";");
+                for (String cmd : cmds) {
+                    execute(connector, cmd);
+                }
+            } else {
+                Scanner scanner = new Scanner(System.in);
+                scanner.useDelimiter("\\s*[;\\n]\\s*");
 
-            for (String s : cmds) {
-                execute(s);
-            }
-        } else {
-            Scanner scanner = new Scanner(System.in);
-            scanner.useDelimiter("\\s*[;\\n]\\s*");
-
-            System.out.print("# ");
-            while (scanner.hasNext()) {
-                execute(scanner.next().trim());
                 System.out.print("# ");
+                while (scanner.hasNext()) {
+                    execute(connector, scanner.next().trim());
+                    System.out.print("# ");
+                }
+                scanner.close();
             }
-            scanner.close();
+        } catch (ConnectionInterruptException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
+
     }
 
-    void execute(String s) {
+    void execute(DbConnector connector, String s) {
         try {
             String out = connector.run(s);
             if (out != null) {
@@ -51,6 +54,7 @@ public class DbMain {
         } catch (CommandInterruptException e) {
             System.err.println(e.getMessage());
             if (batch) {
+                connector.close();
                 System.exit(1);
             }
         } catch (ConnectionInterruptException e) {
@@ -61,8 +65,5 @@ public class DbMain {
 
     public static void main(String[] args) {
         DbMain m = new DbMain(args);
-        /*for (String arg : args) {
-            System.out.println(">"+arg);
-        }*/
     }
 }
