@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.calculator;
 
-import java.util.EmptyStackException;
 import java.util.Stack;
+import java.util.EmptyStackException;
 
 /**
  * @author AlexeyZhuravlev
@@ -10,8 +10,9 @@ import java.util.Stack;
 public abstract class Lexeme {
 
     public static Lexeme fromString(String s) throws Exception {
-        if (s.length() < 1)
+        if (s.length() < 1) {
             throw new Exception("Empty string is not a lexeme");
+        }
         switch(s.charAt(0)) {
             case '+': return new PlusOperator();
             case '-': return new BinaryMinusOperator();
@@ -44,5 +45,4 @@ public abstract class Lexeme {
             throw new Exception("No parenthesis balance");
         }
     }
-
 }

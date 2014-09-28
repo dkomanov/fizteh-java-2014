@@ -19,7 +19,7 @@ public final class MultiplyOperator extends Lexeme {
         try {
             NumberLexeme second = results.pop();
             NumberLexeme first = results.pop();
-            results.push(new NumberLexeme(first.value * second.value));
+            results.push(new NumberLexeme(first.value.multiply(second.value)));
         } catch (EmptyStackException e) {
             throw new Exception("Not enough arguments for multiply operation");
         }

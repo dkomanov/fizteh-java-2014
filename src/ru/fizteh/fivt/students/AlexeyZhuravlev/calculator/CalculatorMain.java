@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.calculator;
 
+import java.math.BigDecimal;
 import java.util.StringTokenizer;
 import java.util.Stack;
 
@@ -15,7 +16,7 @@ public class CalculatorMain {
             System.exit(1);
         }
         try {
-            double result = calculate(args[0]);
+            BigDecimal result = calculate(args[0]);
             System.out.println(result);
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -23,7 +24,7 @@ public class CalculatorMain {
         }
     }
 
-    private static double calculate(String inputString) throws Exception {
+    private static BigDecimal calculate(String inputString) throws Exception {
         inputString = "(" + inputString.replaceAll(" ", "") + ")";
         inputString = markUnaryMinuses(inputString, '~');
         StringTokenizer tokenizer = new StringTokenizer(inputString, "+-*/()~", true);
@@ -34,12 +35,15 @@ public class CalculatorMain {
             Lexeme lex = Lexeme.fromString(t);
             lex.addLexeme(results, operations);
         }
-        if (!operations.isEmpty())
+        if (!operations.isEmpty()) {
             throw new Exception("No parenthesis balance");
-        if (results.isEmpty())
+        }
+        if (results.isEmpty()) {
             throw new Exception("No numbers in equations");
-        if (results.size() > 1)
+        }
+        if (results.size() > 1) {
             throw new Exception("Not enough operators for these numbers");
+        }
         return results.peek().value;
     }
 
@@ -49,12 +53,15 @@ public class CalculatorMain {
         for (int i = 1; i < s.length(); i++) {
             char current = s.charAt(i);
             char previous = s.charAt(i - 1);
-            if (correctSymbols.indexOf(current) == -1)
+            if (correctSymbols.indexOf(current) == -1) {
                 throw new Exception("Incorrect symbol in equation");
-            if (current == ')' && previous == '(')
+            }
+            if (current == ')' && previous == '(') {
                 throw new Exception("Empty parenthesis");
-            if (current == '-' && previous != ')' && !Character.isDigit(previous))
+            }
+            if (current == '-' && previous != ')' && !Character.isDigit(previous)) {
                 current = newSymbol;
+            }
             result = result + current;
         }
         return result;

@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.calculator;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Stack;
 import java.util.EmptyStackException;
 
@@ -19,9 +21,10 @@ public final class DivideOperator extends Lexeme {
         try {
             NumberLexeme second = results.pop();
             NumberLexeme first = results.pop();
-            if (second.value == 0)
+            if (second.value.equals(BigDecimal.ZERO)) {
                 throw new Exception("Division by zero");
-            results.push(new NumberLexeme(first.value / second.value));
+            }
+            results.push(new NumberLexeme(first.value.divide(second.value, MathContext.DECIMAL128)));
         } catch (EmptyStackException e) {
             throw new Exception("Not enough arguments for divide operation");
         }

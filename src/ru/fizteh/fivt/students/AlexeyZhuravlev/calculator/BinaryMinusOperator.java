@@ -19,7 +19,7 @@ public final class BinaryMinusOperator extends Lexeme {
         try {
             NumberLexeme second = results.pop();
             NumberLexeme first = results.pop();
-            results.push(new NumberLexeme(first.value - second.value));
+            results.push(new NumberLexeme(first.value.subtract(second.value)));
         } catch (EmptyStackException e) {
             throw new Exception("Not enough arguments for binary minus operation");
         }

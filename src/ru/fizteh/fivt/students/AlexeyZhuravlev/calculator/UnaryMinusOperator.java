@@ -18,7 +18,7 @@ public final class UnaryMinusOperator extends Lexeme {
     protected void makeOperation(Stack<NumberLexeme> results) throws Exception {
         try {
             NumberLexeme item = results.pop();
-            results.push(new NumberLexeme(-item.value));
+            results.push(new NumberLexeme(item.value.negate()));
         } catch (EmptyStackException e) {
             throw new Exception("No argument for unary minus operation");
         }

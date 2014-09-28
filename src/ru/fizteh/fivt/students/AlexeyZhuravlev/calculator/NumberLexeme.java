@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.calculator;
 
 import java.util.Stack;
+import java.math.BigDecimal;
 
 /**
  * @author AlexeyZhuravlev
@@ -8,12 +9,12 @@ import java.util.Stack;
 
 public final class NumberLexeme extends Lexeme {
 
-    public NumberLexeme(double value) {
+    public NumberLexeme(BigDecimal value) {
         this.value = value;
     }
 
     public NumberLexeme(String s) {
-        this.value = Double.valueOf(s);
+        this.value = new BigDecimal(s);
     }
 
     @Override
@@ -31,5 +32,5 @@ public final class NumberLexeme extends Lexeme {
         results.push(this);
     }
 
-    public double value;
+    public final BigDecimal value;
 }
