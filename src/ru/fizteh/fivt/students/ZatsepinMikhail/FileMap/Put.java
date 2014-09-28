@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
