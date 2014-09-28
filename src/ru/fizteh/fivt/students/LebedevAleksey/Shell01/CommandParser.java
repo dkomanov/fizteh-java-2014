@@ -77,12 +77,11 @@ public abstract class CommandParser {
         ArrayList<ArrayList<CommandToken>> commandsTokens = new ArrayList<>();
         commandsTokens.add(new ArrayList<CommandToken>());
         for (String arg : input) {
-            int length = arg.length();
-            if (length > 0 && arg.charAt(length - 1) == ';') {
-                addAtEnd(commandsTokens, arg.substring(0, length - 1));
+            String[] tokens = arg.split(";", -1);
+            addAtEnd(commandsTokens, tokens[0]);
+            for (int i = 1; i < tokens.length; ++i) {
                 commandsTokens.add(new ArrayList<CommandToken>());
-            } else {
-                addAtEnd(commandsTokens, arg);
+                addAtEnd(commandsTokens, tokens[i]);
             }
         }
         return getParsedCommands(commandsTokens);
@@ -99,7 +98,7 @@ public abstract class CommandParser {
             if (token.isWasInQuotes()) {
                 commandsTokens.get(commandsTokens.size() - 1).add(token);
             } else {
-                String[] tokens = token.getValue().split("; ", -1);
+                String[] tokens = token.getValue().split(";", -1);
                 for (int j = 0; j < tokens.length; ++j) {
                     if (j > 0) {
                         commandsTokens.add(new ArrayList<CommandToken>());
@@ -150,6 +149,8 @@ public abstract class CommandParser {
             result.setArguments(realArguments);
             commands.add(result);
         }
+
+        logParsedResults(commands);
 
         return commands;
     }
