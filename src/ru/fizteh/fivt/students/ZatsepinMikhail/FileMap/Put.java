@@ -18,7 +18,7 @@ public class Put extends Command {
         }
         String oldValue = dataBase.put(args[1], args[2]);
         if (oldValue != null) {
-            System.out.println("overwrite%n" + oldValue);
+            System.out.println("overwrite\n" + oldValue);
         } else {
             System.out.println("new");
         }

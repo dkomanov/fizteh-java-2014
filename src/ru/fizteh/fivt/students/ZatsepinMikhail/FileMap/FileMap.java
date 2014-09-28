@@ -29,6 +29,7 @@ public class FileMap {
         try (Scanner inStream = new Scanner(System.in)) {
             String[] parsedCommands;
             String[] parsedArguments;
+            System.out.print("$ ");
             while (!ended) {
                 if (inStream.hasNextLine()) {
                     parsedCommands = inStream.nextLine().split(";|\n");

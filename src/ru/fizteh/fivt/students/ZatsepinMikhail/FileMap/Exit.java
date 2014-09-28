@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
+import java.util.HashMap;
+
 /**
  * Created by mikhail on 26.09.14.
  */
@@ -8,8 +10,10 @@ public class Exit extends Command {
         name = "exit";
         numberOfArguments = 0;
     }
-    public boolean run() {
-        System.out.println("1");
+
+    @Override
+    public boolean run(HashMap<String, String> dataBase, String[] args) {
+        System.out.println("exit");
         return true;
     }
 }

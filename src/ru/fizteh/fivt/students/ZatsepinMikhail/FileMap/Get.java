@@ -16,9 +16,9 @@ public class Get extends Command {
             System.out.println(name + ": wrong number of arguments");
             return false;
         }
-        String value = dataBase.get(String[1]);
+        String value = dataBase.get(args[1]);
         if (value != null) {
-            System.out.println("found%n" + value);
+            System.out.println("found\n" + value);
         } else {
             System.out.println("not found");
         }
