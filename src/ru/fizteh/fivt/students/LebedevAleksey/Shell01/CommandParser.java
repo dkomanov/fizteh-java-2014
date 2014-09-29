@@ -205,7 +205,7 @@ public abstract class CommandParser {
         return false;
     }
 
-    private void printInvokeError(CommandInvokeException ex) {
+    protected void printInvokeError(CommandInvokeException ex) {
         System.err.println(new StringBuilder().append(ex.getCommandName()).append(": ").append(ex.getMessage()));
     }
 
@@ -253,28 +253,6 @@ public abstract class CommandParser {
         boolean isWasInQuotes() {
             return wasInQuotes;
         }
-    }
-}
-
-
-class ParsedCommand {
-    private String[] arguments;
-    private String commandName;
-
-    public String getCommandName() {
-        return commandName;
-    }
-
-    public void setCommandName(String commandName) {
-        this.commandName = commandName;
-    }
-
-    public String[] getArguments() {
-        return arguments;
-    }
-
-    public void setArguments(String[] arguments) {
-        this.arguments = arguments;
     }
 }
 
@@ -351,15 +329,5 @@ class CommandInvokeException extends ParserException {
 
     public String getCommandName() {
         return commandName;
-    }
-}
-
-class ParserException extends Exception {
-    ParserException(String message) {
-        super(message);
-    }
-
-    ParserException(String message, Throwable ex) {
-        super(message, ex);
     }
 }
