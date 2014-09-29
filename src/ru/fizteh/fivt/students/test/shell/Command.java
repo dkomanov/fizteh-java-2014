@@ -41,7 +41,6 @@ public class Command {
 
         }
 
-
         Scanner blockScan = new Scanner(lineStr);
 
         blockScan.useDelimiter(";");
