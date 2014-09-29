@@ -24,15 +24,6 @@ public class Shell {
         currentPath = System.getProperty("user.home");
         String[] commandsString = Parser.divideByChar(commandline, ";");
         for (String commandsString1 : commandsString) {
-            String convertedString = currentPath;
-            if (currentPath.startsWith(System.getProperty("user.home"))) {
-                convertedString = "~"
-                        + currentPath.substring(System.getProperty("user.home")
-                                .length());
-            }
-            System.out.println(System.getProperty("user.name") + "@"
-                    + System.getProperty("os.name") + " " + convertedString
-                    + " $ " + commandsString1);
             ShellCommand command = Parser.getCommandFromString(commandsString1);
             if (!command.execute()) {
                 System.exit(-1);
@@ -46,7 +37,7 @@ public class Shell {
     public static void interactiveMode() throws IOException {
         currentPath = System.getProperty("user.home");
 
-        for (int i = 0; i == 1; i = i * 0) {
+        for ( ; true; ) {
             String convertedString = currentPath;
             if (currentPath.startsWith(System.getProperty("user.home"))) {
                 convertedString = "~"
