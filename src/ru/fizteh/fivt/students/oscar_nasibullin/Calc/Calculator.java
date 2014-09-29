@@ -1,12 +1,14 @@
 package ru.fizteh.fivt.students.oscar_nasibullin.Calc;
 
+import java.math.BigDecimal;
+
 public final class Calculator {
 
     private static String expression;
     private static int    position = 0;
     private static char[] token;
     private static int    tokenType;
-    //static double rezult;
+    //static BigDecimal rezult;
 
     public static void main(final String[] args) {
         if (args.length > 1 || args.length == 0) {
@@ -14,16 +16,16 @@ public final class Calculator {
             System.exit(0);
         }
 
-        double rezult = calculate(args[0]);
+        BigDecimal rezult = calculate(args[0]);
         System.out.println(rezult);
     }
 
 
-    public static double calculate(final String str) {
+    public static BigDecimal calculate(final String str) {
         
         expression = str;
 
-        if (expression.matches("[^ -+*/()0-9]+")) {  // Check syntax 
+        if (expression.matches("[^ -+*/()0-9]+")) {  // Check syntax, doesn't work properly :( 
             System.out.println("Syntax mistakes");
             System.exit(0);
         }
@@ -33,10 +35,10 @@ public final class Calculator {
         }
 
 
-    public static double additionOrSubstraction() {
+    public static BigDecimal additionOrSubstraction() {
         char operator;
-        double temp;
-        double rezult = multOrDiv();
+        BigDecimal temp;
+        BigDecimal rezult = multOrDiv();
 
         operator = token[0];
         while (operator  == '+' || operator == '-') {
@@ -44,10 +46,10 @@ public final class Calculator {
             temp = multOrDiv();
             switch(operator) {
                 case '-':
-                    rezult = rezult - temp;
+                    rezult = rezult.subtract(temp);
                     break;
                 case '+':
-                    rezult = rezult + temp;
+                    rezult = rezult.add(temp);
                     break;
                 }
             operator = token[0];
@@ -57,10 +59,10 @@ public final class Calculator {
 
 
 
-    public static double multOrDiv() {
+    public static BigDecimal multOrDiv() {
         char operator;
-        double temp;
-        double rezult = unaryOperator();
+        BigDecimal temp;
+        BigDecimal rezult = unaryOperator();
 
         operator = token[0];
         while (operator == '*' || operator == '/') {
@@ -68,14 +70,14 @@ public final class Calculator {
             temp = unaryOperator();
             switch(operator) {
                 case '*':
-                    rezult = rezult * temp;
+                    rezult = rezult.multiply(temp);
                     break;
                 case '/':
-                    if (temp == 0.0) {
+                    if (temp.compareTo(new BigDecimal(0.0)) == 0) {
                         System.out.println("Division by zero");
                         System.exit(0);
                         } else {
-                        rezult = rezult / temp;
+                        rezult = rezult.divide(temp);
                     }
                     break;
             }
@@ -85,24 +87,24 @@ public final class Calculator {
         }
 
 
-    public static double unaryOperator() {
+    public static BigDecimal unaryOperator() {
         char operator = 0;
 
         if ((tokenType == 1) && token[0] == '+' || token[0] == '-') {
             operator = token[0];
             getToken();
           }
-        double rezult = braces();
+        BigDecimal rezult = braces();
         if (operator == '-') {
-            rezult = -(rezult);
+            rezult = rezult.multiply(new BigDecimal(-1));
         }
         return rezult;
         }
 
 
-    public static double braces() {
+    public static BigDecimal braces() {
 
-        double rezult;
+        BigDecimal rezult;
 
         if ((token[0] == '(')) {
             getToken();
@@ -119,13 +121,12 @@ public final class Calculator {
     }
 
 
-    public static double atom() {
-      Double rezult = 0.0;
+    public static BigDecimal atom() {
+      BigDecimal rezult = new BigDecimal(0.0);
       if (tokenType == 2) {
-        String rez = String.valueOf(token);
-        rezult = new Double(rez);
+        rezult = new BigDecimal(String.valueOf(token));
         getToken();
-        return rezult.doubleValue();
+        return rezult;
       }
       System.out.println("Syntax error");
       System.exit(0);
