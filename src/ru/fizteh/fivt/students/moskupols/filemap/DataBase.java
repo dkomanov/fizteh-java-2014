@@ -10,9 +10,6 @@ import java.util.Map;
 class DataBase {
     public Map<String, String> map;
 
-    public DataBase() {
-    }
-
     private static String nextWord(DataInputStream dataStream) throws IOException {
         int length = dataStream.readInt();
         StringBuilder builder = new StringBuilder();
