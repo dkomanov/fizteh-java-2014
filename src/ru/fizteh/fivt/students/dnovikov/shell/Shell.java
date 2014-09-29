@@ -205,9 +205,7 @@ public class Shell {
             fis = new FileInputStream(toRead);
             bis = new BufferedInputStream(fis);
             dis = new DataInputStream(bis);
-            fis = new FileInputStream(toRead);
-            bis = new BufferedInputStream(fis);
-            dis = new DataInputStream(bis);
+
             while (dis.available() != 0) {
                 System.out.println(dis.readLine());
             }
@@ -224,7 +222,6 @@ public class Shell {
                 dis.close();
             }
         }
-
     }
 
     private void mkdirCommand(String dirName) throws Exception {
@@ -265,15 +262,11 @@ public class Shell {
         Path path = new File(currPath).toPath();
         toDelete = path.resolve(fileName).toAbsolutePath().toFile();
 
-
         if (!isRec && toDelete.isDirectory()) {
             throw new Exception(fileName + " is directory");
         }
         if (!toDelete.exists()) {
             throw new Exception("cannot remove '" + fileName + "': no such file or directory");
-        }
-        if (toDelete.isFile() && isRec) {
-            throw new Exception("cannot remove '" + fileName + "' is file");
         }
 
         if (toDelete.isFile() && !isRec) {
@@ -307,6 +300,30 @@ public class Shell {
         }
     }
 
+    private void copyFiles(File source, File destination) throws Exception {
+        InputStream in = null;
+        OutputStream out = null;
+
+        try {
+            in = new FileInputStream(source);
+            out = new FileOutputStream(destination);
+            int lengthRead;
+            byte[] buffer = new byte[4096];
+            while ((lengthRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, lengthRead);
+            }
+
+        } catch (Exception e) {
+            throw new Exception("cannot read file");
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
 
     private void cpCommand(String src, String dest, boolean isRec) throws Exception {
 
@@ -320,17 +337,41 @@ public class Shell {
         if (!source.exists()) {
             throw new Exception(src + ": no such file or directory");
         }
+
         if (!destination.exists()) {
-            throw new Exception(destination + ": no such file or directory");
-        }
-        if (!destination.isDirectory()) {
-            throw new Exception(dest + ": is not directory");
-        }
-        if (source.isDirectory() && !isRec) {
-            throw new Exception(src + " is directory");
+            if (source.isFile()) {
+                copyFiles(source, destination);
+            } else {
+                if (!isRec) {
+                    throw new Exception(src + " is directory");
+                } else {
+                    mkdirCommand(destination.getName());
+                    copy(source, destination);
+                }
+            }
+        } else {
+            if (source.isFile() && destination.isFile()) {
+                copyFiles(source, destination);
+            } else if (source.isDirectory() && destination.isDirectory()) {
+                if (!isRec) {
+                    throw new Exception(src + " is directory");
+                } else {
+                    copy(source, destination);
+                }
+            } else if (source.isFile() && destination.isDirectory()) {
+                try {
+                    File newDest = new File(destination.getCanonicalPath() + File.separator + source.getName());
+                    Files.copy(source.toPath(), newDest.toPath());
+                } catch (FileAlreadyExistsException e) {
+                    rmCommand(e.getMessage().toString(), false);
+                    File newDest = new File(destination.getCanonicalPath() + File.separator + source.getName());
+                    Files.copy(source.toPath(), newDest.toPath());
+                }
+            } else {
+                throw new Exception("cannot copy directory '" + source.getName() + "' to file '" + destination.getName() + "'");
+            }
         }
 
-        copy(source, destination);
     }
 
     private void move(File src, File dest) throws Exception {
@@ -354,25 +395,52 @@ public class Shell {
     }
 
     private void mvCommand(String src, String dest, boolean isRec) throws Exception {
+
         Path path = new File(currPath).toPath();
         File source = new File(currPath + File.separator + src);
         File destination = new File(currPath + File.separator + dest);
 
-        if (src.equals("dest")) {
+        if (src.equals(dest)) {
             throw new Exception("cannot move to itself");
         }
         if (!source.exists()) {
             throw new Exception(src + ": no such file or directory");
         }
+
         if (!destination.exists()) {
-            throw new Exception(destination + ": no such file or directory");
+            if (source.isFile()) {
+                copyFiles(source, destination);
+                rmCommand(source.getName(), false);
+            } else {
+                if (!isRec) {
+                    throw new Exception(src + " is directory");
+                } else {
+                    mkdirCommand(destination.getName());
+                    move(source, destination);
+                }
+            }
+        } else {
+            if (source.isFile() && destination.isFile()) {
+                copyFiles(source, destination);
+                rmCommand(source.getName(), false);
+            } else if (source.isDirectory() && destination.isDirectory()) {
+                if (!isRec) {
+                    throw new Exception(src + " is directory");
+                } else {
+                    move(source, destination);
+                }
+            } else if (source.isFile() && destination.isDirectory()) {
+                try {
+                    File newDest = new File(destination.getCanonicalPath() + File.separator + source.getName());
+                    Files.move(source.toPath(), newDest.toPath());
+                } catch (FileAlreadyExistsException e) {
+                    rmCommand(e.getMessage().toString(), false);
+                    File newDest = new File(destination.getCanonicalPath() + File.separator + source.getName());
+                    Files.move(source.toPath(), newDest.toPath());
+                }
+            } else {
+                throw new Exception("cannot move directory '" + source.getName() + "' to file '" + destination.getName() + "'");
+            }
         }
-        if (!destination.isDirectory()) {
-            throw new Exception(dest + ": is not directory");
-        }
-        if (source.isDirectory() && !isRec) {
-            throw new Exception(src + " is directory");
-        }
-        move(source, destination);
     }
 }
