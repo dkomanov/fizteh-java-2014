@@ -42,7 +42,8 @@ public abstract class CommandParser {
 
     private static String trimOneEndSpace(String line) throws CannotParseCommandException {
         if (line.length() != 0) {
-            if (line.charAt(line.length() - 1) == ' ') {
+            char endChar = line.charAt(line.length() - 1);
+            if (endChar == ' ' || endChar == '\t') {
                 return line.substring(0, line.length() - 1);
             } else {
                 throw new CannotParseCommandException("Where is no space between to arguments.");
@@ -56,7 +57,8 @@ public abstract class CommandParser {
         if (line.length() == 0) {
             return line;
         } else {
-            if (line.charAt(0) == ' ') {
+            char startChar = line.charAt(0);
+            if (startChar == ' ' || startChar == '\t') {
                 return line.substring(1);
             } else {
                 throw new CannotParseCommandException("Where is no space between to arguments.");
