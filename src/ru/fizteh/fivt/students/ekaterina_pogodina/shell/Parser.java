@@ -10,6 +10,7 @@ public class Parser {
         switch (args[0]) {
             case "exit":
                 System.exit(0);
+                break;
             case "cd":
                 Cd.run(args, j);
                 break;

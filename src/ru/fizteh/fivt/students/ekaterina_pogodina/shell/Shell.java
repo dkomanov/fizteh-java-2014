@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.ekaterina_pogodina.shell;
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Shell {
     private Shell() {
@@ -9,6 +11,7 @@ public final class Shell {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         // Bash mode
+        List<String> cmdWithArgs = new ArrayList<String>();
         if (args.length != 0) {
             String line = "";
             for (int i = 0; i < args.length; i++) {
@@ -18,25 +21,28 @@ public final class Shell {
                 }
             }
             String[] commands = line.split(" ; ");
-
             for (int k = 0; k < commands.length; k++) {
                 boolean flag = false;
-                int index, j;
+                int index;
+                int j;
                 index = 0;
                 j = 0;
-                String[] Args = new String[5];
                 for (int i = 0; i < commands[k].length(); i++) {
                     if (commands[k].charAt(i) == ' ') {
-                        Args[j] = commands[k].substring(index, i);
+                        cmdWithArgs.add(commands[k].substring(index, i));
                         j++;
                         index = i + 1;
                     }
                 }
-                Args[j] = commands[k].substring(index, commands[k].length());
-                if (j != 0 && Args[1].equals("-r")) {
+                cmdWithArgs.add(commands[k].substring(index, commands[k].length()));
+                String[] arg = new String [cmdWithArgs.size()];
+                for (int i = 0; i < arg.length; i++) {
+                    arg[i] = cmdWithArgs.get(i);
+                }
+                if (j != 0 && arg[1].equals("-r")) {
                     flag = true;
                 }
-                Parser.parse(Args, flag, true, j);
+                Parser.parse(arg, flag, true, j);
             }
         } else {
             while (true) {
@@ -51,22 +57,27 @@ public final class Shell {
                 String[] commands = line.split(" ; ");
                 for (int k = 0; k < commands.length; k++) {
                     boolean flag = false;
-                    int index, j;
+                    int index;
+                    int j;
                     index = 0;
                     j = 0;
-                    String[] Args = new String[5];
                     for (int i = 0; i < commands[k].length(); i++) {
                         if (commands[k].charAt(i) == ' ') {
-                            Args[j] = commands[k].substring(index, i);
+                            cmdWithArgs.add(commands[k].substring(index, i));
                             j++;
                             index = i + 1;
                         }
                     }
-                    Args[j] = commands[k].substring(index, commands[k].length());
-                    if (j != 0 && Args[1].equals("-r")) {
+                    cmdWithArgs.add(commands[k].substring(index, commands[k].length()));
+                    String[] arg = new String [cmdWithArgs.size()];
+                    for (int i = 0; i < arg.length; i++) {
+                        arg[i] = cmdWithArgs.get(i);
+                    }
+                    if (j != 0 && arg[1].equals("-r")) {
                         flag = true;
                     }
-                    Parser.parse(Args, flag, false, j);
+                    Parser.parse(arg, flag, false, j);
+                    cmdWithArgs.clear();
                 }
             }
         }
