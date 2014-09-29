@@ -8,9 +8,9 @@ import java.util.ArrayList;
  * Created by akhtyamovpavel on 29.09.2014.
  */
 public class DirectoryListCommand implements Command {
-    public Shell link;
+    private Shell link;
 
-    public DirectoryListCommand(Shell shell) {
+    public DirectoryListCommand(final Shell shell) {
         link = shell;
     }
 

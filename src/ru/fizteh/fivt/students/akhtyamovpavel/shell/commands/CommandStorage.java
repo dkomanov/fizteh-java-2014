@@ -9,18 +9,18 @@ public class CommandStorage {
     private String commandName;
     private ArrayList<String> argumentsList;
 
-    public CommandStorage(ArrayList<String> wordList) {
+    public CommandStorage(final ArrayList<String> wordList) {
         commandName = wordList.get(0);
         wordList.remove(0);
 
         argumentsList = new ArrayList<String>(wordList);
     }
 
-    public String getCommandName() {
+    public final String getCommandName() {
         return commandName;
     }
 
-    public ArrayList<String> getArgumentsList() {
+    public final ArrayList<String> getArgumentsList() {
         return argumentsList;
     }
 }

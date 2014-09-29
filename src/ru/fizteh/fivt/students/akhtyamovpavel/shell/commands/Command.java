@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 
 public interface Command {
-    public void executeCommand(ArrayList<String> arguments) throws Exception;
+    void executeCommand(ArrayList<String> arguments) throws Exception;
 
-    public String getName();
+    String getName();
 
 
 }

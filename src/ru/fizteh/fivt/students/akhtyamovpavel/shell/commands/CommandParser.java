@@ -7,7 +7,7 @@ import java.util.Arrays;
  * Created by akhtyamovpavel on 29.09.2014.
  */
 public class CommandParser {
-    private static ArrayList<CommandStorage> parseRequestString(String request) {
+    private static ArrayList<CommandStorage> parseRequestString(final String request) {
         String[] requestLists = request.split(";");
 
         ArrayList<CommandStorage> parsedRequestList = new ArrayList<CommandStorage>();
@@ -26,7 +26,7 @@ public class CommandParser {
         return parsedRequestList;
     }
 
-    public static ArrayList<CommandStorage> parseUserRequest(String[] arguments) {
+    public static ArrayList<CommandStorage> parseUserRequest(final String[] arguments) {
         StringBuilder resultString = new StringBuilder();
         for (String currentArgument : arguments) {
             resultString.append(currentArgument);
@@ -35,7 +35,7 @@ public class CommandParser {
         return parseRequestString(resultString.toString());
     }
 
-    public static ArrayList<CommandStorage> parseUserRequest(String argument) {
+    public static ArrayList<CommandStorage> parseUserRequest(final String argument) {
         return parseRequestString(argument);
     }
 }

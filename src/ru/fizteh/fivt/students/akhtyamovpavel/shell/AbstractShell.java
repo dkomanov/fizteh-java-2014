@@ -11,7 +11,7 @@ import java.util.Scanner;
 /**
  * Created by akhtyamovpavel on 29.09.2014.
  */
-abstract public class AbstractShell {
+public abstract class AbstractShell {
     public Map<String, Command> commandNames;
     public boolean isInteractive;
 
