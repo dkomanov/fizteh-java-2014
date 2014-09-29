@@ -26,7 +26,7 @@ public class FileMapMain {
 
         CommandProcessor commandProcessor;
         if (args.length == 0) {
-            commandProcessor = new InteractiveCommandProcessor();
+            commandProcessor = new InteractiveCommandProcessor("$ ");
         } else {
             commandProcessor = new PackageCommandProcessor(args);
         }
