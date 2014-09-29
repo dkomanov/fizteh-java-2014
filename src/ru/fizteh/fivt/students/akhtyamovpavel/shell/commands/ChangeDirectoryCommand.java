@@ -22,7 +22,9 @@ public class ChangeDirectoryCommand implements Command {
         if (arguments.isEmpty()) {
             return;
         }
-
+        if (arguments.size() > 1) {
+            throw new IllegalArgumentException("cd: too many arguments");
+        }
         File targetDirectory = null;
         if (Paths.get(arguments.get(0)).isAbsolute()) {
             targetDirectory = new File(arguments.get(0));

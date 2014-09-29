@@ -24,6 +24,9 @@ public class MakeDirectoryCommand implements Command {
         if (arguments.isEmpty()) {
             throw new Exception("usage: mkdir directory");
         }
+        if (arguments.size() > 1) {
+            throw new IllegalArgumentException("usage: mkdir directory");
+        }
         for (String folderName : arguments) {
             try {
                 Path newDirectoryPath = Paths.get(link.getWorkDirectory().getAbsolutePath(), folderName);

@@ -24,6 +24,7 @@ public class Shell extends AbstractShell {
         addCommand(new MakeDirectoryCommand(this));
         addCommand(new ChangeDirectoryCommand(this));
         addCommand(new PrintFileCommand(this));
+        addCommand(new CopyCommand(this));
     }
 
     Shell() {

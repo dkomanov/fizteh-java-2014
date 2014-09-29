@@ -38,7 +38,7 @@ public class PrintFileCommand implements Command {
                 throw new Exception("cat: " + currentCommand + ": not a file");
             }
             if (!printFile.canRead()) {
-                throw new Exception("cat: " + currentCommand + ": you haven't got permisssions to read from this file");
+                throw new Exception("cat: " + currentCommand + ": permission denied");
             }
 
             String filePath = printFile.getAbsolutePath();
