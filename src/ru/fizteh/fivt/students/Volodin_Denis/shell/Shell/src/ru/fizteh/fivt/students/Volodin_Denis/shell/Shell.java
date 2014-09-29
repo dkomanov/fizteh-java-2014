@@ -14,7 +14,6 @@ import java.nio.file.StandardCopyOption;
  */
 
 public class Shell {
-	
 	Shell() {	
 	}
 	
@@ -336,7 +335,7 @@ public class Shell {
 									  pathToNewFile.toString() };
 							shellCp(helpArray);
 							System.setProperty("user.dir",
-											pathToFile.getParent().toString());
+								pathToFile.getParent().toString());
 						}
 						if (Paths.get(pathToFile.toString(),
 								      names[i]).normalize().toFile().isFile()) {
