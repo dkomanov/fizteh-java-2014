@@ -1,12 +1,58 @@
-package ru.fizteh.fivt.students.test.shell;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.io.IOException;
 
-/**
- * @author test
- */
-public class ShellMain {
-
-    public static void main(String[] args) {
-        System.out.println("Hello, world!");
-        System.exit(1);
+public class ShellMain
+{
+    public static void main(String[] args)
+    {
+        if(args.length != 0)
+        {
+            int i = 0, j = 0;
+            for(i = 0; i <= args.length; i++)
+            {
+                if(i == args.length || args[i].equals(";"))
+                {
+                    try {
+                        Command cmd = Command.create(Arrays.copyOfRange(args, j, i));
+                        cmd.run();
+                    } catch(Exception e) {
+                        System.err.println(e.getMessage());
+                        System.exit(1);
+                    }
+                    j = i + 1;
+                }
+                else
+                {
+                    args[i] = args[i].trim();
+                }
+            }
+        }
+        else
+        {
+            Scanner sc = new Scanner(System.in);
+            System.out.print("$ ");
+            String[] input = sc.nextLine().split(";");
+            while(true)
+            {
+                for(int i = 0; i < input.length; i++)
+                {
+                    input[i] = input[i].trim();
+                    try
+                    {
+                        Command cmd = Command.create(input[i].split(" "));
+                        cmd.run();
+                    } catch(IOException e){
+                        System.err.println(e.getMessage());
+                        sc.close();
+                        System.exit(1);
+                    } catch(Exception e) {
+                        System.err.println(e.getMessage());
+                    }
+                }
+                System.out.print("$ ");
+                input = sc.nextLine().split(";");
+            }
+        }
     }
 }

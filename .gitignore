@@ -19,3 +19,6 @@ jars
 
 .classpath
 .project
+
+.settings
+/.checkstyle
