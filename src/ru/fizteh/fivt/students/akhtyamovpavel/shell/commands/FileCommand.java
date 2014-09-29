@@ -7,9 +7,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
- * Created by user1 on 29.09.2014.
+ * Created by akhtyamovpavel on 29.09.2014.
  */
-public abstract class FileCommand implements Command{
+public abstract class FileCommand implements Command {
     protected Shell link;
 
     protected File getResolvedFile(String filePath) throws Exception {

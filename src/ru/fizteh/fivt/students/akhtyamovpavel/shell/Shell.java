@@ -26,6 +26,7 @@ public class Shell extends AbstractShell {
         addCommand(new PrintFileCommand(this));
         addCommand(new CopyCommand(this));
         addCommand(new RemoveCommand(this));
+        addCommand(new MoveCommand(this));
     }
 
     Shell() {

@@ -12,7 +12,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 
 /**
- * Created by user1 on 29.09.2014.
+ * Created by akhtyamovpavel on 29.09.2014.
  */
 public class RemoveCommand extends FileCommand {
     public RemoveCommand(Shell shell) {
@@ -66,7 +66,6 @@ public class RemoveCommand extends FileCommand {
     }
 
 
-
     @Override
     public String getName() {
         return "rm";
@@ -75,13 +74,13 @@ public class RemoveCommand extends FileCommand {
     @Override
     protected void checkArgumentNumberCorrection(ArrayList<String> arguments) {
         if (arguments.isEmpty() || arguments.size() >= 3) {
-            throw new IllegalArgumentException("rm: usage file/dir [-r]");
+            throw new IllegalArgumentException("rm: usage <file/dir> [-r]");
         }
         if (arguments.size() == 1 && arguments.get(0).equals("-r")) {
-            throw new IllegalArgumentException("rm: usage file/dir [-r]");
+            throw new IllegalArgumentException("rm: usage <file/dir> [-r]");
         }
         if (arguments.size() == 2 && !arguments.get(0).equals("-r")) {
-            throw new IllegalArgumentException("rm: usage file/dir [-r]");
+            throw new IllegalArgumentException("rm: usage <file/dir> [-r]");
         }
     }
 }

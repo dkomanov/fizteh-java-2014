@@ -12,10 +12,12 @@ import java.util.Scanner;
  * Created by akhtyamovpavel on 29.09.2014.
  */
 public abstract class AbstractShell {
-    public Map<String, Command> commandNames;
-    public boolean isInteractive;
+    protected Map<String, Command> commandNames;
+    private boolean isInteractive;
+    private boolean hasPacketErrors;
 
     public static final int EMERGENCY_STOP = 1;
+    public static final int ERROR_STOP = -1;
 
 
     public void startInteractiveMode() {
@@ -46,6 +48,7 @@ public abstract class AbstractShell {
             System.out.println(exceptionText);
         } else {
             System.err.println(exceptionText);
+            System.exit(ERROR_STOP);
         }
     }
 
@@ -57,6 +60,7 @@ public abstract class AbstractShell {
                 printException(command.getCommandName() + ": command not found");
             }
         } catch (Exception e) {
+            hasPacketErrors = true;
             printException(e.getMessage());
         }
 

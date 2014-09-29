@@ -32,6 +32,9 @@ public class CopyCommand extends FileCommand {
 
         File sourceFile = getResolvedFile(arguments.get(firstFileIndex));
         File targetFile = getResolvedFile(arguments.get(firstFileIndex + 1));
+        if (!targetFile.canWrite()) {
+            throw new Exception("cp: i/o error");
+        }
         if (sourceFile.isDirectory() && !isRecursive) {
             throw new Exception("cp: " + sourceFile.getName() + "is a directory (not copied)");
         }
@@ -52,26 +55,27 @@ public class CopyCommand extends FileCommand {
             Path sourcePath = sourceFile.toPath();
             Path targetPath = targetFile.toPath();
             Files.walkFileTree(sourcePath, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
-                new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                        Path targetDir = targetPath.resolve(sourcePath.relativize(dir));
-                        try {
-                            Files.copy(dir, targetDir);
-                        } catch (FileAlreadyExistsException e) {
-                            if (!Files.isDirectory(targetDir)) {
-                                throw e;
+                    new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                                throws IOException {
+                            Path targetDir = targetPath.resolve(sourcePath.relativize(dir));
+                            try {
+                                Files.copy(dir, targetDir);
+                            } catch (FileAlreadyExistsException e) {
+                                if (!Files.isDirectory(targetDir)) {
+                                    throw e;
+                                }
                             }
+                            return FileVisitResult.CONTINUE;
                         }
-                        return FileVisitResult.CONTINUE;
-                    }
 
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        Files.copy(file, targetPath.resolve(sourcePath.relativize(file)));
-                        return FileVisitResult.CONTINUE;
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            Files.copy(file, targetPath.resolve(sourcePath.relativize(file)));
+                            return FileVisitResult.CONTINUE;
+                        }
                     }
-                }
             );
         }
     }
@@ -84,16 +88,16 @@ public class CopyCommand extends FileCommand {
     @Override
     protected void checkArgumentNumberCorrection(ArrayList<String> arguments) {
         if (arguments.size() < 2) {
-            throw new IllegalArgumentException("cp: isn't enough arguments");
+            throw new IllegalArgumentException("cp: usage [-r] <source> <destination>");
         }
         if (arguments.size() == 2 && arguments.get(0).equals("-r")) {
-            throw new IllegalArgumentException("cp: isn't enough arguments");
+            throw new IllegalArgumentException("cp: usage [-r] <source> <destination>");
         }
         if (arguments.size() == 3 && !arguments.get(0).equals("-r")) {
-            throw new IllegalArgumentException("cp: too many arguments");
+            throw new IllegalArgumentException("cp: usage [-r] <source> <destination>");
         }
         if (arguments.size() >= 4) {
-            throw new IllegalArgumentException("cp: too many arguments");
+            throw new IllegalArgumentException("cp: usage [-r] <source> <destination>");
         }
     }
 

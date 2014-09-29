@@ -22,10 +22,10 @@ public class MakeDirectoryCommand implements Command {
     @Override
     public void executeCommand(ArrayList<String> arguments) throws Exception {
         if (arguments.isEmpty()) {
-            throw new Exception("usage: mkdir directory");
+            throw new Exception("usage: mkdir <directory>");
         }
         if (arguments.size() > 1) {
-            throw new IllegalArgumentException("usage: mkdir directory");
+            throw new IllegalArgumentException("usage: mkdir <directory>");
         }
         for (String folderName : arguments) {
             try {
@@ -34,9 +34,9 @@ public class MakeDirectoryCommand implements Command {
             } catch (FileAlreadyExistsException e) {
                 throw new Exception("mkdir: " + folderName + "already exists");
             } catch (SecurityException se) {
-                throw new Exception("mkdir: you haven't got permission to write into directory");
+                throw new Exception("mkdir: permission denied");
             } catch (IOException ioe) {
-                throw new Exception("mkdir: you haven't got permission to write into directory");
+                throw new Exception("mkdir: permission denied");
             }
         }
     }
