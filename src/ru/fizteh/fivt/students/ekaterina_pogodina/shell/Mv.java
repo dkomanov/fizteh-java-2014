@@ -7,12 +7,11 @@ public class Mv {
     private Mv() {
     }
 
-    public static void run(String[] args) throws IOException {
-        if (args.length < 3) {
+    public static void run(String[] args, int j) throws IOException {
+        if (j + 1 < 3) {
             System.exit(0);
         }
         File source = Utils.absoluteFileCreate(args[1]);
-        ;
         File destination = Utils.absoluteFileCreate(args[2]);
         if ((source.exists()) && (source.getPath().equals(destination.getPath()))) {
             return;
@@ -25,8 +24,8 @@ public class Mv {
             }
             return;
         }
-        boolean flag = true;
-        Utils.copyFileOrDirectory(source, destination, flag);
+
+        Utils.copyFileOrDirectory(source, destination, true);
         Utils.deleteFileOrDirectory(source);
     }
 }

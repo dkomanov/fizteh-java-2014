@@ -5,14 +5,15 @@ import java.io.IOException;
 
 
 public class Cp {
-    private Cp() {
-        //
-    }
+    private Cp() {  }
 
-    public static void run(final String[] args, boolean flag) throws IOException {
-        if (args.length < 3) {
-            System.exit(0);
+    public static void run(final String[] args, boolean flag, int j) throws IOException {
+        if (j + 1 < 3) {
+            throw new IOException(args[0] + ": missing operand");
         } else {
+            if (j + 1 > 3) {
+                throw  new IOException(args[0] + ": too many arguments");
+            }
             int i;
             if (flag) {
                 i = 2;

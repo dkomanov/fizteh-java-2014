@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Utils {
     private Utils() {
@@ -12,7 +14,7 @@ public class Utils {
 
     public static void copy(File source, File destination) throws IOException {
         if (destination.exists()) {
-            System.out.print("file already exists");
+            throw new IOException("file already exists");
         }
 
         @SuppressWarnings("resource")
@@ -28,11 +30,11 @@ public class Utils {
 
     public static void copyFileOrDirectory(File source, File destination, boolean flag) throws IOException {
         if ((destination.isFile()) && (!(source.isFile()))) {
-            System.out.print("Impossible to copy directory ");
+            throw new IOException("Impossible to copy  directory");
         }
         if ((source.isFile()) && (destination.isDirectory())) {
             if (destination.exists()) {
-                System.out.print("file already exists");
+                throw new IOException("file already exists");
             }
             copy(source, new File(destination.getPath(), source.getName()));
         } else if (source.isFile()) {
@@ -41,7 +43,11 @@ public class Utils {
             File elementsDestination = new File(destination.getPath(), source.getName());
 
             if (!elementsDestination.exists()) {
-                elementsDestination.mkdir();
+                try{
+                    elementsDestination.mkdir();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
             }
             for (String element : source.list()) {
                 copyFileOrDirectory(new File(source.getPath(), element), elementsDestination, flag);
@@ -51,7 +57,12 @@ public class Utils {
 
     public static void deleteFileOrDirectory(final File source) {
         if (source.isFile()) {
-            source.delete();
+            Path path = source.toPath();
+            try {
+                Files.deleteIfExists(path);
+            } catch (IOException | SecurityException e) {
+                System.err.println(e);
+            }
             return;
         }
 
@@ -59,7 +70,12 @@ public class Utils {
             deleteFileOrDirectory(new File(source.getPath(), element));
         }
 
-        source.delete();
+        Path path = source.toPath();
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException | SecurityException e) {
+            System.err.println(e);
+        }
     }
 
     public static File absoluteFileCreate(final String name) throws IOException {

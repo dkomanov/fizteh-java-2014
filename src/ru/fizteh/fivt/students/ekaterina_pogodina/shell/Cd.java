@@ -4,14 +4,15 @@ import java.io.File;
 import java.io.IOException;
 
 public class Cd {
-    private Cd() {
-        //
-    }
+    private Cd() {  }
 
-    public static void run(String[] args) throws IOException, InterruptedException {
-        if (args.length < 2) {
-            System.out.wait(0);
+    public static void run(String[] args, int j) throws IOException, InterruptedException {
+        if (j  + 1 < 2) {
+            throw new IOException(args[0] + ": missing operand");
         } else {
+            if (j + 1 > 2) {
+                throw  new IOException(args[0] + ": to many arguments");
+            }
             File resultFile = new File(args[1]);
             File goTo;
             if (resultFile.isAbsolute()) {

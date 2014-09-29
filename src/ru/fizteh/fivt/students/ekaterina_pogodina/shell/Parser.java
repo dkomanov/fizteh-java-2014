@@ -6,35 +6,39 @@ public class Parser {
     private Parser() {
     }
 
-    public static void parse(final String[] args, boolean flag) throws IOException, InterruptedException {
+    public static void parse(final String[] args, boolean flag, boolean mode, int j) throws IOException, InterruptedException {
         switch (args[0]) {
             case "exit":
                 System.exit(0);
             case "cd":
-                Cd.run(args);
+                Cd.run(args, j);
                 break;
             case "mkdir":
-                Mkdir.run(args);
+                Mkdir.run(args, j);
                 break;
             case "pwd":
-                Pwd.run();
+                Pwd.run(args, j);
                 break;
             case "rm":
-                Rm.run(args, flag);
+                Rm.run(args, flag, j);
                 break;
             case "cp":
-                Cp.run(args, flag);
+                Cp.run(args, flag, j);
                 break;
             case "mv":
-                Mv.run(args);
+                Mv.run(args, j);
                 break;
             case "ls":
-                Ls.run();
+                Ls.run(args, j);
                 break;
             case "cat":
-                Cat.run(args);
+                Cat.run(args, j);
                 break;
             default:
+                System.err.println(args[0] + ": no such command");
+                if (mode) {
+                    System.exit(1);
+                }
                 break;
         }
     }
