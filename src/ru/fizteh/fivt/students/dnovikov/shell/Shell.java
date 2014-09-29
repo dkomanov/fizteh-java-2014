@@ -368,7 +368,8 @@ public class Shell {
                     Files.copy(source.toPath(), newDest.toPath());
                 }
             } else {
-                throw new Exception("cannot copy directory '" + source.getName() + "' to file '" + destination.getName() + "'");
+                throw new Exception("cannot copy directory '" + source.getName() + "' to file '"
+                        + destination.getName() + "'");
             }
         }
 
@@ -439,7 +440,8 @@ public class Shell {
                     Files.move(source.toPath(), newDest.toPath());
                 }
             } else {
-                throw new Exception("cannot move directory '" + source.getName() + "' to file '" + destination.getName() + "'");
+                throw new Exception("cannot move directory '" + source.getName() + "' to file '"
+                        + destination.getName() + "'");
             }
         }
     }
