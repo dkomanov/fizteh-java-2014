@@ -1,8 +1,5 @@
 package ru.fizteh.fivt.students.LebedevAleksey.Shell01;
 
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.*;
 
 public abstract class CommandParser {
@@ -23,7 +20,7 @@ public abstract class CommandParser {
                     currentCommand.get(i).setValue(trimOneEndSpace(currentCommand.get(i).getValue()));
                 }
                 if (token.getValue().length() > 0) {
-                    arguments.addAll(Arrays.asList(token.getValue().split(" ", -1)));
+                    arguments.addAll(Arrays.asList(token.getValue().split("\\s", -1)));
                 }
             }
         }
@@ -206,7 +203,7 @@ public abstract class CommandParser {
         return false;
     }
 
-    private void printInvokeError(CommandInvokeException ex) {
+    protected void printInvokeError(CommandInvokeException ex) {
         System.err.println(new StringBuilder().append(ex.getCommandName()).append(": ").append(ex.getMessage()));
     }
 
@@ -257,80 +254,6 @@ public abstract class CommandParser {
     }
 }
 
-
-class ParsedCommand {
-    private String[] arguments;
-    private String commandName;
-
-    public String getCommandName() {
-        return commandName;
-    }
-
-    public void setCommandName(String commandName) {
-        this.commandName = commandName;
-    }
-
-    public String[] getArguments() {
-        return arguments;
-    }
-
-    public void setArguments(String[] arguments) {
-        this.arguments = arguments;
-    }
-}
-
-class Log {
-    private static PrintStream writer;
-    private static OutputStream stream;
-
-    static {
-        try {
-            stream = new FileOutputStream("log.txt");
-            try {
-                writer = new PrintStream(stream, true);
-            } catch (Throwable ex) {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (Throwable e) {
-                        ex.addSuppressed(e);
-                    }
-                }
-                throw ex;
-            }
-        } catch (Throwable ex) {
-            System.err.println("Log error: " + ex.getMessage());
-            closeStream();
-        }
-    }
-
-    static void closeStream() {
-        if (stream != null) {
-            try {
-                stream.close();
-            } catch (Throwable ex) {
-                System.err.println("Error closing log file: " + ex.getMessage());
-            }
-        }
-    }
-
-
-    static void println() {
-        println("");
-    }
-
-    static void println(String line) {
-        writer.println(line);
-        writer.flush();
-    }
-
-    static void print(String line) {
-        writer.print(line);
-        writer.flush();
-    }
-}
-
-
 class CannotParseCommandException extends ParserException {
     CannotParseCommandException(String message) {
         super(message);
@@ -352,15 +275,5 @@ class CommandInvokeException extends ParserException {
 
     public String getCommandName() {
         return commandName;
-    }
-}
-
-class ParserException extends Exception {
-    ParserException(String message) {
-        super(message);
-    }
-
-    ParserException(String message, Throwable ex) {
-        super(message, ex);
     }
 }
