@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.akhtyamovpavel.shell.Shell;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 /**
  * Created by user1 on 29.09.2014.
@@ -23,4 +24,6 @@ public abstract class FileCommand implements Command{
         }
         return targetFile;
     }
+
+    protected abstract void checkArgumentNumberCorrection(ArrayList<String> arguments);
 }

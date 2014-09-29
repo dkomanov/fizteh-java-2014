@@ -81,7 +81,8 @@ public class CopyCommand extends FileCommand {
         return "cp";
     }
 
-    private void checkArgumentNumberCorrection(ArrayList<String> arguments) {
+    @Override
+    protected void checkArgumentNumberCorrection(ArrayList<String> arguments) {
         if (arguments.size() < 2) {
             throw new IllegalArgumentException("cp: isn't enough arguments");
         }
