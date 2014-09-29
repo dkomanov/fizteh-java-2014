@@ -19,8 +19,9 @@ public class ChangeDirectoryCommand implements Command {
 
     @Override
     public void executeCommand(ArrayList<String> arguments) throws Exception {
-        if (arguments.isEmpty())
+        if (arguments.isEmpty()) {
             return;
+        }
 
         File targetDirectory = null;
         if (Paths.get(arguments.get(0)).isAbsolute()) {

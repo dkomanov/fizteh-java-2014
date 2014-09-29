@@ -23,6 +23,7 @@ public class Shell extends AbstractShell {
         addCommand(new ExitCommand());
         addCommand(new MakeDirectoryCommand(this));
         addCommand(new ChangeDirectoryCommand(this));
+        addCommand(new PrintFileCommand(this));
     }
 
     Shell() {
