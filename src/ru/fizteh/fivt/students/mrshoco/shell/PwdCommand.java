@@ -1,11 +1,17 @@
-public class PwdCommand extends Command
-{
-    PwdCommand(String[] cmd)
-    {
+/**
+*.
+*/
+public class PwdCommand extends Command {
+    /**
+    * @param cmd params
+    */
+    PwdCommand(final String[] cmd) {
         super(cmd);
     }
-    public void run()
-    {
+    /**
+    *.
+    */
+    public final void run() {
         System.out.println(System.getProperty("user.dir"));
     }
 }

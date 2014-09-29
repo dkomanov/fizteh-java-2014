@@ -1,13 +1,19 @@
 import java.io.IOException;
 
-public class ExitCommand extends Command
-{
-    ExitCommand(String[] cmd)
-    {
+/**
+*.
+*/
+public class ExitCommand extends Command {
+    /**
+    * @param cmd
+    */
+    ExitCommand(final String[] cmd) {
         super(cmd);
     }
-    public void run() throws Exception
-    {
+    /**
+    *.
+    */
+    public final void run() throws Exception {
         throw new IOException("Exit");
     }
 }

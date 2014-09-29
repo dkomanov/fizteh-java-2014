@@ -2,51 +2,51 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.io.IOException;
 
-public class ShellMain
-{
-    public static void main(String[] args)
-    {
-        if(args.length != 0)
-        {
+/**
+ * class ShellMain.
+ */
+public final class ShellMain {
+    /**
+     * Constructor.
+     */
+    private ShellMain() {
+    }
+
+    /**
+     * @param args programm arguments
+     */
+    public static void main(final String[] args) {
+        if (args.length != 0) {
             int i = 0, j = 0;
-            for(i = 0; i <= args.length; i++)
-            {
-                if(i == args.length || args[i].equals(";"))
-                {
+            for (i = 0; i <= args.length; i++) {
+                if (i == args.length || args[i].equals(";")) {
                     try {
                         Command cmd = Command.create(Arrays.copyOfRange(args, j, i));
                         cmd.run();
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         System.err.println(e.getMessage());
                         System.exit(1);
                     }
                     j = i + 1;
-                }
-                else
-                {
+                } else {
                     args[i] = args[i].trim();
                 }
             }
-        }
-        else
-        {
+        } else {
             Scanner sc = new Scanner(System.in);
             System.out.print("$ ");
             String[] input = sc.nextLine().split(";");
-            while(true)
-            {
-                for(int i = 0; i < input.length; i++)
-                {
+            while (true) {
+                for (int i = 0; i < input.length; i++) {
                     input[i] = input[i].trim();
-                    try
-                    {
+                    try {
                         Command cmd = Command.create(input[i].split(" "));
                         cmd.run();
-                    } catch(IOException e){
+                    } catch (IOException e) {
                         System.err.println(e.getMessage());
                         sc.close();
                         System.exit(1);
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         System.err.println(e.getMessage());
                     }
                 }

@@ -1,35 +1,32 @@
 import java.io.File;
 
-public class CdCommand extends Command
-{
-    CdCommand(String[] cmd)
-    {
+/**
+*.
+*/
+public class CdCommand extends Command {
+    /**
+    * @param cmd
+    */
+    CdCommand(final String[] cmd) {
         super(cmd);
     }
-    public void run() throws Exception
-    {
-        if(args.length == 1)
-        {
+    /**
+    *.
+    */
+    public final void run() throws Exception {
+        if (args.length == 1) {
             System.setProperty("user.dir", System.getProperty("user.home"));
-        }
-        else
-        {
+        } else {
             File folder;
-            if(args[1].startsWith("/"))
-            {
+            if (args[1].startsWith("/")) {
                 folder = new File(args[1]);
-            }
-            else
-            {
+            } else {
                 folder = new File(System.getProperty("user.dir"), args[1]);
             }
 
-            if(folder.isDirectory())
-            {
+            if (folder.isDirectory()) {
                 System.setProperty("user.dir", folder.getAbsolutePath());
-            }
-            else
-            {
+            } else {
                 System.out.println("No such file or directory");
             }
         }

@@ -1,16 +1,27 @@
-public abstract class Command
-{
-    String name;
-    String[] args;
-    Command(String[] cmd)
-    {
+/**
+ * class Command.
+ */
+public abstract class Command {
+    /**
+     *
+     */
+    protected String name;
+    /**
+     *
+     */
+    protected String[] args;
+    /**
+     * @param cmd params
+     */
+    Command(final String[] cmd) {
         name = cmd[0];
         args = cmd;
     }
-    public static Command create(String[] cmd) throws Exception
-    {
-        switch(cmd[0])
-        {
+    /**
+     * Create Command.
+     */
+    public static Command create(final String[] cmd) throws Exception {
+        switch(cmd[0]) {
             case "cd": return new CdCommand(cmd);
             case "mkdir": return new MkdirCommand(cmd);
             case "pwd": return new PwdCommand(cmd);
@@ -24,6 +35,9 @@ public abstract class Command
                 throw new Exception("Bad command");
         }
     }
+    /**
+     * Run.
+     */
     public abstract void run() throws Exception;
 }
 

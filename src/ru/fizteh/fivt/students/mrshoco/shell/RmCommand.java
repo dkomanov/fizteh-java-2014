@@ -1,61 +1,57 @@
 import java.io.File;
 
-public class RmCommand extends Command
-{
-    RmCommand(String[] cmd)
-    {
+/**
+*.
+*/
+public class RmCommand extends Command {
+    /**
+    * @param cmd params
+    */
+    RmCommand(final String[] cmd) {
         super(cmd);
     }
-    public void run() throws Exception
-    {
-        if(args.length < 2 || (args[1] == "-r" && args.length < 3))
-        {
+    /**
+    *.
+    */
+    public final void run() throws Exception {
+        if (args.length < 2 || (args[1] == "-r" && args.length < 3)) {
             throw new Exception("rm: missing operand");
         }
         File file;
 
-        if(args[1].equals("-r"))
-        {
+        if (args[1].equals("-r")) {
             file = new File(System.getProperty("user.dir"), args[2]);
-        }
-        else
-        {
+        } else {
             file = new File(System.getProperty("user.dir"), args[1]);
-            if(file.isDirectory())
-            {
+            if (file.isDirectory()) {
                 throw new Exception("rm: Is a directory");
             }
         }
-        if(!file.exists())
-        {
+        if (!file.exists()) {
             System.out.println(file.getAbsolutePath());
             throw new Exception("rm: No such file or directory");
         }
-        try
-        {
-            if(!remove(file))
-            {
+        try {
+            if (!remove(file)) {
                 throw new Exception("rm: cannot delete file");
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new Exception("rm: cannot delete file");
         }
     }
 
-    private boolean remove(File folder) throws Exception
-    {
+    /**
+    *.
+    */
+    private boolean remove(final File folder) throws Exception {
         File[] files = folder.listFiles();
-        if(files != null)
-        {
-            for(File file : files)
-            {
-                if(file.isDirectory())
-                {
-                    if(!remove(file))
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    if (!remove(file)) {
                         return false;
-                }
-                else
-                {
+                    }
+                } else {
                     file.delete();
                 }
             }
