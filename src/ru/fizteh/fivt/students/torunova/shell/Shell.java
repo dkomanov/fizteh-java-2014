@@ -30,7 +30,7 @@ final class Shell {
 			int status = 0;
 			String[] funcs = parseCommandsFromArray(args);
 			for (int i = 0; i < funcs.length; i++) {
-				if(!run(funcs[i])) {
+				if (!run(funcs[i])) {
 					status = 1;
 					System.exit(status);
 				}
@@ -177,8 +177,7 @@ final class Shell {
 					}
 				}
 			}
-		}
-		else if(!dst.exists()) {
+		} else if (!dst.exists()) {
 			try {
 				dst.createNewFile();
 			} catch (IOException e) {
@@ -273,11 +272,11 @@ final class Shell {
 	 * @param file - file.
 	 * @param dir  - directory.
 	 */
-	private static boolean copy(final String file,String dir) {
+	private static boolean copy(final String file, final String dir) {
 		File oldFile;
 		File newFile;
 		File dIr = new File(dir).getAbsoluteFile();
-		if(dIr.isDirectory()) {
+		if (dIr.isDirectory()) {
 			String[] folders = file.split(File.separator);
 			oldFile = new File(file).getAbsoluteFile();
 			newFile = new File(dir, folders[folders.length - 1]).getAbsoluteFile();
