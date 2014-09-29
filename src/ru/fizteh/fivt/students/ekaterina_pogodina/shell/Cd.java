@@ -5,8 +5,7 @@ import java.io.IOException;
 
 public class Cd {
     private Cd() {  }
-
-    public static void run(String[] args, int j) throws IOException, InterruptedException {
+    public static void run(String[] args, int j) throws IOException {
         if (j  + 1 < 2) {
             throw new IOException(args[0] + ": missing operand");
         } else {

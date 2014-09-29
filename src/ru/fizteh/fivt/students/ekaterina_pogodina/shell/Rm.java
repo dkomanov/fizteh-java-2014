@@ -9,8 +9,7 @@ public class Rm {
     public static void run(String[] args, boolean flag, int j) throws IOException {
         if (j + 1 < 2) {
             throw new IOException(args[0] + ": missing operand");
-        }
-        else {
+        } else {
             if (j + 1 > 2) {
                 throw new IOException(args[0] + ": too many arguments");
             }
@@ -31,8 +30,7 @@ public class Rm {
                     } catch (IOException | SecurityException e) {
                         System.err.println(e);
                     }
-                }
-                else {
+                } else {
                     if (file.list().length > 0) {
                         throw new IOException(args[i] + ": is a directory");
                     } else {

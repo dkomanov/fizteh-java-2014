@@ -9,7 +9,6 @@ import java.nio.file.Path;
 
 public class Cat {
     private Cat() {  }
-
     public static void run(String[] args, int j) throws IOException {
         if (j + 1 < 2) {
             throw new IOException(args[0] + ": missing operand");
@@ -34,12 +33,10 @@ public class Cat {
                         }
                         br.close();
                         System.out.print("\n");
-                    }
-                    else {
+                    } else {
                         throw new IOException(args[0] + "is a directory");
                     }
-                }
-                else {
+                } else {
                     throw new IOException(args[0] + ": No such file or directory");
                 }
             }

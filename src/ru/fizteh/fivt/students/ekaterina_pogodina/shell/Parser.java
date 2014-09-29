@@ -6,7 +6,7 @@ public class Parser {
     private Parser() {
     }
 
-    public static void parse(final String[] args, boolean flag, boolean mode, int j) throws IOException, InterruptedException {
+    public static void parse(final String[] args, boolean flag, boolean mode, int j) throws IOException {
         switch (args[0]) {
             case "exit":
                 System.exit(0);

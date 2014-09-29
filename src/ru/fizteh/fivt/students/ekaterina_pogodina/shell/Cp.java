@@ -6,7 +6,6 @@ import java.io.IOException;
 
 public class Cp {
     private Cp() {  }
-
     public static void run(final String[] args, boolean flag, int j) throws IOException {
         if (j + 1 < 3) {
             throw new IOException(args[0] + ": missing operand");

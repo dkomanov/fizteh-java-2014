@@ -6,7 +6,6 @@ import java.io.IOException;
 public class Mkdir {
     private Mkdir() {
     }
-
     public static void run(final String[] args, int j) throws IOException {
         if (j + 1 == 1) {
             throw new IOException(args[0] + ": missing operand");

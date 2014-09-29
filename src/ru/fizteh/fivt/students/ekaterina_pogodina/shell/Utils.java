@@ -43,9 +43,9 @@ public class Utils {
             File elementsDestination = new File(destination.getPath(), source.getName());
 
             if (!elementsDestination.exists()) {
-                try{
+                try {
                     elementsDestination.mkdir();
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
