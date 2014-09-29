@@ -29,7 +29,7 @@ public class Shell {
             }
         }
         if (f.isDirectory()) {
-            if (r == true) {
+            if (r) {
                 String[] list;
                 list = f.list();
                 if (list.length == 0) {
@@ -37,7 +37,7 @@ public class Shell {
                     System.exit(-1);
                 }
                 for (String value : list) {
-                    remove(value, directory + File.separator + whatDelete, r);
+                    remove(value, directory + File.separator + whatDelete, true);
                 }
                 if (!f.delete()) {
                     System.err.println("rm: cannot remove \"" + f.getName() + "\"");
@@ -81,7 +81,7 @@ public class Shell {
                 }
                 //Files.copy(f1.toPath(), f2.toPath(),);
             } else {
-                if (r == true) {
+                if (r) {
                     if (!f2.exists()) {
                         if (!f2.mkdir()) {
                             System.err.println("mkdir: Cannot create new directory " + f2.getName());
@@ -92,7 +92,7 @@ public class Shell {
                     Files.createDirectory(newDir.toPath());
                     String[] list = f1.list();
                     for (String aList : list) {
-                        copy(new File(f1, aList), newDir, r);
+                        copy(new File(f1, aList), newDir, true);
                     }
                 } else {
                     System.err.println("cp: " + f1.getName() + " is a directory (not copied).");
@@ -114,7 +114,7 @@ public class Shell {
             boolean pack = false;
             if (args.length == 0) {
                 System.out.print("$ ");
-                try{
+                try {
                 Scanner sc = new Scanner(System.in);
                 String s1 = sc.nextLine();
                 s = s1.split(" ");
@@ -123,14 +123,14 @@ public class Shell {
                     System.exit(-1);
                     s = new String[1];
                     s[0] = "";
-                };
+                }
             } else {
                 pack = true;
                 s = args;
             }
-            while(s.length == 0) {
+            while (s.length == 0) {
                 System.out.print("$ ");
-                try{
+                try {
                     Scanner sc = new Scanner(System.in);
                     String s1 = sc.nextLine();
                     s = s1.split(" ");
@@ -139,7 +139,7 @@ public class Shell {
                     System.exit(-1);
                     s = new String[1];
                     s[0] = "";
-                };
+                }
             }
             while (!s[i].equals("exit")) {
                 while (i < s.length && !s[i].equals("exit")) {
@@ -148,7 +148,8 @@ public class Shell {
 
                             case "cd": {
                                 ++i;
-                                String what, temp;
+                                String what;
+                                String temp;
                                 temp = directory;
                                 while (s[i].equals("")) {
                                     ++i;
@@ -236,14 +237,14 @@ public class Shell {
                             case "pwd;": {
                                 File f = new File(directory);
                                 System.out.println(f.getCanonicalPath());
-                                //System.out.println(f.getAbsolutePath());
                                 ++i;
                                 break;
                             }
 
                             case "mv": {
                                 ++i;
-                                String source, destination;
+                                String source;
+                                String destination;
                                 while (s[i].equals("")) {
                                     ++i;
                                 }
@@ -260,16 +261,20 @@ public class Shell {
                                 }
                                 File f1 = new File(directory + File.separator + source);
                                 File f2 = new File(directory + File.separator + destination);
-                                if ((f1.isDirectory() && f2.isDirectory() &&
-                                        f1.getCanonicalPath().equals(f2.getCanonicalPath()))
+                                if (    (f1.isDirectory() && f2.isDirectory()
+                                        && f1.getCanonicalPath().equals(f2.getCanonicalPath()))
                                         ||
-                                        (f1.isFile() && f2.isFile() && f1.getCanonicalPath().equals(f2.getCanonicalPath()))
-                                        || (f1.isDirectory() && f2.isFile() &&
-                                        f1.getAbsolutePath().equals(f2.getCanonicalPath()))
-                                        || (f1.isFile() && f2.isDirectory() &&
-                                        f1.getCanonicalPath().equals(f2.getAbsolutePath()))
+                                        (f1.isFile() && f2.isFile()
+                                        && f1.getCanonicalPath().equals(f2.getCanonicalPath()))
+                                        || (f1.isDirectory() && f2.isFile()
+                                        && f1.getAbsolutePath().equals(f2.getCanonicalPath()))
+                                        || (f1.isFile() && f2.isDirectory()
+                                        && f1.getCanonicalPath().equals(f2.getAbsolutePath()))
                                         ) {
-                                    f1.renameTo(f2);
+                                    if(!f1.renameTo(f2)) {
+                                        System.out.println("can't rename " + f1.getName());
+                                        System.exit(-1);
+                                    };
                                 } else {
                                     Files.move(f1.toPath(), f2.toPath());
                                 }
@@ -312,7 +317,8 @@ public class Shell {
                                     flag = true;
                                     ++i;
                                 }
-                                String source, destination;
+                                String source;
+                                String destination;
                                 while (s[i].equals("")) {
                                     ++i;
                                 }
@@ -370,7 +376,7 @@ public class Shell {
                             }
 
                             default: {
-                                //System.out.println("Error request");
+                                System.exit(-1);
                                 ++i;
                                 break;
                             }
@@ -384,7 +390,7 @@ public class Shell {
                     }
                 }
                 if (i < s.length) {
-                    if (s[i].equals("exit")){
+                    if (s[i].equals("exit")) {
                         break;
                     }
                 }
