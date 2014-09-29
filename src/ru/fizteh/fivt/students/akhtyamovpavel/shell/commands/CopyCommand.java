@@ -52,8 +52,8 @@ public class CopyCommand extends FileCommand {
                 throw new Exception("cp: i/o error");
             }
         } else {
-            Path sourcePath = sourceFile.toPath();
-            Path targetPath = targetFile.toPath();
+            final Path sourcePath = sourceFile.toPath();
+            final Path targetPath = targetFile.toPath();
             Files.walkFileTree(sourcePath, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
                     new SimpleFileVisitor<Path>() {
                         @Override

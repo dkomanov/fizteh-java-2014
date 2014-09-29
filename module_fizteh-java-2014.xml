@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_fizteh-java-2014" default="compile.module.fizteh-java-2014">
+  <dirname property="module.fizteh-java-2014.basedir" file="${ant.file.module_fizteh-java-2014}"/>
+  
+  <property name="module.jdk.home.fizteh-java-2014" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.fizteh-java-2014" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.fizteh-java-2014" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.fizteh-java-2014" value="-encoding UTF-8 -source 8 ${compiler.args}"/>
+  
+  <property name="fizteh-java-2014.output.dir" value="${module.fizteh-java-2014.basedir}/out/production/fizteh-java-2014"/>
+  <property name="fizteh-java-2014.testoutput.dir" value="${module.fizteh-java-2014.basedir}/out/test/fizteh-java-2014"/>
+  
+  <path id="fizteh-java-2014.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="fizteh-java-2014.module.production.classpath">
+    <path refid="${module.jdk.classpath.fizteh-java-2014}"/>
+  </path>
+  
+  <path id="fizteh-java-2014.runtime.production.module.classpath">
+    <pathelement location="${fizteh-java-2014.output.dir}"/>
+  </path>
+  
+  <path id="fizteh-java-2014.module.classpath">
+    <path refid="${module.jdk.classpath.fizteh-java-2014}"/>
+    <pathelement location="${fizteh-java-2014.output.dir}"/>
+  </path>
+  
+  <path id="fizteh-java-2014.runtime.module.classpath">
+    <pathelement location="${fizteh-java-2014.testoutput.dir}"/>
+    <pathelement location="${fizteh-java-2014.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.fizteh-java-2014">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.fizteh-java-2014">
+    <patternset refid="excluded.from.module.fizteh-java-2014"/>
+  </patternset>
+  
+  <path id="fizteh-java-2014.module.sourcepath">
+    <dirset dir="${module.fizteh-java-2014.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.fizteh-java-2014" depends="compile.module.fizteh-java-2014.production,compile.module.fizteh-java-2014.tests" description="Compile module fizteh-java-2014"/>
+  
+  <target name="compile.module.fizteh-java-2014.production" depends="register.custom.compilers" description="Compile module fizteh-java-2014; production classes">
+    <mkdir dir="${fizteh-java-2014.output.dir}"/>
+    <javac2 destdir="${fizteh-java-2014.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.fizteh-java-2014}/javac">
+      <compilerarg line="${compiler.args.fizteh-java-2014}"/>
+      <bootclasspath refid="fizteh-java-2014.module.bootclasspath"/>
+      <classpath refid="fizteh-java-2014.module.production.classpath"/>
+      <src refid="fizteh-java-2014.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.fizteh-java-2014"/>
+    </javac2>
+    
+    <copy todir="${fizteh-java-2014.output.dir}">
+      <fileset dir="${module.fizteh-java-2014.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.fizteh-java-2014.tests" depends="register.custom.compilers,compile.module.fizteh-java-2014.production" description="compile module fizteh-java-2014; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.fizteh-java-2014" description="cleanup module">
+    <delete dir="${fizteh-java-2014.output.dir}"/>
+    <delete dir="${fizteh-java-2014.testoutput.dir}"/>
+  </target>
+</project>

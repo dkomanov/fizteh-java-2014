@@ -14,12 +14,12 @@ import java.util.ArrayList;
 public class PrintFileCommand implements Command {
     private Shell link;
 
-    public PrintFileCommand(Shell shell) {
+    public PrintFileCommand(final Shell shell) {
         link = shell;
     }
 
     @Override
-    public void executeCommand(ArrayList<String> arguments) throws Exception {
+    public void executeCommand(final ArrayList<String> arguments) throws Exception {
         if (arguments.isEmpty()) {
             throw new Exception("usage: cat files ...");
         }

@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.akhtyamovpavel.shell.commands;
 import ru.fizteh.fivt.students.akhtyamovpavel.shell.Shell;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -18,7 +17,7 @@ public class ChangeDirectoryCommand implements Command {
     }
 
     @Override
-    public void executeCommand(ArrayList<String> arguments) throws Exception {
+    public void executeCommand(final ArrayList<String> arguments) throws Exception {
         if (arguments.isEmpty()) {
             return;
         }
@@ -38,11 +37,9 @@ public class ChangeDirectoryCommand implements Command {
             throw new Exception("cd: " + arguments.get(0) + ": not a directory");
         } else {
             link.setWorkDirectory(new File(targetDirectory.getAbsolutePath()));
-            try {
-                link.setWorkDirectory(new File(targetDirectory.getCanonicalPath()));
-            } catch (IOException ioe) {
-                // cannot convert to canonical path
-            }
+
+            link.setWorkDirectory(new File(targetDirectory.getCanonicalPath()));
+
         }
 
     }
