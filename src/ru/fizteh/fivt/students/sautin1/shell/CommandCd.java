@@ -12,20 +12,6 @@ import java.nio.file.Paths;
 public class CommandCd implements Command {
     private static Path presentWorkingDirectory = Paths.get("").toAbsolutePath().normalize();
 
-    /*private static void changeDirectory(String dirName) throws IOException {
-        Path dirAbsolutePath = Paths.get(dirName);
-        if (!dirAbsolutePath.isAbsolute()) {
-            dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();
-        }
-        System.out.println(dirAbsolutePath.toString());
-        if (Files.exists(dirAbsolutePath) && Files.isDirectory(dirAbsolutePath)) {
-            presentWorkingDirectory = dirAbsolutePath;
-            System.out.println("Made changes to pwd!");
-        } else {
-            throw new NoSuchFileException("\'" + dirName + "\': No such file or directory");
-        }
-    }*/
-
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
         String dirName;
