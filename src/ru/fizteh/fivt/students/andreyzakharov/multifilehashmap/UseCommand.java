@@ -10,16 +10,19 @@ public class UseCommand implements Command {
             throw new CommandInterruptException("use: too many arguments");
         }
 
-        if (!connector.tableExists(args[1])) {
-            return args[1]+" not exists";
-        }
-        connector.close();
-        connector.db = new FileMap(connector.dbRoot.resolve(args[1]));
-        try {
-            connector.db.load();
-            return "using "+args[1];
-        } catch (ConnectionInterruptException e) {
-            throw new CommandInterruptException("use: "+e.getMessage());
+        FileMap table = connector.tables.get(args[1]);
+        if (table != null) {
+            if (connector.activeTable != null) {
+                try {
+                    connector.activeTable.unload();
+                } catch (ConnectionInterruptException e) {
+                    throw new CommandInterruptException("use: can't unload active table");
+                }
+            }
+            connector.activeTable = table;
+            return "using " + args[1];
+        } else {
+            return args[1] + " not exists";
         }
     }
 }

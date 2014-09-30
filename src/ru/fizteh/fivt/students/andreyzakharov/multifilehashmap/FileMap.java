@@ -3,47 +3,135 @@ package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 
+import static java.nio.file.FileVisitResult.CONTINUE;
+
 public class FileMap extends HashMap<String, String> {
+    String tableName;
     Path dbPath;
 
-    public FileMap(Path path) {
+    public FileMap(String name, Path path) {
+        tableName = name;
         dbPath = path;
-    }
-
-    public void load() throws ConnectionInterruptException {
-        try (DataInputStream is = new DataInputStream(Files.newInputStream(dbPath))) {
-            clear();
-
-            while (is.available() > 0) {
-                int keyLen = is.readInt();
-                byte[] key = new byte[keyLen];
-                is.read(key, 0, keyLen);
-                int valLen = is.readInt();
-                byte[] value = new byte[valLen];
-                is.read(value, 0, valLen);
-                put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectory(path);
+            } catch (IOException e) {
+                //
             }
-        } catch (IOException e) {
-            throw new ConnectionInterruptException("database: reading from disk failed");
         }
     }
 
+    void readKeyValue(DataInputStream is) throws IOException {
+        int keyLen = is.readInt();
+        byte[] key = new byte[keyLen];
+        is.read(key, 0, keyLen);
+        int valLen = is.readInt();
+        byte[] value = new byte[valLen];
+        is.read(value, 0, valLen);
+        put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+    }
+
+    public void load() throws ConnectionInterruptException {
+        for (int i = 0; i < 16; ++i) {
+            for (int j = 0; j < 16; ++j) {
+                try (DataInputStream stream = new DataInputStream(Files.newInputStream(dbPath.resolve(i + ".dir/" + j + ".dat")))) {
+                    while (stream.available() > 0) {
+                        readKeyValue(stream);
+                    }
+                } catch (IOException e) {
+                    //
+                }
+            }
+        }
+    }
+
+    void writeKeyValue(DataOutputStream os, String keyString, String valueString) throws IOException {
+        byte[] key = keyString.getBytes("UTF-8");
+        byte[] value = valueString.getBytes("UTF-8");
+        os.writeInt(key.length);
+        os.write(key);
+        os.writeInt(value.length);
+        os.write(value);
+    }
+
     public void unload() throws ConnectionInterruptException {
-        try (DataOutputStream os = new DataOutputStream(Files.newOutputStream(dbPath))) {
+        try {
+            clearFiles();
+        } catch (ConnectionInterruptException e) {
+            //
+        }
+
+        boolean[] dirUsed = new boolean[16];
+        boolean[][] fileUsed = new boolean[16][16];
+        DataOutputStream[][] streams = new DataOutputStream[16][16];
+        try {
+            if (!Files.exists(dbPath)) {
+                Files.createDirectory(dbPath);
+            }
             for (HashMap.Entry<String, String> entry : entrySet()) {
-                byte[] key = entry.getKey().getBytes("UTF-8");
-                byte[] value = entry.getValue().getBytes("UTF-8");
-                os.writeInt(key.length);
-                os.write(key);
-                os.writeInt(value.length);
-                os.write(value);
+                int hash = entry.getKey().hashCode();
+                int d = (hash % 16 < 0) ? hash % 16 + 16 : hash % 16;
+                hash /= 16;
+                int f = (hash % 16 < 0) ? hash % 16 + 16 : hash % 16;
+                if (!fileUsed[d][f]) {
+                    if (!dirUsed[d]) {
+                        Files.createDirectory(dbPath.resolve(d + ".dir/"));
+                        dirUsed[d] = true;
+                    }
+                    streams[d][f] = new DataOutputStream(Files.newOutputStream(dbPath.resolve(d + ".dir/" + f + ".dat")));
+                    fileUsed[d][f] = true;
+                }
+                writeKeyValue(streams[d][f], entry.getKey(), entry.getValue());
             }
         } catch (IOException e) {
-            throw new ConnectionInterruptException("database: writing to dist failed");
+            for (int i = 0; i < 16; ++i) {
+                for (int j = 0; j < 16; ++j) {
+                    if (streams[i][j] != null) {
+                        try {
+                            streams[i][j].close();
+                        } catch (IOException e1) {
+                            continue;
+                        }
+                    }
+                }
+            }
+            throw new ConnectionInterruptException("database: writing to disk failed");
+        } finally {
+            for (int i = 0; i < 16; ++i) {
+                for (int j = 0; j < 16; ++j) {
+                    if (streams[i][j] != null) {
+                        try {
+                            streams[i][j].close();
+                        } catch (IOException e) {
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void clearFiles() throws ConnectionInterruptException {
+        try {
+            for (int i = 0; i < 16; ++i) {
+                for (int j = 0; j < 16; ++j) {
+                    if (Files.exists(dbPath.resolve(i + ".dir/" + j + ".dat"))) {
+                        Files.delete(dbPath.resolve(i + ".dir/" + j + ".dat"));
+                    }
+                }
+                if (Files.exists(dbPath.resolve(i + ".dir/"))) {
+                    Files.delete(dbPath.resolve(i + ".dir/"));
+                }
+            }
+        } catch (IOException e) {
+            throw new ConnectionInterruptException("database: deleting table failed");
         }
     }
 }

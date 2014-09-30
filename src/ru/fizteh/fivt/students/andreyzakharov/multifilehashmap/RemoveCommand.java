@@ -9,12 +9,12 @@ public class RemoveCommand implements Command {
         if (args.length > 2) {
             throw new CommandInterruptException("remove: too many arguments");
         }
-        if (connector.db == null) {
+        if (connector.activeTable == null) {
             throw new CommandInterruptException("no table");
         }
-        boolean exists = connector.db.containsKey(args[1]);
+        boolean exists = connector.activeTable.containsKey(args[1]);
         if (exists) {
-            connector.db.remove(args[1]);
+            connector.activeTable.remove(args[1]);
             return "removed";
         } else {
             return "not found";

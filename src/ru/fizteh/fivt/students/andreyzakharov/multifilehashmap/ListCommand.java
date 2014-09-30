@@ -6,14 +6,14 @@ public class ListCommand implements Command {
         if (args.length > 1) {
             throw new CommandInterruptException("list: too many arguments");
         }
-        if (connector.db == null) {
+        if (connector.activeTable == null) {
             throw new CommandInterruptException("no table");
         }
-        if (connector.db.isEmpty()) {
+        if (connector.activeTable.isEmpty()) {
             return "";
         } else {
             StringBuilder sb = new StringBuilder();
-            for (String key : connector.db.keySet()) {
+            for (String key : connector.activeTable.keySet()) {
                 sb.append(key);
                 sb.append(", ");
             }

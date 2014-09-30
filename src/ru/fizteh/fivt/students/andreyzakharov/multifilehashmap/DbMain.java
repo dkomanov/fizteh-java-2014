@@ -9,9 +9,18 @@ public class DbMain {
     Path dbPath;
 
     public DbMain(String[] args) {
-        dbPath = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("fizteh.db.dir"));
+        String property = System.getProperty("fizteh.db.dir");
+        if (property == null) {
+            System.err.println("Database root directory not set");
+            System.exit(1);
+        }
+        dbPath = Paths.get(System.getProperty("user.dir")).resolve(property);
         batch = args.length > 0;
         run(args);
+    }
+
+    public static void main(String[] args) {
+        DbMain m = new DbMain(args);
     }
 
     void run(String[] args) {
@@ -61,9 +70,5 @@ public class DbMain {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-    }
-
-    public static void main(String[] args) {
-        DbMain m = new DbMain(args);
     }
 }

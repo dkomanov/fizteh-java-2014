@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
 
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -8,7 +10,8 @@ import java.util.Map;
 public class DbConnector implements AutoCloseable {
     Map<String, Command> commands = new HashMap<>();
     Path dbRoot;
-    FileMap db;
+    Map<String, FileMap> tables;
+    FileMap activeTable;
 
     DbConnector(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
@@ -18,6 +21,7 @@ public class DbConnector implements AutoCloseable {
             throw new ConnectionInterruptException("connection: destination is not a directory");
         }
         dbRoot = dbPath;
+        open();
 
         commands.put("create", new CreateCommand());
         commands.put("drop", new DropCommand());
@@ -32,23 +36,42 @@ public class DbConnector implements AutoCloseable {
         commands.put("exit", new ExitCommand());
     }
 
+    public void open() throws ConnectionInterruptException {
+        if (tables == null) {
+            tables = new HashMap<>();
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dbRoot)) {
+                for (Path file : stream) {
+                    if (Files.isDirectory(file)) {
+                        FileMap table = new FileMap(file.getFileName().toString(), file);
+                        try {
+                            table.load();
+                        } catch (ConnectionInterruptException e) {
+                            continue;
+                        }
+                        tables.put(file.getFileName().toString(), table);
+                    }
+                }
+            } catch (IOException e) {
+                throw new ConnectionInterruptException("connection: unable to load the database");
+            }
+        }
+    }
+
     @Override
     public void close() {
-        if (db != null) {
+        if (tables != null) {
             try {
-                db.unload();
+                for (FileMap table : tables.values()) {
+                    table.unload();
+                }
             } catch (ConnectionInterruptException e) {
                 // suppress the exception
             }
         }
     }
 
-    public boolean tableExists(String name) {
-        return Files.exists(dbRoot.resolve(name));
-    }
-
     public String run(String argString) throws CommandInterruptException, ConnectionInterruptException {
-        /*if (db == null && !(command instanceof CommandOverTable)) {
+        /*if (activeTable == null && !(command instanceof CommandOverTable)) {
             throw new CommandInterruptException("no table");
         }*/
         String[] args = argString.trim().split("\\s+");
