@@ -13,7 +13,7 @@ public class CreateCommand implements Command {
             return args[1] + " exists";
         }
 
-        FileMap table = new FileMap(args[1], connector.dbRoot.resolve(args[1]));
+        FileMap table = new FileMap(connector.dbRoot.resolve(args[1]));
         connector.tables.put(args[1], table);
         return "created";
     }

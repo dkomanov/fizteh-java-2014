@@ -42,7 +42,7 @@ public class DbConnector implements AutoCloseable {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(dbRoot)) {
                 for (Path file : stream) {
                     if (Files.isDirectory(file)) {
-                        FileMap table = new FileMap(file.getFileName().toString(), file);
+                        FileMap table = new FileMap(file);
                         try {
                             table.load();
                         } catch (ConnectionInterruptException e) {
@@ -70,7 +70,7 @@ public class DbConnector implements AutoCloseable {
         }
     }
 
-    public String run(String argString) throws CommandInterruptException, ConnectionInterruptException {
+    public String run(String argString) throws CommandInterruptException {
         String[] args = argString.trim().split("\\s+");
         Command command = commands.get(args[0]);
         if (command != null) {

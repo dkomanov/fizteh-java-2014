@@ -8,11 +8,9 @@ import java.nio.file.Path;
 import java.util.HashMap;
 
 public class FileMap extends HashMap<String, String> {
-    String tableName;
     Path dbPath;
 
-    public FileMap(String name, Path path) {
-        tableName = name;
+    public FileMap(Path path) {
         dbPath = path;
         if (!Files.exists(path)) {
             try {
@@ -42,7 +40,7 @@ public class FileMap extends HashMap<String, String> {
                         readKeyValue(stream);
                     }
                 } catch (IOException e) {
-                    //
+                    // empty folder is a valid table
                 }
             }
         }

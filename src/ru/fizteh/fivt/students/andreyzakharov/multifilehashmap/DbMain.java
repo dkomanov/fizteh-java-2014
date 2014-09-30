@@ -66,9 +66,6 @@ public class DbMain {
                 connector.close();
                 System.exit(1);
             }
-        } catch (ConnectionInterruptException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
         }
     }
 }
