@@ -29,7 +29,7 @@ public class Log {
         }
     }
 
-    static void closeStream() {
+    public static void closeStream() {
         if (stream != null) {
             try {
                 stream.close();
@@ -40,16 +40,16 @@ public class Log {
     }
 
 
-    static void println() {
+    public static void println() {
         println("");
     }
 
-    static void println(String line) {
+    public static void println(String line) {
         writer.println(line);
         writer.flush();
     }
 
-    static void print(String line) {
+    public static void print(String line) {
         writer.print(line);
         writer.flush();
     }

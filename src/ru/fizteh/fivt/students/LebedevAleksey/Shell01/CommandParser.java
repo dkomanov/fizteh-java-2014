@@ -20,23 +20,17 @@ public abstract class CommandParser {
                     currentCommand.get(i).setValue(trimOneEndSpace(currentCommand.get(i).getValue()));
                 }
                 if (token.getValue().length() > 0) {
-                    arguments.addAll(Arrays.asList(token.getValue().split("\\s", -1)));
+                    arguments.addAll(Arrays.asList(token.getValue().split("\\s")));
                 }
             }
         }
-        while (arguments.size() > 0 && (arguments.get(arguments.size() - 1).equals(""))) {
-            arguments.remove(arguments.size() - 1);
+        ArrayList<String> emptyArgs = new ArrayList<>();
+        for (String arg : arguments) {
+            if (arg.equals("")) {
+                emptyArgs.add(arg);
+            }
         }
-        int trimStartIndex = 0;
-        while (trimStartIndex < arguments.size() && (arguments.get(trimStartIndex).equals(""))) {
-            ++trimStartIndex;
-        }
-        for (int i = trimStartIndex; i < arguments.size(); ++i) {
-            arguments.set(i - trimStartIndex, arguments.get(i));
-        }
-        for (int i = 0; i < trimStartIndex; ++i) {
-            arguments.remove(arguments.size() - 1);
-        }
+        arguments.removeAll(emptyArgs);
         return arguments;
     }
 
