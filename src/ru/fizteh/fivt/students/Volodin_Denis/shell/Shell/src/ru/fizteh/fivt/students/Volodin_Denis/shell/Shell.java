@@ -478,7 +478,7 @@ public class Shell {
             case "cd":
                 shellCd(buffer);
                 break;
-            case "mkdir":	
+            case "mkdir":
                 shellMkdir(buffer);
                 break;
             case "pwd":
