@@ -29,7 +29,7 @@ public class Shell {
                     String[] shellIn = scanner.nextLine().split(";");
                     for (int i = 0; i < shellIn.length; ++i) {
                         if (shellIn[i].length() > 0) {
-                    	    String[] buffer = shellIn[i].trim().split("\\s+");
+                            String[] buffer = shellIn[i].trim().split("\\s+");
                             try {
                                 shellParser(buffer);
                             } catch (Exception except) {
@@ -97,133 +97,130 @@ public class Shell {
     }
     
     private static void shellMkdir(final String[] args) throws Exception {
-		if (args.length != 2) {
-			shellWrongQuantity("mkdir");
-		}
-		if (args[1].isEmpty()) {
-			shellNoName("mkdir");
-		}
-		
-		try {
-			Path pathToFile = Paths.get(args[1]).normalize();
-			if (!pathToFile.isAbsolute()) {
-				pathToFile = Paths.get(System.getProperty("user.dir"),
-									   pathToFile.toString()).normalize();
-			}
-			
-			if (pathToFile.toFile().exists()) {
-				shellAlreadyExist("mkdir", args[1]);
-			} else {
-				if (!pathToFile.toFile().mkdir()) {
-					shellNotMkdir("mkdir", args[1]);
-				}
-			}
-		} catch (InvalidPathException invExcept) {
-			shellInvalidName("mkdir", args[1]);
-		} catch (SecurityException secExcept) {
-			shellSecurity("mkdir", args[1]); 
-		}
-	}
-
-	
-	private static void shellPwd(final String[] args) throws Exception {
-		if (args.length != 1) {
-			shellWrongQuantity("pwd");
-		}
-		
-		try {
-			Path pathToFile = Paths.get(
-							  System.getProperty("user.dir")).normalize();
-			System.out.println(pathToFile.toString());
-		} catch (SecurityException secExcept) {
-			shellSecurity("pwd", "current directory");
-		}
-	}
-	
-	private static void shellRm(final String[] args) throws Exception {
-		if ((args.length != 2) && (args.length != 3)) {
-			shellWrongQuantity("rm");
-		}
-		if (args[args.length - 1].isEmpty()) {
-			shellNoName("rm");
-		}
-		
-		if (args.length == 3) {
-			if (!args[1].equals("-r")) {
-				shellWrongKey("rm", "-r");
-			}
-			try {
-				Path pathToFile = Paths.get(args[2]).normalize();
-				if (!pathToFile.isAbsolute()) {
-					pathToFile = Paths.get(System.getProperty("user.dir"),
-										   args[2]).normalize();
-				}
-				if (!pathToFile.toFile().exists()) {
-					shellNotExist("rm", args[2]);
-				}
-				if (!pathToFile.toFile().isDirectory()) {
-					shellNotDirectory("rm", args[2]);
-				}
-				
-				String[] names = pathToFile.toFile().list();
-				
-				if (names.length != 0) {
-					for (int i = 0; i < names.length; ++i) {
-						if (Paths.get(pathToFile.toString(),
-							names[i]).normalize().toFile().isDirectory()) {
-							System.setProperty("user.dir",
-											   pathToFile.toString());
-							String[] helpArray = new String[]
-									{"rm", "-r", names[i]};
-							shellRm(helpArray);
-							System.setProperty("user.dir",
-											   pathToFile.getParent().
-											   toString());
-						}
-						if (Paths.get(pathToFile.toString(),
-								      names[i]).normalize().toFile().isFile()) {
-							String[] helpArray = new String[]
-									 {"rm", Paths.get(pathToFile.toString(),
-									  names[i]).normalize().toString() };
-							shellRm(helpArray);
-						}
-					}
-				}
-				if (!pathToFile.toFile().delete()) {
-					shellSmthWrong("rm");
-				}
-				
-			} catch (InvalidPathException invExcept) {
-				shellInvalidName("rm", args[2]);
-			} catch (SecurityException secExcept) {
-				shellSecurity("rm", args[2]);
-			}
-		} else {
-			try {
-				Path pathToFile = Paths.get(args[1]).normalize();
-
-				if (!pathToFile.isAbsolute()) {				
-					pathToFile = Paths.get(System.getProperty("user.dir"),
-										   args[1]).normalize();
-				}				
-				if (!pathToFile.toFile().exists()) {
-					shellNotExist("rm", args[1]);
-				}
-				if (!pathToFile.toFile().isFile()) {
-					shellNotFile("rm", args[1]);
-				}
-				if (!pathToFile.toFile().delete()) {
-					shellSmthWrong("rm");
-				}
-			} catch (InvalidPathException invExcept) {
-				shellInvalidName("rm", args[1]);
-			} catch (SecurityException secExcept) {
-				shellSecurity("rm", args[1]);
-			}
-		}
-	}
-//+-	
-	private static void shellCp(String[] args) throws Exception {
+        if (args.length != 2) {
+            shellWrongQuantity("mkdir");
+        }
+        if (args[1].isEmpty()) {
+            shellNoName("mkdir");
+        }
+        
+        try {
+            Path pathToFile = Paths.get(args[1]).normalize();
+            if (!pathToFile.isAbsolute()) {
+                pathToFile = Paths.get(System.getProperty("user.dir"),
+                             pathToFile.toString()).normalize();
+            }
+            
+            if (pathToFile.toFile().exists()) {
+                shellAlreadyExist("mkdir", args[1]);
+            } else {
+                if (!pathToFile.toFile().mkdir()) {
+                    shellNotMkdir("mkdir", args[1]);
+                }
+            }
+        } catch (InvalidPathException invExcept) {
+            shellInvalidName("mkdir", args[1]);
+        } catch (SecurityException secExcept) {
+            shellSecurity("mkdir", args[1]);
+        }
+    }
+    
+    private static void shellPwd(final String[] args) throws Exception {
+        if (args.length != 1) {
+            shellWrongQuantity("pwd");
+        }
+        
+        try {
+            Path pathToFile = Paths.get(
+                System.getProperty("user.dir")).normalize();
+                System.out.println(pathToFile.toString());
+        } catch (SecurityException secExcept) {
+            shellSecurity("pwd", "current directory");
+        }
+    }
+    
+    private static void shellRm(final String[] args) throws Exception {
+        if ((args.length != 2) && (args.length != 3)) {
+            shellWrongQuantity("rm");
+        }
+        if (args[args.length - 1].isEmpty()) {
+            shellNoName("rm");
+        }
+        if (args.length == 3) {
+            if (!args[1].equals("-r")) {
+                shellWrongKey("rm", "-r");
+            }
+            try {
+                Path pathToFile = Paths.get(args[2]).normalize();
+                if (!pathToFile.isAbsolute()) {
+                    pathToFile = Paths.get(System.getProperty("user.dir"),
+                                           args[2]).normalize();
+                }
+                if (!pathToFile.toFile().exists()) {
+                    shellNotExist("rm", args[2]);
+                }
+                if (!pathToFile.toFile().isDirectory()) {
+                    shellNotDirectory("rm", args[2]);
+                }
+                
+                String[] names = pathToFile.toFile().list();
+                
+                if (names.length != 0) {
+                    for (int i = 0; i < names.length; ++i) {
+                        if (Paths.get(pathToFile.toString(),
+                              names[i]).normalize().toFile().isDirectory()) {
+                            System.setProperty("user.dir",
+                                               pathToFile.toString());
+                            String[] helpArray = new String[]
+                                     {"rm", "-r", names[i]};
+                            shellRm(helpArray);
+                            System.setProperty("user.dir",
+                                               pathToFile.getParent().toString());
+                        }
+                        if (Paths.get(pathToFile.toString(),
+                                      names[i]).normalize().toFile().isFile()) {
+                            String[] helpArray = new String[]
+                                     {"rm", Paths.get(pathToFile.toString(),
+                                      names[i]).normalize().toString() };
+                            shellRm(helpArray);
+                        }
+                    }
+                }
+                if (!pathToFile.toFile().delete()) {
+                    shellSmthWrong("rm");
+                }
+            
+            } catch (InvalidPathException invExcept) {
+                shellInvalidName("rm", args[2]);
+            } catch (SecurityException secExcept) {
+                shellSecurity("rm", args[2]);
+            }
+        } else {
+            try {
+                Path pathToFile = Paths.get(args[1]).normalize();
+                
+                if (!pathToFile.isAbsolute()) {				
+                    pathToFile = Paths.get(System.getProperty("user.dir"),
+                                           args[1]).normalize();
+                }
+                if (!pathToFile.toFile().exists()) {
+                    shellNotExist("rm", args[1]);
+                }
+                if (!pathToFile.toFile().isFile()) {
+                    shellNotFile("rm", args[1]);
+                }
+                if (!pathToFile.toFile().delete()) {
+                    shellSmthWrong("rm");
+                }
+            } catch (InvalidPathException invExcept) {
+                shellInvalidName("rm", args[1]);
+            } catch (SecurityException secExcept) {
+                shellSecurity("rm", args[1]);
+            }
+         }
+    }
+    
+    private static void shellCp(String[] args) throws Exception {
 		if ((args.length != 3) && (args.length != 4)) {
 			shellWrongQuantity("cp");
 		}
