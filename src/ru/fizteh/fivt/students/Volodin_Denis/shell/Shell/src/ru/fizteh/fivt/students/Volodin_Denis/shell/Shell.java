@@ -220,7 +220,7 @@ public class Shell {
         }
     }
     
-    private static void shellCp(String[] args) throws Exception {
+    private static void shellCp(final String[] args) throws Exception {
         if ((args.length != 3) && (args.length != 4)) {
             shellWrongQuantity("cp");
         }
@@ -343,7 +343,7 @@ public class Shell {
         }
     }
     
-    private static void shellMv(String[] args) throws Exception {
+    private static void shellMv(final String[] args) throws Exception {
         if (args.length != 3) {
             shellWrongQuantity("mv");
         }
@@ -412,7 +412,7 @@ public class Shell {
         }
     }
     
-    private static void shellLs(String[] args) throws Exception {
+    private static void shellLs(final String[] args) throws Exception {
         if (args.length != 1) {
             shellWrongQuantity("ls");
         }
@@ -429,11 +429,11 @@ public class Shell {
         }
     }
     
-    private static void shellExit(String[] args) throws Exception {
+    private static void shellExit(final String[] args) throws Exception {
         System.exit(SUCCESS);
     }
     
-    private static void shellCat(String[] args) throws Exception {
+    private static void shellCat(final String[] args) throws Exception {
         if (args.length != 2) {
            shellWrongQuantity("cat");
         }
@@ -473,7 +473,7 @@ public class Shell {
     // end
     //
 
-    private static void shellParser(String[] buffer) throws Exception {
+    private static void shellParser(final String[] buffer) throws Exception {
         switch(buffer[0]) {
             case "cd":
                 shellCd(buffer);
