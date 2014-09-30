@@ -31,6 +31,8 @@ public class Shell {
         commandsMap.put(command.toString(), command);
         command = new CommandRm();
         commandsMap.put(command.toString(), command);
+        command = new CommandExit();
+        commandsMap.put(command.toString(), command);
     }
 
     /**
@@ -39,6 +41,7 @@ public class Shell {
      * @return true, if the command is "exit"; false, otherwise.
      */
     public boolean executeCommand(String... commandWithParams) throws IllegalArgumentException {
+        System.out.println("Trying to exec \'" + commandWithParams[0] + "\'");
         Command command = commandsMap.get(commandWithParams[0]);
         if (command == null) {
             throw new IllegalArgumentException(commandWithParams[0] + ": command not found");

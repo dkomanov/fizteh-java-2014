@@ -7,6 +7,5 @@ import com.sun.javaws.exceptions.InvalidArgumentException;
  */
 public interface Command {
     public void execute(String... args) throws IllegalArgumentException;
-    @Override
     public String toString();
 }
