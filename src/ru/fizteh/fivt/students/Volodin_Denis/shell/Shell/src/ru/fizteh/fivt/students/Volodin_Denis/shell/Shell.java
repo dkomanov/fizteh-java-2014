@@ -20,11 +20,9 @@ public class Shell {
     static final int ERROR = 1;
     
     public static void main(final String[] args) {
-        if (args.length == 0) {
-        //interactive mode
-            Scanner scanner = new Scanner(System.in);
+        if (args.length == 0) {     //interactive mode
             do {
-                try {
+                try (Scanner scanner = new Scanner(System.in)) {
                     System.out.print("$ ");
                     String[] shellIn = scanner.nextLine().split(";");
                     for (int i = 0; i < shellIn.length; ++i) {
@@ -451,12 +449,10 @@ public class Shell {
             if (!fileForCat.isFile()) {
                 shellNotFile("cat", args[1]);
             }
-            try {
-                Scanner scanner = new Scanner(fileForCat);
+            try (Scanner scanner = new Scanner(fileForCat)) {
                 while (scanner.hasNext()) {
                     System.out.println(scanner.nextLine());
                 }
-                scanner.close();
             } catch (IOException ioExcept) {
                 shellWrongInput("cat");
             }
