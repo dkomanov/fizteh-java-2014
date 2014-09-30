@@ -1,18 +1,21 @@
+package shell_util;
+
 import java.io.File;
 
 /**
-*.
-*/
+ * .
+ */
 public class CdCommand extends Command {
     /**
-    * @param cmd
-    */
+     * @param cmd
+     */
     CdCommand(final String[] cmd) {
         super(cmd);
     }
+
     /**
-    *.
-    */
+     * .
+     */
     public final void run() throws Exception {
         if (args.length == 1) {
             System.setProperty("user.dir", System.getProperty("user.home"));

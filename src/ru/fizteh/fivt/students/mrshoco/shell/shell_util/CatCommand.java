@@ -1,15 +1,20 @@
+package shell_util;
+
 import java.io.File;
 import java.util.Scanner;
+
 /**
  * .
  */
 public class CatCommand extends Command {
     /**
-    * @param cmd params
+     * @param cmd
+     *            params
      */
     CatCommand(final String[] cmd) {
         super(cmd);
     }
+
     /**
      * .
      */

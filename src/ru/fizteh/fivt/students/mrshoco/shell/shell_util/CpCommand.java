@@ -1,3 +1,5 @@
+package shell_util;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -5,18 +7,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 /**
-*.
-*/
+ * .
+ */
 public class CpCommand extends Command {
     /**
-    * @param cmd
-    */
+     * @param cmd
+     */
     CpCommand(final String[] cmd) {
         super(cmd);
     }
+
     /**
-    *.
-    */
+     * .
+     */
     public final void run() throws Exception {
         if (args.length < 3 || (args[1] == "-r" && args.length < 4)) {
             throw new Exception("cp: missing file operand");
@@ -47,12 +50,12 @@ public class CpCommand extends Command {
     }
 
     /**
-    *.
-    */
+     * .
+     */
     private void copy(final File src, final File dest) throws Exception {
-       if (src.isDirectory()) {
+        if (src.isDirectory()) {
             if (!dest.exists()) {
-               dest.mkdir();
+                dest.mkdir();
             }
 
             String[] files = src.list();
@@ -62,7 +65,7 @@ public class CpCommand extends Command {
                 File destFile = new File(dest, file);
                 copy(srcFile, destFile);
             }
-       } else {
+        } else {
             InputStream in = new FileInputStream(src);
             OutputStream out = new FileOutputStream(dest);
 
@@ -70,7 +73,7 @@ public class CpCommand extends Command {
 
             int length;
             while ((length = in.read(buffer)) > 0) {
-               out.write(buffer, 0, length);
+                out.write(buffer, 0, length);
             }
 
             in.close();

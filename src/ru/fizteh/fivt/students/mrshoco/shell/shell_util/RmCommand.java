@@ -1,18 +1,22 @@
+package shell_util;
+
 import java.io.File;
 
 /**
-*.
-*/
+ * .
+ */
 public class RmCommand extends Command {
     /**
-    * @param cmd params
-    */
+     * @param cmd
+     *            params
+     */
     RmCommand(final String[] cmd) {
         super(cmd);
     }
+
     /**
-    *.
-    */
+     * .
+     */
     public final void run() throws Exception {
         if (args.length < 2 || (args[1] == "-r" && args.length < 3)) {
             throw new Exception("rm: missing operand");
@@ -41,8 +45,8 @@ public class RmCommand extends Command {
     }
 
     /**
-    *.
-    */
+     * .
+     */
     private boolean remove(final File folder) throws Exception {
         File[] files = folder.listFiles();
         if (files != null) {

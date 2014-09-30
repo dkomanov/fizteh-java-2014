@@ -1,3 +1,5 @@
+package shell_util;
+
 import java.util.Arrays;
 import java.util.Scanner;
 import java.io.IOException;
@@ -13,7 +15,8 @@ public final class ShellMain {
     }
 
     /**
-     * @param args programm arguments
+     * @param args
+     *            programm arguments
      */
     public static void main(final String[] args) {
         if (args.length != 0) {
@@ -21,8 +24,12 @@ public final class ShellMain {
             for (i = 0; i <= args.length; i++) {
                 if (i == args.length || args[i].equals(";")) {
                     try {
-                        Command cmd = Command.create(Arrays.copyOfRange(args, j, i));
+                        Command cmd = Command.create(Arrays.copyOfRange(args,
+                                j, i));
                         cmd.run();
+                    } catch (IOException e) {
+                        System.err.println(e.getMessage());
+                        System.exit(0);
                     } catch (Exception e) {
                         System.err.println(e.getMessage());
                         System.exit(1);
@@ -45,7 +52,7 @@ public final class ShellMain {
                     } catch (IOException e) {
                         System.err.println(e.getMessage());
                         sc.close();
-                        System.exit(1);
+                        System.exit(0);
                     } catch (Exception e) {
                         System.err.println(e.getMessage());
                     }

@@ -1,18 +1,22 @@
+package shell_util;
+
 import java.io.File;
 
 /**
-*.
-*/
+ * .
+ */
 public class MkdirCommand extends Command {
     /**
-    * @param cmd params
-    */
+     * @param cmd
+     *            params
+     */
     MkdirCommand(final String[] cmd) {
         super(cmd);
     }
+
     /**
-    *.
-    */
+     * .
+     */
     public final void run() {
         if (args.length < 2) {
             System.out.println("missing operand");
@@ -24,7 +28,8 @@ public class MkdirCommand extends Command {
             try {
                 folder.mkdir();
             } catch (SecurityException e) {
-                System.out.println("cannot create directory : Permission denied");
+                System.out
+                        .println("cannot create directory : Permission denied");
             }
         } else {
             System.out.println("cannot create directory : File exists");
