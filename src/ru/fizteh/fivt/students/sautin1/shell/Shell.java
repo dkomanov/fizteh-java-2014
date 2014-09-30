@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.sautin1.shell;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -40,19 +41,19 @@ public class Shell {
      * @param commandWithParams - Array of command parameters. Zero-element is a command.
      * @return true, if the command is "exit"; false, otherwise.
      */
-    public boolean executeCommand(String... commandWithParams) throws IllegalArgumentException {
-        System.out.println("Trying to exec \'" + commandWithParams[0] + "\'");
+    public boolean executeCommand(String... commandWithParams) throws NullPointerException {
+        /**/System.out.println("Trying to exec \'" + commandWithParams[0] + "\'");
         Command command = commandsMap.get(commandWithParams[0]);
         if (command == null) {
-            throw new IllegalArgumentException(commandWithParams[0] + ": command not found");
+            throw new NullPointerException(commandWithParams[0] + ": command not found");
         }
         if (command instanceof CommandExit) {
             return true;
         }
         try {
             command.execute(commandWithParams);
-        } catch (IllegalArgumentException e) {
-
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
         return false;
     }
@@ -69,9 +70,8 @@ public class Shell {
             boolean wantsExit = false;
             try {
                 wantsExit = executeCommand(params);
-            } catch (IllegalArgumentException e) {
+            } catch (NullPointerException e) {
                 System.err.println(e.getMessage());
-                System.out.println(e.getMessage());
                 return false;
             } finally {
                 if (wantsExit) {
