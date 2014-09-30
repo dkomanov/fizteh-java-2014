@@ -62,10 +62,9 @@ class FileMap {
     }
 
     void exit() throws IOException {
-        rewriteFile(file);
         System.exit(1);
     }
-    void put(final String key, final String value) {
+    void put(final String key, final String value) throws IOException {
         if (map.containsKey(key)) {
             System.out.println("overwrite");
             System.out.println(map.get(key));
@@ -73,6 +72,11 @@ class FileMap {
             System.out.println("new");
         }
         map.put(key, value);
+        try {
+            rewriteFile(file);
+        } catch (IOException e) {
+            throw new IOException("Counldn't rewrite the file");
+        }
     }
     void get(String key) {
         if (map.containsKey(key)) {
@@ -82,13 +86,18 @@ class FileMap {
             System.out.println("not found");
         }
     }
-    void remove(String key) {
+    void remove(String key) throws IOException {
         if (!map.containsKey(key)) {
             System.out.println("not found");
         } else {
             System.out.println(map.get(key));
             map.remove(key);
             System.out.println("removed");
+            try {
+                rewriteFile(file);
+            } catch (IOException e) {
+                throw new IOException("Counldn't rewrite the file");
+            }
         }
     }
     void list() {
@@ -117,11 +126,6 @@ class FileMap {
             printStream.println("Wrong command format: to few arguments\n");
         } catch (IOException e) {
             printStream.println(e.getMessage());
-            try {
-                rewriteFile(file);
-            } catch (IOException e1) {
-                printStream.println("Couldn't even rewrite the file");
-            }
             System.exit(0);
         }
     }
