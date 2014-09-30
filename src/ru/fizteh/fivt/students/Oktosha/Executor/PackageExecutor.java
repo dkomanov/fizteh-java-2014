@@ -1,0 +1,29 @@
+package ru.fizteh.fivt.students.Oktosha.Executor;
+
+import ru.fizteh.fivt.students.Oktosha.Command.Command;
+import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ConsoleUtility;
+import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ConsoleUtilityException;
+
+/**
+ * Class which runs console utility in package mode
+ */
+public class PackageExecutor extends Executor {
+    public static void execute(ConsoleUtility utility, String[] args) {
+        String commandsString = "";
+        for (String str : args) {
+            commandsString.concat(" " + str);
+        }
+        try {
+            Command[] commands = parse(commandsString);
+            for (Command cmd : commands) {
+                utility.run(cmd);
+            }
+        } catch (ExecutorParseException e) {
+            System.err.println("invalid syntax: empty command between two semicolons");
+            System.exit(Executor.SYNTAX_ERROR);
+        } catch (ConsoleUtilityException e) {
+            System.err.println(e.getMessage());
+            System.exit(Executor.SYNTAX_ERROR);
+        }
+    }
+}

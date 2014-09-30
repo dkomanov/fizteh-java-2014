@@ -5,7 +5,7 @@ package ru.fizteh.fivt.students.Oktosha.ConsoleUtility;
  * given to command of ConsoleUtility.
  */
 public class ArgumentSyntaxException extends ConsoleUtilityException {
-    ArgumentSyntaxException(String s) {
+    public ArgumentSyntaxException(String s) {
         super(s);
     }
 }
