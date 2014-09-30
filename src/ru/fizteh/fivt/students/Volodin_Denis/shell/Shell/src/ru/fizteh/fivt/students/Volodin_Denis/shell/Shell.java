@@ -199,7 +199,7 @@ public class Shell {
             try {
                 Path pathToFile = Paths.get(args[1]).normalize();
                 
-                if (!pathToFile.isAbsolute()) {				
+                if (!pathToFile.isAbsolute()) {
                     pathToFile = Paths.get(System.getProperty("user.dir"),
                                            args[1]).normalize();
                 }
