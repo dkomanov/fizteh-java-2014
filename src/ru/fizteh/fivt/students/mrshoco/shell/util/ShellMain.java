@@ -1,4 +1,4 @@
-package shell_util;
+package util;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -26,7 +26,8 @@ public final class ShellMain {
      */
     public static void main(final String[] args) {
         if (args.length != 0) {
-            int i = 0, j = 0;
+            int i = 0;
+            int j = 0;
             for (i = 0; i <= args.length; i++) {
                 if (i == args.length || args[i].equals(";")) {
                     try {

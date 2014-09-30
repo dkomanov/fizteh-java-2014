@@ -1,4 +1,4 @@
-package shell_util;
+package util;
 
 import java.io.File;
 
@@ -18,7 +18,7 @@ public class RmCommand extends Command {
      * .
      */
     public final void run() throws Exception {
-        if (args.length < 2 || (args[1] == "-r" && args.length < 3)) {
+        if (args.length < 2 || (args[1].equals("-r") && args.length < 3)) {
             throw new Exception("rm: missing operand");
         }
         File file;

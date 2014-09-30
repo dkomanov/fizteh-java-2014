@@ -1,4 +1,4 @@
-package shell_util;
+package util;
 
 import java.io.File;
 import java.io.InputStream;
@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 public class CpCommand extends Command {
     /**
      * {@inheritDoc}
+     *
      * @see Command#CpCommand(String[])
      */
     CpCommand(final String[] cmd) {
@@ -16,14 +17,14 @@ public class CpCommand extends Command {
     }
 
     /**
-     * {@inheritDoc}
      * @see Command#run()
      */
     public final void run() throws Exception {
-        if (args.length < 3 || (args[1] == "-r" && args.length < 4)) {
+        if (args.length < 3 || (args[1].equals("-r") && args.length < 4)) {
             throw new Exception("cp: missing file operand");
         }
-        File src, dest;
+        File src;
+        File dest;
 
         if (args[1].equals("-r")) {
             src = new File(System.getProperty("user.dir"), args[2]);

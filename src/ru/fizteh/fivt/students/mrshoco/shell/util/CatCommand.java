@@ -1,4 +1,4 @@
-package shell_util;
+package util;
 
 import java.io.File;
 import java.util.Scanner;
