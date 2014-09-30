@@ -230,10 +230,10 @@ public class Shell {
         }
         
         if (args.length == 3) {
-	    try {
-    	        Path pathToFile = Paths.get(args[1]).normalize();
-    	        if (!pathToFile.isAbsolute()) {
-    	            pathToFile = Paths.get(
+            try {
+                Path pathToFile = Paths.get(args[1]).normalize();
+                if (!pathToFile.isAbsolute()) {
+                    pathToFile = Paths.get(
                                            System.getProperty("user.dir").toString(),
                                            pathToFile.toString()).normalize();
     	        }
