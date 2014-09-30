@@ -14,7 +14,7 @@ public class FileMapCommandFabric implements CommandFabric {
 
     @Override
     public Command fromString(String s) throws UnknownCommandException {
-        final String[] argv = s.trim().split(" ");
+        final String[] argv = s.trim().split("\\s+");
 
         if ("put".equals(argv[0])) {
             return new Command() {
