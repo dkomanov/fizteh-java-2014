@@ -16,11 +16,10 @@ import java.nio.file.StandardCopyOption;
 public class Shell {
     Shell() {
     }
+    static final int SUCCESS = 0;
+    static final int ERROR = 1;
 	
-	static final int SUCCESS = 0;
-	static final int ERROR = 1;
-	
-	public static void main(final String[] args) {
+    public static void main(final String[] args) {
 		if (args.length == 0) {
 			//interactive mode
 			
