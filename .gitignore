@@ -19,7 +19,7 @@ jars
 
 .classpath
 .project
-workbench.xmi
+.xmi
 
 .settings
 /.checkstyle
