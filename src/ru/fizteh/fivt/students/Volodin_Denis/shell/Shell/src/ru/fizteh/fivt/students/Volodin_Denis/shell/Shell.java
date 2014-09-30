@@ -236,7 +236,7 @@ public class Shell {
                     pathToFile = Paths.get(
                                            System.getProperty("user.dir").toString(),
                                            pathToFile.toString()).normalize();
-    	        }
+                }
                 if (!pathToFile.toFile().exists()) {
                     shellNotExist("cp", args[1]);
                 }
@@ -413,102 +413,102 @@ public class Shell {
     }
     
     private static void shellLs(String[] args) throws Exception {
-		if (args.length != 1) {
-			shellWrongQuantity("ls");
-		}
-		
-		try {
-			String[] names = new File(System.getProperty("user.dir")).list();
-			if (names.length != 0) {
-				for (int i = 0; i < names.length; ++i) {
-					System.out.println(names[i]);
-				}
-			}
-		} catch (SecurityException secExcept) {
-			shellAccessProhibited("ls", args[1]);
-		}
-	}
-	
-	private static void shellExit(String[] args) throws Exception {
-		System.exit(SUCCESS);
-	}
-	
-	private static void shellCat(String[] args) throws Exception {
-		if (args.length != 2) {
-			shellWrongQuantity("cat");
-		}
-		if (args[1].isEmpty()) {
-			shellNoName("cat");
-		}
-		
-		try {
-			File fileForCat = Paths.get(System.getProperty("user.dir"),
-					                    args[1]).normalize().toFile();
-			System.out.println(fileForCat.toString());
-			if (!fileForCat.exists()) {
-				shellNotExist("cat", args[1]);
-			}
-			if (!fileForCat.isFile()) {
-				shellNotFile("cat", args[1]);
-			}
-			try {
-				Scanner scanner = new Scanner(fileForCat);
-				while (scanner.hasNext()) {
-					System.out.println(scanner.nextLine());
-				}
-				scanner.close();
-			} catch (IOException ioExcept) {
-				shellWrongInput("cat");
-			}
-		} catch (InvalidPathException invExcept) {
-			shellInvalidName("cat", args[1]);
-		} catch (SecurityException secExcept) {
-			shellSecurity("cat", args[1]);
-		}
-	}
-	
-	//
-	// basic functions
-	//
-	// end
-	//
-	
-	private static void shellParser(String[] buffer) throws Exception {
-		switch(buffer[0]) {
-			case "cd":
-				shellCd(buffer);
-				break;
-			case "mkdir":	
-				shellMkdir(buffer);
-				break;
-			case "pwd":
-				shellPwd(buffer);
-				break;
-			case "rm":
-				shellRm(buffer);
-				break;
-			case "cp":
-				shellCp(buffer);
-				break;
-			case "mv":
-				shellMv(buffer);
-				break;
-			case "ls":
-				shellLs(buffer);
-				break;
-			case "exit":
-				shellExit(buffer);
-				break;
-			case "cat":
-				shellCat(buffer);
-				break;
-			default:
-				System.err.println("Command does not exist: ["
-									+ buffer[0] + "]");
-		} 
-	}
+        if (args.length != 1) {
+            shellWrongQuantity("ls");
+        }
 
-	private static void shellAccessProhibited(
+        try {
+            String[] names = new File(System.getProperty("user.dir")).list();
+            if (names.length != 0) {
+                for (int i = 0; i < names.length; ++i) {
+                    System.out.println(names[i]);
+                }
+            }
+        } catch (SecurityException secExcept) {
+            shellAccessProhibited("ls", args[1]);
+        }
+    }
+    
+    private static void shellExit(String[] args) throws Exception {
+        System.exit(SUCCESS);
+    }
+    
+    private static void shellCat(String[] args) throws Exception {
+        if (args.length != 2) {
+           shellWrongQuantity("cat");
+        }
+        if (args[1].isEmpty()) {
+            shellNoName("cat");
+        }
+        
+        try {
+            File fileForCat = Paths.get(System.getProperty("user.dir"),
+                                        args[1]).normalize().toFile();
+            System.out.println(fileForCat.toString());
+            if (!fileForCat.exists()) {
+                shellNotExist("cat", args[1]);
+            }
+            if (!fileForCat.isFile()) {
+                shellNotFile("cat", args[1]);
+            }
+            try {
+                Scanner scanner = new Scanner(fileForCat);
+                while (scanner.hasNext()) {
+                    System.out.println(scanner.nextLine());
+                }
+                scanner.close();
+            } catch (IOException ioExcept) {
+                shellWrongInput("cat");
+            }
+        } catch (InvalidPathException invExcept) {
+            shellInvalidName("cat", args[1]);
+        } catch (SecurityException secExcept) {
+            shellSecurity("cat", args[1]);
+        }
+    }
+    
+    //
+    // basic functions
+    //
+    // end
+    //
+
+    private static void shellParser(String[] buffer) throws Exception {
+        switch(buffer[0]) {
+            case "cd":
+                shellCd(buffer);
+                break;
+            case "mkdir":	
+                shellMkdir(buffer);
+                break;
+            case "pwd":
+                shellPwd(buffer);
+                break;
+            case "rm":
+                shellRm(buffer);
+                break;
+            case "cp":
+                shellCp(buffer);
+                break;
+            case "mv":
+                shellMv(buffer);
+                break;
+            case "ls":
+                shellLs(buffer);
+                break;
+            case "exit":
+                shellExit(buffer);
+                break;
+            case "cat":
+                shellCat(buffer);
+                break;
+            default:
+                System.err.println("Command does not exist: ["
+                                   + buffer[0] + "]");
+        }
+    }
+    
+    private static void shellAccessProhibited(
 						final String commandName,
 						final String name) throws Exception {
 		throw new Exception(commandName
