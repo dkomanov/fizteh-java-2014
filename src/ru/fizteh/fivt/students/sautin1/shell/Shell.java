@@ -10,31 +10,41 @@ public class Shell {
     private final Map<String, Command> commandsMap = new HashMap<String, Command>();
 
     {
-        Command command = new CommandLs();
+        Command command;
+        command = new CommandCat();
+        commandsMap.put(command.toString(), command);
+        command = new CommandCd();
+        commandsMap.put(command.toString(), command);
+        command = new CommandCp();
         commandsMap.put(command.toString(), command);
         command = new CommandLs();
         commandsMap.put(command.toString(), command);
-        command = new CommandLs();
+        command = new CommandMkDir();
         commandsMap.put(command.toString(), command);
-        command = new CommandLs();
+        command = new CommandMv();
         commandsMap.put(command.toString(), command);
-        command = new CommandLs();
+        command = new CommandPwd();
         commandsMap.put(command.toString(), command);
-        command = new CommandLs();
+        command = new CommandRm();
         commandsMap.put(command.toString(), command);
-        command = new CommandLs();
-        commandsMap.put(command.toString(), command);
-        command = new CommandLs();
-        commandsMap.put(command.toString(), command);
-        command = new CommandLs();
-        commandsMap.put(command.toString(), command);
-    }
-
-    public void interactWithUser() {
-
     }
 
     public void executeCommand(String... commandWithParams) {
+        Command command = commandsMap.get(commandWithParams[0]);
+        if (command == null) {
+            throw new IllegalArgumentException(commandWithParams[0] + ": command not found");
+        }
+        if (command instanceof CommandExit) {
+            return;
+        }
+        try {
+            command.execute(commandWithParams);
+        } catch (IllegalArgumentException e) {
+
+        }
+    }
+
+    public void interactWithUser() {
 
     }
 }

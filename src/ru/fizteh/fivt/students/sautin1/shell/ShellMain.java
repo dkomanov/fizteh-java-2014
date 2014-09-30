@@ -38,10 +38,12 @@ public class ShellMain {
                 try {
                     shell.executeCommand(params);
                 } catch (IllegalArgumentException e) {
+                    System.err.println(e.getMessage());
                     System.out.println(e.getMessage());
                     System.exit(1);
                 }
             }
         }
     }
+
 }
