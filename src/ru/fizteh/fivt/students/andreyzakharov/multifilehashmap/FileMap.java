@@ -3,14 +3,9 @@ package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
-
-import static java.nio.file.FileVisitResult.CONTINUE;
 
 public class FileMap extends HashMap<String, String> {
     String tableName;
@@ -41,7 +36,8 @@ public class FileMap extends HashMap<String, String> {
     public void load() throws ConnectionInterruptException {
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
-                try (DataInputStream stream = new DataInputStream(Files.newInputStream(dbPath.resolve(i + ".dir/" + j + ".dat")))) {
+                try (DataInputStream stream = new DataInputStream(
+                        Files.newInputStream(dbPath.resolve(i + ".dir/" + j + ".dat")))) {
                     while (stream.available() > 0) {
                         readKeyValue(stream);
                     }
@@ -85,7 +81,8 @@ public class FileMap extends HashMap<String, String> {
                         Files.createDirectory(dbPath.resolve(d + ".dir/"));
                         dirUsed[d] = true;
                     }
-                    streams[d][f] = new DataOutputStream(Files.newOutputStream(dbPath.resolve(d + ".dir/" + f + ".dat")));
+                    streams[d][f] = new DataOutputStream(
+                            Files.newOutputStream(dbPath.resolve(d + ".dir/" + f + ".dat")));
                     fileUsed[d][f] = true;
                 }
                 writeKeyValue(streams[d][f], entry.getKey(), entry.getValue());
