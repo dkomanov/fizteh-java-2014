@@ -7,5 +7,5 @@ import ru.fizteh.fivt.students.Oktosha.Command.Command;
  * DbMain or whatever else ConsoleUtility run by Executor.
  */
 public interface ConsoleUtility {
-    void run(Command cmd) throws CommandDoesNotExist, ArgumentSyntaxException;
+    void run(Command cmd) throws CommandIsNotSupportedException, ArgumentSyntaxException;
 }

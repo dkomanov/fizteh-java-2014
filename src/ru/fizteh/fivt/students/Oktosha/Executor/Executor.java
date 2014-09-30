@@ -17,9 +17,7 @@ public abstract class Executor {
         String[] commandStrings = s.split(";");
         Command[] res = new Command[commandStrings.length];
         for (int i = 0; i < res.length; ++i) {
-            String[] split = commandStrings[i].split("\\s+");
-            res[i].name = split[0];
-            System.arraycopy(split, 1, res[i].args, 0, split.length - 1);
+            res[i] = new Command(commandStrings[i]);
         }
         return res;
     }

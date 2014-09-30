@@ -9,10 +9,12 @@ import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ConsoleUtilityException;
  */
 public class PackageExecutor extends Executor {
     public static void execute(ConsoleUtility utility, String[] args) {
-        String commandsString = "";
+        StringBuilder builder = new StringBuilder();
         for (String str : args) {
-            commandsString.concat(" " + str);
+            builder.append(" ");
+            builder.append(str);
         }
+        String commandsString = builder.toString();
         try {
             Command[] commands = parse(commandsString);
             for (Command cmd : commands) {

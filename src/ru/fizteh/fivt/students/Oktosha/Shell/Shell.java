@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.Oktosha.Shell;
 
 import ru.fizteh.fivt.students.Oktosha.Command.Command;
 import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ArgumentSyntaxException;
-import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.CommandDoesNotExist;
+import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.CommandIsNotSupportedException;
 import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ConsoleUtility;
 import ru.fizteh.fivt.students.Oktosha.Executor.InteractiveExecutor;
 import ru.fizteh.fivt.students.Oktosha.Executor.PackageExecutor;
@@ -17,8 +17,8 @@ public class Shell implements ConsoleUtility {
         }
     }
 
-    public void run(Command cmd) throws CommandDoesNotExist,
-            ArgumentSyntaxException {
+    public void run(Command cmd) throws CommandIsNotSupportedException,
+                                        ArgumentSyntaxException {
         switch (cmd.name) {
             case "exit":
                 exit(cmd.args);
@@ -26,11 +26,11 @@ public class Shell implements ConsoleUtility {
             case "":
                 break;
             default:
-                throw new CommandDoesNotExist(cmd.name + ": doesn't exist");
+                throw new CommandIsNotSupportedException(cmd.name + ": command isn't supported");
         }
     }
 
-    protected void exit(String[] args) throws ArgumentSyntaxException {
+    private void exit(String[] args) throws ArgumentSyntaxException {
         if (args.length != 0) {
             throw new ArgumentSyntaxException("exit: too many arguments");
         }
