@@ -71,9 +71,6 @@ public class DbConnector implements AutoCloseable {
     }
 
     public String run(String argString) throws CommandInterruptException, ConnectionInterruptException {
-        /*if (activeTable == null && !(command instanceof CommandOverTable)) {
-            throw new CommandInterruptException("no table");
-        }*/
         String[] args = argString.trim().split("\\s+");
         Command command = commands.get(args[0]);
         if (command != null) {
