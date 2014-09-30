@@ -6,19 +6,18 @@ import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-/**
- * .
- */
 public class CpCommand extends Command {
     /**
-     * @param cmd
+     * {@inheritDoc}
+     * @see Command#CpCommand(String[])
      */
     CpCommand(final String[] cmd) {
         super(cmd);
     }
 
     /**
-     * .
+     * {@inheritDoc}
+     * @see Command#run()
      */
     public final void run() throws Exception {
         if (args.length < 3 || (args[1] == "-r" && args.length < 4)) {

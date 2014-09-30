@@ -14,8 +14,9 @@ public abstract class Command {
     protected String[] args;
 
     /**
+     *
+     *
      * @param cmd
-     *            params
      */
     Command(final String[] cmd) {
         name = cmd[0];
@@ -23,7 +24,12 @@ public abstract class Command {
     }
 
     /**
-     * Create Command.
+     *
+     *
+     * @param cmd
+     * @return
+     *
+     * @throws Exception
      */
     public static Command create(final String[] cmd) throws Exception {
         switch (cmd[0]) {
@@ -51,7 +57,10 @@ public abstract class Command {
     }
 
     /**
-     * Run.
+     *
+     *
+     *
+     * @throws Exception
      */
     public abstract void run() throws Exception;
 }

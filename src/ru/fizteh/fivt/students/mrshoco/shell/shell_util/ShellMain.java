@@ -5,18 +5,22 @@ import java.util.Scanner;
 import java.io.IOException;
 
 /**
- * class ShellMain.
+ *
+ *
+ * @author
  */
 public final class ShellMain {
     /**
-     * Constructor.
+     * {@inheritDoc}
+     * @see Object#ShellMain()
      */
     private ShellMain() {
     }
 
     /**
+     *
+     *
      * @param args
-     *            programm arguments
      */
     public static void main(final String[] args) {
         if (args.length != 0) {
