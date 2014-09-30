@@ -14,16 +14,16 @@ public class FileMapCommandFabric implements CommandFabric {
 
     @Override
     public Command fromString(String s) throws UnknownCommandException {
-        final String[] tokens = s.trim().split(" ");
+        final String[] argv = s.trim().split(" ");
 
-        if ("put".equals(tokens[0])) {
+        if ("put".equals(argv[0])) {
             return new Command() {
                 @Override
                 public void execute() throws CommandExecutionException, StopProcessingException {
-                    if (tokens.length != 3) {
-                        throw new CommandExecutionException("Unexpected number of arguments");
+                    if (argv.length != 3) {
+                        throw new CommandExecutionException(this, "Unexpected number of arguments");
                     }
-                    String old = db.map.put(tokens[1], tokens[2]);
+                    String old = db.map.put(argv[1], argv[2]);
                     if (null == old) {
                         System.out.println("new");
                     } else {
@@ -31,57 +31,85 @@ public class FileMapCommandFabric implements CommandFabric {
                         System.out.println(old);
                     }
                 }
+
+                @Override
+                public String name() {
+                    return "put";
+                }
             };
         }
 
-        if ("get".equals(tokens[0])) {
+        if ("get".equals(argv[0])) {
             return new Command() {
                 @Override
                 public void execute() throws CommandExecutionException, StopProcessingException {
-                    if (tokens.length != 2) {
-                        throw new CommandExecutionException("Unexpected number of arguments");
+                    if (argv.length != 2) {
+                        throw new CommandExecutionException(this, "Unexpected number of arguments");
                     }
-                    String value = db.map.get(tokens[1]);
+                    String value = db.map.get(argv[1]);
                     System.out.println(value == null ? "not found" : value);
                 }
-            };
-        }
 
-        if ("remove".equals(tokens[0])) {
-            return new Command() {
                 @Override
-                public void execute() throws CommandExecutionException, StopProcessingException {
-                    if (tokens.length != 2) {
-                        throw new CommandExecutionException("Unexpected number of arguments");
-                    }
-                    System.out.println(db.map.remove(tokens[1]) == null ? "not found" : "removed");
+                public String name() {
+                    return "get";
                 }
             };
         }
 
-        if ("list".equals(tokens[0])) {
+        if ("remove".equals(argv[0])) {
             return new Command() {
                 @Override
                 public void execute() throws CommandExecutionException, StopProcessingException {
-                    if (tokens.length != 1) {
-                        throw new CommandExecutionException("Unexpected number of arguments");
+                    if (argv.length != 2) {
+                        throw new CommandExecutionException(this, "Unexpected number of arguments");
+                    }
+                    System.out.println(db.map.remove(argv[1]) == null ? "not found" : "removed");
+                }
+
+                @Override
+                public String name() {
+                    return "remove";
+                }
+            };
+        }
+
+        if ("list".equals(argv[0])) {
+            return new Command() {
+                @Override
+                public void execute() throws CommandExecutionException, StopProcessingException {
+                    if (argv.length != 1) {
+                        throw new CommandExecutionException(this, "Unexpected number of arguments");
                     }
                     for (String k : db.map.keySet()) {
                         System.out.println(k);
                     }
                 }
-            };
-        }
 
-        if ("exit".equals(tokens[0])) {
-            return new Command() {
                 @Override
-                public void execute() throws CommandExecutionException, StopProcessingException {
-                    throw new StopProcessingException();
+                public String name() {
+                    return "list";
                 }
             };
         }
 
-        throw new UnknownCommandException(tokens[0]);
+        if ("exit".equals(argv[0])) {
+            return new Command() {
+                @Override
+                public void execute() throws CommandExecutionException, StopProcessingException {
+                    if (argv.length != 1) {
+                        throw new CommandExecutionException(this, "Unexpected number of arguments");
+                    }
+                    throw new StopProcessingException();
+                }
+
+                @Override
+                public String name() {
+                    return "exit";
+                }
+            };
+        }
+
+        throw new UnknownCommandException(argv[0]);
     }
 }

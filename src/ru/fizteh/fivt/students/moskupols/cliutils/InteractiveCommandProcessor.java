@@ -17,6 +17,7 @@ public class InteractiveCommandProcessor implements CommandProcessor {
         Scanner scanner = new Scanner(System.in);
         boolean exited = false;
         do {
+            System.err.flush();
             System.out.print(prompt);
             if (!scanner.hasNextLine()) {
                 break;
