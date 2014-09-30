@@ -18,32 +18,30 @@ public class Shell {
     }
     static final int SUCCESS = 0;
     static final int ERROR = 1;
-	
+    
     public static void main(final String[] args) {
-		if (args.length == 0) {
-			//interactive mode
-			
-			Scanner scanner = new Scanner(System.in);
-			
-			do {			
-				try {
-					System.out.print("$ ");
-					String[] shellIn = scanner.nextLine().split(";");
-					for (int i = 0; i < shellIn.length; ++i) {
-						if (shellIn[i].length() > 0) {
-							String[] buffer = shellIn[i].trim().split("\\s+");
-							try {
-								shellParser(buffer);
-							} catch (Exception except) {
-								System.err.println("$ " + except.getMessage());
-							}
-						}
-					}
-				} catch (Exception except) {	
-					System.err.println("$ " + except.getMessage());
-				}
-			} while (true);
-		} else {
+        if (args.length == 0) {
+        //interactive mode
+            Scanner scanner = new Scanner(System.in);
+            do {			
+                try {
+                    System.out.print("$ ");
+                    String[] shellIn = scanner.nextLine().split(";");
+                    for (int i = 0; i < shellIn.length; ++i) {
+                        if (shellIn[i].length() > 0) {
+                    	    String[] buffer = shellIn[i].trim().split("\\s+");
+                            try {
+                                shellParser(buffer);
+                            } catch (Exception except) {
+                                System.err.println("$ " + except.getMessage());
+                            }
+                        }
+                    }
+                } catch (Exception except) {	
+                    System.err.println("$ " + except.getMessage());
+                }
+            } while (true);
+        } else {
 			try {
 				String[] shellIn = args.toString().split(";");
 				for (int i = 0; i < shellIn.length; ++i) {
