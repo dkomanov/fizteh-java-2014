@@ -283,7 +283,7 @@ public class Shell {
                     shellNotExist("cp", args[2]);
                 }
                 if (!pathToFile.toFile().isDirectory()) {
-        	    shellNotDirectory("cp", args[2]);
+                    shellNotDirectory("cp", args[2]);
                 }
                 Path pathToNewFile = Paths.get(args[3]).normalize();
                 if (!pathToNewFile.isAbsolute()) {
@@ -297,7 +297,7 @@ public class Shell {
                     shellEqualNames("cp");
                 }
                 if (pathToNewFile.toString().startsWith(pathToFile.toString())) {
-        	    shellIntoSelf("cp");
+                    shellIntoSelf("cp");
                 }
                 
                 pathToNewFile = Paths.get(pathToNewFile.toString(),
