@@ -12,63 +12,7 @@ public final class Shell {
     /**
      * In this class params to run command are stored.
      */
-    class Command {
-        /**
-         * Constructor
-         *
-         * @param cmdVal  will be assigned to cmd
-         * @param argsVal will be assigned to args
-         */
-        public Command(final String cmdVal, final String[] argsVal) {
-            cmd = cmdVal;
-            args = argsVal;
-        }
 
-        /**
-         * Cmd setter.
-         *
-         * @param str the value to set to cmd
-         */
-        public void setCmd(final String str) {
-            cmd = str;
-        }
-
-        /**
-         * Args setter.
-         *
-         * @param strArray the value to set to args
-         */
-        public void setArgs(final String[] strArray) {
-            args = strArray;
-        }
-
-        /**
-         * Cmd getter.
-         *
-         * @return actual value of cmd
-         */
-        public String getCmd() {
-            return cmd;
-        }
-
-        /**
-         * Args getter.
-         *
-         * @return actual value of args
-         */
-        public String[] getArgs() {
-            return args;
-        }
-
-        /**
-         * The name of command is stored in cmd.
-         */
-        private String cmd;
-        /**
-         * The arguments passed to command are stored in args.
-         */
-        private String[] args;
-    }
 
     /**
      * @param args command line arguments are treated as shell commands
