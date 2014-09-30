@@ -23,7 +23,7 @@ public class Shell {
         if (args.length == 0) {
         //interactive mode
             Scanner scanner = new Scanner(System.in);
-            do {			
+            do {
                 try {
                     System.out.print("$ ");
                     String[] shellIn = scanner.nextLine().split(";");
@@ -37,67 +37,66 @@ public class Shell {
                             }
                         }
                     }
-                } catch (Exception except) {	
+                } catch (Exception except) {
                     System.err.println("$ " + except.getMessage());
                 }
             } while (true);
         } else {
-			try {
-				String[] shellIn = args.toString().split(";");
-				for (int i = 0; i < shellIn.length; ++i) {
-					if (shellIn[i].length() > 0) {
-						String[] buffer = shellIn[i].trim().split("\\s+");
-						try {
-							shellParser(buffer);
-						} catch (Exception except) {
-							System.err.println("$ " + except.getMessage());
-						}
-					}
-				}
-			} catch (Exception except) {
-				System.err.println("$ " + except.getMessage());
-			}
-		}
+            try {
+                String[] shellIn = args.toString().split(";");
+                for (int i = 0; i < shellIn.length; ++i) {
+                    if (shellIn[i].length() > 0) {
+                        String[] buffer = shellIn[i].trim().split("\\s+");
+                        try {
+                            shellParser(buffer);
+                        } catch (Exception except) {
+                            System.err.println("$ " + except.getMessage());
+                        }
+                    }
+                }
+            } catch (Exception except) {
+                System.err.println("$ " + except.getMessage());
+            }
+        }
     }
-	
-	//
-	// basic functions
-	//
-	// begin
-	//
-	
-	private static void shellCd(final String[] args) throws Exception {
-		if (args.length != 2) {
-			shellWrongQuantity("cd");
-		}
-		if (args[1].isEmpty()) {
-			shellNoName("cd");
-		}
-		
-		try {
-			Path pathToFile = Paths.get(args[1]).normalize();
-			if (!pathToFile.isAbsolute()) {
-				pathToFile = Paths.get(System.getProperty("user.dir"),
-									   pathToFile.toString()).normalize();
-			}
-			
-			if (pathToFile.toFile().exists()) {
-				if (pathToFile.toFile().isDirectory()) {
-					System.setProperty("user.dir", pathToFile.toString());
-				} else {
-					shellNotDirectory("cd", args[1]);
-				}
-			} else {
-				shellNotExist("cd", args[1]);
-			}
-		} catch (InvalidPathException invExcept) {
-			shellInvalidName("cd", args[1]);
-		} catch (SecurityException secExcept) {
-			shellSecurity("cd", args[1]);
-		}
-	}
-	
-	private static void shellMkdir(final String[] args) throws Exception {
+
+    //
+    // basic functions
+    //
+    // begin
+    //
+    
+    private static void shellCd(final String[] args) throws Exception {
+        if (args.length != 2) {
+            shellWrongQuantity("cd");
+        }
+        if (args[1].isEmpty()) {
+            shellNoName("cd");
+        }
+        
+        try {
+            Path pathToFile = Paths.get(args[1]).normalize();
+            if (!pathToFile.isAbsolute()) {
+                pathToFile = Paths.get(System.getProperty("user.dir"),
+                             pathToFile.toString()).normalize();
+            }
+            if (pathToFile.toFile().exists()) {
+                if (pathToFile.toFile().isDirectory()) {
+                    System.setProperty("user.dir", pathToFile.toString());
+                } else {
+                    shellNotDirectory("cd", args[1]);
+                }
+            } else {
+                shellNotExist("cd", args[1]);
+            }
+        } catch (InvalidPathException invExcept) {
+            shellInvalidName("cd", args[1]);
+        } catch (SecurityException secExcept) {
+            shellSecurity("cd", args[1]);
+        }
+    }
+    
+    private static void shellMkdir(final String[] args) throws Exception {
 		if (args.length != 2) {
 			shellWrongQuantity("mkdir");
 		}
