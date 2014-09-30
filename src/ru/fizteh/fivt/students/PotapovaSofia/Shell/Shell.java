@@ -10,7 +10,7 @@ import java.io.OutputStream;
 
 public class Shell {
     private static String currentPath = "/";
-    private static File currentDir = new File(currentPath);                     
+    private static File currentDir = new File(currentPath);                          
 
     public static String pathSplit(String path) {
         String []splitted = path.split("/");
@@ -109,19 +109,11 @@ public class Shell {
         }
         for (File f : files) {
             if (f.isDirectory()) {
-            	if (f.listFiles() == null) {
-            		throw new Exception("rm: No such file or directory\n");
-            	}
-                if (f.listFiles().length == 0) {
-                    if (!f.delete()) {
-                        return false;
-                    }
-                } else {
+                if (f.listFiles().length != 0) {
                     if (!recRm(f)) {
                         return false;
                     }
                 }
-
             } else {
                 if (!f.delete()) {
                     return false;
@@ -387,3 +379,9 @@ public class Shell {
         }
     }
 }
+
+
+
+
+
+
