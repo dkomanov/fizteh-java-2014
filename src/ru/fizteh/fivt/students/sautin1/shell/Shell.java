@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.sautin1.shell;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -12,7 +11,7 @@ import static ru.fizteh.fivt.students.sautin1.shell.CommandParser.splitStringInt
  * Created by sautin1 on 9/30/14.
  */
 public class Shell {
-    private final Map<String, Command> commandsMap = new HashMap<String, Command>();
+    private final Map<String, Command> commandsMap = new HashMap<>();
 
     {
         Command command;
@@ -65,9 +64,9 @@ public class Shell {
      */
     public boolean callCommands(String newCommand) {
         String[] commandArray = splitStringIntoCommands(newCommand);
+        boolean wantsExit = false;
         for (String command : commandArray) {
             String[] params = splitCommandIntoParams(command);
-            boolean wantsExit = false;
             try {
                 wantsExit = executeCommand(params);
             } catch (NullPointerException e) {
@@ -75,11 +74,11 @@ public class Shell {
                 return false;
             } finally {
                 if (wantsExit) {
-                    return true;
+                    break;
                 }
             }
         }
-        return false;
+        return wantsExit;
     }
 
     /**
@@ -87,7 +86,7 @@ public class Shell {
      */
     public void interactWithUser() {
         Scanner scanner = new Scanner(System.in);
-        boolean wantExit = false;
+        boolean wantExit;
         while (true) {
             System.out.print("$ ");
             String newCommand = scanner.nextLine();
