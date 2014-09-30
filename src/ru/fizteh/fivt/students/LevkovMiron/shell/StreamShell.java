@@ -5,10 +5,7 @@ import java.util.Scanner;
 /**
  * Created by Мирон on 22.09.2014 ru.fizteh.fivt.students.LevkovMiron.shell.
  */
-class StreamFileMap extends FileMap {
-    StreamFileMap() {
-        super(System.out);
-    }
+class StreamShell extends Shell {
     public void readCommands() {
         System.out.println("$");
         Scanner scanner = new Scanner(System.in);
