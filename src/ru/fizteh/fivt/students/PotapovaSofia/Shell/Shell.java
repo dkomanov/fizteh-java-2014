@@ -10,7 +10,7 @@ import java.io.OutputStream;
 
 public class Shell {
     private static String currentPath = "/";
-    private static File currentDir = new File(currentPath);                          
+    private static File currentDir = new File(currentPath);                                  //is not used
 
     public static String pathSplit(String path) {
         String []splitted = path.split("/");
@@ -365,6 +365,7 @@ public class Shell {
         for (String cmd : cmds) {
             try {
                 parseIMode(cmd);
+                //commandParse(cmds, cmds.length);
             } catch (Exception e) {
                 System.err.println(e.getMessage());
                 System.exit(1);
