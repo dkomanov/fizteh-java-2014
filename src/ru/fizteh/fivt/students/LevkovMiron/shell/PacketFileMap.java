@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.LevkovMiron.shell;
 /**
  * Created by Мирон on 22.09.2014 ru.fizteh.fivt.students.LevkovMiron.shell.
  */
+
 class PacketFileMap extends FileMap {
     PacketFileMap() {
         super(System.err);
