@@ -262,7 +262,7 @@ public class Shell {
                 Files.copy(pathToFile, pathToNewFile,
                            StandardCopyOption.COPY_ATTRIBUTES,
                            StandardCopyOption.REPLACE_EXISTING);
-	    } catch (InvalidPathException invExcept) {
+            } catch (InvalidPathException invExcept) {
                 shellInvalidName("cp", args[1]);
             } catch (SecurityException secExcept) {
                 shellSecurity("cp", args[1]);
@@ -503,98 +503,91 @@ public class Shell {
                 shellCat(buffer);
                 break;
             default:
-                System.err.println("Command does not exist: ["
-                                   + buffer[0] + "]");
+                System.err.println("Command does not exist: [" + buffer[0] + "]");
         }
     }
     
-    private static void shellAccessProhibited(
-						final String commandName,
-						final String name) throws Exception {
-		throw new Exception(commandName
-				+ ":  access to list of [" + name + "] is phohibited.");
-	}
-	
-	private static void shellAlreadyExist(
-						final String commandName,
-						final String name) throws Exception {
-		throw new Exception(commandName
-				+ ": the file [" + name + "] already exists.");
-	}
+    private static void shellAccessProhibited(final String commandName,
+                                              final String name) throws Exception {
+        throw new Exception(commandName
+                            + ":  access to list of [" + name + "] is phohibited.");
+    }
+    
+    private static void shellAlreadyExist(final String commandName,
+                                          final String name) throws Exception {
+        throw new Exception(commandName
+                            + ": the file [" + name + "] already exists.");
+    }
 
-	private static void shellEqualNames(
-						final String commandName) throws Exception {
-		throw new Exception(commandName + ": files are same.");
-	}
-	
-	private static void shellIntoSelf(
-						final String commandName) throws Exception {
-		throw new Exception(commandName + ": copy into self.");
-	}
-	
-	private static void shellInvalidName(
-						final String commandName, 
-						final String name) throws Exception {
-		throw new Exception(commandName + ": [" + name + "] is invalid name.");
-	}
+    private static void shellEqualNames(final String commandName) throws Exception {
+        throw new Exception(commandName
+                            + ": files are same.");
+    }
+    
+    private static void shellIntoSelf(final String commandName) throws Exception {
+        throw new Exception(commandName
+                            + ": copy into self.");
+    }
+    
+    private static void shellInvalidName(final String commandName, 
+                                         final String name) throws Exception {
+        throw new Exception(commandName
+                            + ": [" + name + "] is invalid name.");
+    }
 
-	private static void shellNotDirectory(
-						final String commandName, 
-						final String name) throws Exception {
-		throw new Exception(commandName
-				+ ": [" + name + "] is not a directory.");
-	}
-	
-	private static void shellNotFile(
-						final String commandName, 
-						final String name) throws Exception {
-		throw new Exception(commandName + ": [" + name + "] is not a file.");
-	}
-		
-	private static void shellNotExist(
-						final String commandName,
-						final String name) throws Exception {
-		throw new Exception(commandName
-				+ ": the file [" + name + "] is not exists.");
-	}
+    private static void shellNotDirectory(final String commandName, 
+                                          final String name) throws Exception {
+        throw new Exception(commandName
+                            + ": [" + name + "] is not a directory.");
+    }
+    
+    private static void shellNotFile(final String commandName, 
+                                     final String name) throws Exception {
+        throw new Exception(commandName
+                            + ": [" + name + "] is not a file.");
+    }
+    
+    private static void shellNotExist(final String commandName,
+                                      final String name) throws Exception {
+        throw new Exception(commandName
+                            + ": the file [" + name + "] is not exists.");
+    }
+    
+    private static void shellNotMkdir(final String commandName,
+                                      final String name) throws Exception {
+        throw new Exception(commandName
+                            + ": failed to create a directory [" + name + "].");
+    }
+    
+    private static void shellNoName(final String commandName) throws Exception {
+        throw new Exception(commandName
+                            + ": no file name.");
+    }
+    
+    private static void shellSecurity(final String commandName,
+                                      final String name) throws Exception {
+        throw new Exception(commandName
+                            + ": access to the [" + name + "] is prohibeted.");
+    }
+    
+    private static void shellSmthWrong(final String commandName) throws Exception {
+        throw new Exception(commandName
+                            + ": something went wrong.");
+    }
 
-	private static void shellNotMkdir(
-						final String commandName,
-						final String name) throws Exception {
-		throw new Exception(commandName
-				+ ": failed to create a directory [" + name + "].");
-	}
-	
-	private static void shellNoName(
-						final String commandName) throws Exception {
-		throw new Exception(commandName + ": no file name.");
-	}
-	
-	private static void shellSecurity(
-						final String commandName,
-						final String name) throws Exception {
-		throw new Exception(commandName
-				+ ": access to the [" + name + "] is prohibeted.");
-	}
-	
-	private static void shellSmthWrong(
-						final String commandName) throws Exception {
-		throw new Exception(commandName + ": something went wrong.");
-	}
-	
-	private static void shellWrongInput(
-						final String commandName) throws Exception {
-		throw new Exception(commandName + ": wrong input.");
-	}
-	
-	private static void shellWrongKey(
-						final String commandName, 
-						final String key) throws Exception {
-		throw new Exception(commandName + ": key is wrong. Use [" + key + "].");
-	}
-	
-	private static void shellWrongQuantity(
-						final String commandName) throws Exception {
-		throw new Exception(commandName + ": wrong quantity of arguments.");
-	}
+    private static void shellWrongInput(final String commandName) throws Exception {
+        throw new Exception(commandName
+                            + ": wrong input.");
+    }
+    
+    private static void shellWrongKey(final String commandName, 
+                                      final String key) throws Exception {
+        throw new Exception(commandName
+                            + ": key is wrong. Use [" + key + "].");
+    }
+    
+    private static void shellWrongQuantity(final String commandName) throws Exception {
+        throw new Exception(commandName
+                            + ": wrong quantity of arguments.");
+    }
 }
