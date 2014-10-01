@@ -9,17 +9,14 @@ public class CommandRm extends Command {
 
     public CommandRm() {
         minArgNumber = 1;
+        commandName = "rm";
     }
 
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
-        if (!enoughArguments()) {
+        if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }
     }
 
-    @Override
-    public String toString() {
-        return "rm";
-    }
 }

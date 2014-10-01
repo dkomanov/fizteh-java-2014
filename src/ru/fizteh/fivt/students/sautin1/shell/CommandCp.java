@@ -9,17 +9,14 @@ public class CommandCp extends Command {
 
     public CommandCp() {
         minArgNumber = 2;
+        commandName = "cp";
     }
 
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
-        if (!enoughArguments()) {
+        if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }
     }
 
-    @Override
-    public String toString() {
-        return "cp";
-    }
 }

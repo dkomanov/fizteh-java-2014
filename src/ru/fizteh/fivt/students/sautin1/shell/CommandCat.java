@@ -9,17 +9,14 @@ public class CommandCat extends Command {
 
     public CommandCat() {
         minArgNumber = 1;
+        commandName = "cat";
     }
 
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
-        if (!enoughArguments()) {
+        if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }
     }
 
-    @Override
-    public String toString() {
-        return "cat";
-    }
 }

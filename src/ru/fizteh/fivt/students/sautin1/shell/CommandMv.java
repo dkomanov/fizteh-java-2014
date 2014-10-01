@@ -9,17 +9,14 @@ public class CommandMv extends Command {
 
     public CommandMv() {
         minArgNumber = 2;
+        commandName = "mv";
     }
 
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
-        if (!enoughArguments()) {
+        if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }
     }
 
-    @Override
-    public String toString() {
-        return "mv";
-    }
 }

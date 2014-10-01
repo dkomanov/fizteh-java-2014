@@ -10,9 +10,14 @@ import java.nio.file.Paths;
 public abstract class Command {
     protected static Path presentWorkingDirectory = Paths.get("").toAbsolutePath().normalize();
     protected int minArgNumber;
+    protected String commandName;
 
     public abstract void execute(String... args) throws RuntimeException, IOException;
-    public abstract String toString();
+
+    @Override
+    public String toString() {
+        return commandName;
+    }
 
     public boolean enoughArguments(String... args)
     {

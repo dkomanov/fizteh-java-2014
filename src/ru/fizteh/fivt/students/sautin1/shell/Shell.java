@@ -15,8 +15,8 @@ public class Shell {
 
     {
         Command command;
-        command = new CommandCat();
-        commandsMap.put(command.toString(), command);
+        /*command = new CommandCat();
+        commandsMap.put(command.toString(), command);*/
         command = new CommandCd();
         commandsMap.put(command.toString(), command);
         /*command = new CommandCp();
@@ -30,9 +30,9 @@ public class Shell {
         command = new CommandPwd();
         commandsMap.put(command.toString(), command);
         command = new CommandRm();
-        commandsMap.put(command.toString(), command);
-        command = new CommandExit();
         commandsMap.put(command.toString(), command);*/
+        command = new CommandExit();
+        commandsMap.put(command.toString(), command);
     }
 
     /**

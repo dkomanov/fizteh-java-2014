@@ -13,11 +13,12 @@ public class CommandCd extends Command {
 
     public CommandCd() {
         minArgNumber = 1;
+        commandName = "cd";
     }
 
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
-        if (!enoughArguments()) {
+        if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }
 
@@ -37,8 +38,4 @@ public class CommandCd extends Command {
         }
     }
 
-    @Override
-    public String toString() {
-        return "cd";
-    }
 }
