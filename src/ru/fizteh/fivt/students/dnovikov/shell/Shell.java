@@ -207,8 +207,9 @@ public class Shell {
             dis = new DataInputStream(bis);
 
             while (dis.available() != 0) {
-                System.out.println(dis.readLine());
+                System.out.print((char) dis.read());
             }
+            System.out.println();
         } catch (FileNotFoundException e) {
             throw new Exception("cat: '" + fileName + "': no such file");
         } finally {
