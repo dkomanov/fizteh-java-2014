@@ -61,6 +61,7 @@ public class Parser {
                         continue;
                     }
                 } catch (Exception e) {
+                    ;// nothing to do
                 }
                 quoted = !quoted;
                 continue;

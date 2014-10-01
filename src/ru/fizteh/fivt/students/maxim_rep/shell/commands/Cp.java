@@ -114,6 +114,7 @@ public class Cp implements ShellCommand {
         if (fileNew.exists()) {
             if (fileNew.isFile()) {
                 try {
+                    Files.delete(fileNew.toPath());
                     Files.copy(fileToCopy.toPath(), fileNew.toPath());
                 } catch (IOException e) {
                     System.out.println("cp: Error " + e.getMessage());
@@ -125,6 +126,7 @@ public class Cp implements ShellCommand {
                         + fileToCopy.getName());
             }
             try {
+                Files.delete(fileNew.toPath());
                 Files.copy(fileToCopy.toPath(), fileNew.toPath());
             } catch (IOException e) {
                 System.out.println("cp: Error " + e.getMessage());
