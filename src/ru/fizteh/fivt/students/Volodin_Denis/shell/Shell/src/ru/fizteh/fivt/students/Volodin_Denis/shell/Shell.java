@@ -260,6 +260,10 @@ public class Shell {
                 if (!pathToNewFile.getParent().toFile().exists()) {
                     shellNotExist("cp", pathToNewFile.getParent().toString());
                 }
+                if (pathToNewFile.toFile().isDirectory())
+                {
+                    pathToNewFile = Paths.get(pathToNewFile.toString(), pathToFile.getFileName().toString()).normalize();
+                }
                 if (pathToNewFile.toString().equals(pathToFile.toString())) {
                     shellEqualNames("cp");
                 }
@@ -301,7 +305,9 @@ public class Shell {
                 if (!pathToNewFile.toFile().isDirectory()) {
                     shellNotDirectory("cp", args[3]);
                 }
-                if (pathToNewFile.toString().equals(pathToFile.toString())) {
+                if (Paths.get(pathToNewFile.toString(),
+                              pathToFile.getFileName().toString()).
+                              normalize().toString().equals(pathToFile.toString())) {
                     shellEqualNames("cp");
                 }
                 if (pathToNewFile.toString().startsWith(pathToFile.toString())) {
