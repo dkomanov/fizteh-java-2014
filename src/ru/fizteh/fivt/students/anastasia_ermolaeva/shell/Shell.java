@@ -24,7 +24,7 @@ public final class Shell {
     }
     private static void commandHandler(
             final String command, final boolean mode) {
-        String[] arguments = command.split("\\s+");
+        String[] arguments = command.trim().split("\\s+");
         try {
             switch (arguments[0]) {
                 case "cd":
@@ -88,4 +88,3 @@ public final class Shell {
         }
     }
 }
-
