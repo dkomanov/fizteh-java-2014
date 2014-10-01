@@ -26,11 +26,11 @@ public class Shell {
         command = new CommandMkDir();
         commandsMap.put(command.toString(), command);/*
         command = new CommandMv();
-        commandsMap.put(command.toString(), command);
+        commandsMap.put(command.toString(), command);*/
         command = new CommandPwd();
         commandsMap.put(command.toString(), command);
         command = new CommandRm();
-        commandsMap.put(command.toString(), command);*/
+        commandsMap.put(command.toString(), command);
         command = new CommandExit();
         commandsMap.put(command.toString(), command);
     }
@@ -87,8 +87,7 @@ public class Shell {
         Scanner scanner = new Scanner(System.in);
         boolean wantExit;
         while (true) {
-            System.out.print(Command.presentWorkingDirectory.toString());
-            System.out.print("$ ");
+            System.out.print(Command.presentWorkingDirectory.toString() + "$ ");
             String newCommand = scanner.nextLine();
             if (newCommand.isEmpty()) {
                 continue;

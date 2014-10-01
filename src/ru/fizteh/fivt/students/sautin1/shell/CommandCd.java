@@ -31,8 +31,12 @@ public class CommandCd extends Command {
             if (!dirAbsolutePath.isAbsolute()) {
                 dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();
             }
-            if (Files.exists(dirAbsolutePath) && Files.isDirectory(dirAbsolutePath)) {
-                presentWorkingDirectory = dirAbsolutePath;
+            if (Files.exists(dirAbsolutePath)) {
+                if (Files.isDirectory(dirAbsolutePath)) {
+                    presentWorkingDirectory = dirAbsolutePath;
+                } else {
+                    throw new NoSuchFileException(toString() + ": " + dirName + ": Not a directory");
+                }
             } else {
                 throw new NoSuchFileException(toString() + ": \'" + dirName + "\': No such file or directory");
             }
