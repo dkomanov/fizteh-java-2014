@@ -228,7 +228,8 @@ public final class Commands {
     public static void cp(final String[] args) throws Exception {
         String command = "cp";
         boolean recursive;
-        String source, destination;
+        String source;
+        String destination;
         String [] idealCmd = {"cp", "-r", "source", "destination"};
         int suitAmount = idealCmd.length;
         if (args.length > suitAmount) {
@@ -306,7 +307,8 @@ public final class Commands {
 
     public static void mv(final String[] args) throws Exception {
         String command = "mv";
-        String source, destination;
+        String source;
+        String destination;
         String [] idealCmd = {"mv", "source", "destination"};
         int suitAmount = idealCmd.length;
         if (args.length > suitAmount) {
