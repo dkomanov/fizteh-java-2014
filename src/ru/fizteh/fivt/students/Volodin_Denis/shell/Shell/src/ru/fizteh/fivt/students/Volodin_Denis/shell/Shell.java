@@ -32,12 +32,13 @@ public class Shell {
                             try {
                                 shellParser(buffer);
                             } catch (Exception except) {
-                                System.err.println("$ " + except.getMessage());
+                                System.err.println(except.getMessage());
                             }
                         }
                     }
                 } catch (Exception except) {
-                    System.err.println("$ " + except.getMessage());
+                    System.err.println("\nSmth wrong."); //+ except.getMessage());
+                    System.exit(ERROR);
                 }
             } while (true);
         } else {
@@ -56,12 +57,13 @@ public class Shell {
                         try {
                             shellParser(buffer);
                         } catch (Exception except) {
-                            System.err.println("$ " + except.getMessage());
+                            System.err.println(except.getMessage());
                         }
                     }
                 }
             } catch (Exception except) {
-                System.err.println("$ " + except.getMessage());
+                System.err.println("\nSmth wrong."); //+ except.getMessage());
+                System.exit(ERROR);
             }
         }
     }
