@@ -221,20 +221,20 @@ public class Shell {
         return true;
     }
     
-    static boolean cat(String path) {
-		try {
-			File file = new File(currentDir.getPath() + File.separator + path); 
-			Scanner sc = new Scanner(file); 
-			
-			while (sc.hasNextLine()) {
-				System.out.println(sc.nextLine());
-		    }
-			sc.close();
-		} catch(Exception e) {
-			System.err.println("File \"" + path + "\" not found");
-	        return false;
-		}
-		return true;   	
+    static boolean cat(final String path) {
+        try {
+            File file = new File(currentDir.getPath() + File.separator + path);
+            Scanner sc = new Scanner(file);
+            
+            while (sc.hasNextLine()) {
+                System.out.println(sc.nextLine());
+            }
+            sc.close();
+        } catch (Exception e) {
+            System.err.println("File \"" + path + "\" not found");
+            return false;
+        }
+        return true;
     }
 
     static boolean executeCommand(String command) {
@@ -298,7 +298,7 @@ public class Shell {
                 System.err.println("Error: cat: wrong count of arguments");
                 return false;
             }
-        }else if (tokens[i].equals("mkdir")) {
+        } else if (tokens[i].equals("mkdir")) {
             if (tokens.length == i + 2) {
                 return mkdir(tokens[i + 1]);
             } else {
@@ -347,8 +347,7 @@ public class Shell {
         }
     }
 
-
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
         if (args.length == 0) {
             interactive();
