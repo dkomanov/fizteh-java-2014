@@ -22,7 +22,8 @@ public class Shell {
     public static void main(final String[] args) {
         if (args.length == 0) {     //interactive mode
             do {
-                try (Scanner scanner = new Scanner(System.in)) {
+                Scanner scanner = new Scanner(System.in);
+                try {
                     System.out.print("$ ");
                     String[] shellIn = scanner.nextLine().split(";");
                     for (int i = 0; i < shellIn.length; ++i) {
