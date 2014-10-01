@@ -42,7 +42,14 @@ public class Shell {
             } while (true);
         } else {
             try {
-                String[] shellIn = args.toString().split(";");
+                StringBuilder helpArray = new StringBuilder();
+                
+                for (int i = 0; i < args.length; ++i) {
+                    helpArray.append(args[i]).append(' ');
+                }
+                
+                String longStr = helpArray.toString();
+                String[] shellIn = longStr.split(";");
                 for (int i = 0; i < shellIn.length; ++i) {
                     if (shellIn[i].length() > 0) {
                         String[] buffer = shellIn[i].trim().split("\\s+");
