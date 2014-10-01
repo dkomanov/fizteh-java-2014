@@ -24,7 +24,6 @@ final class Shell {
      */
     private Shell() {
     }
-
     /**
      * main method.
      *
@@ -58,7 +57,6 @@ final class Shell {
             }
         }
     }
-
     /**
      * parses commands,given in array.
      *
@@ -75,7 +73,6 @@ final class Shell {
         String[] funcs = functions.split(";");
         return funcs;
     }
-
     /**
      * method,which runs all functions.
      *
@@ -83,37 +80,50 @@ final class Shell {
      */
     private static boolean run(String func) {
         func = func.trim();
-        if (Pattern.matches("cd .*", func)) {
-            String dir = func.substring(3);
+        if (Pattern.matches("cd\\s+.*", func)) {
+            String dir = func.substring(2);
+            dir = dir.trim();
             return cd(dir);
         } else if (func.equals("ls")) {
             return ls();
-        } else if (Pattern.matches("mkdir .*", func)) {
-            String dir = func.substring(6);
+        } else if (Pattern.matches("mkdir\\s+.*", func)) {
+            String dir = func.substring(5);
+            dir = dir.trim();
             return mkdir(dir);
         } else if (func.equals("pwd")) {
             return pwd();
-        } else if (Pattern.matches("cp .*", func) && !Pattern.matches("cp -r .*", func)) {
-            String args = func.substring(3);
-            String[] arrgs = args.split(" ");
+        } else if (Pattern.matches("cp\\s+.*", func) && !Pattern.matches("cp\\s+-r\\s+.*", func)) {
+            String args = func.substring(2);
+            args = args.trim();
+            String[] arrgs = args.split("\\s+");
             return copy(arrgs[0], arrgs[1]);
-        } else if (Pattern.matches("cp -r .*", func)) {
-            String args = func.substring(6);
-            String[] arrgs = args.split(" ");
+        } else if (Pattern.matches("cp\\s+-r\\s+.*", func)) {
+            String args = func.substring(2);
+            args = args.trim();
+            args = args.substring(2);
+            args = args.trim();
+            String[] arrgs = args.split("\\s+");
             return copyRecursive(arrgs[0], arrgs[1]);
-        } else if (Pattern.matches("rm .*", func) && !Pattern.matches("rm -r .*", func)) {
-            String arg = func.substring(3);
+        } else if (Pattern.matches("rm\\s+.*", func) && !Pattern.matches("rm\\s+-r\\s+.*", func)) {
+            String arg = func.substring(2);
+            arg = arg.trim();
             return remove(arg);
-        } else if (Pattern.matches("rm -r .*", func)) {
-            String arg = func.substring(6);
+        } else if (Pattern.matches("rm\\s+-r\\s+.*", func)) {
+            String arg = func.substring(2);
+            arg = arg.trim();
+            arg = arg.substring(2);
+            arg = arg.trim();
             return removeRecursive(arg);
-        } else if (Pattern.matches("cat .*", func)) {
-            String file = func.substring(4);
+        } else if (Pattern.matches("cat\\s+.*", func)) {
+            String file = func.substring(3);
+            file = file.trim();
             return cat(file);
-        } else if (Pattern.matches("mv .*", func)) {
-            String[] args = func.substring(3).split(" ");
+        } else if (Pattern.matches("mv\\s+.*", func)) {
+            String arg = func.substring(2);
+            arg = arg.trim();
+            String[] args = arg.split("\\s+");
             return move(args[0], args[1]);
-        } else if (Pattern.matches("exit", func)) {
+        } else if (func.equals("exit")) {
             System.exit(0);
         } else if (!func.equals("")) {
             System.err.println("I don't know this function");
@@ -121,10 +131,8 @@ final class Shell {
         }
         return FUNCTION_SUCCESS;
     }
-
     /**
      * copy for directory.
-     *
      * @param sourceDir -source directory.
      * @param destDir   - destination directory.
      */
@@ -149,7 +157,6 @@ final class Shell {
         }
         return FUNCTION_SUCCESS;
     }
-
     /**
      * move file or directory.
      *
@@ -216,7 +223,6 @@ final class Shell {
         }
         return FUNCTION_SUCCESS;
     }
-
     /**
      * print file content.
      *
@@ -243,7 +249,6 @@ final class Shell {
         }
         return FUNCTION_SUCCESS;
     }
-
     /**
      * remove for regular file.
      *
@@ -259,7 +264,6 @@ final class Shell {
         }
         return FUNCTION_SUCCESS;
     }
-
     /**
      * remove for directory.
      *
@@ -286,7 +290,6 @@ final class Shell {
         }
         return FUNCTION_SUCCESS;
     }
-
     /**
      * copy for regular file.
      *
@@ -313,7 +316,6 @@ final class Shell {
         }
         return FUNCTION_SUCCESS;
     }
-
     /**
      * print working directory.
      */
@@ -322,7 +324,6 @@ final class Shell {
         System.out.println(currentdir);
         return FUNCTION_SUCCESS;
     }
-
     /**
      * make directory.
      *
@@ -336,7 +337,6 @@ final class Shell {
         }
         return FUNCTION_SUCCESS;
     }
-
     /**
      * list contents of current directory.
      */
@@ -348,7 +348,6 @@ final class Shell {
         }
         return FUNCTION_SUCCESS;
     }
-
     /**
      * change directory.
      *
