@@ -34,14 +34,12 @@ public class Shell {
 				if (parsedCommand.length != 2) {
 					System.out.println("usage: mkdir directory ...");
 					throw new WrongCommand();
-				}
-				else {
+				} else {
 					File newDir = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
 					if (newDir.exists()) {
                        System.out.print("mkdir: " + parsedCommand[1] + ": File exists\n");
                        throw new WrongCommand();
-					}
-				 else if (!newDir.mkdirs()) {
+					} else if (!newDir.mkdirs()) {
 					 	System.out.println("mkdir: " 
 					 			+ newDir.getCanonicalPath() + ": can't create");
 					 	throw new WrongCommand();
@@ -52,8 +50,7 @@ public class Shell {
 				if (parsedCommand.length != 2) {
                      System.out.println("usage: cd ...");
                      throw new WrongCommand();
-				}
-				else {
+				} else {
 					File newCurrentDirectory = WorkingWithFile.ConcatPath(currentDirectory,
                             parsedCommand[1]).getCanonicalFile();
 					if (!newCurrentDirectory.exists()) {
@@ -73,8 +70,7 @@ public class Shell {
 				if (parsedCommand.length != 2) {
                     System.out.println("usage: rm ...");
                     throw new WrongCommand();
-                }
-				else {
+                } else {
 					File elementToDelete = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
 					if (elementToDelete.exists()) {
 						try {
@@ -94,15 +90,13 @@ public class Shell {
 				if (parsedCommand.length != 3) {
                     System.out.println("cp: need 2 parameters");
                     throw new WrongCommand();
-                } 
-				else {
+                } else {
 					File source = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
                     File destination = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[2]);
                     if (source.equals(destination)) {
                         System.out.println("cp: source and destination are equal");
                         throw new WrongCommand();
-                    } 
-                    else if (!source.exists()) {
+                    } else if (!source.exists()) {
                         System.out.println("cp: source not exists");
                         throw new WrongCommand();
                     } else if (!destination.exists()) {
@@ -110,7 +104,9 @@ public class Shell {
                     	throw new WrongCommand();
                     } else { 
                     	WorkingWithFile.copy(source, destination);
-                    	//Files.copy(source.toPath(), Paths.get(destination.toPath().toString() + File.separator + source.getName()), REPLACE_EXISTING);            
+                    	//Files.copy(source.toPath(),
+                    	// Paths.get(destination.toPath().toString()
+                    	// + File.separator + source.getName()), REPLACE_EXISTING);
                     }
 				}
 				break;
@@ -118,8 +114,7 @@ public class Shell {
 				if (parsedCommand.length != 3) {
                     System.out.println("mv: need 2 parameters");
                     throw new WrongCommand();
-				} 
-				else {
+				} else {
 					File source = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
                     File destination = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[2]);
                     if (source.exists()) {
@@ -142,8 +137,7 @@ public class Shell {
 				if (parsedCommand.length > 1) {
 					System.out.println("ls hasn't any parameters");
 					throw new WrongCommand();
-				}
-				else {
+				} else {
 					File[] listOfElements = currentDirectory.listFiles();
 			        if (listOfElements != null) {
 			            for (File i : listOfElements) {			               
@@ -156,8 +150,7 @@ public class Shell {
 				if (parsedCommand.length != 2) {
 					System.out.println("cat has 1 parametr");
 					throw new WrongCommand();
-				}
-				else {
+				} else {
 					File f = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
 					BufferedReader fin = new BufferedReader(new FileReader(f));
 					String line;
@@ -168,6 +161,9 @@ public class Shell {
 				break;
 			case "":
 				throw new WrongCommand();
+            default:
+                System.out.println("unknown command:" + parsedCommand[0]);
+                throw new WrongCommand();
 		}
 	}
 	
@@ -182,8 +178,7 @@ public class Shell {
 		
 			if (interactiveMode) {
 				shellInput = new InteractiveInput();
-			}
-			else {
+			} else {
 				shellInput = new PackageInput(args);
 			}
 			while (shellInput.isNext()) {
