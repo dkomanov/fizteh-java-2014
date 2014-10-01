@@ -260,16 +260,12 @@ public class Shell {
                 if (!pathToNewFile.getParent().toFile().exists()) {
                     shellNotExist("cp", pathToNewFile.getParent().toString());
                 }
-                if (pathToNewFile.toFile().isDirectory())
-                {
-                    pathToNewFile = Paths.get(pathToNewFile.toString(), pathToFile.getFileName().toString()).normalize();
-                }
-                if (pathToNewFile.toString().equals(pathToFile.toString())) {
-                    shellEqualNames("cp");
-                }
                 if (pathToNewFile.toFile().isDirectory()) {
                     pathToNewFile = Paths.get(pathToNewFile.toString(),
                                               pathToFile.getFileName().toString()).normalize();
+                }
+                if (pathToNewFile.toString().equals(pathToFile.toString())) {
+                    shellEqualNames("cp");
                 }
                 Files.copy(pathToFile, pathToNewFile,
                            StandardCopyOption.COPY_ATTRIBUTES,
