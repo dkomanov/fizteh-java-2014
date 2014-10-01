@@ -19,8 +19,8 @@ public class Shell {
         commandsMap.put(command.toString(), command);
         command = new CommandCd();
         commandsMap.put(command.toString(), command);
-        /*command = new CommandCp();
-        commandsMap.put(command.toString(), command);*/
+        command = new CommandCp();
+        commandsMap.put(command.toString(), command);
         command = new CommandLs();
         commandsMap.put(command.toString(), command);
         command = new CommandMkDir();
