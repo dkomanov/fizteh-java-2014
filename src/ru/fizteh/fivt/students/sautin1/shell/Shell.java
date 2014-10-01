@@ -19,12 +19,12 @@ public class Shell {
         commandsMap.put(command.toString(), command);
         command = new CommandCd();
         commandsMap.put(command.toString(), command);
-        command = new CommandCp();
+        /*command = new CommandCp();
         commandsMap.put(command.toString(), command);
         command = new CommandLs();
         commandsMap.put(command.toString(), command);
-        command = new CommandMkDir();
-        commandsMap.put(command.toString(), command);
+        */command = new CommandMkDir();
+        commandsMap.put(command.toString(), command);/*
         command = new CommandMv();
         commandsMap.put(command.toString(), command);
         command = new CommandPwd();
@@ -32,7 +32,7 @@ public class Shell {
         command = new CommandRm();
         commandsMap.put(command.toString(), command);
         command = new CommandExit();
-        commandsMap.put(command.toString(), command);
+        commandsMap.put(command.toString(), command);*/
     }
 
     /**
@@ -46,9 +46,9 @@ public class Shell {
         if (command == null) {
             throw new NullPointerException(commandWithParams[0] + ": command not found");
         }
-        if (command instanceof CommandExit) {
+        /*if (command instanceof CommandExit) {
             return true;
-        }
+        }*/
         try {
             command.execute(commandWithParams);
         } catch (Exception e) {

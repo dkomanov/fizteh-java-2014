@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * Created by sautin1 on 9/30/14.
  */
-public class CommandCp implements Command {
+public class CommandCp extends Command {
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
 

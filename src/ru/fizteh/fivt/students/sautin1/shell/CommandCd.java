@@ -9,9 +9,8 @@ import java.nio.file.Paths;
 /**
  * Created by sautin1 on 9/30/14.
  */
-public class CommandCd implements Command {
-    private static Path presentWorkingDirectory = Paths.get("").toAbsolutePath().normalize();
-
+public class CommandCd extends Command {
+    
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
         String dirName;
