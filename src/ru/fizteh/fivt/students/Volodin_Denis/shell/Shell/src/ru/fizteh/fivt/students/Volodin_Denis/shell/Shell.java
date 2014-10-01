@@ -450,7 +450,6 @@ public class Shell {
         try {
             File fileForCat = Paths.get(System.getProperty("user.dir"),
                                         args[1]).normalize().toFile();
-            System.out.println(fileForCat.toString());
             if (!fileForCat.exists()) {
                 shellNotExist("cat", args[1]);
             }
