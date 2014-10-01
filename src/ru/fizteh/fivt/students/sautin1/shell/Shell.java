@@ -15,8 +15,8 @@ public class Shell {
 
     {
         Command command;
-        /*command = new CommandCat();
-        commandsMap.put(command.toString(), command);*/
+        command = new CommandCat();
+        commandsMap.put(command.toString(), command);
         command = new CommandCd();
         commandsMap.put(command.toString(), command);
         /*command = new CommandCp();
@@ -41,14 +41,13 @@ public class Shell {
      * @return true, if the command is "exit"; false, otherwise.
      */
     public boolean executeCommand(String... commandWithParams) throws NullPointerException {
-        /**/System.out.println("Trying to exec \'" + commandWithParams[0] + "\'");
         Command command = commandsMap.get(commandWithParams[0]);
         if (command == null) {
             throw new NullPointerException(commandWithParams[0] + ": command not found");
         }
-        /*if (command instanceof CommandExit) {
+        if (command instanceof CommandExit) {
             return true;
-        }*/
+        }
         try {
             command.execute(commandWithParams);
         } catch (Exception e) {
@@ -88,6 +87,7 @@ public class Shell {
         Scanner scanner = new Scanner(System.in);
         boolean wantExit;
         while (true) {
+            System.out.print(Command.presentWorkingDirectory.toString());
             System.out.print("$ ");
             String newCommand = scanner.nextLine();
             if (newCommand.isEmpty()) {

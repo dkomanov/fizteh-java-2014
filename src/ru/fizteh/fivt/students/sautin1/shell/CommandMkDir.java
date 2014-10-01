@@ -24,7 +24,6 @@ public class CommandMkDir extends Command {
         dirName = args[1];
 
         Path dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();
-        /**/System.out.println(dirAbsolutePath.toString());
         try {
             Files.createDirectory(dirAbsolutePath);
         } catch (IOException e) {

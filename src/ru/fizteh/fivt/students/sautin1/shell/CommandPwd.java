@@ -17,6 +17,7 @@ public class CommandPwd extends Command {
         if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }
+        System.out.println(presentWorkingDirectory.toString());
     }
 
 }

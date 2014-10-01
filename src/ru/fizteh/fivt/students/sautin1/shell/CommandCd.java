@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 public class CommandCd extends Command {
 
     public CommandCd() {
-        minArgNumber = 1;
+        minArgNumber = 0;
         commandName = "cd";
     }
 
@@ -21,20 +21,21 @@ public class CommandCd extends Command {
         if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }
-
-        String dirName;
-        dirName = args[1];
-
-        Path dirAbsolutePath = Paths.get(dirName);
-        if (!dirAbsolutePath.isAbsolute()) {
-            dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();
-        }
-        /**/System.out.println(dirAbsolutePath.toString());
-        if (Files.exists(dirAbsolutePath) && Files.isDirectory(dirAbsolutePath)) {
-            presentWorkingDirectory = dirAbsolutePath;
-            /**/System.out.println("Made changes to pwd!");
+        if (args.length == 1) {
+            presentWorkingDirectory = Paths.get("").toAbsolutePath().normalize();
         } else {
-            throw new NoSuchFileException(toString() + ": \'" + dirName + "\': No such file or directory");
+            String dirName;
+            dirName = args[1];
+
+            Path dirAbsolutePath = Paths.get(dirName);
+            if (!dirAbsolutePath.isAbsolute()) {
+                dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();
+            }
+            if (Files.exists(dirAbsolutePath) && Files.isDirectory(dirAbsolutePath)) {
+                presentWorkingDirectory = dirAbsolutePath;
+            } else {
+                throw new NoSuchFileException(toString() + ": \'" + dirName + "\': No such file or directory");
+            }
         }
     }
 
