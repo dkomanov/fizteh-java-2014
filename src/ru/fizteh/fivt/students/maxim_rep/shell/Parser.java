@@ -61,10 +61,9 @@ public class Parser {
                         continue;
                     }
                 } catch (Exception e) {
-                    ;// nothing to do
+                    quoted = !quoted;
+                    continue;
                 }
-                quoted = !quoted;
-                continue;
             }
             if (Character.isWhitespace(curChar)) {
                 if (quoted) {
