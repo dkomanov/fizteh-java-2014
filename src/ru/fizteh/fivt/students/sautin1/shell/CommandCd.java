@@ -10,15 +10,20 @@ import java.nio.file.Paths;
  * Created by sautin1 on 9/30/14.
  */
 public class CommandCd extends Command {
-    
+
+    public CommandCd() {
+        minArgNumber = 1;
+    }
+
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
-        String dirName;
-        if (args.length < 2) {
+        if (!enoughArguments()) {
             throw new IllegalArgumentException(toString() + ": missing operand");
-        } else {
-            dirName = args[1];
         }
+
+        String dirName;
+        dirName = args[1];
+
         Path dirAbsolutePath = Paths.get(dirName);
         if (!dirAbsolutePath.isAbsolute()) {
             dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();

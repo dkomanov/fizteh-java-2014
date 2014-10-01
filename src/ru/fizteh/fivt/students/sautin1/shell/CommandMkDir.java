@@ -9,26 +9,19 @@ import java.nio.file.Paths;
  * Created by sautin1 on 9/30/14.
  */
 public class CommandMkDir extends Command {
-    //private static Path presentWorkingDirectory = Paths.get("").toAbsolutePath().normalize();
 
-    /*private static void makeDirectory(String dirName) throws IOException {
-        Path dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();
-        System.out.println(dirAbsolutePath.toString());
-        try {
-            Files.createDirectory(dirAbsolutePath);
-        } catch (IOException exception) {
-            throw new IOException("cannot create directory \'" + dirName + "\': No such file or directory");
-        }
-    }*/
+    public CommandMkDir() {
+        minArgNumber = 1;
+    }
 
     @Override
     public void execute(String... args) throws RuntimeException, IOException {
-        String dirName;
-        if (args.length < 2) {
+        if (!enoughArguments()) {
             throw new IllegalArgumentException(toString() + ": missing operand");
-        } else {
-            dirName = args[1];
         }
+        String dirName;
+        dirName = args[1];
+
         Path dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();
         /**/System.out.println(dirAbsolutePath.toString());
         try {
