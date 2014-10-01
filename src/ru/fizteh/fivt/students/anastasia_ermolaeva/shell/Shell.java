@@ -56,6 +56,9 @@ public final class Shell {
                     break;
                 default:
                     System.out.println(arguments[0] + ":unknown command ");
+                    if (!mode) {
+						System.exit(-1);
+					}
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
