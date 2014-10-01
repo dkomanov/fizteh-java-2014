@@ -63,12 +63,9 @@ public class Shell {
                 OutputStream os = null;
                 try {
                     is = new FileInputStream(f1);
-                    File dest = new File(f2.getCanonicalPath() + File.separator + f1.getName());
-                    if (dest.exists()) {
-                        System.err.println(dest.getName() + "File exists.");
-                        System.exit(-1);
-                        return;
-                    }
+                    File dest;
+                    if(f2.isFile()) dest = new File(f2.getCanonicalPath());
+                    else dest = new File(f2.getCanonicalPath() + File.separator + f1.getName());
                     os = new FileOutputStream(dest);
                     byte[] buffer = new byte[1024];
                     int length;
@@ -117,7 +114,7 @@ public class Shell {
                 try {
                 Scanner sc = new Scanner(System.in);
                 String s1 = sc.nextLine();
-                s = s1.split(" ");
+                s = s1.split("\\s+");
                 } catch (Exception e) {
                     System.err.println("Exception: " + e.getMessage());
                     System.exit(-1);
@@ -133,7 +130,7 @@ public class Shell {
                 try {
                     Scanner sc = new Scanner(System.in);
                     String s1 = sc.nextLine();
-                    s = s1.split(" ");
+                    s = s1.split("\\s+");
                 } catch (Exception e) {
                     System.err.println("Exception: " + e.getMessage());
                     System.exit(-1);
