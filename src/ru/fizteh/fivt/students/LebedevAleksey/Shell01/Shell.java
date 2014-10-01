@@ -30,7 +30,11 @@ public class Shell extends CommandParser {
                         action = new CommandPwd(command.getArguments());
                         break;
                     case CMD_EXIT:
-                        return exit();
+                        if (command.getArguments().length == 0) {
+                            return exit();
+                        } else {
+                            throw new CommandInvokeException("This command have mo arguments.", "exit");
+                        }
                     case CMD_CD:
                         action = new CommandCd(command.getArguments());
                         break;
