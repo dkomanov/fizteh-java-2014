@@ -30,7 +30,8 @@ public class Parser {
                 return "/" + path.substring(2);
             }
             return f.getParent() + path.substring(2);
-        } else if (path.startsWith(".")) {
+        } else if (path.startsWith(".")
+                && (path.startsWith("/", 1) || path.startsWith("\\", 1))) {
             return currentPath + path.substring(1);
         }
 
@@ -53,6 +54,14 @@ public class Parser {
         boolean quoted = false;
         for (char curChar : command.toCharArray()) {
             if (curChar == '"') {
+                try {
+                    if (newLine.charAt(newLine.length() - 1) == '\\') {
+                        newLine.deleteCharAt(newLine.length() - 1);
+                        newLine.insert(newLine.length(), curChar);
+                        continue;
+                    }
+                } catch (Exception e) {
+                }
                 quoted = !quoted;
                 continue;
             }

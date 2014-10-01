@@ -39,7 +39,9 @@ public class Rm implements ShellCommand {
             if (recursive) {
                 recursiveRm(f, destination);
             } else {
-                f.delete();
+                System.out
+                        .println("Rm: '" + destination + "': Is a directory!");
+                return false;
             }
         } else {
             System.out.println("rm: cannot remove '" + destination
