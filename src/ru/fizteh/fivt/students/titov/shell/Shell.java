@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.titov.shell;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class Shell {
 
@@ -207,18 +208,33 @@ public class Shell {
         return true;
     }
 
-    static boolean dir() {
+    static boolean ls() {
         try {
             String[] entries = currentDir.list();
 
             for (String entry : entries) {
                 System.out.println(entry);
             }
-        }
-        catch (Exception e) {
-            System.err.println("dir: couldn't execute the command.");
+        } catch (Exception e) {
+            System.err.println("ls: couldn't execute the command.");
         }
         return true;
+    }
+    
+    static boolean cat(String path) {
+		try {
+			File file = new File(currentDir.getPath() + File.separator + path); 
+			Scanner sc = new Scanner(file); 
+			
+			while (sc.hasNextLine()) {
+				System.out.println(sc.nextLine());
+		    }
+			sc.close();
+		} catch(Exception e) {
+			System.err.println("File \"" + path + "\" not found");
+	        return false;
+		}
+		return true;   	
     }
 
     static boolean executeCommand(String command) {
@@ -268,14 +284,21 @@ public class Shell {
                 System.err.println("Error: rm: wrong count of arguments");
                 return false;
             }
-        } else if (tokens[i].equals("dir")) {
+        } else if (tokens[i].equals("ls")) {
             if (tokens.length == i + 1) {
-                return dir();
+                return ls();
             } else {
-                System.err.println("Error: dir: wrong count of arguments");
+                System.err.println("Error: ls: wrong count of arguments");
                 return false;
             }
-        } else if (tokens[i].equals("mkdir")) {
+        } else if (tokens[i].equals("cat")) {
+            if (tokens.length == i + 2) {
+                return cat(tokens[i + 1]);
+            } else {
+                System.err.println("Error: cat: wrong count of arguments");
+                return false;
+            }
+        }else if (tokens[i].equals("mkdir")) {
             if (tokens.length == i + 2) {
                 return mkdir(tokens[i + 1]);
             } else {
