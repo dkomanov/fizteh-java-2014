@@ -20,10 +20,10 @@ public class Shell {
         command = new CommandCd();
         commandsMap.put(command.toString(), command);
         /*command = new CommandCp();
-        commandsMap.put(command.toString(), command);
+        commandsMap.put(command.toString(), command);*/
         command = new CommandLs();
         commandsMap.put(command.toString(), command);
-        */command = new CommandMkDir();
+        command = new CommandMkDir();
         commandsMap.put(command.toString(), command);/*
         command = new CommandMv();
         commandsMap.put(command.toString(), command);
