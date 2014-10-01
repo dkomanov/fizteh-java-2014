@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.sofia_potapova.shell;
 
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.util.Scanner;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,9 +11,165 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Shell {
-    private static String currentPath = "/";
-    private static File currentDir = new File(currentPath);
+    private static String currentPath = System.getProperty("user.dir");
 
+    public static void main(String[] args) throws Exception {
+        if (args.length == 0) {
+            interMode();
+        } else {
+            packMode(args);
+        }
+    }
+    public static void interMode() throws Exception {
+        System.out.println("$ ");
+        try {
+            Scanner in = new Scanner(System.in);
+            while (in.hasNextLine()) {
+                String str = in.nextLine();
+                String[] cmds = str.split(";");
+                for (String cmd : cmds) {
+                    try {
+                        parseIMode(cmd);
+                    } catch (Exception e) {
+                        System.err.println(e.getMessage());
+                    }
+                }
+                System.out.println("$ ");
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        System.out.println();
+    }
+    public static void packMode(String[] args) throws Exception {
+        String[] cmds = parsePMode(args);
+        for (String cmd : cmds) {
+            try {
+                parseIMode(cmd);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                System.exit(1);
+            }
+        }
+    }
+    public static void parseIMode(String str) throws Exception {
+        String []cmdt = str.split(" ");
+        String []cmdr = new String [cmdt.length];
+        int k = 0;
+        for (String st : cmdt) {
+            if (!st.equals("")) {
+                cmdr[k] = st;
+                k += 1;
+            }
+        }
+        commandParse(cmdr, k);
+    }
+    public static String[] parsePMode(String[] args) {
+        String cmd;
+        StringBuilder newArgs = new StringBuilder();
+        for (String str : args) {
+            newArgs.append(str).append(' ');
+        }
+        cmd = newArgs.toString();
+        return cmd.split(";");
+    }
+    public static void commandParse(String []runningCmd, int len) throws Exception {
+        if (runningCmd[0].equals("cd")) {
+            try {
+                if (len > 2) {
+                    throw new Exception("cd: too much arguments\n");
+                } else if (len < 2) {
+                    throw new Exception("cd: few arguements\n");
+                } else {
+                    changeDir(runningCmd[1]);
+                }
+            } catch (IndexOutOfBoundsException e) {
+                throw new Exception("usage: cd <dirname>");
+            }
+        } else if (runningCmd[0].equals("mkdir")) {
+            if (len > 2) {
+                throw new Exception("mkdir: too much arguments\n");
+            } else if (len < 2) {
+                throw new Exception("mkdir: few arguements\n");
+            } else {
+                makeDir(runningCmd[1]);
+            }
+        } else if (runningCmd[0].equals("pwd")) {
+            if (len > 1) {
+                throw new Exception("pwd: too much arguments\n");
+            } else {
+                printWorkDir();
+            }
+        } else if (runningCmd[0].equals("rm")) {
+            try {
+                if (len < 2) {
+                    throw new Exception("rm: few arguments\n");
+                } else if (len == 2) {
+                    remove(runningCmd[1], false);
+                } else {
+                    if (len == 3 && runningCmd[1].equals("-r")) {
+                        remove(runningCmd[2], true);
+                    } else {
+                        throw new Exception("rm: too much arguments\n");
+                    }
+                }
+            } catch (IndexOutOfBoundsException e) {
+                throw new Exception("usage: rm [-r] <filename>");
+            }
+
+        } else if (runningCmd[0].equals("cp")) {
+            try {
+                if (len < 3) {
+                    throw new Exception("cp: few  arguments\n");
+                } else if (len == 3) {
+                    copy(runningCmd[1], runningCmd[2], false);
+                } else if (len == 4 && runningCmd[1].equals("-r")) {
+                    copy(runningCmd[2], runningCmd[3], true);
+                } else {
+                    throw new Exception("cp: too much arguments\n");
+                }
+            } catch (IndexOutOfBoundsException e) {
+                throw new Exception("usage: cd <dirname>");
+            }
+        } else if (runningCmd[0].equals("mv")) {
+            try {
+                if (len < 3) {
+                    throw new Exception("mv: few arguments\n");
+                } else if (len > 3) {
+                    throw new Exception("mv: too much arguments\n");
+                } else {
+                    move(runningCmd[1], runningCmd[2]);
+                }
+            } catch (IndexOutOfBoundsException e) {
+                throw new Exception("usage: mv [-r] <source> <destination>");
+            }
+        } else if (runningCmd[0].equals("ls")) {
+            if (len > 1) {
+                throw new Exception("ls: too much argument\n");
+            }
+            ls();
+        } else if (runningCmd[0].equals("cat")) {
+            try {
+                if (len > 2) {
+                    throw new Exception("cat: too much arguments\n");
+                } else if (len < 2) {
+                    throw new Exception("cat: few arguments\n");
+                } else {
+                    cat(runningCmd[1]);
+                }
+            } catch (IndexOutOfBoundsException e) {
+                throw new Exception("usage: mkdir <dirname>");
+            }
+        } else if (runningCmd[0].equals("exit")) {
+            if (len > 1) {
+                throw new Exception("exit: too much arguments");
+            }
+            System.exit(0);
+        } else {
+            throw new Exception(runningCmd[0] + " not found\n");
+        }
+    }
     public static String pathSplit(String path) {
         String []splitted = path.split("/");
         boolean fromRoot = path.startsWith("/");
@@ -87,40 +245,25 @@ public class Shell {
             throw new Exception(str + ": Not a directory\n");
         }
         currentPath = path;
-        currentDir = dir;
     }
     public static void makeDir(String str) throws Exception {
         String path = pathSplit(str);
         File dir = new File(path);
-        if (dir.exists()) {
+     /*   if (dir.exists()) {
             throw new Exception("mkdir: " + str + ": Directory is already exists\n");
         }
         if (!dir.mkdir()) {
             throw new Exception("mkdir: " + str + ": Can't create directory\n");
         }
+       */
+        try {
+            Files.createDirectory(dir.toPath());
+        } catch (FileAlreadyExistsException e) {
+            throw new Exception(str + ": Already exists");
+        }
     }
     public static void printWorkDir() throws Exception {
         System.out.println(currentPath + "\n");
-    }
-    public static boolean recRm(File dir)throws Exception {
-        File[] files = dir.listFiles();
-        if (files == null) {
-            throw new Exception("rm: No such file or directory\n");
-        }
-        for (File f : files) {
-            if (f.isDirectory()) {
-                if (f.listFiles().length != 0) {
-                    if (!recRm(f)) {
-                        return false;
-                    }
-                }
-            } else {
-                if (!f.delete()) {
-                    return false;
-                }
-            }
-        }
-        return dir.delete();
     }
     public static void remove(String str, boolean key) throws Exception {
         String path = pathSplit(str);
@@ -147,6 +290,53 @@ public class Shell {
                 throw new Exception("rm: " + str + ": Can't delete\n");
             }
         }
+    }
+    public static boolean recRm(File dir)throws Exception {
+        File[] files = dir.listFiles();
+        if (files == null) {
+            throw new Exception("rm: No such file or directory\n");
+        }
+        for (File f : files) {
+            if (f.isDirectory()) {
+                if (f.listFiles().length != 0) {
+                    if (!recRm(f)) {
+                        return false;
+                    }
+                }
+            } else {
+                if (!f.delete()) {
+                    return false;
+                }
+            }
+        }
+        return dir.delete();
+    }
+    public static void copy(String source, String destination, boolean key) throws Exception {
+        String sourcePath = pathSplit(source);
+        File sourceDir = new File(sourcePath);
+        String destPath = pathSplit(destination);
+        File destDir = new File(destPath);
+        if (sourceDir.equals(destDir)) {
+            throw new Exception("cp: " + source + " and " + destination + " are the same\n");
+        }
+        if (!sourceDir.exists()) {
+            throw new Exception("cp: " + source + ": No such file or directory\n");
+        }
+        if (sourceDir.isDirectory() && !key) {
+            throw new Exception("cp: " + source + ": is Directory (use -r)\n");
+        }
+        if (destDir.isDirectory() && destDir.exists()) {
+            destDir = new File(destDir, source);
+        }
+        if (!destDir.exists()) {
+            if (sourceDir.isDirectory() && !destDir.mkdir()) {
+                throw new Exception("cp: " + destination + ": Can't create\n");
+            }
+            if (sourceDir.isFile() && !destDir.createNewFile()) {
+                throw new Exception("cp: " + destination + ": Can't create\n");
+            }
+        }
+        recCopy(sourceDir, destDir);
     }
     public static void recCopy(File source, File dest) throws Exception {
         if (source.isFile()) {
@@ -183,33 +373,6 @@ public class Shell {
         for (String file : files) {
             recCopy(new File(source, file), new File(dest, file));
         }
-    }
-    public static void copy(String source, String destination, boolean key) throws Exception {
-        String sourcePath = pathSplit(source);
-        File sourceDir = new File(sourcePath);
-        String destPath = pathSplit(destination);
-        File destDir = new File(destPath);
-        if (sourceDir.equals(destDir)) {
-            throw new Exception("cp: " + source + " and " + destination + " are the same\n");
-        }
-        if (!sourceDir.exists()) {
-            throw new Exception("cp: " + source + ": No such file or directory\n");
-        }
-        if (sourceDir.isDirectory() && !key) {
-            throw new Exception("cp: " + source + ": is Directory (use -r)\n");
-        }
-        if (destDir.isDirectory() && destDir.exists()) {
-            destDir = new File(destDir, source);
-        }
-        if (!destDir.exists()) {
-            if (sourceDir.isDirectory() && !destDir.mkdir()) {
-                throw new Exception("cp: " + destination + ": Can't create\n");
-            }
-            if (sourceDir.isFile() && !destDir.createNewFile()) {
-                throw new Exception("cp: " + destination + ": Can't create\n");
-            }
-        }
-        recCopy(sourceDir, destDir);
     }
     public static void move(String source, String destination) throws Exception {
         String sourcePath = pathSplit(source);
@@ -253,131 +416,6 @@ public class Shell {
             c = fr.read();
         }
         fr.close();
-    }
-    public static void commandParse(String []runningCmd, int len) throws Exception {
-        if (runningCmd[0].equals("cd")) {
-            if (len > 2) {
-                throw new Exception("cd: too much arguments\n");
-            } else if (len < 2) {
-                throw new Exception("cd: few arguements\n");
-            } else {
-                changeDir(runningCmd[1]);
-            }
-        } else if (runningCmd[0].equals("mkdir")) {
-            if (len > 2) {
-                throw new Exception("mkdir: too much arguments\n");
-            } else if (len < 2) {
-                throw new Exception("mkdir: few arguements\n");
-            } else {
-                makeDir(runningCmd[1]);
-            }
-        } else if (runningCmd[0].equals("pwd")) {
-            if (len > 1) {
-                throw new Exception("pwd: too much arguments\n");
-            } else {
-                printWorkDir();
-            }
-        } else if (runningCmd[0].equals("rm")) {
-            if (len < 2) {
-                throw new Exception("rm: few arguments\n");
-            } else if (len == 2) {
-                remove(runningCmd[1], false);
-            } else {
-                if (len == 3 && runningCmd[1].equals("-r")) {
-                    remove(runningCmd[2], true);
-                } else {
-                    throw new Exception("rm: too much arguments\n");
-                }
-            }
-        } else if (runningCmd[0].equals("cp")) {
-            if (len < 3) {
-                throw new Exception("cp: few  arguments\n");
-            } else if (len == 3) {
-                copy(runningCmd[1], runningCmd[2], false);
-            } else if (len == 4 && runningCmd[1].equals("-r")) {
-                copy(runningCmd[2], runningCmd[3], true);
-            } else {
-                throw new Exception("cp: too much arguments\n");
-            }
-        } else if (runningCmd[0].equals("mv")) {
-            if (len < 3) {
-                throw new Exception("mv: few arguments\n");
-            } else if (len > 3) {
-                throw new Exception("mv: too much arguments\n");
-            } else {
-                move(runningCmd[1], runningCmd[2]);
-            }
-        } else if (runningCmd[0].equals("ls")) {
-            if (len > 1) {
-                throw new Exception("ls: too much argument\n");
-            }
-            ls();
-        } else if (runningCmd[0].equals("cat")) {
-            if (len > 2) {
-                throw new Exception("cat: too much arguments\n");
-            } else if (len < 2) {
-                throw new Exception("cat: few arguments\n");
-            } else {
-                cat(runningCmd[1]);
-            }
-        } else if (runningCmd[0].equals("exit")) {
-            System.exit(0);
-        } else {
-            throw new Exception(runningCmd[0] + " not found\n");
-        }
-    }
-    public static void parseIMode(String str) throws Exception {
-        String []cmdt = str.split(" ");
-        String []cmdr = new String [cmdt.length];
-        int k = 0;
-        for (String st : cmdt) {
-            if (!st.equals("")) {
-                cmdr[k] = st;
-                k += 1;
-            }
-        }
-        commandParse(cmdr, k);
-    }
-    public static String[] parsePMode(String[] args) {
-        String cmd;
-        StringBuilder newArgs = new StringBuilder();
-        for (String str : args) {
-            newArgs.append(str).append(' ');
-        }
-        cmd = newArgs.toString();
-        return cmd.split(";");
-    }
-    public static void interMode() throws Exception {
-        Scanner in = new Scanner(System.in);
-        System.out.println("$ ");
-        while (in.hasNextLine()) {
-            String str = in.nextLine();
-            String []cmds = str.split(";");
-            for (String cmd : cmds) {
-                parseIMode(cmd);
-            }
-            System.out.println("$ ");
-        }
-        System.out.println();
-    }
-    public static void packMode(String[] args) throws Exception {
-        String[] cmds = parsePMode(args);
-        for (String cmd : cmds) {
-            try {
-                parseIMode(cmd);
-                //commandParse(cmds, cmds.length);
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                System.exit(1);
-            }
-        }
-    }
-    public static void main(String[] args) throws Exception {
-        if (args.length == 0) {
-            interMode();
-        } else {
-            packMode(args);
-        }
     }
 }
 
