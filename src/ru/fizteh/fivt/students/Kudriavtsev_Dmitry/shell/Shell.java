@@ -32,10 +32,6 @@ public class Shell {
             if (r) {
                 String[] list;
                 list = f.list();
-                if (list.length == 0) {
-                    System.err.println("rm: " + f.getName() + " is a directory");
-                    System.exit(-1);
-                }
                 for (String value : list) {
                     remove(value, directory + File.separator + whatDelete, true);
                 }
@@ -52,6 +48,10 @@ public class Shell {
 
     private static void copy(File f1, File f2, boolean r) {
         try {
+            if (f1.getCanonicalPath() == f2.getCanonicalPath()) {
+                System.err.println("cp: can't copy file on the same file");
+                System.exit(-1);
+            }
             if (f1.isFile()) {
                 if (!f2.exists()) {
                     if (!f2.mkdir()) {
@@ -156,9 +156,17 @@ public class Shell {
                                     what = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     what = s[i];
+                                    if(i + 1 < s.length){
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
                                 }
                                 if (what.equals(".")) {
                                     ++i;
+                                    if(i < s.length){
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
                                     break;
                                 }
                                 if (what.equals("..")) {
@@ -166,6 +174,10 @@ public class Shell {
                                         directory = new File(temp).getParent();
                                     }
                                     ++i;
+                                    if(i < s.length){
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
                                     break;
                                 }
                                 if (new File(what).exists()) {
@@ -190,6 +202,10 @@ public class Shell {
                             }
 
                             case "ls":
+                                if(i + 1 < s.length){
+                                    System.err.println("too much arguments");
+                                    System.exit(-1);
+                                }
                             case "ls;": {
                                 if (directory == null) {
                                     System.err.println("Bad directory");
@@ -223,14 +239,26 @@ public class Shell {
                                     dirname = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     dirname = s[i];
+                                    if(i + 1 < s.length){
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
                                 }
                                 File newDir = new File(directory + File.separator + dirname);
+                                if(newDir.exists()) {
+                                        System.err.println("New directory exists");
+                                        System.exit(-1);
+                                }
                                 Files.createDirectory(newDir.toPath());
                                 ++i;
                                 break;
                             }
 
                             case "pwd":
+                                if(i + 1 < s.length){
+                                    System.err.println("too much arguments");
+                                    System.exit(-1);
+                                }
                             case "pwd;": {
                                 File f = new File(directory);
                                 System.out.println(f.getCanonicalPath());
@@ -255,25 +283,41 @@ public class Shell {
                                     destination = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     destination = s[i];
+                                    if(i + 1 < s.length){
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
                                 }
                                 File f1 = new File(directory + File.separator + source);
                                 File f2 = new File(directory + File.separator + destination);
-                                if (    (f1.isDirectory() && f2.isDirectory()
-                                        && f1.getCanonicalPath().equals(f2.getCanonicalPath()))
+                                if( f1.isFile() && f2.isFile() && f2.exists()) {
+                                    System.err.println("mv: can't move file in existed file");
+                                    System.exit(-1);
+                                }
+                                if (    (f1.isFile() && !f2.exists()
+                                        && f1.getParent().equals(f2.getParent()))
                                         ||
-                                        (f1.isFile() && f2.isFile()
-                                        && f1.getCanonicalPath().equals(f2.getCanonicalPath()))
-                                        || (f1.isDirectory() && f2.isFile()
-                                        && f1.getAbsolutePath().equals(f2.getCanonicalPath()))
-                                        || (f1.isFile() && f2.isDirectory()
-                                        && f1.getCanonicalPath().equals(f2.getAbsolutePath()))
+                                        (f1.isDirectory() && !f2.exists()
+                                        && f1.getParent().equals(f2.getParent()))
                                         ) {
                                     if(!f1.renameTo(f2)) {
-                                        System.out.println("can't rename " + f1.getName());
+                                        System.out.println("mv: can't rename " + f1.getName());
                                         System.exit(-1);
                                     };
                                 } else {
-                                    Files.move(f1.toPath(), f2.toPath());
+                                    //Files.move(f1.toPath(), f2.toPath());
+                                    if (f1.isFile()) {
+                                       copy(f1, f2, false);
+                                       remove(f1.getName(), f1.getParent(), false);
+                                    }
+                                    if(f1.isDirectory()) {
+                                        if(f2.isFile()) {
+                                            System.err.println("mv: can't move directory in file");
+                                            System.exit(-1);
+                                        }
+                                        copy(f1, f2, true);
+                                        remove(f1.getName(), f1.getParent(), true);
+                                    }
                                 }
                                 ++i;
                                 break;
@@ -298,6 +342,10 @@ public class Shell {
                                     whatDelete = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     whatDelete = s[i];
+                                    if(i + 1 < s.length){
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
                                 }
                                 remove(whatDelete, directory, flag);
                                 ++i;
@@ -329,6 +377,10 @@ public class Shell {
                                     destination = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     destination = s[i];
+                                    if(i + 1 < s.length){
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
                                 }
                                 File f1 = new File(directory + File.separator + source);
                                 File f2 = new File(directory + File.separator + destination);
@@ -349,6 +401,10 @@ public class Shell {
                                     name = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     name = s[i];
+                                    if(i + 1 < s.length){
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
                                 }
                                 File f = new File(directory + File.separator + name);
                                 if (!f.exists()) {
