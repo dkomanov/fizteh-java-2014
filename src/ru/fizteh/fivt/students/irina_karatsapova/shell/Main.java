@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.irina_karatsapova.shell; 
+package ru.fizteh.fivt.students.irina_karatsapova.shell;
 
 import ru.fizteh.fivt.students.irina_karatsapova.shell.commands.*;
 import ru.fizteh.fivt.students.irina_karatsapova.shell.Shell;
@@ -28,4 +28,4 @@ public class Main {
 		}
 	}
 }
- 
+
