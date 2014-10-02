@@ -1,5 +1,3 @@
-package ru.fizteh.fivt.students.AndrewTimokhin.Calculator;
-
 import java.util.*;
 
 //@Author: Timokhin Andrew 295 Group
@@ -164,3 +162,4 @@ private double skobki() throws Errors {
 return (" ()+-*/".indexOf(c) != -1);
  }  
  }
+ 
