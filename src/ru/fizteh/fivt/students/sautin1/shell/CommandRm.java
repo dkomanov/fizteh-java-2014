@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.sautin1.shell;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Scanner;
 
 /**
  * Created by sautin1 on 9/30/14.
@@ -44,10 +43,7 @@ public class CommandRm extends Command {
             fileName = args[1];
         }
 
-        Path fileAbsolutePath = Paths.get(fileName);
-        if (!fileAbsolutePath.isAbsolute()) {
-            fileAbsolutePath = Paths.get(presentWorkingDirectory.toString(), fileName).toAbsolutePath().normalize();
-        }
+        Path fileAbsolutePath = presentWorkingDirectory.resolve(fileName);
         if (Files.exists(fileAbsolutePath)) {
             try {
                 removeFile(fileAbsolutePath, isRecursive);

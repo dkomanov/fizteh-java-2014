@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Scanner;
 
 /**
@@ -24,11 +23,8 @@ public class CommandCat extends Command {
         }
 
         String fileName = args[1];
-        Path fileAbsolutePath = Paths.get(fileName);
+        Path fileAbsolutePath = presentWorkingDirectory.resolve(fileName).normalize();
 
-        if (!fileAbsolutePath.isAbsolute()) {
-            fileAbsolutePath = Paths.get(presentWorkingDirectory.toString(), fileName).toAbsolutePath().normalize();
-        }
         if (Files.exists(fileAbsolutePath)) {
             if (!Files.isDirectory(fileAbsolutePath)) {
                 Scanner scanner = new Scanner(Files.newInputStream(fileAbsolutePath));

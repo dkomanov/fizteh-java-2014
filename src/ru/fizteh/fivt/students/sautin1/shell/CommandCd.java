@@ -27,10 +27,7 @@ public class CommandCd extends Command {
             String dirName;
             dirName = args[1];
 
-            Path dirAbsolutePath = Paths.get(dirName);
-            if (!dirAbsolutePath.isAbsolute()) {
-                dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();
-            }
+            Path dirAbsolutePath = presentWorkingDirectory.resolve(dirName).normalize();
             if (Files.exists(dirAbsolutePath)) {
                 if (Files.isDirectory(dirAbsolutePath)) {
                     presentWorkingDirectory = dirAbsolutePath;

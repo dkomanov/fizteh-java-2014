@@ -19,8 +19,7 @@ public abstract class Command {
         return commandName;
     }
 
-    public boolean enoughArguments(String... args)
-    {
+    public boolean enoughArguments(String... args) {
         return (args.length >= minArgNumber + 1);
     }
 }
