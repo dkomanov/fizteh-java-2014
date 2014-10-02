@@ -5,10 +5,10 @@ import ru.fizteh.fivt.students.moskupols.cliutils.*;
 /**
  * Created by moskupols on 28.09.14.
  */
-public class FileMapCommandFabric implements CommandFabric {
+public class FileMapCommandFactory implements CommandFactory {
     private final DataBase db;
 
-    public FileMapCommandFabric(DataBase db) {
+    public FileMapCommandFactory(DataBase db) {
         this.db = db;
     }
 

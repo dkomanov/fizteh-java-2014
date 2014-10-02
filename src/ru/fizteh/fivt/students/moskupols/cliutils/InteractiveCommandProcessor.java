@@ -13,7 +13,7 @@ public class InteractiveCommandProcessor implements CommandProcessor {
     }
 
     @Override
-    public void process(CommandFabric commandFabric) {
+    public void process(CommandFactory commandFactory) {
         Scanner scanner = new Scanner(System.in);
         boolean exited = false;
         do {
@@ -25,7 +25,7 @@ public class InteractiveCommandProcessor implements CommandProcessor {
 
             for (String s : scanner.nextLine().split(";")) {
                 try {
-                    commandFabric.fromString(s).execute();
+                    commandFactory.fromString(s).execute();
                 } catch (UnknownCommandException | CommandExecutionException e) {
                     System.err.println(e.getMessage());
                 } catch (StopProcessingException e) {

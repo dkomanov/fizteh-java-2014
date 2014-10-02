@@ -16,12 +16,12 @@ public class PackageCommandProcessor implements CommandProcessor {
     }
 
     @Override
-    public void process(CommandFabric commandFabric)
+    public void process(CommandFactory commandFactory)
             throws CommandExecutionException, UnknownCommandException {
         for (String s : splittedCommands) {
             boolean needed = true;
             try {
-                commandFabric.fromString(s).execute();
+                commandFactory.fromString(s).execute();
             } catch (StopProcessingException e) {
                 needed = false;
             }
