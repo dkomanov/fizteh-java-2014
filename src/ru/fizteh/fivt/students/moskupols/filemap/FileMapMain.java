@@ -32,7 +32,7 @@ public class FileMapMain {
         }
 
         try {
-            commandProcessor.process(new FileMapCommandFabric(db));
+            commandProcessor.process(new FileMapCommandFactory(db));
         } catch (CommandExecutionException | UnknownCommandException e) {
             System.err.println(e.getMessage());
             System.exit(1);
