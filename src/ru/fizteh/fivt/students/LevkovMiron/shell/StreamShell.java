@@ -9,6 +9,9 @@ class StreamShell extends Shell {
     public void readCommands() {
         System.out.println("$");
         Scanner scanner = new Scanner(System.in);
+        if (!scanner.hasNextLine()) {
+            exit();
+        }
         String input = scanner.nextLine();
         String[] commands = input.split(";");
         for (String cmd : commands) {

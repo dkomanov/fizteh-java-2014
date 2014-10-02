@@ -1,10 +1,10 @@
 package ru.fizteh.fivt.students.LevkovMiron.shell;
 
+import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.nio.file.*;
 import java.util.Scanner;
 import java.lang.String;
-
 /**
  * Created by Мирон on 19.09.2014 ${PACKAGE_NAME}.
  */
@@ -13,9 +13,18 @@ class Shell {
     private String curDir;
 
     Shell() {
-        curDir = root();
+        curDir = FileSystemView.getFileSystemView().getHomeDirectory().toString();
+        curDir = replaceSlash(curDir);
     }
-
+    String replaceSlash(String s) {
+        char[] charArray = s.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            if (charArray[i] == '\\') {
+                charArray[i] = '/';
+            }
+        }
+        return new String(charArray);
+    }
     String root() {
         String s = File.listRoots()[0].toString();
         return s.substring(0, s.length() - 1);
@@ -31,11 +40,11 @@ class Shell {
     }
 
     void cd(final String path) throws NoSuchFileException {
-        if (path.equals(".")) {
+        if (".".equals(path)) {
             return;
         }
         String previousDir = curDir;
-        if (path.equals("..")) {
+        if ("..".equals(path)) {
             String[] dirs = curDir.split("/");
             curDir = root();
             for (int i = 1; i < dirs.length - 1; i++) {
@@ -44,6 +53,7 @@ class Shell {
             return;
         }
         curDir = absPath(path);
+        curDir = replaceSlash(curDir);
         File f = new File(curDir);
         if (!f.exists()) {
             curDir = previousDir;
@@ -78,7 +88,8 @@ class Shell {
         if (!file.exists()) {
             throw new NoSuchFileException("cat: " + name + ": No such file or directory");
         }
-        try (FileInputStream stream = new FileInputStream(file); Scanner scanner = new Scanner(stream)) {
+        try (FileInputStream stream = new FileInputStream(file);
+             Scanner scanner = new Scanner(stream)) {
             while (scanner.hasNext()) {
                 System.out.println(scanner.nextLine());
             }
@@ -251,11 +262,9 @@ class Shell {
                 } catch (IOException e) {
                     printStream.println(e.getMessage());
                 }
-            } else {
-                printStream.println(command[0] + ": Unknown command");
+            } else { printStream.println(command[0] + ": Unknown command");
             }
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             printStream.println("Wrong command format: to few arguments\n");
         }
     }

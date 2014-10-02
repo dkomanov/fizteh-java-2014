@@ -6,9 +6,11 @@ package ru.fizteh.fivt.students.LevkovMiron.shell;
 class PacketShell extends Shell {
     public void readCommands(final String[] args) {
         String argumentString = "";
+        StringBuilder stringBuilder = new StringBuilder();
         for (String s : args) {
-            argumentString += s;
+            stringBuilder.append(s);
         }
+        argumentString = stringBuilder.toString();
         argumentString.trim();
         String[] commands = argumentString.split(";");
         for (String cmd : commands) {
