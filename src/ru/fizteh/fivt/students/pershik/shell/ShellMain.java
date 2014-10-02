@@ -134,7 +134,6 @@ public class ShellMain {
                 while ((line = reader.readLine()) != null) {
                     System.out.println(line);
                 }
-                reader.close();
             }
         } catch (IOException e) {
             errorNoFile("cat", args[1]);
@@ -358,6 +357,8 @@ public class ShellMain {
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {
                 System.out.print("$ ");
+                if (!sc.hasNextLine())
+                    break;
                 String allCommands = sc.nextLine();
                 execLine(allCommands);
                 if (exited) {
