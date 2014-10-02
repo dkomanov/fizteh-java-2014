@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.test.shell;
+package ru.fizteh.fivt.students.deserg.shell;
 
 /**
  * Created by deserg on 21.09.14.

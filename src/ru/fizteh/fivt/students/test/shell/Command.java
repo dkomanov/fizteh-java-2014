@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.test.shell;
+package ru.fizteh.fivt.students.deserg.shell;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -419,7 +419,12 @@ public class Command {
                 }
             } else {
                 if (fromPath.getParent().equals(toPath.getParent())) {
-                    copyFinal(fromPath, toPath);
+                    if (!fromPath.equals(toPath)) {
+                        copyFinal(fromPath, toPath);
+                    } else {
+                        throw new MyException("Trying to copy the file into itself");
+                    }
+
                 } else {
                     if (Files.isDirectory(toPath)) {
                         toPath = Paths.get(toPath.toString(), fromPath.getFileName().toString());
@@ -456,7 +461,12 @@ public class Command {
                 }
             } else {
                 if (fromPath.getParent().equals(toPath.getParent())) {
-                    copyFinal(fromPath, toPath);
+                    if (!fromPath.equals(toPath)) {
+                        copyFinal(fromPath, toPath);
+                    } else {
+                        throw new MyException("Trying to copy the directory into itself");
+                    }
+
                 } else {
                     toPath = Paths.get(toPath.toString(), fromPath.getFileName().toString());
                     checkRecursiveCopy(fromPath, toPath);
@@ -474,7 +484,13 @@ public class Command {
                 }
             } else {
                 if (fromPath.getParent().equals(toPath.getParent())) {
-                    copyFinal(fromPath, toPath);
+
+                    if (!fromPath.equals(toPath)) {
+                        copyFinal(fromPath, toPath);
+                    } else {
+                        throw new MyException("Trying to copy the file into itself");
+                    }
+
                 } else {
                     if (Files.isDirectory(toPath)) {
                         toPath = Paths.get(toPath.toString(), fromPath.getFileName().toString());
