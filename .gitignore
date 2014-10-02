@@ -4,7 +4,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
@@ -21,4 +20,4 @@ jars
 .project
 
 .settings
-/.checkstyle
+.checkstyle
