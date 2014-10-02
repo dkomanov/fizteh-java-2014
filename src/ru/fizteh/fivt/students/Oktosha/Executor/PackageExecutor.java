@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.Oktosha.Executor;
 
 import ru.fizteh.fivt.students.Oktosha.Command.Command;
 import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ConsoleUtility;
+import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ConsoleUtilityRuntimeException;
 import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ConsoleUtilitySyntaxException;
 
 /**
@@ -26,6 +27,9 @@ public class PackageExecutor extends Executor {
         } catch (ConsoleUtilitySyntaxException e) {
             System.err.println(e.getMessage());
             System.exit(Executor.SYNTAX_ERROR);
+        } catch (ConsoleUtilityRuntimeException e) {
+            System.err.println(e.getMessage());
+            System.exit(Executor.COMMAND_RUNTIME_ERROR);
         }
     }
 }

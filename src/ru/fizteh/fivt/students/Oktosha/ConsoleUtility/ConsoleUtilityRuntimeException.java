@@ -7,4 +7,7 @@ public class ConsoleUtilityRuntimeException extends ConsoleUtilityException {
     public ConsoleUtilityRuntimeException(String s) {
         super(s);
     }
+    public ConsoleUtilityRuntimeException(String s, Exception e) {
+        super(s, e);
+    }
 }

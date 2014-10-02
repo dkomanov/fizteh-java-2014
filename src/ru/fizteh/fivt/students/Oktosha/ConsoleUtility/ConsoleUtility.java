@@ -8,5 +8,6 @@ import ru.fizteh.fivt.students.Oktosha.Command.Command;
  */
 public interface ConsoleUtility {
     void run(Command cmd) throws CommandIsNotSupportedException,
-                                 CommandArgumentSyntaxException;
+                                 CommandArgumentSyntaxException,
+                                 ConsoleUtilityRuntimeException;
 }
