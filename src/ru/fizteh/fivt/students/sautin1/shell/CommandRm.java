@@ -21,12 +21,8 @@ public class CommandRm extends Command {
             Files.delete(filePath);
         } else if (isRecursive) {
             try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(filePath)) {
-                for (Path newFile : directoryStream) {
-                    if (Files.isDirectory(newFile)) {
-                        removeFile(newFile, true);
-                    } else {
-                        Files.delete(newFile);
-                    }
+                for (Path entryPath : directoryStream) {
+                    removeFile(entryPath, isRecursive);
                 }
             }
             Files.delete(filePath);

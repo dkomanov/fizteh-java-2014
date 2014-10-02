@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.sautin1.shell;
 import java.io.IOException;
 import java.nio.file.*;
 
+import static java.nio.file.StandardCopyOption.*;
+
 /**
  * Created by sautin1 on 9/30/14.
  */
@@ -14,28 +16,23 @@ public class CommandCp extends Command {
         commandName = "cp";
     }
 
-    public void copyFile(Path sourceFilePath, Path destFilePath, boolean isRecursive) throws IOException {
-        if (!Files.isDirectory(sourceFilePath)) {
-            Files.copy(sourceFilePath, destFilePath, StandardCopyOption.REPLACE_EXISTING);
+    public void copyFile(final Path sourcePath, final Path destPath, final boolean isRecursive) throws IOException {
+        if (!Files.isDirectory(sourcePath)) {
+            Files.copy(sourcePath, destPath, REPLACE_EXISTING);
         } else if (isRecursive) {
-            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(sourceFilePath)) {
-                for (Path newFilePath : directoryStream) {
-                    if (Files.isDirectory(newFilePath)) {
-                        Files.copy(sourceFilePath, destFilePath, StandardCopyOption.REPLACE_EXISTING);
-                        Path newDestPath = Paths.get(destFilePath.toString(), newFilePath.toString()).toAbsolutePath().normalize();
-                        copyFile(newFilePath, newDestPath, true);
-                    } else {
-                        Files.copy(sourceFilePath, destFilePath, StandardCopyOption.REPLACE_EXISTING);
-                    }
+            Files.copy(sourcePath, destPath, REPLACE_EXISTING);
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(sourcePath)) {
+                for (Path entryPath : directoryStream) {
+                    copyFile(entryPath, destPath.resolve(entryPath.getFileName()).normalize(), isRecursive);
                 }
             }
         } else {
-            throw new DirectoryNotEmptyException(sourceFilePath.getFileName() + " is a directory (not copied).");
+            throw new DirectoryNotEmptyException(sourcePath.getFileName() + " is a directory (not copied).");
         }
     }
 
     @Override
-    public void execute(String... args) throws RuntimeException, IOException {
+    public void execute(final String... args) throws IOException {
         if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }
@@ -50,26 +47,16 @@ public class CommandCp extends Command {
             destFileName = args[2];
         }
 
-        Path sourceFileAbsolutePath = Paths.get(sourceFileName);
-        Path destFileAbsolutePath = Paths.get(destFileName);
-        if (!sourceFileAbsolutePath.isAbsolute()) {
-            sourceFileAbsolutePath = Paths.get(presentWorkingDirectory.toString(), sourceFileName).toAbsolutePath().normalize();
-        }
-        if (!destFileAbsolutePath.isAbsolute()) {
-            destFileAbsolutePath = Paths.get(presentWorkingDirectory.toString(), destFileName).toAbsolutePath().normalize();
-        }
-        if (Files.exists(sourceFileAbsolutePath)) {
-            if (Files.exists(destFileAbsolutePath)) {
+        Path sourcePath = presentWorkingDirectory.resolve(sourceFileName).normalize();
+        Path destPath = presentWorkingDirectory.resolve(destFileName).resolve(sourcePath.getFileName()).normalize();
+        if (Files.exists(sourcePath)) {
                 try {
-                    copyFile(sourceFileAbsolutePath, destFileAbsolutePath, isRecursive);
+                    copyFile(sourcePath, destPath, isRecursive);
                 } catch (IOException e) {
                     throw new IOException(toString() + ": " + e.getMessage());
                 }
-            } else {
-                throw new NoSuchFileException(toString() + ": cannot stat \'" + destFileAbsolutePath.getFileName() + "\': No such file or directory");
-            }
         } else {
-            throw new NoSuchFileException(toString() + ": cannot stat \'" + sourceFileAbsolutePath.getFileName() + "\': No such file or directory");
+            throw new NoSuchFileException(toString() + ": cannot stat \'" + sourcePath.getFileName() + "\': No such file or directory");
         }
     }
 

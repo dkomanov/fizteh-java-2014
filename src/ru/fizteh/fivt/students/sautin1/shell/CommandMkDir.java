@@ -24,10 +24,14 @@ public class CommandMkDir extends Command {
         dirName = args[1];
 
         Path dirAbsolutePath = Paths.get(presentWorkingDirectory.toString(), dirName).toAbsolutePath().normalize();
-        try {
-            Files.createDirectory(dirAbsolutePath);
-        } catch (IOException e) {
-            throw new IOException(toString() + ": cannot create directory \'" + dirName + "\': " + e.getMessage());
+        if (!Files.exists(dirAbsolutePath)) {
+            try {
+                Files.createDirectory(dirAbsolutePath);
+            } catch (IOException e) {
+                throw new IOException(toString() + ": cannot create directory \'" + dirName + "\': " + e.getMessage());
+            }
+        } else {
+            throw new IOException(toString() + ": cannot create directory \'" + dirName + "\': File exists");
         }
     }
 
