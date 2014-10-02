@@ -77,14 +77,18 @@ public final class MainShell {
 						interfaceshell.cat(dir, path);
 						break;
 					case "exit":
+						in.close();
 						interfaceshell.exit();
 						break;
 					default:
 						System.out.println("Invalid command");
+						if(args.length != 0){
+							in.close();
+							System.exit(1);
+						}						
 						break;
 			}	}		
-		} while(arg2[0] != "exit");		
-		in.close();
+		} while(arg2[0] != "exit");			
 	}
 }
 
