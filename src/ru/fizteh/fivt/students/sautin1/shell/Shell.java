@@ -52,7 +52,7 @@ public class Shell {
         try {
             command.execute(commandWithParams);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }
         return false;
     }
@@ -69,7 +69,7 @@ public class Shell {
             String[] params = splitCommandIntoParams(command);
             try {
                 wantsExit = executeCommand(params);
-            } catch (NullPointerException e) {
+            } catch (Exception e) {
                 System.err.println(e.getMessage());
                 return false;
             }

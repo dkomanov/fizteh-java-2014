@@ -63,17 +63,27 @@ public class CommandCp extends Command {
 
         Path sourcePath = presentWorkingDirectory.resolve(sourceFileName).normalize();
         Path destPath = presentWorkingDirectory.resolve(destFileName).resolve(sourcePath.getFileName()).normalize();
+
         if (Files.exists(sourcePath)) {
-                try {
-                    copyFile(sourcePath, destPath, isRecursive);
-                } catch (IOException e) {
-                    throw new IOException(toString() + ": " + e.getMessage());
-                }
+            if (Files.isDirectory(destPath)) {
+                destPath = destPath.resolve(sourcePath.getFileName()).normalize();
+            }
+            try {
+                copyFile(sourcePath, destPath, isRecursive);
+            } catch (IOException e) {
+                throw new IOException(toString() + ": " + e.getMessage());
+            }
         } else {
             String errorMessage = toString() + ": cannot stat \'" + sourcePath.getFileName();
             errorMessage = errorMessage + "\': No such file or directory";
             throw new NoSuchFileException(errorMessage);
         }
+
+
+
+
+
+
     }
 
 }
