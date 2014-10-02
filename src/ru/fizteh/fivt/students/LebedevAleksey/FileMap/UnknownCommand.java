@@ -5,6 +5,10 @@ public class UnknownCommand extends DatabaseException{
         super(message);
     }
 
+    public UnknownCommand() {
+        super("This command is unknown.");
+    }
+
     public UnknownCommand(String message, Throwable ex) {
         super(message, ex);
     }

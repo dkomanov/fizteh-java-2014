@@ -4,13 +4,19 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class TablePart {
-    public static final Charset CHARSET = Charset.forName("UTF-8");
+    public static final String DB_FILE_PARAMETER_NAME = "db.file";
+    protected static final Charset CHARSET = Charset.forName("UTF-8");
     protected static final String UNEXPECTED_END_OF_FILE = "Unexpected end of file.";
-    protected SortedMap<String, String> data;
-    protected boolean isLoaded = false;
+    protected TreeMap<String, String> data = new TreeMap<>();
+
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    private boolean isLoaded = false;
 
     public String put(String key, String value) {
         String result = data.put(key, value);
@@ -53,13 +59,14 @@ public class TablePart {
         return result;
     }
 
-    public void load() {
+    public void load() throws LoadOrSaveError {
         if (!isLoaded) {
             loadWork();
+            isLoaded = true;
         }
     }
 
-    protected void loadWork() {
+    protected void loadWork() throws LoadOrSaveError {
         File path = getSaveFilePath();
         Exception error = null;
         try (FileInputStream inputStream = new FileInputStream(path)) {
@@ -83,7 +90,6 @@ public class TablePart {
                         }
                         throw new LoadOrSaveError(UNEXPECTED_END_OF_FILE);
                     }
-                    keyString.remove(keyString.size() - 1);
                     keys.add(getString(keyString));
                     begins.add(reader.readInt());
                     index += 4;
@@ -105,7 +111,6 @@ public class TablePart {
                 System.err.println("Can't create file with database: " + cantCreateFileEx.getMessage());
                 ex.addSuppressed(cantCreateFileEx);
             }
-            error = ex;
         } catch (SecurityException ex) {
             System.err.println("Security error: " + ex.getMessage());
             error = ex;
@@ -124,18 +129,44 @@ public class TablePart {
         }
     }
 
-    public void Save() {
+    public void save() throws LoadOrSaveError {
         File path = getSaveFilePath();
+        Exception error = null;
         try (FileOutputStream stream = new FileOutputStream(path)) {
             try (DataOutputStream output = new DataOutputStream(stream)) {
-
+                List<String> keys = list();
+                ArrayList<byte[]> keysUtf8 = new ArrayList<>(keys.size());
+                int keysDataSize = 0;
+                ArrayList<byte[]> values = new ArrayList<>(keys.size());
+                for (String key : keys) {
+                    byte[] buffer = key.getBytes(CHARSET);
+                    keysUtf8.add(buffer);
+                    keysDataSize += buffer.length + 1 + Integer.BYTES;
+                    values.add(data.get(key).getBytes(CHARSET));
+                }
+                byte[] separator = new byte[]{0};
+                for (int i = 0; i < values.size(); i++) {
+                    output.write(keysUtf8.get(i));
+                    output.write(separator);
+                    output.writeInt(keysDataSize);
+                    keysDataSize += values.get(i).length;
+                }
+                for (int i = 0; i < keys.size(); i++) {
+                    output.write(values.get(i));
+                }
             }
         } catch (FileNotFoundException ex) {
-
+            System.err.println("File not found on save: " + ex.getMessage());
+            error = ex;
         } catch (SecurityException ex) {
-
+            System.err.println("Security error: " + ex.getMessage());
+            error = ex;
         } catch (IOException ex) {
-        
+            System.err.println("Can't save: " + ex.getMessage());
+            error = ex;
+        }
+        if (error != null) {
+            throw new LoadOrSaveError("Can't save: " + error.getMessage(), error);
         }
     }
 
@@ -148,7 +179,7 @@ public class TablePart {
     }
 
     public File getSaveFilePath() {
-        return new File(System.getProperty("db.file"));
+        return new File(System.getProperty(DB_FILE_PARAMETER_NAME));
     }
 }
 
