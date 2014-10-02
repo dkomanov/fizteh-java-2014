@@ -30,7 +30,11 @@ public class Shell extends CommandParser {
                         action = new CommandPwd(command.getArguments());
                         break;
                     case CMD_EXIT:
-                        return exit();
+                        if (command.getArguments().length == 0) {
+                            return exit();
+                        } else {
+                            throw new CommandInvokeException("This command have mo arguments.", "exit");
+                        }
                     case CMD_CD:
                         action = new CommandCd(command.getArguments());
                         break;
@@ -164,6 +168,10 @@ public class Shell extends CommandParser {
                 result.setArg1(arguments[changeIndex]);
                 result.setArg2(arguments[changeIndex + 1]);
             }
+        }
+
+        protected boolean isSubPath(Path source, Path target) {
+            return (source.startsWith(target) || target.startsWith(source));
         }
     }
 
@@ -309,7 +317,12 @@ public class Shell extends CommandParser {
                                     CommandNames.CMD_MV.getName());
                         }
                     }
-                    Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+                    if (isSubPath(source, target)) {
+                        throw new CommandInvokeException("Can't move in subfolder or parent folder",
+                                CommandNames.CMD_MV.getName());
+                    } else {
+                        Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+                    }
                 } catch (FileAlreadyExistsException | DirectoryNotEmptyException ex) {
                     throw new CommandInvokeException("Can't move to '" + args[1] + "': wrong target"
                             , CommandNames.CMD_MV.getName(), ex);
@@ -340,7 +353,12 @@ public class Shell extends CommandParser {
                 if (source.toFile().exists()) {
                     boolean canCopy = ((!source.toFile().isDirectory()) || args.isRecursive());
                     if (canCopy) {
-                        copy(args, source.toFile(), target, target.toFile().exists());
+                        if (isSubPath(source, target)) {
+                            throw new CommandInvokeException("Can't copy in subfolder or parent folder",
+                                    CommandNames.CMD_CP.getName());
+                        } else {
+                            copy(args, source.toFile(), target, target.toFile().exists());
+                        }
                     } else {
                         throw new CommandInvokeException("'" + source + "' is a directory (not copied).",
                                 CommandNames.CMD_CP.getName());
