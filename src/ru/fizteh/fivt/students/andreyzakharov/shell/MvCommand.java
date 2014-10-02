@@ -14,7 +14,7 @@ public class MvCommand extends AbstractCommand {
 
     @Override
     public void execute(String... args) {
-        if (args.length < 2) {
+        if (args.length < 3) {
             shell.error("mv: missing file operand");
             return;
         }
@@ -22,24 +22,27 @@ public class MvCommand extends AbstractCommand {
             shell.error("cat: too many arguments");
             return;
         }
-        Path src = shell.getWd().resolve(args[1]);
-        Path target = shell.getWd().resolve(args[2]);
+        Path src = shell.getWd().resolve(args[1]).normalize();
+        Path target = shell.getWd().resolve(args[2]).normalize();
+
         if (!Files.exists(src)) {
             // note: we do not actually call stat
             shell.error("mv: cannot stat '" + args[1] + "': No such file or directory");
             return;
         }
-        if (Files.isDirectory(src) && !Files.isDirectory(target)) {
+        if (Files.isDirectory(src) && !Files.isDirectory(target) && Files.exists(target)) {
             shell.error("mv: cannot overwrite non-directory '" + args[2] + "' with directory '" + args[1] + "'");
             return;
         }
-        /*if (!Files.exists(target.getParent())) {
-            shell.error("mv: cannot move '" + args[1] + "' to '" + args[2] + "': Cannot overwrite existing file");
-            return;
-        }*/
-        Path dest = Files.isDirectory(target) ? target.resolve(src.getFileName()) : target;
+
+        Path dest = Files.isDirectory(target) ? target.resolve(args[2]).normalize() : target;
+        String sep = java.nio.file.FileSystems.getDefault().getSeparator();
         try {
             try {
+                if ((dest.toString() + sep).startsWith(src.toString() + sep)) {
+                    shell.error("mv: cannot move a directory to a subdirectory of itself");
+                    return;
+                }
                 Files.move(src, dest, REPLACE_EXISTING);
             } catch (DirectoryNotEmptyException e) {
                 // the folder is not empty and the actual physical move is required
