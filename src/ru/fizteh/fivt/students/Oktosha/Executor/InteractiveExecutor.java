@@ -13,8 +13,9 @@ import java.util.Scanner;
 public class InteractiveExecutor extends Executor {
     public static void execute(ConsoleUtility utility) {
         Scanner sc = new Scanner(System.in);
+        System.out.print("$ ");
+        System.out.flush();
         for (; ; ) {
-            System.out.print("$ ");
             String commandsString = sc.nextLine();
             try {
                 Command[] commands = parse(commandsString);
@@ -23,10 +24,16 @@ public class InteractiveExecutor extends Executor {
                 }
             } catch (ExecutorParseException e) {
                 System.err.println("invalid syntax: empty command between two semicolons");
+                System.err.flush();
             } catch (ConsoleUtilityException e) {
                 System.err.println(e.getMessage());
+                System.err.flush();
+                System.out.flush();
+            } finally {
+                System.out.print("$ ");
+                System.out.flush();
+                System.err.flush();
             }
-
         }
     }
 }
