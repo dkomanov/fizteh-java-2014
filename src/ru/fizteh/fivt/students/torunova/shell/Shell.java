@@ -224,14 +224,26 @@ final class Shell {
         }
         File[] listOfFiles = source.listFiles();
         dest = new File(dest.getAbsolutePath(), source.getName()).getAbsoluteFile();
-        dest.mkdirs();
+        if (!dest.mkdirs()) {
+			System.out.println("cp -r: directory " + sourceDir
+					+ "cannot be copied");
+			return FUNCTION_ERROR;
+		}
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isDirectory()) {
                 File newDestDir = new File(dest.getAbsolutePath(), listOfFiles[i].getName());
-                newDestDir.mkdirs();
-                copyRecursive(listOfFiles[i].getAbsolutePath(), newDestDir.getAbsolutePath());
+                if (!newDestDir.mkdirs()) {
+					System.out.println("cp -r: directory " + newDestDir.getName()
+							+ "cannot be copied");
+					return FUNCTION_ERROR;
+				}
+                if (!copyRecursive(listOfFiles[i].getAbsolutePath(), newDestDir.getAbsolutePath())) {
+					return FUNCTION_ERROR;
+				}
             } else {
-                copy(listOfFiles[i].getAbsolutePath(), destDir);
+                if (!copy(listOfFiles[i].getAbsolutePath(), destDir)) {
+					return FUNCTION_ERROR;
+				}
             }
         }
         return FUNCTION_SUCCESS;
@@ -261,8 +273,15 @@ final class Shell {
             } else if (src.isFile()) {
                 if (src.getParent().equals(dst.getParent())) {
                     if (!src.renameTo(dst)) {
-                        System.err.println("mv: cannot rename "
-                                + source + "to" + dest + ",file already exists.");
+						if (dst.exists()) {
+							System.err.println("mv: cannot rename "
+									+ source + "to"
+									+ dest + ",file already exists.");
+						} else {
+							System.err.println("mv: cannot rename "
+									+ source + "to"
+									+ dest + " for some unknown reason.");
+						}
                         return FUNCTION_ERROR;
                     }
                 } else {
@@ -270,8 +289,15 @@ final class Shell {
                     remove(source);
                     File newCopy = new File(dst.getParent(), source);
                     if (!newCopy.renameTo(dst)) {
-                        System.err.println("mv: cannot rename "
-                                + source + "to" + dest + ",file already exists.");
+						if (dst.exists()) {
+							System.err.println("mv: cannot rename "
+									+ source + "to"
+									+ dest + ",file already exists.");
+						} else {
+							System.err.println("mv: cannot rename "
+									+ source + "to"
+									+ dest + " for some unknown reason.");
+						}
                         return FUNCTION_ERROR;
                     }
                 }
@@ -280,13 +306,18 @@ final class Shell {
             try {
                 dst.createNewFile();
             } catch (IOException e) {
-                System.err.println(e.getMessage());
+                System.err.println("mv: caught IOException " + e.getMessage());
                 return FUNCTION_ERROR;
             }
             if (src.getParent().equals(dst.getParent())) {
                 if (!src.renameTo(dst)) {
+					if (dst.exists()) {
                     System.err.println("mv: cannot rename "
                             + source + "to" + dest + ",file already exists.");
+					} else {
+						System.err.println("mv: cannot rename "
+								+ source + "to" + dest + " for some unknown reason.");
+					}
                     return FUNCTION_ERROR;
                 }
             } else {
@@ -294,8 +325,13 @@ final class Shell {
                 remove(source);
                 File newCopy = new File(dst.getParent(), source);
                 if (!newCopy.renameTo(dst)) {
+					if (dst.exists()) {
                     System.err.println("mv: cannot rename "
                             + source + "to" + dest + ",file already exists.");
+					} else {
+						System.err.println("mv: cannot rename "
+								+ source + "to" + dest + " for some unknown reason.");
+					}
                     return FUNCTION_ERROR;
                 }
             }
@@ -314,7 +350,7 @@ final class Shell {
             try {
                 scanner = new Scanner(f);
             } catch (FileNotFoundException e) {
-                System.err.println("Caught FileNotFoundException " + e.getMessage());
+                System.err.println("cat: caught FileNotFoundException " + e.getMessage());
                 return FUNCTION_ERROR;
             }
             String nextString = new String();
@@ -336,7 +372,11 @@ final class Shell {
     private static boolean remove(final String file) {
         File f = new File(file).getAbsoluteFile();
         if (f.isFile()) {
-            f.delete();
+           if (!f.delete()) {
+			   System.err.println("rm: file " + f.getName()
+					   + " cannot be removed for some unknown reason.");
+			   return FUNCTION_ERROR;
+		   }
         } else if (f.isDirectory()) {
             System.out.println("rm: " + f.getName() + " : is a directory.");
             return FUNCTION_ERROR;
@@ -360,12 +400,20 @@ final class Shell {
             File[] content = dIr.listFiles();
             for (int i = 0; i < content.length; i++) {
                 if (content[i].isDirectory()) {
-                    removeRecursive(content[i].getAbsolutePath());
+                    if (!removeRecursive(content[i].getAbsolutePath())) {
+						return FUNCTION_ERROR;
+					}
                 } else {
-                    remove(content[i].getAbsolutePath());
+                    if (!remove(content[i].getAbsolutePath())) {
+						return FUNCTION_ERROR;
+					}
                 }
             }
-            dIr.delete();
+           if (!dIr.delete()) {
+			  System.err.println("rm -r: directory " + dIr.getName()
+					  + "cannot be deleted for some unknown reason.");
+			   return FUNCTION_ERROR;
+		   }
         } else {
             System.out.println("rm -r: " + dir + " is not a directory");
             return FUNCTION_ERROR;
@@ -403,7 +451,7 @@ final class Shell {
             Files.copy(oldFile.toPath(), newFile.toPath(),
 					StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-			System.err.println("Caught IOException " + e.getMessage());
+			System.err.println("cp: Caught IOException " + e.getMessage());
 			return FUNCTION_ERROR;
 		}
         return FUNCTION_SUCCESS;
@@ -424,7 +472,14 @@ final class Shell {
     private static boolean mkdir(final String dir) {
         File newDir = new File(dir).getAbsoluteFile();
         if (!newDir.mkdirs()) {
-            System.err.println("mkdir: directory " + newDir.getAbsolutePath() + " already exists.");
+			if (newDir.isDirectory()) {
+            	System.err.println("mkdir: directory " + newDir.getAbsolutePath() + " already exists.");
+			} else if (newDir.isFile()) {
+				System.err.println("mkdir: file " + newDir.getAbsolutePath() + " already exists.");
+			} else {
+				System.err.println("mkdir: directory " + newDir.getAbsolutePath()
+						+ " cannot be created for some unknown reason.");
+			}
             return FUNCTION_ERROR;
         }
         return FUNCTION_SUCCESS;
@@ -452,7 +507,7 @@ final class Shell {
             try {
                 canonicalPath = newWorkingDir.getCanonicalPath();
             } catch (IOException e) {
-                System.err.println("Caught IOException: " + e.getMessage());
+                System.err.println("cp: Caught IOException: " + e.getMessage());
                 return FUNCTION_ERROR;
             }
             System.setProperty("user.dir", canonicalPath);
