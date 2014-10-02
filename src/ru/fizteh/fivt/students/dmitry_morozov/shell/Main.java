@@ -528,12 +528,9 @@ public class Main {
                         break;
                     }
                     error = "";
-                    currentPath = currentFile.getAbsolutePath();
-                    
+                    currentPath = currentFile.getAbsolutePath();                    
                 }
             }
         }
-
     }
-
 }
