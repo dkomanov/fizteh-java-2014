@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import ru.fizteh.fivt.students.Oktosha.Command.Command;
-import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ArgumentSyntaxException;
+import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.CommandArgumentSyntaxException;
 import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.CommandIsNotSupportedException;
 import ru.fizteh.fivt.students.Oktosha.ConsoleUtility.ConsoleUtility;
 import ru.fizteh.fivt.students.Oktosha.Executor.InteractiveExecutor;
@@ -27,7 +27,7 @@ public class Shell implements ConsoleUtility {
     }
 
     public void run(Command cmd) throws CommandIsNotSupportedException,
-                                        ArgumentSyntaxException {
+                                        CommandArgumentSyntaxException {
         switch (cmd.name) {
             case "exit":
                 exit(cmd.args);
@@ -42,16 +42,16 @@ public class Shell implements ConsoleUtility {
         }
     }
 
-    private void exit(String[] args) throws ArgumentSyntaxException {
+    private void exit(String[] args) throws CommandArgumentSyntaxException {
         if (args.length != 0) {
-            throw new ArgumentSyntaxException("exit: too many arguments");
+            throw new CommandArgumentSyntaxException("exit: too many arguments");
         }
         System.exit(0);
     }
 
-    private void pwd(String[] args) throws ArgumentSyntaxException {
+    private void pwd(String[] args) throws CommandArgumentSyntaxException {
         if (args.length != 0) {
-            throw new ArgumentSyntaxException("pwd: too many arguments");
+            throw new CommandArgumentSyntaxException("pwd: too many arguments");
         }
         System.out.println(workingDirectory);
     }
