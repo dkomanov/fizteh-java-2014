@@ -232,8 +232,9 @@ public class Main {
                 error += "rm: '" + path + "': is a directory\n";
                 return ErrorCode.ERROR_EXECUTING;
             }
-            if (!removeDirectory(f))
+            if (!removeDirectory(f)) {
                 return ErrorCode.ERROR_EXECUTING;
+            }
         } else {
             if (!f.delete()) {
                 error += "Can't remove file " + path + "\n";
@@ -522,6 +523,7 @@ public class Main {
                         break;
                     case ERROR_EXECUTING:
                         System.out.print("Errors occured: " + error);
+                        break;
                     default:
                         break;
                     }
