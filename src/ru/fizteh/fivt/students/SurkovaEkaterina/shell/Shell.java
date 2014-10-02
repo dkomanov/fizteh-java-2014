@@ -30,11 +30,12 @@ public class Shell {
 
     private void interactiveMode() {
         Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.print(invitation);
+        System.out.print(invitation);
+        while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
             String[] commands = CommandsParser.parseCommands(command);
             if (command.length() == 0) {
+                System.out.print(invitation);
                 continue;
             }
             for (String currentCommand:commands) {
@@ -42,18 +43,21 @@ public class Shell {
                     break;
                 }
             }
+            System.out.print(invitation);
         }
+        scanner.close();
     }
 
     private void packageMode() {
-        String commandsLine = "";
+        StringBuilder stringBuilder = new StringBuilder();
         for (String s:arguments) {
-            commandsLine += arguments + " ";
+            stringBuilder.append(s + " ");
         }
-        String[] commands = CommandsParser.parseCommandParameters(commandsLine);
+        String[] commands = CommandsParser.parseCommands(
+                stringBuilder.toString());
         for (String currentCommand:commands) {
             boolean result = execute(currentCommand);
-            if (result) {
+            if (!result) {
                 System.exit(-1);
             }
         }
@@ -63,7 +67,7 @@ public class Shell {
     private boolean execute(final String currentCommand) {
         String commandName = CommandsParser.getCommandName(currentCommand);
         String parameters = CommandsParser.getCommandParameters(currentCommand);
-        if (commandName.equals("")) {
+        if (commandName.isEmpty()) {
             System.out.println("Empty command name!");
             return true;
         }
