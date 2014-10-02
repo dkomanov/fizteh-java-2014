@@ -529,6 +529,7 @@ public class Main {
                     }
                     error = "";
                     currentPath = currentFile.getAbsolutePath();
+                    
                 }
             }
         }
