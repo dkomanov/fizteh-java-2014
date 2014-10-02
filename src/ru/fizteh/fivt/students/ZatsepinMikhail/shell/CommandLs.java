@@ -10,6 +10,9 @@ public class CommandLs extends Command {
 
     @Override
     public boolean run(final String[] arguments) {
+        if (arguments.length != numberOfArguments) {
+            return false;
+        }
         String[] listOfFiles = new File(System.getProperty("user.dir")).list();
         for (String oneFileName : listOfFiles) {
             System.out.println(oneFileName);

@@ -32,6 +32,11 @@ public class CommandCp extends Command {
         Path destinationPath = PathsFunction.toAbsolutePathString(arguments[2]);
         Path fileName = Paths.get(arguments[1]).getFileName();
 
+        if (startPath.equals(destinationPath)) {
+            System.out.println(name + ": \'" + arguments[1] + "\' and \'"
+                               + arguments[2] + "\' are the same file or directory");
+            return false;
+        }
         if (Files.isDirectory(startPath)) {
             System.out.println(name + ": " + arguments[1]
                                + " is a directory (not copied).");
@@ -65,6 +70,12 @@ public class CommandCp extends Command {
     private boolean recursiveCopy(final String[] arguments) {
         Path startPath = PathsFunction.toAbsolutePathString(arguments[2]);
         Path destinationPath = PathsFunction.toAbsolutePathString(arguments[3]);
+
+        if (startPath.equals(destinationPath)) {
+            System.out.println(name + ": \'" + arguments[2] + "\' and \'"
+                    + arguments[3] + "\' are the same file or directory");
+            return false;
+        }
         destinationPath =
                 destinationPath.resolve(startPath.getFileName()).normalize();
 
