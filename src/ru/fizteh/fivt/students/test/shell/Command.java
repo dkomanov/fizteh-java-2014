@@ -1,4 +1,4 @@
-package com.Shell.commads;
+package ru.fizteh.fivt.students.test.shell;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -13,16 +13,22 @@ public class Command {
 
     private Queue<Vector<String>> argumentsQueue;
     private boolean endOfProgram;
+    private boolean exceptionOccured;
     private Path currentPath;
 
     public Command() {
         argumentsQueue = new LinkedList<>();
         endOfProgram = false;
+        exceptionOccured = false;
         currentPath = Paths.get("").toAbsolutePath();
     }
 
     public boolean isEndOfProgram() {
         return endOfProgram;
+    }
+
+    public boolean isExceptionOccured() {
+        return exceptionOccured;
     }
 
 
@@ -40,6 +46,7 @@ public class Command {
             }
 
         }
+
 
         Scanner blockScan = new Scanner(lineStr);
 
@@ -78,6 +85,7 @@ public class Command {
                 executeCommand(arguments);
             } catch (MyException ex) {
                 System.out.println(ex.getMessage());
+                exceptionOccured = true;
             }
 
         }
@@ -96,43 +104,43 @@ public class Command {
             switch (command) {
 
                 case "pwd": {
-                    CommandPWD(arguments);
+                    commandPWD(arguments);
                     break;
                 }
 
                 case "ls": {
-                    CommandLS(arguments);
+                    commandLS(arguments);
                     break;
                 }
 
                 case "mkdir": {
-                    CommandMKDIR(arguments);
+                    commandMKDIR(arguments);
                     break;
                 }
 
                 case "cd": {
-                    CommandCD(arguments);
+                    commandCD(arguments);
                     break;
                 }
 
                 case "cp": {
-                    CommandCP(arguments);
+                    commandCP(arguments);
                     break;
                 }
 
                 case "rm": {
-                    CommandRM(arguments);
+                    commandRM(arguments);
                     break;
                 }
 
                 case "mv": {
-                    CommandMV(arguments);
+                    commandMV(arguments);
                     break;
                 }
 
                 case "cat": {
                     try {
-                        CommandCAT(arguments);
+                        commandCAT(arguments);
                     } catch (IOException ex) {
                         throw new MyException("cat: I/O exception occurred");
                     }
@@ -155,7 +163,7 @@ public class Command {
 
 
 
-    private void CommandPWD(Vector<String> arguments) {
+    private void commandPWD(Vector<String> arguments) {
 
         if (arguments.size() > 1) {
             throw new MyException("Too many arguments");
@@ -166,7 +174,7 @@ public class Command {
     }
 
 
-    private void CommandCD(Vector<String> arguments) {
+    private void commandCD(Vector<String> arguments) {
 
         if (arguments.size() > 2) {
             throw new MyException("Too many arguments");
@@ -189,7 +197,7 @@ public class Command {
 
     }
 
-    private void CommandLS(Vector<String> arguments) {
+    private void commandLS(Vector<String> arguments) {
 
         if (arguments.size() > 1) {
             throw new MyException("Too many arguments");
@@ -207,7 +215,7 @@ public class Command {
 
 
 
-    private void CommandMKDIR(Vector<String> arguments) {
+    private void commandMKDIR(Vector<String> arguments) {
 
         if (arguments.size() > 2) {
             throw new MyException("Too many arguments");
@@ -227,7 +235,7 @@ public class Command {
     }
 
 
-    private void CommandCAT(Vector<String> arguments) throws IOException {
+    private void commandCAT(Vector<String> arguments) throws IOException {
 
         if (arguments.size() < 1) {
             throw new MyException("Not enough arguments");
@@ -261,7 +269,7 @@ public class Command {
 
     }
 
-    private void CommandRM(Vector<String> arguments) {
+    private void commandRM(Vector<String> arguments) {
 
         if (arguments.size() == 1) {
             throw new MyException("Not enough arguments");
@@ -348,7 +356,7 @@ public class Command {
     }
 
 
-    private void CommandMV(Vector<String> arguments) {
+    private void commandMV(Vector<String> arguments) {
 
         if (arguments.size() < 3) {
             throw new MyException("Not enough arguments");
@@ -366,7 +374,7 @@ public class Command {
     }
 
 
-    private void CommandCP(Vector<String> arguments) {
+    private void commandCP(Vector<String> arguments) {
 
         if (arguments.size() < 3) {
             throw new MyException("Not enough arguments");
@@ -393,26 +401,32 @@ public class Command {
     private void copyNonRecursive(String fromPathString, String toPathString) {
 
 
-        Path fromPath = resolvePaths(currentPath.toString(), fromPathString);
-        Path toPath = resolvePaths(currentPath.toString(), toPathString);
-        checkExisting(fromPath);
-        checkExisting(toPath);
+        Path fromPath;
+        fromPath = resolvePaths(currentPath.toString(), fromPathString);
+
+        Path toPath = currentPath;
+        toPath = toPath.resolve(toPathString).normalize();
 
         if (Files.isDirectory(fromPath)) {
             throw new MyException("rm: " + fromPathString + ": is a directory");
         } else {
 
-            if (Files.isDirectory(toPath)) {
-                toPath = Paths.get(toPath.toString(), fromPath.getFileName().toString());
+            if (!Files.exists(toPath)) {
+                if (!Files.exists(toPath.getParent())) {
+                    throw new MyException("The destination directory does not exists");
+                } else {
+                    copyFinal(fromPath, toPath);
+                }
+            } else {
+                if (fromPath.getParent().equals(toPath.getParent())) {
+                    copyFinal(fromPath, toPath);
+                } else {
+                    if (Files.isDirectory(toPath)) {
+                        toPath = Paths.get(toPath.toString(), fromPath.getFileName().toString());
+                    }
+                    copyFinal(fromPath, toPath);
+                }
             }
-
-            try {
-                Files.copy(fromPath, toPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException ex) {
-                throw new MyException("cp: I/O error occurs");
-            }
-
-
         }
 
     }
@@ -421,40 +435,52 @@ public class Command {
 
 
         Path fromPath;
-        Path toPath;
-
         fromPath = resolvePaths(currentPath.toString(), fromPathString);
-        toPath = resolvePaths(currentPath.toString(), toPathString);
 
-        checkExisting(fromPath);
-        checkExisting(toPath);
+        Path toPath = currentPath;
+        toPath = toPath.resolve(toPathString).normalize();
+
 
         if (Files.isDirectory(fromPath)) {
 
-            if (!Files.isDirectory(toPath)) {
-                throw new MyException("Invalid destination directory");
+            if (!Files.exists(toPath)) {
+                if (!Files.exists(toPath.getParent())) {
+                    throw new MyException("The destination directory does not exists");
+                } else {
+                    if (fromPath.getParent().equals(toPath.getParent())) {
+                        copyFinal(fromPath, toPath);
+                    } else {
+                        checkRecursiveCopy(fromPath, toPath);
+                        copyFinal(fromPath, toPath);
+                    }
+                }
+            } else {
+                if (fromPath.getParent().equals(toPath.getParent())) {
+                    copyFinal(fromPath, toPath);
+                } else {
+                    toPath = Paths.get(toPath.toString(), fromPath.getFileName().toString());
+                    checkRecursiveCopy(fromPath, toPath);
+                    copyFinal(fromPath, toPath);
+                }
             }
-
-            toPath = Paths.get(toPath.toString(), fromPath.getFileName().toString());
-
-            try {
-                Files.copy(fromPath, toPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException ex) {
-                throw new MyException("cp: I/O error occurs");
-            }
-
-            copyFinal(fromPath, toPath);
 
         } else {
 
-            if (Files.isDirectory(toPath)) {
-                toPath = Paths.get(toPath.toString(), fromPath.getFileName().toString());
-            }
-
-            try {
-                Files.copy(fromPath, toPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException ex) {
-                throw new MyException("cp: I/O error occurs");
+            if (!Files.exists(toPath)) {
+                if (!Files.exists(toPath.getParent())) {
+                    throw new MyException("The destination directory does not exists");
+                } else {
+                    copyFinal(fromPath, toPath);
+                }
+            } else {
+                if (fromPath.getParent().equals(toPath.getParent())) {
+                    copyFinal(fromPath, toPath);
+                } else {
+                    if (Files.isDirectory(toPath)) {
+                        toPath = Paths.get(toPath.toString(), fromPath.getFileName().toString());
+                    }
+                    copyFinal(fromPath, toPath);
+                }
             }
         }
 
@@ -462,12 +488,25 @@ public class Command {
     }
 
 
+    private void checkRecursiveCopy(Path fromPath, Path toPath) {
+
+        if (toPath.toString().startsWith(fromPath.toString())) {
+            throw new MyException("Recursive copying directory into itself");
+        }
+
+    }
 
 
     private void copyFinal(Path fromPath, Path toPath) {
 
-        if (!Files.exists(fromPath) || !Files.exists(toPath)) {
-            throw new MyException("Directory does not exists");
+        try {
+            Files.copy(fromPath, toPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            throw new MyException("cp: I/O error occurs");
+        }
+
+        if (!Files.isDirectory(fromPath)) {
+            return;
         }
 
         File curDir;

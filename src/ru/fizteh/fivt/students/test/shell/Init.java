@@ -1,4 +1,4 @@
-package com.Shell.commads;
+package ru.fizteh.fivt.students.test.shell;
 
 /**
  * Created by deserg on 21.09.14.
@@ -12,6 +12,9 @@ public class Init {
             Command command = new Command();
             command.readCommands(args);
             command.executeAll();
+            if (command.isExceptionOccured()) {
+                System.exit(1);
+            }
 
         } else {
             Command command = new Command();
@@ -26,4 +29,7 @@ public class Init {
 
         }
     }
+
 }
+
+
