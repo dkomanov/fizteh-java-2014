@@ -357,8 +357,9 @@ public class ShellMain {
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {
                 System.out.print("$ ");
-                if (!sc.hasNextLine())
+                if (!sc.hasNextLine()) {
                     break;
+                }
                 String allCommands = sc.nextLine();
                 execLine(allCommands);
                 if (exited) {
