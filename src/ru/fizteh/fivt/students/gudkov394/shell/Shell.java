@@ -71,8 +71,9 @@ public class Shell {
             }
             int size = 0;
             for (int j = 0; j < i - first; ++j) {
-                if (commands[j + first].length() != 0)
+                if (commands[j + first].length() != 0) {
                     ++size;
+                }
             }
 
             String[] s = new String[size];
