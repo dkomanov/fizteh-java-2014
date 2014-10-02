@@ -1,9 +1,9 @@
 package util;
 
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.NoSuchElementException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 /**
  *
@@ -34,9 +34,6 @@ public final class ShellMain {
                         Command cmd = Command.create(Arrays.copyOfRange(args,
                                 j, i));
                         cmd.run();
-                    } catch (IOException e) {
-                        System.err.println(e.getMessage());
-                        System.exit(0);
                     } catch (Exception e) {
                         System.err.println(e.getMessage());
                         System.exit(1);
