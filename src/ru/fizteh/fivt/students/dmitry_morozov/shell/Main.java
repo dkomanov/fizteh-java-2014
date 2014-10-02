@@ -17,7 +17,7 @@ public class Main {
     private static File currentFile = new File(currentPath);
     private static String error = "";
 
-    public static String PathHandler(String path) {
+    public static String pathHandler(String path) {
         String[] splitted = path.split("/");
         boolean fromRoot = path.startsWith("/");
         int backSteps = 0; // How much steps must we do in current path
@@ -25,11 +25,11 @@ public class Main {
         String[] handledPath = new String[splitted.length];
         for (int i = 0; i < splitted.length; i++) {
             if (splitted[i].equals("..")) {
-                if (finishIndex > 0)
+                if (finishIndex > 0) {
                     finishIndex--;
-                else
+                } else {
                     backSteps++;
-
+                }
             } else if (!splitted[i].equals(".")) {
                 handledPath[finishIndex] = splitted[i];
                 finishIndex++;
@@ -37,46 +37,54 @@ public class Main {
         }
         if (fromRoot) {
             String res = "";
-            for (int i = 0; i < finishIndex; i++)
-                if (i != finishIndex - 1)
+            for (int i = 0; i < finishIndex; i++) {
+                if (i != finishIndex - 1) {
                     res += handledPath[i] + "/";
-                else
+                } else {
                     res += handledPath[i];
+                }
+            }
             return res;
         }
 
         String[] prefix = currentPath.split("/");
         String res = "";
         if (backSteps >= prefix.length) {
-
-            for (int i = 0; i < finishIndex; i++)
-                if (i != finishIndex - 1)
+            for (int i = 0; i < finishIndex; i++) {
+                if (i != finishIndex - 1) {
                     res += handledPath[i] + "/";
-                else
+                } else {
                     res += handledPath[i];
+                }
+            }
         } else {
-            for (int i = 0; i < prefix.length - backSteps; i++)
-                if (i != prefix.length - backSteps - 1)
+            for (int i = 0; i < prefix.length - backSteps; i++) {
+                if (i != prefix.length - backSteps - 1) {
                     res += prefix[i] + "/";
-                else
+                } else {
                     res += prefix[i];
-            if (finishIndex != 0)
+                }
+            }
+            if (finishIndex != 0) {
                 res += "/";
-            for (int i = 0; i < finishIndex; i++)
-                if (i != finishIndex - 1)
+            }
+            for (int i = 0; i < finishIndex; i++) {
+                if (i != finishIndex - 1) {
                     res += handledPath[i] + "/";
-                else
+                } else {
                     res += handledPath[i];
+                }
+            }
         }
 
-        if (!res.startsWith("/"))
+        if (!res.startsWith("/")) {
             res = "/" + res;
-
+        }
         return res;
     }
 
-    public static ErrorCode CatOne(String path) throws IOException {
-        String hPath = PathHandler(path);
+    public static ErrorCode catOne(String path) throws IOException {
+        String hPath = pathHandler(path);
         File f = new File(hPath);
         if (!f.exists()) {
             error += "No such file: " + hPath + "\n";
@@ -98,20 +106,20 @@ public class Main {
         return ErrorCode.SUCCESS;
     }
 
-    public static ErrorCode Cat(String[] params, int bIndex, int eIndex)
+    public static ErrorCode cat(String[] params, int bIndex, int eIndex)
             throws IOException {
 
         boolean errorOcured = false;
         for (int i = bIndex; i < eIndex; i++) {
             errorOcured = errorOcured
-                    || (ErrorCode.ERROR_EXECUTING == CatOne(params[i]));
+                    || (ErrorCode.ERROR_EXECUTING == catOne(params[i]));
         }
 
         return errorOcured ? ErrorCode.ERROR_EXECUTING : ErrorCode.SUCCESS;
     }
 
-    public static ErrorCode CD(String path) {
-        String candPath = PathHandler(path);
+    public static ErrorCode cD(String path) {
+        String candPath = pathHandler(path);
         File dir = new File(candPath);
         if (!dir.exists()) {
             error += "cd: '" + path + "': no such file or directory\n";
@@ -127,7 +135,7 @@ public class Main {
 
     }
 
-    public static ErrorCode LsOne(String path) { // Handled path should be given
+    public static ErrorCode lsOne(String path) { // Handled path should be given
         File f = new File(path);
         if (!f.exists()) {
             error += "Directory doesn't exist: " + path + "\n";
@@ -139,23 +147,25 @@ public class Main {
         }
         System.out.println(path + ":\n");
         String[] list = f.list();
-        for (int i = 0; i < list.length; i++)
+        for (int i = 0; i < list.length; i++) {
             System.out.println(list[i]);
+        }
         return ErrorCode.SUCCESS;
     }
 
-    public static ErrorCode Ls(String[] params, int bIndex, int eIndex) {
-        if (bIndex == eIndex)
-            return LsOne(currentPath);
+    public static ErrorCode ls(String[] params, int bIndex, int eIndex) {
+        if (bIndex == eIndex) {
+            return lsOne(currentPath);
+        }
         boolean errorOcurred = false;
         for (int i = bIndex; i < eIndex; i++) {
             errorOcurred = errorOcurred
-                    || (LsOne(PathHandler(params[i])) == ErrorCode.ERROR_EXECUTING);
+                    || (lsOne(pathHandler(params[i])) == ErrorCode.ERROR_EXECUTING);
         }
         return errorOcurred ? ErrorCode.ERROR_EXECUTING : ErrorCode.SUCCESS;
     }
 
-    public static ErrorCode MkDirOne(String path) { // should be handled
+    public static ErrorCode mkDirOne(String path) { // should be handled
         File dir = new File(path);
         if (dir.exists()) {
             error += path + " already exists\n";
@@ -169,7 +179,7 @@ public class Main {
         return ErrorCode.SUCCESS;
     }
 
-    public static ErrorCode MkDir(String[] params, int bIndex, int eIndex) {
+    public static ErrorCode mkDir(String[] params, int bIndex, int eIndex) {
         if (bIndex == eIndex) {
             error += "Not enough parametres for mkdir: directory name expected\n";
             return ErrorCode.ERROR_EXECUTING;
@@ -177,12 +187,12 @@ public class Main {
         boolean errorOcurred = false;
         for (int i = bIndex; i < eIndex; i++) {
             errorOcurred = errorOcurred
-                    || (MkDirOne(PathHandler(params[i])) == ErrorCode.ERROR_EXECUTING);
+                    || (mkDirOne(pathHandler(params[i])) == ErrorCode.ERROR_EXECUTING);
         }
         return errorOcurred ? ErrorCode.ERROR_EXECUTING : ErrorCode.SUCCESS;
     }
 
-    public static boolean RemoveDirectory(File dir) { // returns false if
+    public static boolean removeDirectory(File dir) { // returns false if
         // something was wrong
         File[] flist = dir.listFiles();
         for (int i = 0; i < flist.length; i++) {
@@ -194,8 +204,9 @@ public class Main {
                         return false;
                     }
                 } else {
-                    if (!RemoveDirectory(flist[i]))
+                    if (!removeDirectory(flist[i])) {
                         return false;
+                    }
                 }
             } else {
                 if (!flist[i].delete()) {
@@ -209,7 +220,7 @@ public class Main {
         return dir.delete();
     }
 
-    public static ErrorCode RMOne(String path, boolean rec) {
+    public static ErrorCode rMOne(String path, boolean rec) {
         File f = new File(path);
         if (!f.exists()) {
             error += "rm: cannot remove '" + path
@@ -221,7 +232,7 @@ public class Main {
                 error += "rm: '" + path + "': is a directory\n";
                 return ErrorCode.ERROR_EXECUTING;
             }
-            if (!RemoveDirectory(f))
+            if (!removeDirectory(f))
                 return ErrorCode.ERROR_EXECUTING;
         } else {
             if (!f.delete()) {
@@ -233,42 +244,45 @@ public class Main {
         return ErrorCode.SUCCESS;
     }
 
-    public static ErrorCode RM(String[] params, int bIndex, int eIndex) {
+    public static ErrorCode rM(String[] params, int bIndex, int eIndex) {
         if (bIndex == eIndex) {
             error += "Not enough parametres for rm\n";
             return ErrorCode.ERROR_EXECUTING;
         }
         boolean rec = false;
         int keyIndex = -1;
-        for (int i = bIndex; i < eIndex; i++)
+        for (int i = bIndex; i < eIndex; i++) {
             if (params[i].equals("-r")) {
                 rec = true;
                 keyIndex = i;
                 break;
             }
+        }
         boolean errorOcurred = false;
         for (int i = bIndex; i < eIndex; i++) {
             if (i != keyIndex) {
                 errorOcurred = errorOcurred
-                        || (RMOne(PathHandler(params[i]), rec) == ErrorCode.ERROR_EXECUTING);
+                        || (rMOne(pathHandler(params[i]), rec) == ErrorCode.ERROR_EXECUTING);
             }
         }
         return errorOcurred ? ErrorCode.ERROR_EXECUTING : ErrorCode.SUCCESS;
     }
 
-    public static int FileCopy(File toCopy, String dest) throws IOException {
+    public static int fileCopy(File toCopy, String dest) throws IOException {
         /**
          * Return values: 0 - success, -1 - file already exists, -2 - toCopy
          * file is not readable
          */
-        if (!toCopy.canRead())
+        if (!toCopy.canRead()) {
             return -2;
+        }
         File fDest = new File(dest);
         if (fDest.isDirectory()) {
             fDest = new File(dest + "/" + toCopy.getName());
         }
-        if (!fDest.createNewFile())
+        if (!fDest.createNewFile()) {
             return -1;
+        }
         FileInputStream fin = new FileInputStream(toCopy);
         FileOutputStream fout = new FileOutputStream(fDest);
         int readChar = fin.read();
@@ -281,7 +295,7 @@ public class Main {
         return 0;
     }
 
-    public static int DirectoryCopy(File dir, String dest) throws IOException {
+    public static int directoryCopy(File dir, String dest) throws IOException {
         File cpDir = new File(dest);
         String newDest = dest;
         if (cpDir.exists()) {
@@ -294,7 +308,6 @@ public class Main {
                 return -1;
             }
         } else {
-
             if (!cpDir.mkdir()) {
                 return -1;
             }
@@ -303,16 +316,18 @@ public class Main {
         File[] content = dir.listFiles();
         for (int i = 0; i < content.length; i++) {
             if (content[i].isDirectory()) {
-                if (DirectoryCopy(content[i],
-                        newDest + "/" + content[i].getName()) < 0)
+                if (directoryCopy(content[i],
+                        newDest + "/" + content[i].getName()) < 0) {
                     return -1;
-            } else if (FileCopy(content[i], newDest) < 0)
+                }
+            } else if (fileCopy(content[i], newDest) < 0) {
                 return -1;
+            }
         }
         return 0;
     }
 
-    public static ErrorCode CP(String[] params, int bIndex, int eIndex)
+    public static ErrorCode cP(String[] params, int bIndex, int eIndex)
             throws IOException { // takes exactly to paramtres and an optional
         // key
         if (bIndex + 1 > eIndex) {
@@ -324,11 +339,11 @@ public class Main {
             rec = true;
             bIndex++;
         }
-        String toCopyPath = PathHandler(params[bIndex]);
+        String toCopyPath = pathHandler(params[bIndex]);
         File toCopy = new File(toCopyPath);
-        String dest = PathHandler(params[bIndex + 1]);
+        String dest = pathHandler(params[bIndex + 1]);
         if (!toCopy.isDirectory()) {
-            int errcode = FileCopy(toCopy, dest);
+            int errcode = fileCopy(toCopy, dest);
             switch (errcode) {
             case 0:
                 return ErrorCode.SUCCESS;
@@ -352,7 +367,7 @@ public class Main {
                     + " into itself\n";
             return ErrorCode.ERROR_EXECUTING;
         }
-        if (DirectoryCopy(toCopy, dest) < 0) {
+        if (directoryCopy(toCopy, dest) < 0) {
             error += "Failed copy " + params[bIndex] + "\n";
             return ErrorCode.ERROR_EXECUTING;
         }
@@ -360,7 +375,7 @@ public class Main {
         return ErrorCode.SUCCESS;
     }
 
-    public static ErrorCode MV(String[] params, int bIndex, int eIndex)
+    public static ErrorCode mV(String[] params, int bIndex, int eIndex)
             throws IOException {
         if (bIndex + 2 > eIndex) {
             error += "Not eniugh parametres for mv\n";
@@ -371,15 +386,17 @@ public class Main {
         forCP[0] = "-r";
         forCP[1] = params[bIndex];
         forCP[2] = params[bIndex + 1];
-        if (ErrorCode.ERROR_EXECUTING == CP(forCP, 0, forCPParams))
+        if (ErrorCode.ERROR_EXECUTING == cP(forCP, 0, forCPParams)) {
             return ErrorCode.ERROR_EXECUTING;
-        if (ErrorCode.ERROR_EXECUTING == RMOne(PathHandler(params[bIndex]),
-                true))
+        }
+        if (ErrorCode.ERROR_EXECUTING == rMOne(pathHandler(params[bIndex]),
+                true)) {
             return ErrorCode.ERROR_EXECUTING;
+        }
         return ErrorCode.SUCCESS;
     }
 
-    public static ErrorCode FunctionHandler(String[] comAndParams, int bIndex,
+    public static ErrorCode functionHandler(String[] comAndParams, int bIndex,
             int eIndex) throws IOException {
         final int optAm = 9;
         String[] options = new String[optAm]; // Initializing options list
@@ -394,9 +411,11 @@ public class Main {
         options[8] = "cp"; //
 
         int functionNumber;
-        for (functionNumber = 0; functionNumber < options.length; functionNumber++)
-            if (options[functionNumber].equals(comAndParams[bIndex]))
+        for (functionNumber = 0; functionNumber < options.length; functionNumber++) {
+            if (options[functionNumber].equals(comAndParams[bIndex])) {
                 break;
+            }
+        }
 
         switch (functionNumber) {
         case optAm: // Command not found
@@ -409,29 +428,28 @@ public class Main {
                 error += "Not enough parametres for cd\n";
                 return ErrorCode.ERROR_EXECUTING;
             }
-            return CD(comAndParams[bIndex + 1]);
+            return cD(comAndParams[bIndex + 1]);
         case 1: // Cat
-            return Cat(comAndParams, bIndex + 1, eIndex);
+            return cat(comAndParams, bIndex + 1, eIndex);
         case 6: // pwd
             System.out.println(currentPath);
             return ErrorCode.SUCCESS;
         case 2: // ls
-            return Ls(comAndParams, bIndex + 1, eIndex);
+            return ls(comAndParams, bIndex + 1, eIndex);
         case 7: // mkdir
-            return MkDir(comAndParams, bIndex + 1, eIndex);
+            return mkDir(comAndParams, bIndex + 1, eIndex);
         case 4:
-            return RM(comAndParams, bIndex + 1, eIndex);
+            return rM(comAndParams, bIndex + 1, eIndex);
         case 8: // cp
-            return CP(comAndParams, bIndex + 1, eIndex);
+            return cP(comAndParams, bIndex + 1, eIndex);
         case 5:
-            return MV(comAndParams, bIndex + 1, eIndex);
-
+            return mV(comAndParams, bIndex + 1, eIndex);
+        default:
+            return ErrorCode.SUCCESS;
         }
-
-        return ErrorCode.SUCCESS;
     }
 
-    public static ErrorCode CommandSplitting(String command) throws IOException {
+    public static ErrorCode commandSplitting(String command) throws IOException {
         String[] firstSplitted = command.split(" ");
         String[] toGive = new String[firstSplitted.length];
         int j = 0;
@@ -441,12 +459,13 @@ public class Main {
                 j++;
             }
         }
-        if (0 == j)
+        if (0 == j) {
             return ErrorCode.SUCCESS;
-        return FunctionHandler(toGive, 0, j);
+        }
+        return functionHandler(toGive, 0, j);
     }
 
-    public static void PacketMode(String[] args) throws IOException {
+    public static void packetMode(String[] args) throws IOException {
         String currentLine = "";
         for (int i = 0; i < args.length; i++) {
             currentLine += args[i] + " ";
@@ -454,7 +473,7 @@ public class Main {
         String[] commands = currentLine.split(";");
         for (int i = 0; i < commands.length; i++) {
             if (commands[i].length() > 0) {
-                ErrorCode exitCode = CommandSplitting(commands[i]);
+                ErrorCode exitCode = commandSplitting(commands[i]);
                 if (ErrorCode.EXIT == exitCode) {
                     return;
                 }
@@ -479,7 +498,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         if (args.length != 0) {
-            PacketMode(args);
+            packetMode(args);
             return;
         }
         Scanner in = new Scanner(System.in);
@@ -490,7 +509,7 @@ public class Main {
             String[] commands = currentLine.split(";");
             for (int i = 0; i < commands.length; i++) {
                 if (commands[i].length() > 0) {
-                    ErrorCode exitCode = CommandSplitting(commands[i]);
+                    ErrorCode exitCode = commandSplitting(commands[i]);
                     if (ErrorCode.EXIT == exitCode) {
                         contFlag = false;
                         break;
