@@ -98,7 +98,7 @@ public class Shell {
             }
 
         } catch (IOException e) {
-            System.err.println("Exception on coping");
+            System.err.println("Exception on coping: " + e.getMessage());
             System.exit(-1);
         }
     }
@@ -290,10 +290,6 @@ public class Shell {
                                 }
                                 File f1 = new File(directory + File.separator + source);
                                 File f2 = new File(directory + File.separator + destination);
-                                if( f1.isFile() && f2.isFile() && f2.exists()) {
-                                    System.err.println("mv: can't move file in existed file");
-                                    System.exit(-1);
-                                }
                                 if (    (f1.isFile() && !f2.exists()
                                         && f1.getParent().equals(f2.getParent()))
                                         ||
@@ -434,9 +430,6 @@ public class Shell {
                                 break;
                             }
                         }
-                    } catch (IOException e) {
-                        System.err.println("Exception on coping : " + e.getMessage());
-                        System.exit(-1);
                     } catch (Exception e) {
                         System.err.println("Exception: " + e.getMessage());
                         System.exit(-1);
