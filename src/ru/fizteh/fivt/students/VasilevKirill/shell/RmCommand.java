@@ -12,6 +12,9 @@ public class RmCommand implements Command {
         if (args.length < 2) {
             return 0;
         }
+        if (args[1] == null || args[2] == null) {
+            return 1;
+        }
         if (args[1].equals("-r")) {
             File file = new File(Shell.currentPath + File.separator + args[2]);
             if (!file.exists()) {

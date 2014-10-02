@@ -69,6 +69,8 @@ public class Shell {
                         if (currentCommand.execute(currentArgs) == 1) {
                             status = 1;
                         }
+                    } else {
+                        return 1;
                     }
                     currentArgs = new String[4];
                     argIterator = 0;
@@ -76,6 +78,8 @@ public class Shell {
             }
             if ((currentCommand = commandMap.get(currentArgs[0])) != null) {
                 currentCommand.execute(currentArgs);
+            } else {
+                return 1;
             }
         } catch (IOException e) {
             System.err.println("IOException caught");
