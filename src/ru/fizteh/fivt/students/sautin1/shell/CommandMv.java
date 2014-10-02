@@ -6,6 +6,7 @@ import java.nio.file.*;
 import static java.nio.file.StandardCopyOption.*;
 
 /**
+ * "mv" command.
  * Created by sautin1 on 9/30/14.
  */
 public class CommandMv extends Command {
@@ -21,6 +22,11 @@ public class CommandMv extends Command {
         }
     }
 
+    /**
+     * Move (rename) files and directories.
+     * @param args [0] - command name; [1] - source file name; [2] - destination file name.
+     * @throws IOException
+     */
     @Override
     public void execute(final String... args) throws IOException {
         if (!enoughArguments(args)) {
@@ -38,7 +44,9 @@ public class CommandMv extends Command {
             if (Files.isDirectory(destPath)) {
                 destPath = destPath.resolve(sourcePath.getFileName()).normalize();
                 if (Files.exists(destPath) && Files.isDirectory(destPath) && !isEmptyDir(destPath)) {
-                    throw new IOException(toString() + ": cannot move \'" + sourcePath.getFileName() + "\' to \'" + destPath.getFileName() + "\': Directory not empty");
+                    String errorMessage = toString() + ": cannot move \'" + sourcePath.getFileName();
+                    errorMessage = errorMessage +  "\' to \'" + destPath.getFileName() + "\': Directory not empty";
+                    throw new IOException(errorMessage);
                 }
             }
             try {
@@ -47,7 +55,9 @@ public class CommandMv extends Command {
                 throw new IOException(toString() + ": " + e.getMessage());
             }
         } else {
-            throw new NoSuchFileException(toString() + ": cannot stat \'" + sourcePath.getFileName() + "\': No such file or directory");
+            String errorMessage = toString() + ": cannot stat \'" + sourcePath.getFileName();
+            errorMessage = errorMessage + "\': No such file or directory";
+            throw new NoSuchFileException(errorMessage);
         }
     }
 

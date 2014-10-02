@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
+ * "cd" command.
  * Created by sautin1 on 9/30/14.
  */
 public class CommandCd extends Command {
@@ -16,8 +17,13 @@ public class CommandCd extends Command {
         commandName = "cd";
     }
 
+    /**
+     * Changes present working directory to args[1]. If (args.length == 1) returns to the home directory.
+     * @param args [0] - command name; [1] - (optional) new absolute or relative path
+     * @throws IOException
+     */
     @Override
-    public void execute(String... args) throws RuntimeException, IOException {
+    public void execute(String... args) throws IOException {
         if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }

@@ -6,6 +6,7 @@ import java.nio.file.*;
 import static java.nio.file.StandardCopyOption.*;
 
 /**
+ * "cp" command.
  * Created by sautin1 on 9/30/14.
  */
 public class CommandCp extends Command {
@@ -16,6 +17,14 @@ public class CommandCp extends Command {
         commandName = "cp";
     }
 
+    /**
+     * Copies file from sourcePath to destPath.
+     * If (isRecursive == true), then copies also all subdirectories of the directory, specified by sourcePath.
+     * @param sourcePath - source file/directory path
+     * @param destPath - destination file/directory path
+     * @param isRecursive - flag whether the contents of the source folder have to be copied
+     * @throws IOException
+     */
     public void copyFile(final Path sourcePath, final Path destPath, final boolean isRecursive) throws IOException {
         if (!Files.isDirectory(sourcePath)) {
             Files.copy(sourcePath, destPath, REPLACE_EXISTING);
@@ -23,7 +32,7 @@ public class CommandCp extends Command {
             Files.copy(sourcePath, destPath, REPLACE_EXISTING);
             try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(sourcePath)) {
                 for (Path entryPath : directoryStream) {
-                    copyFile(entryPath, destPath.resolve(entryPath.getFileName()).normalize(), isRecursive);
+                    copyFile(entryPath, destPath.resolve(entryPath.getFileName()).normalize(), true);
                 }
             }
         } else {
@@ -31,6 +40,11 @@ public class CommandCp extends Command {
         }
     }
 
+    /**
+     * Copies file from sourcePath to destPath using copyFile().
+     * @param args [0] - command name; [1] - (optional) "-r" flag; [2] - source file name; [3] - destination file name.
+     * @throws IOException
+     */
     @Override
     public void execute(final String... args) throws IOException {
         if (!enoughArguments(args)) {
@@ -56,7 +70,9 @@ public class CommandCp extends Command {
                     throw new IOException(toString() + ": " + e.getMessage());
                 }
         } else {
-            throw new NoSuchFileException(toString() + ": cannot stat \'" + sourcePath.getFileName() + "\': No such file or directory");
+            String errorMessage = toString() + ": cannot stat \'" + sourcePath.getFileName();
+            errorMessage = errorMessage + "\': No such file or directory";
+            throw new NoSuchFileException(errorMessage);
         }
     }
 

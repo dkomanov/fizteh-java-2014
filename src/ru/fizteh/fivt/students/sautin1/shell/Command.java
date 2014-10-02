@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
+ * A typical Unix shell command.
  * Created by sautin1 on 10/1/14.
  */
 public abstract class Command {
@@ -12,7 +13,7 @@ public abstract class Command {
     protected int minArgNumber;
     protected String commandName;
 
-    public abstract void execute(String... args) throws RuntimeException, IOException;
+    public abstract void execute(String... args) throws IOException;
 
     @Override
     public String toString() {

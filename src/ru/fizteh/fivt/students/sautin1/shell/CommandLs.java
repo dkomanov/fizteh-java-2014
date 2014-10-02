@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
+ * "ls" command.
  * Created by sautin1 on 9/30/14.
  */
 public class CommandLs extends Command {
@@ -15,8 +16,13 @@ public class CommandLs extends Command {
         commandName = "ls";
     }
 
+    /**
+     * Lists present working directory contents.
+     * @param args [0] - command name.
+     * @throws IOException
+     */
     @Override
-    public void execute(String... args) throws RuntimeException, IOException {
+    public void execute(String... args) throws IOException {
         if (!enoughArguments(args)) {
             throw new IllegalArgumentException(toString() + ": missing operand");
         }

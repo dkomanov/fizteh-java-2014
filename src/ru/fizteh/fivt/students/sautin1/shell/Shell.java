@@ -8,6 +8,7 @@ import static ru.fizteh.fivt.students.sautin1.shell.CommandParser.splitCommandIn
 import static ru.fizteh.fivt.students.sautin1.shell.CommandParser.splitStringIntoCommands;
 
 /**
+ * Represents Unix shell with interactive and non-interactive modes available.
  * Created by sautin1 on 9/30/14.
  */
 public class Shell {
@@ -71,10 +72,9 @@ public class Shell {
             } catch (NullPointerException e) {
                 System.err.println(e.getMessage());
                 return false;
-            } finally {
-                if (wantsExit) {
-                    break;
-                }
+            }
+            if (wantsExit) {
+                break;
             }
         }
         return wantsExit;
