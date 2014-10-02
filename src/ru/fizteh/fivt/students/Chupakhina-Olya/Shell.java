@@ -20,8 +20,7 @@ public class Shell {
             if (args.length > 0) {
                 mode = true;
                 packageMode(args);
-            }
-            else {
+            } else {
                 mode = false;
                 interactiveMode();
             }
@@ -58,14 +57,14 @@ public class Shell {
         String[] commands = line.trim().split(";");
         try {
             for (int i = 0; i < commands.length; i ++) {
-                DoCommand(commands[i]);
+                doCommand(commands[i]);
             }
         } catch (Exception e) {
             System.exit(0);
         }
     }
 
-    private static void DoCommand(String command)
+    private static void doCommand(String command)
             throws Exception {
         command = command.trim();
         String[] args = command.split("\\s+");
@@ -91,8 +90,7 @@ public class Shell {
                             throw new Exception(
                                     );
                         }
-                    }
-                    else{
+                    } else {
                     throw new Exception(
                             "cd: '" + args[1] + "': No such file or directory");
                     }
@@ -123,7 +121,7 @@ public class Shell {
                 System.out.println(current);
             }
 
-            if (args[0].equals("rm")){
+            if (args[0].equals("rm")) {
                 done = true;
                 if ((args.length > 3) && (args.length < 2)) {
                     throw new Exception(
@@ -149,7 +147,7 @@ public class Shell {
                 }
                 remove(file);
             }
-            if (args[0].equals("cp")){
+            if (args[0].equals("cp")) {
                 done = true;
                 if ((args.length > 4) && (args.length < 3)) {
                     throw new Exception(
@@ -177,7 +175,7 @@ public class Shell {
                 }
                 copy(from, to);
             }
-            if (args[0].equals("mv ")){
+            if (args[0].equals("mv")) {
                 done = true;
                 if ((args.length != 3)) {
                     throw new Exception(
@@ -210,7 +208,7 @@ public class Shell {
                 }
             }
 
-            if (args[0].equals("ls")){
+            if (args[0].equals("ls")) {
                 done = true;
                 if ((args.length != 1)) {
                     throw new Exception(
@@ -235,9 +233,8 @@ public class Shell {
                     throw new Exception(
                             "cat: " + args[1] + ": is a directory");
                 }
-                try {
-                        BufferedReader reader = new BufferedReader(
-                                new FileReader(currentFile));
+                try (BufferedReader reader = new BufferedReader(
+                        new FileReader(currentFile));) {
                         String line;
                         while ((line = reader.readLine()) != null) {
                             System.out.println(line);
@@ -257,28 +254,27 @@ public class Shell {
                 System.exit(0);
             }
 
-            if (!done){
+            if (!done) {
                 throw new Exception(
                         args[0] + ": Unknown command");
             }
         }
-        catch (Exception e){
+        catch (Exception e) {
             System.err.println(e.getMessage());
             if (mode) {
                 System.exit(-1);
             }
         }
-
     }
     private static void remove(File file)
             throws Exception {
         if (file.isDirectory()) {
-            File[] FList = file.listFiles();
-            if (FList == null) {
+            File[] fList = file.listFiles();
+            if (fList == null) {
                 throw new Exception(
                          "rm: cannot remove");
             }
-            for (File f: FList) {
+            for (File f: fList) {
                 remove(f);
             }
         }
@@ -320,5 +316,4 @@ public class Shell {
             }
         }
     }
-
 }
