@@ -13,7 +13,7 @@ public class Main {
         SUCCESS, EXIT, NO_SUCH_COMMAND, ERROR_EXECUTING
     }
 
-    private static String currentPath = "/";
+    private static String currentPath = System.getProperty("user.dir");
     private static File currentFile = new File(currentPath);
     private static String error = "";
 
@@ -420,7 +420,7 @@ public class Main {
 
         switch (functionNumber) {
         case optAm: // Command not found
-            error = comAndParams[0];
+            error = comAndParams[0] + "\n";
             return ErrorCode.NO_SUCH_COMMAND;
         case 0: // Exit
             return ErrorCode.EXIT;
