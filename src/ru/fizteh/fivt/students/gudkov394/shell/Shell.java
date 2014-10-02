@@ -56,16 +56,32 @@ public class Shell {
 
     public void packageMode(final String[] args) {
         CurrentDirectory currentDirectory = new CurrentDirectory();
+        StringBuilder builder = new StringBuilder();
+        for (String s : args) {
+            builder.append(s).append(" ");
+        }
+        String string = new String(builder);
+        String[] commands = string.split(";|(\\s+)");
         int i = 0;
-        while (i < args.length) {
+        while (i < commands.length) {
             int first = i;
             ++i;
-            while (i < args.length && !checkName(args[i])) {
+            while (i < commands.length && !checkName(commands[i])) {
                 ++i;
             }
-            String[] s = new String[i - first];
+            int size = 0;
+            for (int j = 0; j < i - first; ++j) {
+                if (commands[j + first].length() != 0)
+                    ++size;
+            }
+
+            String[] s = new String[size];
+            int tmpSize = 0;
             for (int j = 0; j < s.length; ++j) {
-                s[j] = args[j + first];
+                if (commands[j + first].length() != 0) {
+                    s[tmpSize] = commands[j + first];
+                    ++tmpSize;
+                }
             }
             run(s, currentDirectory);
         }
