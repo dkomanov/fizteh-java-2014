@@ -22,8 +22,7 @@ public final class Commands {
             throw new Exception(command + ": missing operand");
         } else {
             if (args.length > 2) {
-                throw new Exception(command
-                        + ": too much arguments");
+                throw new Exception(command + ": too much arguments");
             }
         }
         try {
@@ -58,8 +57,8 @@ public final class Commands {
             }
         } catch (InvalidPathException e) {
             throw new Exception(command
-                   + ": cannot change directory to '" 
-                   + args[1] + "': illegal character in path");
+                    + ": cannot change directory to '"
+                    + args[1] + "': illegal character in path");
         } catch (SecurityException e) {
             throw new Exception(command
                     + ": cannot change directory: access denied");
@@ -80,41 +79,41 @@ public final class Commands {
             String path = System.getProperty("user.dir");
             File newDirectory = new File(path + File.separator + dirName);
             if (args[1].isEmpty()) {
-            throw new Exception(command + ": cannot create '" 
-            + "': no such file or directory");
+                throw new Exception(command + ": cannot create '"
+                        + "': no such file or directory");
             }
             if (newDirectory.exists()) {
-                throw new Exception(command + ": cannot create directory '" 
-                + args[1] + "': File exists");
+                throw new Exception(command + ": cannot create directory '"
+                        + args[1] + "': File exists");
             } else {
                 if (!newDirectory.mkdir()) {
-                throw new Exception(command 
-                + ": cannot create directory '" 
-                + args[1]);
+                    throw new Exception(command
+                            + ": cannot create directory '"
+                            + args[1]);
                 }
             }
         } catch (InvalidPathException e) {
-            throw new Exception(command 
-            + ": cannot create directory '" 
-            + args[1] + "': illegal character in name");
+            throw new Exception(command
+                    + ": cannot create directory '"
+                    + args[1] + "': illegal character in name");
         } catch (SecurityException e) {
-            throw new Exception(command 
-            + ": cannot create directory '" 
-            + args[1] + "': access denied");
+            throw new Exception(command
+                    + ": cannot create directory '"
+                    + args[1] + "': access denied");
         }
     }
     public static void pwd(final String[] args) throws Exception {
         String command = "pwd";
         if (args.length != 1) {
-            throw new Exception(command 
-            + ": too much arguments");
+            throw new Exception(command
+                    + ": too much arguments");
         }
         try {
             String path = System.getProperty("user.dir");
             System.out.println(path);
         } catch (SecurityException e) {
-            throw new Exception(command 
-            + ": cannot read current working directory: access denied");
+            throw new Exception(command
+                    + ": cannot read current working directory: access denied");
         }
     }
 
@@ -126,9 +125,9 @@ public final class Commands {
             }
         }
         if (!name.delete()) {
-            throw new Exception(command 
-            + ": cannot remove a file '" 
-            + name.getName() + "'");
+            throw new Exception(command
+                    + ": cannot remove a file '"
+                    + name.getName() + "'");
         }
     }
     public static void rm(final String[] args) throws Exception {
@@ -141,23 +140,23 @@ public final class Commands {
         if (args.length > suitableAmount) {
             throw new Exception(command + ": too much arguments");
         } else
-            if (args.length == suitableAmount) {
-                if (args[1].equals("-r")) {
-                    recursive = true;
-                    file = args[2];
-                    index = 2;
-                } else {
-                    throw new Exception(command + ": too much arguments");
-                }
+        if (args.length == suitableAmount) {
+            if (args[1].equals("-r")) {
+                recursive = true;
+                file = args[2];
+                index = 2;
             } else {
-                if (args.length != 2) {
-                    throw new Exception(command + ": missing operand");
-                } else {
-                    recursive = false;
-                    file = args[1];
-                    index = 1;
-                }
+                throw new Exception(command + ": too much arguments");
             }
+        } else {
+            if (args.length != 2) {
+                throw new Exception(command + ": missing operand");
+            } else {
+                recursive = false;
+                file = args[1];
+                index = 1;
+            }
+        }
         try {
             File object = new File(file);
             if (!object.isAbsolute()) {
@@ -165,45 +164,45 @@ public final class Commands {
                 object = new File(current + File.separator + file);
             }
             if (args[index].isEmpty()) {
-            throw new Exception(command 
-            + ": cannot remove '" 
-            + args[index] 
-            + "': No such file or directory");
+                throw new Exception(command
+                        + ": cannot remove '"
+                        + args[index]
+                        + "': No such file or directory");
             } else {
                 if (object.exists()) {
                     if (object.isFile()) {
                         if (!object.delete()) {
-                        throw new Exception(command 
-                        + ": cannot remove a file '" + file + "'");
+                            throw new Exception(command
+                                    + ": cannot remove a file '" + file + "'");
                         }
                     } else {
                         if (object.isDirectory()) {
                             if (recursive) {
                                 rmutil(object);
                             } else {
-                            throw new Exception(command + ": " 
-                                + file + ": is a directory");
+                                throw new Exception(command + ": "
+                                        + file + ": is a directory");
                             }
                         }
                     }
                 } else {
-                throw new Exception(command 
-                    + ": cannot remove '" 
-                    + file 
-                    + "': No such file or directory");
+                    throw new Exception(command
+                            + ": cannot remove '"
+                            + file
+                            + "': No such file or directory");
                 }
             }
         } catch (SecurityException e) {
-        throw new Exception(command 
-            + ": cannot remove file '" 
-            + args[index] 
-            + "': access denied");
+            throw new Exception(command
+                    + ": cannot remove file '"
+                    + args[index]
+                    + "': access denied");
         } catch (InvalidPathException e) {
-        throw new Exception(command 
-        + ": cannot remove file '" 
-        + args[index] 
-        + "': illegal character in name");
-	} 
+            throw new Exception(command
+                    + ": cannot remove file '"
+                    + args[index]
+                    + "': illegal character in name");
+        }
     }
 
     private static void cputil(final File source, final File destination)
@@ -215,12 +214,12 @@ public final class Commands {
             String filePath = absolutePath + File.separator + sourceName;
             File current = new File(filePath);
             if (current.exists()) {
-            	throw new Exception(command + ": " + current.getName() + " : directory already exists");
+                throw new Exception(command + ": " + current.getName() + " : directory already exists");
             } else {
                 if (!current.mkdir()) {
-                throw new Exception(command 
-                    + ": cannot create directory '" 
-                    + current.getName());
+                    throw new Exception(command
+                            + ": cannot create directory '"
+                            + current.getName());
                 }
             }
             for (File c : source.listFiles()) {
@@ -234,7 +233,7 @@ public final class Commands {
                 throw new Exception(command + ": file already exists");
             } else {
                 if (!newFile.createNewFile()) {
-                throw new Exception(command + ": cannot create a file");
+                    throw new Exception(command + ": cannot create a file");
                 } else {
                     FileReader f1 = new FileReader(source);
                     FileWriter f2 = new FileWriter(newFile);
@@ -260,7 +259,7 @@ public final class Commands {
         String [] idealCmd = {"cp", "-r", "source", "destination"};
         int suitAmount = idealCmd.length;
         if (args.length > suitAmount) {
-        throw new Exception(command + ": too much arguments");
+            throw new Exception(command + ": too much arguments");
         } else {
             if (args.length == suitAmount) {
                 if (args[1].equals("-r")) {
@@ -269,11 +268,11 @@ public final class Commands {
                     index = 2;
                     destination = args[index + 1];
                 } else {
-                throw new Exception(command + ": too much arguments");
+                    throw new Exception(command + ": too much arguments");
                 }
             } else {
                 if (args.length != suitAmount - 1) {
-                throw new Exception(command + ": missing operand");
+                    throw new Exception(command + ": missing operand");
                 } else {
                     recursive = false;
                     source = args[1];
@@ -301,19 +300,19 @@ public final class Commands {
                 return;
             }
             if (!fileSource.exists()) {
-            	throw new Exception(command + ": " 
-                + fileSource.getName()
-                + " : No such file or directory");
+                throw new Exception(command + ": "
+                        + fileSource.getName()
+                        + " : No such file or directory");
             } else {
                 if (!fileDestination.exists()) {
-                throw new Exception(command + ": " 
-                    + fileDestination.getName() 
-                    + ": No such file or directory");
+                    throw new Exception(command + ": "
+                            + fileDestination.getName()
+                            + ": No such file or directory");
                 } else {
                     if (!fileDestination.isDirectory()) {
-                    throw new Exception(command + ": " 
-                        + fileDestination.getName() 
-                        + " :is not a directory");
+                        throw new Exception(command + ": "
+                                + fileDestination.getName()
+                                + " :is not a directory");
                     } else {
                         String srcAbsolute = fileSource.getAbsolutePath();
                         String destAbsolute = fileDestination.getAbsolutePath();
@@ -330,20 +329,20 @@ public final class Commands {
                 }
             }
         } catch (IOException e) {
-        throw new Exception(command 
-            + ": cannot read or write files");
+            throw new Exception(command
+                    + ": cannot read or write files");
         } catch (SecurityException e) {
-        throw new Exception(command 
-            + ": cannot copy file '" 
-            + args[index] + "' to '" 
-            + args[index  + 1] 
-            + "': access denied");
+            throw new Exception(command
+                    + ": cannot copy file '"
+                    + args[index] + "' to '"
+                    + args[index  + 1]
+                    + "': access denied");
         } catch (InvalidPathException e) {
-        throw new Exception(command 
-        + ": cannot copy file '" 
-        + args[index] + "' to '" 
-        + args[index + 1] 
-        + "': illegal character in name");
+            throw new Exception(command
+                    + ": cannot copy file '"
+                    + args[index] + "' to '"
+                    + args[index + 1]
+                    + "': illegal character in name");
         }
     }
 
@@ -390,18 +389,18 @@ public final class Commands {
             cp(args1);
             rm(args2);
         } catch (IOException e) {
-        throw new Exception(command 
-            + ": cannot read or write files");
+            throw new Exception(command
+                    + ": cannot read or write files");
         } catch (SecurityException e) {
-        throw new Exception(command 
-            + ": cannot move file '" 
-            + args[1] + "' to '" 
-            + args[2] + "': access denied");
+            throw new Exception(command
+                    + ": cannot move file '"
+                    + args[1] + "' to '"
+                    + args[2] + "': access denied");
         } catch (InvalidPathException e) {
-        throw new Exception(command 
-        + ": cannot move file '" 
-        + args[1] + "' to '" 
-        + args[2] + "': illegal character in name");
+            throw new Exception(command
+                    + ": cannot move file '"
+                    + args[1] + "' to '"
+                    + args[2] + "': illegal character in name");
         }
     }
     public static void ls(final String[] args) throws Exception {
@@ -415,8 +414,8 @@ public final class Commands {
                 System.out.println(i);
             }
         } catch (SecurityException e) {
-        throw new Exception(command 
-            + ": cannot get the list of files: access denied");
+            throw new Exception(command
+                    + ": cannot get the list of files: access denied");
         }
     }
 
@@ -433,8 +432,8 @@ public final class Commands {
                 sourceFile = new File(current + File.separator + file);
             }
             if (!sourceFile.exists()) {
-            	throw new Exception(command + ": " 
-                + file + ": No such file or directory");
+                throw new Exception(command + ": "
+                        + file + ": No such file or directory");
             }
             if (sourceFile.isDirectory()) {
                 System.out.println(sourceFile.getName());
@@ -449,17 +448,17 @@ public final class Commands {
                     }
                     reader.close();
                 } catch (FileNotFoundException e) {
-                throw new Exception(command + ": '" 
-                    + sourceFile.getName() + "': file not found");
+                    throw new Exception(command + ": '"
+                            + sourceFile.getName() + "': file not found");
                 }
             }
         } catch (SecurityException e) {
-            throw new Exception(command 
-            + ": cannot open file '" 
-            + args[1] + "': access denied");
+            throw new Exception(command
+                    + ": cannot open file '"
+                    + args[1] + "': access denied");
         } catch (InvalidPathException e) {
-            throw new Exception(command + ": cannot open file'" 
-            + args[1] + "': illegal character in name");
+            throw new Exception(command + ": cannot open file'"
+                    + args[1] + "': illegal character in name");
         }
     }
 
