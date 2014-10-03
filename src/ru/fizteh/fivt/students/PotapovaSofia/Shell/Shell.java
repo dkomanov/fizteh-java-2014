@@ -324,7 +324,6 @@ public class Shell {
                 throw new Exception("cp: " + destination + ": Can't create");
             }
         }
-        if()
         recCopy(sourceDir, destDir);
     }
     public static void recCopy(File source, File dest) throws Exception {
