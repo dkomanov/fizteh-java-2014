@@ -80,9 +80,9 @@ public final class Commands {
             String path = System.getProperty("user.dir");
             File newDirectory = new File(path + File.separator + dirName);
             if (args[1].isEmpty()) {
-				throw new Exception(command + ": cannot create '" 
-				+ "': no such file or directory");
-			}
+            	throw new Exception(command + ": cannot create '" 
+            	+ "': no such file or directory");
+            }
             if (newDirectory.exists()) {
                 throw new Exception(command + ": cannot create directory '"
                             + args[1] + "': File exists");
