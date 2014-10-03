@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 public class InteractiveInput extends Input{
 
-	protected BufferedReader inputStream;
+    protected BufferedReader inputStream;
 
     public InteractiveInput() {
         commandBuffer = new LinkedList<>();

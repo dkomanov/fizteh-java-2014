@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.andrey_reshetnikov.shell;
 import java.util.LinkedList;
 
 public class PackageInput extends Input{
-	
 	public PackageInput(String[] in) {
 		commandBuffer = new LinkedList<>();
 		StringBuilder concatenetedInput = new StringBuilder();

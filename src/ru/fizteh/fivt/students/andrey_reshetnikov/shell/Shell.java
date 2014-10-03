@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.File;
 
 public class Shell {
-	
 	private static File currentDirectory;
 	private static boolean interactiveMode;
 	
@@ -35,7 +34,7 @@ public class Shell {
 					System.out.println("usage: mkdir directory ...");
 					throw new WrongCommand();
 				} else {
-					File newDir = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
+					File newDir = WorkingWithFile.concatPath(currentDirectory, parsedCommand[1]);
 					if (newDir.exists()) {
                        System.out.print("mkdir: " + parsedCommand[1] + ": File exists\n");
                        throw new WrongCommand();
@@ -51,7 +50,7 @@ public class Shell {
                      System.out.println("usage: cd ...");
                      throw new WrongCommand();
 				} else {
-					File newCurrentDirectory = WorkingWithFile.ConcatPath(currentDirectory,
+					File newCurrentDirectory = WorkingWithFile.concatPath(currentDirectory,
                             parsedCommand[1]).getCanonicalFile();
 					if (!newCurrentDirectory.exists()) {
                         System.out.println("cd: " + newCurrentDirectory 
@@ -67,22 +66,42 @@ public class Shell {
 				}
 				break;
 			case "rm":
-				if (parsedCommand.length != 2) {
-                    System.out.println("usage: rm ...");
+				if (parsedCommand.length > 3 || parsedCommand.length < 2) {
+                    System.out.println("usage: rm <-r> ...");
                     throw new WrongCommand();
                 } else {
-					File elementToDelete = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
-					if (elementToDelete.exists()) {
-						try {
-							WorkingWithFile.delete(elementToDelete);
-						} catch (FileWasNotDeleted e) {
-							System.out.println("rm: can't remove");
+                    if (parsedCommand[1].equals("-r")) {
+                        File elementToDelete = WorkingWithFile.concatPath(currentDirectory, parsedCommand[2]);
+                        if (elementToDelete.exists()) {
+                            try {
+                                WorkingWithFile.delete(elementToDelete);
+                            } catch (FileWasNotDeleted e) {
+                                System.out.println("rm: can't remove");
+                                throw new WrongCommand();
+                            }
+                        } else {
+                            System.out.println("rm: can't remove " + elementToDelete
+                                    + ": No such file or directory");
                             throw new WrongCommand();
-						}
-					} else {
-                        System.out.println("rm: can't remove " + elementToDelete
-                                + ": No such file or directory");
-                        throw new WrongCommand();
+                        }
+                    } else if (!parsedCommand[1].equals("-r")) {
+                        File elementToDelete = WorkingWithFile.concatPath(currentDirectory, parsedCommand[1]);
+                        if (elementToDelete.exists()) {
+                            if (elementToDelete.isDirectory()) {
+                                System.out.println("you must use <-r> for deleting directory");
+                                throw new WrongCommand();
+                            }
+                            try {
+                                WorkingWithFile.delete(elementToDelete);
+                            } catch (FileWasNotDeleted e) {
+                                System.out.println("rm: can't remove");
+                                throw new WrongCommand();
+                            }
+                        } else {
+                            System.out.println("rm: can't remove " + elementToDelete
+                                    + ": No such file or directory");
+                            throw new WrongCommand();
+                        }
                     }
 				}
 				break;
@@ -91,8 +110,8 @@ public class Shell {
                     System.out.println("cp: need 2 parameters");
                     throw new WrongCommand();
                 } else {
-					File source = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
-                    File destination = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[2]);
+					File source = WorkingWithFile.concatPath(currentDirectory, parsedCommand[1]);
+                    File destination = WorkingWithFile.concatPath(currentDirectory, parsedCommand[2]);
                     if (source.equals(destination)) {
                         System.out.println("cp: source and destination are equal");
                         throw new WrongCommand();
@@ -115,8 +134,8 @@ public class Shell {
                     System.out.println("mv: need 2 parameters");
                     throw new WrongCommand();
 				} else {
-					File source = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
-                    File destination = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[2]);
+					File source = WorkingWithFile.concatPath(currentDirectory, parsedCommand[1]);
+                    File destination = WorkingWithFile.concatPath(currentDirectory, parsedCommand[2]);
                     if (source.exists()) {
                         if (!destination.exists()) {                    
                                 System.out.println("rm: destination doesn't exists");
@@ -151,7 +170,7 @@ public class Shell {
 					System.out.println("cat has 1 parametr");
 					throw new WrongCommand();
 				} else {
-					File f = WorkingWithFile.ConcatPath(currentDirectory, parsedCommand[1]);
+					File f = WorkingWithFile.concatPath(currentDirectory, parsedCommand[1]);
 					BufferedReader fin = new BufferedReader(new FileReader(f));
 					String line;
 					while ((line = fin.readLine()) != null) {

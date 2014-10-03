@@ -1,15 +1,13 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.shell;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.*;
 
 public class WorkingWithFile {
-	public static File ConcatPath(File pwdFolder, String s) throws IOException {
+	public static File concatPath(File pwdFolder, String s) throws IOException {
 		File newElem = new File(s);
         if (!newElem.isAbsolute()) {
             newElem = new File(pwdFolder, s);
