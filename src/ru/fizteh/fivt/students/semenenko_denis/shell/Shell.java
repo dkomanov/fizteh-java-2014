@@ -14,7 +14,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-class InvalidCommandException extends Exception {
+private class InvalidCommandException extends Exception {
     public InvalidCommandException(String message) {
         super(message);
     }
@@ -116,6 +116,7 @@ public class Shell {
                 exit(parts);
 
             } else if (parts[0].equals("")) {
+                int i = 0;
             } else {
                 errorUnknownCommand(parts[0]);
 
