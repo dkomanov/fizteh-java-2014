@@ -49,7 +49,7 @@ public class Shell {
 
     private static void copy(File f1, File f2, boolean r) {
         try {
-            if (f1.getCanonicalPath() == f2.getCanonicalPath()) {
+            if (f1.getCanonicalPath().equals(f2.getCanonicalPath())) {
                 System.err.println("cp: can't copy file on the same file");
                 System.exit(-1);
             }
@@ -107,6 +107,143 @@ public class Shell {
         }
     }
 
+    private static String cd(String directory, String what) throws IOException {
+        Path path = new File(directory).toPath();
+
+        File newPath = path.resolve(what).toAbsolutePath().normalize().toFile();
+        if (newPath.exists() && newPath.isDirectory()) {
+            System.setProperty("user.dir", newPath.getCanonicalPath());
+        } else if (!newPath.exists()) {
+            System.err.println("path '" + newPath.toString() + "' doesn't exist");
+            System.exit(-1);
+        } else {
+            System.err.println(what + " is not a directory");
+            System.exit(-1);
+        }
+        directory = System.getProperty("user.dir");
+        return directory;
+    }
+
+    private static void ls(String directory) {
+        File path = new File(directory);
+        if (path.isDirectory()) {
+            String[] list;
+            list = path.list();
+            for (String value : list) {
+                System.out.println(value);
+            }
+        } else {
+            System.err.println("It is not a directory");
+            System.exit(-1);
+        }
+    }
+
+    private static void mkdir(String directory, String dirname) {
+        File newDir = new File(directory + File.separator + dirname);
+        if (newDir.exists()) {
+            System.err.println("New directory exists");
+            System.exit(-1);
+        }
+        try {
+        Files.createDirectory(newDir.toPath());
+        } catch (IOException e) {
+            System.err.println("Exception: " + e.getMessage());
+            System.exit(-1);
+        }
+    }
+
+    private static void mv(String directory, String source, String destination) {
+        File f1 = new File(directory + File.separator + source);
+        File f2 = new File(directory + File.separator + destination);
+        if ((f1.isFile() && !f2.exists()
+                && f1.getParent().equals(f2.getParent()))
+                ||
+                (f1.isDirectory() && !f2.exists()
+                        && f1.getParent().equals(f2.getParent()))
+                ) {
+            if (!f1.renameTo(f2)) {
+                System.out.println("mv: can't rename " + f1.getName());
+                System.exit(-1);
+            }
+        } else {
+            if (f1.isFile()) {
+                copy(f1, f2, false);
+                remove(f1.getName(), f1.getParent(), false);
+            }
+            if (f1.isDirectory()) {
+                if (f2.isFile()) {
+                    System.err.println("mv: can't move directory in file");
+                    System.exit(-1);
+                }
+                copy(f1, f2, true);
+                remove(f1.getName(), f1.getParent(), true);
+            }
+        }
+    }
+
+    private static void cat(String directory, String name) {
+        try {
+        File f = new File(directory + File.separator + name);
+        if (!f.exists()) {
+            System.err.println("cat: " + f.getName() + ": no such file");
+            System.exit(-1);
+        }
+        if (f.isDirectory()) {
+            System.err.println("cat: " + f.getName() + ": it is a directory");
+            System.exit(-1);
+        }
+        BufferedReader fin = new BufferedReader(new FileReader(f));
+        String line;
+
+        while ((line = fin.readLine()) != null) {
+            System.out.println(line);
+        }
+        } catch (IOException e) {
+            System.err.println("Exception: " + e.getMessage());
+            System.exit(-1);
+        }
+    }
+
+    private static void pwd(String directory) {
+        try {
+        File f = new File(directory);
+        System.out.println(f.getCanonicalPath());
+        } catch (IOException e) {
+            System.err.println("Exception: " + e.getMessage());
+            System.exit(-1);
+        }
+    }
+
+    private static String WhatDelete(String[] s, int i) {
+        String whatDelete;
+        int j = s[i].indexOf(';');
+        if (j != -1) {
+            whatDelete = s[i].substring(0, s[i].length() - 1);
+        } else {
+            whatDelete = s[i];
+            if (i + 1 < s.length) {
+                System.err.println("too much arguments");
+                System.exit(-1);
+            }
+        }
+        return whatDelete;
+    }
+
+    private static String Destination(String[] s, int i) {
+        String destination;
+        int j = s[i].indexOf(';');
+        if (j != -1) {
+            destination = s[i].substring(0, s[i].length() - 1);
+        } else {
+            destination = s[i];
+            if (i + 1 < s.length) {
+                System.err.println("too much arguments");
+                System.exit(-1);
+            }
+        }
+        return destination;
+    }
+
     public static void main(String[] args) {
         try {
             int i = 0;
@@ -146,13 +283,9 @@ public class Shell {
                 while (i < s.length && !s[i].equals("exit")) {
                     try {
                         switch (s[i]) {
-
                             case "cd": {
                                 ++i;
                                 String what;
-                                while (s[i].equals("")) {
-                                    ++i;
-                                }
                                 int j = s[i].indexOf(';');
                                 if (j != -1) {
                                     what = s[i].substring(0, s[i].length() - 1);
@@ -163,23 +296,10 @@ public class Shell {
                                         System.exit(-1);
                                     }
                                 }
-                                Path path = new File(directory).toPath();
-
-                                File newPath = path.resolve(what).toAbsolutePath().normalize().toFile();
-                                if (newPath.exists() && newPath.isDirectory()) {
-                                    System.setProperty("user.dir", newPath.getCanonicalPath());
-                                } else if (!newPath.exists()) {
-                                    System.err.println("path '" + newPath.toString() + "' doesn't exist");
-                                    System.exit(-1);
-                                } else {
-                                    System.err.println(what + " is not a directory");
-                                    System.exit(-1);
-                                }
-                                directory = System.getProperty("user.dir");
+                                directory = cd(directory, what);
                                 ++i;
                                 break;
                             }
-
                             case "ls":
                             case "ls;": {
                                 if (s[1].equals("ls")) {
@@ -194,27 +314,13 @@ public class Shell {
                                     ++i;
                                     break;
                                 }
-                                File path = new File(directory);
-                                if (path.isDirectory()) {
-                                    String[] list;
-                                    list = path.list();
-                                    for (String value : list) {
-                                        System.out.println(value);
-                                    }
-                                } else {
-                                    System.err.println("It is not a directory");
-                                    System.exit(-1);
-                                }
+                                ls(directory);
                                 ++i;
                                 break;
                             }
-
                             case "mkdir": {
                                 ++i;
                                 String dirname;
-                                while (s[i].equals("")) {
-                                    ++i;
-                                }
                                 int j = s[i].indexOf(';');
                                 if (j != -1) {
                                     dirname = s[i].substring(0, s[i].length() - 1);
@@ -225,16 +331,10 @@ public class Shell {
                                         System.exit(-1);
                                     }
                                 }
-                                File newDir = new File(directory + File.separator + dirname);
-                                if (newDir.exists()) {
-                                        System.err.println("New directory exists");
-                                        System.exit(-1);
-                                }
-                                Files.createDirectory(newDir.toPath());
+                                mkdir(directory, dirname);
                                 ++i;
                                 break;
                             }
-
                             case "pwd":
                             case "pwd;": {
                                 if (s[1].equals("pwd")) {
@@ -243,114 +343,39 @@ public class Shell {
                                         System.exit(-1);
                                     }
                                 }
-                                File f = new File(directory);
-                                System.out.println(f.getCanonicalPath());
+                                pwd(directory);
                                 ++i;
                                 break;
                             }
-
                             case "mv": {
                                 ++i;
-                                String source;
-                                String destination;
-                                while (s[i].equals("")) {
-                                    ++i;
-                                }
-                                source = s[i];
+                                String source = s[i];
                                 ++i;
-                                while (s[i].equals("")) {
-                                    ++i;
-                                }
-                                int j = s[i].indexOf(';');
-                                if (j != -1) {
-                                    destination = s[i].substring(0, s[i].length() - 1);
-                                } else {
-                                    destination = s[i];
-                                    if (i + 1 < s.length) {
-                                        System.err.println("too much arguments");
-                                        System.exit(-1);
-                                    }
-                                }
-                                File f1 = new File(directory + File.separator + source);
-                                File f2 = new File(directory + File.separator + destination);
-                                if ((f1.isFile() && !f2.exists()
-                                        && f1.getParent().equals(f2.getParent()))
-                                        ||
-                                        (f1.isDirectory() && !f2.exists()
-                                        && f1.getParent().equals(f2.getParent()))
-                                        ) {
-                                    if (!f1.renameTo(f2)) {
-                                        System.out.println("mv: can't rename " + f1.getName());
-                                        System.exit(-1);
-                                    }
-                                } else {
-                                    //Files.move(f1.toPath(), f2.toPath());
-                                    if (f1.isFile()) {
-                                       copy(f1, f2, false);
-                                       remove(f1.getName(), f1.getParent(), false);
-                                    }
-                                    if (f1.isDirectory()) {
-                                        if (f2.isFile()) {
-                                            System.err.println("mv: can't move directory in file");
-                                            System.exit(-1);
-                                        }
-                                        copy(f1, f2, true);
-                                        remove(f1.getName(), f1.getParent(), true);
-                                    }
-                                }
+                                mv(directory, source, Destination(s, i));
                                 ++i;
                                 break;
                             }
-
                             case "rm": {
                                 ++i;
-                                while (s[i].equals("")) {
-                                    ++i;
-                                }
                                 boolean flag = false;
                                 if (s[i].equals("-r")) {
                                     flag = true;
                                     ++i;
                                 }
-                                String whatDelete;
-                                while (s[i].equals("")) {
-                                    ++i;
-                                }
-                                int j = s[i].indexOf(';');
-                                if (j != -1) {
-                                    whatDelete = s[i].substring(0, s[i].length() - 1);
-                                } else {
-                                    whatDelete = s[i];
-                                    if (i + 1 < s.length) {
-                                        System.err.println("too much arguments");
-                                        System.exit(-1);
-                                    }
-                                }
-                                remove(whatDelete, directory, flag);
+                                remove(WhatDelete(s, i), directory, flag);
                                 ++i;
                                 break;
                             }
-
                             case "cp": {
                                 ++i;
-                                while (s[i].equals("")) {
-                                    ++i;
-                                }
                                 boolean flag = false;
                                 if (s[i].equals("-r")) {
                                     flag = true;
                                     ++i;
                                 }
-                                String source;
                                 String destination;
-                                while (s[i].equals("")) {
-                                    ++i;
-                                }
-                                source = s[i];
+                                String source = s[i];
                                 ++i;
-                                while (s[i].equals("")) {
-                                    ++i;
-                                }
                                 int j = s[i].indexOf(';');
                                 if (j != -1) {
                                     destination = s[i].substring(0, s[i].length() - 1);
@@ -364,11 +389,9 @@ public class Shell {
                                 File f1 = new File(directory + File.separator + source);
                                 File f2 = new File(directory + File.separator + destination);
                                 copy(f1, f2, flag);
-
                                 ++i;
                                 break;
                             }
-
                             case "cat": {
                                 ++i;
                                 String name;
@@ -385,31 +408,12 @@ public class Shell {
                                         System.exit(-1);
                                     }
                                 }
-                                File f = new File(directory + File.separator + name);
-                                if (!f.exists()) {
-                                    System.err.println("cat: " + f.getName() + ": no such file");
-                                    System.exit(-1);
-                                    ++i;
-                                    break;
-                                }
-                                if (f.isDirectory()) {
-                                    System.err.println("cat: " + f.getName() + ": it is a directory");
-                                    System.exit(-1);
-                                    ++i;
-                                    break;
-                                }
-                                BufferedReader fin = new BufferedReader(new FileReader(f));
-                                String line;
-                                while ((line = fin.readLine()) != null) {
-                                    System.out.println(line);
-                                }
+                                cat(directory, name);
                                 ++i;
                                 break;
                             }
-
                             default: {
                                 System.exit(-1);
-                                ++i;
                                 break;
                             }
                         }
