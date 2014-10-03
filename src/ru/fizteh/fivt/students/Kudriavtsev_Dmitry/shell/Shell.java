@@ -16,7 +16,7 @@ import java.util.Scanner;
 //import  java.nio.channels.FileChannel;
 
 public class Shell {
-
+    //public static final String CHECKSTYLE_PREFIX;
     private static void remove(String whatDelete, String directory, boolean r) {
         File f = new File(directory + File.separator + whatDelete);
         if (!f.exists()) {
@@ -67,8 +67,7 @@ public class Shell {
                     File dest;
                     if (f2.isFile()) {
                         dest = new File(f2.getCanonicalPath());
-                    }
-                    else {
+                    } else {
                         dest = new File(f2.getCanonicalPath() + File.separator + f1.getName());
                     }
                     os = new FileOutputStream(dest);
@@ -182,11 +181,13 @@ public class Shell {
                             }
 
                             case "ls":
-                                if (i + 1 < s.length) {
-                                    System.err.println("too much arguments");
-                                    System.exit(-1);
-                                }
                             case "ls;": {
+                                if (s[1].equals("ls")) {
+                                    if (i + 1 < s.length) {
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
+                                }
                                 if (directory == null) {
                                     System.err.println("Bad directory");
                                     System.exit(-1);
@@ -235,11 +236,13 @@ public class Shell {
                             }
 
                             case "pwd":
-                                if (i + 1 < s.length) {
-                                    System.err.println("too much arguments");
-                                    System.exit(-1);
-                                }
                             case "pwd;": {
+                                if (s[1].equals("pwd")) {
+                                    if (i + 1 < s.length) {
+                                        System.err.println("too much arguments");
+                                        System.exit(-1);
+                                    }
+                                }
                                 File f = new File(directory);
                                 System.out.println(f.getCanonicalPath());
                                 ++i;
