@@ -207,14 +207,20 @@ public final class Shellfunc {
             return;
         }
         File newDir = new File(dirName);
-
+        String origPath = null;
+        if (!newDir.isAbsolute()) {
+            origPath = newDir.getPath();
+            newDir = new File(newDir.getAbsolutePath());
+        }
         if (newDir.exists()) {
-            if (!newDir.isAbsolute()) {
-                newDir = new File(newDir.getAbsolutePath());
-            }
-            if (!newDir.isDirectory()) {
 
-                System.out.println(newDir.getPath() + (" is not a Directory"));
+            if (!newDir.isDirectory()) {
+                if (origPath == null) {
+                    System.out.println(newDir.getPath()
+                            + (" is not a Directory"));
+                } else {
+                    System.out.println(origPath + (" is not a Directory"));
+                }
                 return;
             }
             try {
