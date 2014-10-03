@@ -59,7 +59,7 @@ public final class Commands {
         } catch (InvalidPathException e) {
             throw new Exception(command
                    + ": cannot change directory to '"
-					+ args[1] + "': illegal character in path");
+		+ args[1] + "': illegal character in path");
         } catch (SecurityException e) {
             throw new Exception(command
                     + ": cannot change directory: access denied");
@@ -194,13 +194,12 @@ public final class Commands {
                     + ": cannot remove file '" 
                     + args[index]
                     + "': access denied");
-        }
-        catch (InvalidPathException e) {
+        } catch (InvalidPathException e) {
 			throw new Exception(command
 					+ ": cannot remove file '"
 					+ args[index]
 					+ "': illegal character in name");
-		} 
+	} 
     }
 
     private static void cputil(final File source, final File destination)
