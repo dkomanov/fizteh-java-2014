@@ -93,7 +93,7 @@ public final class Shell {
                 CommandMv.execute(args);
                 break;
             case "ls":
-                CommandLs.execute();
+                CommandLs.execute(args);
                 break;
             case "cat":
                 CommandCat.execute(args);
