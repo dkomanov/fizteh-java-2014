@@ -18,11 +18,6 @@ public class RemoveDirectory {
                     recursiveDelete(tmp);
                 }
             }
-            if (!f.delete()) {
-                System.err.println("delete doesn't work");
-                System.exit(5);
-            }
-
         }
         if (!f.delete()) {
             System.err.println("delete doesn't work");
