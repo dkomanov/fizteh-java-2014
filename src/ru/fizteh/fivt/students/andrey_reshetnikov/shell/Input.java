@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Queue;
 
 public abstract class Input {
-    
-	Queue<String[]> commandBuffer;
+
+    Queue<String[]> commandBuffer;
 	
 	public abstract String[] nextCommand() throws IOException, CommandsIsEmpty;
 	

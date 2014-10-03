@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.*;
 
 public class WorkingWithFile {
-	public static File concatPath(File pwdFolder, String s) throws IOException {
+    public static File concatPath(File pwdFolder, String s) throws IOException {
 		File newElem = new File(s);
         if (!newElem.isAbsolute()) {
             newElem = new File(pwdFolder, s);

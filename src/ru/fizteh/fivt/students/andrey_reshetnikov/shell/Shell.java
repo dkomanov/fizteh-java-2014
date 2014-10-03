@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.File;
 
 public class Shell {
-	private static File currentDirectory;
+    private static File currentDirectory;
 	private static boolean interactiveMode;
 	
 	static void runningCommand(String[] parsedCommand) throws IOException, WrongCommand, ExitCommand {
