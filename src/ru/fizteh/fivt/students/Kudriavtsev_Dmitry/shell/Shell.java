@@ -65,8 +65,12 @@ public class Shell {
                 try {
                     is = new FileInputStream(f1);
                     File dest;
-                    if(f2.isFile()) dest = new File(f2.getCanonicalPath());
-                    else dest = new File(f2.getCanonicalPath() + File.separator + f1.getName());
+                    if (f2.isFile()) {
+                        dest = new File(f2.getCanonicalPath());
+                    }
+                    else {
+                        dest = new File(f2.getCanonicalPath() + File.separator + f1.getName());
+                    }
                     os = new FileOutputStream(dest);
                     byte[] buffer = new byte[1024];
                     int length;
@@ -155,7 +159,7 @@ public class Shell {
                                     what = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     what = s[i];
-                                    if(i + 1 < s.length){
+                                    if (i + 1 < s.length) {
                                         System.err.println("too much arguments");
                                         System.exit(-1);
                                     }
@@ -178,7 +182,7 @@ public class Shell {
                             }
 
                             case "ls":
-                                if(i + 1 < s.length){
+                                if (i + 1 < s.length) {
                                     System.err.println("too much arguments");
                                     System.exit(-1);
                                 }
@@ -215,13 +219,13 @@ public class Shell {
                                     dirname = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     dirname = s[i];
-                                    if(i + 1 < s.length){
+                                    if (i + 1 < s.length) {
                                         System.err.println("too much arguments");
                                         System.exit(-1);
                                     }
                                 }
                                 File newDir = new File(directory + File.separator + dirname);
-                                if(newDir.exists()) {
+                                if (newDir.exists()) {
                                         System.err.println("New directory exists");
                                         System.exit(-1);
                                 }
@@ -231,7 +235,7 @@ public class Shell {
                             }
 
                             case "pwd":
-                                if(i + 1 < s.length){
+                                if (i + 1 < s.length) {
                                     System.err.println("too much arguments");
                                     System.exit(-1);
                                 }
@@ -259,31 +263,31 @@ public class Shell {
                                     destination = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     destination = s[i];
-                                    if(i + 1 < s.length){
+                                    if (i + 1 < s.length) {
                                         System.err.println("too much arguments");
                                         System.exit(-1);
                                     }
                                 }
                                 File f1 = new File(directory + File.separator + source);
                                 File f2 = new File(directory + File.separator + destination);
-                                if (    (f1.isFile() && !f2.exists()
+                                if ((f1.isFile() && !f2.exists()
                                         && f1.getParent().equals(f2.getParent()))
                                         ||
                                         (f1.isDirectory() && !f2.exists()
                                         && f1.getParent().equals(f2.getParent()))
                                         ) {
-                                    if(!f1.renameTo(f2)) {
+                                    if (!f1.renameTo(f2)) {
                                         System.out.println("mv: can't rename " + f1.getName());
                                         System.exit(-1);
-                                    };
+                                    }
                                 } else {
                                     //Files.move(f1.toPath(), f2.toPath());
                                     if (f1.isFile()) {
                                        copy(f1, f2, false);
                                        remove(f1.getName(), f1.getParent(), false);
                                     }
-                                    if(f1.isDirectory()) {
-                                        if(f2.isFile()) {
+                                    if (f1.isDirectory()) {
+                                        if (f2.isFile()) {
                                             System.err.println("mv: can't move directory in file");
                                             System.exit(-1);
                                         }
@@ -314,7 +318,7 @@ public class Shell {
                                     whatDelete = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     whatDelete = s[i];
-                                    if(i + 1 < s.length){
+                                    if (i + 1 < s.length) {
                                         System.err.println("too much arguments");
                                         System.exit(-1);
                                     }
@@ -349,7 +353,7 @@ public class Shell {
                                     destination = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     destination = s[i];
-                                    if(i + 1 < s.length){
+                                    if (i + 1 < s.length) {
                                         System.err.println("too much arguments");
                                         System.exit(-1);
                                     }
@@ -373,7 +377,7 @@ public class Shell {
                                     name = s[i].substring(0, s[i].length() - 1);
                                 } else {
                                     name = s[i];
-                                    if(i + 1 < s.length){
+                                    if (i + 1 < s.length) {
                                         System.err.println("too much arguments");
                                         System.exit(-1);
                                     }
