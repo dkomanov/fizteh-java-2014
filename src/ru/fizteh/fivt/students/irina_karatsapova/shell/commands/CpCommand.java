@@ -4,7 +4,8 @@ import java.io.File;
 
 public class CpCommand implements Command {
     public void execute(String[] args) throws Exception {
-        File copied, destination;
+        File copied;
+        File destination;
         if (!args[1].equals("-r")) {
             copied = Utils.makePathAbsolute(args[1]).toFile();
             destination = Utils.makePathAbsolute(args[2]).toFile();
