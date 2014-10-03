@@ -82,7 +82,7 @@ public final class MainShell {
                         break;
                     default:
                         System.out.println("Invalid command");
-                        if (args.length != 0) {
+                        if (args.length > 0) {
                             in.close();
                             System.exit(1);
                         }                        
