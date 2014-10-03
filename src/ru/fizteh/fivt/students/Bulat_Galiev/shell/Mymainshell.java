@@ -7,6 +7,7 @@ public final class Mymainshell {
     private Mymainshell() {
         // not called
     }
+
     public static void interactiveMode() {
         String input = "";
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -26,10 +27,10 @@ public final class Mymainshell {
     public static void packageMode(final String[] input) {
         StringBuilder cmd = new StringBuilder();
         for (String argument : input) {
-            cmd.append(argument);
-            if (input.length > 1) {
+            if (cmd.length() != 0) {
                 cmd.append(' ');
             }
+            cmd.append(argument);
         }
         String arg = cmd.toString();
         parser(arg, true);
