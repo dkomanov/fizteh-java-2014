@@ -21,7 +21,6 @@ public class Cd extends Instruction {
         if (!needAbsolutePath.isAbsolute()) {
             needAbsolutePath = Paths.get(presentDirectory.toString(), arguments[1]).toAbsolutePath().normalize();
         }
-        System.out.println(needAbsolutePath.toString());
 
         if (Files.exists(needAbsolutePath) && Files.isDirectory(needAbsolutePath)) {
             presentDirectory = needAbsolutePath;
