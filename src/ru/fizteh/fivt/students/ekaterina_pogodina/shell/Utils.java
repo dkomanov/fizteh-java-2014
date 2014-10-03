@@ -13,46 +13,45 @@ public class Utils {
     }
 
     public static void copy(File source, File destination) throws IOException {
-        if (destination.exists()) {
-            throw new IOException("file already exists");
+        try {
+            FileChannel sourceChannel = new FileInputStream(source.getPath()).getChannel();
+            FileChannel destinationChannel = new FileOutputStream(destination.getPath()).getChannel();
+            destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+            sourceChannel.close();
+            destinationChannel.close();
+        } catch (Exception e) {
+            System.err.println("Couldn't close sources or write");
         }
-
-        @SuppressWarnings("resource")
-        FileChannel sourceChannel = new FileInputStream(source.getPath()).getChannel();
-        @SuppressWarnings("resource")
-        FileChannel destinationChannel = new FileOutputStream(destination.getPath()).getChannel();
-
-        destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
-
-        sourceChannel.close();
-        destinationChannel.close();
     }
 
     public static void copyFileOrDirectory(File source, File destination, boolean flag) throws IOException {
-        if ((destination.isFile()) && (!(source.isFile()))) {
-            throw new IOException("Impossible to copy  directory");
-        }
-        if ((source.isFile()) && (destination.isDirectory())) {
-            if (destination.exists()) {
-                throw new IOException("file already exists");
+        //try {
+            if ((destination.isFile()) && (!(source.isFile()))) {
+                throw new IOException("Impossible to copy  directory");
             }
-            copy(source, new File(destination.getPath(), source.getName()));
-        } else if (source.isFile()) {
-            copy(source, destination);
-        } else {
-            File elementsDestination = new File(destination.getPath(), source.getName());
-
-            if (!elementsDestination.exists()) {
+            if ((source.isFile()) && (destination.isDirectory())) {
+                copy(source, new File(destination.getPath(), source.getName()));
+            } else if (source.isFile()) {
                 try {
-                    elementsDestination.mkdir();
+                    copy(source, destination);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.err.println("cannot copy");
+                }
+            } else {
+                File elementsDestination = new File(destination.getPath(), source.getName());
+
+                if (!elementsDestination.exists()) {
+                    if (!elementsDestination.mkdir()) {
+                        throw new IOException();
+                    }
+                }
+                for (String element : source.list()) {
+                    copyFileOrDirectory(new File(source.getPath(), element), elementsDestination, flag);
                 }
             }
-            for (String element : source.list()) {
-                copyFileOrDirectory(new File(source.getPath(), element), elementsDestination, flag);
-            }
-        }
+        //} catch (Exception e) {
+        //    System.err.println("A problem with reading from source file or writing to destination file");
+        //}
     }
 
     public static void deleteFileOrDirectory(final File source) {

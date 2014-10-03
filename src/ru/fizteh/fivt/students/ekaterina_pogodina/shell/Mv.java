@@ -8,8 +8,8 @@ public class Mv {
     }
 
     public static void run(String[] args, int j) throws IOException {
-        if (j + 1 < 3) {
-            System.exit(0);
+        if (j + 1 != 3) {
+            System.err.println(args[0] + "wrong count of arguments");
         }
         File source = Utils.absoluteFileCreate(args[1]);
         File destination = Utils.absoluteFileCreate(args[2]);
@@ -24,7 +24,6 @@ public class Mv {
             }
             return;
         }
-
         Utils.copyFileOrDirectory(source, destination, true);
         Utils.deleteFileOrDirectory(source);
     }

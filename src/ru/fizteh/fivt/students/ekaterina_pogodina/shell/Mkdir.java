@@ -8,20 +8,19 @@ public class Mkdir {
     }
     public static void run(final String[] args, int j) throws IOException {
         if (j + 1 == 1) {
-            throw new IOException(args[0] + ": missing operand");
+            System.err.println(args[0] + ": missing operand");
         } else {
             if (j + 1 > 2) {
-                throw new IOException(args[0] + ": too much arguments");
+                System.err.println(args[0] + ": too much arguments");
             } else {
                 File file = Utils.absoluteFileCreate(args[1]);
                 if (!file.exists()) {
-                    try {
-                        file.mkdir();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (!file.mkdir()) {
+                        throw new IOException();
                     }
                 } else {
-                    throw new IOException(args[0] + ": '" + args[1] + "' already exists");
+                    System.err.println(args[0] + ": '" + args[1] + "' already exists");
+                    return;
                 }
             }
         }

@@ -11,36 +11,31 @@ public class Cat {
     private Cat() {  }
     public static void run(String[] args, int j) throws IOException {
         if (j + 1 < 2) {
-            throw new IOException(args[0] + ": missing operand");
+            System.err.println(args[0] + ": missing operand");
         } else {
             if (j + 1 > 2) {
-                throw new IOException(args[0] + ": too mush arguments");
+                System.err.println(args[0] + ": too mush arguments");
             } else {
-                File file = Utils.absoluteFileCreate(args[1]);
-                if (file.exists()) {
-                    if (file.isFile()) {
-                        Path path = file.toPath();
-                        if (!Files.isReadable(path)) {
-                            throw new IOException("cat: " + args[1] + ": not readable");
-                        }
-                        BufferedReader br = new BufferedReader(new FileReader(file));
-                        while (true) {
-                            int c = br.read();
-                            if (c == -1) {
-                                break;
-                            }
-                            System.out.print((char) c);
-                        }
-                        br.close();
-                        System.out.print("\n");
-                    } else {
-                        throw new IOException(args[0] + "is a directory");
+                try {
+                    File file = Utils.absoluteFileCreate(args[1]);
+                    Path path = file.toPath();
+                    if (!Files.isReadable(path)) {
+                        throw new IOException("cat: " + args[1] + ": not readable");
                     }
-                } else {
-                    throw new IOException(args[0] + ": No such file or directory");
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    while (true) {
+                        int c = br.read();
+                        if (c == -1) {
+                            break;
+                        }
+                        System.out.print((char) c);
+                    }
+                    br.close();
+                    System.out.print("\n");
+                } catch (Exception e) {
+                    System.err.println("File \"" + args[1] + "\" not found");
                 }
             }
-
         }
     }
 }

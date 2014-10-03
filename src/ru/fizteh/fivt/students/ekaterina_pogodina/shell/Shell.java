@@ -43,6 +43,7 @@ public final class Shell {
                     flag = true;
                 }
                 Parser.parse(arg, flag, true, j);
+                cmdWithArgs.clear();
             }
         } else {
             while (true) {
@@ -69,9 +70,9 @@ public final class Shell {
                         }
                     }
                     cmdWithArgs.add(commands[k].substring(index, commands[k].length()));
-                    String[] arg = new String [cmdWithArgs.size()];
+                    String[] arg = new String[cmdWithArgs.size()];
                     for (int i = 0; i < arg.length; i++) {
-                        arg[i] = cmdWithArgs.get(i);
+                           arg[i] = cmdWithArgs.get(i);
                     }
                     if (j != 0 && arg[1].equals("-r")) {
                         flag = true;
