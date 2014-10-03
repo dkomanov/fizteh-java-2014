@@ -14,6 +14,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+class InvalidCommandException extends Exception {
+    public InvalidCommandException(String message) {
+        super(message);
+    }
+}
 
 
 public class Shell {
@@ -385,11 +390,6 @@ public class Shell {
                 command + ": unknown command");
     }
 
-    class InvalidCommandException extends Exception {
-        public InvalidCommandException(String message) {
-            super(message);
-        }
-    }
 
 }
 
