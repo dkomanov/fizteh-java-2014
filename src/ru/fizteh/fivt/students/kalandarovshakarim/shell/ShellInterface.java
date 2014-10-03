@@ -58,6 +58,7 @@ public class ShellInterface {
                     break;
                 case "exit":
                     System.exit(0);
+                    break;
                 default:
                     throw new Exception("Shell : '"
                             + cmd[0] + "' No such command");
