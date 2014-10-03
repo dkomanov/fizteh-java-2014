@@ -84,17 +84,18 @@ public class Shell {
      * Asks user to enter commands and executes them.
      */
     public void interactWithUser() {
-        Scanner scanner = new Scanner(System.in);
-        boolean wantExit;
-        while (true) {
-            System.out.print(Command.presentWorkingDirectory.toString() + "$ ");
-            String newCommand = scanner.nextLine();
-            if (newCommand.isEmpty()) {
-                continue;
-            }
-            wantExit = callCommands(newCommand);
-            if (wantExit) {
-                break;
+        try (Scanner scanner = new Scanner(System.in)) {
+            boolean wantExit;
+            while (true) {
+                System.out.print(Command.presentWorkingDirectory.toString() + "$ ");
+                String newCommand = scanner.nextLine();
+                if (newCommand.isEmpty()) {
+                    continue;
+                }
+                wantExit = callCommands(newCommand);
+                if (wantExit) {
+                    break;
+                }
             }
         }
     }
