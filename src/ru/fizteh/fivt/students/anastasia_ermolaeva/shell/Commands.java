@@ -58,7 +58,7 @@ public final class Commands {
             }
         } catch (InvalidPathException e) {
             throw new Exception(command
-                    + ": cannot change directory:wrong path'"
+                    + ": cannot change directory:wrong path"
                     + args[1]);
         } catch (SecurityException e) {
             throw new Exception(command
