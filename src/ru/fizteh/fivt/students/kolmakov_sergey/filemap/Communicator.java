@@ -28,7 +28,7 @@ public class Communicator {
             keys.add(bytes.toString("UTF-8"));
             bytes.reset();
         } while (counter < firstOffset);
-        offsets.add((int)dataBaseFile.length());
+        offsets.add((int) dataBaseFile.length());
         Iterator<String> keyIterator = keys.iterator();
         for (Integer currentOffset : offsets) { //reading values
             while (currentOffset > counter) {

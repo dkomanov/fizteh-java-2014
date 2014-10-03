@@ -17,7 +17,7 @@ public class FileMapMain {
         return from <= value && value <= to;
     }
 
-    private static void put(String[] args){
+    private static void put(String[] args) {
         if (!checkArguments(3, args.length, 3)) {
             throw new IllegalArgumentException("put: invalid number of arguments");
         }
@@ -30,7 +30,7 @@ public class FileMapMain {
         }
     }
 
-    private static void get(String[] args){
+    private static void get(String[] args) {
         if (!checkArguments(2, args.length, 2)) {
             throw new IllegalArgumentException("get: invalid number of arguments");
         }
@@ -43,7 +43,7 @@ public class FileMapMain {
         }
     }
 
-    private static void remove(String[] args){
+    private static void remove(String[] args) {
         if (!checkArguments(2, args.length, 2)) {
             throw new IllegalArgumentException("remove: invalid number of arguments");
         }
@@ -55,7 +55,7 @@ public class FileMapMain {
         }
     }
 
-    private static void list(String[] args){
+    private static void list(String[] args) {
         if (!checkArguments(1, args.length, 1)) {
             throw new IllegalArgumentException("list: invalid number of arguments");
         }
@@ -64,7 +64,7 @@ public class FileMapMain {
         for (String current : keys) {
             ++counter;
             System.out.print(current);
-            if (counter != keys.size()){
+            if (counter != keys.size()) {
                 System.out.print(", ");
             }
         }
@@ -119,7 +119,7 @@ public class FileMapMain {
                         if (command.length > 1) {
                             exitStatus = -1;
                             System.out.println("exit: invalid number of arguments");
-                        } else{
+                        } else {
                             exitStatus = 0;
                         }
                         throw new FileMapExitException();
