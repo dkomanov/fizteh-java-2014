@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.IllegalFormatCodePointException;
 
 public final class CommandCp {
     public static void execute(final String[] args) throws IOException {
@@ -97,9 +96,9 @@ public final class CommandCp {
         }
     }
 
-    private static boolean isEmptyDir(final Path dir_path) {
-        if (Files.isDirectory(dir_path)) {
-            File[] dirContent = new File(dir_path.toString()).listFiles();
+    private static boolean isEmptyDir(final Path dirPath) {
+        if (Files.isDirectory(dirPath)) {
+            File[] dirContent = new File(dirPath.toString()).listFiles();
             if (dirContent.length == 0) {
                 return true;
             }

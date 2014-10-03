@@ -46,7 +46,7 @@ public final class CommandMv {
         }
     }
 
-    private static void mv(final String src, final String dest) throws IOException {   // correct arguments, recursive moving
+    private static void mv(final String src, final String dest) throws IOException {
         Path currDirPath = Paths.get(src);
         String[] currDirContent = new File(currDirPath.toString()).list();
         for (String x : currDirContent) {
