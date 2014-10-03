@@ -181,7 +181,7 @@ public final class Commands {
                             if (recursive) {
                                 rmutil(object);
                             } else {
-                            	throw new Exception(command + ": " 
+                            throw new Exception(command + ": " 
                                 + file + ": is a directory");
                             }
                         }
