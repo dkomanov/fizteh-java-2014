@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Scanner;
 
 //import  java.nio.channels.FileChannel;
@@ -146,8 +147,6 @@ public class Shell {
                             case "cd": {
                                 ++i;
                                 String what;
-                                String temp;
-                                temp = directory;
                                 while (s[i].equals("")) {
                                     ++i;
                                 }
@@ -161,42 +160,19 @@ public class Shell {
                                         System.exit(-1);
                                     }
                                 }
-                                if (what.equals(".")) {
-                                    ++i;
-                                    if(i < s.length){
-                                        System.err.println("too much arguments");
-                                        System.exit(-1);
-                                    }
-                                    break;
-                                }
-                                if (what.equals("..")) {
-                                    if (!temp.equals("C:\\") && !temp.equals("/")) {
-                                        directory = new File(temp).getParent();
-                                    }
-                                    ++i;
-                                    if(i < s.length){
-                                        System.err.println("too much arguments");
-                                        System.exit(-1);
-                                    }
-                                    break;
-                                }
-                                if (new File(what).exists()) {
-                                    temp = what;
-                                } else {
-                                    if (new File(temp + File.separator + what).exists()) {
-                                        temp = temp + File.separator + what;
-                                    } else {
-                                        System.err.println("cd: \'" + what + "\': No such file or directory");
-                                        System.exit(-1);
-                                    }
-                                }
-                                File dir = new File(temp);
-                                if (!dir.isDirectory()) {
-                                    System.err.println("It is not a directory");
+                                Path path = new File(directory).toPath();
+
+                                File newPath = path.resolve(what).toAbsolutePath().normalize().toFile();
+                                if (newPath.exists() && newPath.isDirectory()) {
+                                    System.setProperty("user.dir", newPath.getCanonicalPath());
+                                } else if (!newPath.exists()) {
+                                    System.err.println("path '" + newPath.toString() + "' doesn't exist");
                                     System.exit(-1);
                                 } else {
-                                    directory = temp;
+                                    System.err.println(what + " is not a directory");
+                                    System.exit(-1);
                                 }
+                                directory = System.getProperty("user.dir");
                                 ++i;
                                 break;
                             }
