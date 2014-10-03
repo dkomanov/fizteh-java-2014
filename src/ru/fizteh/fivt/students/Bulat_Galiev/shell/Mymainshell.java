@@ -78,7 +78,7 @@ public final class Mymainshell {
             }
             break;
         case "exit":
-            System.exit(-1);
+            System.exit(0);
             break;
 
         default:
@@ -106,7 +106,7 @@ public final class Mymainshell {
             commandHandler(arg, mod);
         }
         if (mod) {
-            System.exit(-1);
+            System.exit(0);
         }
     }
 }
