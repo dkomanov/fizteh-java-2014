@@ -58,8 +58,8 @@ public final class Commands {
             }
         } catch (InvalidPathException e) {
             throw new Exception(command
-                   + ": cannot change directory to '"
-		+ args[1] + "': illegal character in path");
+                   + ": cannot change directory to '" 
+                   + args[1] + "': illegal character in path");
         } catch (SecurityException e) {
             throw new Exception(command
                     + ": cannot change directory: access denied");
