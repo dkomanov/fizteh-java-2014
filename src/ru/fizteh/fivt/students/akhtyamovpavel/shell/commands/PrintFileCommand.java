@@ -20,9 +20,10 @@ public class PrintFileCommand implements Command {
 
     @Override
     public void executeCommand(final ArrayList<String> arguments) throws Exception {
-        if (arguments.isEmpty()) {
-            throw new Exception("usage: cat files ...");
+        if (arguments.size() != 1) {
+            throw new Exception("usage: file");
         }
+
         for (String currentCommand : arguments) {
             File printFile = null;
             if (Paths.get(currentCommand).isAbsolute()) {
@@ -32,13 +33,13 @@ public class PrintFileCommand implements Command {
             }
 
             if (!printFile.exists()) {
-                throw new Exception("cat: " + currentCommand + ": doesn't exists");
+                throw new Exception(currentCommand + ": doesn't exists");
             }
             if (!printFile.isFile()) {
-                throw new Exception("cat: " + currentCommand + ": not a file");
+                throw new Exception(currentCommand + ": not a file");
             }
             if (!printFile.canRead()) {
-                throw new Exception("cat: " + currentCommand + ": permission denied");
+                throw new Exception(currentCommand + ": permission denied");
             }
 
             String filePath = printFile.getAbsolutePath();

@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.shell.commands;
 import ru.fizteh.fivt.students.akhtyamovpavel.shell.Shell;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class ChangeDirectoryCommand implements Command {
             return;
         }
         if (arguments.size() > 1) {
-            throw new IllegalArgumentException("cd: too many arguments");
+            throw new IllegalArgumentException("too many arguments");
         }
         File targetDirectory = null;
         if (Paths.get(arguments.get(0)).isAbsolute()) {
@@ -32,14 +33,16 @@ public class ChangeDirectoryCommand implements Command {
         }
 
         if (!targetDirectory.exists()) {
-            throw new Exception("cd: " + arguments.get(0) + ": No such file or directory");
+            throw new Exception(arguments.get(0) + ": no such file or directory");
         } else if (!targetDirectory.isDirectory()) {
-            throw new Exception("cd: " + arguments.get(0) + ": not a directory");
+            throw new Exception(arguments.get(0) + ": not a directory");
         } else {
             link.setWorkDirectory(new File(targetDirectory.getAbsolutePath()));
-
-            link.setWorkDirectory(new File(targetDirectory.getCanonicalPath()));
-
+            try {
+                link.setWorkDirectory(new File(targetDirectory.getCanonicalPath()));
+            } catch (IOException ioe) {
+                throw new Exception("broken path");
+            }
         }
 
     }

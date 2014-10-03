@@ -22,21 +22,21 @@ public class MakeDirectoryCommand implements Command {
     @Override
     public void executeCommand(ArrayList<String> arguments) throws Exception {
         if (arguments.isEmpty()) {
-            throw new Exception("usage: mkdir <directory>");
+            throw new Exception("usage: <directory>");
         }
         if (arguments.size() > 1) {
-            throw new IllegalArgumentException("usage: mkdir <directory>");
+            throw new IllegalArgumentException("usage: <directory>");
         }
         for (String folderName : arguments) {
             try {
                 Path newDirectoryPath = Paths.get(link.getWorkDirectory().getAbsolutePath(), folderName);
                 Files.createDirectory(newDirectoryPath);
             } catch (FileAlreadyExistsException e) {
-                throw new Exception("mkdir: " + folderName + "already exists");
+                throw new Exception(folderName + " already exists");
             } catch (SecurityException se) {
-                throw new Exception("mkdir: permission denied");
+                throw new Exception("permission denied");
             } catch (IOException ioe) {
-                throw new Exception("mkdir: permission denied");
+                throw new Exception("permission denied");
             }
         }
     }

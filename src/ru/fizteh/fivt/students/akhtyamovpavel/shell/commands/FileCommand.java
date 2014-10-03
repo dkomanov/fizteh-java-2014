@@ -12,18 +12,18 @@ import java.util.ArrayList;
 public abstract class FileCommand implements Command {
     protected Shell link;
 
-    protected File getResolvedFile(String filePath) throws Exception {
+    protected File getResolvedFile(String filePath, boolean checkExistence) throws Exception {
         File targetFile = null;
         if (Paths.get(filePath).isAbsolute()) {
             targetFile = new File(filePath);
         } else {
             targetFile = new File(link.getWorkDirectory(), filePath);
         }
-        if (!targetFile.exists()) {
-            throw new Exception(getName() + ": '" + filePath + "': No such file or directory");
+        if (!targetFile.exists() && checkExistence) {
+            throw new Exception(filePath + "': No such file or directory");
         }
         return targetFile;
     }
 
-    protected abstract void checkArgumentNumberCorrection(ArrayList<String> arguments);
+    protected abstract void checkArgumentNumberCorrection(ArrayList<String> arguments) throws Exception;
 }

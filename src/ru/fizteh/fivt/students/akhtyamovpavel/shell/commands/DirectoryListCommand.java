@@ -17,7 +17,7 @@ public class DirectoryListCommand implements Command {
     @Override
     public void executeCommand(ArrayList<String> arguments) {
         if (!arguments.isEmpty()) {
-            throw new IllegalArgumentException("ls: too many arguments");
+            throw new IllegalArgumentException("too many arguments");
         }
         for (String fileName : link.getWorkDirectory().list()) {
             System.out.println(fileName);

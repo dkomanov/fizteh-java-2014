@@ -61,7 +61,7 @@ public abstract class AbstractShell {
             }
         } catch (Exception e) {
             hasPacketErrors = true;
-            printException(e.getMessage());
+            printException(command.getCommandName() + ": " + e.getMessage());
         }
 
     }

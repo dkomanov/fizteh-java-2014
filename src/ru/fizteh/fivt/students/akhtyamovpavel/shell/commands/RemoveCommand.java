@@ -29,36 +29,46 @@ public class RemoveCommand extends FileCommand {
             fileIndex++;
         }
 
-        File sourceFile = getResolvedFile(arguments.get(fileIndex));
+        File sourceFile = getResolvedFile(arguments.get(fileIndex), true);
 
         if (sourceFile.isDirectory() && !isRecursive) {
-            throw new Exception("rm: " + sourceFile.getName() + ": is a directory");
+            throw new Exception(sourceFile.getName() + ": is a directory");
         }
 
         if (!isRecursive) {
             try {
                 Files.delete(sourceFile.toPath());
             } catch (SecurityException se) {
-                throw new Exception("rm: permission denied");
+                throw new Exception("permission denied");
             } catch (IOException ioe) {
-                throw new Exception("rm: permission denied");
+                throw new Exception("permission denied");
             }
         } else {
             Path sourcePath = sourceFile.toPath();
             Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
+                    try {
+                        Files.delete(file);
+                    } catch (SecurityException se) {
+                        throw new IOException("permission denied");
+                    }
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
                     if (e == null) {
-                        Files.delete(dir);
+                        try {
+                            Files.delete(dir);
+                        } catch (SecurityException se) {
+                            throw new IOException("permission denied");
+                        } catch (IOException ioe) {
+                            throw new IOException("i/o error");
+                        }
                         return FileVisitResult.CONTINUE;
                     } else {
-                        throw e;
+                        throw new IOException("i/o error");
                     }
                 }
             });
@@ -72,15 +82,15 @@ public class RemoveCommand extends FileCommand {
     }
 
     @Override
-    protected void checkArgumentNumberCorrection(ArrayList<String> arguments) {
+    protected void checkArgumentNumberCorrection(ArrayList<String> arguments) throws Exception {
         if (arguments.isEmpty() || arguments.size() >= 3) {
-            throw new IllegalArgumentException("rm: usage <file/dir> [-r]");
+            throw new Exception("usage <file/dir> [-r]");
         }
         if (arguments.size() == 1 && arguments.get(0).equals("-r")) {
-            throw new IllegalArgumentException("rm: usage <file/dir> [-r]");
+            throw new Exception("usage <file/dir> [-r]");
         }
         if (arguments.size() == 2 && !arguments.get(0).equals("-r")) {
-            throw new IllegalArgumentException("rm: usage <file/dir> [-r]");
+            throw new Exception("usage <file/dir> [-r]");
         }
     }
 }

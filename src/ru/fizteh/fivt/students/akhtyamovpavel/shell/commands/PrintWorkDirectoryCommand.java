@@ -15,7 +15,7 @@ public class PrintWorkDirectoryCommand implements Command {
     }
 
     @Override
-    public void executeCommand(ArrayList<String> arguments) {
+    public void executeCommand(ArrayList<String> arguments) throws Exception {
         System.out.println(link.getWorkDirectory());
     }
 

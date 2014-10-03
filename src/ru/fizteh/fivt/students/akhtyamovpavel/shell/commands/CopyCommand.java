@@ -25,35 +25,46 @@ public class CopyCommand extends FileCommand {
         checkArgumentNumberCorrection(arguments);
         boolean isRecursive = false;
         int firstFileIndex = 0;
-        if (arguments.get(0).equals("-r")) {
+        if ("-r".equals(arguments.get(0))) {
             isRecursive = true;
             firstFileIndex++;
         }
 
-        File sourceFile = getResolvedFile(arguments.get(firstFileIndex));
-        File targetFile = getResolvedFile(arguments.get(firstFileIndex + 1));
-        if (!targetFile.canWrite()) {
-            throw new Exception("cp: i/o error");
-        }
+        File sourceFile = getResolvedFile(arguments.get(firstFileIndex), true);
+        File targetFile = getResolvedFile(arguments.get(firstFileIndex + 1), false);
+
+
         if (sourceFile.isDirectory() && !isRecursive) {
-            throw new Exception("cp: " + sourceFile.getName() + "is a directory (not copied)");
+            throw new Exception(sourceFile.getName() + "is a directory (not copied)");
         }
-        if (!targetFile.isDirectory()) {
-            throw new Exception("cp: " + targetFile.getName() + "not a directory: can't copy");
+
+        if (targetFile.exists()) {
+            if (targetFile.isDirectory()) {
+                try {
+                    targetFile = Paths.get(targetFile.getAbsolutePath(), sourceFile.getName()).toFile();
+                } catch (InvalidPathException ipe) {
+                    throw new Exception("target path is broken");
+                }
+            }
         }
-        targetFile = Paths.get(targetFile.getAbsolutePath(), sourceFile.getName()).toFile();
 
         if (!isRecursive) {
             try {
+                sourceFile = sourceFile.getCanonicalFile();
+                targetFile = targetFile.getCanonicalFile();
+                if (sourceFile.equals(targetFile)) {
+                    throw new Exception("copy to the same file");
+                }
                 Files.copy(sourceFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (SecurityException se) {
-                throw new Exception("cp: permission denied");
+                throw new Exception("permission denied");
             } catch (IOException ioe) {
-                throw new Exception("cp: i/o error");
+                throw new Exception("i/o error");
             }
         } else {
             final Path sourcePath = sourceFile.toPath();
             final Path targetPath = targetFile.toPath();
+            checkForSubdirectory(sourceFile, targetFile);
             Files.walkFileTree(sourcePath, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
                     new SimpleFileVisitor<Path>() {
                         @Override
@@ -61,18 +72,24 @@ public class CopyCommand extends FileCommand {
                                 throws IOException {
                             Path targetDir = targetPath.resolve(sourcePath.relativize(dir));
                             try {
-                                Files.copy(dir, targetDir);
-                            } catch (FileAlreadyExistsException e) {
-                                if (!Files.isDirectory(targetDir)) {
-                                    throw e;
-                                }
+                                Files.copy(dir, targetDir, StandardCopyOption.REPLACE_EXISTING);
+                            } catch (SecurityException se) {
+                                throw new IOException("permission denied");
+                            } catch (IOException ioe) {
+                                throw new IOException("i/o error");
                             }
                             return FileVisitResult.CONTINUE;
                         }
 
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                            Files.copy(file, targetPath.resolve(sourcePath.relativize(file)));
+                            try {
+                                Files.copy(file, targetPath.resolve(sourcePath.relativize(file)));
+                            } catch (SecurityException se) {
+                                throw new IOException("permission denied");
+                            } catch (IOException ioe) {
+                                throw new IOException("i/o error");
+                            }
                             return FileVisitResult.CONTINUE;
                         }
                     }
@@ -88,16 +105,33 @@ public class CopyCommand extends FileCommand {
     @Override
     protected void checkArgumentNumberCorrection(ArrayList<String> arguments) {
         if (arguments.size() < 2) {
-            throw new IllegalArgumentException("cp: usage [-r] <source> <destination>");
+            throw new IllegalArgumentException("usage [-r] <source> <destination>");
         }
-        if (arguments.size() == 2 && arguments.get(0).equals("-r")) {
-            throw new IllegalArgumentException("cp: usage [-r] <source> <destination>");
+        if (arguments.size() == 2 && "-r".equals(arguments.get(0))) {
+            throw new IllegalArgumentException("usage [-r] <source> <destination>");
         }
-        if (arguments.size() == 3 && !arguments.get(0).equals("-r")) {
-            throw new IllegalArgumentException("cp: usage [-r] <source> <destination>");
+        if (arguments.size() == 3 && !"-r".equals(arguments.get(0))) {
+            throw new IllegalArgumentException("usage [-r] <source> <destination>");
         }
         if (arguments.size() >= 4) {
-            throw new IllegalArgumentException("cp: usage [-r] <source> <destination>");
+            throw new IllegalArgumentException("usage [-r] <source> <destination>");
+        }
+    }
+
+    private void checkForSubdirectory(File sourceFile, File targetFile) throws Exception {
+        try {
+            sourceFile = sourceFile.getCanonicalFile();
+            targetFile = targetFile.getCanonicalFile();
+            File tempTargetFile = targetFile;
+
+            while (tempTargetFile != null) {
+                if (sourceFile.equals(tempTargetFile)) {
+                    throw new Exception("links error");
+                }
+                tempTargetFile = tempTargetFile.getParentFile();
+            }
+        } catch (IOException ioe) {
+            throw new Exception("i/o error");
         }
     }
 
