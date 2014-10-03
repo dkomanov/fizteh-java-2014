@@ -57,7 +57,6 @@ public class Shell {
             System.err.println(e.getMessage());
             System.exit(-1);
         }
-        interactive();
     }
 
     public static void docom(final String command, boolean mode)
