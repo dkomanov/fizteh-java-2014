@@ -7,7 +7,7 @@ public class Shell {
     private HashMap<String, Instruction> instructions;
 
     public Shell() {
-        instructions = new HashMap();
+        instructions = new HashMap<String, Instruction>();
 
         Instruction commandCd = new Cd();
         instructions.put(commandCd.nameOfInstruction, commandCd);
