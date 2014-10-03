@@ -321,10 +321,6 @@ public class Shell {
 		}
 		if (from.isDirectory()) {
 			File[] fileNamesList = from.listFiles();
-			if (fileNamesList == null) {
-				throw new MyException(
-						"cp: error");
-			}
 			for (File f: fileNamesList) {
 				copy(f, destination);
 			}
@@ -369,3 +365,4 @@ public class Shell {
 		throw new ExitException();
 	}
 }
+
