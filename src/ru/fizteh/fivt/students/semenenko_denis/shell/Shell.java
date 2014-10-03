@@ -19,7 +19,7 @@ class InvalidCommandException extends Exception {
     }
 }
 
-public class Shell2 {
+public class Shell {
 
     private static String currentDirectory;
     private static boolean batchMode;
