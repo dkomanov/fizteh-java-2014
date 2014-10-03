@@ -88,7 +88,7 @@ public final class MainShell {
                         }                        
                         break;
             }    }        
-        } while(arg2[0] != "exit");            
+        } while(!arg2[0].equals("exit"));            
     }
 }
 
