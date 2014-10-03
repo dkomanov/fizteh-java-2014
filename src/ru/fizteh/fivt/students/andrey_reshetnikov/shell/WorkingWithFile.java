@@ -8,13 +8,13 @@ import static java.nio.file.StandardCopyOption.*;
 
 public class WorkingWithFile {
     public static File concatPath(File pwdFolder, String s) throws IOException {
-		File newElem = new File(s);
+        File newElem = new File(s);
         if (!newElem.isAbsolute()) {
             newElem = new File(pwdFolder, s);
         }
         return newElem;
-	}
-	public static void delete(File deleting) throws IOException, FileWasNotDeleted {
+    }
+    public static void delete(File deleting) throws IOException, FileWasNotDeleted {
         File[] listOfElements = deleting.listFiles();
         if (listOfElements != null) {
             for (File i : listOfElements) {
@@ -29,7 +29,7 @@ public class WorkingWithFile {
             throw new FileWasNotDeleted();
         }
     }
-	public static void copy(File source, File destination) throws IOException, WrongCommand {
+    public static void copy(File source, File destination) throws IOException, WrongCommand {
         if (source.isDirectory()) {
             copyDirectory(source, new File(destination, source.getName()));
         } else {
