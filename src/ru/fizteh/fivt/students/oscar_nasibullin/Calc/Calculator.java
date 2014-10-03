@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.oscar_nasibullin.Calc;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public final class Calculator {
 
@@ -25,7 +26,7 @@ public final class Calculator {
         
         expression = str;
 
-        if (expression.matches("[^ -+*/()0-9]+")) {  // Check syntax, doesn't work properly :( 
+        if (expression.matches("^[ -+*/()0-9]+")) {  // Check syntax, doesn't work properly :( 
             System.out.println("Syntax mistakes");
             System.exit(0);
         }
@@ -77,7 +78,7 @@ public final class Calculator {
                         System.out.println("Division by zero");
                         System.exit(0);
                         } else {
-                        rezult = rezult.divide(temp);
+                        rezult = rezult.divide(temp, 2, RoundingMode.HALF_UP);
                     }
                     break;
             }
