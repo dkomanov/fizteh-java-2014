@@ -192,7 +192,7 @@ public final class Commands {
                     + file 
                     + "': No such file or directory");
                 }
-			}
+            }
         } catch (SecurityException e) {
         throw new Exception(command 
             + ": cannot remove file '" 
