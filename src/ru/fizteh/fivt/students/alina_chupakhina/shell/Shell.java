@@ -10,8 +10,8 @@ import java.nio.file.StandardCopyOption;
 
 public class Shell {
 
-    static private String current;
-    static private boolean out;
+    private static String current;
+    private static boolean out;
 
     public static void main(final String[] args) {
         current = System.getProperty("user.dir");
@@ -92,6 +92,7 @@ public class Shell {
                 exit(args);
 
             } else if (args[0].equals("")) {
+                out = false;
             } else {
                 throw new Exception(args[0] + "Invalid command");
             }
