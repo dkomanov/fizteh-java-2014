@@ -227,7 +227,8 @@ class InterfaceShell {
     
     boolean cp(final File dir, final String path, final String destanation)    {
         try    {
-            File file, file2;            
+            File file;
+            File file2;            
             if (dir.isDirectory()) {
                 if (!Paths.get(path).isAbsolute()) {
                     file = new File(dir.getCanonicalPath() 
