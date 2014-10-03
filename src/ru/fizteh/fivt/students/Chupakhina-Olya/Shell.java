@@ -219,9 +219,9 @@ public class Shell {
                 for (String s : fList) {
                     System.out.println(s);
                 }
-            }
+        }
 
-            if (args[0].equals("cat")){
+            if (args[0].equals("cat")) {
                 done = true;
                 if ((args.length != 2)) {
                     throw new Exception(
@@ -258,8 +258,7 @@ public class Shell {
                 throw new Exception(
                         args[0] + ": Unknown command");
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             if (mode) {
                 System.exit(-1);
@@ -317,3 +316,7 @@ public class Shell {
         }
     }
 }
+
+
+
+
