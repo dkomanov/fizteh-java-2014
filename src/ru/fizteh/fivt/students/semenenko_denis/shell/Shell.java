@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.semenenko_denis.shell;
 /**
  * Created by denny_000 on 23.09.2014.
  */
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -166,7 +165,7 @@ public class Shell {
                 throw new Exception(args[1] + " is not a directory");
             }
             currentDirectory = System.getProperty("user.dir");
-        } catch (Exception e) {
+        }catch(Exception e){
             errorNoFile("cd", args[1]);
         }
     }
