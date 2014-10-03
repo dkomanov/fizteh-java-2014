@@ -83,7 +83,7 @@ final class Shell {
         if (Pattern.matches("cd\\s+.*", func)) {
             String dir = func.substring(2);
             dir = dir.trim();
-			String[]args = dir.split("\\s+");
+                        String[]args = dir.split("\\s+");
 			if (args.length > 1) {
 				System.err.println("cd: too many arguments.");
 				return FUNCTION_ERROR;
