@@ -81,40 +81,40 @@ public final class Commands {
             File newDirectory = new File(path + File.separator + dirName);
             if (args[1].isEmpty()) {
             throw new Exception(command + ": cannot create '" 
-            	+ "': no such file or directory");
+            + "': no such file or directory");
             }
             if (newDirectory.exists()) {
-                throw new Exception(command + ": cannot create directory '"
-                            + args[1] + "': File exists");
+                throw new Exception(command + ": cannot create directory '" 
+                + args[1] + "': File exists");
             } else {
                 if (!newDirectory.mkdir()) {
-                    throw new Exception(command
-                            + ": cannot create directory '"
-                            + args[1]);
+                    throw new Exception(command + 
+                    ": cannot create directory '" 
+                    + args[1]);
                 }
             }
         } catch (InvalidPathException e) {
-            throw new Exception(command
-                    + ": cannot create directory '"
-                    + args[1] + "': illegal character in name");
+            throw new Exception(command 
+            + ": cannot create directory '" 
+            + args[1] + "': illegal character in name");
         } catch (SecurityException e) {
-            throw new Exception(command
-                    + ": cannot create directory '"
-                    + args[1] + "': access denied");
+            throw new Exception(command 
+            + ": cannot create directory '" 
+            + args[1] + "': access denied");
         }
     }
     public static void pwd(final String[] args) throws Exception {
         String command = "pwd";
         if (args.length != 1) {
-            throw new Exception(command
-                    + ": too much arguments");
+            throw new Exception(command 
+            + ": too much arguments");
         }
         try {
             String path = System.getProperty("user.dir");
             System.out.println(path);
         } catch (SecurityException e) {
-            throw new Exception(command
-                    + ": cannot read current working directory: access denied");
+            throw new Exception(command 
+            + ": cannot read current working directory: access denied");
         }
     }
 
@@ -126,7 +126,9 @@ public final class Commands {
             }
         }
         if (!name.delete()) {
-            throw new Exception(command + ": cannot remove a file '" + name.getName() + "'");
+            throw new Exception(command 
+            + ": cannot remove a file '" 
+            + name.getName() + "'");
         }
     }
     public static void rm(final String[] args) throws Exception {
@@ -163,42 +165,44 @@ public final class Commands {
                 object = new File(current + File.separator + file);
             }
             if (args[index].isEmpty()) {
-				throw new Exception(command
-						+ ": cannot remove '"
-					    + args[index] 
-					    + "': No such file or directory");
+				throw new Exception(command 
+				+ ": cannot remove '" 
+				+ args[index] 
+				+ "': No such file or directory");
 			} else {
                 if (object.exists()) {
                     if (object.isFile()) {
                         if (!object.delete()) {
-                            throw new Exception(command
-                                + ": cannot remove a file '" + file + "'");
+                            throw new Exception(command 
+                            + ": cannot remove a file '" + file + "'");
                         }
                     } else {
                         if (object.isDirectory()) {
                             if (recursive) {
                                 rmutil(object);
                             } else {
-                                throw new Exception(command + ": "
-                                    + file + ": is a directory");
+                                throw new Exception(command + ": " 
+                                + file + ": is a directory");
                             }
                         }
                     }
                 } else {
-                    throw new Exception(command
-                       + ": cannot remove '" + file + "': No such file or directory");
+                    throw new Exception(command 
+                    + ": cannot remove '" 
+                    + file 
+                    + "': No such file or directory");
                 }
 			}
         } catch (SecurityException e) {
-            throw new Exception(command
-                    + ": cannot remove file '" 
-                    + args[index]
-                    + "': access denied");
+            throw new Exception(command 
+            + ": cannot remove file '" 
+            + args[index] 
+            + "': access denied");
         } catch (InvalidPathException e) {
-			throw new Exception(command
-					+ ": cannot remove file '"
-					+ args[index]
-					+ "': illegal character in name");
+			throw new Exception(command 
+			+ ": cannot remove file '" 
+			+ args[index] 
+			+ "': illegal character in name");
 	} 
     }
 
@@ -214,9 +218,9 @@ public final class Commands {
                 throw new Exception(command + ": " + current.getName() + " : directory already exists");
             } else {
                 if (!current.mkdir()) {
-                    throw new Exception(command
-                            + ": cannot create directory '"
-                            + current.getName());
+                    throw new Exception(command 
+                    + ": cannot create directory '" 
+                    + current.getName());
                 }
             }
             for (File c : source.listFiles()) {
@@ -302,13 +306,14 @@ public final class Commands {
                 + " : No such file or directory");
             } else {
                 if (!fileDestination.exists()) {
-                    throw new Exception(command + ": "
-                            + fileDestination.getName()
-                            + ": No such file or directory");
+                    throw new Exception(command + ": " 
+                    + fileDestination.getName() 
+                    + ": No such file or directory");
                 } else {
                     if (!fileDestination.isDirectory()) {
-                        throw new Exception(command + ": "
-                                + fileDestination.getName() + " :is not a directory");
+                        throw new Exception(command + ": " 
+                        + fileDestination.getName() 
+                        + " :is not a directory");
                     } else {
                         String srcAbsolute = fileSource.getAbsolutePath();
                         String destAbsolute = fileDestination.getAbsolutePath();
@@ -325,20 +330,20 @@ public final class Commands {
                 }
             }
         } catch (IOException e) {
-            throw new Exception(command
-                    + ": cannot read or write files");
+            throw new Exception(command 
+            + ": cannot read or write files");
         } catch (SecurityException e) {
-            throw new Exception(command
-                    + ": cannot copy file '"
-					+ args[index] + "' to '"
-					+ args[index  + 1]
-					+ "': access denied");
+            throw new Exception(command 
+            + ": cannot copy file '" 
+            + args[index] + "' to '" 
+            + args[index  + 1] 
+            + "': access denied");
         } catch (InvalidPathException e) {
-			throw new Exception(command
-					+ ": cannot copy file '"
-					+ args[index] + "' to '"
-					+ args[index + 1]
-					+ "': illegal character in name");
+			throw new Exception(command 
+			+ ": cannot copy file '" 
+			+ args[index] + "' to '" 
+			+ args[index + 1] 
+			+ "': illegal character in name");
 		}
     }
 
@@ -385,18 +390,18 @@ public final class Commands {
             cp(args1);
             rm(args2);
         } catch (IOException e) {
-            throw new Exception(command
-                    + ": cannot read or write files");
+            throw new Exception(command 
+            + ": cannot read or write files");
         } catch (SecurityException e) {
-            throw new Exception(command
-                    + ": cannot move file '"
-                    + args[1] + "' to '"
-					+ args[2] + "': access denied");
+            throw new Exception(command 
+            + ": cannot move file '" 
+            + args[1] + "' to '" 
+            + args[2] + "': access denied");
         } catch (InvalidPathException e) {
-			throw new Exception(command
-					+ ": cannot move file '"
-					+ args[1] + "' to '"
-					+ args[2] + "': illegal character in name");
+			throw new Exception(command 
+			+ ": cannot move file '" 
+			+ args[1] + "' to '" 
+			+ args[2] + "': illegal character in name");
 		}
     }
     public static void ls(final String[] args) throws Exception {
@@ -410,8 +415,8 @@ public final class Commands {
                 System.out.println(i);
             }
         } catch (SecurityException e) {
-            throw new Exception(command
-                    + ": cannot get the list of files: access denied");
+            throw new Exception(command 
+            + ": cannot get the list of files: access denied");
         }
     }
 
@@ -428,8 +433,8 @@ public final class Commands {
                 sourceFile = new File(current + File.separator + file);
             }
             if (!sourceFile.exists()) {
-                throw new Exception(command + ": "
-                        + file + ": No such file or directory");
+                throw new Exception(command + ": " 
+                + file + ": No such file or directory");
             }
             if (sourceFile.isDirectory()) {
                 System.out.println(sourceFile.getName());
@@ -444,17 +449,17 @@ public final class Commands {
                     }
                     reader.close();
                 } catch (FileNotFoundException e) {
-                    throw new Exception(command + ": '"
-                            + sourceFile.getName() + "': file not found");
+                    throw new Exception(command + ": '" 
+                    + sourceFile.getName() + "': file not found");
                 }
             }
         } catch (SecurityException e) {
-            throw new Exception(command
-                    + ": cannot open file '" + args[1] + "': access denied");
+            throw new Exception(command 
+            + ": cannot open file '" 
+            + args[1] + "': access denied");
         } catch (InvalidPathException e) {
-            throw new Exception(command
-                    + ": cannot open file '"
-				    + args[1] + "': illegal character in name");
+            throw new Exception(command + ": cannot open file'" 
+            + args[1] + "': illegal character in name");
         }
     }
 
