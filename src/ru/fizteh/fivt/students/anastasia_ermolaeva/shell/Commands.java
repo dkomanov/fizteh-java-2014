@@ -88,9 +88,9 @@ public final class Commands {
                 + args[1] + "': File exists");
             } else {
                 if (!newDirectory.mkdir()) {
-                	throw new Exception(command 
-                	+ ": cannot create directory '" 
-                	+ args[1]);
+                throw new Exception(command 
+                + ": cannot create directory '" 
+                + args[1]);
                 }
             }
         } catch (InvalidPathException e) {
