@@ -335,7 +335,7 @@ public final class Commands {
 					+ args[index  + 1]
 					+ "': access denied");
         } catch (InvalidPathException e) {
-			throw new Exception(getName()
+			throw new Exception(command
 					+ ": cannot copy file '"
 					+ args[index] + "' to '"
 					+ args[index + 1]
@@ -394,7 +394,7 @@ public final class Commands {
                     + args[1] + "' to '"
 					+ args[2] + "': access denied");
         } catch (InvalidPathException e) {
-			throw new Exception(getName()
+			throw new Exception(command
 					+ ": cannot move file '"
 					+ args[1] + "' to '"
 					+ args[2] + "': illegal character in name");
