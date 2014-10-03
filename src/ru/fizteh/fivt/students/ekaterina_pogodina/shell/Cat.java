@@ -11,10 +11,10 @@ public class Cat {
     private Cat() {  }
     public static void run(String[] args, int j) throws IOException {
         if (j + 1 < 2) {
-            System.err.println(args[0] + ": missing operand");
+            throw new IOException(args[0] + ": missing operand");
         } else {
             if (j + 1 > 2) {
-                System.err.println(args[0] + ": too mush arguments");
+                throw new IOException(args[0] + ": too mush arguments");
             } else {
                 try {
                     File file = Utils.absoluteFileCreate(args[1]);
@@ -33,7 +33,7 @@ public class Cat {
                     br.close();
                     System.out.print("\n");
                 } catch (Exception e) {
-                    System.err.println("File \"" + args[1] + "\" not found");
+                    throw new IOException("File \"" + args[1] + "\" not found");
                 }
             }
         }

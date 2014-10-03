@@ -7,7 +7,7 @@ public class Pwd {
     private Pwd() { }
     public static void run(String[] args, int j) throws IOException {
         if (j != 0) {
-            System.err.println(args[0] + ": to many arguments");
+            throw new IOException(args[0] + ": to many arguments");
         } else {
             try {
                 String s =
@@ -15,7 +15,7 @@ public class Pwd {
                 System.out.print(s);
                 System.out.print("\n");
             } catch (Exception e) {
-                System.err.println(
+                throw new IOException(
                 "mkdir: couldn't create the directory \'" + CurrentDir.getCurrentDirectory() + "\'.");
             }
         }

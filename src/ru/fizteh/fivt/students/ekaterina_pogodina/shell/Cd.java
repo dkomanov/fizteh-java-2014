@@ -7,10 +7,10 @@ public class Cd {
     private Cd() {  }
     public static void run(String[] args, int j) throws IOException {
         if (j  + 1 < 2) {
-            System.err.println(args[0] + ": missing operand");
+            throw new IOException(args[0] + ": missing operand");
         } else {
             if (j + 1 > 2) {
-                System.err.println(args[0] + ": too many arguments");
+                throw new IOException(args[0] + ": too many arguments");
             } else {
                 File resultFile = new File(args[1]);
                 File goTo;
@@ -23,10 +23,10 @@ public class Cd {
                     if (goTo.isDirectory()) {
                         CurrentDir.changeCurrentDirectory(goTo.getPath());
                     } else {
-                        System.err.println("cd: '" + args[1] + "': no such file or directory");
+                        throw new IOException("cd: '" + args[1] + "': no such file or directory");
                     }
                 } catch (Exception e) {
-                    System.err.println("cd: couldn't change current directory to \'" + args[1] + "\'.");
+                    throw new IOException("cd: couldn't change current directory to \'" + args[1] + "\'.");
                 }
             }
         }

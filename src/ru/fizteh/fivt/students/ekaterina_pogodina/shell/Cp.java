@@ -8,10 +8,10 @@ public class Cp {
     private Cp() {  }
     public static void run(final String[] args, boolean flag, int j) throws IOException {
         if (!(flag && j + 1 >= 4) && !(!flag && j + 1 >= 3)) {
-            System.err.println(args[0] + ": missing operand");
+            throw new IOException(args[0] + ": missing operand");
         } else {
             if (!(flag && j + 1 <= 4) && !(!flag && j + 1 <= 3)) {
-                System.err.println(args[0] + ": too many arguments");
+                throw new IOException(args[0] + ": too many arguments");
             } else {
                 int i;
                 if (flag) {
@@ -26,10 +26,10 @@ public class Cp {
                             && ((new File(destination.getParent())).exists()))) {
                         Utils.copyFileOrDirectory(source, destination, flag);
                     } else {
-                        System.err.println("cp: " + args[i] + " not exists");
+                        throw new IOException("cp: " + args[i] + " not exists");
                     }
                 } else {
-                    System.err.println("cp: " + args[i] + " not exists");
+                    throw new IOException("cp: " + args[i] + " not exists");
                 }
             }
         }

@@ -8,7 +8,7 @@ public final class Ls {
     }
     public static void run(final String[] args, int j) throws IOException {
         if (j + 1 > 1) {
-            System.err.println(args[0] + ": too many arguments");
+            throw new IOException(args[0] + ": too many arguments");
         } else {
             try {
                 File file = new File(CurrentDir.getCurrentDirectory());
@@ -16,7 +16,7 @@ public final class Ls {
                     System.out.println(element);
                 }
             } catch (Exception e) {
-                System.err.println("ls: couldn't execute the command.");
+                throw new IOException("ls: couldn't execute the command.");
             }
         }
     }

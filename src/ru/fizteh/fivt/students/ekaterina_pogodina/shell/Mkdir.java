@@ -8,7 +8,7 @@ public class Mkdir {
     }
     public static void run(final String[] args, int j) throws IOException {
         if (j + 1 == 1) {
-            System.err.println(args[0] + ": missing operand");
+            throw new IOException(args[0] + ": missing operand");
         } else {
             if (j + 1 > 2) {
                 System.err.println(args[0] + ": too much arguments");
@@ -19,8 +19,7 @@ public class Mkdir {
                         throw new IOException();
                     }
                 } else {
-                    System.err.println(args[0] + ": '" + args[1] + "' already exists");
-                    return;
+                    throw new IOException(args[0] + ": '" + args[1] + "' already exists");
                 }
             }
         }

@@ -8,12 +8,10 @@ import java.nio.file.Files;
 public class Rm {
     public static void run(String[] args, boolean flag, int j) throws IOException {
         if (!(flag && j + 1 >= 3) && !(!flag && j + 1 >= 2)) {
-            System.err.println(args[0] + ": missing operand");
-            return;
+            throw new IOException(args[0] + ": missing operand");
         } else {
             if (!(flag && j + 1 <= 3) && !(!flag && j + 1 >= 2)) {
-                System.err.println(args[0] + ": too many arguments");
-                return;
+                throw new IOException(args[0] + ": too many arguments");
             }
         }
         int i;

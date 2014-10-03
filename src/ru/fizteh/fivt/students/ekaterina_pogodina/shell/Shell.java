@@ -42,44 +42,57 @@ public final class Shell {
                 if (j != 0 && arg[1].equals("-r")) {
                     flag = true;
                 }
-                Parser.parse(arg, flag, true, j);
+                try {
+                    Parser.parse(arg, flag, true, j);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                    System.exit(1);
+                }
                 cmdWithArgs.clear();
             }
         } else {
-            while (true) {
-                System.out.print("$ ");
-                Scanner sc = new Scanner(System.in);
-                String line = "";
-                if (sc.hasNext()) {
-                    line = sc.nextLine();
-                } else {
-                    System.exit(0);
-                }
-                String[] commands = line.split(" ; ");
-                for (int k = 0; k < commands.length; k++) {
-                    boolean flag = false;
-                    int index;
-                    int j;
-                    index = 0;
-                    j = 0;
-                    for (int i = 0; i < commands[k].length(); i++) {
-                        if (commands[k].charAt(i) == ' ') {
-                            cmdWithArgs.add(commands[k].substring(index, i));
-                            j++;
-                            index = i + 1;
+            try (Scanner sc = new Scanner(System.in)) {
+                while (true) {
+                    System.out.print("$ ");
+                    String line = "";
+                    if (sc.hasNext()) {
+                        line = sc.nextLine();
+                    } else {
+                        System.exit(0);
+                    }
+                    String[] commands = line.split(" ; ");
+                    for (int k = 0; k < commands.length; k++) {
+                        boolean flag = false;
+                        int index;
+                        int j;
+                        index = 0;
+                        j = 0;
+                        for (int i = 0; i < commands[k].length(); i++) {
+                            if (commands[k].charAt(i) == ' ') {
+                                cmdWithArgs.add(commands[k].substring(index, i));
+                                j++;
+                                index = i + 1;
+                            }
                         }
+                        cmdWithArgs.add(commands[k].substring(index, commands[k].length()));
+                        String[] arg = new String[cmdWithArgs.size()];
+                        for (int i = 0; i < arg.length; i++) {
+                            arg[i] = cmdWithArgs.get(i);
+                        }
+                        if (j != 0 && arg[1].equals("-r")) {
+                            flag = true;
+                        }
+                        try {
+                            Parser.parse(arg, flag, false, j);
+                        } catch (Exception e) {
+                            System.err.println(e.getMessage());
+                        }
+                        cmdWithArgs.clear();
                     }
-                    cmdWithArgs.add(commands[k].substring(index, commands[k].length()));
-                    String[] arg = new String[cmdWithArgs.size()];
-                    for (int i = 0; i < arg.length; i++) {
-                           arg[i] = cmdWithArgs.get(i);
-                    }
-                    if (j != 0 && arg[1].equals("-r")) {
-                        flag = true;
-                    }
-                    Parser.parse(arg, flag, false, j);
-                    cmdWithArgs.clear();
                 }
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                System.exit(1);
             }
         }
 

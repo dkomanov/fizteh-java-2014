@@ -6,7 +6,7 @@ public class Parser {
     private Parser() {
     }
 
-    public static void parse(final String[] args, boolean flag, boolean mode, int j) throws IOException {
+    public static void parse(final String[] args, boolean flag, boolean mode, int j) throws IOException, Exception {
         try {
             switch (args[0]) {
                 case "exit":
@@ -38,17 +38,10 @@ public class Parser {
                     break;
                 default:
                     System.err.println(args[0] + ": no such command");
-                    if (mode) {
-                        System.exit(1);
-                    }
-                    return;
+                    //return;
             }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            if (mode) {
-                System.exit(1);
-            }
+            throw new Exception(e.getMessage());
         }
-
     }
 }
