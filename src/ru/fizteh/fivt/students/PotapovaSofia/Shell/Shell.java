@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Scanner;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,8 +23,7 @@ public class Shell {
     }
     public static void interMode() throws Exception {
         System.out.println("$ ");
-        try {
-            Scanner in = new Scanner(System.in);
+        try (Scanner in = new Scanner(System.in)) {
             while (in.hasNextLine()) {
                 String str = in.nextLine();
                 String[] cmds = str.split(";");
@@ -94,6 +94,7 @@ public class Shell {
                 throw new Exception("mkdir: few arguements\n");
             } else {
                 makeDir(runningCmd[1]);
+                System.out.println("mkdir done\n");
             }
         } else if (runningCmd[0].equals("pwd")) {
             if (len > 1) {
@@ -110,6 +111,7 @@ public class Shell {
                 } else {
                     if (len == 3 && runningCmd[1].equals("-r")) {
                         remove(runningCmd[2], true);
+                        System.out.println("rm done\n");
                     } else {
                         throw new Exception("rm: too much arguments\n");
                     }
@@ -126,6 +128,7 @@ public class Shell {
                     copy(runningCmd[1], runningCmd[2], false);
                 } else if (len == 4 && runningCmd[1].equals("-r")) {
                     copy(runningCmd[2], runningCmd[3], true);
+                    System.out.println("cp done\n");
                 } else {
                     throw new Exception("cp: too much arguments\n");
                 }
@@ -265,51 +268,43 @@ public class Shell {
     public static void printWorkDir() throws Exception {
         System.out.println(currentPath + "\n");
     }
-    public static void remove(String str, boolean key) throws Exception {
-        String path = pathSplit(str);
-        File dir = new File(path);
-        if (!dir.exists()) {
-            throw new Exception("rm: " + str + ": Not exists\n");
-        }
-        if (dir.isDirectory()) {
-            if (!key) {
-                throw new Exception("rm: " + str + " is a directory (use -r)\n");
-            } else {
-                if (dir.listFiles().length == 0) {
-                    if (!dir.delete()) {
-                        throw new Exception("rm: " + str + ": Can't delete\n");
-                    }
-                } else {
-                    if (!recRm(dir)) {
-                        throw new Exception("rm: " + str + ": Can't delete\n");
-                    }
-                }
-            }
-        } else {
-            if (!dir.delete()) {
-                throw new Exception("rm: " + str + ": Can't delete\n");
-            }
-        }
+    public static void recRm(File dir) throws Exception {
+       boolean isDeleted = false;
+       if (dir.isFile()) {
+           isDeleted = dir.delete();
+           if (!isDeleted) {
+               throw new Exception("rm: " + dir.toString() + ":" + " cannot remove file or directory");
+           }
+       } else {
+           String[] files = dir.list();
+           for (String it : files) {
+               recRm(new File(dir, it));
+           }
+           isDeleted = dir.delete();
+       }
+       if (!isDeleted) {
+           throw new Exception("rm: Can't delete\n");
+       }
     }
-    public static boolean recRm(File dir)throws Exception {
-        File[] files = dir.listFiles();
-        if (files == null) {
-            throw new Exception("rm: No such file or directory\n");
-        }
-        for (File f : files) {
-            if (f.isDirectory()) {
-                if (f.listFiles().length != 0) {
-                    if (!recRm(f)) {
-                        return false;
-                    }
-                }
-            } else {
-                if (!f.delete()) {
-                    return false;
-                }
-            }
-        }
-        return dir.delete();
+    public static void remove(String str, boolean key) throws Exception {
+       boolean isDeleted = false;
+       File dir = new File(str);
+       Path path = new File(currentPath).toPath();
+       dir = path.resolve(str).toAbsolutePath().toFile();
+       if (!key && dir.isDirectory()) {
+           throw new Exception(str + " is directory (use -r)\n");
+       }
+       if (!dir.exists()) {
+           throw new Exception("rm: '" + str + "': No such file or directory\n");
+       }
+       if (dir.isFile() && !key) {
+           isDeleted = dir.delete();
+           if (!isDeleted) {
+               throw new Exception("rm:" + str + ": Can't remove file or directory\n");
+           }
+           return;
+       }
+       recRm(dir);
     }
     public static void copy(String source, String destination, boolean key) throws Exception {
         String sourcePath = pathSplit(source);
