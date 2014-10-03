@@ -1,10 +1,9 @@
 package ru.fizteh.fivt.students.irina_karatsapova.shell;
 
 import ru.fizteh.fivt.students.irina_karatsapova.shell.commands.*;
-import ru.fizteh.fivt.students.irina_karatsapova.shell.Shell;
 
-public class Main {	
-	public static void main(String[] args) {
+public class Main {
+    public static void main(String[] args) {
 		Shell shell = new Shell();
 		shell.addCommand(new CatCommand());
 		shell.addCommand(new CdCommand());
