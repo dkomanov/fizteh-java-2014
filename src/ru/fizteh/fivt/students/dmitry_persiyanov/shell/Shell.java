@@ -102,6 +102,8 @@ public final class Shell {
                 System.exit(0);
                 break;
             default:
+                System.err.println("shell: wrong syntax");
+                System.exit(-1);
                 break;
         }
     }
