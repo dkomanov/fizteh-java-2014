@@ -6,7 +6,9 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class MyMap {
-    public Map<String, CurrentTable> tables = null;
+    public Map<String, CurrentTable> tables = new HashMap<String, CurrentTable>();
+    public CurrentTable ct;
+
     public Boolean checkName(final String name) {
         String[] s = {"put", "get", "remove", "list", "exit", "create", "use", "drop", "show tables"};
         for (int i = 0; i < s.length; ++i) {
@@ -17,7 +19,7 @@ public class MyMap {
         return false;
     }
 
-    public void run(final String[] currentArgs, CurrentTable ct) {
+    public void run(final String[] currentArgs) {
         if ("put".equals(currentArgs[0])) {
             Put put = new Put(currentArgs, ct);
         } else if ("get".equals(currentArgs[0])) {
@@ -40,26 +42,31 @@ public class MyMap {
                 System.err.println("wrong number of argument to use");
                 System.exit(1);
             }
-            if(tables.containsKey(currentArgs[1])){
+            if (tables.containsKey(currentArgs[1])) {
                 ct = tables.get(currentArgs[1]);
                 System.out.println("using " + ct.getName());
-            }
-            else{
+            } else {
                 System.out.println("tablename not exists");
             }
-        }
-        else if ("drop".equals(currentArgs[0])) {
-            ct.delete();
-            tables.remove(ct.getName());
-        }else if ("show tables".equals(currentArgs[0])) {
+        } else if ("drop".equals(currentArgs[0])) {
+            if (currentArgs.length != 2) {
+                System.err.println("wrong number of argument to drop");
+                System.exit(1);
+            }
+            if (tables.containsKey(currentArgs[1])) {
+                tables.get(currentArgs[1]).delete();
+                tables.remove(ct.getName());
+            } else {
+                System.out.println("tablename not exists");
+            }
+        } else if ("show tables".equals(currentArgs[0])) {
             Set<String> set = tables.keySet();
             System.out.println("table_name row_count");
             for (String s : set) {
-                System.out.println(s + " " + ((Integer)tables.get(s).getNumber()).toString());
+                System.out.println(s + " " + ((Integer) tables.get(s).getNumber()).toString());
             }
             System.out.println();
-        }
-        else {
+        } else {
             System.err.println("wrong command");
             System.exit(22);
         }
@@ -71,7 +78,7 @@ public class MyMap {
         while (true) {
             String currentString = sc.nextLine();
             currentString = currentString.trim();
-                run(currentString.split("\\s+"), currentTable);
+            run(currentString.split("\\s+"));
         }
 
     }
@@ -107,7 +114,7 @@ public class MyMap {
                     ++tmpSize;
                 }
             }
-            run(s, currentTable);
+            run(s);
         }
     }
 

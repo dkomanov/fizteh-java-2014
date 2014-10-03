@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
-import java.util.Map;
 
 public class Put {
     public Put(final String[] currentArgs, CurrentTable ct) {
@@ -19,6 +18,6 @@ public class Put {
             System.err.println("problem with put");
             System.exit(2);
         }
-   //     Write write = new Write(ct);
+        ct.write();
     }
 }

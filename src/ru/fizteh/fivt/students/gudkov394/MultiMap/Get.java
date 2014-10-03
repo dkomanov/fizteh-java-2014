@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
-import java.util.Map;
 
 public class Get {
     public Get(final String[] currentArgs, CurrentTable ct) {

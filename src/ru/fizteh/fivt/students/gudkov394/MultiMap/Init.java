@@ -1,13 +1,10 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
-import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Map;
 
 public class Init {
     public Init(CurrentTable currentTable, final String property) {
@@ -49,8 +46,7 @@ public class Init {
                     System.exit(6);
                 }
             }
-        }
-        else{
+        } else {
             System.err.println("Empty directory");
             System.exit(2);
         }

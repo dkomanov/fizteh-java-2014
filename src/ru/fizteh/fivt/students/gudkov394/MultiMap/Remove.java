@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
-import java.util.Map;
-
 public class Remove {
     public Remove(final String[] currentArgs, CurrentTable ct) {
         if (currentArgs.length != 2) {
