@@ -214,7 +214,7 @@ public class Shell {
         }
     }
 
-    private static String WhatDelete(String[] s, int i) {
+    private static String whatDelete(String[] s, int i) {
         String whatDelete;
         int j = s[i].indexOf(';');
         if (j != -1) {
@@ -229,7 +229,7 @@ public class Shell {
         return whatDelete;
     }
 
-    private static String Destination(String[] s, int i) {
+    private static String destination(String[] s, int i) {
         String destination;
         int j = s[i].indexOf(';');
         if (j != -1) {
@@ -351,7 +351,7 @@ public class Shell {
                                 ++i;
                                 String source = s[i];
                                 ++i;
-                                mv(directory, source, Destination(s, i));
+                                mv(directory, source, destination(s, i));
                                 ++i;
                                 break;
                             }
@@ -362,7 +362,7 @@ public class Shell {
                                     flag = true;
                                     ++i;
                                 }
-                                remove(WhatDelete(s, i), directory, flag);
+                                remove(whatDelete(s, i), directory, flag);
                                 ++i;
                                 break;
                             }
