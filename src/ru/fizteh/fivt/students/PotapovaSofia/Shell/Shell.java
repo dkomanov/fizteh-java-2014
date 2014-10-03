@@ -22,7 +22,7 @@ public class Shell {
         }
     }
     public static void interMode() throws Exception {
-        System.out.println("$ ");
+        System.out.print("$ ");
         try (Scanner in = new Scanner(System.in)) {
             while (in.hasNextLine()) {
                 String str = in.nextLine();
@@ -34,7 +34,7 @@ public class Shell {
                         System.err.println(e.getMessage());
                     }
                 }
-                System.out.println("$ ");
+                System.out.print("$ ");
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -78,9 +78,9 @@ public class Shell {
         if (runningCmd[0].equals("cd")) {
             try {
                 if (len > 2) {
-                    throw new Exception("cd: too much arguments\n");
+                    throw new Exception("cd: too much arguments");
                 } else if (len < 2) {
-                    throw new Exception("cd: few arguements\n");
+                    throw new Exception("cd: few arguements");
                 } else {
                     changeDir(runningCmd[1]);
                 }
@@ -89,31 +89,31 @@ public class Shell {
             }
         } else if (runningCmd[0].equals("mkdir")) {
             if (len > 2) {
-                throw new Exception("mkdir: too much arguments\n");
+                throw new Exception("mkdir: too much arguments");
             } else if (len < 2) {
-                throw new Exception("mkdir: few arguements\n");
+                throw new Exception("mkdir: few arguements");
             } else {
                 makeDir(runningCmd[1]);
-                System.out.println("mkdir done\n");
+                System.out.println("mkdir done");
             }
         } else if (runningCmd[0].equals("pwd")) {
             if (len > 1) {
-                throw new Exception("pwd: too much arguments\n");
+                throw new Exception("pwd: too much arguments");
             } else {
                 printWorkDir();
             }
         } else if (runningCmd[0].equals("rm")) {
             try {
                 if (len < 2) {
-                    throw new Exception("rm: few arguments\n");
+                    throw new Exception("rm: few arguments");
                 } else if (len == 2) {
                     remove(runningCmd[1], false);
                 } else {
                     if (len == 3 && runningCmd[1].equals("-r")) {
                         remove(runningCmd[2], true);
-                        System.out.println("rm done\n");
+                        System.out.println("rm done");
                     } else {
-                        throw new Exception("rm: too much arguments\n");
+                        throw new Exception("rm: too much arguments");
                     }
                 }
             } catch (IndexOutOfBoundsException e) {
@@ -123,14 +123,14 @@ public class Shell {
         } else if (runningCmd[0].equals("cp")) {
             try {
                 if (len < 3) {
-                    throw new Exception("cp: few  arguments\n");
+                    throw new Exception("cp: few  arguments");
                 } else if (len == 3) {
                     copy(runningCmd[1], runningCmd[2], false);
                 } else if (len == 4 && runningCmd[1].equals("-r")) {
                     copy(runningCmd[2], runningCmd[3], true);
-                    System.out.println("cp done\n");
+                    System.out.println("cp done");
                 } else {
-                    throw new Exception("cp: too much arguments\n");
+                    throw new Exception("cp: too much arguments");
                 }
             } catch (IndexOutOfBoundsException e) {
                 throw new Exception("usage: cd <dirname>");
@@ -138,9 +138,9 @@ public class Shell {
         } else if (runningCmd[0].equals("mv")) {
             try {
                 if (len < 3) {
-                    throw new Exception("mv: few arguments\n");
+                    throw new Exception("mv: few arguments");
                 } else if (len > 3) {
-                    throw new Exception("mv: too much arguments\n");
+                    throw new Exception("mv: too much arguments");
                 } else {
                     move(runningCmd[1], runningCmd[2]);
                 }
@@ -149,15 +149,15 @@ public class Shell {
             }
         } else if (runningCmd[0].equals("ls")) {
             if (len > 1) {
-                throw new Exception("ls: too much argument\n");
+                throw new Exception("ls: too much argument");
             }
             ls();
         } else if (runningCmd[0].equals("cat")) {
             try {
                 if (len > 2) {
-                    throw new Exception("cat: too much arguments\n");
+                    throw new Exception("cat: too much arguments");
                 } else if (len < 2) {
-                    throw new Exception("cat: few arguments\n");
+                    throw new Exception("cat: few arguments");
                 } else {
                     cat(runningCmd[1]);
                 }
@@ -170,7 +170,7 @@ public class Shell {
             }
             System.exit(0);
         } else {
-            throw new Exception(runningCmd[0] + " not found\n");
+            throw new Exception(runningCmd[0] + " not found");
         }
     }
     public static String pathSplit(String path) {
@@ -242,23 +242,16 @@ public class Shell {
         String path = pathSplit(str);
         File dir = new File(path);
         if (!dir.exists()) {
-            throw new Exception(str + ": No such file or directory\n");
+            throw new Exception(str + ": No such file or directory");
         }
         if (!dir.isDirectory()) {
-            throw new Exception(str + ": Not a directory\n");
+            throw new Exception(str + ": Not a directory");
         }
         currentPath = path;
     }
     public static void makeDir(String str) throws Exception {
         String path = pathSplit(str);
         File dir = new File(path);
-     /*   if (dir.exists()) {
-            throw new Exception("mkdir: " + str + ": Directory is already exists\n");
-        }
-        if (!dir.mkdir()) {
-            throw new Exception("mkdir: " + str + ": Can't create directory\n");
-        }
-       */
         try {
             Files.createDirectory(dir.toPath());
         } catch (FileAlreadyExistsException e) {
@@ -283,7 +276,7 @@ public class Shell {
            isDeleted = dir.delete();
        }
        if (!isDeleted) {
-           throw new Exception("rm: Can't delete\n");
+           throw new Exception("rm: Can't delete");
        }
     }
     public static void remove(String str, boolean key) throws Exception {
@@ -292,15 +285,15 @@ public class Shell {
        Path path = new File(currentPath).toPath();
        dir = path.resolve(str).toAbsolutePath().toFile();
        if (!key && dir.isDirectory()) {
-           throw new Exception(str + " is directory (use -r)\n");
+           throw new Exception(str + " is directory (use -r)");
        }
        if (!dir.exists()) {
-           throw new Exception("rm: '" + str + "': No such file or directory\n");
+           throw new Exception("rm: '" + str + "': No such file or directory");
        }
        if (dir.isFile() && !key) {
            isDeleted = dir.delete();
            if (!isDeleted) {
-               throw new Exception("rm:" + str + ": Can't remove file or directory\n");
+               throw new Exception("rm:" + str + ": Can't remove file or directory");
            }
            return;
        }
@@ -312,25 +305,26 @@ public class Shell {
         String destPath = pathSplit(destination);
         File destDir = new File(destPath);
         if (sourceDir.equals(destDir)) {
-            throw new Exception("cp: " + source + " and " + destination + " are the same\n");
+            throw new Exception("cp: " + source + " and " + destination + " are the same");
         }
         if (!sourceDir.exists()) {
-            throw new Exception("cp: " + source + ": No such file or directory\n");
+            throw new Exception("cp: " + source + ": No such file or directory");
         }
         if (sourceDir.isDirectory() && !key) {
-            throw new Exception("cp: " + source + ": is Directory (use -r)\n");
+            throw new Exception("cp: " + source + ": is Directory (use -r)");
         }
         if (destDir.isDirectory() && destDir.exists()) {
             destDir = new File(destDir, source);
         }
         if (!destDir.exists()) {
             if (sourceDir.isDirectory() && !destDir.mkdir()) {
-                throw new Exception("cp: " + destination + ": Can't create\n");
+                throw new Exception("cp: " + destination + ": Can't create");
             }
             if (sourceDir.isFile() && !destDir.createNewFile()) {
-                throw new Exception("cp: " + destination + ": Can't create\n");
+                throw new Exception("cp: " + destination + ": Can't create");
             }
         }
+        if()
         recCopy(sourceDir, destDir);
     }
     public static void recCopy(File source, File dest) throws Exception {
@@ -352,7 +346,7 @@ public class Shell {
                 os.write(buffer, 0, length);
             }
         } catch (Exception e) {
-            throw new Exception("cp: " + source + "Can't read file\n");
+            throw new Exception("cp: " + source + "Can't read file");
         } finally {
             if (is != null) {
                 is.close();
@@ -389,20 +383,20 @@ public class Shell {
     }
     public static void ls() throws Exception {
         File fl = new File(currentPath);
-        System.out.println(currentPath + ":\n");
+        System.out.println(currentPath);
         String[] files = fl.list();
         for (String st : files) {
-            System.out.println(st + "\n");
+            System.out.println(st);
         }
     }
     public static void cat(String str) throws Exception {
         String path = pathSplit(str);
         File f = new File(path);
         if (!f.exists()) {
-            throw new Exception("cat: " + str + ": No such file\n");
+            throw new Exception("cat: " + str + ": No such file");
         }
         if (!f.canRead()) {
-            throw new Exception("cat: " + str + ": Can't read file\n");
+            throw new Exception("cat: " + str + ": Can't read file");
         }
         FileReader fr = new FileReader(f);
         int c = fr.read();
