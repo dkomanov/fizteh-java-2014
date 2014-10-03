@@ -21,10 +21,15 @@ public class Mkdir extends Instruction {
             }
 
         Path needPath = Paths.get(presentDirectory.toString(), arguments[1]).toAbsolutePath().normalize();
-        try {
-            Files.createDirectory(needPath);
-        } catch (IOException e) {
-            System.err.print(e.getMessage());
+        if (!Files.exists(needPath)) {
+            try {
+                Files.createDirectory(needPath);
+            } catch (IOException e) {
+                System.err.print(e.getMessage());
+                System.exit(1);
+            }
+        } else {
+            System.err.print("ERROR: File already exists");
             System.exit(1);
         }
         return true;

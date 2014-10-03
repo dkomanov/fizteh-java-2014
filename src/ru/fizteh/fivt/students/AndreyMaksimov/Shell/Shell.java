@@ -11,27 +11,26 @@ public class Shell {
 
         Instruction commandCd = new Cd();
         instructions.put(commandCd.nameOfInstruction, commandCd);
-        Instruction commandMkdir = new Mkdir();
-        instructions.put(commandMkdir.nameOfInstruction, commandMkdir);
         Instruction commandLs = new Ls();
         instructions.put(commandLs.nameOfInstruction, commandLs);
-        Instruction commandCat = new Cat();
-        instructions.put(commandCat.nameOfInstruction, commandCat);
         Instruction commandRm = new Rm();
         instructions.put(commandRm.nameOfInstruction, commandRm);
-        Instruction commandPwd = new Pwd();
-        instructions.put(commandPwd.nameOfInstruction, commandPwd);
-        Instruction commandExit = new Exit();
-        instructions.put(commandExit.nameOfInstruction, commandExit);
         Instruction commandCp = new Cp();
         instructions.put(commandCp.nameOfInstruction, commandCp);
         Instruction commandMv = new Mv();
         instructions.put(commandMv.nameOfInstruction, commandMv);
+        Instruction commandCat = new Cat();
+        instructions.put(commandCat.nameOfInstruction, commandCat);
+        Instruction commandPwd = new Pwd();
+        instructions.put(commandPwd.nameOfInstruction, commandPwd);
+        Instruction commandExit = new Exit();
+        instructions.put(commandExit.nameOfInstruction, commandExit);
+        Instruction commandMkdir = new Mkdir();
+        instructions.put(commandMkdir.nameOfInstruction, commandMkdir);
 
     }
 
     public boolean interactive() {
-
         System.out.print("$ ");
 
         String[] parsedCommands;
@@ -40,10 +39,14 @@ public class Shell {
 
         try (Scanner IN = new Scanner(System.in)) {
             while (checkShell) {
-                parsedCommands = IN.nextLine().split(";");
+                if (IN.hasNextLine()) {
+                    parsedCommands = IN.nextLine().split(";");
+                } else {
+                    continue;
+                }
                 for (String firstCommand : parsedCommands) {
-                    firstCommand = firstCommand.trim(); //Remove unnecessary whitespace;
 
+                    firstCommand = firstCommand.trim(); //Remove unnecessary whitespace;
                     needArguments = firstCommand.split("\\s+");
 
                     Instruction shellInstruction = instructions.get(needArguments[0]);
@@ -59,6 +62,7 @@ public class Shell {
             }
 
         }
+
         return checkShell;
     }
 

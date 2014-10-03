@@ -59,6 +59,9 @@ public class Rm extends Instruction {
                 System.err.print(e.getMessage());
                 System.exit(1);
             }
+        } else {
+            System.err.print("ERROR: No such file or directory");
+            System.exit(1);
         }
         return true;
     }

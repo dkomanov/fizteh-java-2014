@@ -36,6 +36,9 @@ public class Cat extends Instruction {
                     System.exit(1);
                 }
             }
+        } else {
+            System.err.print("ERROR: No such file or directory");
+            System.exit(1);
         }
         return true;
     }
