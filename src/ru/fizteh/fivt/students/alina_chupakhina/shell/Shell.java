@@ -143,7 +143,7 @@ public class Shell {
             throw new Exception(
                     "mkdir: Invalid number of arguments");
         }
-        out = true;
+        System.exit(0);
     }
 
     private static void copy(final File source, File destination)
