@@ -39,6 +39,10 @@ public class MvCommand extends AbstractCommand {
         String sep = java.nio.file.FileSystems.getDefault().getSeparator();
         try {
             try {
+                if (Files.exists(dest) && Files.isSameFile(src, dest)) {
+                    shell.error("mv: '" + args[1] + "' and '" + args[2] + "' are the same file");
+                    return;
+                }
                 if ((dest.toString() + sep).startsWith(src.toString() + sep)) {
                     shell.error("mv: cannot move a directory to a subdirectory of itself");
                     return;
