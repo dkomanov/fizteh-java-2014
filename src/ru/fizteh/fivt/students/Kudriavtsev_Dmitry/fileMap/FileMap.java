@@ -130,7 +130,7 @@ public class FileMap {
             for (String newCommand :s) {
                 int j = 0;
                 String[] arguments = newCommand.split("\\s+");
-                while(arguments[j].equals("")) {
+                while (arguments[j].equals("")) {
                     ++j;
                 }
                 if (arguments[j].equals("exit")) {
@@ -143,7 +143,7 @@ public class FileMap {
                     return false;
                 }
                 String[] newArgs = new String[arguments.length - j - 1];
-                System.arraycopy(arguments, j+1, newArgs, 0, newArgs.length);
+                System.arraycopy(arguments, j + 1, newArgs, 0, newArgs.length);
                 if (!whatToDo.exec(dBase, newArgs)) {
                     System.out.println("Error on " + whatToDo.name);
                     System.exit(-1);
