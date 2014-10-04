@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.storage.strings;
 
+import java.util.List
+
 /**
  * @author Fedor Lavrentyev
  * @author Dmitriy Komanov
