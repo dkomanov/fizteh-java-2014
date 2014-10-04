@@ -92,6 +92,18 @@ public class Utils {
             throw new Exception(file.toString() + ": Not a directory");
         }
     }
+
+    public static void checkSubDirectory(File source, File destination) throws Exception {
+        if (destination.toString().startsWith(source.toString())) {
+            throw new Exception(source.toString() + ": Subdirectory of " + destination.toString());
+        }
+    }
+
+    public static void checkArgumentsNumber(int realNumber, int correctNumber) throws Exception {
+        if (realNumber != correctNumber) {
+            throw new Exception("Wrong number of arguments");
+        }
+    }
 }
 
 

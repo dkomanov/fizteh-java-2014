@@ -5,12 +5,14 @@ import java.io.File;
 public class RmCommand implements Command {
     public void execute(String[] args) throws Exception {
         if (!args[1].equals("-r")) {
+            Utils.checkArgumentsNumber(args.length, minArgs());
             File removed = Utils.makePathAbsolute(args[1]).toFile();
             Utils.checkExistance(removed);
             if ((removed.isFile()) || ((removed.isDirectory()) && (removed.list().length == 0))) {
                 Utils.delete(removed);
             }
         } else {
+            Utils.checkArgumentsNumber(args.length, maxArgs());
             File removed = Utils.makePathAbsolute(args[2]).toFile();
             Utils.checkExistance(removed);
             recursiveRemove(removed);

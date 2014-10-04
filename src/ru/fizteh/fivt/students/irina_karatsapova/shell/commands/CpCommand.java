@@ -7,28 +7,37 @@ public class CpCommand implements Command {
         File copied;
         File destination;
         if (!args[1].equals("-r")) {
+            Utils.checkArgumentsNumber(args.length, minArgs());
             copied = Utils.makePathAbsolute(args[1]).toFile();
             destination = Utils.makePathAbsolute(args[2]).toFile();
         } else {
+            Utils.checkArgumentsNumber(args.length, maxArgs());
             copied = Utils.makePathAbsolute(args[2]).toFile();
             destination = Utils.makePathAbsolute(args[3]).toFile();
+            Utils.checkSubDirectory(copied, destination);
+        }
+
+        File newDestination;
+        if (destination.exists() && destination.isDirectory()) {
+            newDestination = new File(destination, copied.getName());
+        } else {
+            newDestination = destination;
         }
         
-        File newDestination = new File(destination, copied.getName());
-        
         Utils.checkExistance(copied);
-        Utils.checkDirectory(destination);
+        Utils.checkExistance(newDestination.getParentFile());
         Utils.checkNonExistance(newDestination);
-            
-        if (!args[1].equals("-r")) {
-            if (copied.isFile()) {
-                Utils.copy(copied, newDestination);
+
+        if (copied.isFile()) {
+            Utils.copy(copied, newDestination);
+        }
+        if (copied.isDirectory()) {
+            newDestination.mkdir();
+            if (args[1].equals("-r")) {
+                for (File object: copied.listFiles()) {
+                    recursiveCopy(object, newDestination);
+                }
             }
-            if (copied.isDirectory()) {
-                newDestination.mkdir();
-            }
-        } else {
-            recursiveCopy(copied, destination);
         }
     }
     
