@@ -80,13 +80,7 @@ public class Command {
 
         while (argumentsQueue.size() > 0) {
             Vector<String> arguments = new Vector<>(argumentsQueue.poll());
-
-            try {
-                executeCommand(arguments);
-            } catch (MyException ex) {
-                System.out.println(ex.getMessage());
-                exceptionOccured = true;
-            }
+            executeCommand(arguments);
 
         }
 

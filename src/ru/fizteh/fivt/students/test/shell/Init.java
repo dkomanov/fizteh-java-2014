@@ -11,16 +11,25 @@ public class Init {
 
             Command command = new Command();
             command.readCommands(args);
-            command.executeAll();
-            if (command.isExceptionOccured()) {
+
+            try {
+                command.executeAll();
+            } catch (MyException ex) {
+                System.out.println(ex.getMessage());
                 System.exit(1);
             }
+
 
         } else {
             Command command = new Command();
             do {
                 command.readCommands(null);
-                command.executeAll();
+                try {
+                    command.executeAll();
+                } catch (MyException ex) {
+                    System.out.println(ex.getMessage());
+                }
+
                 if (command.isEndOfProgram()) {
                     break;
                 }
