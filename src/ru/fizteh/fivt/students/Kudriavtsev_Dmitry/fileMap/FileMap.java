@@ -113,16 +113,17 @@ public class FileMap {
             System.exit(-1);
             return false;
         }
-        String merged = null;
+        String merged = args[0];
         String[] s;
         HashMap<String, Command> myCommands = new HashMap<>();
-        myCommands.put("Put", new Put());
-        myCommands.put("Get", new Get());
-        myCommands.put("Remove", new Remove());
-        myCommands.put("List", new List());
+        myCommands.put("put", new Put());
+        myCommands.put("get", new Get());
+        myCommands.put("remove", new Remove());
+        myCommands.put("list", new List());
 
-        for (String arg : args) {
-            merged += arg;
+        for (int i = 1; i < args.length; ++i) {
+            merged += " ";
+            merged += args[i];
         }
         try {
             s = merged.split(";");
