@@ -38,7 +38,7 @@ public class Shell {
 					}
 					if (quoteOpened) {
 						System.out
-								.println("Error parsing statement: odd number of quotes");
+								.println("Error parsing statement");
 					}
 					if (builder.length() != 0) {
 						cmdArgs.add(builder.toString());
