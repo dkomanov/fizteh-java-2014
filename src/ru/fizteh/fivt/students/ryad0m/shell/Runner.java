@@ -29,13 +29,16 @@ public class Runner {
                 Path filePath = curPath.resolve(args[2]).normalize();
                 Path resPath = curPath.resolve(args[3]).normalize();
                 File file = filePath.toFile();
+                if (resPath.toFile().isDirectory()) {
+                    resPath = resPath.resolve(file.getName()).normalize();
+                }
                 File resFile = resPath.toFile();
-                if (!file.exists() || !resFile.isDirectory()) {
+                if (!file.exists() || resFile.exists()) {
                     System.err.println("File not found.");
                     System.exit(1);
                 } else {
                     try {
-                        Files.copy(filePath, resPath.resolve(file.getName()));
+                        Files.copy(filePath, resPath);
                     } catch (IOException e) {
                         System.err.println("Error with copying " + e.getMessage());
                         System.exit(1);
@@ -46,8 +49,11 @@ public class Runner {
             Path filePath = curPath.resolve(args[1]).normalize();
             Path resPath = curPath.resolve(args[2]).normalize();
             File file = filePath.toFile();
+            if (resPath.toFile().isDirectory()) {
+                resPath = resPath.resolve(file.getName()).normalize();
+            }
             File resFile = resPath.toFile();
-            if (!file.exists() || !resFile.isDirectory()) {
+            if (!file.exists() || resFile.exists()) {
                 System.err.println("File not found.");
                 System.exit(1);
             } else if (file.isDirectory()) {
@@ -55,7 +61,7 @@ public class Runner {
                 System.exit(1);
             } else {
                 try {
-                    Files.copy(filePath, resPath.resolve(file.getName()));
+                    Files.copy(filePath, resPath);
                 } catch (IOException e) {
                     System.err.println("Error with copying ");
                     System.exit(1);
