@@ -164,7 +164,8 @@ public class Shell {
                 printError("cp: copy into self.");
                 return false;
             }
-            if (Paths.get(destFile.getCanonicalPath(), currFile.getName()).toString().equals(currFile.getCanonicalPath())) {
+            if (Paths.get(destFile.getCanonicalPath(),
+                    currFile.getName()).toString().equals(currFile.getCanonicalPath())) {
                 printError("cp: paths are equal.");
                 return false;
             }
