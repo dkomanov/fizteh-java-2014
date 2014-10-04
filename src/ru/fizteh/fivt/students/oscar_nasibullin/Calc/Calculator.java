@@ -9,7 +9,10 @@ public final class Calculator {
     private static int    position = 0;
     private static char[] token;
     private static int    tokenType;
-    //static BigDecimal rezult;
+
+    private Calculator() {
+        // checkstyle asked for this useless constructor. I don't understand java code conventions  
+    }
 
     public static void main(final String[] args) {
         if (args.length > 1 || args.length == 0) {
@@ -23,10 +26,10 @@ public final class Calculator {
 
 
     public static BigDecimal calculate(final String str) {
-        
+
         expression = str;
 
-        if (expression.matches("^[ -+*/()0-9]+")) {  // Check syntax, doesn't work properly :( 
+        if (expression.matches("^[ -+*/()0-9]+")) {
             System.out.println("Syntax mistakes");
             System.exit(0);
         }
@@ -41,20 +44,24 @@ public final class Calculator {
         BigDecimal temp;
         BigDecimal rezult = multOrDiv();
 
-        operator = token[0];
-        while (operator  == '+' || operator == '-') {
-            getToken();
-            temp = multOrDiv();
-            switch(operator) {
-                case '-':
-                    rezult = rezult.subtract(temp);
-                    break;
-                case '+':
-                    rezult = rezult.add(temp);
-                    break;
-                }
-            operator = token[0];
-            }
+        try {
+        	operator = token[0];
+        	while (operator  == '+' || operator == '-') {
+        		getToken();
+        		temp = multOrDiv();
+        		switch(operator) {
+                	case '-':
+                		rezult = rezult.subtract(temp);
+                		break;
+                	case '+':
+                		rezult = rezult.add(temp);
+                		break;
+                	}
+        		operator = token[0];
+            	}
+        	} catch (Throwable th) {
+        		System.err.println(th);
+        	}
         return rezult;
         }
 
