@@ -30,25 +30,11 @@ public class FilesOperations {
 
     public final void setCurrentDirectory(final String directory)
             throws IOException {
-        File relativeNewDirectory =
-                new File(currentDirectory + File.separator + directory);
-        File absoluteNewDirectory =
-                new File(directory);
-
-        if (absoluteNewDirectory.exists()
-                && absoluteNewDirectory.isDirectory()
-                && absoluteNewDirectory.isAbsolute()) {
-            currentDirectory = Paths.get(directory);
-        } else {
-            if (relativeNewDirectory.exists()
-                    && relativeNewDirectory.isDirectory()) {
-                currentDirectory =
-                       Paths.get(currentDirectory + File.separator + directory);
-            } else {
-                throw new IOException("cd: \'"
-                        + directory + "\': No such file or directory");
-            }
+        Path newWorkingDirectory = getPath(directory);
+        if (!newWorkingDirectory.toFile().exists()) {
+            throw new IOException(String.format("'%s': No such file or directory", directory));
         }
+        currentDirectory = newWorkingDirectory;
     }
 
     public final String[] getFilesList() {
