@@ -61,6 +61,7 @@ public class Shell {
             builder.append(s).append(" ");
         }
         String string = new String(builder);
+        string = string.trim();
         String[] commands = string.split(";|(\\s+)");
         int i = 0;
         while (i < commands.length) {
@@ -86,6 +87,7 @@ public class Shell {
             }
             run(s, currentDirectory);
         }
+        System.exit(0);
     }
 
 

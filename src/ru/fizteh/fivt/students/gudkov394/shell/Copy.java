@@ -34,51 +34,61 @@ public class Copy {
     }
 
     public Copy(final String[] currentArgs, final CurrentDirectory cd) {
-        if (currentArgs.length > 4) {
-            System.out.println("more than 4 arguments to cp");
+        if (currentArgs.length != 4 && currentArgs.length != 3) {
+            System.out.println("wrong numbers of arguments to cp");
             System.exit(1);
         }
-        File from = new File(currentArgs[1]);
-        File to = new File(currentArgs[2]);
+        File from;
+        File to;
+        if (currentArgs.length == 3) {
+            from = new File(currentArgs[1]);
+            to = new File(currentArgs[2]);
+        } else {
+            from = new File(currentArgs[2]);
+            to = new File(currentArgs[3]);
+        }
         if (!from.isAbsolute()) {
-            from = new File(cd.getCurrentDirectory(), currentArgs[1]);
+            from = new File(cd.getCurrentDirectory(), from.getPath());
         }
         if (!to.isAbsolute()) {
-            to = new File(cd.getCurrentDirectory(), currentArgs[2]);
+            to = new File(cd.getCurrentDirectory(), to.getPath());
+        }
+        if (!from.exists()) {
+            System.err.println("this file or derictory doesn't exist");
+            System.exit(2);
         }
         if (currentArgs.length == 3) {
-            if (from.isFile() && to.isDirectory()) {
+            if (from.isFile()) {
                 try {
-                    File newTo = new File(to.getAbsolutePath(), from.getName());
-                    Files.copy(from.toPath(), newTo.toPath());
+                    Files.copy(from.toPath(), to.toPath());
                 } catch (IOException e2) {
                     System.err.println("problem with copy");
                     System.exit(3);
                 }
-            } else if (from.isDirectory() && to.isDirectory()) {
-                File newTo = new File(to.getAbsolutePath(), from.getName());
+            } else if (from.isDirectory()) {
                 try {
                     CopyOption[] options = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
-                    Files.copy(from.toPath(), newTo.toPath(), options);
+                    Files.copy(from.toPath(), to.toPath(), options);
                 } catch (IOException e2) {
-                    System.err.println("problem with copy");
-                    System.exit(3);
+                    System.err.println("this file already exists");
                 }
             } else {
                 System.err.println("fail with copy directory");
                 System.exit(2);
             }
         } else if (currentArgs.length == 4 && currentArgs[1].equals("-r")) {
-            if (from.isDirectory() && to.isDirectory()) {
-                File newTo = new File(to.getAbsolutePath(), from.getName());
+            if (from.isDirectory()) {
+                boolean allIsGood = true;
                 try {
                     CopyOption[] options = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
-                    Files.copy(from.toPath(), newTo.toPath(), options);
+                    Files.copy(from.toPath(), to.toPath(), options);
                 } catch (IOException e2) {
-                    System.err.println("problem with copy");
-                    System.exit(3);
+                    allIsGood = false;
+                    System.err.println("this file already exists");
                 }
-                copyRecursive(from, newTo);
+                if (allIsGood) {
+                    copyRecursive(from, to);
+                }
             } else {
                 System.err.println("fail with copy directory maybe -r is excess");
                 System.exit(2);
