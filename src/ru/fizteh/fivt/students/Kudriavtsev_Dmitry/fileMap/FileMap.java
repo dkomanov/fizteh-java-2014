@@ -26,7 +26,7 @@ public class FileMap {
             FileChannel iChannel = iStream.getChannel();
             ByteBuffer buffer;
             buffer = iChannel.map(FileChannel.MapMode.READ_WRITE, 0, iChannel.size());
-            while(buffer.hasRemaining()) {
+            while (buffer.hasRemaining()) {
                 int keySize = buffer.getInt();
                 byte[] key = new byte[keySize];
                 buffer.get(key, 0, keySize);
@@ -70,7 +70,7 @@ public class FileMap {
         myCommands.put("remove", new Remove());
         myCommands.put("list", new List());
         String[] arguments;
-        while(true) {
+        while (true) {
             try {
                 System.out.print("$ ");
                 Scanner sc = new Scanner(System.in);
@@ -81,7 +81,7 @@ public class FileMap {
                 System.exit(-1);
                 return false;
             }
-            if(arguments[0].equals("exit")) {
+            if (arguments[0].equals("exit")) {
                 break;
             }
             Command whatToDo = myCommands.get(arguments[0]);
@@ -128,7 +128,7 @@ public class FileMap {
             s = merged.split(";");
             for (String newCommand :s) {
                 String[] arguments = newCommand.split("\\s+");
-                if(arguments[0].equals("exit")) {
+                if (arguments[0].equals("exit")) {
                     break;
                 }
                 Command whatToDo = myCommands.get(arguments[0]);

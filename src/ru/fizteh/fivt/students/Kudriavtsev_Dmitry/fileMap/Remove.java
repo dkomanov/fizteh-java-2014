@@ -17,7 +17,7 @@ public class Remove extends Command {
             System.err.println("Incorrect number of arguments in " + name);
             return false;
         }
-        if (dBase.remove(args[0])!= null) {
+        if (dBase.remove(args[0]) != null) {
             System.out.println("removed");
         } else {
             System.out.println("not found");
