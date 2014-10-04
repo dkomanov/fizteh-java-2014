@@ -362,7 +362,7 @@ class Parser {
 				String b1;
 				StringBuilder bb = new StringBuilder();
 				try {
-					while((b1 = b.readLine()) != null) {
+					while ((b1 = b.readLine()) != null) {
 						bb.append(b1 + "\n");
 						System.out.println(b1);
 					}
@@ -559,8 +559,7 @@ class MethodsDirectory {
 		specialcp(arg1, arg2);
 	}
 	
-	void specialcp(final File arg1,final File arg2)
-	{
+	void specialcp(final File arg1,final File arg2)	{
 		//always with -r
 		if (arg1.isFile()) {
 			File newfile = new File(arg2 , arg1.getName());
