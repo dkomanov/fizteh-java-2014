@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * @author ilivanov
  */
 class Shell {
-    public static File currentDirectory = new File(System.getProperty("user.home"));
+    public static File currentDirectory = new File(System.getProperty("user.dir"));
     private int exitCode = 0;
 
     private ArrayList<Command> parseCommands(final StringBuilder source) {
