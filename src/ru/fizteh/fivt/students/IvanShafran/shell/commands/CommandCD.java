@@ -21,8 +21,8 @@ public class CommandCD extends Command {
         }
 
         File nextDirectory;
-            nextDirectory
-                    = new File(getAbsolutePath(shellLink.getWorkingDirectory().getAbsolutePath(), args.get(0)));
+        nextDirectory
+                = new File(getAbsolutePath(shellLink.getWorkingDirectory().getAbsolutePath(), args.get(0)));
 
         if (!nextDirectory.isDirectory()) {
             throw new Exception(args.get(0) + ": Not a directory");
