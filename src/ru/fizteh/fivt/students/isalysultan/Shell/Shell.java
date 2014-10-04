@@ -10,7 +10,6 @@ import java.io.*;
 import java.nio.file.*;
 
 public class Shell {
-	
 	public static void main(String[] args) {
 				Scanner in = new Scanner(System.in);
 				String currentdir = "C:";
@@ -32,35 +31,35 @@ public class Shell {
 		        		File path = new File(currentdir);
 		        		String a = comands[j];
 		        		a.trim();
-		        		String[] ParsedComand = a.split(" ");
+		        		String[] parsedComand = a.split(" ");
 		        		int k = 0;
-		        		if (ParsedComand[k].equals("exit")) {
+		        		if (parsedComand[k].equals("exit")) {
 		        			end = true;
 		        			break;
 		        		}
-		        		if (ParsedComand[k].equals("cd")) {
-		        			currentdir = parser.cd(ParsedComand, currentdir);
+		        		if (parsedComand[k].equals("cd")) {
+		        			currentdir = parser.cd(parsedComand, currentdir);
 		        		}
-		        		if (ParsedComand[k].equals("pwd")) {
+		        		if (parsedComand[k].equals("pwd")) {
 		        			objectdir.pwd(path);
 		        		}
-		        		if (ParsedComand[k].equals("mkdir")) {
-		        			objectdir.mkdir(ParsedComand[1], path);
+		        		if (parsedComand[k].equals("mkdir")) {
+		        			objectdir.mkdir(parsedComand[1], path);
 		        		}
-		        		if (ParsedComand[k].equals("rm")) {
-		        			parser.rm(path, ParsedComand);
+		        		if (parsedComand[k].equals("rm")) {
+		        			parser.rm(path, parsedComand);
 		        		}
-		        		if (ParsedComand[k].equals("cp")) {
-		        			parser.cp(path, ParsedComand);
+		        		if (parsedComand[k].equals("cp")) {
+		        			parser.cp(path, parsedComand);
 		        		}
-		        		if (ParsedComand[k].equals("ls")) {
-		        			objectdir.ls(path, ParsedComand);
+		        		if (parsedComand[k].equals("ls")) {
+		        			objectdir.ls(path, parsedComand);
 		        		}
-		        		if (ParsedComand[k].equals("mv")) {
-		        			parser.mv(path, ParsedComand);
+		        		if (parsedComand[k].equals("mv")) {
+		        			parser.mv(path, parsedComand);
 		        		}
-		        		if (ParsedComand[k].equals("cat")) {
-		        			parser.cat(path, ParsedComand);
+		        		if (parsedComand[k].equals("cat")) {
+		        			parser.cat(path, parsedComand);
 		        		}
 		        		j = j + 1;
 		        	}
@@ -107,7 +106,8 @@ public class Shell {
         			int c = 1;
         			if (parserstring[i + c].equals("-r")) {	
         				int f = 2;
-        				argstring = parserstring[i] + " " + parserstring[i + c] + " " + parserstring[i + f];
+        				argstring = parserstring[i] + " " + parserstring[i + c] 
+        					+ " " + parserstring[i + f];
         				f = 3;
         				i = i + f;
         			} else {
@@ -122,10 +122,12 @@ public class Shell {
         		if (parserstring[i].equals("cp")) {
         			String argstring;
         			if (parserstring[i + 1].equals("-r")) {	
-        				argstring = parserstring[i] + " " + parserstring[i + 1] + " " + parserstring[i + 2] + " " + parserstring[i + 3];
+        				argstring = parserstring[i] + " " + parserstring[i + 1] 
+        					+ " " + parserstring[i + 2] + " " + parserstring[i + 3];
         				i = i + 4;
         			} else {
-        				argstring = parserstring[i] + " " + parserstring[i + 1] + " " + parserstring[i + 2];
+        				argstring = parserstring[i] + " " + parserstring[i + 1] 
+        					+ " " + parserstring[i + 2];
         				i = i + 3;
         			}
         			String[] arg = argstring.split(" ");
@@ -140,7 +142,8 @@ public class Shell {
         			continue;
         		}
         		if (parserstring[i].equals("mv")) {
-        			String argstring = parserstring[i] + " " + parserstring[i + 1] + " " + parserstring[i + 2];
+        			String argstring = parserstring[i] + " " + parserstring[i + 1] 
+        				+ " " + parserstring[i + 2];
         			String[] arg = argstring.split(" ");
         			objectdir.ls(path, arg);
         			i = i + 3;
@@ -316,9 +319,10 @@ class Parser {
 		File path1 = new File(path, comand[1]);
 		File path2 = new File(path, comand[2]);
 		if (arg1path && !arg2path && path2.exists()) {
-			if ((arg1.isDirectory() && path2.isDirectory()) || (!arg1.isDirectory() && path2.isDirectory())) {
-				object1.mv(arg1, path2);
-				return;
+			if ((arg1.isDirectory() && path2.isDirectory()) 
+				|| (!arg1.isDirectory() && path2.isDirectory())) {
+					object1.mv(arg1, path2);
+					return;
 			}
 			if (arg1.isFile() && path2.isFile()) {
 				object2.mv(arg1, path2);
@@ -328,9 +332,10 @@ class Parser {
 			return;
 		}
 		if (!arg1path && arg2path && path1.exists()) {
-			if ((path1.isDirectory() && arg2.isDirectory()) || (!path1.isDirectory() && arg2.isDirectory())) {
-				object1.mv(path1, arg2);
-				return;
+			if ((path1.isDirectory() && arg2.isDirectory()) 
+				|| (!path1.isDirectory() && arg2.isDirectory())) {
+					object1.mv(path1, arg2);
+					return;
 			}
 			if (path1.isFile() && arg2.isFile()) {
 				object2.mv(path1, arg2);
@@ -340,9 +345,10 @@ class Parser {
 			return;
 		}
 		if (!arg1path && !arg2path && path1.exists() && path2.exists()) {
-			if ((path1.isDirectory() && path2.isDirectory()) || (!path1.isDirectory() && path2.isDirectory())) {
-				object1.mv(path1, path2);
-				return;
+			if ((path1.isDirectory() && path2.isDirectory()) 
+				|| (!path1.isDirectory() && path2.isDirectory())) {
+					object1.mv(path1, path2);
+					return;
 			}
 			if (path1.isFile() && path2.isFile()) {
 				object2.mv(path1, path2);
