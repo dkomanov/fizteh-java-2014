@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.hromov_igor.shell.cmd;
 import java.io.File;
 
 public class Ls {
-	public static void run(String[] args) throws Exception{
+	public static void run(String[] args) throws Exception {
 		if (args.length > 1) {
 			throw new Exception("ls : wrong number of arguments");
 		}

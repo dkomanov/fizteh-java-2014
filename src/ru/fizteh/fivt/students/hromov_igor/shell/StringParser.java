@@ -2,50 +2,49 @@ package ru.fizteh.fivt.students.hromov_igor.shell;
 
 import ru.fizteh.fivt.students.hromov_igor.shell.cmd.*;
 
-
 public class StringParser {
-	
-	public static void parse(String[] str_p, boolean fl){
-		try{
-			switch(str_p[0]){
+
+	public static void parse(String[] strParsed, boolean fl) {
+		try {
+			switch (strParsed[0]) {
 			case "exit":
 				System.exit(0);
 			case "ls":
-				Ls.run(str_p);
+				Ls.run(strParsed);
 				break;
-			case "pwd" :
-				Pwd.run(str_p);
+			case "pwd":
+				Pwd.run(strParsed);
 				break;
-			case "cat" :
-				Cat.run(str_p);
+			case "cat":
+				Cat.run(strParsed);
 				break;
-			case "cp" :
-				Cp.run(str_p);
+			case "cp":
+				Cp.run(strParsed);
 				break;
-			case "rm" :
-				Rm.run(str_p);
+			case "rm":
+				Rm.run(strParsed);
 				break;
-			case "mkdir" :
-				Mkdir.run(str_p);
+			case "mkdir":
+				Mkdir.run(strParsed);
 				break;
-			case "cd" :
-				Cd.run(str_p);
+			case "cd":
+				Cd.run(strParsed);
 				break;
-			case "mv" :
-				Mv.run(str_p);
+			case "mv":
+				Mv.run(strParsed);
 				break;
 			default:
-				System.err.println(str_p[0] + " : no such command");
-				if(fl){
+				System.err.println(strParsed[0] + " : no such command");
+				if (fl) {
 					System.exit(1);
 				}
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			System.err.println(e.getMessage());
-			if(fl){
+			if (fl) {
 				System.exit(1);
 			}
 		}
 	}
-	
+
 }
