@@ -13,6 +13,10 @@ public class MoveAction extends Action {
     //TODO: fix move
     @Override
     public boolean run() {
+		if (arguments.length != 3) {
+			System.err.println("mv: wrong number of arguments");
+			return false;
+		}
         File source = FileUtils.fromPath(arguments[1]);
         File dest = FileUtils.fromPath(arguments[2]);
         CopyAction copyAction = new CopyAction(new String[]

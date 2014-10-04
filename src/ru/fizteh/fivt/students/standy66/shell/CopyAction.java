@@ -35,6 +35,10 @@ public class CopyAction extends Action {
 
     @Override
     public boolean run() {
+		if (arguments.length != 3 && arguments.length != 4) {
+			System.err.println("cp: wrong number of arguments");
+			return false;
+		}
         File source;
         File dest;
         if (arguments[1].equals("-r")) {
