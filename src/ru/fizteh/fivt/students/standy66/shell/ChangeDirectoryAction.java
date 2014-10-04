@@ -7,25 +7,25 @@ import java.io.IOException;
  * Created by astepanov on 20.09.14.
  */
 public class ChangeDirectoryAction extends Action {
-	public ChangeDirectoryAction(String[] args) {
-		super(args);
-	}
+    public ChangeDirectoryAction(String[] args) {
+        super(args);
+    }
 
-	@Override
-	public boolean run() {
-		String path = arguments[1];
-		File f = FileUtils.fromPath(path);
+    @Override
+    public boolean run() {
+        String path = arguments[1];
+        File f = FileUtils.fromPath(path);
 
-		if (!f.isDirectory()) {
-			System.err.printf("cd: '%s': No such file or directory\n", path);
-			return false;
-		}
-		try {
-			System.setProperty("user.dir", f.getCanonicalPath());
-		} catch (IOException e) {
-			System.err.printf("cd: '%s': unable to read file\n", path);
-			return false;
-		}
-		return true;
-	}
+        if (!f.isDirectory()) {
+            System.err.printf("cd: '%s': No such file or directory\n", path);
+            return false;
+        }
+        try {
+            System.setProperty("user.dir", f.getCanonicalPath());
+        } catch (IOException e) {
+            System.err.printf("cd: '%s': unable to read file\n", path);
+            return false;
+        }
+        return true;
+    }
 }

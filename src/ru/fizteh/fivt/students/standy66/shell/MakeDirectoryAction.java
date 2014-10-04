@@ -7,18 +7,18 @@ import java.io.File;
  */
 public class MakeDirectoryAction extends Action {
 
-	public MakeDirectoryAction(String[] args) {
-		super(args);
-	}
+    public MakeDirectoryAction(String[] args) {
+        super(args);
+    }
 
-	@Override
-	public boolean run() {
-		String name = arguments[1];
-		File f = FileUtils.fromPath(name);
-		if (!f.mkdirs()) {
-			System.err.printf("mkdir: '%s': failed to create directory\n", name);
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean run() {
+        String name = arguments[1];
+        File f = FileUtils.fromPath(name);
+        if (!f.mkdirs()) {
+            System.err.printf("mkdir: '%s': failed to create directory\n", name);
+            return false;
+        }
+        return true;
+    }
 }
