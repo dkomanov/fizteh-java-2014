@@ -70,95 +70,95 @@ public class Shell {
   }
  }
 	
-	static void packageparser(final String[] parserstring, final Scanner in) {
-		String currentdir = "C:";
-		Parser parser = new Parser();
-		MethodsDirectory objectdir = new MethodsDirectory();
-		int i = 0;
-		while (i < parserstring.length) {
-			File path = new File(currentdir);
-				if (parserstring[i].equals("exit")) {
-        			break;
-        		}
-        		if (parserstring[i].equals("cd")) {
-        			int c = 1;
-        			String argstring = parserstring[i] + " " + parserstring[i + c];
-        			String[] arg = argstring.split(" ");
-        			currentdir = parser.cd(arg, currentdir);
-        			c = 2;
-        			i = i + c;
-        			continue;
-        		}
-        		if (parserstring[i].equals("pwd")) {
-        			objectdir.pwd(path);
-        			i = i + 1;
-        			continue;
-        		}
-        		if (parserstring[i].equals("mkdir")) {
-        			int c = 1;
-        			objectdir.mkdir(parserstring[i + c], path);
-        			c = 2;
-        			i = i + c;
-        			continue;
-        		}
-        		if (parserstring[i].equals("rm")) {
-        			String argstring;
-        			int c = 1;
-        			if (parserstring[i + c].equals("-r")) {	
-        				int f = 2;
-        				argstring = parserstring[i] + " " + parserstring[i + c] 
-        					+ " " + parserstring[i + f];
-        				f = 3;
-        				i = i + f;
-        			} else {
-        				argstring = parserstring[i] + " " + parserstring[i + c];
-        				int g = 2;
-        				i = i + g;
-        			}
-        			String[] arg = argstring.split(" ");
-        			parser.rm(path,	arg);
-        			continue;
-        		}
-        		if (parserstring[i].equals("cp")) {
-        			String argstring;
-        			if (parserstring[i + 1].equals("-r")) {	
-        				argstring = parserstring[i] + " " + parserstring[i + 1] 
-        					+ " " + parserstring[i + 2] + " " + parserstring[i + 3];
-        				i = i + 4;
-        			} else {
-        				argstring = parserstring[i] + " " + parserstring[i + 1] 
-        					+ " " + parserstring[i + 2];
-        				i = i + 3;
-        			}
-        			String[] arg = argstring.split(" ");
-        			parser.rm(path,	arg);
-        			continue;
-        		}
-        		if (parserstring[i].equals("ls")) {
-        			String argstring = parserstring[i] + " " + parserstring[i + 1];
-        			String[] arg = argstring.split(" ");
-        			objectdir.ls(path, arg);
-        			i = i + 2;
-        			continue;
-        		}
-        		if (parserstring[i].equals("mv")) {
-        			String argstring = parserstring[i] + " " + parserstring[i + 1] 
-        				+ " " + parserstring[i + 2];
-        			String[] arg = argstring.split(" ");
-        			objectdir.ls(path, arg);
-        			i = i + 3;
-        			continue;
-        		}
-        		if (parserstring[i].equals("cat")) {
-        			String argstring = parserstring[i] + " " + parserstring[i + 1];
-        			String[] arg = argstring.split(" ");
-        			objectdir.ls(path, arg);
-        			i = i + 2;
-        			continue;
-        		}
-        	System.out.println("$");
-		}
-	}
+ static void packageparser(final String[] parserstring, final Scanner in) {
+  String currentdir = "C:";
+  Parser parser = new Parser();
+  MethodsDirectory objectdir = new MethodsDirectory();
+  int i = 0;
+  while (i < parserstring.length) {
+   File path = new File(currentdir);
+   if (parserstring[i].equals("exit")) {
+    break;
+   }
+   if (parserstring[i].equals("cd")) {
+    int c = 1;
+    String argstring = parserstring[i] + " " + parserstring[i + c];
+    String[] arg = argstring.split(" ");
+    currentdir = parser.cd(arg, currentdir);
+    c = 2;
+    i = i + c;
+    continue;
+   }
+   if (parserstring[i].equals("pwd")) {
+    objectdir.pwd(path);
+    i = i + 1;
+    continue;
+   }
+   if (parserstring[i].equals("mkdir")) {
+    int c = 1;
+    objectdir.mkdir(parserstring[i + c], path);
+    c = 2;
+    i = i + c;
+    continue;
+   }
+   if (parserstring[i].equals("rm")) {
+    String argstring;
+    int c = 1;
+    if (parserstring[i + c].equals("-r")) {	
+     int f = 2;
+     argstring = parserstring[i] + " " + parserstring[i + c] 
+      + " " + parserstring[i + f];
+     f = 3;
+     i = i + f;
+    } else {
+     argstring = parserstring[i] + " " + parserstring[i + c];
+     int g = 2;
+     i = i + g;
+    }
+    String[] arg = argstring.split(" ");
+    parser.rm(path, arg);
+    continue;
+   }
+   if (parserstring[i].equals("cp")) {
+    String argstring;
+    if (parserstring[i + 1].equals("-r")) {	
+     argstring = parserstring[i] + " " + parserstring[i + 1] 
+      + " " + parserstring[i + 2] + " " + parserstring[i + 3];
+     i = i + 4;
+    } else {
+     argstring = parserstring[i] + " " + parserstring[i + 1] 
+      + " " + parserstring[i + 2];
+     i = i + 3;
+    }
+    String[] arg = argstring.split(" ");
+    parser.rm(path, arg);
+    continue;
+   }
+   if (parserstring[i].equals("ls")) {
+    String argstring = parserstring[i] + " " + parserstring[i + 1];
+    String[] arg = argstring.split(" ");
+    objectdir.ls(path, arg);
+    i = i + 2;
+    continue;
+   }
+   if (parserstring[i].equals("mv")) {
+    String argstring = parserstring[i] + " " + parserstring[i + 1] 
+    + " " + parserstring[i + 2];
+    String[] arg = argstring.split(" ");
+    objectdir.ls(path, arg);
+    i = i + 3;
+    continue;
+   }
+   if (parserstring[i].equals("cat")) {
+    String argstring = parserstring[i] + " " + parserstring[i + 1];
+    String[] arg = argstring.split(" ");
+    objectdir.ls(path, arg);
+    i = i + 2;
+    continue;
+   }
+   System.out.println("$");
+  }
+ }
 }
 
 
