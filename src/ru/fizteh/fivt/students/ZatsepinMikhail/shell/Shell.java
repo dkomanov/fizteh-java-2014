@@ -27,7 +27,7 @@ public class Shell {
                 if (inStream.hasNextLine()) {
                     parsedCommands = inStream.nextLine().split(";|\n");
                 } else {
-                    continue;
+                    break;
                 }
                 for (String oneCommand : parsedCommands) {
                     parsedArguments = oneCommand.split("\\s+");
