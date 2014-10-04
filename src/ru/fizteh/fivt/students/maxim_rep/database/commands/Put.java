@@ -37,12 +37,8 @@ public class Put implements DBCommand {
                 + "00"
                 + StringConverter.convertIntTo8(allDataInHex.length());
 
-        if (IoLib.writeToDB(filePath, allKeysInHex + newKeyInHex + allDataInHex
-                + newDataInHex, false)) {
-            return true;
-        } else {
-            return false;
-        }
+        return IoLib.writeToDB(filePath, allKeysInHex + newKeyInHex
+                + allDataInHex + newDataInHex, false);
 
     }
 
@@ -58,11 +54,7 @@ public class Put implements DBCommand {
             System.out.println("NEW");
         }
 
-        if (putData(keyName, dataText, filePath)) {
-            return true;
-        } else {
-            return false;
-        }
+        return putData(keyName, dataText, filePath);
 
     }
 }

@@ -5,11 +5,11 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
 public class HexConverter {
-    public static String hexToString(String HexCode) {
-        HexCode = HexCode.toUpperCase();
-        ByteBuffer buff = ByteBuffer.allocate(HexCode.length() / 2);
-        for (int i = 0; i < HexCode.length(); i += 2) {
-            buff.put((byte) Integer.parseInt(HexCode.substring(i, i + 2), 16));
+    public static String hexToString(String hexCode) {
+        hexCode = hexCode.toUpperCase();
+        ByteBuffer buff = ByteBuffer.allocate(hexCode.length() / 2);
+        for (int i = 0; i < hexCode.length(); i += 2) {
+            buff.put((byte) Integer.parseInt(hexCode.substring(i, i + 2), 16));
         }
         buff.rewind();
         // Charset cs = Charset.defaultCharset();
@@ -20,16 +20,16 @@ public class HexConverter {
     }
 
     public static String stringToHex(String text) {
-        char arr[] = text.toCharArray();
-        String HexString = "";
+        char[] arr = text.toCharArray();
+        String hexString = "";
         for (int i = 0; i < text.length(); i++) {
             if (arr[i] == '\0') {
-                HexString = HexString + "00";
+                hexString = hexString + "00";
             } else {
-                HexString = HexString + Integer.toHexString(arr[i]);
+                hexString = hexString + Integer.toHexString(arr[i]);
             }
         }
-        return HexString.toUpperCase();
+        return hexString.toUpperCase();
     }
 
     public static byte[] hexStringToByteArray(String s) {

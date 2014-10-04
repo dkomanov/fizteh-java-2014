@@ -59,12 +59,13 @@ public class IoLib {
 
         int len;
         String data = "";
-        byte bytes[] = new byte[16];
+        byte[] bytes = new byte[16];
         try {
             do {
                 len = in.read(bytes);
-                for (int j = 0; j < len; j++)
+                for (int j = 0; j < len; j++) {
                     data = data + String.format("%02X", bytes[j]);
+                }
             } while (len != -1);
         } catch (IOException e) {
             System.out.println("Database Error: " + e.getMessage() + "\"");
