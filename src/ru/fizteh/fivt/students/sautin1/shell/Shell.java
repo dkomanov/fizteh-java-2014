@@ -70,8 +70,7 @@ public class Shell {
             try {
                 wantsExit = executeCommand(params);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
-                return false;
+                throw new IllegalArgumentException(e.getMessage());
             }
             if (wantsExit) {
                 break;
@@ -85,14 +84,18 @@ public class Shell {
      */
     public void interactWithUser() {
         try (Scanner scanner = new Scanner(System.in)) {
-            boolean wantExit;
+            boolean wantExit = false;
             while (true) {
                 System.out.print(Command.presentWorkingDirectory.toString() + "$ ");
                 String newCommand = scanner.nextLine();
                 if (newCommand.isEmpty()) {
                     continue;
                 }
-                wantExit = callCommands(newCommand);
+                try {
+                    wantExit = callCommands(newCommand);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
                 if (wantExit) {
                     break;
                 }

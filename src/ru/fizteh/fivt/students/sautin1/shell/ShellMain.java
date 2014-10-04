@@ -16,12 +16,15 @@ public class ShellMain {
             shell.interactWithUser();
         } else {
             // non-interactive mode
-            boolean success = shell.callCommands(convertArrayToString(args));
-            if (!success) {
-                System.exit(1);
+            int exitCode = 0;
+            try {
+                shell.callCommands(convertArrayToString(args));
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                exitCode = 1;
             }
+            System.exit(exitCode);
         }
-        System.exit(0);
     }
 
 }
