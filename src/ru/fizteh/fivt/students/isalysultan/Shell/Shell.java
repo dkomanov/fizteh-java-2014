@@ -355,12 +355,12 @@ class Parser {
 
 	//функция представлена только в классе Parser
 	void cat(final File path, final String[] comand) {
-		File absPathFile=new File(comand[1]);
+		File absPathFile = new File(comand[1]);
 		if (absPathFile.exists()) {
 			try {
 				BufferedReader b = new BufferedReader(new FileReader(absPathFile));
 				String b1;
-				StringBuilder bb=new StringBuilder();
+				StringBuilder bb = new StringBuilder();
 				try {
 					while((b1 = b.readLine()) != null) {
 						bb.append(b1 + "\n");
