@@ -48,7 +48,10 @@ public class ShellMain {
             }
         } catch (Exception e) {
             System.out.println("Unhandled error: " + e.getMessage());
+            System.exit(1);
         }
-
+        if (runner.fail) {
+            System.exit(1);
+        }
     }
 }

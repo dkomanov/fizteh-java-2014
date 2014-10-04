@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Runner {
+    public boolean fail = false;
     private Path curPath = Paths.get("").toAbsolutePath().normalize();
 
     Runner() {
@@ -15,7 +16,7 @@ public class Runner {
     void exit(String[] args) {
         if (args.length > 1) {
             System.out.println("Command 'exit' must have no arguments, but exiting...");
-            System.exit(1);
+            fail = true;
         }
         System.exit(0);
     }
@@ -24,7 +25,7 @@ public class Runner {
         if (args.length == 4) {
             if (!args[1].equals("-r")) {
                 System.out.println("The only acceptable option is -r");
-                System.exit(1);
+                fail = true;
             } else {
                 Path filePath = curPath.resolve(args[2]).normalize();
                 Path resPath = curPath.resolve(args[3]).normalize();
@@ -35,13 +36,13 @@ public class Runner {
                 File resFile = resPath.toFile();
                 if (!file.exists() || resFile.exists()) {
                     System.err.println("File not found.");
-                    System.exit(1);
+                    fail = true;
                 } else {
                     try {
                         Files.copy(filePath, resPath);
                     } catch (IOException e) {
                         System.err.println("Error with copying " + e.getMessage());
-                        System.exit(1);
+                        fail = true;
                     }
                 }
             }
@@ -55,32 +56,32 @@ public class Runner {
             File resFile = resPath.toFile();
             if (!file.exists() || resFile.exists()) {
                 System.err.println("File not found.");
-                System.exit(1);
+                fail = true;
             } else if (file.isDirectory()) {
                 System.out.println("cp: " + args[1] + " is a directory (not copied).");
-                System.exit(1);
+                fail = true;
             } else {
                 try {
                     Files.copy(filePath, resPath);
                 } catch (IOException e) {
                     System.err.println("Error with copying ");
-                    System.exit(1);
+                    fail = true;
                 }
             }
         } else {
             System.err.println("Wrong arguments");
-            System.exit(1);
+            fail = true;
         }
     }
 
     void mkdir(String[] args) {
         if (args.length != 2) {
             System.err.println("Command cd must take only 1 argument.");
-            System.exit(1);
+            fail = true;
         } else {
             if (!curPath.resolve(args[1]).normalize().toFile().mkdir()) {
                 System.err.println("Error with mkdir");
-                System.exit(1);
+                fail = true;
             }
         }
     }
@@ -88,13 +89,13 @@ public class Runner {
     void cd(String[] args) {
         if (args.length != 2) {
             System.err.println("Command cd must take only 1 argument.");
-            System.exit(1);
+            fail = true;
         } else {
             Path newPath = curPath.resolve(args[1]).normalize();
             File file = newPath.toFile();
             if (!file.isDirectory()) {
                 System.out.println("cd: '" + args[1] + "': No such file or directory");
-                System.exit(1);
+                fail = true;
             } else {
                 curPath = newPath;
             }
@@ -104,7 +105,7 @@ public class Runner {
     void pwd(String[] args) {
         if (args.length > 1) {
             System.err.println("Command 'pwd' must have no arguments, but...");
-            System.exit(1);
+            fail = true;
         }
         System.out.println(curPath.toAbsolutePath().toString());
     }
@@ -122,13 +123,13 @@ public class Runner {
                     deleteDir(f);
                 } else if (!f.delete()) {
                     System.err.println("Delete error");
-                    System.exit(1);
+                    fail = true;
                 }
             }
         }
         if (!dir.delete()) {
             System.err.println("Delete error");
-            System.exit(1);
+            fail = true;
         }
     }
 
@@ -136,7 +137,7 @@ public class Runner {
         if (args.length == 3) {
             if (!args[1].equals("-r")) {
                 System.err.println("The only acceptable option is -r");
-                System.exit(1);
+                fail = true;
             } else {
                 Path filePath = curPath.resolve(args[2]).normalize();
                 File file = filePath.toFile();
@@ -144,10 +145,10 @@ public class Runner {
                     deleteDir(file);
                 } else if (!file.exists()) {
                     System.out.println("rm: cannot remove '" + args[2] + "': No such file or directory");
-                    System.exit(1);
+                    fail = true;
                 } else if (!file.delete()) {
                     System.err.println("Can't delete " + args[2]);
-                    System.exit(1);
+                    fail = true;
                 }
             }
         } else if (args.length == 2) {
@@ -155,24 +156,24 @@ public class Runner {
             File file = filePath.toFile();
             if (file.isDirectory()) {
                 System.out.println("rm: " + args[1] + ": is a directory");
-                System.exit(1);
+                fail = true;
             } else if (!file.exists()) {
                 System.out.println("rm: cannot remove '" + args[1] + "': No such file or directory");
-                System.exit(1);
+                fail = true;
             } else if (!file.delete()) {
                 System.err.println("Can't delete " + args[1]);
-                System.exit(1);
+                fail = true;
             }
         } else {
             System.err.println("Wrong arguments");
-            System.exit(1);
+            fail = true;
         }
     }
 
     void ls(String[] args) {
         if (args.length != 1) {
             System.err.println("ls: Wrong arguments.");
-            System.exit(1);
+            fail = true;
         }
         String[] files = curPath.toFile().list();
         for (String file : files) {
@@ -184,30 +185,30 @@ public class Runner {
     void cat(String[] args) {
         if (args.length != 2) {
             System.err.println("Command cat must take only 1 argument.");
-            System.exit(1);
+            fail = true;
         } else {
             Path filePath = curPath.resolve(args[1]).normalize();
             File file = filePath.toFile();
             if (!file.exists()) {
                 System.out.println("cat: " + args[1] + ": No such file or directory");
-                System.exit(1);
+                fail = true;
             } else if (!file.canRead()) {
                 System.err.println("Can't read from file.");
-                System.exit(1);
+                fail = true;
             } else {
                 byte[] buff = null;
                 try {
                     buff = Files.readAllBytes(filePath);
                 } catch (IOException e) {
                     System.err.println("Read error: " + e.getMessage());
-                    System.exit(1);
+                    fail = true;
                 }
                 if (buff != null) {
                     try {
                         System.out.write(buff);
                     } catch (IOException e) {
                         System.err.println("Write error: " + e.getMessage());
-                        System.exit(1);
+                        fail = true;
                     }
                 }
             }
@@ -218,7 +219,7 @@ public class Runner {
     void mv(String[] args) {
         if (args.length != 3) {
             System.err.println("Wrong arguments");
-            System.exit(1);
+            fail = true;
         } else {
             File file = curPath.resolve(args[1]).normalize().toFile();
             Path res = curPath.resolve(args[2]).normalize();
@@ -228,7 +229,7 @@ public class Runner {
             File newFile = res.toFile();
             if (!file.renameTo(newFile)) {
                 System.err.println("Error");
-                System.exit(1);
+                fail = true;
             }
         }
     }
@@ -257,7 +258,7 @@ public class Runner {
             mv(args);
         } else {
             System.err.println("Command '" + args[0] + "' not found");
-            System.exit(1);
+            fail = true;
         }
     }
 }
