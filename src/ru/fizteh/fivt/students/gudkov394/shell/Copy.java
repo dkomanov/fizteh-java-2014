@@ -57,6 +57,10 @@ public class Copy {
             System.err.println("this file or derictory doesn't exist");
             System.exit(2);
         }
+        if (from.toString().equals(to.toString())) {
+            System.err.println("source and destination are equal");
+            System.exit(2);
+        }
         if (currentArgs.length == 3) {
             if (from.isFile()) {
                 try {

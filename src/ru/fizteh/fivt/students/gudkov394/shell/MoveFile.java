@@ -23,6 +23,10 @@ public class MoveFile {
         if (!to.isAbsolute()) {
             to = new File(cd.getCurrentDirectory(), currentArgs[2]);
         }
+        if (from.toString().equals(to.toString())) {
+            System.err.println("source and destination are equal");
+            System.exit(2);
+        }
         try {
             Files.move(from.toPath(), to.toPath(), options);
         } catch (IOException e) {

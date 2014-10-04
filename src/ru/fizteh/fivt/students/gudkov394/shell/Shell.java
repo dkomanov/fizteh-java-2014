@@ -45,6 +45,7 @@ public class Shell {
         while (true) {
             System.out.print(currentDirectory.getCurrentDirectory() + "$");
             String currentString = sc.nextLine();
+            currentString = currentString.replaceAll("\\s*;\\s*", ";");
             String[] functions = currentString.split(";");
             for (int i = 0; i < functions.length; ++i) {
                 functions[i] = functions[i].trim();
@@ -62,6 +63,7 @@ public class Shell {
         }
         String string = new String(builder);
         string = string.trim();
+        string = string.replaceAll("\\s*;\\s*", ";");
         String[] commands = string.split(";|(\\s+)");
         int i = 0;
         while (i < commands.length) {
