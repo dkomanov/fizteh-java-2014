@@ -349,6 +349,7 @@ public class ShellMain {
         StringBuilder allCommands = new StringBuilder();
         for (String arg: args) {
             allCommands.append(arg);
+            allCommands.append(" ");
         }
         execLine(allCommands.toString());
     }
