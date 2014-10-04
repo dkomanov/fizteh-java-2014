@@ -23,7 +23,6 @@ public class MoveFile {
         if (!to.isAbsolute()) {
             to = new File(cd.getCurrentDirectory(), currentArgs[2]);
         }
-        to = new File(to.getAbsolutePath(), from.getName());
         try {
             Files.move(from.toPath(), to.toPath(), options);
         } catch (IOException e) {
