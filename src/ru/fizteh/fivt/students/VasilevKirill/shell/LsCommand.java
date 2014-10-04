@@ -14,6 +14,9 @@ public class LsCommand implements Command {
 
     @Override
     public int execute(String[] args) throws IOException {
+        if (args.length > 1) {
+            return 1;
+        }
         File[] listFiles = new File(Shell.currentPath).listFiles();
         for (File f : listFiles) {
             System.out.println(f.getName());
