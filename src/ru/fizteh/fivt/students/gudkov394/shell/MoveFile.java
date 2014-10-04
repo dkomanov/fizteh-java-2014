@@ -10,8 +10,8 @@ import java.nio.file.StandardCopyOption;
 
 public class MoveFile {
     public MoveFile(final String[] currentArgs, final CurrentDirectory cd) {
-        if (currentArgs.length > 3) {
-            System.err.println("extra arguments for mv");
+        if (currentArgs.length != 3) {
+            System.err.println("wrong number arguments for mv");
             System.exit(1);
         }
         CopyOption[] options = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};

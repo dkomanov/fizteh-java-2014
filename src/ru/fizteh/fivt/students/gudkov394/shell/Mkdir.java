@@ -5,8 +5,8 @@ import java.io.File;
 //работает
 public class Mkdir {
     public Mkdir(final String[] currentArgs, final CurrentDirectory cd) {
-        if (currentArgs.length > 2) {
-            System.err.println("extra arguments for mkdir");
+        if (currentArgs.length != 2) {
+            System.err.println("wrong number arguments for mkdir");
             System.exit(1);
         }
         if (currentArgs.length > 2) {
