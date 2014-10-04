@@ -560,7 +560,7 @@ class MethodsDirectory {
 		specialcp(arg1, arg2);
 	}
 	
-	void specialcp(final File arg1,final File arg2)	{
+	void specialcp(final File arg1, final File arg2) {
 		//always with -r
 		if (arg1.isFile()) {
 			File newfile = new File(arg2 , arg1.getName());
