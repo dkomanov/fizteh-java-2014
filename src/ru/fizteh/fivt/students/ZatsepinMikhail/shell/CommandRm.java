@@ -19,10 +19,10 @@ public class CommandRm extends Command {
         boolean recursive =
                 (arguments.length == numberOfArguments & arguments[1].equals("-r"));
         boolean result;
-        if (!recursive) {
-            result = generalDelete(arguments);
-        } else {
+        if (recursive) {
             result = recursiveDelete(arguments);
+        } else {
+            result = generalDelete(arguments);
         }
         return result;
     }
@@ -33,6 +33,7 @@ public class CommandRm extends Command {
             if (!Files.deleteIfExists(filePath)) {
                 System.out.println(name + ": cannot remove \'" + arguments[1] + "\'"
                                    + ": No such file or directory");
+                return false;
             }
         } catch (Exception e) {
             if (Files.isDirectory(filePath)) {
@@ -45,10 +46,6 @@ public class CommandRm extends Command {
 
     private boolean recursiveDelete(final String[] arguments) {
         Path dirPath = PathsFunction.toAbsolutePathString(arguments[2]);
-        if (!Files.isDirectory(dirPath)) {
-            return false;
-        }
-
         FileVisitorDelete myFileVisitorDelete = new FileVisitorDelete();
 
         try {
