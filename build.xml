@@ -41,6 +41,7 @@
                 failureProperty="run.checkstyle.failure"
                 failOnViolation="false"
                 >
+            <formatter type="plain"/>
             <formatter type="xml" tofile="${out}/checkstyle-report.xml"/>
             <classpath>
                 <path refid="fizteh.classpath"/>
