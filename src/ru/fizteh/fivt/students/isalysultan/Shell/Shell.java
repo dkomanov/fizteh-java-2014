@@ -164,13 +164,13 @@ public class Shell {
 
 class Parser {
 	
-	String cd(final String[] comand, final String currentdir) {
-		MethodsDirectory objectdir = new MethodsDirectory();
-		String newstring = objectdir.cd(comand[1], currentdir);
-		return newstring;
-	}
+ String cd(final String[] comand, final String currentdir) {
+  MethodsDirectory objectdir = new MethodsDirectory();
+  String newstring = objectdir.cd(comand[1], currentdir);
+  return newstring;
+ }
 	
-	void cp(final File path, final String[] comand) {
+ void cp(final File path, final String[] comand) {
 		MethodsDirectory objectdir = new MethodsDirectory();
 		MethodsFiles objectfile = new MethodsFiles();
 		if (comand[1].equals("-r")) {
