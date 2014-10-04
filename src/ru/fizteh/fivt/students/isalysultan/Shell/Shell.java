@@ -182,22 +182,22 @@ class Parser {
    }
    if (!object.exists()) {
     System.out.println("there is no file at the root directory of the");
-					return;
-				}
-			if (obj.isDirectory()  && object.isDirectory()) {
-					arg2 = object.getAbsolutePath();
-					objectdir.cp(comand[2], arg2, true, path);
-				} else if	(obj.isDirectory() && !object.isDirectory()) {
-					System.out.println("can't copy directory in file");
-					return;
-				} else {
-					try {
-						arg2 = object.getAbsolutePath();
-						objectfile.cp(comand[2], arg2);
-					} catch (IOException e) {
-						System.out.println("unable to copy files");
-					}
-				}
+    return;
+   }
+   if (obj.isDirectory()  && object.isDirectory()) {
+    arg2 = object.getAbsolutePath();
+    objectdir.cp(comand[2], arg2, true, path);
+   } else if	(obj.isDirectory() && !object.isDirectory()) {
+    System.out.println("can't copy directory in file");
+    return;
+   } else {
+    try {
+     arg2 = object.getAbsolutePath();
+     objectfile.cp(comand[2], arg2);
+    } catch (IOException e) {
+     System.out.println("unable to copy files");
+    }
+   }
 		} else {
 			String arg2 = new String();
 			File obj = new File(comand[1]);
