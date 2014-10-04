@@ -15,7 +15,7 @@ public class Table {
     }
 
 
-    protected TablePart getPartForKey(String key) throws LoadOrSaveError {
+    public TablePart getPartForKey(String key) throws LoadOrSaveError {
         TablePart tablePart = selectPartForKey(key);
         tablePart.load();
         return tablePart;

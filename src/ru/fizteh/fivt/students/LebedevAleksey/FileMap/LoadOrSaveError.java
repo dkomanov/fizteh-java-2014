@@ -1,11 +1,11 @@
 package ru.fizteh.fivt.students.LebedevAleksey.FileMap;
 
 public class LoadOrSaveError extends DatabaseException {
-    LoadOrSaveError(String message) {
+    public LoadOrSaveError(String message) {
         super(message);
     }
 
-    LoadOrSaveError(String message, Exception ex) {
+    public LoadOrSaveError(String message, Exception ex) {
         super(message, ex);
     }
 }

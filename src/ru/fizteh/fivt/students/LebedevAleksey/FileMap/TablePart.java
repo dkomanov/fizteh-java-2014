@@ -11,12 +11,11 @@ public class TablePart {
     protected static final Charset CHARSET = Charset.forName("UTF-8");
     protected static final String UNEXPECTED_END_OF_FILE = "Unexpected end of file.";
     protected TreeMap<String, String> data = new TreeMap<>();
+    private boolean isLoaded = false;
 
     public boolean isLoaded() {
         return isLoaded;
     }
-
-    private boolean isLoaded = false;
 
     public String put(String key, String value) {
         String result = data.put(key, value);
@@ -69,6 +68,7 @@ public class TablePart {
     protected void loadWork() throws LoadOrSaveError {
         File path = getSaveFilePath();
         Exception error = null;
+        String exMessage = null;
         try (FileInputStream inputStream = new FileInputStream(path)) {
             try (DataInputStream reader = new DataInputStream(inputStream)) {
                 ArrayList<String> keys = new ArrayList<>();
@@ -107,31 +107,32 @@ public class TablePart {
         } catch (FileNotFoundException ex) {
             try (FileOutputStream writer = new FileOutputStream(path)) {
                 writer.flush();
-            } catch (Throwable cantCreateFileEx) {
-                System.err.println("Can't create file with database: " + cantCreateFileEx.getMessage());
-                ex.addSuppressed(cantCreateFileEx);
+            } catch (Exception cantCreateFileEx) {
+                exMessage = "Can't create file with database: " + cantCreateFileEx.getMessage();
+                error = cantCreateFileEx;
             }
         } catch (SecurityException ex) {
-            System.err.println("Security error: " + ex.getMessage());
+            exMessage = "Security error: " + ex.getMessage();
             error = ex;
         } catch (EOFException ex) {
-            System.err.println(UNEXPECTED_END_OF_FILE);
+            exMessage = UNEXPECTED_END_OF_FILE;
             error = ex;
         } catch (IOException ex) {
-            System.err.println("Input/output error on loading data: " + ex.getMessage());
+            exMessage = "Input/output error on loading data: " + ex.getMessage();
             error = ex;
         } catch (LoadOrSaveError ex) {
-            System.err.println("Error in loading : " + ex.getMessage());
+            exMessage = "Error in loading : " + ex.getMessage();
             error = ex;
         }
         if (error != null) {
-            throw new LoadOrSaveError("Can't load.", error);
+            throw new LoadOrSaveError("Can't load. " + exMessage, error);
         }
     }
 
     public void save() throws LoadOrSaveError {
         File path = getSaveFilePath();
         Exception error = null;
+        String exMessage = null;
         try (FileOutputStream stream = new FileOutputStream(path)) {
             try (DataOutputStream output = new DataOutputStream(stream)) {
                 List<String> keys = list();
@@ -156,17 +157,17 @@ public class TablePart {
                 }
             }
         } catch (FileNotFoundException ex) {
-            System.err.println("File not found on save: " + ex.getMessage());
+            exMessage = "File not found on save: " + ex.getMessage();
             error = ex;
         } catch (SecurityException ex) {
-            System.err.println("Security error: " + ex.getMessage());
+            exMessage = "Security error: " + ex.getMessage();
             error = ex;
         } catch (IOException ex) {
-            System.err.println("Can't save: " + ex.getMessage());
+            exMessage = "Error in save: " + ex.getMessage();
             error = ex;
         }
         if (error != null) {
-            throw new LoadOrSaveError("Can't save: " + error.getMessage(), error);
+            throw new LoadOrSaveError("Can't save. " + exMessage, error);
         }
     }
 
@@ -178,7 +179,7 @@ public class TablePart {
         return new String(lineBytes, CHARSET);
     }
 
-    public File getSaveFilePath() {
+    public File getSaveFilePath() throws LoadOrSaveError {
         return new File(System.getProperty(DB_FILE_PARAMETER_NAME));
     }
 }
