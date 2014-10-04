@@ -1,4 +1,4 @@
-package ru/fizteh/fivt/students/isalysultan/Shell.Shell;
+package ru.fizteh.fivt.students.isalysultan.Shell;
 
 import java.io.File;
 import java.io.FileNotFoundException;
