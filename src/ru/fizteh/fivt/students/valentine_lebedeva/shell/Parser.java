@@ -39,6 +39,7 @@ public final class Parser {
                 break;
             case "exit":
                 System.exit(0);
+                break;
             case "cat":
                 ru.fizteh.fivt.students.valentine_lebedeva.shell
                 .Cmd.Cat.execute(parseArgs);
