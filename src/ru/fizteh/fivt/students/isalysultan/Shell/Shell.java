@@ -11,64 +11,64 @@ import java.nio.file.*;
 
 public class Shell {
 	public static void main(String[] args) {
-				Scanner in = new Scanner(System.in);
-				String currentdir = "C:";
-				Parser parser = new Parser();
-				MethodsDirectory objectdir = new MethodsDirectory();
-	        	//for package
-				if (args.length > 0) {
-					packageparser(args, in);
-				}
-				System.out.println("$");
-				//input comand of Shell;.
-		        String comand;
-		        while (true) {
-		        	boolean end = false;
-		        	comand = in.nextLine();
-		        	String[] comands = comand.split(";");
-		        	int j = 0;
-		        	while (j < comands.length) {
-		        		File path = new File(currentdir);
-		        		String a = comands[j];
-		        		a.trim();
-		        		String[] parsedComand = a.split(" ");
-		        		int k = 0;
-		        		if (parsedComand[k].equals("exit")) {
-		        			end = true;
-		        			break;
-		        		}
-		        		if (parsedComand[k].equals("cd")) {
-		        			currentdir = parser.cd(parsedComand, currentdir);
-		        		}
-		        		if (parsedComand[k].equals("pwd")) {
-		        			objectdir.pwd(path);
-		        		}
-		        		if (parsedComand[k].equals("mkdir")) {
-		        			objectdir.mkdir(parsedComand[1], path);
-		        		}
-		        		if (parsedComand[k].equals("rm")) {
-		        			parser.rm(path, parsedComand);
-		        		}
-		        		if (parsedComand[k].equals("cp")) {
-		        			parser.cp(path, parsedComand);
-		        		}
-		        		if (parsedComand[k].equals("ls")) {
-		        			objectdir.ls(path, parsedComand);
-		        		}
-		        		if (parsedComand[k].equals("mv")) {
-		        			parser.mv(path, parsedComand);
-		        		}
-		        		if (parsedComand[k].equals("cat")) {
-		        			parser.cat(path, parsedComand);
-		        		}
-		        		j = j + 1;
+		Scanner in = new Scanner(System.in);
+		String currentdir = "C:";
+		Parser parser = new Parser();
+		MethodsDirectory objectdir = new MethodsDirectory();
+	       	//for package
+		if (args.length > 0) {
+			packageparser(args, in);
+		}
+		System.out.println("$");
+		//input comand of Shell;.
+		String comand;
+		while (true) {
+		        boolean end = false;
+		       	comand = in.nextLine();
+		        String[] comands = comand.split(";");
+		        int j = 0;
+		       	while (j < comands.length) {
+		        	File path = new File(currentdir);
+		        	String a = comands[j];
+		        	a.trim();
+		        	String[] parsedComand = a.split(" ");
+		        	int k = 0;
+		        	if (parsedComand[k].equals("exit")) {
+		        		end = true;
+		        		break;
 		        	}
-		        		if (end) {
-							break;
-						}
-		        		System.out.println("$");
+		        	if (parsedComand[k].equals("cd")) {
+		        		currentdir = parser.cd(parsedComand, currentdir);
 		        	}
-				}
+		        	if (parsedComand[k].equals("pwd")) {
+		        		objectdir.pwd(path);
+		        	}
+		        	if (parsedComand[k].equals("mkdir")) {
+		        		objectdir.mkdir(parsedComand[1], path);
+		        	}
+		        	if (parsedComand[k].equals("rm")) {
+		        		parser.rm(path, parsedComand);
+		        	}
+		        	if (parsedComand[k].equals("cp")) {
+		        		parser.cp(path, parsedComand);
+		        	}
+		        	if (parsedComand[k].equals("ls")) {
+		        		objectdir.ls(path, parsedComand);
+		        	}
+		        	if (parsedComand[k].equals("mv")) {
+		        		parser.mv(path, parsedComand);
+		        	}
+		        	if (parsedComand[k].equals("cat")) {
+		        		parser.cat(path, parsedComand);
+		        	}
+		        	j = j + 1;
+		        }
+		        if (end) {
+				break;
+			}
+		       	System.out.println("$");
+		 }
+	}
 	
 	static void packageparser(final String[] parserstring, final Scanner in) {
 		String currentdir = "C:";
