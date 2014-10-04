@@ -69,7 +69,6 @@ public class Shell {
    System.out.println("$");
   }
  }
-	
  static void packageparser(final String[] parserstring, final Scanner in) {
   String currentdir = "C:";
   Parser parser = new Parser();
@@ -171,18 +170,18 @@ class Parser {
  }
 	
  void cp(final File path, final String[] comand) {
-		MethodsDirectory objectdir = new MethodsDirectory();
-		MethodsFiles objectfile = new MethodsFiles();
-		if (comand[1].equals("-r")) {
-			String arg2 = new String();
-			File obj = new File(path, comand[2]);
-			File object = new File(path, comand[3]);
-			if (!obj.exists()) {
-					System.out.println("there is no file at the root directory of the");
-					return;
-				}
-			if (!object.exists()) {
-					System.out.println("there is no file at the root directory of the");
+  MethodsDirectory objectdir = new MethodsDirectory();
+  MethodsFiles objectfile = new MethodsFiles();
+  if (comand[1].equals("-r")) {
+   String arg2 = new String();
+   File obj = new File(path, comand[2]);
+   File object = new File(path, comand[3]);
+   if (!obj.exists()) {
+    System.out.println("there is no file at the root directory of the");
+    return;
+   }
+   if (!object.exists()) {
+    System.out.println("there is no file at the root directory of the");
 					return;
 				}
 			if (obj.isDirectory()  && object.isDirectory()) {
