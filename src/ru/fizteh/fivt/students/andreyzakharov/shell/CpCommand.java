@@ -25,7 +25,7 @@ public class CpCommand extends AbstractCommand {
         }
 
         String srcString = args[recursive ? 2 : 1];
-        String destString = args[recursive ? 3 : 2];
+        String targetString = args[recursive ? 3 : 2];
 
         Path src = shell.getWd().resolve(srcString).normalize();
         if (!Files.exists(src)) {
@@ -40,18 +40,18 @@ public class CpCommand extends AbstractCommand {
             return;
         }
 
-        Path target = shell.getWd().resolve(destString).normalize();
+        Path target = shell.getWd().resolve(targetString).normalize();
         boolean isTargetADir = Files.isDirectory(target);
 
         if (isSourceADir && !isTargetADir && Files.exists(target)) {
-            shell.error("cp: cannot overwrite non-directory '" + destString + "' with directory '" + srcString + "'");
+            shell.error("cp: cannot overwrite non-directory '" + targetString + "' with directory '" + srcString + "'");
             return;
         }
 
         Path parent = isTargetADir ? target : target.getParent();
         if (!Files.exists(parent)) {
             shell.error("cp: cannot create " + (isSourceADir ? "directory '" : "regular file '")
-                    + destString + "': No such file or directory");
+                    + targetString + "': No such file or directory");
             return;
         }
 
@@ -82,6 +82,10 @@ public class CpCommand extends AbstractCommand {
             }
         } else {
             try {
+                if (Files.isSameFile(src, dest)) {
+                    shell.error("cp: '" + srcString + "' and '" + targetString + "' are the same file");
+                    return;
+                }
                 Files.copy(src, dest, REPLACE_EXISTING);
             } catch (IOException e) {
                 shell.error("cp: i/o error");
