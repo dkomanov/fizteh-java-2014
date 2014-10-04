@@ -637,7 +637,8 @@ class MethodsFiles {
     void mv(final File arg1, final File arg2) {
         arg1.renameTo(arg2); // переименование первого аргумента
     }
-} /**/
+	
+} 
  
 		 
 	 
