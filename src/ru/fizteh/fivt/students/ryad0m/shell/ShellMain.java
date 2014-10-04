@@ -9,10 +9,11 @@ public class ShellMain {
 
     public static void runLine(String line) {
         String[] commands = line.split(";");
-        for (String command_i : commands) {
-            String command = command_i.trim().replaceAll("\\s+", " ");
-            if (!command.equals(""))
+        for (String someCommand : commands) {
+            String command = someCommand.trim().replaceAll("\\s+", " ");
+            if (!command.equals("")) {
                 runner.runCommand(command.split(" "));
+            }
         }
     }
 

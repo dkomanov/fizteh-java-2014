@@ -33,12 +33,13 @@ public class Runner {
                 if (!file.exists() || !resFile.isDirectory()) {
                     System.err.println("File not found.");
                     System.exit(1);
-                } else try {
-                    Files.copy(filePath, resPath.resolve(file.getName()));
-                } catch (IOException e) {
-
-                    System.err.println("Error with copying " + e.getMessage());
-                    System.exit(1);
+                } else {
+                    try {
+                        Files.copy(filePath, resPath.resolve(file.getName()));
+                    } catch (IOException e) {
+                        System.err.println("Error with copying " + e.getMessage());
+                        System.exit(1);
+                    }
                 }
             }
         } else if (args.length == 3) {
@@ -52,11 +53,13 @@ public class Runner {
             } else if (file.isDirectory()) {
                 System.out.println("cp: " + args[1] + " is a directory (not copied).");
                 System.exit(1);
-            } else try {
-                Files.copy(filePath, resPath.resolve(file.getName()));
-            } catch (IOException e) {
-                System.err.println("Error with copying ");
-                System.exit(1);
+            } else {
+                try {
+                    Files.copy(filePath, resPath.resolve(file.getName()));
+                } catch (IOException e) {
+                    System.err.println("Error with copying ");
+                    System.exit(1);
+                }
             }
         } else {
             System.err.println("Wrong arguments");
@@ -161,6 +164,10 @@ public class Runner {
     }
 
     void ls(String[] args) {
+        if (args.length != 1) {
+            System.err.println("ls: Wrong arguments.");
+            System.exit(1);
+        }
         String[] files = curPath.toFile().list();
         for (String file : files) {
             System.out.println(file);
