@@ -1,3 +1,5 @@
+package ru.fizteh.fivt.students.AndrewTimokhin.calculator;
+
 import java.util.*;
 
 //@Author: Timokhin Andrew 295 Group
@@ -8,7 +10,8 @@ class Calculator {  //class Calculator
  //System.out.println(">>Enter String>> : ->");
  //Scanner sc= new Scanner(System.in);
  try {
- String a = args[0].toString();
+ String b = args[0].toString();
+ String a = b.replace(" ", "");
  //String a= sc.next();
  Parser myparser = new Parser();
  try {
