@@ -49,7 +49,7 @@ public class Shell {
     private static String[] parseInput(String[] args) {
         StringBuilder input = new StringBuilder();
         for (String cmd : args) {
-            input.append(cmd);
+            input.append(cmd).append(' ');
         }
         return input.toString().split("\\s*;\\s*");
     }
