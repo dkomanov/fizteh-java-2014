@@ -159,6 +159,10 @@ public class Shell {
             printError("cp: " + tmpName + ": No such file or directory.");
             return false;
         }
+        if (!destFile.exists()) {
+            printError("cp: destination folder does't exist");
+            return false;
+        }
         try {
             if (destFile.getCanonicalPath().startsWith(currFile.getCanonicalPath())) {
                 printError("cp: copy into self.");
