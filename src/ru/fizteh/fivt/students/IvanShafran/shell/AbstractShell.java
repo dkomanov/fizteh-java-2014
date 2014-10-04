@@ -19,8 +19,14 @@ abstract class AbstractShell {
         Scanner in = new Scanner(System.in);
         while (true) {
             System.out.print('$');
-            String userRequest = in.nextLine();
-            processUserRequest(userRequest);
+            String userRequest;
+            if (in.hasNext()) {
+                userRequest = in.nextLine();
+                processUserRequest(userRequest);
+            } else {
+                /*when we close program process not by exit command*/
+                System.exit(0);
+            }
         }
     }
 
