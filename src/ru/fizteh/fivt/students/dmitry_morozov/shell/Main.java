@@ -479,21 +479,21 @@ public class Main {
                     return;
                 }
                 switch (exitCode) {
-
                 case NO_SUCH_COMMAND:
                     System.err.println("No such command: " + error);
-                    return;
-
+                    System.exit(1);
                 case ERROR_EXECUTING:
                     System.err.println("Errors occured: " + error);
-                    return;
+                    System.exit(2);
                 default:
                     break;
                 }
                 error = "";
-                currentPath = currentFile.getAbsolutePath();
+                currentPath = currentFile.getAbsolutePath();                
             }
+            
         }
+        System.exit(0);
 
     }
 
@@ -528,7 +528,7 @@ public class Main {
                         break;
                     }
                     error = "";
-                    currentPath = currentFile.getAbsolutePath();                    
+                    currentPath = currentFile.getAbsolutePath();
                 }
             }
         }
