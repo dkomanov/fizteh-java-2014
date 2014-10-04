@@ -128,18 +128,22 @@ public class FileMap {
         try {
             s = merged.split(";");
             for (String newCommand :s) {
+                int j = 0;
                 String[] arguments = newCommand.split("\\s+");
-                if (arguments[0].equals("exit")) {
+                while(arguments[j].equals("")) {
+                    ++j;
+                }
+                if (arguments[j].equals("exit")) {
                     break;
                 }
-                Command whatToDo = myCommands.get(arguments[0]);
+                Command whatToDo = myCommands.get(arguments[j]);
                 if (whatToDo == null) {
-                    System.out.println("Not found command: " + arguments[0]);
+                    System.out.println("Not found command: " + arguments[j]);
                     System.exit(-1);
                     return false;
                 }
-                String[] newArgs = new String[arguments.length - 1];
-                System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);
+                String[] newArgs = new String[arguments.length - j - 1];
+                System.arraycopy(arguments, j+1, newArgs, 0, newArgs.length);
                 if (!whatToDo.exec(dBase, newArgs)) {
                     System.out.println("Error on " + whatToDo.name);
                     System.exit(-1);
