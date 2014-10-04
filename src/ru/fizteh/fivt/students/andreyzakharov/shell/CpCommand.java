@@ -82,7 +82,7 @@ public class CpCommand extends AbstractCommand {
             }
         } else {
             try {
-                if (Files.isSameFile(src, dest)) {
+                if (Files.exists(dest) && Files.isSameFile(src, dest)) {
                     shell.error("cp: '" + srcString + "' and '" + targetString + "' are the same file");
                     return;
                 }
