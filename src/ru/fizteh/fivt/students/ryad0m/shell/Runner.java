@@ -13,8 +13,10 @@ public class Runner {
     }
 
     void exit(String[] args) {
-        if (args.length > 1)
+        if (args.length > 1) {
             System.out.println("Command 'exit' must have no arguments, but exiting...");
+            System.exit(1);
+        }
         System.exit(0);
     }
 
@@ -47,14 +49,15 @@ public class Runner {
             if (!file.exists() || !resFile.isDirectory()) {
                 System.err.println("File not found.");
                 System.exit(1);
-            } else if (file.isDirectory())
+            } else if (file.isDirectory()) {
                 System.out.println("cp: " + args[1] + " is a directory (not copied).");
-            else try {
-                    Files.copy(filePath, resPath.resolve(file.getName()));
-                } catch (IOException e) {
-                    System.err.println("Error with copying ");
-                    System.exit(1);
-                }
+                System.exit(1);
+            } else try {
+                Files.copy(filePath, resPath.resolve(file.getName()));
+            } catch (IOException e) {
+                System.err.println("Error with copying ");
+                System.exit(1);
+            }
         } else {
             System.err.println("Wrong arguments");
             System.exit(1);
@@ -82,8 +85,10 @@ public class Runner {
             File file = newPath.toFile();
             if (!file.isDirectory()) {
                 System.out.println("cd: '" + args[1] + "': No such file or directory");
-            } else
+                System.exit(1);
+            } else {
                 curPath = newPath;
+            }
         }
     }
 
@@ -102,15 +107,16 @@ public class Runner {
         }
 
         File[] files = dir.listFiles();
-        if (files != null)
+        if (files != null) {
             for (File f : files) {
-                if (f.isDirectory())
+                if (f.isDirectory()) {
                     deleteDir(f);
-                else if (!f.delete()) {
+                } else if (!f.delete()) {
                     System.err.println("Delete error");
                     System.exit(1);
                 }
             }
+        }
         if (!dir.delete()) {
             System.err.println("Delete error");
             System.exit(1);
@@ -125,11 +131,12 @@ public class Runner {
             } else {
                 Path filePath = curPath.resolve(args[2]).normalize();
                 File file = filePath.toFile();
-                if (file.isDirectory())
+                if (file.isDirectory()) {
                     deleteDir(file);
-                else if (!file.exists())
+                } else if (!file.exists()) {
                     System.out.println("rm: cannot remove '" + args[2] + "': No such file or directory");
-                else if (!file.delete()) {
+                    System.exit(1);
+                } else if (!file.delete()) {
                     System.err.println("Can't delete " + args[2]);
                     System.exit(1);
                 }
@@ -137,11 +144,13 @@ public class Runner {
         } else if (args.length == 2) {
             Path filePath = curPath.resolve(args[1]).normalize();
             File file = filePath.toFile();
-            if (file.isDirectory())
+            if (file.isDirectory()) {
                 System.out.println("rm: " + args[1] + ": is a directory");
-            else if (!file.exists())
+                System.exit(1);
+            } else if (!file.exists()) {
                 System.out.println("rm: cannot remove '" + args[1] + "': No such file or directory");
-            else if (!file.delete()) {
+                System.exit(1);
+            } else if (!file.delete()) {
                 System.err.println("Can't delete " + args[1]);
                 System.exit(1);
             }
@@ -153,8 +162,9 @@ public class Runner {
 
     void ls(String[] args) {
         String[] files = curPath.toFile().list();
-        for (String file : files)
+        for (String file : files) {
             System.out.println(file);
+        }
     }
 
 
@@ -165,9 +175,10 @@ public class Runner {
         } else {
             Path filePath = curPath.resolve(args[1]).normalize();
             File file = filePath.toFile();
-            if (!file.exists())
+            if (!file.exists()) {
                 System.out.println("cat: " + args[1] + ": No such file or directory");
-            else if (!file.canRead()) {
+                System.exit(1);
+            } else if (!file.canRead()) {
                 System.err.println("Can't read from file.");
                 System.exit(1);
             } else {
@@ -178,13 +189,14 @@ public class Runner {
                     System.err.println("Read error: " + e.getMessage());
                     System.exit(1);
                 }
-                if (buff != null)
+                if (buff != null) {
                     try {
                         System.out.write(buff);
                     } catch (IOException e) {
                         System.err.println("Write error: " + e.getMessage());
                         System.exit(1);
                     }
+                }
             }
         }
     }
@@ -197,8 +209,9 @@ public class Runner {
         } else {
             File file = curPath.resolve(args[1]).normalize().toFile();
             Path res = curPath.resolve(args[2]).normalize();
-            if (res.toFile().isDirectory())
+            if (res.toFile().isDirectory()) {
                 res = res.resolve(file.getName()).normalize();
+            }
             File newFile = res.toFile();
             if (!file.renameTo(newFile)) {
                 System.err.println("Error");
@@ -208,27 +221,28 @@ public class Runner {
     }
 
     void runCommand(String[] args) {
-        if (args.length == 0)
+        if (args.length == 0) {
             return;
-        if (args[0].equals("exit"))
+        }
+        if (args[0].equals("exit")) {
             exit(args);
-        else if (args[0].equals("cp"))
+        } else if (args[0].equals("cp")) {
             cp(args);
-        else if (args[0].equals("mkdir"))
+        } else if (args[0].equals("mkdir")) {
             mkdir(args);
-        else if (args[0].equals("cd"))
+        } else if (args[0].equals("cd")) {
             cd(args);
-        else if (args[0].equals("pwd"))
+        } else if (args[0].equals("pwd")) {
             pwd(args);
-        else if (args[0].equals("rm"))
+        } else if (args[0].equals("rm")) {
             rm(args);
-        else if (args[0].equals("ls"))
+        } else if (args[0].equals("ls")) {
             ls(args);
-        else if (args[0].equals("cat"))
+        } else if (args[0].equals("cat")) {
             cat(args);
-        else if (args[0].equals("mv"))
+        } else if (args[0].equals("mv")) {
             mv(args);
-        else {
+        } else {
             System.err.println("Command '" + args[0] + "' not found");
             System.exit(1);
         }
