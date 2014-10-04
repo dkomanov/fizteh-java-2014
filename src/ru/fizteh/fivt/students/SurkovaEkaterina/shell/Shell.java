@@ -73,7 +73,7 @@ public class Shell {
         }
         if (!shellCommands.containsKey(commandName)) {
             System.out.println("Unknown command: \'" + commandName + "\'");
-            return true;
+            return false;
         }
         boolean result = true;
         try {
