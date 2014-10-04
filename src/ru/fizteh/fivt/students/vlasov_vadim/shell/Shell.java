@@ -53,7 +53,8 @@ public class Shell {
 
 	private static void beginInteractiveMode() {
 		try (Scanner s = new Scanner(System.in)) {
-			while (true) {System.out.print("$ ");
+			while (true) {
+				System.out.print("$ ");
 				String line = s.nextLine();
 				String[] commands = (line.toString()).trim().split(";");
 				execCommands(commands);
