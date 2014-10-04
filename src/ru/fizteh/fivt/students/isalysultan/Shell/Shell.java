@@ -10,15 +10,15 @@ import java.io.*;
 import java.nio.file.*;
 
 public class Shell {
-	public static void main(String[] args) {
-		Scanner in = new Scanner(System.in);
-		String currentdir = "C:";
-		Parser parser = new Parser();
-		MethodsDirectory objectdir = new MethodsDirectory();
-	       	//for package
-		if (args.length > 0) {
-			packageparser(args, in);
-		}
+ public static void main(String[] args) {
+  Scanner in = new Scanner(System.in);
+  String currentdir = "C:";
+  Parser parser = new Parser();
+  MethodsDirectory objectdir = new MethodsDirectory();
+  //for package
+  if (args.length > 0) {
+   packageparser(args, in);
+  }
 		System.out.println("$");
 		//input comand of Shell;.
 		String comand;
