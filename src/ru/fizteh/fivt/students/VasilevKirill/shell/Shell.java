@@ -53,7 +53,6 @@ public class Shell {
     }
 
     private int handle(String[] args) {
-        int status = 0;
         if (args.length == 0) {
             return 0;
         }
@@ -67,7 +66,7 @@ public class Shell {
                 } else {
                     if ((currentCommand = commandMap.get(currentArgs[0])) != null) {
                         if (currentCommand.execute(currentArgs) == 1) {
-                            status = 1;
+                            return 1;
                         }
                     } else {
                         return 1;
@@ -77,7 +76,7 @@ public class Shell {
                 }
             }
             if ((currentCommand = commandMap.get(currentArgs[0])) != null) {
-                currentCommand.execute(currentArgs);
+                return currentCommand.execute(currentArgs);
             } else {
                 return 1;
             }
@@ -86,6 +85,6 @@ public class Shell {
         } catch (Exception e) {
             System.err.println("Exception caught");
         }
-        return status;
+        return 0;
     }
 }
