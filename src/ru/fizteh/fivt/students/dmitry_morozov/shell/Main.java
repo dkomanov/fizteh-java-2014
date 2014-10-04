@@ -482,9 +482,11 @@ public class Main {
                 case NO_SUCH_COMMAND:
                     System.err.println("No such command: " + error);
                     System.exit(1);
+                    break;
                 case ERROR_EXECUTING:
                     System.err.println("Errors occured: " + error);
                     System.exit(2);
+                    break;
                 default:
                     break;
                 }
