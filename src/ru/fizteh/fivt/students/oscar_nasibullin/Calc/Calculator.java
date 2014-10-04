@@ -10,8 +10,7 @@ public final class Calculator {
     private static char[] token;
     private static int    tokenType;
 
-    private Calculator() {
-        // checkstyle asked for this useless constructor. I don't understand java code conventions  
+    private Calculator() { //for checkstyle
     }
 
     public static void main(final String[] args) {
@@ -45,23 +44,25 @@ public final class Calculator {
         BigDecimal rezult = multOrDiv();
 
         try {
-        	operator = token[0];
-        	while (operator  == '+' || operator == '-') {
-        		getToken();
-        		temp = multOrDiv();
-        		switch(operator) {
-                	case '-':
-                		rezult = rezult.subtract(temp);
-                		break;
-                	case '+':
-                		rezult = rezult.add(temp);
-                		break;
-                	}
-        		operator = token[0];
-            	}
-        	} catch (Throwable th) {
-        		System.err.println(th);
-        	}
+            operator = token[0];
+            while (operator  == '+' || operator == '-') {
+                getToken();
+                temp = multOrDiv();
+                switch(operator) {
+                    case '-':
+                        rezult = rezult.subtract(temp);
+                        break;
+                    case '+':
+                        rezult = rezult.add(temp);
+                        break;
+                default:
+                    break;
+                    }
+                operator = token[0];
+                }
+            } catch (Throwable th) {
+                System.err.println(th);
+            }
         return rezult;
         }
 
@@ -88,6 +89,8 @@ public final class Calculator {
                         rezult = rezult.divide(temp, 2, RoundingMode.HALF_UP);
                     }
                     break;
+            default:
+                break;
             }
             operator = token[0];
         }
@@ -146,8 +149,9 @@ public final class Calculator {
 
         tokenType = 0; //End token
         String temp = new String();
+        String e = expression;
 
-        while (position < expression.length() && expression.charAt(position) == ' ') {
+        while (position < e.length() && e.charAt(position) == ' ') {
             position++;
         }
 
@@ -166,7 +170,7 @@ public final class Calculator {
             position++;
 
         } else {
-            while (position < expression.length() && (Character.isDigit(expression.charAt(position)) || expression.charAt(position) == '.')) {
+            while (tokenWhile()) {
             temp += expression.charAt(position);
             position++;
             }
@@ -176,4 +180,10 @@ public final class Calculator {
 
     }
 
+    static boolean tokenWhile() {
+        boolean length = position < expression.length();
+        boolean digit = Character.isDigit(expression.charAt(position));
+        boolean point = expression.charAt(position) == '.';
+        return length && (digit || point);
+    }
 }
