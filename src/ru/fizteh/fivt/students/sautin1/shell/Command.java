@@ -1,26 +1,12 @@
 package ru.fizteh.fivt.students.sautin1.shell;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 /**
- * A typical Unix shell command.
- * Created by sautin1 on 10/1/14.
+ * A typical command interface.
+ * Created by sautin1 on 10/4/14.
  */
-public abstract class Command {
-    protected static Path presentWorkingDirectory = Paths.get("").toAbsolutePath().normalize();
-    protected int minArgNumber;
-    protected String commandName;
-
-    public abstract void execute(String... args) throws IOException;
-
-    @Override
-    public String toString() {
-        return commandName;
-    }
-
-    public boolean enoughArguments(String... args) {
-        return (args.length >= minArgNumber + 1);
-    }
+public interface Command<T> {
+    String toString();
+    int getMinArgNumber();
+    int getMaxArgNumber();
+    void execute(T state, String... args) throws UserInterruptException, CommandExecuteException;
 }

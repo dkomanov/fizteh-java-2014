@@ -7,13 +7,12 @@ import java.nio.file.*;
  * "rm" command.
  * Created by sautin1 on 9/30/14.
  */
-public class CommandRm extends Command {
-    public String recursiveFlag = "-r";
+public class RmCommand extends AbstractShellCommand {
+    public final String recursiveFlag = "-r";
 
 
-    public CommandRm() {
-        minArgNumber = 1;
-        commandName = "rm";
+    public RmCommand() {
+        super("rm", 1, 2);
     }
 
     /**
@@ -21,7 +20,7 @@ public class CommandRm extends Command {
      * in directory sourcePath.
      * @param filePath - path to the file to be removed.
      * @param isRecursive - flag whether the contents of the directory, specified by filePath, have to be removed.
-     * @throws IOException
+     * @throws IOException if any IO error occurs.
      */
      public void removeFile(Path filePath, boolean isRecursive) throws IOException {
         if (!Files.isDirectory(filePath)) {
@@ -40,16 +39,16 @@ public class CommandRm extends Command {
 
     /**
      * Removes file/directory from filePath using removeFile().
-     * @param args [0] - command name; [1] - (optional) flag "-r"; [2] - file name.
-     * @throws RuntimeException
-     * @throws IOException
+     * @param state - ShellState.
+     * @param args - arguments.
+     * @throws CommandExecuteException if any error occurs.
      */
     @Override
-    public void execute(String... args) throws RuntimeException, IOException {
-        if (!enoughArguments(args)) {
-            throw new IllegalArgumentException(toString() + ": missing operand");
+    public void execute(ShellState state, String... args) throws CommandExecuteException {
+        if (checkArgumentNumber(args) != CheckArgumentNumber.EQUAL) {
+            throw new CommandExecuteException(toString() + ": wrong number of arguments");
         }
-        boolean isRecursive = (args.length >= 3) && (args[1].equals(recursiveFlag));
+        boolean isRecursive = (args.length - 1 == getMaxArgNumber()) && (args[1].equals(recursiveFlag));
         String fileName;
         if (isRecursive) {
             fileName = args[2];
@@ -57,16 +56,17 @@ public class CommandRm extends Command {
             fileName = args[1];
         }
 
-        Path fileAbsolutePath = presentWorkingDirectory.resolve(fileName);
-        if (Files.exists(fileAbsolutePath)) {
-            try {
-                removeFile(fileAbsolutePath, isRecursive);
-            } catch (IOException e) {
-                throw new IOException(toString() + ": " + e.getMessage());
+        Path fileAbsolutePath = state.getPWD().resolve(fileName).normalize();
+        try {
+            removeFile(fileAbsolutePath, isRecursive);
+        } catch (IOException e) {
+            String exceptionMessage = toString() + ": ";
+            if (e instanceof NoSuchFileException) {
+                exceptionMessage += "cannot remove \'" + fileName + "\': No such file or directory";
+            } else {
+                exceptionMessage += e.getMessage();
             }
-        } else {
-            String errorMessage = toString() + ": cannot remove \'" + fileName + "\': No such file or directory";
-            throw new NoSuchFileException(errorMessage);
+            throw new CommandExecuteException(exceptionMessage);
         }
     }
 

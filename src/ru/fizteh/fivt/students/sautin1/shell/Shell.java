@@ -4,102 +4,110 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import static ru.fizteh.fivt.students.sautin1.shell.CommandParser.splitCommandIntoParams;
-import static ru.fizteh.fivt.students.sautin1.shell.CommandParser.splitStringIntoCommands;
-
 /**
  * Represents Unix shell with interactive and non-interactive modes available.
  * Created by sautin1 on 9/30/14.
  */
-public class Shell {
-    private final Map<String, Command> commandsMap = new HashMap<>();
+public class Shell<T> {
+    private final Map<String, Command<T>> commandsMap = new HashMap<>();
+    private static final String PROMPT = "$ ";
+    private T state;
+    private CommandParser parser;
 
-    {
-        Command command;
-        command = new CommandCat();
-        commandsMap.put(command.toString(), command);
-        command = new CommandCd();
-        commandsMap.put(command.toString(), command);
-        command = new CommandCp();
-        commandsMap.put(command.toString(), command);
-        command = new CommandLs();
-        commandsMap.put(command.toString(), command);
-        command = new CommandMkDir();
-        commandsMap.put(command.toString(), command);
-        command = new CommandMv();
-        commandsMap.put(command.toString(), command);
-        command = new CommandPwd();
-        commandsMap.put(command.toString(), command);
-        command = new CommandRm();
-        commandsMap.put(command.toString(), command);
-        command = new CommandExit();
-        commandsMap.put(command.toString(), command);
+    public Shell(T state, Command<T>[] commands, CommandParser parser) {
+        this.state = state;
+        this.parser = parser;
+        for (Command<T> command : commands) {
+            commandsMap.put(command.toString(), command);
+        }
     }
 
     /**
      * Tries executing command with parameters commandWithParams.
      * @param commandWithParams - Array of command parameters. Zero-element is a command.
-     * @return true, if the command is "exit"; false, otherwise.
+     * @throws UserInterruptException if user wants to exit.
+     * @throws CommandExecuteException if any error occurs.
      */
-    public boolean executeCommand(String... commandWithParams) throws NullPointerException {
-        Command command = commandsMap.get(commandWithParams[0]);
+    public void executeCommand(String... commandWithParams) throws UserInterruptException, CommandExecuteException {
+        Command<T> command = commandsMap.get(commandWithParams[0]);
         if (command == null) {
-            throw new NullPointerException(commandWithParams[0] + ": command not found");
+            throw new CommandExecuteException(commandWithParams[0] + ": command not found");
         }
-        if (command instanceof CommandExit) {
-            return true;
-        }
-        try {
-            command.execute(commandWithParams);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
-        return false;
+        command.execute(state, commandWithParams);
     }
 
     /**
      * Parses string newCommand into commands and tries executing them.
-     * @param newCommand - String consisting of one or a few commands (divided by ;)
-     * @return true, if there was command "exit" in newCommand; false, otherwise.
+     * @param newCommand - String consisting of one or a few commands.
+     * @throws UserInterruptException if user wants to exit.
+     * @throws CommandExecuteException if any error occurs.
      */
-    public boolean callCommands(String newCommand) {
-        String[] commandArray = splitStringIntoCommands(newCommand);
-        boolean wantsExit = false;
+    public void callCommands(String newCommand) throws UserInterruptException, CommandExecuteException {
+        String[] commandArray = parser.splitStringIntoCommands(newCommand);
         for (String command : commandArray) {
-            String[] params = splitCommandIntoParams(command);
-            try {
-                wantsExit = executeCommand(params);
-            } catch (Exception e) {
-                throw new IllegalArgumentException(e.getMessage());
-            }
-            if (wantsExit) {
-                break;
-            }
+            String[] params = parser.splitCommandIntoParams(command);
+            executeCommand(params);
         }
-        return wantsExit;
     }
 
     /**
      * Asks user to enter commands and executes them.
+     * @throws UserInterruptException if user wants to exit.
+     * @throws CommandExecuteException if any error occurs.
      */
-    public void interactWithUser() {
+    public void interactWithUser() throws UserInterruptException, CommandExecuteException {
         try (Scanner scanner = new Scanner(System.in)) {
-            boolean wantExit = false;
             while (true) {
-                System.out.print(Command.presentWorkingDirectory.toString() + "$ ");
+                System.out.print(PROMPT);
                 String newCommand = scanner.nextLine();
                 if (newCommand.isEmpty()) {
                     continue;
                 }
                 try {
-                    wantExit = callCommands(newCommand);
-                } catch (Exception e) {
+                    callCommands(newCommand);
+                } catch (CommandExecuteException e) {
                     System.err.println(e.getMessage());
-                }
-                if (wantExit) {
-                    break;
                 }
             }
         }
+    }
+
+    /**
+     * Calls interactWithUser() in interactive mode or callCommands() in non-interactive mode.
+     * @param args - arguments for non-interactive mode.
+     * @throws UserInterruptException if user wants to exit.
+     * @throws CommandExecuteException if any error occurs.
+     */
+    public void startWork(String[] args) throws UserInterruptException, CommandExecuteException {
+        if (args.length == 0) {
+            // interactive mode
+            interactWithUser();
+        } else {
+            // non-interactive mode
+            callCommands(parser.convertArrayToString(args));
+        }
+    }
+
+    public static void main(String[] args) {
+        Command[] shellCommands = {
+                new CatCommand(), new CdCommand(), new CpCommand(),
+                new LsCommand(), new MkDirCommand(), new MvCommand(),
+                new PwdCommand(), new RmCommand(), new ExitCommand<ShellState>()
+        };
+
+        ShellState state = new ShellState();
+        ShellCommandParser shellCommandParser = new ShellCommandParser();
+        @SuppressWarnings("unchecked")
+        Shell<ShellState> shell = new Shell<>(state, shellCommands, shellCommandParser);
+        int exitStatus = 0;
+        try {
+            shell.startWork(args);
+        } catch (UserInterruptException e) {
+            exitStatus = 0;
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            exitStatus = 1;
+        }
+        System.exit(exitStatus);
     }
 }
