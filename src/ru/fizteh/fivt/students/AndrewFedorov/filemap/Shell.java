@@ -171,7 +171,8 @@ public class Shell {
     }
 
     /**
-     * Execute commands from input stream. Commands are awaited until the-end-of-stream.
+     * Execute commands from input stream. Commands are awaited until
+     * the-end-of-stream.
      * 
      * @param stream
      */
