@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.standy66.shell;
 
-		import java.io.File;
+import java.io.File;
 
 /**
  * Created by astepanov on 21.09.14.
