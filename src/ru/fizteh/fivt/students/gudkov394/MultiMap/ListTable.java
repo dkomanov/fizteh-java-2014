@@ -6,7 +6,7 @@ public class ListTable {
     public ListTable(final String[] currentArgs, CurrentTable ct) {
         Set<String> set = ct.keySet();
         for (String s : set) {
-            System.out.println("name "+ s + ", size " + ct.getNumber());
+            System.out.println("name " + s + ", size " + ct.getNumber());
         }
         System.out.println();
     }
