@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.MaksimovAndrey.FileMap;
 public class Put extends Instruction {
 
     public Put() {
-        nameOfInstruction ="put";
+        nameOfInstruction = "put";
     }
 
     @Override
@@ -12,7 +12,7 @@ public class Put extends Instruction {
             System.out.println("ERROR: Missing operand");
             System.exit(1);
         }
-        String value =needBase.needdatabase.get(arguments[1]);
+        String value = needBase.needdatabase.get(arguments[1]);
         if (value != null) {
             System.out.println("overwrite");
             System.out.println(value);

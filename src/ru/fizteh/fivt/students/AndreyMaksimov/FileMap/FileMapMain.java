@@ -28,7 +28,7 @@ public class FileMapMain {
             if (arguments.length == 0) {
                 check = interactive(needBase);
             } else {
-               check = batch(needBase, arguments);
+                check = batch(needBase, arguments);
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -36,8 +36,7 @@ public class FileMapMain {
         }
         if (!check) {
             System.exit(1);
-        }
-        else {
+        } else {
             System.exit(0);
         }
     }
@@ -50,10 +49,10 @@ public class FileMapMain {
         String[] parsedArguments;
         String[] needArguments;
 
-        Scanner IN = new Scanner(System.in);
+        Scanner in = new Scanner(System.in);
         while (checkfilemap) {
-            if (IN.hasNextLine()) {
-                parsedArguments = IN.nextLine().split(";");
+            if (in.hasNextLine()) {
+                parsedArguments = in.nextLine().split(";");
             } else {
                 continue;
             }

@@ -17,13 +17,12 @@ public class DataBaseWriter {
         }
     }
 
-    public void write(HashMap<String,String> data) throws Exception {
-        for (Map.Entry<String,String> entry: data.entrySet()) {
+    public void write(HashMap<String, String> data) throws Exception {
+        for (Map.Entry<String, String> entry : data.entrySet()) {
             try {
                 writetext(entry.getKey());
                 writetext(entry.getValue());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new Exception("ERROR: Error with writing");
             }
         }

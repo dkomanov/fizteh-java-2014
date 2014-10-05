@@ -15,7 +15,7 @@ public class Get extends Instruction {
         }
 
         String value = needbase.needdatabase.get(arguments[1]); {
-            if(value == null) {
+            if (value == null) {
                 System.out.println("not found");
             } else {
                 System.out.println("found");

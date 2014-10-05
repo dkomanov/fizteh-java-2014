@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.MaksimovAndrey.FileMap;
 
-import java.io. *;
+import java.io.*;
 import java.util.HashMap;
 
 public class DataBaseReader {

@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.MaksimovAndrey.FileMap;
 
 public class Remove extends Instruction {
     public Remove() {
-        nameOfInstruction ="remove";
+        nameOfInstruction = "remove";
     }
 
     @Override

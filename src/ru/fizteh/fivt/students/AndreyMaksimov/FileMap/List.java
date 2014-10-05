@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.MaksimovAndrey.FileMap;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -16,7 +15,7 @@ public class List extends Instruction{
             Iterator<String> iteratorkeysSet = keysSet.iterator();
             int checkvalue = 0;
             while (iteratorkeysSet.hasNext()) {
-                if(checkvalue > 0) {
+                if (checkvalue > 0) {
                     System.out.print(", ");
                 }
                 System.out.print(iteratorkeysSet.next());
