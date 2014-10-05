@@ -60,6 +60,7 @@ public class Shell<T> {
             while (true) {
                 System.out.print(PROMPT);
                 String newCommand = scanner.nextLine();
+                newCommand = newCommand.trim();
                 if (newCommand.isEmpty()) {
                     continue;
                 }
