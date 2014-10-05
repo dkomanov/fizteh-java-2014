@@ -5,6 +5,11 @@ import java.util.Set;
 
 public class ListTable {
     public ListTable(final String[] currentArgs, final Map ct) {
+        if(currentArgs.length != 1)
+        {
+            System.err.println("wrong number of argumets to list");
+            System.exit(3);
+        }
         Set<String> set = ct.keySet();
         for (String s : set) {
             System.out.print(s + ", ");
