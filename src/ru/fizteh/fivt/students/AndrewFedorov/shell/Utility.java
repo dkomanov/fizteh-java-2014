@@ -23,26 +23,26 @@ public class Utility {
      * @author phoenix
      * @see FileVisitor
      */
-    static abstract class MyTreeWalker<T> implements FileVisitor<T> {
+    abstract static class MyTreeWalker<T> implements FileVisitor<T> {
         @Override
         public FileVisitResult visitFileFailed(T visitPath, IOException exc)
-        	throws IOException {
+            throws IOException {
             throw exc;
         }
     
         @Override
         public FileVisitResult postVisitDirectory(T path, IOException exc)
-        	throws IOException {
+            throws IOException {
             if (exc == null) {
-        	return FileVisitResult.CONTINUE;
+            return FileVisitResult.CONTINUE;
             } else {
-        	return visitFileFailed(path, exc);
+            return visitFileFailed(path, exc);
             }
         }
     
         @Override
         public FileVisitResult preVisitDirectory(T visitPath,
-        	BasicFileAttributes attrs) throws IOException {
+            BasicFileAttributes attrs) throws IOException {
             return FileVisitResult.CONTINUE;
         }
     }
@@ -81,35 +81,35 @@ public class Utility {
     
         @Override
         public FileVisitResult preVisitDirectory(Path visitPath,
-        	BasicFileAttributes attrs) throws IOException {
+            BasicFileAttributes attrs) throws IOException {
             try {
-        	Path relativePath = sourceRoot.relativize(visitPath);
-        	Path destDir = targetRoot.resolve(relativePath).normalize();
-        	Log.log(Commands.class, String.format(
-        		"\tCopy dir '%s' -> '%s'", visitPath, destDir));
-        	if (!Files.exists(destDir)) {
-        	    Files.createDirectory(destDir);
-        	}
+            Path relativePath = sourceRoot.relativize(visitPath);
+            Path destDir = targetRoot.resolve(relativePath).normalize();
+            Log.log(Commands.class, String.format(
+                "\tCopy dir '%s' -> '%s'", visitPath, destDir));
+            if (!Files.exists(destDir)) {
+                Files.createDirectory(destDir);
+            }
             } catch (IOException exc) {
-        	visitFileFailed(visitPath, exc);
+            visitFileFailed(visitPath, exc);
             }
             return FileVisitResult.CONTINUE;
         }
     
         @Override
         public FileVisitResult visitFile(Path visitPath,
-        	BasicFileAttributes attrs) throws IOException {
+            BasicFileAttributes attrs) throws IOException {
             try {
-        	Path rel = sourceRoot.relativize(visitPath);
-        	Path destPath = targetRoot.resolve(rel).normalize();
-        	Log.log(Commands.class, String.format(
-        		"\tCopy file '%s' -> '%s'", visitPath, destPath));
-        	Files.copy(visitPath, destPath,
-        		StandardCopyOption.REPLACE_EXISTING);
+            Path rel = sourceRoot.relativize(visitPath);
+            Path destPath = targetRoot.resolve(rel).normalize();
+            Log.log(Commands.class, String.format(
+                "\tCopy file '%s' -> '%s'", visitPath, destPath));
+            Files.copy(visitPath, destPath,
+                StandardCopyOption.REPLACE_EXISTING);
     
-        	return FileVisitResult.CONTINUE;
+            return FileVisitResult.CONTINUE;
             } catch (IOException exc) {
-        	return visitFileFailed(visitPath, exc);
+            return visitFileFailed(visitPath, exc);
             }
         }
     }
@@ -124,29 +124,29 @@ public class Utility {
     static class FileTreeRemover extends MyTreeWalker<Path> {
         @Override
         public FileVisitResult postVisitDirectory(Path path, IOException exc)
-        	throws IOException {
+            throws IOException {
             FileVisitResult superResult = super.postVisitDirectory(path, exc);
     
             if (superResult != FileVisitResult.TERMINATE) {
-        	try {
-        	    Files.delete(path);
-        	} catch (IOException ex) {
-        	    return visitFileFailed(path, ex);
-        	}
-        	return FileVisitResult.CONTINUE;
+            try {
+                Files.delete(path);
+            } catch (IOException ex) {
+                return visitFileFailed(path, ex);
+            }
+            return FileVisitResult.CONTINUE;
             } else {
-        	return superResult;
+            return superResult;
             }
         }
     
         @Override
         public FileVisitResult visitFile(Path visitPath,
-        	BasicFileAttributes attrs) throws IOException {
+            BasicFileAttributes attrs) throws IOException {
             try {
-        	Files.delete(visitPath);
-        	return FileVisitResult.CONTINUE;
+            Files.delete(visitPath);
+            return FileVisitResult.CONTINUE;
             } catch (IOException exc) {
-        	return visitFileFailed(visitPath, exc);
+            return visitFileFailed(visitPath, exc);
             }
         }
     }

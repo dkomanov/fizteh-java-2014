@@ -12,6 +12,6 @@ public class DBFileCorruptException extends Exception {
     private static final long serialVersionUID = 2107102137382933269L;
 
     public DBFileCorruptException(String reason) {
-	super("DB file is corrupt: " + reason);
+    super("DB file is corrupt: " + reason);
     }
 }
