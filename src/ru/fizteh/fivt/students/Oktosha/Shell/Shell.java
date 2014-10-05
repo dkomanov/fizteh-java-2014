@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.Oktosha.Shell;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -31,6 +32,9 @@ public class Shell implements ConsoleUtility {
                                         CommandArgumentSyntaxException,
                                         ConsoleUtilityRuntimeException {
         switch (cmd.name) {
+            case "cat":
+                cat(cmd.args);
+                break;
             case "cd":
                 cd(cmd.args);
                 break;
@@ -53,8 +57,30 @@ public class Shell implements ConsoleUtility {
         }
     }
 
+    private void cat(String[] args) throws CommandArgumentSyntaxException,
+                                           ConsoleUtilityRuntimeException {
+        if (args.length != 1) {
+            throw new CommandArgumentSyntaxException("cat: expected 1 argument, found " + args.length);
+        }
+        try {
+            Path filePath = workingDirectory.resolve(Paths.get(args[0])).toRealPath();
+            try (BufferedReader reader = Files.newBufferedReader(filePath)) {
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            } catch (AccessDeniedException e) {
+                throw new ConsoleUtilityRuntimeException("cat: '" + args[0] + "': Permission denied", e);
+            } catch (IOException e) {
+                throw new ConsoleUtilityRuntimeException("cat: something really bad happened " + e.toString(), e);
+            }
+        } catch (IOException e) {
+            throw new ConsoleUtilityRuntimeException("cat: " + args[0] + "': No such file or directory", e);
+        }
+    }
+
     private void cd(String[] args) throws  CommandArgumentSyntaxException,
-            ConsoleUtilityRuntimeException {
+                                           ConsoleUtilityRuntimeException {
         if (args.length != 1) {
             throw new CommandArgumentSyntaxException("cd: expected 1 argument, found " + args.length);
         }
