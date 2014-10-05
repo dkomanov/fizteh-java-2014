@@ -16,7 +16,7 @@ public class Shell {
         }
     }
 
-    static Path currentPath = Paths.get(System.getProperty("user.home"));
+    static Path currentPath = Paths.get("").toAbsolutePath();
 
     private static void switchCommand(String[] command)throws MyException {
 
