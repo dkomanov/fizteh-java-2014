@@ -54,7 +54,7 @@ public class MyMap {
             }
         } else if ("#*#".equals(currentArgs[0])) {
             if (obvious()) {
-                ListTable listTable = new ListTable(currentArgs, ct);
+                ListTable listTable = new ListTable(currentArgs, tables);
             }
         } else if ("exit".equals(currentArgs[0])) {
             Exit exit = new Exit(currentArgs);
@@ -66,8 +66,7 @@ public class MyMap {
             if (tables.containsKey(currentArgs[1])) {
                 System.out.println("tablename exists");
             } else {
-                ct = new CurrentTable(currentArgs[1]);
-                tables.put(ct.getName(), ct);
+                tables.put(currentArgs[1], new CurrentTable(currentArgs[1]));
             }
         } else if ("use".equals(currentArgs[0])) {
             if (currentArgs.length != 2) {
@@ -89,7 +88,7 @@ public class MyMap {
             }
             if (tables.containsKey(currentArgs[1])) {
                 tables.get(currentArgs[1]).delete();
-                tables.remove(ct.getName());
+                tables.remove(currentArgs[1]);
             } else {
                 System.out.println("tablename not exists");
             }
