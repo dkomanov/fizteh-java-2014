@@ -16,7 +16,6 @@ public class CopyAction extends Action {
     private boolean copyRecursively(File source, File dest) {
         if (!source.isDirectory()) {
             try {
-				//need for commit
                 if (!dest.mkdirs()) {
                     return false;
                 }
