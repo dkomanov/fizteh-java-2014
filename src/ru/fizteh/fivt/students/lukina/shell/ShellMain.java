@@ -211,7 +211,16 @@ public/* abstract */class ShellMain {
             args[i] = scanner.next();
         }
         scanner.close();
-        return args;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] == null) {
+                countWords--;
+            }
+        }
+        String[] arg = new String[countWords];
+        for (int i = 0; i < countWords; i++) {
+            arg[i] = args[i];
+        }
+        return arg;
     }
 
     protected/* abstract */ static void execProc(String[] args) {
@@ -295,7 +304,7 @@ public/* abstract */class ShellMain {
             System.out.print("$ ");
             Scanner scanner = new Scanner(System.in);
             scanner.useDelimiter(System.lineSeparator() + "|[;]");
-            while (scanner.hasNext()) {
+            while (scanner.hasNextLine()) {
                 String str = "";
                 str = scanner.next();
                 if (str.equals("exit")) {
