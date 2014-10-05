@@ -37,6 +37,9 @@ public class Shell implements ConsoleUtility {
             case "exit":
                 exit(cmd.args);
                 break;
+            case "ls":
+                ls(cmd.args);
+                break;
             case "mkdir":
                 mkdir(cmd.args);
                 break;
@@ -63,10 +66,12 @@ public class Shell implements ConsoleUtility {
                 throw new ConsoleUtilityRuntimeException("cd: '" + args[0] + "': Not a directory");
             }
             workingDirectory = newWorkingDirectory;
-        } catch (InvalidPathException e) {
-            throw new ConsoleUtilityRuntimeException("cd: '" + args[0] + "': Invalid path", e);
-        } catch (IOException e) {
+        } catch (AccessDeniedException e) {
+            throw new ConsoleUtilityRuntimeException("cd: '" + args[0] + "': Permission denied", e);
+        } catch (NoSuchFileException | InvalidPathException e) {
             throw new ConsoleUtilityRuntimeException("cd: '" + args[0] + "': No such file or directory", e);
+        } catch (IOException e) {
+            throw new ConsoleUtilityRuntimeException("cd: something really bad happened " + e.toString(), e);
         }
     }
     
@@ -75,6 +80,24 @@ public class Shell implements ConsoleUtility {
             throw new CommandArgumentSyntaxException("exit: too many arguments");
         }
         System.exit(0);
+    }
+
+    private void ls(String[] args) throws CommandArgumentSyntaxException,
+                                          ConsoleUtilityRuntimeException {
+        if (args.length != 0) {
+            throw new CommandArgumentSyntaxException("ls: too many arguments");
+        }
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(workingDirectory)) {
+            for (Path file : stream) {
+                System.out.println(file.getFileName());
+            }
+        } catch (NoSuchFileException e) {
+            throw new ConsoleUtilityRuntimeException("ls: Working directory doesn't exist", e);
+        } catch (AccessDeniedException e) {
+            throw new ConsoleUtilityRuntimeException("ls: Permission denied", e);
+        } catch (IOException | DirectoryIteratorException e) {
+            throw new ConsoleUtilityRuntimeException("ls: something really bad happened " + e.toString(), e);
+        }
     }
 
     private void mkdir(String[] args) throws CommandArgumentSyntaxException,
@@ -94,7 +117,9 @@ public class Shell implements ConsoleUtility {
                                                      + Paths.get(args[0]).getParent()
                                                      + ": No such file or directory", e);
         } catch (IOException | SecurityException e) {
-            throw new ConsoleUtilityRuntimeException("mkdir: " + args[0] + ": something really bad happened", e);
+            throw new ConsoleUtilityRuntimeException("mkdir: " + args[0]
+                                                     + ": something really bad happened "
+                                                     + e.toString(), e);
         }
     }
 
