@@ -75,7 +75,6 @@ public class CurrentTable {
         }
     }
 
-    ////проверь что всё нормально с путями
     public void delete() {
         String[] s = new String[]{"remove", "-r", getName()};
         CurrentDirectory cd = new CurrentDirectory();
@@ -86,5 +85,19 @@ public class CurrentTable {
 
     public int getNumber() {
         return number;
+    }
+
+    public void clear() {
+        currentTable.clear();
+    }
+
+    public void init() {
+        File f = new File(getHomeDirectory());
+        if (f.exists()) {
+            File[] files = f.listFiles();
+            for (File tmp : files) {
+                    Init z = new Init(currentTable, tmp.toString());
+            }
+        }
     }
 }

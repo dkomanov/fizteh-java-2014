@@ -5,9 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Map;
 
 public class Init {
-    public Init(CurrentTable currentTable, final String property) {
+    public Init(Map<String, String> currentTable, final String property) {
         if (property == null) {
             System.err.println("You forgot file");
             System.exit(4);
