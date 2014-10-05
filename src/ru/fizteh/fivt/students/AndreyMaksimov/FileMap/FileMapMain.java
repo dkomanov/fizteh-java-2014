@@ -12,6 +12,14 @@ public class FileMapMain {
 
         Instruction commandPut = new Put();
         instructions.put(commandPut.nameOfInstruction, commandPut);
+        Instruction commandGet = new Get();
+        instructions.put(commandGet.nameOfInstruction, commandGet);
+        Instruction commandExit = new Exit();
+        instructions.put(commandExit.nameOfInstruction, commandExit);
+        Instruction commandList = new List();
+        instructions.put(commandList.nameOfInstruction, commandList);
+        Instruction commandRemove = new Remove();
+        instructions.put(commandRemove.nameOfInstruction, commandRemove);
     }
 
     public void main(String[] arguments) {
