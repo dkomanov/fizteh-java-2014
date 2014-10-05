@@ -3,8 +3,8 @@ package ru.fizteh.fivt.students.maxim_rep.database;
 import ru.fizteh.fivt.students.maxim_rep.database.commands.*;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.IOException;
 
 public class DbMain {
     static String filePath;
