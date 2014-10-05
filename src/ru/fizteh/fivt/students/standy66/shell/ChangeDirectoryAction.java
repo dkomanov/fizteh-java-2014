@@ -13,10 +13,10 @@ public class ChangeDirectoryAction extends Action {
 
     @Override
     public boolean run() {
-		if (arguments.length != 2) {
-			System.err.println("cd: wrong number of arguments");
-			return false;
-		}
+        if (arguments.length != 2) {
+            System.err.println("cd: wrong number of arguments");
+            return false;
+        }
         String path = arguments[1];
         File f = FileUtils.fromPath(path);
 

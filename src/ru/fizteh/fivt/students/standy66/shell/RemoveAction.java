@@ -27,10 +27,10 @@ public class RemoveAction extends Action {
 
     @Override
     public boolean run() {
-		if (arguments.length != 3 && arguments.length != 4) {
-			System.err.println("rm: wrong number of arguments");
-			return false;
-		}
+        if (arguments.length != 3 && arguments.length != 4) {
+            System.err.println("rm: wrong number of arguments");
+            return false;
+        }
         File f;
         if (arguments[1].equals("-r")) {
             f = FileUtils.fromPath(arguments[2]);

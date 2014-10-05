@@ -15,10 +15,10 @@ public class CatAction extends Action {
     @Override
     public boolean run() {
         try {
-			if (arguments.length != 2) {
-				System.err.println("cat: wrong number of arguments");
-				return false;
-			}
+            if (arguments.length != 2) {
+                System.err.println("cat: wrong number of arguments");
+                return false;
+            }
             Scanner sc = new Scanner(new FileInputStream(FileUtils.fromPath(arguments[1])));
             while (sc.hasNextLine()) {
                 System.out.println(sc.nextLine());

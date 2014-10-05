@@ -13,10 +13,10 @@ public class MakeDirectoryAction extends Action {
 
     @Override
     public boolean run() {
-		if (arguments.length != 2) {
-			System.err.println("mkdir: wrong number of arguments");
-			return false;
-		}
+        if (arguments.length != 2) {
+            System.err.println("mkdir: wrong number of arguments");
+            return false;
+        }
         String name = arguments[1];
         File f = FileUtils.fromPath(name);
         if (!f.mkdirs()) {
