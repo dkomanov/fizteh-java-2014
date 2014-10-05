@@ -53,6 +53,7 @@ public class MyMap {
             builder.append(s).append(" ");
         }
         String string = new String(builder);
+        string = string.replaceAll("\\s*;\\s*", ";");
         String[] commands = string.split(";|(\\s+)");
         int i = 0;
         while (i < commands.length) {
@@ -78,6 +79,7 @@ public class MyMap {
             }
             run(s, currentTable);
         }
+        System.exit(0);
     }
 
 
