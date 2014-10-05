@@ -53,8 +53,8 @@ public class Shell {
 				for (int i = 0; i < newArgv.size(); ++i) {
 					String curCommand = newArgv.elementAt(i)[0];
 					try {
-						if (shellCommands.get(curCommand).execute(
-								newArgv.elementAt(i)) == false) {
+						if (!shellCommands.get(curCommand).execute(
+								newArgv.elementAt(i))) {
 							errorOccurred = true;
 						}
 					} catch (NullPointerException e) {
@@ -70,8 +70,8 @@ public class Shell {
 			for (int i = 0; i < newArgv.size(); ++i) {
 				String curCommand = newArgv.elementAt(i)[0];
 				try {
-					if (shellCommands.get(curCommand).execute(
-							newArgv.elementAt(i)) == false) {
+					if (!shellCommands.get(curCommand).execute(
+							newArgv.elementAt(i))) {
 						errorOccurred = true;
 					}
 				} catch (NullPointerException e) {
