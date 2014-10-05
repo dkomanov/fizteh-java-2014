@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
 
 import java.util.Scanner;
 
-final public class Interactive {
+public final class Interactive {
 
     private Interactive() {
         //
@@ -13,6 +13,7 @@ final public class Interactive {
         try {
             dataBase = new DataBase(
                      System.getProperty("db.file"));
+            
              try {
                  while (true) {
                      System.out.print("$ ");
@@ -24,7 +25,7 @@ final public class Interactive {
                          current[i].trim();
                      }
                      try {
-                         Commander.CommandExec(current, dataBase);
+                         Commander.commandExec(current, dataBase);
                      } catch (MapExcept ex1) {
                          System.out.println(ex1.toString());
                      }
@@ -32,7 +33,7 @@ final public class Interactive {
                  }
              } catch (Exception ex) {
                  System.out.println(ex.getMessage());
-                 in.close();
+                 in.close(); 
                  System.exit(1);
              }
              dataBase.writeInFile();

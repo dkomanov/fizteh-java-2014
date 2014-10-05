@@ -2,11 +2,11 @@ package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
 
 import java.util.ArrayList;
 
-final public class Commander {
+public final class Commander {
     private Commander() {
         //
     }
-    public static void CommandExec(final String[] command,
+    public static void commandExec(final String[] command,
             final DataBase dataBase) throws MapExcept {
         if (command.length == 0) {
             return;
@@ -40,11 +40,12 @@ final public class Commander {
         case "exit":
             dataBase.writeInFile();
             System.exit(0);
+            break;
         default:
             throw new MapExcept(command[0] + ": No such command");
         }
     }
-    public static void CommandExec(final ArrayList<String> command,
+    public static void commandExec(final ArrayList<String> command,
             final DataBase dataBase) throws MapExcept {
         if (command.size() == 0) {
             return;
@@ -78,6 +79,7 @@ final public class Commander {
         case "exit":
             dataBase.writeInFile();
             System.exit(0);
+            break;
         default:
             throw new MapExcept(command.get(0)
                     + ": No such command");

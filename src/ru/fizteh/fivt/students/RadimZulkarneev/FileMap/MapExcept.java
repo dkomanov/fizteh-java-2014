@@ -6,8 +6,9 @@ public class MapExcept extends Exception {
     MapExcept(final String problem) {
         messageOfExcept = problem;
     }
-    final public String toString() {
+    public final String toString() {
         return messageOfExcept;
     }
-
 }
+
+

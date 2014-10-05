@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
 
 
-final public class FileMapMain {
+public final class FileMapMain {
 
     private FileMapMain() {
         //
@@ -10,7 +10,7 @@ final public class FileMapMain {
 
         if (arg.length > 0) {
             //Parse
-            InputParse.Parse(arg);
+            InputParse.parse(arg);
         } else {
             //Interactive
             Interactive.conv();
