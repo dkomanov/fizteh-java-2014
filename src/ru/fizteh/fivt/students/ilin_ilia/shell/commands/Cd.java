@@ -1,8 +1,6 @@
 package ru.fiztech.fivt.students.theronsg.shell.commands;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public final class Cd {
