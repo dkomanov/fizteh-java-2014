@@ -121,7 +121,9 @@ public class Shell implements ConsoleUtility {
             Path target = workingDirectory.resolve(Paths.get((args.length == 3) ? args[2] : args[1]));
 
             if (Files.exists(target) && source.equals(target.toRealPath())) {
-                return;
+                throw new ConsoleUtilityRuntimeException("cp:" + source
+                                                         + " and " + target
+                                                         + " are identical (not copied)");
             }
 
             if (Files.isDirectory(source)) {
@@ -216,7 +218,7 @@ public class Shell implements ConsoleUtility {
             if (Files.isDirectory(source)) {
                 if (Files.exists(target)) {
                     if (Files.isDirectory(target)) {
-                    Files.walkFileTree(source, new MvFileVisitor(source, target.resolve(source.getFileName())));
+                        Files.walkFileTree(source, new MvFileVisitor(source, target.resolve(source.getFileName())));
                     } else {
                         throw new ConsoleUtilityRuntimeException("mv: rename '"
                                 + args[0] + "' to '" + args[1]
