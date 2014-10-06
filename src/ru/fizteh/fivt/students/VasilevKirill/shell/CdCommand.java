@@ -11,7 +11,7 @@ public class CdCommand implements Command {
     public int execute(String[] args) throws IOException {
         String path = Shell.currentPath;
         if (args.length < 2) {
-            return 0;
+            return 1;
         } else if (args[1].equals(".")) {
             return 0;
         } else if (args[1].equals("..")) {

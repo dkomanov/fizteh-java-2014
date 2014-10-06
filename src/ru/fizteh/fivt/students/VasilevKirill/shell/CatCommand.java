@@ -9,7 +9,7 @@ public class CatCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
         if (args.length < 2) {
-            return 0;
+            return 1;
         }
         File file = new File(Shell.currentPath + File.separator + args[1]);
         if (!file.exists()) {

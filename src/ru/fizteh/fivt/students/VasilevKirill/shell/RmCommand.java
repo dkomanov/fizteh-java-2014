@@ -10,7 +10,7 @@ public class RmCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
         if (args.length < 2) {
-            return 0;
+            return 1;
         }
         if (args[1] == null || args[2] == null) {
             return 1;
