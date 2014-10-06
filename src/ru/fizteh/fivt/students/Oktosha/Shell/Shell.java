@@ -136,7 +136,7 @@ public class Shell implements ConsoleUtility {
                         Files.walkFileTree(source, new CpFileVisitor(source, target));
                     }
                 } else {
-                    throw new ConsoleUtilityRuntimeException("cp:" + args[1] + ": Is a directory");
+                    throw new ConsoleUtilityRuntimeException("cp:" + args[0] + ": Is a directory");
                 }
             } else {
                 if (Files.exists(target) && Files.isDirectory(target)) {
