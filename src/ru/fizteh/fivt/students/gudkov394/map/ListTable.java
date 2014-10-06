@@ -5,8 +5,7 @@ import java.util.Set;
 
 public class ListTable {
     public ListTable(final String[] currentArgs, final Map ct) {
-        if(currentArgs.length != 1)
-        {
+        if (currentArgs.length != 1) {
             System.err.println("wrong number of argumets to list");
             System.exit(3);
         }
