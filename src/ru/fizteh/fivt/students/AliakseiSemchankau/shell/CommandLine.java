@@ -40,10 +40,8 @@ public class CommandLine {
             return;
         }
 
-        for (int curSymbol = 0; curSymbol < toParse.length(); ++curSymbol) {
-            Vector<String> argumentLine = new Vector<String>();
             String curArgument = "";
-            int curSymbolInThisBlock = curSymbol;
+            /*int curSymbolInThisBlock = curSymbol;
             for (; curSymbolInThisBlock != toParse.length() && toParse.charAt(curSymbolInThisBlock) != ';'; ++curSymbolInThisBlock) {
 
                 if (toParse.charAt(curSymbolInThisBlock) != ' ') {
@@ -57,16 +55,50 @@ public class CommandLine {
                 argumentLine.add(curArgument);
 
             listOfCommands.add(argumentLine);
-            curSymbol = curSymbolInThisBlock + 1;
+            curSymbol = curSymbolInThisBlock;*/
+
+            for(int curSymbol = 0; ; ++curSymbol){
+                if (curSymbol != toParse.length() && toParse.charAt(curSymbol) != ';'){
+                    curArgument += toParse.charAt(curSymbol);
+                }
+                else {
+                    listOfCommands.add(processing(curArgument));
+                    curArgument = "";
+                    if (curSymbol == toParse.length())
+                        break;
+                }
+
         }
 
-       /* while (!listOfCommands.isEmpty())
+       /*while (!listOfCommands.isEmpty())
         {
             Vector<String> curLine = listOfCommands.poll();
             for (int i = 0; i < curLine.size(); ++i)
                 System.out.print(curLine.get(i) + " ");
-            System.out.println("end");
+            System.out.println(";");
         }*/
+    }
+
+    Vector<String> processing(String argLine){
+        Vector<String> argumentList = new Vector<String>();
+        String argument = new String();
+        argument = "";
+        for(int symbol = 0; ; ++symbol){
+            if (symbol != argLine.length() && argLine.charAt(symbol) != ' ') {
+                argument += argLine.charAt(symbol);
+            }
+            else {
+                if (argument.length() > 0) {
+                    argumentList.add(argument);
+                    argument = "";
+                }
+
+                if (symbol == argLine.length()) {
+                    break;
+                }
+            }
+        }
+        return argumentList;
     }
 
     public void doCommands() {
@@ -77,28 +109,29 @@ public class CommandLine {
 
             if (toDo.equals("pwd"))
                 doPWD(currentCommand);
-
+            else
             if (toDo.equals("ls"))
                 doLS(currentCommand);
-
+            else
             if (toDo.equals("exit"))
                 doExit(currentCommand);
-
+            else
             if (toDo.equals("cd"))
                 doCD(currentCommand);
-
+            else
             if (toDo.equals("mkdir"))
                 doMKDIR(currentCommand);
-
+            else
             if (toDo.equals("cp"))
                 doCP(currentCommand);
-
+            else
             if (toDo.equals("rm"))
                 doRM(currentCommand);
-
+            else
             if (toDo.equals("mv"))
                 doMV(currentCommand);
-
+            else
+                throw new ShellException("unknown command");
         }
     }
 

@@ -7,7 +7,6 @@ public class ShellMain {
 
     public static void main(String[] args) {
 
-
         CommandLine commandLine = new CommandLine();
 
         if (args.length > 0) {
