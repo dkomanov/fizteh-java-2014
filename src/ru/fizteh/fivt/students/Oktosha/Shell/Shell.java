@@ -39,6 +39,9 @@ public class Shell implements ConsoleUtility {
             case "cd":
                 cd(cmd.args);
                 break;
+            case "cp":
+                cp(cmd.args);
+                break;
             case "exit":
                 exit(cmd.args);
                 break;
@@ -107,7 +110,51 @@ public class Shell implements ConsoleUtility {
             throw new ConsoleUtilityRuntimeException("cd: something really bad happened " + e.toString(), e);
         }
     }
-    
+
+    private void cp(String[] args) throws CommandArgumentSyntaxException, ConsoleUtilityRuntimeException {
+        if ((args.length < 2) || (args.length > 3) || ((args.length == 3) && !(args[0].equals("-r")))) {
+            throw new CommandArgumentSyntaxException("cp: Invalid syntax, usage: cp [-r] <source> <destination>");
+        }
+        boolean recursively = (args.length == 3);
+        try {
+            Path source = workingDirectory.resolve(Paths.get((args.length == 3) ? args[1] : args[0])).toRealPath();
+            Path target = workingDirectory.resolve(Paths.get((args.length == 3) ? args[2] : args[1]));
+
+            if (Files.exists(target) && source.equals(target.toRealPath())) {
+                return;
+            }
+
+            if (Files.isDirectory(source)) {
+                if (recursively) {
+                    if (Files.exists(target)) {
+                        if (Files.isDirectory(target)) {
+                            Files.walkFileTree(source, new CpFileVisitor(source, target.resolve(source.getFileName())));
+                        } else {
+                            throw new ConsoleUtilityRuntimeException("cp:" + args[2] + ": Not a directory");
+                        }
+                    } else {
+                        Files.walkFileTree(source, new CpFileVisitor(source, target));
+                    }
+                } else {
+                    throw new ConsoleUtilityRuntimeException("cp:" + args[1] + ": Is a directory");
+                }
+            } else {
+                if (Files.exists(target) && Files.isDirectory(target)) {
+                    Files.copy(source, target.resolve(source.getFileName()), REPLACE_EXISTING);
+                } else {
+                    Files.copy(source, target, REPLACE_EXISTING);
+                }
+            }
+        } catch (NoSuchFileException e) {
+            throw new ConsoleUtilityRuntimeException("cp: " + e.getMessage() + ": No such file or directory", e);
+        } catch (AccessDeniedException e) {
+            throw new ConsoleUtilityRuntimeException("cp: " + e.getMessage() + ": Permission denied", e);
+        } catch (IOException | SecurityException e) {
+            throw new ConsoleUtilityRuntimeException("cp: something really bad happened " + e.toString(), e);
+        }
+
+    }
+
     private void exit(String[] args) throws CommandArgumentSyntaxException {
         if (args.length != 0) {
             throw new CommandArgumentSyntaxException("exit: too many arguments");
@@ -224,6 +271,5 @@ public class Shell implements ConsoleUtility {
         } catch (IOException | SecurityException e) {
             throw new ConsoleUtilityRuntimeException("rm: something really bad happened " + e.toString(), e);
         }
-
     }
 }
