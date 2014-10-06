@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class Copy implements Command {
+
     private final int numberOfArguments;
 
     public Copy(int numberOfArguments) {

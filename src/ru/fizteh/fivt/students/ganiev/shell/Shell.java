@@ -3,12 +3,14 @@ package ru.fizteh.fivt.students.ganiev.shell;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.io.IOException;
-import java.lang.Thread;
 
 public class Shell {
-    private Shell() {}
+
+    private Shell() {
+    }
 
     public static class MyShell {
+
         public MyShell(String currentDirectory) {
             this.currentDirectory = currentDirectory;
         }
@@ -24,7 +26,8 @@ public class Shell {
         private String currentDirectory;
     }
 
-    private static void invokeInstruction(String[] instruction, Shell.MyShell shell) throws IOException, BreakingException {
+    private static void invokeInstruction(String[] instruction, Shell.MyShell shell)
+            throws IOException, BreakingException {
         Command currentCommand = null;
 
         if (instruction[0].equals("cd")) {

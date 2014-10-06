@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class Move implements Command {
+
     public void invokeCommand(String[] arguments, Shell.MyShell shell) throws IOException {
         File source = FileCommander.getFile(arguments[0], shell);
         File destination = FileCommander.getFile(arguments[1], shell);
@@ -13,7 +14,8 @@ public class Move implements Command {
             return;
         }
 
-        if ((source.exists()) && (source.isDirectory()) && (!destination.exists()) && (source.getParent().equals(destination.getParent()))) {
+        if ((source.exists()) && (source.isDirectory()) && (!destination.exists())
+                && (source.getParent().equals(destination.getParent()))) {
             if (!source.renameTo(destination)) {
                 throw new IOException("Unable to move " + source.getPath() + " to " + destination.getPath());
             }

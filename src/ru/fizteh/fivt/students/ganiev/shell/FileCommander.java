@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 public class FileCommander {
-    private FileCommander() {}
+
+    private FileCommander() {
+    }
 
     public static File getFile(String fileName, Shell.MyShell shell) throws IOException {
         File currentFile = new File(fileName);
@@ -45,7 +47,7 @@ public class FileCommander {
         } else {
             File elementsDestination = new File(destination.getPath(), source.getName());
 
-            if(!elementsDestination.exists()) {
+            if (!elementsDestination.exists()) {
                 elementsDestination.mkdir();
             }
 

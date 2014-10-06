@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class Remove implements Command {
+
     private final int numberOfArguments;
 
     public Remove(int numberOfArguments) {
@@ -23,7 +24,8 @@ public class Remove implements Command {
                 FileCommander.deleteFileOrDirectory(source);
             }
         } else {
-            throw new IOException("rm: cannot remove " + arguments[numberOfArguments - 1] + ": No such file or directory");
+            throw new IOException("rm: cannot remove " 
+                    + arguments[numberOfArguments - 1] + ": No such file or directory");
         }
     }
 
