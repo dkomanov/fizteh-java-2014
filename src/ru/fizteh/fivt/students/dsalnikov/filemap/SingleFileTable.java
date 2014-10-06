@@ -4,10 +4,8 @@ package ru.fizteh.fivt.students.dsalnikov.filemap;
 import ru.fizteh.fivt.students.dsalnikov.utils.FileMapUtils;
 import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 
-
-import java.util.Map;
-import java.util.Set;
 import java.io.File;
+import java.util.Map;
 
 
 public class SingleFileTable extends ShellState implements Table {
@@ -27,24 +25,54 @@ public class SingleFileTable extends ShellState implements Table {
         }
     }
 
+    public SingleFileTable(String path) {
+        try {
+            dbfile = new File(path);
+            storage = FileMapUtils.readToMap(dbfile);
+        } catch (Throwable exc) {
+            System.err.println("file processing failed. Paths might be incorrect");
+            System.exit(1);
+        }
+    }
+
     @Override
     public String get(String key) {
-        return storage.get(key);
+        String result = storage.get(key);
+        if (result == null) {
+            System.out.println("not found");
+        } else {
+            System.out.println(String.format("found\n'%s'", result));
+        }
+        return result;
     }
 
     @Override
     public String put(String key, String value) {
-        return storage.put(key, value);
+        String rv = storage.put(key, value);
+        if (rv == null) {
+            System.out.println("new");
+        } else {
+            System.out.println(String.format("overwrite\n'%s'", rv));
+        }
+        return rv;
     }
 
     @Override
-    public Set<String> list() {
-        return storage.keySet();
+    public void list() {
+        for (String s : storage.keySet()) {
+            System.out.println(s);
+        }
     }
 
     @Override
     public String remove(String key) {
-        return storage.remove(key);
+        String result = storage.remove(key);
+        if (result == null) {
+            System.out.println("not found");
+        } else {
+            System.out.println("removed");
+        }
+        return result;
     }
 
     @Override
@@ -56,5 +84,9 @@ public class SingleFileTable extends ShellState implements Table {
             System.exit(1);
         }
         return 0;
+    }
+
+    public int size() {
+        return storage.size();
     }
 }

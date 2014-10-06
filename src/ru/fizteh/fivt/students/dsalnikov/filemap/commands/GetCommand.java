@@ -16,12 +16,7 @@ public class GetCommand implements Command {
         if (args.length != 2) {
             throw new IllegalArgumentException("wrong amount of arguments");
         } else {
-            String result = db.get(args[1]);
-            if (result == null) {
-                System.out.println("not found");
-            } else {
-                System.out.println(String.format("found\n'%s'", result));
-            }
+            db.get(args[1]);
         }
     }
 
