@@ -54,6 +54,9 @@ public class Shell implements ConsoleUtility {
             case "pwd":
                 pwd(cmd.args);
                 break;
+            case "rm":
+                rm(cmd.args);
+                break;
             case "":
                 break;
             default:
@@ -185,7 +188,7 @@ public class Shell implements ConsoleUtility {
         } catch (NoSuchFileException e) {
             throw new ConsoleUtilityRuntimeException("mv: " + e.getMessage() + ": No such file or directory", e);
         } catch (AccessDeniedException e) {
-            throw new ConsoleUtilityRuntimeException("mkdir: " + e.getMessage() + ": Permission denied", e);
+            throw new ConsoleUtilityRuntimeException("mv: " + e.getMessage() + ": Permission denied", e);
         } catch (IOException | SecurityException e) {
             throw new ConsoleUtilityRuntimeException("mv: something really bad happened " + e.toString(), e);
         }
@@ -196,5 +199,31 @@ public class Shell implements ConsoleUtility {
             throw new CommandArgumentSyntaxException("pwd: too many arguments");
         }
         System.out.println(workingDirectory);
+    }
+
+    private void rm(String[] args) throws CommandArgumentSyntaxException, ConsoleUtilityRuntimeException {
+        if ((args.length == 0) || (args.length > 2) || ((args.length == 2) && !(args[0].equals("-r")))) {
+            throw new CommandArgumentSyntaxException("rm: Invalid syntax, usage: rm [-r] <file|dir>");
+        }
+        boolean recursively = (args.length == 2);
+        try {
+            Path target = workingDirectory.resolve(Paths.get((args.length == 2) ? args[1] : args[0])).toRealPath();
+            if (!Files.isDirectory(target)) {
+                Files.delete(target);
+            } else {
+                if (recursively) {
+                    Files.walkFileTree(target, new RmFileVisitor());
+                } else {
+                    throw new ConsoleUtilityRuntimeException("rm: " + args[0] + ": Is a directory");
+                }
+            }
+        } catch (NoSuchFileException e) {
+            throw new ConsoleUtilityRuntimeException("rm: " + e.getMessage() + ": No such file or directory", e);
+        } catch (AccessDeniedException e) {
+            throw new ConsoleUtilityRuntimeException("rm: " + e.getMessage() + ": Permission denied", e);
+        } catch (IOException | SecurityException e) {
+            throw new ConsoleUtilityRuntimeException("rm: something really bad happened " + e.toString(), e);
+        }
+
     }
 }
