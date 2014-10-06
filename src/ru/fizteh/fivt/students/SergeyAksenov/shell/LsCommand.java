@@ -4,7 +4,7 @@ import java.io.File;
 
 public final class LsCommand implements Command {
 
-    public final void run(final String[] args, final Environment env)
+    public void run(final String[] args, final Environment env)
             throws ShellException {
         if (!Executor.checkArgNumber(1, args.length, 1)) {
             ErrorHandler.countArguments("ls");

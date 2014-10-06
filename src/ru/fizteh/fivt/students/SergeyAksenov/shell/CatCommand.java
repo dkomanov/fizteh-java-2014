@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class CatCommand implements Command {
-    public final void run(final String[] args, final Environment env)
+public final class CatCommand implements Command {
+    public void run(final String[] args, final Environment env)
             throws ShellException {
         if (!Executor.checkArgNumber(2, args.length, 2)) {
             ErrorHandler.countArguments("cat");

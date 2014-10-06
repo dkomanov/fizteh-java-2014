@@ -6,13 +6,13 @@ import java.io.File;
 
 public final class MkDirCommand implements Command {
 
-    public final void run(final String[] args, final Environment env)
+    public void run(final String[] args, final Environment env)
             throws ShellException {
         if (!Executor.checkArgNumber(2, args.length, 2)) {
             ErrorHandler.countArguments("mkdir");
         }
-        File directory = new File(env.currentDirectory +
-                File.separator + args[1]);
+        File directory = new File(env.currentDirectory
+                + File.separator + args[1]);
         if (directory.exists()) {
             ErrorHandler.fileExist("mkdir", args[1]);
         }

@@ -11,12 +11,12 @@ import java.util.Scanner;
 
 public final class Executor {
 
-    public final static boolean checkArgNumber(int from, int value, int to) {
+    public static boolean checkArgNumber(int from, int value, int to) {
         return from <= value && value <= to;
     }
 
-    public final static void execute(final HashMap<String, Command> commandMap,
-                                     String[] commands, final Environment env)
+    public static void execute(final HashMap<String, Command> commandMap,
+                               String[] commands, final Environment env)
             throws ShellExitException {
         try {
             Command cmd = commandMap.get(commands[0]);
@@ -24,17 +24,17 @@ public final class Executor {
                 ErrorHandler.unknownCommand(commands[0]);
             }
             commandMap.get(commands[0]).run(commands, env);
-        } catch (ShellException E) {
-            System.err.println(E.getMessage());
+        } catch (ShellException e) {
+            System.err.println(e.getMessage());
             if (env.packageMode) {
                 System.exit(-1);
             }
         }
     }
 
-    public final static void execLine(String Line,
-                                      final HashMap<String, Command> commandMap,
-                                      final Environment env)
+    public static void execLine(String Line,
+                                final HashMap<String, Command> commandMap,
+                                final Environment env)
             throws ShellExitException {
         String[] commands = Line.trim().split(";");
         try {
@@ -48,7 +48,7 @@ public final class Executor {
         }
     }
 
-    public final static void delete(File fileToRem)
+    public static void delete(File fileToRem)
             throws ShellException {
         if (fileToRem.isDirectory()) {
             File[] files = fileToRem.listFiles();
@@ -65,7 +65,7 @@ public final class Executor {
 
     }
 
-    public final static void copy(File src, File dst)
+    public static void copy(File src, File dst)
             throws ShellException {
         File finalDst = null;
         try {
@@ -97,16 +97,18 @@ public final class Executor {
         }
     }
 
-    public final static void interactiveMode
-            (final HashMap<String, Command> commandMap,
-             final Environment env)
+    public static void interactiveMode(
+            final HashMap<String, Command> commandMap,
+            final Environment env)
             throws ShellException, ShellExitException {
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
                 System.out.print("$ ");
+                if (!scanner.hasNextLine()) {
+                    System.exit(0);
+                }
                 String command = scanner.nextLine();
                 execLine(command, commandMap, env);
-
             }
         } catch (NoSuchElementException e) {
             System.err.println(e.getMessage());
@@ -114,10 +116,10 @@ public final class Executor {
         }
     }
 
-    public final static void packageAppender(final String[] args,
-                                             final HashMap<String, Command>
-                                                     commandMap,
-                                             final Environment env)
+    public static void packageAppender(final String[] args,
+                                       final HashMap<String, Command>
+                                               commandMap,
+                                       final Environment env)
             throws ShellExitException {
         StringBuilder commands = new StringBuilder();
         for (String arg : args) {

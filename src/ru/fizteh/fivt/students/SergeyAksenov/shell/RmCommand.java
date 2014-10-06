@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.SergeyAksenov.shell;
 import java.io.File;
 
 public final class RmCommand implements Command {
-    public final void run(final String[] args, final Environment env)
+    public void run(final String[] args, final Environment env)
             throws ShellException {
         if (!Executor.checkArgNumber(2, args.length, 3)) {
             ErrorHandler.countArguments("rm");

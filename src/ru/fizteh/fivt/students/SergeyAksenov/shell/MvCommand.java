@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.SergeyAksenov.shell;
 import java.io.File;
 
 public final class MvCommand implements Command {
-    public final void run(final String[] args, final Environment env)
+    public void run(final String[] args, final Environment env)
             throws ShellException {
         if (!Executor.checkArgNumber(3, args.length, 3)) {
             ErrorHandler.countArguments("mv");

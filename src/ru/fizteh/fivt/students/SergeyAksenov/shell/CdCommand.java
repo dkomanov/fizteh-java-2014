@@ -15,8 +15,8 @@ public class CdCommand implements Command {
         if (args[1].charAt(0) == '/') {
             currentFile = new File(args[1]);
         } else {
-            currentFile = new File(env.currentDirectory +
-                    File.separator + args[1]);
+            currentFile = new File(env.currentDirectory
+                    + File.separator + args[1]);
         }
         try {
             if (currentFile.exists() && currentFile.isDirectory()) {
