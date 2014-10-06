@@ -10,7 +10,7 @@ public final class Interactive {
      public static void conv() {
          Scanner in = new Scanner(System.in);
          DataBase dataBase;
-        try {
+         try {
             dataBase = new DataBase(
                      System.getProperty("db.file"));
             

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
+package ru.fizteh.fivt.students.RadimZulkarneev.MultiFileHashMap;
 
 public class MapExcept extends Exception {
     private static final long serialVersionUID = 1L;
@@ -10,5 +10,4 @@ public class MapExcept extends Exception {
         return messageOfExcept;
     }
 }
-
 

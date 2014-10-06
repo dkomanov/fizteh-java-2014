@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
+package ru.fizteh.fivt.students.RadimZulkarneev.MultiFileHashMap;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class DataBase {
-    public DataBase(final String dbName)
-            throws MapExcept {
+public class Table {
+    public Table(final String dbName)
+            throws MapExcept, DataBaseCorrupt {
         try {
             dBasePath = Paths.get(dbName);
             dBase = new HashMap<String, String>();
@@ -21,26 +21,21 @@ public class DataBase {
             if (ex.toString().equals(
                     "MakeDbFile: File already exist")) {
                 try {
-                    RandomAccessFile dbFile = new
-                            RandomAccessFile(
-                        dBasePath.toString(), "r");
+                    RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "r");
                     if (dbFile.length() > 0) {
-                        while (dbFile.
-                                getFilePointer()
-                            < dbFile.length()) {
-                            String key =
-                            readFromDataBase(
-                                dbFile);
-                            String value =
-                            readFromDataBase(
-                                    dbFile);
+                        while (dbFile.getFilePointer() < dbFile.length()) {
+                            String key = readFromTable(dbFile);
+                            isValid(key);
+                            String value = readFromTable(dbFile);
                             dBase.put(key, value);
                         }
                     }
                     dbFile.close();
+                } catch (DataBaseCorrupt ex2) {
+                    throw new DataBaseCorrupt(ex2.toString());
                 } catch (Exception ex1) {
                     throw new MapExcept(
-                            "DataBase: "
+                            "Table: "
                     + "I don't know-exception");
                 }
             } 
@@ -51,25 +46,21 @@ public class DataBase {
         }
     }
 
-    private  String readFromDataBase(
-            final RandomAccessFile dbFile)
-                    throws MapExcept {
-
+    private  String readFromTable(final RandomAccessFile dbFile) throws MapExcept {
         try {
             int wordlen = dbFile.readInt();
             byte[] word = new byte[wordlen];
             dbFile.read(word, 0, wordlen);
             return new String(word);
         } catch (IOException e) {
-            throw new MapExcept("Can't read from database");
+            throw new MapExcept("Can't read from Table");
         }
     }
 
 
-    private void writeToDataBase(final RandomAccessFile dbFile,
+    private void writeToTable(final RandomAccessFile dbFile,
             final String word) throws MapExcept {
         try {
-            
             dbFile.writeInt(word.getBytes("UTF-8").length);
             dbFile.write(word.getBytes("UTF-8"));
         } catch (Exception ex) {
@@ -83,10 +74,11 @@ public class DataBase {
         try {
             dBase.put(key, value);
         } catch (Exception ex) {
-            throw new MapExcept("Database addValue:"
+            throw new MapExcept("Table addValue:"
                     + " Unknown exception");
         }
     }
+    
     public final void listCommand() {
         Set<Entry<String, String>> baseSet = dBase.entrySet();
         Iterator<Entry<String, String>> it = baseSet.iterator();
@@ -95,29 +87,26 @@ public class DataBase {
                     (Entry<String, String>) it.next();
             System.out.print(current.getKey() + " ");
         }
-        System.out.println("");
+        //System.out.println("");
 
     }
     public final void writeInFile() throws MapExcept {
-        try {
+        try (RandomAccessFile dbFile = new
+                RandomAccessFile(dBasePath.toString(), "rw")) {
             Set<Entry<String, String>> baseSet = dBase.entrySet();
             Iterator<Entry<String, String>> it = baseSet.iterator();
-       //     Functions.makeDbFileHard(dBasePath.toString());
-            RandomAccessFile dbFile = new
-                    RandomAccessFile(dBasePath.toString(), "rw");
+          //  Functions.makeDbFileHard(dBasePath.toString());
+            
             dbFile.setLength(0);
             while (it.hasNext()) {
                 Entry<String, String> current =
                         (Entry<String, String>) it.next();
-              //  System.out.println(current.getKey() + " " + current.getKey().hashCode() % 16 + " " 
-                //        + current.getKey().hashCode() / 16 % 16);
-                
-                writeToDataBase(dbFile, current.getKey());
-                writeToDataBase(dbFile, current.getValue());
+                writeToTable(dbFile, current.getKey());
+                writeToTable(dbFile, current.getValue());
             }
         } catch (Exception ex) {
             System.out.println(ex.toString());
-            throw new MapExcept("DataBase: cant write");
+            throw new MapExcept("Table: cant write");
         }
     }
     public final void put(final String key, final String value) {
@@ -147,6 +136,51 @@ public class DataBase {
         } else {
             System.out.println("not found");
         }
+    }
+    
+    private boolean isValid(String key) throws DataBaseCorrupt {
+        int hCode = Math.abs(key.hashCode());
+        int nDir = hCode % 16;
+        int nFile = hCode / 16 % 16;
+        String nameDir = new String(nDir + ".dir");
+        String nameFile = new String(nFile + ".dat");
+        if (nameFile.equals(dBasePath.getFileName().toString()) 
+                && nameDir.equals(dBasePath.getParent().getFileName().toString())) {
+            return true;
+        } else {
+            throw new DataBaseCorrupt("Key hash does not matches with table");
+        }
+    }
+    public int getRowCoutn() {
+        return dBase.size();
+    }
+   
+    public String retCode() {
+        String a = "";
+        try {
+            String current = dBasePath.getParent().getFileName().toString().substring(0,
+                    dBasePath.getParent().getFileName().toString().length() - 4);
+            
+            if (current.matches("[0-9]")) {
+                a = (0 + current);
+            } else {
+                a = (current);
+            }
+            current = dBasePath.getFileName().toString().substring(0, dBasePath.getFileName().toString().length() - 4);
+            if (current.matches("[0-9]")) {
+                a += (0 + current);
+            } else {
+                a += (current);
+            }
+        } catch (Exception ex) {
+            System.out.println("Some errors");
+        }
+       
+        return a;
+    }
+    
+    public Path tablePath() {
+        return dBasePath;
     }
     private Map<String, String> dBase;
     private Path dBasePath;

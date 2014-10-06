@@ -1,14 +1,15 @@
-package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
+package ru.fizteh.fivt.students.RadimZulkarneev.MultiFileHashMap;
 
-public class MapExcept extends Exception {
+public class DataBaseCorrupt extends Exception {
+
     private static final long serialVersionUID = 1L;
     private String messageOfExcept;
-    MapExcept(final String problem) {
+    DataBaseCorrupt(final String problem) {
         messageOfExcept = problem;
     }
     public final String toString() {
         return messageOfExcept;
     }
+
+
 }
-
-
