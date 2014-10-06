@@ -19,7 +19,7 @@ public class MakeDirectoryCommand implements Commands<ShellState> {
         return 1;
     }
     
-    public void implement (String[] args, ShellState state) throws SomethingIsWrongException{
+    public void implement(String[] args, ShellState state) throws SomethingIsWrongException {
         String nameOfDirectory = args [0];
         File creating = UtilMethods.getAbsoluteName(nameOfDirectory, state);
         if (!creating.mkdir()) {

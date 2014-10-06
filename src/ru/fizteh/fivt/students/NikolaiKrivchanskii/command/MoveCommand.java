@@ -42,7 +42,7 @@ public class MoveCommand implements Commands<ShellState> {
         File source = UtilMethods.getAbsoluteName(from, state);
         File destination = UtilMethods.getAbsoluteName(to, state);
         if (!source.exists()) {
-            throw new SomethingIsWrongException ("The file " + from + " doesn't exist.");
+            throw new SomethingIsWrongException("The file " + from + " doesn't exist.");
         }
         if (source.getParent().equals(destination.getParent()) && destination.isDirectory()) {
             if (!source.renameTo(destination)) {
@@ -51,7 +51,7 @@ public class MoveCommand implements Commands<ShellState> {
             return;
         }
         if (!destination.isDirectory()) {
-            if(!source.renameTo(destination)) {
+            if (!source.renameTo(destination)) {
                 throw new SomethingIsWrongException(to + " Error acquired while renaming it.");
             }
             return;

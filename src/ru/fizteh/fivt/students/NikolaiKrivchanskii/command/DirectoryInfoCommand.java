@@ -13,7 +13,7 @@ import ru.fizteh.fivt.students.NikolaiKrivchanskii.shell1.UtilMethods;
 public class DirectoryInfoCommand implements Commands<ShellState> {
     
     public String getCommandName() {
-        return "dir";
+        return "ls";
     }
 
     public int getArgumentQuantity() {
@@ -24,7 +24,7 @@ public class DirectoryInfoCommand implements Commands<ShellState> {
         File dir = new File(state.getCurDir());
         String[] files = dir.list();
         List<String> tempObj = Arrays.asList(files);
-        if(tempObj.size() > 0) {
+        if (tempObj.size() > 0) {
             String anotherTempObj = UtilMethods.uniteItems(tempObj, "\n");
             System.out.println(anotherTempObj);
         }

@@ -3,9 +3,9 @@ package ru.fizteh.fivt.students.NikolaiKrivchanskii.shell1;
 
 public interface Commands<State> {
 
-    public String getCommandName();
+    String getCommandName();
     
-    public int getArgumentQuantity();
+    int getArgumentQuantity();
     
-    abstract public void implement(String[] args, State state) throws SomethingIsWrongException;
+    public void implement(String[] args, State state) throws SomethingIsWrongException;
 }

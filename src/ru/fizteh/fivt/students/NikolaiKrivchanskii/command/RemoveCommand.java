@@ -1,14 +1,12 @@
 package ru.fizteh.fivt.students.NikolaiKrivchanskii.command;
 
 import java.io.File;
-import java.io.IOException;
 
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.shell1.Commands;
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.shell1.ShellState;
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.shell1.SomethingIsWrongException;
-import ru.fizteh.fivt.students.NikolaiKrivchanskii.shell1.UtilMethods;
 
-public class RemoveCommand implements Commands<ShellState>{
+public class RemoveCommand implements Commands<ShellState> {
     
     public String getCommandName() {
         return "rm";
@@ -23,8 +21,8 @@ public class RemoveCommand implements Commands<ShellState>{
     private void delete(File f) throws SomethingIsWrongException {
         if (f.isDirectory()) {
             if (f.list().length == 0) {
-                if(!f.delete()) {
-                	throw new SomethingIsWrongException("Error occured while deleting. Whoopsie.");
+                if (!f.delete()) {
+                     throw new SomethingIsWrongException("Error occured while deleting. Whoopsie.");
                 }
             } else {
                 String[] files = f.list();
@@ -33,16 +31,15 @@ public class RemoveCommand implements Commands<ShellState>{
                     delete(fileDelete);
                 }
                 if (f.list().length == 0) {
-                    if(!f.delete()) {
-                    	throw new SomethingIsWrongException("Error occured while deleting. Whoopsie.");
+                    if (!f.delete()) {
+                         throw new SomethingIsWrongException("Error occured while deleting. Whoopsie.");
                     }
                 }
             }
         } else {
-            if(!f.delete()) {
-            	throw new SomethingIsWrongException("Error occured while deleting. Whoopsie.");
+            if (!f.delete()) {
+                 throw new SomethingIsWrongException("Error occured while deleting. Whoopsie.");
             }
-
         }
     }
     
@@ -51,7 +48,7 @@ public class RemoveCommand implements Commands<ShellState>{
         if (args.length != 1 && args.length != 2) {
             throw new SomethingIsWrongException("wrong ammount of args. should be called with one arg");
         } else if (args.length == 1) {
-        	File fi = new File(args[0]);
+             File fi = new File(args[0]);
             if (!fi.isAbsolute()) {
                 fi = new File(state.getCurDir(), args[0]);
             }
@@ -64,7 +61,7 @@ public class RemoveCommand implements Commands<ShellState>{
                 delete(fi);
             }
         } else {
-        	File fi = new File(args[1]);
+             File fi = new File(args[1]);
             if (!fi.isAbsolute()) {
                 fi = new File(state.getCurDir(), args[1]);
             }

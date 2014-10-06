@@ -15,7 +15,7 @@ public class ExitCommand implements Commands<ShellState> {
         return 0;
     }
     public void implement(String[] args, ShellState state) throws SomethingIsWrongException {
-    	throw new SomethingIsWrongException("EXIT");
+        throw new SomethingIsWrongException("EXIT");
     }
 
 }

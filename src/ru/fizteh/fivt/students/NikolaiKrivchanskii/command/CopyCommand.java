@@ -25,40 +25,40 @@ public class CopyCommand implements Commands<ShellState> {
     
     
     public void implement(String[] args, ShellState state) throws SomethingIsWrongException {
-    	if (!args[0].equals("-r") && args.length == 2) {
-		    String from = args[0];
-		    String to = args[1];
-		    File source = UtilMethods.getAbsoluteName(from, state);
-		    if (source.isDirectory() && source.list().length != 0) {
-		    	throw new SomethingIsWrongException("To copy directory, which is not empty use \"-r\" flag.");
-		    }
-		    File newPlace = UtilMethods.getAbsoluteName(to, state);
-		    if (!newPlace.isDirectory()) {
-		        if (!newPlace.exists()) {
-		            copyToNotExistingFile(source, newPlace);
-		            return;
-		        } else {
-		            throw new SomethingIsWrongException("This file already exists. ");
-		        }
-		    }
-		    mkCopy(source, newPlace);
-    	} else if (args[0].equals("-r") && args.length == 3) {
-    		String from = args[1];
-		    String to = args[2];
-		    File source = UtilMethods.getAbsoluteName(from, state);
-		    File newPlace = UtilMethods.getAbsoluteName(to, state);
-		    if (!source.isDirectory()) {
-		    	copy(source, newPlace);
-		    	return;
-		    }
+        if (!args[0].equals("-r") && args.length == 2) {
+            String from = args[0];
+            String to = args[1];
+            File source = UtilMethods.getAbsoluteName(from, state);
+            if (source.isDirectory() && source.list().length != 0) {
+                throw new SomethingIsWrongException("To copy directory, which is not empty use \"-r\" flag.");
+            }
+            File newPlace = UtilMethods.getAbsoluteName(to, state);
+            if (!newPlace.isDirectory()) {
+                if (!newPlace.exists()) {
+                    copyToNotExistingFile(source, newPlace);
+                    return;
+                } else {
+                    throw new SomethingIsWrongException("This file already exists. ");
+                }
+            }
+            mkCopy(source, newPlace);
+        } else if (args[0].equals("-r") && args.length == 3) {
+            String from = args[1];
+            String to = args[2];
+            File source = UtilMethods.getAbsoluteName(from, state);
+            File newPlace = UtilMethods.getAbsoluteName(to, state);
+            if (!source.isDirectory()) {
+                copy(source, newPlace);
+                return;
+            }
             File newDir = new File(newPlace, from);
             if (!newDir.getAbsoluteFile().mkdirs()) {
                 throw new SomethingIsWrongException("error creating directory");
             }
             recursiveCopy(source, newDir);
-    	} else {
-    		throw new SomethingIsWrongException("wrong flag. note that only \"-r\" flag is supported");
-    	}
+        } else {
+            throw new SomethingIsWrongException("wrong flag. note that only \"-r\" flag is supported");
+        }
     }
     
     
@@ -69,20 +69,20 @@ public class CopyCommand implements Commands<ShellState> {
                 if (file.isFile()) {
                     File tempDestination = new File(destination.getAbsolutePath(), file.getName());
                     try {
-						Files.copy(file.toPath(), tempDestination.toPath());
-					} catch (IOException e) {
-						throw new SomethingIsWrongException(e.getMessage());
-					}
+                        Files.copy(file.toPath(), tempDestination.toPath());
+                    } catch (IOException e) {
+                        throw new SomethingIsWrongException(e.getMessage());
+                    }
                 } else {
                     File newDir = new File(destination, file.getName()).toPath().normalize().toFile();
                     newDir = newDir.toPath().normalize().toFile();
                     try {
-						if (!newDir.getCanonicalFile().mkdirs()) {
-						    throw new SomethingIsWrongException("error occured while creating directory");
-						}
-					} catch (IOException e) {
-						throw new SomethingIsWrongException(e.getMessage());
-					}
+                        if (!newDir.getCanonicalFile().mkdirs()) {
+                            throw new SomethingIsWrongException("error occured while creating directory");
+                        }
+                    } catch (IOException e) {
+                        throw new SomethingIsWrongException(e.getMessage());
+                    }
                     recursiveCopy(file, newDir);
                 }
             }

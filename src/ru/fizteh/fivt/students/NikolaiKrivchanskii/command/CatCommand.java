@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.shell1.*;
 
-public class CatCommand implements Commands<ShellState>{
+public class CatCommand implements Commands<ShellState> {
     
     public String getCommandName() {
         return "cat";
@@ -50,9 +50,9 @@ public class CatCommand implements Commands<ShellState>{
                 }
             }
             } catch (FileNotFoundException e) {
-            	throw new SomethingIsWrongException(e.getMessage());
+                throw new SomethingIsWrongException(e.getMessage());
             } catch (IOException e) {
-            	throw new SomethingIsWrongException(e.getMessage());
+                throw new SomethingIsWrongException(e.getMessage());
             }
         }
     }
