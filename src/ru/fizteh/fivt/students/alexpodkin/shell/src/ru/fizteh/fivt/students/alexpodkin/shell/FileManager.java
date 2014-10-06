@@ -129,13 +129,13 @@ public class FileManager {
         if (sourceFile.isDirectory()) {
             try {
                 if (!finishFile.mkdir()) {
-                    printStream.println(command + ": " +
-                            finishFile.getAbsolutePath() + " : can't create this directory");
+                    printStream.println(command + ": "
+                            + finishFile.getAbsolutePath() + " : can't create this directory");
                     return false;
                 }
             } catch (SecurityException e) {
-                printStream.println(command + ": " +
-                        finishFile.getAbsolutePath() + " : you haven't rights to create this directory");
+                printStream.println(command + ": "
+                        + finishFile.getAbsolutePath() + " : you haven't rights to create this directory");
             }
             File[] files = sourceFile.listFiles();
             if (files != null && files.length > 0) {
@@ -149,23 +149,23 @@ public class FileManager {
         } else {
             try {
                 if (!finishFile.createNewFile()) {
-                    printStream.println(command + ": " +
-                            finishFile.getAbsolutePath() + " : can't create this file");
+                    printStream.println(command + ": "
+                            + finishFile.getAbsolutePath() + " : can't create this file");
                     return false;
                 }
                 if (!sourceFile.canWrite() || !finishFile.canRead()) {
-                    printStream.println(command + ":" +
-                            finishFile.getAbsolutePath() + " : you haven't rights to create this file");
+                    printStream.println(command + ":"
+                            + finishFile.getAbsolutePath() + " : you haven't rights to create this file");
                     return false;
                 }
                 return copy(sourceFile, finishFile, command);
             } catch (IOException e) {
-                printStream.println(command + ": " +
-                        finishFile.getAbsolutePath() + " : can't create this file");
+                printStream.println(command + ": "
+                        + finishFile.getAbsolutePath() + " : can't create this file");
                 return false;
             } catch (SecurityException e) {
-                printStream.println(command + ":" +
-                        finishFile.getAbsolutePath() + " : you haven't rights to create this file");
+                printStream.println(command + ":"
+                        + finishFile.getAbsolutePath() + " : you haven't rights to create this file");
                 return false;
             }
         }

@@ -59,9 +59,6 @@ public class Launcher {
                     printStream.println(arguments[0] + ": command not found");
                 } else {
                     switch (arguments[0]) {
-                        case "exit":
-                            jobCheck = myExit(arguments);
-                            break;
                         case "ls":
                             jobCheck = myLs(arguments);
                             break;
@@ -86,6 +83,8 @@ public class Launcher {
                         case "mv":
                             jobCheck = myMv(arguments);
                             break;
+                        default:
+                            jobCheck = myExit(arguments);
                     }
                 }
                 if (exitFlag) {
@@ -126,8 +125,8 @@ public class Launcher {
             return false;
         }
         try {
-            File newDirectory = new File(fileManager.getCurrentPath().getAbsolutePath() +
-                    File.separator + arguments[1]);
+            File newDirectory = new File(fileManager.getCurrentPath().getAbsolutePath()
+                    + File.separator + arguments[1]);
             if (newDirectory.exists()) {
                 printStream.println(arguments[0] + ": " + arguments[1] + " : this directory already exists");
                 return false;
@@ -227,15 +226,15 @@ public class Launcher {
         if (arguments.length == 3) {
             if (sourceFile.exists() && sourceFile.isDirectory()) {
                 if (sourceFile.listFiles() != null && sourceFile.listFiles().length > 0) {
-                    printStream.println(arguments[0] + ": " +
-                            sourceFile.getAbsolutePath() + " : this directory isn't empty");
+                    printStream.println(arguments[0] + ": "
+                            + sourceFile.getAbsolutePath() + " : this directory isn't empty");
                     return false;
                 }
             }
             if (finishFile.exists() && finishFile.isDirectory()) {
                 if (finishFile.listFiles() != null && finishFile.listFiles().length > 0) {
-                    printStream.println(arguments[0] + ": " +
-                            finishFile.getAbsolutePath() + " : this directory isn't empty");
+                    printStream.println(arguments[0] + ": "
+                            + finishFile.getAbsolutePath() + " : this directory isn't empty");
                     return false;
                 }
             }
@@ -284,9 +283,9 @@ public class Launcher {
             printStream.println(arguments[0] + ": invalid destination path");
         }
         File sourceFile = fileManager.getFileByPath(arguments[1]);
-        File finishFile = new File(fileManager.getFileByPath(arguments[2]).getParentFile() +
-                File.separator + newFileName);
-        return fileManager.recursiveCopyWithErrorMessages(sourceFile, finishFile, arguments[0]) &&
-                fileManager.recursiveRemove(sourceFile, arguments[0]);
+        File finishFile = new File(fileManager.getFileByPath(arguments[2]).getParentFile()
+                + File.separator + newFileName);
+        return fileManager.recursiveCopyWithErrorMessages(sourceFile, finishFile, arguments[0])
+                && fileManager.recursiveRemove(sourceFile, arguments[0]);
     }
 }
