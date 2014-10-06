@@ -116,6 +116,14 @@ public/* abstract */class ShellMain {
     private static void cp(boolean recursive, String args1, String args2) {
         File from = createFile(args1);
         File to = createFile(args2);
+        try {
+			if (from.getCanonicalPath().equals(to.getCanonicalPath())){
+				printError("cp: «" + args1 + "» и «" + args2+ "» - один и тот же файл");
+				return;
+			}
+		} catch (IOException e1) {
+			printError("couldn't copy");
+		}
         if (recursive && from.isDirectory()) {
             copy(from, to);
         } else if (!from.isDirectory()) {
