@@ -40,7 +40,7 @@ public class Shell<State> {
                        && !(usedOne.getCommandName().equals("cp") 
                                  && data.length - 1 == usedOne.getArgumentQuantity() + 1)) { 
                   throw new SomethingIsWrongException("Wrong number of arguments. Correct argument quantity = "
-                                 + (data.length-1) + "\nTo correctly run this command use " 
+                                 + (data.length - 1) + "\nTo correctly run this command use " 
                             + usedOne.getArgumentQuantity() + " arguments.");
              }
         }
@@ -88,8 +88,10 @@ public class Shell<State> {
     
     public static void main(String[] args) {
          ShellState state = new ShellState(System.getProperty("user.dir"));
-        Set<Commands> commands =  new HashSet<Commands>() {{ add(new WhereAreWeCommand()); add(new CopyCommand()); add(new DirectoryInfoCommand());
-             add(new ExitCommand()); add(new MakeDirectoryCommand()); add(new MoveCommand()); add(new ChangeDirectoryCommand()); add(new RemoveCommand()); add(new CatCommand()); }};
+        Set<Commands> commands =  new HashSet<Commands>() { { add(new WhereAreWeCommand());
+             add(new CopyCommand()); add(new DirectoryInfoCommand());
+             add(new ExitCommand()); add(new MakeDirectoryCommand()); add(new MoveCommand());
+             add(new ChangeDirectoryCommand()); add(new RemoveCommand()); add(new CatCommand()); }};
         Shell<ShellState> shell = new Shell<ShellState>(commands);
         
         if (args.length != 0) {

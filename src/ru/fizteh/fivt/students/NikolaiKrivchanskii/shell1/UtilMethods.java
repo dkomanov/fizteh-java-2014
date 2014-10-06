@@ -11,12 +11,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
 public class UtilMethods {
-	public static final String ENCODING = "UTF-8";
+    public static final String ENCODING = "UTF-8";
     public static String uniteItems(Collection<?> items, String separator) {
         boolean isFirstIteration = true;
         StringBuilder joinBuilder = new StringBuilder();
         for (Object item: items) {
-            if(isFirstIteration) {
+            if (isFirstIteration) {
                 isFirstIteration = false;
             } else {
                 joinBuilder.append(separator);
@@ -46,14 +46,14 @@ public class UtilMethods {
             ofCopy = new FileOutputStream(copy);
             byte[] buf = new byte[4096]; //size of reading = 4kB
             int read = ofOriginal.read(buf);
-            while(read > 0) {
+            while (read > 0) {
                 ofCopy.write(buf, 0, read);
                 read = ofOriginal.read(buf);
             }
         } catch (FileNotFoundException e) {
-            throw new SomethingIsWrongException ("This file or directory doesn't exist yet. " + e.getMessage());
+            throw new SomethingIsWrongException("This file or directory doesn't exist yet. " + e.getMessage());
         } catch (IOException e) {
-            throw new SomethingIsWrongException ("Error while writing/reading file. " + e.getMessage());
+            throw new SomethingIsWrongException("Error while writing/reading file. " + e.getMessage());
         } finally {
             closeCalm(ofOriginal);
             closeCalm(ofCopy);
@@ -63,7 +63,7 @@ public class UtilMethods {
     public static File getAbsoluteName(String fileName, ShellState state) {
         File file = new File(fileName);
         
-        if (!file.isAbsolute()){
+        if (!file.isAbsolute()) {
             file = new File(state.getCurDir(), fileName);
         }
         return file;
@@ -93,7 +93,7 @@ public class UtilMethods {
         try {
             byte[] bytes = string.getBytes(encoding);
             return bytes.length;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return 0;
         }
     }
