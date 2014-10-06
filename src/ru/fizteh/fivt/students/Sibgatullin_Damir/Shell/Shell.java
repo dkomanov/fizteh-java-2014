@@ -43,6 +43,10 @@ public class Shell {
         System.out.print("$ ");
         while (true) {
             String com = input.nextLine();
+            if (com.length() == 0) {
+                System.out.print("$ ");
+                continue;
+            }
             String[] commands = com.split(";");
             for (String string: commands) {
                 try {
