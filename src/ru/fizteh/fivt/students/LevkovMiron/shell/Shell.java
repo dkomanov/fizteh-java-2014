@@ -1,10 +1,8 @@
 package ru.fizteh.fivt.students.LevkovMiron.shell;
 
-import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.nio.file.*;
 import java.util.Scanner;
-import java.lang.String;
 /**
  * Created by Мирон on 19.09.2014 ${PACKAGE_NAME}.
  */
@@ -13,7 +11,7 @@ class Shell {
     private String curDir;
 
     Shell() {
-        curDir = FileSystemView.getFileSystemView().getHomeDirectory().toString();
+        curDir = System.getProperty("user.dir");
         curDir = replaceSlash(curDir);
     }
     String replaceSlash(String s) {
