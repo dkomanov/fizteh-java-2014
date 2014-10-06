@@ -4,21 +4,32 @@ import java.io.File;
 
 public class MvCommand implements Command {
     public void execute(String[] args) throws Exception {
-        File copied = Utils.makePathAbsolute(args[1]).toFile();
+        File moved = Utils.makePathAbsolute(args[1]).toFile();
         File destination = Utils.makePathAbsolute(args[2]).toFile();
-        
-        Utils.checkExistance(copied);
-        
-        if (destination.getName().lastIndexOf('.') != -1) { // если это файл 
-            copied.renameTo(new File(copied.getParentFile(), destination.getName()));
-            destination = destination.getParentFile();
+
+        File newDestination;
+        if (destination.exists() && destination.isDirectory()) {
+            newDestination = new File(destination, moved.getName());
+        } else {
+            newDestination = destination;
         }
-        File newDestination = new File(destination, copied.getName());
-        
-        Utils.checkExistance(destination);
+
+        Utils.checkExistance(moved);
+        Utils.checkExistance(newDestination.getParentFile());
         Utils.checkNonExistance(newDestination);
-        
-        recursiveMove(copied, destination);
+        Utils.checkSubDirectory(moved, newDestination);
+
+        if (moved.isFile()) {
+            Utils.copy(moved, newDestination);
+            Utils.delete(moved);
+        }
+        if (moved.isDirectory()) {
+            newDestination.mkdir();
+            for (File object: moved.listFiles()) {
+                recursiveMove(object, newDestination);
+            }
+            Utils.delete(moved);
+        }
     }
     
     public void recursiveMove(File moved, File destination) throws Exception {
