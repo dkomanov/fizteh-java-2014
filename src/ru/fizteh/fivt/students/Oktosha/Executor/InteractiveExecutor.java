@@ -15,7 +15,7 @@ public class InteractiveExecutor extends Executor {
         Scanner sc = new Scanner(System.in);
         System.out.print("$ ");
         System.out.flush();
-        for (; ; ) {
+        while (sc.hasNextLine()) {
             String commandsString = sc.nextLine();
             try {
                 Command[] commands = parse(commandsString);
