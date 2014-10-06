@@ -59,7 +59,18 @@ public class Shell {
         LinkedHashSet<String> com = new LinkedHashSet<String>();
         for (String string : args) {
             if (!string.equals(";")) {
-                com.add(string);
+                if (string.endsWith(";")) {
+                    string = string.substring(0, string.length() - 1);
+                    com.add(string);
+                    try {
+                        switchCommand(com.toArray(new String[com.size()]));
+                    } catch (MyException e) {
+                        System.exit(1);
+                    }
+
+                    com.clear();
+                } else
+                    com.add(string);
             } else {
                 try {
                     switchCommand(com.toArray(new String[com.size()]));
