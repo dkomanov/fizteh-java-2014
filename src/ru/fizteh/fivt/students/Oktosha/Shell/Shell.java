@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.Oktosha.Shell;
 
+import static java.nio.file.StandardCopyOption.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
@@ -47,6 +48,9 @@ public class Shell implements ConsoleUtility {
             case "mkdir":
                 mkdir(cmd.args);
                 break;
+            case "mv":
+                mv(cmd.args);
+                break;
             case "pwd":
                 pwd(cmd.args);
                 break;
@@ -65,7 +69,7 @@ public class Shell implements ConsoleUtility {
         try {
             Path filePath = workingDirectory.resolve(Paths.get(args[0])).toRealPath();
             try (BufferedReader reader = Files.newBufferedReader(filePath)) {
-                String line = null;
+                String line;
                 while ((line = reader.readLine()) != null) {
                     System.out.println(line);
                 }
@@ -143,9 +147,47 @@ public class Shell implements ConsoleUtility {
                                                      + Paths.get(args[0]).getParent()
                                                      + ": No such file or directory", e);
         } catch (IOException | SecurityException e) {
-            throw new ConsoleUtilityRuntimeException("mkdir: " + args[0]
-                                                     + ": something really bad happened "
-                                                     + e.toString(), e);
+            throw new ConsoleUtilityRuntimeException("mkdir: something really bad happened " + e.toString(), e);
+        }
+    }
+
+    private void mv(String[] args) throws CommandArgumentSyntaxException, ConsoleUtilityRuntimeException {
+        if (args.length != 2) {
+            throw new CommandArgumentSyntaxException("mv: expected 2 arguments, found " + args.length);
+        }
+        try {
+            Path source = workingDirectory.resolve(Paths.get(args[0])).toRealPath();
+            Path target = workingDirectory.resolve(Paths.get(args[1]));
+
+            if (Files.exists(target) && source.equals(target.toRealPath())) {
+                return;
+            }
+
+            if (Files.isDirectory(source)) {
+                if (Files.exists(target)) {
+                    if (Files.isDirectory(target)) {
+                    Files.walkFileTree(source, new MvFileVisitor(source, target.resolve(source.getFileName())));
+                    } else {
+                        throw new ConsoleUtilityRuntimeException("mv: rename '"
+                                + args[0] + "' to '" + args[1]
+                                + ": Not a directory");
+                    }
+                } else {
+                    Files.walkFileTree(source, new MvFileVisitor(source, target));
+                }
+            } else {
+                if (Files.exists(target) && Files.isDirectory(target)) {
+                    Files.move(source, target.resolve(source.getFileName()), REPLACE_EXISTING);
+                } else {
+                    Files.move(source, target, REPLACE_EXISTING);
+                }
+            }
+        } catch (NoSuchFileException e) {
+            throw new ConsoleUtilityRuntimeException("mv: " + e.getMessage() + ": No such file or directory", e);
+        } catch (AccessDeniedException e) {
+            throw new ConsoleUtilityRuntimeException("mkdir: " + e.getMessage() + ": Permission denied", e);
+        } catch (IOException | SecurityException e) {
+            throw new ConsoleUtilityRuntimeException("mv: something really bad happened " + e.toString(), e);
         }
     }
 
