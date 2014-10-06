@@ -117,13 +117,13 @@ public/* abstract */class ShellMain {
         File from = createFile(args1);
         File to = createFile(args2);
         try {
-			if (from.getCanonicalPath().equals(to.getCanonicalPath())){
-				printError("cp: «" + args1 + "» и «" + args2+ "» - один и тот же файл");
-				return;
-			}
-		} catch (IOException e1) {
-			printError("couldn't copy");
-		}
+            if (from.getCanonicalPath().equals(to.getCanonicalPath())) {
+                printError("cp: «" + args1 + "» и «" + args2 + "» - один и тот же файл");
+                return;
+            }
+        } catch (IOException e1) {
+            printError("couldn't copy");
+        }
         if (recursive && from.isDirectory()) {
             copy(from, to);
         } else if (!from.isDirectory()) {
@@ -237,46 +237,62 @@ public/* abstract */class ShellMain {
                 case "cd":
                     if (checkArgs(2, args)) {
                         cd(args[1]);
-                    }else{ printError("unknown command format");}
+                    } else {
+                        printError("unknown command format");
+                    }
                     break;
                 case "mkdir":
                     if (checkArgs(2, args)) {
                         mkdir(args[1]);
-                    }else{ printError("unknown command format");}
+                    } else {
+                        printError("unknown command format");
+                    }
                     break;
                 case "pwd":
                     if (checkArgs(1, args)) {
                         pwd();
-                    }else{ printError("unknown command format");}
+                    } else {
+                        printError("unknown command format");
+                    }
                     break;
                 case "rm":
                     if (checkArgs(2, args)) {
                         rm(args[1], false);
                     } else if (checkArgs(3, args) && args[1].equals("-r")) {
                         rm(args[2], true);
-                    }else{ printError("unknown command format");}
+                    } else {
+                        printError("unknown command format");
+                    }
                     break;
                 case "cp":
                     if (checkArgs(3, args)) {
                         cp(false, args[1], args[2]);
                     } else if (checkArgs(4, args) && args[1].equals("-r")) {
                         cp(true, args[2], args[3]);
-                    }else{ printError("unknown command format");}
+                    } else {
+                        printError("unknown command format");
+                    }
                     break;
                 case "mv":
                     if (checkArgs(3, args)) {
                         mv(args);
-                    }else{ printError("unknown command format");}
+                    } else {
+                        printError("unknown command format");
+                    }
                     break;
                 case "ls":
                     if (checkArgs(1, args)) {
                         ls();
-                    }else{ printError("unknown command format");}
+                    } else {
+                        printError("unknown command format");
+                    }
                     break;
                 case "cat":
                     if (checkArgs(2, args)) {
                         cat(args[1]);
-                    }else{ printError("unknown command format");}
+                    } else {
+                        printError("unknown command format");
+                    }
                     break;
                 default:
                     printError("unknown_command");
