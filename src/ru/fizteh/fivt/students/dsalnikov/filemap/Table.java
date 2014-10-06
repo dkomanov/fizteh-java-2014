@@ -2,14 +2,14 @@ package ru.fizteh.fivt.students.dsalnikov.filemap;
 
 public interface Table {
 
-    public String get(String key);
+    String get(String key);
 
-    public String put(String key, String value);
+    String put(String key, String value);
 
-    public java.util.Set<String> list();
+    void list();
 
-    public String remove(String key);
+    String remove(String key);
 
-    public int exit();
+    int exit();
 }
 

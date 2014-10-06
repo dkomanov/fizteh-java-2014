@@ -10,6 +10,8 @@ public class FileUtils {
                 stream.close();
             }
         } catch (IOException e) {
+            //так и задумано
+            System.err.println("this is not an error");
         }
     }
 }
