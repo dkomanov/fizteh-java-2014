@@ -21,11 +21,11 @@ import java.util.Map;
  */
 public class Shell {
     public static void main(String[] args) {
-	if (args.length == 0) {
-	    new Shell().run(System.in);
-	} else {
-	    new Shell().run(args);
-	}
+    if (args.length == 0) {
+        new Shell().run(System.in);
+    } else {
+        new Shell().run(args);
+    }
     }
 
     private int readBufferSize = 10000; // 10 kb
@@ -43,7 +43,7 @@ public class Shell {
     private boolean interactive;
 
     public Shell() {
-	init();
+    init();
     }
 
     /**
@@ -54,74 +54,74 @@ public class Shell {
      * @return returns true if execution finished correctly; false otherwise;
      */
     public boolean execute(String command) {
-	String[] args = command.trim().split("[ ]{1,}");
-	if (args[0].isEmpty()) {
-	    return true;
-	}
+    String[] args = command.trim().split("[ ]{1,}");
+    if (args[0].isEmpty()) {
+        return true;
+    }
 
-	Log.log(Shell.class, "Invocation request: " + Arrays.toString(args));
+    Log.log(Shell.class, "Invocation request: " + Arrays.toString(args));
 
-	Method method = methodsMap.get(args[0]);
-	if (method == null) {
-	    Log.log(Shell.class,
-		    String.format("Command not found by name %s", args[0]));
-	    System.err.println("Sorry, this command is missing");
-	    return false;
-	} else {
-	    try {
-		method.invoke(null, this, (Object) args);
-		return true;
-	    } catch (Throwable exc) {
-		if (!(exc.getCause() instanceof HandledException)) {
-		    // unhandled exception
-		    Log.log(Shell.class, exc, String.format(
-			    "Error during execution of %s", args[0]));
-		    System.err.println(String.format(
-			    "%s: Method execution error", args[0]));
-		}
-		return false;
-	    }
-	}
+    Method method = methodsMap.get(args[0]);
+    if (method == null) {
+        Log.log(Shell.class,
+            String.format("Command not found by name %s", args[0]));
+        System.err.println("Sorry, this command is missing");
+        return false;
+    } else {
+        try {
+        method.invoke(null, this, (Object) args);
+        return true;
+        } catch (Throwable exc) {
+        if (!(exc.getCause() instanceof HandledException)) {
+            // unhandled exception
+            Log.log(Shell.class, exc, String.format(
+                "Error during execution of %s", args[0]));
+            System.err.println(String.format(
+                "%s: Method execution error", args[0]));
+        }
+        return false;
+        }
+    }
     }
 
     public ShellCommand getCommandAnnotation(String methodName) {
-	return methodsMap.get(methodName).getAnnotation(ShellCommand.class);
+    return methodsMap.get(methodName).getAnnotation(ShellCommand.class);
     }
 
     public int getReadBufferSize() {
-	return readBufferSize;
+    return readBufferSize;
     }
 
     public Iterator<String> getSupportedCommands() {
-	return methodsMap.keySet().iterator();
+    return methodsMap.keySet().iterator();
     }
 
     public Path getWorkingDirectory() {
-	return workingDirectory;
+    return workingDirectory;
     }
 
     /**
      * Prepares shell for further command interpretation
      */
     private void init() {
-	Log.log(Shell.class, "Shell starting");
-	Method[] methods = Commands.class.getMethods();
+    Log.log(Shell.class, "Shell starting");
+    Method[] methods = Commands.class.getMethods();
 
-	methodsMap = new HashMap<>(methods.length);
-	for (int i = 0, len = methods.length; i < len; i++) {
-	    if (methods[i].getAnnotation(ShellCommand.class) != null) {
-		methodsMap.put(methods[i].getName(), methods[i]);
-		Log.log(Shell.class,
-			String.format("Method registered: %s",
-				methods[i].getName()));
-	    }
-	}
+    methodsMap = new HashMap<>(methods.length);
+    for (int i = 0, len = methods.length; i < len; i++) {
+        if (methods[i].getAnnotation(ShellCommand.class) != null) {
+        methodsMap.put(methods[i].getName(), methods[i]);
+        Log.log(Shell.class,
+            String.format("Method registered: %s",
+                methods[i].getName()));
+        }
+    }
 
-	workingDirectory = Paths.get(System.getProperty("user.home"));
+    workingDirectory = Paths.get(System.getProperty("user.home"));
     }
 
     public boolean isInteractive() {
-	return interactive;
+    return interactive;
     }
 
     /**
@@ -130,33 +130,33 @@ public class Shell {
      * @param stream
      */
     public void run(InputStream stream) {
-	interactive = true;
+    interactive = true;
 
-	BufferedReader reader = new BufferedReader(
-		new InputStreamReader(stream), getReadBufferSize());
-	try {
-	    while (true) {
-		System.out.print(String.format("JShell: %s $ ",
-			getWorkingDirectory()));
+    BufferedReader reader = new BufferedReader(
+        new InputStreamReader(stream), getReadBufferSize());
+    try {
+        while (true) {
+        System.out.print(String.format("JShell: %s $ ",
+            getWorkingDirectory()));
 
-		String str = reader.readLine();
+        String str = reader.readLine();
 
-		// end of stream
-		if (str == null) {
-		    break;
-		}
+        // end of stream
+        if (str == null) {
+            break;
+        }
 
-		String[] commands = str.split(";");
-		for (int i = 0, len = commands.length; i < len; i++) {
-		    boolean correct = execute(commands[i]);
-		    if (!correct) {
-			break;
-		    }
-		}
-	    }
-	} catch (IOException exc) {
-	    Log.log(Shell.class, exc, "Cannot parse inputstream for shell");
-	}
+        String[] commands = str.split(";");
+        for (int i = 0, len = commands.length; i < len; i++) {
+            boolean correct = execute(commands[i]);
+            if (!correct) {
+            break;
+            }
+        }
+        }
+    } catch (IOException exc) {
+        Log.log(Shell.class, exc, "Cannot parse inputstream for shell");
+    }
     }
 
     /**
@@ -167,26 +167,26 @@ public class Shell {
      * @param args
      */
     public void run(String[] args) {
-	interactive = false;
+    interactive = false;
 
-	StringBuilder sb = new StringBuilder();
-	for (int i = 0, len = args.length; i < len; i++) {
-	    sb.append((i == 0 ? "" : " ")).append(args[i]);
-	}
-	String cmds = sb.toString();
-	String[] commands = cmds.split(";");
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0, len = args.length; i < len; i++) {
+        sb.append((i == 0 ? "" : " ")).append(args[i]);
+    }
+    String cmds = sb.toString();
+    String[] commands = cmds.split(";");
 
-	for (int i = 0, len = commands.length; i < len; i++) {
-	    boolean correct = execute(commands[i]);
-	    if (!correct) {
-		System.exit(1);
-	    }
-	}
+    for (int i = 0, len = commands.length; i < len; i++) {
+        boolean correct = execute(commands[i]);
+        if (!correct) {
+        System.exit(1);
+        }
+    }
 
-	Log.close();
+    Log.close();
     }
 
     public void setWorkingDirectory(Path workingDirectory) {
-	this.workingDirectory = workingDirectory.normalize();
+    this.workingDirectory = workingDirectory.normalize();
     }
 }

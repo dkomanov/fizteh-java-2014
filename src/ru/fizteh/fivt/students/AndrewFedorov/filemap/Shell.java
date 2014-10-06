@@ -21,16 +21,16 @@ import java.util.Map.Entry;
  * @see Commands
  */
 public class Shell {
-    public final static String DB_FILE_PROPERTY_NAME = "db.file";
+    public static final String DB_FILE_PROPERTY_NAME = "db.file";
 
-    public final static int READ_BUFFER_SIZE = 16 * 1024;
+    public static final int READ_BUFFER_SIZE = 16 * 1024;
 
     public static void main(String[] args) {
-	if (args.length == 0) {
-	    new Shell().run(System.in);
-	} else {
-	    new Shell().run(args);
-	}
+    if (args.length == 0) {
+        new Shell().run(System.in);
+    } else {
+        new Shell().run(args);
+    }
     }
 
     /**
@@ -46,7 +46,7 @@ public class Shell {
     private boolean interactive;
 
     public Shell() {
-	init();
+    init();
     }
 
     /**
@@ -57,37 +57,37 @@ public class Shell {
      * @return returns true if execution finished correctly; false otherwise;
      */
     public boolean execute(String command) {
-	String[] args = command.trim().split("[ ]{1,}");
-	if (args[0].isEmpty()) {
-	    return true;
-	}
+    String[] args = command.trim().split("[ ]{1,}");
+    if (args[0].isEmpty()) {
+        return true;
+    }
 
-	Log.log(Shell.class, "Invocation request: " + Arrays.toString(args));
+    Log.log(Shell.class, "Invocation request: " + Arrays.toString(args));
 
-	Class<?> commandClass = classesMap.get(args[0]);
-	if (commandClass == null) {
-	    Log.log(Shell.class,
-		    String.format("Command not found by name %s", args[0]));
-	    System.err.println("Sorry, this command is missing");
-	    return false;
-	} else {
-	    try {
-		Command commandInstance = (Command) commandClass.newInstance();
-		commandInstance.execute(this, args);
+    Class<?> commandClass = classesMap.get(args[0]);
+    if (commandClass == null) {
+        Log.log(Shell.class,
+            String.format("Command not found by name %s", args[0]));
+        System.err.println("Sorry, this command is missing");
+        return false;
+    } else {
+        try {
+        Command commandInstance = (Command) commandClass.newInstance();
+        commandInstance.execute(this, args);
 
-		return true;
-	    } catch (Throwable exc) {
-		if (!(exc instanceof HandledException)) {
-		    // unhandled exception
-		    Log.log(Shell.class, exc, String.format(
-			    "Error during execution of %s", args[0]));
-		    System.err.println(String.format(
-			    "%s: Method execution error", args[0]));
-		}
-		// throw new RuntimeException(exc);
-		return false;
-	    }
-	}
+        return true;
+        } catch (Throwable exc) {
+        if (!(exc instanceof HandledException)) {
+            // unhandled exception
+            Log.log(Shell.class, exc, String.format(
+                "Error during execution of %s", args[0]));
+            System.err.println(String.format(
+                "%s: Method execution error", args[0]));
+        }
+        // throw new RuntimeException(exc);
+        return false;
+        }
+    }
     }
 
     /**
@@ -99,57 +99,57 @@ public class Shell {
      *             if active object is null
      */
     public FileMap getActiveFilemap() throws NullPointerException {
-	if (activeFileMap == null) {
-	    throw new NullPointerException("No active file map in use");
-	}
-	return activeFileMap;
+    if (activeFileMap == null) {
+        throw new NullPointerException("No active file map in use");
+    }
+    return activeFileMap;
     }
 
     /**
      * Prepares shell for further command interpretation
      */
     private void init() {
-	Log.log(Shell.class, "Shell starting");
+    Log.log(Shell.class, "Shell starting");
 
-	try {
-	    activeFileMap = new FileMap(
-		    System.getProperty(DB_FILE_PROPERTY_NAME));
+    try {
+        activeFileMap = new FileMap(
+            System.getProperty(DB_FILE_PROPERTY_NAME));
 
-	    readDatabaseMap();
-	} catch (HandledException exc) {
-	    System.exit(1);
-	}
+        readDatabaseMap();
+    } catch (HandledException exc) {
+        System.exit(1);
+    }
 
-	// collecting commands
-	Class<?>[] classes = Commands.class.getDeclaredClasses();
-	classesMap = new HashMap<>(classes.length);
+    // collecting commands
+    Class<?>[] classes = Commands.class.getDeclaredClasses();
+    classesMap = new HashMap<>(classes.length);
 
-	for (int i = 0, len = classes.length; i < len; i++) {
-	    boolean isShellCommand = true;
-	    try {
-		classes[i].asSubclass(Command.class);
-	    } catch (ClassCastException exc) {
-		isShellCommand = false;
-	    }
+    for (int i = 0, len = classes.length; i < len; i++) {
+        boolean isShellCommand = true;
+        try {
+        classes[i].asSubclass(Command.class);
+        } catch (ClassCastException exc) {
+        isShellCommand = false;
+        }
 
-	    if (isShellCommand) {
-		String simpleName = Utility.simplifyClassName(classes[i]
-			.getSimpleName());
+        if (isShellCommand) {
+        String simpleName = Utility.simplifyClassName(classes[i]
+            .getSimpleName());
 
-		classesMap.put(simpleName, classes[i]);
-		Log.log(Shell.class, String.format(
-			"Class registered: %s as '%s'", classes[i].getName(),
-			simpleName));
-	    }
-	}
+        classesMap.put(simpleName, classes[i]);
+        Log.log(Shell.class, String.format(
+            "Class registered: %s as '%s'", classes[i].getName(),
+            simpleName));
+        }
+    }
     }
 
     public boolean isInteractive() {
-	return interactive;
+    return interactive;
     }
 
     public Iterator<Entry<String, Class<?>>> listCommands() {
-	return classesMap.entrySet().iterator();
+    return classesMap.entrySet().iterator();
     }
 
     /**
@@ -159,15 +159,15 @@ public class Shell {
      * @throws HandledException
      */
     void readDatabaseMap() throws HandledException {
-	try {
-	    getActiveFilemap().readDatabaseMap();
-	} catch (Throwable exc) {
-	    if (exc instanceof HandledException) {
-		throw (HandledException) exc;
-	    } else {
-		Utility.handleError(exc, "Cannot read database from file", true);
-	    }
-	}
+    try {
+        getActiveFilemap().readDatabaseMap();
+    } catch (Throwable exc) {
+        if (exc instanceof HandledException) {
+        throw (HandledException) exc;
+        } else {
+        Utility.handleError(exc, "Cannot read database from file", true);
+        }
+    }
     }
 
     /**
@@ -176,48 +176,48 @@ public class Shell {
      * @param stream
      */
     public void run(InputStream stream) {
-	interactive = true;
+    interactive = true;
 
-	BufferedReader reader = new BufferedReader(
-		new InputStreamReader(stream), READ_BUFFER_SIZE);
-	try {
-	    while (true) {
-		System.out.print(String.format("FileMap: %s $ ",
-			getActiveFilemap().getDbFileName()));
+    BufferedReader reader = new BufferedReader(
+        new InputStreamReader(stream), READ_BUFFER_SIZE);
+    try {
+        while (true) {
+        System.out.print(String.format("FileMap: %s $ ",
+            getActiveFilemap().getDbFileName()));
 
-		String str = reader.readLine();
+        String str = reader.readLine();
 
-		// end of stream
-		if (str == null) {
-		    break;
-		}
+        // end of stream
+        if (str == null) {
+            break;
+        }
 
-		// clone of the map before modifications
-		FileMap fmapClone = activeFileMap.clone();
+        // clone of the map before modifications
+        FileMap fmapClone = activeFileMap.clone();
 
-		String[] commands = str.split(";");
-		for (int i = 0, len = commands.length; i < len; i++) {
-		    boolean correct = execute(commands[i]);
-		    if (!correct) {
-			activeFileMap = fmapClone;
-			try {
-			    activeFileMap.writeDatabaseMap();
-			} catch (Exception exc) {
-			    System.exit(1);
-			}
-			break;
-		    }
-		}
-	    }
-	} catch (IOException exc) {
-	    Log.log(Shell.class, exc, "Cannot parse inputstream for shell");
-	}
+        String[] commands = str.split(";");
+        for (int i = 0, len = commands.length; i < len; i++) {
+            boolean correct = execute(commands[i]);
+            if (!correct) {
+            activeFileMap = fmapClone;
+            try {
+                activeFileMap.writeDatabaseMap();
+            } catch (Exception exc) {
+                System.exit(1);
+            }
+            break;
+            }
+        }
+        }
+    } catch (IOException exc) {
+        Log.log(Shell.class, exc, "Cannot parse inputstream for shell");
+    }
 
-	try {
-	    writeDatabaseMap();
-	} catch (HandledException exc) {
-	    System.exit(1);
-	}
+    try {
+        writeDatabaseMap();
+    } catch (HandledException exc) {
+        System.exit(1);
+    }
     }
 
     /**
@@ -228,28 +228,28 @@ public class Shell {
      * @param args
      */
     public void run(String[] args) {
-	interactive = false;
+    interactive = false;
 
-	StringBuilder sb = new StringBuilder();
-	for (int i = 0, len = args.length; i < len; i++) {
-	    sb.append((i == 0 ? "" : " ")).append(args[i]);
-	}
-	String cmds = sb.toString();
-	String[] commands = cmds.split(";");
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0, len = args.length; i < len; i++) {
+        sb.append((i == 0 ? "" : " ")).append(args[i]);
+    }
+    String cmds = sb.toString();
+    String[] commands = cmds.split(";");
 
-	for (int i = 0, len = commands.length; i < len; i++) {
-	    boolean correct = execute(commands[i]);
-	    if (!correct) {
-		System.exit(1);
-	    }
-	}
+    for (int i = 0, len = commands.length; i < len; i++) {
+        boolean correct = execute(commands[i]);
+        if (!correct) {
+        System.exit(1);
+        }
+    }
 
-	try {
-	    writeDatabaseMap();
-	} catch (HandledException exc) {
-	    System.exit(1);
-	}
-	Log.close();
+    try {
+        writeDatabaseMap();
+    } catch (HandledException exc) {
+        System.exit(1);
+    }
+    Log.close();
     }
 
     /**
@@ -258,7 +258,7 @@ public class Shell {
      * @param fmap
      */
     public void setActiveFileMap(FileMap fmap) {
-	activeFileMap = fmap;
+    activeFileMap = fmap;
     }
 
     /**
@@ -268,15 +268,15 @@ public class Shell {
      * @throws HandledException
      */
     void writeDatabaseMap() throws HandledException {
-	try {
-	    getActiveFilemap().writeDatabaseMap();
-	} catch (Throwable exc) {
-	    if (exc instanceof HandledException) {
-		throw (HandledException) exc;
-	    } else {
-		Utility.handleError(exc, "Cannot write database to file", true);
-	    }
-	}
+    try {
+        getActiveFilemap().writeDatabaseMap();
+    } catch (Throwable exc) {
+        if (exc instanceof HandledException) {
+        throw (HandledException) exc;
+        } else {
+        Utility.handleError(exc, "Cannot write database to file", true);
+        }
+    }
     }
 
 }
