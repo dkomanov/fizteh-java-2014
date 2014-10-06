@@ -30,7 +30,7 @@ public class Shell<State> {
     
     private void runCommand(String[] data, State state) throws SomethingIsWrongException {
         if (data[0].length() == 0) {
-            throw new SomethingIsWrongException("Empty string.");
+            throw new SomethingIsWrongException("");
         }
         Commands<State> usedOne = availableCommands.get(data[0]);
         if (usedOne == null) {
@@ -99,7 +99,7 @@ public class Shell<State> {
             try {
                 shell.runLine(arg, state);                  
             } catch (SomethingIsWrongException exc) {
-                if (exc.getMessage().equals("EXIT")) {
+                if (exc.getMessage().equals("EXIT") || exc.getMessage().equals("")) {
                     System.exit(0);
                 } else {
                     System.err.println(exc.getMessage());
