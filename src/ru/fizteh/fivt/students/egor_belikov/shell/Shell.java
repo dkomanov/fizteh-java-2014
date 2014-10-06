@@ -17,15 +17,17 @@ public class Shell {
     public static void main(String[] args) {
         try {
             path = System.getProperty("user.home");
-            ispack = (args.length == 0);
-            if (args.length == 0) {
+            ispack = (args.length != 0);
+            if (ispack) {
                 pack(args);
             } else {
                 interactive();
             }
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
-            System.exit(1);
+            if (ispack) {
+                System.exit(1);
+            }
         }
     }
  
@@ -44,15 +46,16 @@ public class Shell {
     private static void interactive() throws Exception {
         Scanner scan = new Scanner(System.in);
         try {
-            String line = scan.nextLine();
-            System.out.print("$ ");
-            String[] comm = line.toString().trim().split(";");
-            for (String s: comm) {
-                run(s);
+            while (true) {
+                System.out.print("$ ");
+                String line = scan.nextLine();
+                String[] comm = line.toString().trim().split(";");
+                for (String s: comm) {
+                    run(s);
+                }
             }
         } catch (NoSuchElementException exception) {
             System.err.println(exception.getMessage());
-            System.exit(1);
         }
         scan.close();
     }
@@ -136,7 +139,7 @@ public class Shell {
         } catch (Exception e) {
             System.err.println(e.getMessage());
             if (ispack) {
-                System.exit(-1);
+                System.exit(1);
             }
         }
     }
