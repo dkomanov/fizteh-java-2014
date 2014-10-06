@@ -18,7 +18,7 @@ public class Main {
         while (true) {
             shellStart();
             String command = shellRead();
-            shellDo(command);
+            shellDo(command, false);
         }
     }
 
@@ -70,20 +70,20 @@ public class Main {
         return s.split(" +");
     }
 
-    private static void shellExit(String[] args) {
+    private static boolean shellExit(String[] args) {
         if (args.length > 1) {
             printError(1, null);
-            return;
+            return false;
         }
-        System.out.println("Shell exit");
         System.exit(0);
+        return true;
     }
 
 
-    private static void shellCat(String[] args) {
+    private static boolean shellCat(String[] args) {
         if (args.length != 2) {
             printError(2, null);
-            return;
+            return false;
         }
 
         try (FileReader fr = new FileReader(System.getProperty("user.dir") + "/" + args[1])) {
@@ -97,14 +97,16 @@ public class Main {
 
         } catch (IOException e) {
             System.err.println(e.getMessage());
+            return false;
         }
+        return true;
     }
 
 
-    private static void shellLs(String[] args) throws NullPointerException {
+    private static boolean shellLs(String[] args) throws NullPointerException {
         if (args.length > 1) {
             printError(1, null);
-            return;
+            return false;
         }
         File fl = new File(System.getProperty("user.dir"));
         if (fl.list() != null) {
@@ -112,16 +114,17 @@ public class Main {
                 System.out.println(tfl);
             }
         }
+        return true;
     }
 
-    private static void shellCd(String[] path) {
+    private static boolean shellCd(String[] path) {
         if (path.length != 2) {
             printError(2, null);
-            return;
+            return false;
         }
 
         if (path[1].equals(".")) {
-            return;
+            return true;
         }
 
         if (path[1].equals("..")) {
@@ -132,56 +135,61 @@ public class Main {
             File fl = new File(System.getProperty("user.dir") + "/" + path[1]);
             if (!fl.isDirectory()) {
                 printError(8, path[1]);
-                return;
+                return false;
             }
             System.setProperty("user.dir", fl.getAbsolutePath());
         }
+        return true;
     }
 
-    private static void shellPwd(String[] args) {
+    private static boolean shellPwd(String[] args) {
         if (args.length != 1) {
             printError(2, null);
-            return;
+            return false;
         }
         System.out.println(System.getProperty("user.dir"));
+        return true;
     }
 
 
-    private static void shellMkDir(String[] args) {
+    private static boolean shellMkDir(String[] args) {
         if (args.length != 2) {
             printError(2, null);
-            return;
+            return false;
         }
 
         File fl = new File(System.getProperty("user.dir") + "/" + args[1]);
         if (fl.exists() && fl.isDirectory()) {
             printError(4, null);
-            return;
+            return false;
         }
 
         if (!fl.mkdir()) {
             printError(5, args[1]);
+            return false;
         }
+        return true;
     }
 
 
-    private static void shellRm(String[] args) {
+    private static boolean shellRm(String[] args) {
         if ((args.length > 3) | (args.length < 2)) {
             printError(1, null);
-            return;
+            return false;
         }
         if (args.length == 3 && !args[1].equals("-r")) {
             printError(2, null);
-            return;
+            return false;
         }
         File fl = new File(System.getProperty("user.dir") + "/" + args[args.length - 1]);
         if (!fl.exists()) {
             printError(8, System.getProperty("user.dir") + "/" + args[args.length - 1]);
+            return false;
         }
 
         if (fl.isDirectory() && (args.length == 2 | (args.length == 3 && !args[1].equals("-r")))) {
             printError(6, args[args.length - 1]);
-            return;
+            return false;
         }
         if (fl.isDirectory()) {
             if (fl.listFiles() != null) {
@@ -192,28 +200,30 @@ public class Main {
                     }
                 } catch (NullPointerException e) {
                     System.err.println(e.getMessage());
+                    return false;
                 }
             }
         }
 
         if (!fl.delete()) {
             printError(7, args[args.length - 1]);
+            return false;
         }
-
+        return true;
     }
 
 
-    private static void shellMv(String[] args) {
+    private static boolean shellMv(String[] args) {
         if (3 != args.length) {
             printError(2, null);
-            return;
+            return false;
         }
 
 
         File fl = new File(System.getProperty("user.dir") + "/" + args[1]);
         if (!fl.exists()) {
             printError(8, args[1]);
-            return;
+            return false;
         }
 
         File nfl = new File(System.getProperty("user.dir") + "/" + args[2]);
@@ -222,11 +232,13 @@ public class Main {
         }
         if (!fl.renameTo(nfl)) {
             printError(9, args[1]);
+            return false;
         }
+        return true;
     }
 
 
-    private static void copy(String now, String to) throws NullPointerException {
+    private static boolean copy(String now, String to) throws NullPointerException {
         File source = new File(now);
         File path = new File(to);
 
@@ -234,7 +246,7 @@ public class Main {
             if (!path.exists()) {
                 if (!path.mkdir()) {
                     printError(5, to);
-                    return;
+                    return false;
                 }
             }
             if (source.listFiles() != null) {
@@ -244,9 +256,10 @@ public class Main {
                     }
                 } catch (NullPointerException e) {
                     System.err.println(e.getMessage());
+                    return false;
                 }
             }
-            return;
+            return true;
         }
 
 
@@ -258,47 +271,47 @@ public class Main {
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
+            return false;
         }
-
+        return true;
     }
 
-    private static void shellCp(String[] args) {
+    private static boolean shellCp(String[] args) {
         if (args.length > 4 | args.length < 2) {
             printError(2, null);
-            return;
+            return false;
         }
         if (args.length == 4 && !args[1].equals("-r")) {
             printError(2, null);
-            return;
+            return false;
         }
         File source = new File(System.getProperty("user.dir") + "/" + args[args.length - 2]);
+        File path = new File(System.getProperty("user.dir") + "/" + args[args.length - 1]);
+
+        if (source.equals(path)) {
+            printError(11, null);
+            return false;
+        }
 
         if (source.isDirectory() && args.length == 3) {
             printError(6, args[args.length - 2]);
-            return;
+            return false;
         }
-
-        File path = new File(System.getProperty("user.dir") + "/" + args[args.length - 1]);
 
         if (source.isDirectory() && path.isFile()) {
             printError(10, null);
-            return;
+            return false;
         }
 
         if (path.exists() && path.isDirectory()) {
             path = new File(path.getAbsolutePath() + "/" + source.getName());
         }
 
-        if (source.equals(path)) {
-            printError(11, null);
-            return;
-        }
-
         if (!source.exists()) {
             printError(8, args[args.length - 2]);
-            return;
+            return false;
         }
-        copy(source.getAbsolutePath(), path.getAbsolutePath());
+        return copy(source.getAbsolutePath(), path.getAbsolutePath());
     }
 
     private static void shellStart() {
@@ -316,7 +329,7 @@ public class Main {
         return null;
     }
 
-    private static void shellJob(String[] job) {
+    private static void shellJob(String[] job, boolean ifPack) {
         if (job == null) {
             return;
         }
@@ -324,52 +337,57 @@ public class Main {
             return;
         }
 
+        boolean res = true;
+
         switch (job[0]) {
             case "cd":
-                shellCd(job);
+                res = shellCd(job);
                 break;
             case "mkdir":
-                shellMkDir(job);
+                res = shellMkDir(job);
                 break;
             case "pwd":
-                shellPwd(job);
+                res = shellPwd(job);
                 break;
             case "rm":
-                shellRm(job);
+                res = shellRm(job);
                 break;
             case "cp":
-                shellCp(job);
+                res = shellCp(job);
                 break;
             case "mv":
-                shellMv(job);
+                res = shellMv(job);
                 break;
             case "ls":
-                shellLs(job);
+                res = shellLs(job);
                 break;
             case "cat":
-                shellCat(job);
+                res = shellCat(job);
                 break;
             case "exit":
-                shellExit(job);
+                res = shellExit(job);
                 break;
             default:
                 if (job[0].length() > 0) {
                     printError(3, job[0]);
-                    return;
+                    res = false;
                 }
                 break;
+        }
+        if ((!res) && ifPack) {
+            System.exit(1);
         }
     }
 
 
-    private static void shellDo(String command) {
+    private static void shellDo(String command, boolean ifPack) {
         String[] func = parsCmd(command);
         if (func == null) {
             return;
         }
         for (String name : func) {
             String[] job = parsArg(name);
-            shellJob(job);
+            shellJob(job, ifPack);
         }
     }
 
@@ -382,7 +400,7 @@ public class Main {
 
         String command = new String(builder);
 
-        shellDo(command);
+        shellDo(command, true);
     }
 }
 
