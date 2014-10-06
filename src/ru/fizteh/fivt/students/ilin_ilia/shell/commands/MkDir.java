@@ -4,7 +4,7 @@ import java.io.File;
 
 public final class MkDir {
     public static void run(final String dirName) {
-        File dir = new File(dirName);
+        File dir = new File(System.getProperty("user.dir") + "\\" + dirName);
         if (!dir.exists()) {
             dir.mkdir();
         } else {

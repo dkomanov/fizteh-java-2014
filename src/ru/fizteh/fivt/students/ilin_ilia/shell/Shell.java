@@ -81,94 +81,100 @@ public class Shell {
     }
 
     public static void commandMode(final String[] args) {
+        String arg = "";
+        String [] arg1 = null;
+        String [] arg2 = null;
         for (int i = 0; i < args.length; i++) {
-        	int sep = args[i].indexOf(";");
-        	String com = "";
-        	if (sep != -1) {
-        		com = args[i].substring(0, sep);
-        	} else {
-        		com = args[i];
-        	}
-            switch (com) {
+            arg += (args[i] + " ");
+        }
+        arg += ";exit";
+        String ss = arg.trim();
+        arg1 = ss.split(";");
+        for (int i = 0; i < arg1.length; i++) {
+            ss = arg1[i].trim();
+            arg2 = ss.split(" ");
+            switch (arg2[0]) {
             case "ls":
                 Ls.run();
+                break;
             case "cat":
-                i++;
-                if (i == args.length) {
+                if (arg2.length == 1) {
                     System.out.println("Cat doesn't have argument");
                     System.exit(-1);
                 } else {
-                    Cat.run(args[i]);
+                    Cat.run(arg2[1]);
                 }
+                break;
             case "rm":
-                i++;
-                if (i == args.length) {
+                if (arg2.length == 1) {
                     System.out.println("Rm doesn't have argument");
                     System.exit(-1);
                 } else {
-                    if (args[i].equals("-r")) {
-                        i++;
-                        if (i == args.length) {
+                    if (arg2[1].equals("-r")) {
+                        if (arg2.length == 2) {
                             System.out.println("Rm doesn't have argument");
                             System.exit(-1);
                         } else {
-                            Rm.run(args[i], true);
+                            Rm.run(arg2[2], true);
                         }
                     } else {
-                        Rm.run(args[i], false);
+                        Rm.run(arg2[1], false);
                     }
                 }
+                break;
             case "cd":
-                ;
+                if (arg2.length == 1) {
+                    Cd.run("");
+                } else {
+                    Cd.run(arg2[1]);
+                }
+                break;
             case "cp":
-                i++;
-                if (i == args.length) {
+                if (arg2.length == 1) {
                     System.out.println("Cp doesn't have arguments");
                     System.exit(-1);
                 } else {
-                    if (args[i].equals("-r")) {
-                        i++;
-                        if (i == args.length || i + 1 == args.length) {
+                    if (arg2[1].equals("-r")) {
+                        if (arg2.length == 2 || arg2.length == 3) {
                             System.out.println("Cp doesn't have arguments");
                             System.exit(-1);
                         } else {
-                            Cp.run(args[i], args[i + 1], true);
+                            Cp.run(arg2[2], arg2[3], true);
                         }
                     } else {
-                        i++;
-                        if (i == args.length) {
+                        if (arg2.length == 2) {
                             System.out.println("Cat doesn't have argument");
                             System.exit(-1);
                         } else {
-                         Cp.run(args [i - 1], args[i], false);
+                            Cp.run(arg2[1], arg2[2], false);
                         }
                     }
                 }
+                break;
             case "exit":
                 System.exit(0);
             case "mkdir":
-                i++;
-                if (i == args.length) {
+                if (arg2.length == 1) {
                     System.out.println("MkDir doesn't have argument");
                     System.exit(-1);
                 }
-                MkDir.run(args[i]);
+                MkDir.run(arg2[1]);
+                break;
             case "mv":
-                i++;
-                if (i == args.length || i + 1 == args.length) {
+                if (arg2.length == 1 || arg2.length == 2) {
                     System.out.println("Mv doesn't have arguments");
                     System.exit(-1);
                 } else {
-                    Mv.run(args[i], args[i + 1]);
-                    i++;
+                    Mv.run(arg2[1], arg2[2]);
                 }
+                break;
             case "pwd":
                 Pwd.run();
+                break;
             default:
-                System.err.println("Unknown command:" + args[i]);
+                System.err.println("Unknown command:" + arg2[0]);
                 System.exit(-1);
             }
         }
     }
-
 }
