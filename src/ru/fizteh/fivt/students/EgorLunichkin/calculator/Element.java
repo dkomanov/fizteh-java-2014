@@ -1,9 +1,9 @@
+package ru.fizteh.fivt.students.EgorLunichkin.calculator;
+
 import java.util.Stack;
 
-public abstract class Element
-{
-    public static Element parse(String el) throws CalculatorException
-    {
+public abstract class Element {
+    public static Element parse(String el) throws CalculatorException {
         if (el.length() == 0)
             throw new CalculatorException("Bad expression");
         switch(el.charAt(0)) {
@@ -22,12 +22,9 @@ public abstract class Element
             case ')':
                 return new CloseBracket();
             default:
-                try
-                {
+                try {
                     return new Operand(el);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     throw new CalculatorException(e.getMessage());
                 }
         }
