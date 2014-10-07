@@ -128,9 +128,14 @@ public class Main {
         }
 
         if (path[1].equals("..")) {
-            File temp = new File(System.getProperty("user.dir"));
-            File fl = new File(temp.getParent());
-            System.setProperty("user.dir", fl.getAbsolutePath());
+            try {
+                File temp = new File(System.getProperty("user.dir"));
+                File fl = new File(temp.getParent());
+                System.setProperty("user.dir", fl.getAbsolutePath());
+            } catch (NullPointerException e) {
+                System.err.println(e.getMessage());
+                return false;
+            }
         } else {
             File fl = new File(System.getProperty("user.dir") + "/" + path[1]);
             if (!fl.isDirectory()) {
