@@ -68,8 +68,7 @@ public class Shell {
         String commandName = CommandsParser.getCommandName(currentCommand);
         String parameters = CommandsParser.getCommandParameters(currentCommand);
         if (commandName.isEmpty()) {
-            System.out.println("Empty command name!");
-            return false;
+            return true;
         }
         if (!shellCommands.containsKey(commandName)) {
             System.out.println("Unknown command: \'" + commandName + "\'");
