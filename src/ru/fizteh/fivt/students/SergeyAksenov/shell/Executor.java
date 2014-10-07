@@ -19,6 +19,9 @@ public final class Executor {
                                String[] commands, final Environment env)
             throws ShellExitException {
         try {
+            if (commands[0].equals("")) {
+                return;
+            }
             Command cmd = commandMap.get(commands[0]);
             if (cmd == null) {
                 ErrorHandler.unknownCommand(commands[0]);
