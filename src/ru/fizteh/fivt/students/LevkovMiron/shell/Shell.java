@@ -15,6 +15,7 @@ class Shell {
         curDir = System.getProperty("user.dir");
         curDir = replaceSlash(curDir);
     }
+
     String replaceSlash(String s) {
         char[] charArray = s.toCharArray();
         for (int i = 0; i < charArray.length; i++) {
@@ -24,10 +25,12 @@ class Shell {
         }
         return new String(charArray);
     }
+
     String root() {
         String s = File.listRoots()[0].toString();
         return s.substring(0, s.length() - 1);
     }
+
     String absPath(String path) {
         while (path.charAt(0) == '/') {
             path = path.substring(1);
@@ -59,6 +62,7 @@ class Shell {
             throw new NoSuchFileException("cd: " + path + ": No such file or directory");
         }
     }
+
     void mkdir(final String name) {
         File curDirFile = new File(curDir + "/" + name);
         curDirFile.mkdir();
@@ -201,7 +205,9 @@ class Shell {
                 for (File f : file.listFiles()) {
                     cpR(f.getAbsolutePath(), destinationPath + "/" + fileName);
                 }
-            } else { Files.copy(source, destination); }
+            } else {
+                Files.copy(source, destination);
+            }
         } catch (NoSuchFileException e) {
             throw new IOException("cp [-r]:" + sourcePath + " " + destinationPath + ": No such file or directory");
         } catch (IOException e) {
@@ -218,6 +224,7 @@ class Shell {
         cmdMap.put("exit", 1);
         cmdMap.put("cat", 2);
         cmdMap.put("mv", 3);
+        boolean flag = printStream.equals(System.err);
         try {
             inString = inString.trim();
             String[] command = inString.split(" ");
@@ -225,11 +232,7 @@ class Shell {
                 throw new ArrayIndexOutOfBoundsException();
             }
             if (command[0].equals("cd") && command.length == 2) {
-                try {
-                    cd(command[1]);
-                } catch (NoSuchFileException e) {
-                    printStream.println(e.getMessage());
-                }
+                cd(command[1]);
             } else if (command[0].equals("mkdir")) {
                 mkdir(command[1]);
             } else if (command[0].equals("pwd")) {
@@ -239,13 +242,8 @@ class Shell {
             } else if (command[0].equals("exit")) {
                 exit();
             } else if (command[0].equals("cat")) {
-                try {
-                    cat(command[1]);
-                } catch (IOException e) {
-                    printStream.println(e.getMessage());
-                }
+                cat(command[1]);
             } else if (command[0].equals("rm")) {
-                try {
                     if (command[1].equals("-r")) {
                         if (command.length != 3) {
                             throw new ArrayIndexOutOfBoundsException();
@@ -257,11 +255,7 @@ class Shell {
                         }
                         rm(command[1]);
                     }
-                } catch (IOException e) {
-                    printStream.println(e.getMessage());
-                }
             } else if (command[0].equals("cp")) {
-                try {
                     if (command[1].equals("-r")) {
                         if (command.length != 4) {
                             throw new ArrayIndexOutOfBoundsException();
@@ -273,21 +267,29 @@ class Shell {
                         }
                         cp(command[1], command[2]);
                     }
-                } catch (NoSuchFileException e) {
-                    printStream.println(e.getMessage());
-                } catch (IOException e) {
-                    printStream.println(e.getMessage());
-                }
             } else if (command[0].equals("mv")) {
-                try {
                     mv(command[1], command[2]);
-                } catch (IOException e) {
-                    printStream.println(e.getMessage());
+            } else {
+                printStream.println(command[0] + ": Unknown command");
+                if (flag) {
+                    System.exit(-3);
                 }
-            } else { printStream.println(command[0] + ": Unknown command");
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            printStream.println("Wrong command format: to few arguments\n");
+            printStream.println("Wrong command format " + "\"" + inString + "\": to few arguments\n");
+            if (flag) {
+                System.exit(-4);
+            }
+        } catch (NoSuchFileException e) {
+            printStream.println(e.getMessage());
+            if (flag) {
+                System.exit(-1);
+            }
+        } catch (IOException e) {
+            printStream.println(e.getMessage());
+            if (flag) {
+                System.exit(-2);
+            }
         }
     }
 }

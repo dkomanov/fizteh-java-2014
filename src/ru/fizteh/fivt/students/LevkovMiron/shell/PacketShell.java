@@ -8,7 +8,7 @@ class PacketShell extends Shell {
         String argumentString = "";
         StringBuilder stringBuilder = new StringBuilder();
         for (String s : args) {
-            stringBuilder.append(s);
+            stringBuilder.append(s + " ");
         }
         argumentString = stringBuilder.toString();
         argumentString.trim();
