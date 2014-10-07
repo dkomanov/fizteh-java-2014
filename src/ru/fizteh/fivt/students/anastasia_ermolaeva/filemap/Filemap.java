@@ -85,11 +85,11 @@ public final class Filemap {
     }
 }
 class ExitException extends Exception {
-    private  int status;
+    private int status;
     public  int getStatus() {
         return status;
     }
-    public ExitException(final int exitStatus) {
+    public ExitException(int exitStatus) {
         status = exitStatus;
     }
 }
