@@ -1,10 +1,6 @@
 package ru.fizteh.fivt.students.deserg.filemap;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
-
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Vector;
 
 /**
