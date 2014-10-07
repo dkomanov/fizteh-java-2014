@@ -48,7 +48,7 @@ public class Shell {
         } catch (IOException e) {
             System.err.println("IOException caught");
         } catch (Exception e) {
-            System.err.println("Exception caught");
+            System.err.println("Exception " + e.toString());
         }
     }
 
@@ -83,7 +83,7 @@ public class Shell {
         } catch (IOException e) {
             System.err.println("IOException caught");
         } catch (Exception e) {
-            System.err.println("Exception caught");
+            System.err.println("Exception " + e.toString());
         }
         return 0;
     }
