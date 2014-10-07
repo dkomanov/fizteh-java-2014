@@ -98,7 +98,7 @@ public class Shell {
     private void makeDirectory(String arg) {
         File currFile = createFile(arg);
         if (currFile.exists()) {
-                printError("mkdir: cannot create a directory '" + arg + "': such directory exists");
+        	printError("mkdir: cannot create a directory '" + arg + "': such directory exists");
         } else if (!currFile.mkdirs()) {
             printError("mkdir cannot create a directory'" + arg + "'");
         }
@@ -130,9 +130,9 @@ public class Shell {
     }
 
     private boolean copyErrorCheck(final String[] args) {
-        if (args.length > 4 || args.length < 3) {
-                printError("cp: Wrong number of arguments.");
-                return false;
+    	if (args.length > 4 || args.length < 3) {
+    		printError("cp: Wrong number of arguments.");
+    		return false;
     	}
     	File currFile = createFile(args[1]);
     	File destFile = createFile(args[2]);
