@@ -7,7 +7,7 @@ public class Minus extends Operator {
         return 0;
     }
 
-    public void operate (Stack<Operand> nums) throws CalculatorException {
+    public void operate(Stack<Operand> nums) throws CalculatorException {
         try {
             nums.push(new Operand(nums.pop().value.subtract(nums.pop().value).negate()));
         } catch (Exception e) {

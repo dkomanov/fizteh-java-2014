@@ -4,8 +4,9 @@ import java.util.Stack;
 
 public abstract class Element {
     public static Element parse(String el) throws CalculatorException {
-        if (el.length() == 0)
+        if (el.length() == 0) {
             throw new CalculatorException("Bad expression");
+        }
         switch(el.charAt(0)) {
             case '!':
                 return new UnaryMinus();
@@ -30,5 +31,5 @@ public abstract class Element {
         }
     }
 
-    public abstract void pushElement (Stack<Operand> nums, Stack<Operator> ops) throws CalculatorException;
+    public abstract void pushElement(Stack<Operand> nums, Stack<Operator> ops) throws CalculatorException;
 }

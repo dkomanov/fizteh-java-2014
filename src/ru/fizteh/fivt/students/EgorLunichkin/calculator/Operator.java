@@ -7,11 +7,11 @@ public abstract class Operator extends Element {
 
     public abstract void operate(Stack<Operand> nums) throws CalculatorException;
 
-    public void pushElement (Stack<Operand> nums, Stack<Operator> ops) throws CalculatorException {
+    public void pushElement(Stack<Operand> nums, Stack<Operator> ops) throws CalculatorException {
         try {
             while (ops.peek().priority() >= this.priority()) {
-                Operator cur_op = ops.pop();
-                cur_op.operate(nums);
+                Operator op = ops.pop();
+                op.operate(nums);
             }
             ops.push(this);
         } catch (Exception e) {

@@ -8,11 +8,10 @@ public class Divide extends Operator {
         return 1;
     }
 
-    public void operate (Stack<Operand> nums) throws CalculatorException {
+    public void operate(Stack<Operand> nums) throws CalculatorException {
         try {
             nums.push(new Operand(new BigDecimal(1).divide(nums.pop().value.divide(nums.pop().value))));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new CalculatorException(e.getMessage());
         }
     }

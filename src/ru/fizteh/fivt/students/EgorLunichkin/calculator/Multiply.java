@@ -7,7 +7,7 @@ public class Multiply extends Operator {
         return 1;
     }
 
-    public void operate (Stack<Operand> nums) throws CalculatorException {
+    public void operate(Stack<Operand> nums) throws CalculatorException {
         try {
             nums.push(new Operand(nums.pop().value.multiply(nums.pop().value)));
         } catch (Exception e) {

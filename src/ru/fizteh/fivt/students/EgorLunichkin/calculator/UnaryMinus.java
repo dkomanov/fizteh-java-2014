@@ -7,11 +7,10 @@ public class UnaryMinus extends Operator {
         return 2;
     }
 
-    public void operate (Stack<Operand> nums) throws CalculatorException {
+    public void operate(Stack<Operand> nums) throws CalculatorException {
         try {
             nums.push(new Operand(nums.pop().value.negate()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new CalculatorException(e.getMessage());
         }
     }

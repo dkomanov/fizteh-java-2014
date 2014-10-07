@@ -14,7 +14,7 @@ public class Operand extends Element {
         this.value = val;
     }
 
-    public void pushElement (Stack<Operand> nums, Stack<Operator> ops) {
+    public void pushElement(Stack<Operand> nums, Stack<Operator> ops) {
         nums.push(this);
     }
 }

@@ -11,7 +11,7 @@ public class OpenBracket extends Operator {
         throw new CalculatorException("Operation with opening bracket");
     }
 
-    public void pushElement (Stack<Operand> nums, Stack<Operator> ops) throws CalculatorException {
+    public void pushElement(Stack<Operand> nums, Stack<Operator> ops) throws CalculatorException {
         ops.push(this);
     }
 }
