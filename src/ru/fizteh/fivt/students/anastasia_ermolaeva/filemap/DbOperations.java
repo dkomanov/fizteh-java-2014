@@ -50,9 +50,6 @@ public class DbOperations implements AutoCloseable {
             try {
                 String key = readUtil();
                 String value = readUtil();
-                //if (getDataBase().containsKey(key)) {
-                  //  throw new Exception("ERROR: Two same keys");
-                //}
                 database.put(key, value);
             } catch (IOException e) {
                 end = true;
