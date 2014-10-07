@@ -2,11 +2,19 @@ package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
 
 import java.util.ArrayList;
 
+<<<<<<< HEAD
 public final class Commander {
     private Commander() {
         //
     }
     public static void commandExec(final String[] command,
+=======
+final public class Commander {
+    private Commander() {
+        //
+    }
+    public static void CommandExec(final String[] command,
+>>>>>>> parent of 7dfbcf9... FileMap commit. Fix
             final DataBase dataBase) throws MapExcept {
         if (command.length == 0) {
             return;
@@ -40,12 +48,19 @@ public final class Commander {
         case "exit":
             dataBase.writeInFile();
             System.exit(0);
+<<<<<<< HEAD
             break;
+=======
+>>>>>>> parent of 7dfbcf9... FileMap commit. Fix
         default:
             throw new MapExcept(command[0] + ": No such command");
         }
     }
+<<<<<<< HEAD
     public static void commandExec(final ArrayList<String> command,
+=======
+    public static void CommandExec(final ArrayList<String> command,
+>>>>>>> parent of 7dfbcf9... FileMap commit. Fix
             final DataBase dataBase) throws MapExcept {
         if (command.size() == 0) {
             return;
@@ -79,7 +94,10 @@ public final class Commander {
         case "exit":
             dataBase.writeInFile();
             System.exit(0);
+<<<<<<< HEAD
             break;
+=======
+>>>>>>> parent of 7dfbcf9... FileMap commit. Fix
         default:
             throw new MapExcept(command.get(0)
                     + ": No such command");

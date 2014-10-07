@@ -2,11 +2,19 @@ package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
 
 import java.util.ArrayList;
 
+<<<<<<< HEAD
 public final class InputParse {
     private InputParse() {
         //
     }
     public static void parse(final String[] arg) {
+=======
+final public class InputParse {
+    private InputParse() {
+        //
+    }
+    public static void Parse(final String[] arg) {
+>>>>>>> parent of 7dfbcf9... FileMap commit. Fix
         try {
             DataBase dataBase = new DataBase(
                     System.getProperty("db.file"));
@@ -24,7 +32,11 @@ public final class InputParse {
                         break;
                     }
                 }
+<<<<<<< HEAD
                 Commander.commandExec(current, dataBase);
+=======
+                Commander.CommandExec(current, dataBase);
+>>>>>>> parent of 7dfbcf9... FileMap commit. Fix
             }
             dataBase.writeInFile();
         } catch (MapExcept ex) {
