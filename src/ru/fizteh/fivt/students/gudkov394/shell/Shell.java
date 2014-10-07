@@ -44,7 +44,10 @@ public class Shell {
         Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.print(currentDirectory.getCurrentDirectory() + "$");
-            String currentString = sc.nextLine();
+            String currentString = null;
+            if (sc.hasNextLine()) {
+                currentString = sc.nextLine();
+            }
             currentString = currentString.replaceAll("\\s*;\\s*", ";");
             String[] functions = currentString.split(";");
             for (int i = 0; i < functions.length; ++i) {
