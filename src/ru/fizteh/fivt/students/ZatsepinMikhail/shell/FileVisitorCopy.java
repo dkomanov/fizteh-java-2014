@@ -42,7 +42,7 @@ public class FileVisitorCopy extends SimpleFileVisitor<Path> {
         try {
             Files.createDirectory(newDirPath);
         } catch (IOException e) {
-            System.err.println("IOException " + newDirPath.toString());
+            System.err.println("IOException");
         }
         return CONTINUE;
     }

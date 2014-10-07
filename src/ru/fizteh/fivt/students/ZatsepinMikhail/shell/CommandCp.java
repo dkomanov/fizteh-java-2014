@@ -77,7 +77,8 @@ public class CommandCp extends Command {
 
         Path destinationPath = PathsFunction.toAbsolutePathString(arguments[3]);
 
-        if (!Files.isDirectory(destinationPath)) {
+
+        if (!Files.isDirectory(destinationPath) & Files.exists(destinationPath)) {
             System.out.println("\'" + arguments[3] + "\' isn't a directory");
             return false;
         }
@@ -86,12 +87,14 @@ public class CommandCp extends Command {
                     + arguments[3] + "\' are the same file or directory");
             return false;
         }
-        destinationPath =
-                destinationPath.resolve(startPath.getFileName()).normalize();
+
+        if (Files.exists(destinationPath)) {
+            destinationPath =
+                    destinationPath.resolve(startPath.getFileName()).normalize();
+        }
 
         FileVisitorCopy myFileVisitorCopy =
                 new FileVisitorCopy(startPath, destinationPath);
-
         try {
             Files.walkFileTree(startPath, myFileVisitorCopy);
         } catch (IOException e) {
