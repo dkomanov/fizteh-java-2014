@@ -327,16 +327,21 @@ public/* abstract */class ShellMain {
             isPacket = false;
             System.out.print("$ ");
             Scanner scanner = new Scanner(System.in);
-            scanner.useDelimiter(System.lineSeparator() + "|[;]");
+            scanner.useDelimiter(System.lineSeparator());
             while (scanner.hasNextLine()) {
-                String str = "";
-                str = scanner.next();
-                if (str.equals("exit")) {
-                    scanner.close();
-                    return;
-                }
-                if (!str.isEmpty()) {
-                    execProc(getArgsFromString(str));
+            	Scanner scannerParse = new Scanner (scanner.next());
+            	scannerParse.useDelimiter("[ ]*;[ ]*");
+                while (scannerParse.hasNext()) {
+                    String string = "";
+                    string = scannerParse.next();
+                    if (string.equals("exit")) {
+                        scanner.close();
+                        scannerParse.close();
+                        return;
+                    }
+                    if (!string.isEmpty()) {
+                        execProc(getArgsFromString(string));
+                    }
                 }
                 System.out.print("$ ");
             }
