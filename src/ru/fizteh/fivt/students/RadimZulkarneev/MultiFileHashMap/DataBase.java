@@ -77,12 +77,12 @@ public class DataBase {
     
     public void showTables() {
         Set<String> it = tableRowCount.keySet();
-        
+
         for (String cur : it) {
             System.out.println(cur + " " + tableRowCount.get(cur));
         }
     }
-    /*      Создание новой таблицы
+    /*     
      * */
     public void create(String tbName) throws MapExcept, IOException {
         if (tableRowCount.containsKey(tbName)) {
@@ -102,16 +102,16 @@ public class DataBase {
     public Path getPath() {
         return dataBasePath;
     }
-    
+
     public void use(String tbName) throws TableConnectionError, DataBaseCorrupt, MapExcept {
         if (!tableRowCount.containsKey(tbName)) {
             throw new MapExcept("use: '" + tbName + "': tablename not exists");
         }
         if (isChoose) {
-            // Запись таблицы!!!! СДЕЛАТЬ епт
+            //
             this.commit();
         }
-        
+
         sTable = new SuperTable(dataBasePath.resolve(tbName));
         try {
             isChoose = true;
@@ -127,7 +127,7 @@ public class DataBase {
             sTable.showTableList();
             System.out.println("");
         }
-        
+
     }
     public void commit() throws MapExcept {
         if (isChoose) {
@@ -148,7 +148,7 @@ public class DataBase {
             sTable.get(key);
         }
     }
-    
+
     public void remove(String key) throws MapExcept {
         if (!isChoose) {
             throw new MapExcept("no table");
