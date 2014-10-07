@@ -98,7 +98,7 @@ public class Shell {
     private void makeDirectory(String arg) {
         File currFile = createFile(arg);
         if (currFile.exists()) {
-        	printError("mkdir: cannot create a directory '" + arg + "': such directory exists");
+                printError("mkdir: cannot create a directory '" + arg + "': such directory exists");
         } else if (!currFile.mkdirs()) {
             printError("mkdir cannot create a directory'" + arg + "'");
         }
