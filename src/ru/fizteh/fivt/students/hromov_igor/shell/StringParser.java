@@ -9,6 +9,7 @@ public class StringParser {
             switch (strParsed[0]) {
             case "exit":
                 System.exit(0);
+                break;
             case "ls":
                 Ls.run(strParsed);
                 break;
