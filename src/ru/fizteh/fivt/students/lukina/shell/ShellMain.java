@@ -329,8 +329,8 @@ public/* abstract */class ShellMain {
             Scanner scanner = new Scanner(System.in);
             scanner.useDelimiter(System.lineSeparator());
             while (scanner.hasNextLine()) {
-            	Scanner scannerParse = new Scanner (scanner.next());
-            	scannerParse.useDelimiter("[ ]*;[ ]*");
+                Scanner scannerParse = new Scanner(scanner.next());
+                scannerParse.useDelimiter("[ ]*;[ ]*");
                 while (scannerParse.hasNext()) {
                     String string = "";
                     string = scannerParse.next();
