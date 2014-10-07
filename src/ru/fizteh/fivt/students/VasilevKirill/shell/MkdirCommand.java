@@ -10,7 +10,7 @@ public class MkdirCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
         if (args.length < 2) {
-            return 0;
+            return 1;
         }
         File directory = new File(Shell.currentPath + File.separator + args[1]);
         if (!directory.mkdirs()) {

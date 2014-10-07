@@ -8,6 +8,9 @@ import java.io.IOException;
 public class PwdCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
+        if (args.length != 1) {
+            return 1;
+        }
         System.out.println(Shell.currentPath);
         return 0;
     }
