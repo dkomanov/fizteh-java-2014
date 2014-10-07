@@ -15,7 +15,10 @@ public class Shell {
         Scanner in = new Scanner(System.in);
         while (true) {
             System.out.print("$ ");
-            String input = in.nextLine();
+            String input = null;
+            if (in.hasNextLine()) {
+                input = in.nextLine();
+            }
             try {
                 batchMode(input);
             } catch (Exception e) {
