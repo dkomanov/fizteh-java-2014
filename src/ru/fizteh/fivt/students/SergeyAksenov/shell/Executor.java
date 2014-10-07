@@ -35,11 +35,11 @@ public final class Executor {
         }
     }
 
-    public static void execLine(String Line,
+    public static void execLine(String line,
                                 final HashMap<String, Command> commandMap,
                                 final Environment env)
             throws ShellExitException {
-        String[] commands = Line.trim().split(";");
+        String[] commands = line.trim().split(";");
         try {
             for (String command : commands) {
                 command = command.trim();
@@ -85,7 +85,7 @@ public final class Executor {
             }
             Files.copy(src.toPath(), dst.toPath(),
                     StandardCopyOption.COPY_ATTRIBUTES);
-        } catch (IOException E) {
+        } catch (IOException e) {
             ErrorHandler.canNotPerform("cp");
         }
         if (src.isDirectory()) {

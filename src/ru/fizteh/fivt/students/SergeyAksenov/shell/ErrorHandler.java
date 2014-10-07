@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.SergeyAksenov.shell;
 
 public class ErrorHandler {
 
-    protected final static void countArguments(final String command)
+    protected static final void countArguments(final String command)
             throws ShellException {
         throw new ShellException(
                 command + ": invalid number of arguments");

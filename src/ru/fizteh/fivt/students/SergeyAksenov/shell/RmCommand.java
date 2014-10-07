@@ -15,8 +15,8 @@ public final class RmCommand implements Command {
             }
             recursive = true;
         }
-        File fileToRem = new File(env.currentDirectory +
-                File.separator + args[args.length - 1]);
+        File fileToRem = new File(env.currentDirectory
+                + File.separator + args[args.length - 1]);
         if (!fileToRem.exists()) {
             ErrorHandler.noFile("rm", args[args.length - 1]);
         }
