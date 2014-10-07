@@ -42,6 +42,9 @@ public class Shell {
         Scanner input = new Scanner(System.in);
         System.out.print("$ ");
         while (true) {
+            if (!input.hasNextLine()) {
+                System.exit(0);
+            }
             String com = input.nextLine();
             if (com.length() == 0) {
                 System.out.print("$ ");
@@ -51,7 +54,11 @@ public class Shell {
             for (String string: commands) {
                 try {
                     String[] command = string.trim().split("\\s+");
-                    switchCommand(command);
+                    if (command.length == 1 && command[0].length() == 0) {
+                        continue;
+                    } else {
+                        switchCommand(command);
+                    }
                 } catch (MyException e) {
                     System.out.println(e.getMessage());
                 }
