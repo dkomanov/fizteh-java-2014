@@ -66,8 +66,7 @@ public class Funcshell {
             File[] files = f.listFiles();
             if (files != null) {
                 deletefiledirectories(f);
-            }
-            else {
+            } else {
                 System.out.println("not perform to delete");
                 return;
             }
@@ -80,16 +79,14 @@ public class Funcshell {
             File f;
             if (args.length == 3) {
                 f = new File(currentDirectory + File.separator + args[2]);
-            }
-            else  {
+            } else  {
                 f = new File(currentDirectory + File.separator + args[1]);
             }
             if (f.exists()) {
                 if (f.isDirectory()) {
                     if (args.length == 3) {
                         deletefiledirectories(f);
-                        }
-                    else { System.out.println("rm: " + f.getName() + ": is a directory"); }
+                        } else { System.out.println("rm: " + f.getName() + ": is a directory"); }
                 } else if (!f.delete()) { System.out.println("not perform to delete"); }
             } else { System.out.println("rm: cannot remove '" + f.getName() + "': No such file or directory"); }
         } else { System.out.println("Incorrect arguments"); }
@@ -100,8 +97,7 @@ public class Funcshell {
         File d = null;
         if (f2.isDirectory()) {
             d = new File(f2.getCanonicalPath() + File.separator + f1.getName());
-        }
-        else { return; }
+        } else { return; }
         Files.copy(f1.toPath(), d.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
         if (f2.isDirectory()) {
             File[] files = f1.listFiles();
@@ -126,8 +122,7 @@ public class Funcshell {
                             System.out.println("cp: " + f1.getName() + " is a directory (not copied).");
                         }
                     }
-                }
-                else { System.out.println("File is already exist"); }
+                } else { System.out.println("File is already exist"); }
             } else {
                 if (!Files.exists(f1.toPath())) {
                     System.out.println("cp: cannot copied '" + args[args.length - 2]
@@ -146,16 +141,15 @@ public class Funcshell {
             File f1 = new File(currentDirectory + File.separator + args[args.length - 2]);
             File f2 = new File(currentDirectory + File.separator + args[args.length - 1]);
             if (f1.exists() && f2.exists()) {
-                if (f1.toString().equals(f2.toString())) { System.out.println("files is identify"); }
-                else {
+                if (f1.toString().equals(f2.toString())) {
+                    System.out.println("files is identify");
+                } else {
                     if (!f2.toPath().startsWith(f1.toPath())) {
                         recursiveCopy(f1, f2);
                         deletefiledirectories(f1);
-                    }
-                    else { System.out.println("unable to move"); }
+                    } else { System.out.println("unable to move"); }
                 }
-            }
-            else {
+            } else {
                 if (!f1.exists()) { System.out.println("mv: cannot move '" + args[args.length - 2]
                         + "': No such file or directory ");
                 }
@@ -191,8 +185,7 @@ public class Funcshell {
     public void pwd(String[] args) {
         if (args.length == 1) {
             System.out.println(currentDirectory);
-        }
-        else { System.out.println("Incorrect arguments"); }
+        } else { System.out.println("Incorrect arguments"); }
     }
 
 
@@ -207,33 +200,21 @@ public class Funcshell {
         try {
             if (s[0].equals("cd")) {
                 cd(s);
-            }
-            else if (s[0].equals("pwd")) {
+            } else if (s[0].equals("pwd")) {
                 pwd(s);
-            }
-
-            else if (s[0].equals("ls")) {
+            } else if (s[0].equals("ls")) {
                 ls();
-            }
-
-            else if (s[0].equals("cat")) {
+            } else if (s[0].equals("cat")) {
                 cat(s);
-            }
-            else if (s[0].equals("mkdir")) {
+            } else if (s[0].equals("mkdir")) {
                 mkdir(s);
-            }
-            else if (s[0].equals("rm")) {
+            } else if (s[0].equals("rm")) {
                 rm(s);
-            }
-            else if (s[0].equals("cp")) {
+            } else if (s[0].equals("cp")) {
                 cp(s);
-            }
-
-            else if (s[0].equals("mv")) {
+            } else if (s[0].equals("mv")) {
                 mv(s);
-            }
-
-            else if (s[0].equals("exit")) {
+            } else if (s[0].equals("exit")) {
                 exit();
             }
         } catch (IOException e) {
@@ -250,8 +231,7 @@ public class Funcshell {
 
         } catch (ShellexecException e) {
             System.exit(0);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.exit(0);
         }
     }
