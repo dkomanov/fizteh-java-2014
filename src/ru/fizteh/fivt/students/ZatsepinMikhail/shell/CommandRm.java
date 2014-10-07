@@ -14,6 +14,7 @@ public class CommandRm extends Command {
     public boolean run(final String[] arguments) {
         if (arguments.length != numberOfArguments
                 & arguments.length != numberOfArguments - 1) {
+            System.out.println("wrong number of arguments");
             return false;
         }
         boolean recursive =

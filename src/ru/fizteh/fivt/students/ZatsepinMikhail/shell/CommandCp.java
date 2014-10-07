@@ -16,6 +16,7 @@ public class CommandCp extends Command {
     public boolean run(final String[] arguments) {
         if (arguments.length != numberOfArguments
                 & arguments.length != numberOfArguments - 1) {
+            System.out.println("wrong number of arguments");
             return false;
         }
         boolean recursive =
@@ -69,8 +70,14 @@ public class CommandCp extends Command {
 
     private boolean recursiveCopy(final String[] arguments) {
         Path startPath = PathsFunction.toAbsolutePathString(arguments[2]);
+
         Path destinationPath = PathsFunction.toAbsolutePathString(arguments[3]);
 
+        if (!Files.isDirectory(destinationPath)) {
+            System.out.println("\'" + arguments[3] + "\' isn't a directory");
+            return false;
+        }
+        //destinationPath = destinationPath + System.getProperty("file.separator");
         if (startPath.equals(destinationPath)) {
             System.out.println(name + ": \'" + arguments[2] + "\' and \'"
                     + arguments[3] + "\' are the same file or directory");
@@ -83,7 +90,6 @@ public class CommandCp extends Command {
                 new FileVisitorCopy(startPath, destinationPath);
 
         try {
-            Files.createDirectory(destinationPath);
             Files.walkFileTree(startPath, myFileVisitorCopy);
         } catch (IOException e) {
             return false;

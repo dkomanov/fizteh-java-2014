@@ -9,6 +9,7 @@ public class CommandPwd extends Command {
     @Override
     public boolean run(final String[] args) {
         if (args.length != numberOfArguments) {
+            System.out.println("wrong number of arguments");
             return false;
         }
         try {

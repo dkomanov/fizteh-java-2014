@@ -15,6 +15,10 @@ public class CommandCd extends Command {
             System.setProperty("user.dir", "/");
             return true;
         }
+        if (arguments.length != numberOfArguments) {
+            System.out.println("wrong number of arguments");
+            return false;
+        }
         Path newWorkDirectory = PathsFunction.toAbsolutePathString(arguments[1]);
         if (Files.isDirectory(newWorkDirectory)) {
             System.setProperty("user.dir", newWorkDirectory.toString());
