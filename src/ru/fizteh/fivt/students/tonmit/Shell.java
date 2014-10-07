@@ -131,7 +131,7 @@ public class Shell {
 
     private boolean copyErrorCheck(final String[] args) {
         if (args.length > 4 || args.length < 3) {
-    		printError("cp: Wrong number of arguments.");
+                printError("cp: Wrong number of arguments.");
                 return false;
     	}
     	File currFile = createFile(args[1]);
