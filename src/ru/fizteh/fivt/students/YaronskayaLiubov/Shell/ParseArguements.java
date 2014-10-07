@@ -1,5 +1,4 @@
 package ru.fizteh.fivt.students.YaronskayaLiubov.Shell;
-//package Shell;
 
 import java.util.Vector;
 
@@ -16,13 +15,17 @@ public class ParseArguements {
                 newCommand = false;
             }
             if (args[i].endsWith(";")) {
-                args[i] = args[i].substring(0, args[i].length() - 1);
-                vectorArgv.elementAt(commandCnt).add(args[i]);
+                vectorArgv.elementAt(commandCnt).add(
+                        args[i].equals(";") ? " " : args[i].substring(0,
+                                args[i].length() - 1));
                 ++commandCnt;
                 newCommand = true;
             } else {
                 vectorArgv.elementAt(commandCnt).add(args[i]);
             }
+        }
+        if (args[args.length - 1].endsWith(";")) {
+            --commandCnt;
         }
         for (int i = 0; i <= commandCnt; ++i) {
             String[] arrayArgv = new String[vectorArgv.elementAt(i).size()];
