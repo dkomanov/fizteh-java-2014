@@ -103,7 +103,7 @@ public/* abstract */class ShellMain {
             Files.copy(from.toPath(), destinationFile.toPath(),
                     StandardCopyOption.COPY_ATTRIBUTES);
         } catch (IOException e) {
-            printError("couldn't copy" + from.getName());
+            printError("couldn't copy " + from.getName());
         }
         if (from.isDirectory()) {
             File[] fileNamesList = from.listFiles();
@@ -119,6 +119,11 @@ public/* abstract */class ShellMain {
         try {
             if (from.getCanonicalPath().equals(to.getCanonicalPath())) {
                 printError("cp: «" + args1 + "» и «" + args2 + "» - один и тот же файл");
+                return;
+            }
+            if (from.isDirectory() && !to.isDirectory()) {
+                printError("cp: невозможно перезаписать поверх файла «" + args2
+                        + "», не являющегося каталогом, каталог «" + args1 + "»");
                 return;
             }
         } catch (IOException e1) {
@@ -157,6 +162,9 @@ public/* abstract */class ShellMain {
         if (!currFile.exists()) {
             printError("mv: cannot move: '" + args[1]
                     + "': No such file or directory");
+        } else if (currFile.isDirectory() && !tmpFile.isDirectory()) {
+            printError("mv: невозможно перезаписать поверх файла «" + args[2]
+                    + "», не являющегося каталогом, каталог «" + args[1] + "»");
         } else {
             if (!tmpFile.isDirectory()) {
                 destFile = tmpFile;
