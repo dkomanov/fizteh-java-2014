@@ -72,7 +72,7 @@ public class Calculator {
         wasOper = true;
       } else if (c.equals("(")) {
         tempStack.push(c);
-        wasOper = false;
+        wasOper = true;
       } else if (c.equals(")")) {
         while (!tempStack.empty()
             && !tempStack.lastElement().equals("(")) {
