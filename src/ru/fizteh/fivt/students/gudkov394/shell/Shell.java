@@ -52,7 +52,7 @@ public class Shell {
             String[] functions = currentString.split(";");
             for (int i = 0; i < functions.length; ++i) {
                 functions[i] = functions[i].trim();
-                if (functions[i].length() != 0) {
+                if (!functions[i].isEmpty()) {
                     run(functions[i].split("\\s+"), currentDirectory);
                 }
             }
