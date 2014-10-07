@@ -60,13 +60,18 @@ public class Shell {
         int argIterator = 0;
         StringBuilder commandBuilder = new StringBuilder();
         for (int i = 0; i < args.length; ++i) {
-            commandBuilder.append(args[i]);
+            //commandBuilder.append(args[i]);
+            for (int j = 0; j < args[i].length(); ++j) {
+                if (args[i].charAt(j) != '\"') {
+                    commandBuilder.append(args[i].charAt(j));
+                }
+            }
             if (i != args.length - 1) {
                 commandBuilder.append(" ");
             }
         }
         String[] cmdsBySemicolon = commandBuilder.toString().split("\\s*;\\s*");
-        String[][] newArgs = new String[args.length][cmdsBySemicolon.length];
+        String[][] newArgs = new String[5][cmdsBySemicolon.length];
         int arrayIterator = 0;
         for (int i = 0; i < cmdsBySemicolon.length; ++i) {
             if (!cmdsBySemicolon[i].equals("")) {
@@ -76,6 +81,9 @@ public class Shell {
         try {
             Command currentCommand;
             for (String[] it : newArgs) {
+                if (it[0] == null) {
+                    continue;
+                }
                 if ((currentCommand = commandMap.get(it[0])) != null) {
                     if (currentCommand.execute(it) == 1) {
                         return 1;

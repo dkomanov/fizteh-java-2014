@@ -66,7 +66,7 @@ public class CpCommand implements Command {
                 System.out.println("cp: " + args[1] + " is a directory (not copied).");
                 return 1;
             }
-            File destination = new File(Shell.currentPath + File.separator + args[2] + File.separator + args[1]);
+            File destination = new File(Shell.currentPath + File.separator + args[2]);
             if (destination.exists()) {
                 destination.delete();
             }
