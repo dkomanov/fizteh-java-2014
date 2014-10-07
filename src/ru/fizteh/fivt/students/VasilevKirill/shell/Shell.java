@@ -48,7 +48,7 @@ public class Shell {
         } catch (IOException e) {
             System.err.println("IOException caught");
         } catch (Exception e) {
-            System.err.println("Exception " + e.toString());
+            System.err.println("Exception caught");
         }
     }
 
@@ -58,32 +58,36 @@ public class Shell {
         }
         String[] currentArgs = new String[4];
         int argIterator = 0;
+        StringBuilder commandBuilder = new StringBuilder();
+        for (int i = 0; i < args.length; ++i) {
+            commandBuilder.append(args[i]);
+            if (i != args.length - 1) {
+                commandBuilder.append(" ");
+            }
+        }
+        String[] cmdsBySemicolon = commandBuilder.toString().split("\\s*;\\s*");
+        String[][] newArgs = new String[args.length][cmdsBySemicolon.length];
+        int arrayIterator = 0;
+        for (int i = 0; i < cmdsBySemicolon.length; ++i) {
+            if (!cmdsBySemicolon[i].equals("")) {
+                newArgs[arrayIterator++] = cmdsBySemicolon[i].split("\\s+");
+            }
+        }
         try {
             Command currentCommand;
-            for (int i = 0; i < args.length; ++i) {
-                if (!args[i].equals(";")) {
-                    currentArgs[argIterator++] = args[i];
-                } else {
-                    if ((currentCommand = commandMap.get(currentArgs[0])) != null) {
-                        if (currentCommand.execute(currentArgs) == 1) {
-                            return 1;
-                        }
-                    } else {
+            for (String[] it : newArgs) {
+                if ((currentCommand = commandMap.get(it[0])) != null) {
+                    if (currentCommand.execute(it) == 1) {
                         return 1;
                     }
-                    currentArgs = new String[4];
-                    argIterator = 0;
+                } else {
+                    return 1;
                 }
-            }
-            if ((currentCommand = commandMap.get(currentArgs[0])) != null) {
-                return currentCommand.execute(currentArgs);
-            } else {
-                return 1;
             }
         } catch (IOException e) {
             System.err.println("IOException caught");
         } catch (Exception e) {
-            System.err.println("Exception " + e.toString());
+            System.err.println("Exception caught");
         }
         return 0;
     }
