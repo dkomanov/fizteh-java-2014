@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.filemap;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -38,10 +39,26 @@ class DbReader {
         }
     }
 
-    private String readNext() throws IOException {
+    private String readNext() throws Exception {
         int length = stream.readInt();
+        if (length < 0) {
+            throw new Exception("Incorrect data base file: negative length of word");
+        }
+        ArrayList<Byte> wordBuilder = new ArrayList<>();
+        try {
+            for (int i = 0; i < length; i++) {
+                byte symbol = stream.readByte();
+                wordBuilder.add(symbol);
+            }
+        } catch (EOFException e) {
+            throw new Exception("Incorrect data base file: unexpected end of file");
+        } catch (OutOfMemoryError e) {
+            throw new Exception("Not enough memory to store database");
+        }
         byte[] word = new byte[length];
-        stream.readFully(word);
+        for (int i = 0; i < length; i++) {
+            word[i] = wordBuilder.get(i);
+        }
         return new String(word, "UTF-8");
     }
 
