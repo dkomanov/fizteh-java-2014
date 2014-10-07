@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.LevkovMiron.shell;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.HashMap;
 import java.util.Scanner;
 /**
  * Created by Мирон on 19.09.2014 ${PACKAGE_NAME}.
@@ -208,11 +209,22 @@ class Shell {
         }
     }
 
-    void runCommand(final String inString, final PrintStream printStream) {
+    void runCommand(String inString, final PrintStream printStream) {
+        HashMap<String, Integer> cmdMap = new HashMap<>();
+        cmdMap.put("cd", 2);
+        cmdMap.put("mkdir", 2);
+        cmdMap.put("pwd", 1);
+        cmdMap.put("ls", 1);
+        cmdMap.put("exit", 1);
+        cmdMap.put("cat", 2);
+        cmdMap.put("mv", 3);
         try {
-            inString.trim();
+            inString = inString.trim();
             String[] command = inString.split(" ");
-            if (command[0].equals("cd")) {
+            if (cmdMap.containsKey(command[0]) && cmdMap.get(command[0]) != command.length) {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+            if (command[0].equals("cd") && command.length == 2) {
                 try {
                     cd(command[1]);
                 } catch (NoSuchFileException e) {
@@ -235,8 +247,14 @@ class Shell {
             } else if (command[0].equals("rm")) {
                 try {
                     if (command[1].equals("-r")) {
+                        if (command.length != 3) {
+                            throw new ArrayIndexOutOfBoundsException();
+                        }
                         rmR(command[2]);
                     } else {
+                        if (command.length != 2) {
+                            throw new ArrayIndexOutOfBoundsException();
+                        }
                         rm(command[1]);
                     }
                 } catch (IOException e) {
@@ -245,8 +263,14 @@ class Shell {
             } else if (command[0].equals("cp")) {
                 try {
                     if (command[1].equals("-r")) {
+                        if (command.length != 4) {
+                            throw new ArrayIndexOutOfBoundsException();
+                        }
                         cpR(command[2], command[3]);
                     } else {
+                        if (command.length != 3) {
+                            throw new ArrayIndexOutOfBoundsException();
+                        }
                         cp(command[1], command[2]);
                     }
                 } catch (NoSuchFileException e) {
