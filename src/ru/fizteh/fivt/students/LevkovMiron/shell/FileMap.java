@@ -106,15 +106,24 @@ class FileMap {
     }
     void list() {
         for (HashMap.Entry<String, String> pair : map.entrySet()) {
-            System.out.print(pair.getKey() + ";  ");
+            System.out.print(pair.getKey() + "; ");
         }
         System.out.println();
     }
 
-    void runCommand(final String inString, final PrintStream printStream) {
+    void runCommand(String inString, final PrintStream printStream) {
+        HashMap<String, Integer> mp = new HashMap<String, Integer>();
+        mp.put("put", 3);
+        mp.put("get", 2);
+        mp.put("remove", 2);
+        mp.put("list", 1);
+        mp.put("exit", 1);
         try {
-            inString.trim();
+            inString = inString.trim();
             String[] command = inString.split(" ");
+            if (mp.containsKey(command[0]) && mp.get(command[0]) != command.length) {
+                throw new ArrayIndexOutOfBoundsException();
+            }
             if (command[0].equals("put")) {
                 put(command[1], command[2]);
             } else if (command[0].equals("exit")) {
@@ -125,12 +134,20 @@ class FileMap {
                 remove(command[1]);
             } else if (command[0].equals("list")) {
                 list();
-            } else { printStream.println("Unknown command"); }
+            } else {
+                throw new IOException("Unknown command");
+            }
         } catch (ArrayIndexOutOfBoundsException e) {
-            printStream.println("Wrong command format: to few arguments\n");
+            printStream.println("Wrong command format " + "\"" + inString
+                        + "\" : wrong number of arguments arguments\n");
+            if (printStream.equals(System.err)) {
+                System.exit(-2);
+            }
         } catch (IOException e) {
             printStream.println(e.getMessage());
-            System.exit(0);
+            if (printStream.equals(System.err)) {
+                System.exit(-3);
+            }
         }
     }
 }

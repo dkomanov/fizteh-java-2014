@@ -10,10 +10,12 @@ class PacketFileMap extends FileMap {
     }
     public void readCommands(final String[] args) {
         String argumentString = "";
+        StringBuilder builder = new StringBuilder();
         for (String s : args) {
-            argumentString += s;
+            builder.append(s + " ");
         }
-        argumentString.trim();
+        argumentString = builder.toString();
+        argumentString = argumentString.trim();
         String[] commands = argumentString.split(";");
         for (String cmd : commands) {
             runCommand(cmd, System.err);

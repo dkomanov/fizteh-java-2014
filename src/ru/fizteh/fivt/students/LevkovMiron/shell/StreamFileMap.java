@@ -13,11 +13,15 @@ class StreamFileMap extends FileMap {
     public void readCommands() {
         System.out.println("$");
         Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        String[] commands = input.split(";");
-        for (String cmd : commands) {
-            runCommand(cmd, System.out);
+        if (scanner.hasNextLine()) {
+            String input = scanner.nextLine();
+            String[] commands = input.split(";");
+            for (String cmd : commands) {
+                runCommand(cmd, System.out);
+            }
+            readCommands();
+        } else {
+            System.exit(1);
         }
-        readCommands();
     }
 }
