@@ -44,7 +44,11 @@ public class Shell<T> {
      */
     public void callCommands(String newCommand) throws UserInterruptException, CommandExecuteException {
         String[] commandArray = parser.splitStringIntoCommands(newCommand);
+
         for (String command : commandArray) {
+            if (command.isEmpty()) {
+                continue;
+            }
             String[] params = parser.splitCommandIntoParams(command);
             executeCommand(params);
         }
@@ -59,10 +63,9 @@ public class Shell<T> {
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
                 System.out.print(PROMPT);
-                String newCommand = scanner.nextLine();
-                newCommand = newCommand.trim();
-                if (newCommand.isEmpty()) {
-                    continue;
+                String newCommand = null;
+                if (scanner.hasNextLine()) {
+                    newCommand = scanner.nextLine().trim();
                 }
                 try {
                     callCommands(newCommand);
