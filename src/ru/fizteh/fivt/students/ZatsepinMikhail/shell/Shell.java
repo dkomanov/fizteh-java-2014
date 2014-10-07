@@ -79,9 +79,6 @@ public class Shell {
             if (parsedArguments[0].equals("exit")) {
                 return true;
             }
-            if (parsedArguments[0].equals("")) {
-                continue;
-            }
             Command commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {
                 if (!commandToExecute.run(parsedArguments)) {
