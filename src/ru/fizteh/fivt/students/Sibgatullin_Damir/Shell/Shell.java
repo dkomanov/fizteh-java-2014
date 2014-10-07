@@ -61,41 +61,29 @@ public class Shell {
     }
     private static void packageMode(String[] args) {
         LinkedHashSet<String> com = new LinkedHashSet<String>();
+
+        String s = "";
         for (String string : args) {
-            if (!string.equals(";")) {
-                if (string.endsWith(";")) {
-                    string = string.substring(0, string.length() - 1);
-                    com.add(string);
-                    try {
-                        switchCommand(com.toArray(new String[com.size()]));
-                    } catch (MyException e) {
-                        System.exit(1);
-                    }
 
-                    com.clear();
-                } else
-                    com.add(string);
-            } else {
-                try {
-                    switchCommand(com.toArray(new String[com.size()]));
-                } catch (MyException e) {
-                    System.exit(1);
-                }
+            s = s + string + " ";
 
-                com.clear();
+        }
+        String[] commands = s.trim().split(";");
+
+        for (String string : commands) {
+            String[] command = string.trim().split("\\s+");
+            for (String str : command) {
+                str.trim();
+            }
+            try {
+                switchCommand(command);
+            } catch (MyException e) {
+                System.err.println(e.getMessage());
+                System.exit(1);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                System.exit(1);
             }
         }
-
-        try {
-            switchCommand(com.toArray(new String[com.size()]));
-        } catch (MyException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-
-        com.clear();
     }
 }
