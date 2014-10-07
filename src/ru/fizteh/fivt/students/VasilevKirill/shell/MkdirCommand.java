@@ -9,7 +9,7 @@ import java.io.IOException;
 public class MkdirCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
-        if (args.length < 2) {
+        if (args.length != 2) {
             return 1;
         }
         File directory = new File(Shell.currentPath + File.separator + args[1]);

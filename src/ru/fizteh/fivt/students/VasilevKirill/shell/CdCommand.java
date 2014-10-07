@@ -10,7 +10,7 @@ public class CdCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
         String path = Shell.currentPath;
-        if (args.length < 2) {
+        if (args.length != 2) {
             return 1;
         } else if (args[1].equals(".")) {
             return 0;

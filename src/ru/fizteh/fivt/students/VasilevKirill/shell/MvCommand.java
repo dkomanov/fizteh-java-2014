@@ -9,7 +9,7 @@ import java.io.IOException;
 public class MvCommand implements Command {
     @Override
     public int execute(String[] args) throws IOException {
-        if (args.length < 2) {
+        if (args.length < 2 || args.length > 3) {
             return 1;
         }
         if (args[1] == null || args[2] == null) {

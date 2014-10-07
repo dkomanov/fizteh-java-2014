@@ -20,6 +20,9 @@ public class CpCommand implements Command {
             if (args[2].equals(args[3])) {
                 return 1;
             }
+            if (args.length > 4) {
+                return 1;
+            }
             File source = new File(Shell.currentPath + File.separator + args[2]);
             if (!source.exists()) {
                 System.out.println("cp: cannot copy '" + args[2] + "': No such file or directory");
@@ -57,6 +60,9 @@ public class CpCommand implements Command {
             if (args[1].equals(args[2])) {
                 return 1;
             }
+            if (args.length > 3) {
+                return 1;
+            }
             File source = new File(Shell.currentPath + File.separator + args[1]);
             if (!source.exists()) {
                 System.out.println("cp: cannot copy '" + args[1] + "': No such file or directory");
@@ -68,9 +74,16 @@ public class CpCommand implements Command {
             }
             File destination = new File(Shell.currentPath + File.separator + args[2]);
             if (destination.exists()) {
-                destination.delete();
+                if (destination.isDirectory()) {
+                    String path = Shell.currentPath + File.separator + args[2] + File.separator + args[1];
+                    File newDestination = new File(path);
+                    Files.copy(source.toPath(), newDestination.toPath());
+                } else {
+                    return 1;
+                }
+            } else {
+                destination.createNewFile();
             }
-            Files.copy(source.toPath(), destination.toPath());
         }
         return 0;
     }

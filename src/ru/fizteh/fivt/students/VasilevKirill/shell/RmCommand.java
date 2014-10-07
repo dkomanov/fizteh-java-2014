@@ -19,6 +19,9 @@ public class RmCommand implements Command {
             if (args[2] == null) {
                 return 1;
             }
+            if (args.length > 3) {
+                return 1;
+            }
             File file = new File(Shell.currentPath + File.separator + args[2]);
             if (!file.exists()) {
                 System.out.println("rm: cannot remove '" + args[2] + "': No such file or directory\"");
@@ -45,6 +48,9 @@ public class RmCommand implements Command {
                 }
             }
         } else {
+            if (args.length > 2) {
+                return 1;
+            }
             File file = new File(Shell.currentPath + File.separator + args[1]);
             if (!file.exists()) {
                 System.out.println("rm: cannot remove '" + args[1] + "': No such file or directory");
