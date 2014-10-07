@@ -29,6 +29,10 @@ public class CommandRm extends Command {
     }
 
     private boolean generalDelete(final String[] arguments) {
+        if (numberOfArguments - 1 != arguments.length) {
+            System.out.println("wrong number of arguments");
+            return false;
+        }
         Path filePath = PathsFunction.toAbsolutePathString(arguments[1]);
         try {
             if (!Files.deleteIfExists(filePath)) {

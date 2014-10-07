@@ -29,6 +29,10 @@ public class CommandCp extends Command {
     }
 
     private boolean generalCopy(final String[] arguments) {
+        if (numberOfArguments - 1 != arguments.length) {
+            System.out.println("wrong number of arguments");
+            return  false;
+        }
         Path startPath = PathsFunction.toAbsolutePathString(arguments[1]);
         Path destinationPath = PathsFunction.toAbsolutePathString(arguments[2]);
         Path fileName = Paths.get(arguments[1]).getFileName();
@@ -77,7 +81,6 @@ public class CommandCp extends Command {
             System.out.println("\'" + arguments[3] + "\' isn't a directory");
             return false;
         }
-        //destinationPath = destinationPath + System.getProperty("file.separator");
         if (startPath.equals(destinationPath)) {
             System.out.println(name + ": \'" + arguments[2] + "\' and \'"
                     + arguments[3] + "\' are the same file or directory");
