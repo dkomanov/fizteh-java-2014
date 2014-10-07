@@ -68,18 +68,12 @@ public class Shell {
             s = s + string + " ";
 
         }
-        String[] commands = s.trim().split(";");
+        String[] commands = s.split(";");
 
         for (String string : commands) {
             String[] command = string.trim().split("\\s+");
-            for (String str : command) {
-                str.trim();
-            }
             try {
                 switchCommand(command);
-            } catch (MyException e) {
-                System.err.println(e.getMessage());
-                System.exit(1);
             } catch (Exception e) {
                 System.err.println(e.getMessage());
                 System.exit(1);
