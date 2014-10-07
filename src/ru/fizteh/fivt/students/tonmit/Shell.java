@@ -166,7 +166,8 @@ public class Shell {
     			printError("cp: copy into self.");
     			return false;
     		}
-    		if (Paths.get(destFile.getCanonicalPath(), currFile.getName()).toString().equals(currFile.getCanonicalPath())) {
+    		if (Paths.get(destFile.getCanonicalPath(),
+    		        currFile.getName()).toString().equals(currFile.getCanonicalPath())) {
 	    		printError("cp: paths are equal.");
 	    		return false;
 	    	}
@@ -213,8 +214,9 @@ public class Shell {
 	    		String[] fileList = currFile.list();
 	    		String directoryName = currFile.getName();
 	    		File destDir = createFile(destFile.getCanonicalPath() + File.separator + directoryName);
-	    		if (!destFile.exists())
+	    		if (!destFile.exists()) {
 	    		    destDir = createFile(destFile.toString());
+	    		}
 	    		makeDirectory(destDir.getCanonicalPath());
 	    		String[] argStr = new String[]{"cp", "-r", "", destDir.getCanonicalPath()};
 	    		for (int i = 0; i < fileList.length; i++) {
