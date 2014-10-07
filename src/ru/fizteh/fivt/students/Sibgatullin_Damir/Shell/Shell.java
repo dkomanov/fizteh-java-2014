@@ -80,7 +80,11 @@ public class Shell {
         for (String string : commands) {
             String[] command = string.trim().split("\\s+");
             try {
-                switchCommand(command);
+                if (command.length == 1 && command[0].length() == 0) {
+                    continue;
+                } else {
+                    switchCommand(command);
+                }
             } catch (Exception e) {
                 System.err.println(e.getMessage());
                 System.exit(1);
