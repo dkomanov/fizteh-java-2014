@@ -69,6 +69,7 @@ public final class DataBaseShell {
                   //  pocketMode = true;
                     dataBase.closeDataBase(); //???
                     System.exit(0);
+                    break;
                 case "put":
                     if (dataBase.put(commands.get(i))) {
                         throw new Exception("Illegal arguments for put");
