@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public interface Command {
 
-    public void invokeCommand(String[] arguments, Shell.MyShell shell) throws IOException, BreakingException;
+    void invokeCommand(String[] arguments, Shell.MyShell shell) throws IOException, BreakingException;
 
     int getNumberOfArguments();
 }
