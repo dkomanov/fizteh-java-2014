@@ -10,10 +10,7 @@ public abstract class Executor {
     static final int SYNTAX_ERROR = 1;
     static final int COMMAND_RUNTIME_ERROR = 2;
 
-    protected static Command[] parse(String s) throws ExecutorParseException {
-        if (s.matches(".*;\\s*;.*")) {
-            throw new ExecutorParseException();
-        }
+    protected static Command[] parse(String s) {
         String[] commandStrings = s.split(";");
         Command[] res = new Command[commandStrings.length];
         for (int i = 0; i < res.length; ++i) {
