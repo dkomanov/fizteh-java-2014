@@ -110,6 +110,7 @@ public class MyMap {
         CurrentTable currentTable = new CurrentTable();
         //initMap();
         while (true) {
+
             String currentString = sc.nextLine();
             currentString = currentString.trim();
             currentString = currentString.replaceAll("\\s*;\\s*", ";");
