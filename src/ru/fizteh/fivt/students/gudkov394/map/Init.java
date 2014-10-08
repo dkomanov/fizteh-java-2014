@@ -1,10 +1,11 @@
 package ru.fizteh.fivt.students.gudkov394.map;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import com.sun.org.apache.xerces.internal.impl.xpath.XPath;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+
+import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Init {
@@ -14,9 +15,9 @@ public class Init {
             System.exit(4);
         }
         File f = new File(property);
-        FileInputStream input = null;
+        DataInputStream input = null;
         try {
-            input = new FileInputStream(f);
+            input = new DataInputStream(new FileInputStream(f));
         } catch (FileNotFoundException e) {
             System.err.println("Input file didn't find");
             System.exit(4);
@@ -31,6 +32,11 @@ public class Init {
                 String value = readString(input, length);
                 length = readInt(input);
                 value = readString(input, length);
+            if(currentTable.containsKey(key))
+            {
+                System.err.println("Wrong data: same keys");
+                System.exit(2);
+            }
                 currentTable.put(key, value);
             }
         } catch (IOException e) {
@@ -45,18 +51,37 @@ public class Init {
         }
     }
 
-    private static byte[] read(final FileInputStream input, final int length) throws IOException {
+    private static byte[] read(final DataInputStream input, final int length) throws IOException {
+        if (length < 0) {
+            System.err.println("Incorrect data base file: negative length");
+            System.exit(2);
+        }
+        ArrayList<Byte> wordBuilder = new ArrayList<Byte>();
+        try {
+            for (int i = 0; i < length; i++) {
+                byte symbol = input.readByte();
+                wordBuilder.add(symbol);
+            }
+        } catch (EOFException e) {
+            System.err.println("unexpected end of file");
+            System.exit(2);
+        } catch (OutOfMemoryError e) {
+            System.err.println("Not enough memory to store database");
+            System.exit(2);
+        }
         byte[] buffer = new byte[length];
-        input.read(buffer);
+        for (int i = 0; i < length; ++i) {
+            buffer[i] = wordBuilder.get(i);
+        }
         return buffer;
     }
 
-    public static int readInt(final FileInputStream input) throws IOException {
+    public static int readInt(final DataInputStream input) throws IOException {
         ByteBuffer wrapped = ByteBuffer.wrap(read(input, 4));
         return wrapped.getInt();
     }
 
-    public static String readString(final FileInputStream input, final int length) throws IOException {
+    public static String readString(final DataInputStream input, final int length) throws IOException {
         if (length <= 0) {
             throw new IOException("Length must be positive number");
         }
