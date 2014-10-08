@@ -7,8 +7,12 @@ import java.util.Set;
  */
 public interface Database {
 	boolean put(final String key, final String value);
+
 	String get(final String key);
+
 	boolean remove(final String key);
+
 	Set<String> list();
+
 	void close();
 }
