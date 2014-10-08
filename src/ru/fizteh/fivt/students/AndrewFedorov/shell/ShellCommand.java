@@ -13,9 +13,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target (ElementType.METHOD)
 public @interface ShellCommand {
-	/**
-	 * Description of command invocation for manual.
-	 * @return
-	 */
-	String description () default "Not documented yet";
+    /**
+     * Description of command invocation for manual.
+     * @return
+     */
+    String description () default "Not documented yet";
 }

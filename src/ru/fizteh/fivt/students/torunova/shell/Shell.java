@@ -70,8 +70,7 @@ final class Shell {
             b.append(commands[i]).append(" ");
         }
         String functions = b.toString();
-        String[] funcs = functions.split(";");
-        return funcs;
+        return functions.split(";");
     }
     /**
      * method,which runs all functions.
@@ -84,125 +83,125 @@ final class Shell {
             String dir = func.substring(2);
             dir = dir.trim();
                         String[]args = dir.split("\\s+");
-			if (args.length > 1) {
-				System.err.println("cd: too many arguments.");
-				return FUNCTION_ERROR;
-			}
+            if (args.length > 1) {
+                System.err.println("cd: too many arguments.");
+                return FUNCTION_ERROR;
+            }
             return cd(dir);
         }  else if (func.equals("cd")) {
-			System.err.println("cd: too few arguments.");
-			return FUNCTION_ERROR;
-		} else if (Pattern.matches("ls\\s+.*", func)) {
-			System.err.println("ls: too many arguments.");
-			return FUNCTION_ERROR;
-		} else if (func.equals("ls")) {
+            System.err.println("cd: too few arguments.");
+            return FUNCTION_ERROR;
+        } else if (Pattern.matches("ls\\s+.*", func)) {
+            System.err.println("ls: too many arguments.");
+            return FUNCTION_ERROR;
+        } else if (func.equals("ls")) {
             return ls();
         } else if (Pattern.matches("mkdir\\s+.*", func)) {
             String dir = func.substring(5);
             dir = dir.trim();
-			String[] args = dir.split("\\s+");
-			if (args.length > 1) {
-				System.err.println("mkdir: too many arguments.");
-				return FUNCTION_ERROR;
-			}
+            String[] args = dir.split("\\s+");
+            if (args.length > 1) {
+                System.err.println("mkdir: too many arguments.");
+                return FUNCTION_ERROR;
+            }
             return mkdir(dir);
         } else if (func.equals("mkdir")) {
-			System.err.println("mkdir: too few arguments.");
-			return FUNCTION_ERROR;
-		} else if (Pattern.matches("pwd\\s+.*", func)) {
-			System.err.println("pwd: too many arguments.");
-			return FUNCTION_ERROR;
-		} else if (func.equals("pwd")) {
+            System.err.println("mkdir: too few arguments.");
+            return FUNCTION_ERROR;
+        } else if (Pattern.matches("pwd\\s+.*", func)) {
+            System.err.println("pwd: too many arguments.");
+            return FUNCTION_ERROR;
+        } else if (func.equals("pwd")) {
             return pwd();
         } else if (Pattern.matches("cp\\s+.*", func) && !Pattern.matches("cp\\s+-r\\s+.*", func)) {
             String args = func.substring(2);
             args = args.trim();
             String[] arrgs = args.split("\\s+");
-			if (arrgs.length > 2) {
-				System.err.println("cp: too many arguments.");
-				return FUNCTION_ERROR;
-			} else if (arrgs.length < 2) {
-				System.err.println("cp: too few arguments.");
-				return FUNCTION_ERROR;
-			}
+            if (arrgs.length > 2) {
+                System.err.println("cp: too many arguments.");
+                return FUNCTION_ERROR;
+            } else if (arrgs.length < 2) {
+                System.err.println("cp: too few arguments.");
+                return FUNCTION_ERROR;
+            }
             return copy(arrgs[0], arrgs[1]);
         } else if (func.equals("cp")) {
-			System.err.println("cp: too few arguments.");
-			return FUNCTION_ERROR;
-		} else if (Pattern.matches("cp\\s+-r\\s+.*", func)) {
+            System.err.println("cp: too few arguments.");
+            return FUNCTION_ERROR;
+        } else if (Pattern.matches("cp\\s+-r\\s+.*", func)) {
             String args = func.substring(2);
             args = args.trim();
             args = args.substring(2);
             args = args.trim();
             String[] arrgs = args.split("\\s+");
-			if (arrgs.length > 2) {
-				System.err.println("cp -r: too many arguments.");
-				return FUNCTION_ERROR;
-			} else if (arrgs.length < 2) {
-				System.err.println("cp -r: too few arguments.");
-				return FUNCTION_ERROR;
-			}
+            if (arrgs.length > 2) {
+                System.err.println("cp -r: too many arguments.");
+                return FUNCTION_ERROR;
+            } else if (arrgs.length < 2) {
+                System.err.println("cp -r: too few arguments.");
+                return FUNCTION_ERROR;
+            }
             return copyRecursive(arrgs[0], arrgs[1]);
         } else if (Pattern.matches("cp\\s+-r", func)) {
-			System.err.println("cp -r: too few arguments.");
-			return FUNCTION_ERROR;
-		} else if (Pattern.matches("rm\\s+.*", func) && !Pattern.matches("rm\\s+-r\\s+.*", func)) {
+            System.err.println("cp -r: too few arguments.");
+            return FUNCTION_ERROR;
+        } else if (Pattern.matches("rm\\s+.*", func) && !Pattern.matches("rm\\s+-r\\s+.*", func)) {
             String arg = func.substring(2);
             arg = arg.trim();
-			String[] args = arg.split("\\s+");
-			if (args.length > 1) {
-				System.err.println("rm: too many arguments.");
-				return FUNCTION_ERROR;
-			}
+            String[] args = arg.split("\\s+");
+            if (args.length > 1) {
+                System.err.println("rm: too many arguments.");
+                return FUNCTION_ERROR;
+            }
             return remove(arg);
         } else if (Pattern.matches("rm\\s+-r\\s+.*", func)) {
             String arg = func.substring(2);
             arg = arg.trim();
             arg = arg.substring(2);
             arg = arg.trim();
-			String[] args = arg.split("\\s+");
-			if (args.length > 1) {
-				System.err.println("rm -r: too many arguments.");
-				return FUNCTION_ERROR;
-			}
+            String[] args = arg.split("\\s+");
+            if (args.length > 1) {
+                System.err.println("rm -r: too many arguments.");
+                return FUNCTION_ERROR;
+            }
             return removeRecursive(arg);
         } else if (func.equals("rm")) {
-			System.err.println("rm : too few arguments.");
-			return FUNCTION_ERROR;
-		} else if (Pattern.matches("rm\\s+-r", func)) {
-			System.err.println("rm -r: too few arguments.");
-			return FUNCTION_ERROR;
-		} else if (Pattern.matches("cat\\s+.*", func)) {
+            System.err.println("rm : too few arguments.");
+            return FUNCTION_ERROR;
+        } else if (Pattern.matches("rm\\s+-r", func)) {
+            System.err.println("rm -r: too few arguments.");
+            return FUNCTION_ERROR;
+        } else if (Pattern.matches("cat\\s+.*", func)) {
             String file = func.substring(3);
             file = file.trim();
-			String[] args = file.split("\\s+");
-			if (args.length > 1) {
-				System.err.println("cat: too many arguments.");
-				return FUNCTION_ERROR;
-			}
+            String[] args = file.split("\\s+");
+            if (args.length > 1) {
+                System.err.println("cat: too many arguments.");
+                return FUNCTION_ERROR;
+            }
             return cat(file);
         } else if (func.equals("cat")) {
-			System.err.println("cat: too few arguments.");
-			return FUNCTION_ERROR;
-		} else if (Pattern.matches("mv\\s+.*", func)) {
+            System.err.println("cat: too few arguments.");
+            return FUNCTION_ERROR;
+        } else if (Pattern.matches("mv\\s+.*", func)) {
             String arg = func.substring(2);
             arg = arg.trim();
             String[] args = arg.split("\\s+");
-			if (args.length > 2) {
-				System.err.println("mv: too many arguments.");
-				return FUNCTION_ERROR;
-			} else if (args.length < 2) {
-				System.err.println("mv: too few arguments.");
-				return FUNCTION_ERROR;
-			}
+            if (args.length > 2) {
+                System.err.println("mv: too many arguments.");
+                return FUNCTION_ERROR;
+            } else if (args.length < 2) {
+                System.err.println("mv: too few arguments.");
+                return FUNCTION_ERROR;
+            }
             return move(args[0], args[1]);
         } else if (func.equals("mv")) {
-			System.err.println("mv: too few arguments.");
-			return FUNCTION_ERROR;
-		} else if (Pattern.matches("exit.+", func)) {
-			System.err.println("exit: too many arguments.");
-			return FUNCTION_ERROR;
-		} else if (func.equals("exit")) {
+            System.err.println("mv: too few arguments.");
+            return FUNCTION_ERROR;
+        } else if (Pattern.matches("exit.+", func)) {
+            System.err.println("exit: too many arguments.");
+            return FUNCTION_ERROR;
+        } else if (func.equals("exit")) {
             System.exit(0);
         } else if (!func.equals("")) {
             System.err.println(func + ":command not found");
@@ -225,25 +224,25 @@ final class Shell {
         File[] listOfFiles = source.listFiles();
         dest = new File(dest.getAbsolutePath(), source.getName()).getAbsoluteFile();
         if (!dest.mkdirs()) {
-			System.out.println("cp -r: directory " + sourceDir
-					+ "cannot be copied");
-			return FUNCTION_ERROR;
-		}
+            System.out.println("cp -r: directory " + sourceDir
+                    + "cannot be copied");
+            return FUNCTION_ERROR;
+        }
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isDirectory()) {
                 File newDestDir = new File(dest.getAbsolutePath(), listOfFiles[i].getName());
                 if (!newDestDir.mkdirs()) {
-					System.out.println("cp -r: directory " + newDestDir.getName()
-							+ "cannot be copied");
-					return FUNCTION_ERROR;
-				}
+                    System.out.println("cp -r: directory " + newDestDir.getName()
+                            + "cannot be copied");
+                    return FUNCTION_ERROR;
+                }
                 if (!copyRecursive(listOfFiles[i].getAbsolutePath(), newDestDir.getAbsolutePath())) {
-					return FUNCTION_ERROR;
-				}
+                    return FUNCTION_ERROR;
+                }
             } else {
                 if (!copy(listOfFiles[i].getAbsolutePath(), destDir)) {
-					return FUNCTION_ERROR;
-				}
+                    return FUNCTION_ERROR;
+                }
             }
         }
         return FUNCTION_SUCCESS;
@@ -273,15 +272,15 @@ final class Shell {
             } else if (src.isFile()) {
                 if (src.getParent().equals(dst.getParent())) {
                     if (!src.renameTo(dst)) {
-						if (dst.exists()) {
-							System.err.println("mv: cannot rename "
-									+ source + "to"
-									+ dest + ",file already exists.");
-						} else {
-							System.err.println("mv: cannot rename "
-									+ source + "to"
-									+ dest + " for some unknown reason.");
-						}
+                        if (dst.exists()) {
+                            System.err.println("mv: cannot rename "
+                                    + source + "to"
+                                    + dest + ",file already exists.");
+                        } else {
+                            System.err.println("mv: cannot rename "
+                                    + source + "to"
+                                    + dest + " for some unknown reason.");
+                        }
                         return FUNCTION_ERROR;
                     }
                 } else {
@@ -289,15 +288,15 @@ final class Shell {
                     remove(source);
                     File newCopy = new File(dst.getParent(), source);
                     if (!newCopy.renameTo(dst)) {
-						if (dst.exists()) {
-							System.err.println("mv: cannot rename "
-									+ source + "to"
-									+ dest + ",file already exists.");
-						} else {
-							System.err.println("mv: cannot rename "
-									+ source + "to"
-									+ dest + " for some unknown reason.");
-						}
+                        if (dst.exists()) {
+                            System.err.println("mv: cannot rename "
+                                    + source + "to"
+                                    + dest + ",file already exists.");
+                        } else {
+                            System.err.println("mv: cannot rename "
+                                    + source + "to"
+                                    + dest + " for some unknown reason.");
+                        }
                         return FUNCTION_ERROR;
                     }
                 }
@@ -311,13 +310,13 @@ final class Shell {
             }
             if (src.getParent().equals(dst.getParent())) {
                 if (!src.renameTo(dst)) {
-					if (dst.exists()) {
+                    if (dst.exists()) {
                     System.err.println("mv: cannot rename "
                             + source + "to" + dest + ",file already exists.");
-					} else {
-						System.err.println("mv: cannot rename "
-								+ source + "to" + dest + " for some unknown reason.");
-					}
+                    } else {
+                        System.err.println("mv: cannot rename "
+                                + source + "to" + dest + " for some unknown reason.");
+                    }
                     return FUNCTION_ERROR;
                 }
             } else {
@@ -325,13 +324,13 @@ final class Shell {
                 remove(source);
                 File newCopy = new File(dst.getParent(), source);
                 if (!newCopy.renameTo(dst)) {
-					if (dst.exists()) {
+                    if (dst.exists()) {
                     System.err.println("mv: cannot rename "
                             + source + "to" + dest + ",file already exists.");
-					} else {
-						System.err.println("mv: cannot rename "
-								+ source + "to" + dest + " for some unknown reason.");
-					}
+                    } else {
+                        System.err.println("mv: cannot rename "
+                                + source + "to" + dest + " for some unknown reason.");
+                    }
                     return FUNCTION_ERROR;
                 }
             }
@@ -373,17 +372,17 @@ final class Shell {
         File f = new File(file).getAbsoluteFile();
         if (f.isFile()) {
            if (!f.delete()) {
-			   System.err.println("rm: file " + f.getName()
-					   + " cannot be removed for some unknown reason.");
-			   return FUNCTION_ERROR;
-		   }
+               System.err.println("rm: file " + f.getName()
+                       + " cannot be removed for some unknown reason.");
+               return FUNCTION_ERROR;
+           }
         } else if (f.isDirectory()) {
             System.out.println("rm: " + f.getName() + " : is a directory.");
             return FUNCTION_ERROR;
         } else if (!f.exists()) {
-			System.out.println("rm: cannot remove " + f.getName() + " : No such file or directory");
-			return FUNCTION_ERROR;
-		}
+            System.out.println("rm: cannot remove " + f.getName() + " : No such file or directory");
+            return FUNCTION_ERROR;
+        }
         return FUNCTION_SUCCESS;
     }
     /**
@@ -401,19 +400,19 @@ final class Shell {
             for (int i = 0; i < content.length; i++) {
                 if (content[i].isDirectory()) {
                     if (!removeRecursive(content[i].getAbsolutePath())) {
-						return FUNCTION_ERROR;
-					}
+                        return FUNCTION_ERROR;
+                    }
                 } else {
                     if (!remove(content[i].getAbsolutePath())) {
-						return FUNCTION_ERROR;
-					}
+                        return FUNCTION_ERROR;
+                    }
                 }
             }
            if (!dIr.delete()) {
-			  System.err.println("rm -r: directory " + dIr.getName()
-					  + "cannot be deleted for some unknown reason.");
-			   return FUNCTION_ERROR;
-		   }
+              System.err.println("rm -r: directory " + dIr.getName()
+                      + "cannot be deleted for some unknown reason.");
+               return FUNCTION_ERROR;
+           }
         } else {
             System.out.println("rm -r: " + dir + " is not a directory");
             return FUNCTION_ERROR;
@@ -438,22 +437,22 @@ final class Shell {
             oldFile = new File(file).getAbsoluteFile();
             newFile = new File(dir).getAbsoluteFile();
         }
-		if (oldFile.getAbsolutePath().equals(newFile.getAbsolutePath())) {
-			System.out.println("cp:"
-					+ oldFile.getName()
-					+ " and " + newFile.getName() + " are the same file.");
-			return FUNCTION_ERROR;
-		}
-		if (oldFile.isDirectory()) {
-			System.err.println("cp: " + oldFile.getAbsolutePath() + " is a directory (not copied).");
-		}
+        if (oldFile.getAbsolutePath().equals(newFile.getAbsolutePath())) {
+            System.out.println("cp:"
+                    + oldFile.getName()
+                    + " and " + newFile.getName() + " are the same file.");
+            return FUNCTION_ERROR;
+        }
+        if (oldFile.isDirectory()) {
+            System.err.println("cp: " + oldFile.getAbsolutePath() + " is a directory (not copied).");
+        }
         try {
             Files.copy(oldFile.toPath(), newFile.toPath(),
-					StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+                    StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-			System.err.println("cp: Caught IOException " + e.getMessage());
-			return FUNCTION_ERROR;
-		}
+            System.err.println("cp: Caught IOException " + e.getMessage());
+            return FUNCTION_ERROR;
+        }
         return FUNCTION_SUCCESS;
     }
     /**
@@ -472,14 +471,14 @@ final class Shell {
     private static boolean mkdir(final String dir) {
         File newDir = new File(dir).getAbsoluteFile();
         if (!newDir.mkdirs()) {
-			if (newDir.isDirectory()) {
-            	System.err.println("mkdir: directory " + newDir.getAbsolutePath() + " already exists.");
-			} else if (newDir.isFile()) {
-				System.err.println("mkdir: file " + newDir.getAbsolutePath() + " already exists.");
-			} else {
-				System.err.println("mkdir: directory " + newDir.getAbsolutePath()
-						+ " cannot be created for some unknown reason.");
-			}
+            if (newDir.isDirectory()) {
+                System.err.println("mkdir: directory " + newDir.getAbsolutePath() + " already exists.");
+            } else if (newDir.isFile()) {
+                System.err.println("mkdir: file " + newDir.getAbsolutePath() + " already exists.");
+            } else {
+                System.err.println("mkdir: directory " + newDir.getAbsolutePath()
+                        + " cannot be created for some unknown reason.");
+            }
             return FUNCTION_ERROR;
         }
         return FUNCTION_SUCCESS;
