@@ -19,6 +19,9 @@ public class Shell {
             if (in.hasNextLine()) {
                 input = in.nextLine();
             }
+            else {
+                break;
+            }
             try {
                 batchMode(input);
             } catch (Exception e) {
