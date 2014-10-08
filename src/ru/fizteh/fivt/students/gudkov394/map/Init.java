@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.gudkov394.map;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.XPath;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -32,11 +30,10 @@ public class Init {
                 String value = readString(input, length);
                 length = readInt(input);
                 value = readString(input, length);
-            if(currentTable.containsKey(key))
-            {
-                System.err.println("Wrong data: same keys");
-                System.exit(2);
-            }
+                if (currentTable.containsKey(key)) {
+                    System.err.println("Wrong data: same keys");
+                    System.exit(2);
+                }
                 currentTable.put(key, value);
             }
         } catch (IOException e) {
