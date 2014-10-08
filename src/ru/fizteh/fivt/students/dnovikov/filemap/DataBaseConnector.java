@@ -7,8 +7,13 @@ public class DataBaseConnector {
     private SingleTable table = null;
 
     public DataBaseConnector() throws Exception {
-        Path dataBasePath = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("db.file"));
-        table = new SingleTable(dataBasePath);
+
+        try {
+            Path dataBasePath = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("db.file"));
+            table = new SingleTable(dataBasePath);
+        } catch (NullPointerException ex) {
+            throw new Exception("database file not set");
+        }
     }
 
     public SingleTable getState() {
