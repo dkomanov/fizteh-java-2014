@@ -5,10 +5,10 @@ import ru.fizteh.fivt.students.moskupols.cliutils.*;
 /**
  * Created by moskupols on 28.09.14.
  */
-public class FileMapCommandFactory implements CommandFactory {
-    private final DataBase db;
+public class TableCommandFactory implements CommandFactory {
+    private final DataBaseTable db;
 
-    public FileMapCommandFactory(DataBase db) {
+    public TableCommandFactory(DataBaseTable db) {
         this.db = db;
     }
 
