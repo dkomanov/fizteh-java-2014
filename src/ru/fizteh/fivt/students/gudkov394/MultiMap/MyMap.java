@@ -24,7 +24,7 @@ public class MyMap {
         File f = new File(System.getProperty("db.file"));
         String[] s = f.list();
         if (s != null) {
-            for (String  tmp : s) {
+            for (String tmp : s) {
                 CurrentTable ct = new CurrentTable(tmp);
                 ct.init(); //в number запишем количество аргументов, а дальше поддерживаем его
                 ct.clear();

@@ -15,7 +15,7 @@ public class CurrentTable {
 
     public CurrentTable(String nameTmp) {
         name = nameTmp;
-     //   create();
+        //   create();
     }
 
     public CurrentTable() {
@@ -96,7 +96,7 @@ public class CurrentTable {
         if (f.exists()) {
             File[] files = f.listFiles();
             for (File tmp : files) {
-                    Init z = new Init(currentTable, tmp.toString());
+                Init z = new Init(currentTable, tmp.toString());
             }
         }
         number = currentTable.size();
