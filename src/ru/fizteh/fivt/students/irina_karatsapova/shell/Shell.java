@@ -18,8 +18,7 @@ public class Shell {
             String input = null;
             if (in.hasNextLine()) {
                 input = in.nextLine();
-            }
-            else {
+            } else {
                 break;
             }
             try {
