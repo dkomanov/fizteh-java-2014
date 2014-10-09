@@ -17,7 +17,7 @@ public class Init {
             for (File tmp : files) {
                 DataInputStream input = null;
                 try {
-                    input = new DataInputStream(new FileInputStream(f));
+                    input = new DataInputStream(new FileInputStream(tmp));
                 } catch (FileNotFoundException e) {
                     System.err.println("Input file didn't find");
                     System.exit(4);

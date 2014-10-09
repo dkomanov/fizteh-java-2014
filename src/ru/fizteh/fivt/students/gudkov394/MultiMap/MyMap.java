@@ -11,7 +11,7 @@ public class MyMap {
     public CurrentTable ct = new CurrentTable();
 
     public Boolean checkName(final String name) {
-        String[] s = {"put", "get", "remove", "list", "exit", "create", "use", "drop", "#*#"};
+        String[] s = {"put", "get", "remove", "list", "exit", "create", "use", "drop", "#*#", "size"};
         for (int i = 0; i < s.length; ++i) {
             if (name.equals(s[i])) {
                 return true;
@@ -22,12 +22,14 @@ public class MyMap {
 
     private void initMap() {
         File f = new File(System.getProperty("db.file"));
-        File[] s = f.listFiles();
-        for (File tmp : s) {
-            CurrentTable ct = new CurrentTable(tmp.toString());
-            ct.init(); //в number запишем количество аргументов, а дальше поддерживаем его
-            ct.clear();
-            tables.put(s.toString(), ct);
+        String[] s = f.list();
+        if (s != null) {
+            for (String  tmp : s) {
+                CurrentTable ct = new CurrentTable(tmp);
+                ct.init(); //в number запишем количество аргументов, а дальше поддерживаем его
+                ct.clear();
+                tables.put(tmp, ct);
+            }
         }
     }
 
@@ -52,7 +54,7 @@ public class MyMap {
             if (obvious()) {
                 Remove remove = new Remove(currentArgs, ct);
             }
-        } else if ("#*#".equals(currentArgs[0])) {
+        } else if ("list".equals(currentArgs[0])) {
             if (obvious()) {
                 ListTable listTable = new ListTable(currentArgs, tables);
             }
@@ -92,13 +94,23 @@ public class MyMap {
             } else {
                 System.out.println("tablename not exists");
             }
-        } else if ("show tables".equals(currentArgs[0])) {
+        } else if ("#*#".equals(currentArgs[0])) {
             Set<String> set = tables.keySet();
             System.out.println("table_name row_count");
             for (String s : set) {
                 System.out.println(s + " " + ((Integer) tables.get(s).getNumber()).toString());
             }
             System.out.println();
+        } else if ("size".equals(currentArgs[0])) {
+            if (currentArgs.length != 1) {
+                System.err.println("wrong number of argument to drop");
+                System.exit(1);
+            }
+            int size = 0;
+            for (String s : tables.keySet()) {
+                size += tables.get(s).getNumber();
+            }
+            System.out.println(size);
         } else {
             System.err.println("wrong command");
             System.exit(22);
@@ -108,7 +120,7 @@ public class MyMap {
     public void interactive() {
         Scanner sc = new Scanner(System.in);
         CurrentTable currentTable = new CurrentTable();
-        //initMap();
+        initMap();
         while (true) {
 
             String currentString = sc.nextLine();
@@ -124,7 +136,7 @@ public class MyMap {
     public void packageMode(final String[] args) {
         Scanner sc = new Scanner(System.in);
         CurrentTable currentTable = new CurrentTable();
-       // initMap();
+        initMap();
         StringBuilder builder = new StringBuilder();
         for (String s : args) {
             builder.append(s).append(" ");

@@ -15,7 +15,7 @@ public class CurrentTable {
 
     public CurrentTable(String nameTmp) {
         name = nameTmp;
-        create();
+     //   create();
     }
 
     public CurrentTable() {
@@ -99,5 +99,6 @@ public class CurrentTable {
                     Init z = new Init(currentTable, tmp.toString());
             }
         }
+        number = currentTable.size();
     }
 }
