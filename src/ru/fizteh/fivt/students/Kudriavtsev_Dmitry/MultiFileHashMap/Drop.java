@@ -12,7 +12,7 @@ public class Drop extends Command {
     }
 
     @Override
-    public boolean exec(Connector dbConnector ,String[] args) {
+    public boolean exec(Connector dbConnector, String[] args) {
         if (args.length != argLen) {
             System.err.println("Incorrect number of arguments in " + name);
             return false;

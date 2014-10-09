@@ -12,7 +12,7 @@ public class Show extends Command {
     }
 
     @Override
-    public boolean exec(Connector dbConnector ,String[] args) {
+    public boolean exec(Connector dbConnector, String[] args) {
         if (args.length != argLen) {
             System.err.println("Incorrect number of arguments in " + name);
             return false;
@@ -23,7 +23,7 @@ public class Show extends Command {
             return true;
         }
         String s = "";
-        for( Map.Entry<String, MFHMap> a: dbConnector.tables.entrySet() ) {
+        for (Map.Entry<String, MFHMap> a: dbConnector.tables.entrySet()) {
             s = a.getKey() + " " + a.getValue().size() + "\\n";
         }
         System.out.println(s.substring(0, s.length() - 1));

@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.MultiFileHashMap;
 
-import java.util.HashMap;
-
 /**
  * Created by Дмитрий on 07.10.14.
  */
@@ -12,7 +10,7 @@ public class Create extends Command {
     }
 
     @Override
-    public boolean exec(Connector dbConnector ,String[] args) {
+    public boolean exec(Connector dbConnector, String[] args) {
         if (args.length != argLen) {
             System.err.println("Incorrect number of arguments in " + name);
             return false;

@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Дмитрий on 07.10.14.
@@ -27,8 +26,8 @@ public class MFHMap extends HashMap<String, String> {
         }
     }
 
-    void readFromFile(DataInputStream iStream){
-        try{
+    void readFromFile(DataInputStream iStream) {
+        try {
             int keySize = iStream.readInt();
             byte[] key = new byte[keySize];
             iStream.read(key, 0, keySize);
@@ -38,7 +37,7 @@ public class MFHMap extends HashMap<String, String> {
             iStream.read(value, 0, valueSize);
 
             put(new String(key, "UTF-8"), new String(value, "UTF-8"));
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.err.println("Error in reading: " + e.getMessage());
             System.exit(-1);
         }
@@ -48,8 +47,8 @@ public class MFHMap extends HashMap<String, String> {
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
                 try {
-                    DataInputStream stream = new DataInputStream( Files.newInputStream(
-                            dbPath.resolve(i + ".dir" + File.separator + j + ".dat")) );
+                    DataInputStream stream = new DataInputStream(Files.newInputStream(
+                            dbPath.resolve(i + ".dir" + File.separator + j + ".dat")));
                         while (stream.available() > 0) {
                             readFromFile(stream);
                         }
@@ -109,8 +108,8 @@ public class MFHMap extends HashMap<String, String> {
                         Files.createDirectory(dbPath.resolve(d + ".dir/"));
                         dir[d] = true;
                     }
-                    streams[d][f] = new DataOutputStream( Files.newOutputStream(
-                            dbPath.resolve(d + ".dir" + File.separator + f + ".dat")) );
+                    streams[d][f] = new DataOutputStream(Files.newOutputStream(
+                            dbPath.resolve(d + ".dir" + File.separator + f + ".dat")));
                     file[d][f] = true;
                 }
                 writeToFile(streams[d][f], entry.getKey(), entry.getValue());
@@ -124,6 +123,7 @@ public class MFHMap extends HashMap<String, String> {
                         try {
                             streams[i][j].close();
                         } catch (IOException ignored) {
+                            continue;
                         }
                     }
                 }
@@ -139,6 +139,7 @@ public class MFHMap extends HashMap<String, String> {
                         try {
                             streams[i][j].close();
                         } catch (IOException ignored) {
+                            continue;
                         }
                     }
                 }
