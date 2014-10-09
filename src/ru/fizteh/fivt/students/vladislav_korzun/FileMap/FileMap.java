@@ -1,0 +1,267 @@
+package ru.fizteh.fivt.students.vladislav_korzun.FileMap;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.regex.PatternSyntaxException;
+
+public class FileMap {
+    public static void main(final String[] args) {        
+        try {            
+            String path = System.getProperty("db.file");
+            if (!Paths.get(path).toFile().exists()) {
+                Paths.get(path).toFile().createNewFile();
+            }
+            RandomAccessFile dbfile = new RandomAccessFile(path, "rw");
+            DbMain db = new DbMain();
+            if (dbfile.length() > 0) {                    
+                db.read(dbfile);
+            }             
+              Switcher swch = new Switcher();
+              swch.swch(args, db, dbfile);
+              dbfile.close();                     
+            
+        } catch (Exception e) {
+                System.out.println("Error connecting database");
+        }
+    }
+    
+}
+
+class Commands {
+    Commands(DbMain db) {
+        filemap = db.filemap;
+    }
+    void put(String key, String value) {
+        try {            
+            String val = filemap.put(key, value);
+            if (val == null) {
+                System.out.println("new");
+            } else {
+                System.out.println("owerwrite");
+                System.out.println(val);
+            }            
+        } catch (Exception e) {
+            System.out.println("Something get wrong");
+        }
+        
+    }
+    
+    void get(String key) {
+        try {
+            String val = filemap.get(key);
+            if (val.equals(null)) {
+                System.out.println("not found");
+            } else {
+                System.out.println("found");
+                System.out.println(val);
+            }            
+        } catch (Exception e) {
+            System.out.println("Something get wrong");
+        }      
+    }
+    
+    void remove(String key) {
+        try {
+            String val = filemap.remove(key);
+            if (val.equals(null)) {
+                System.out.println("not found");
+            } else {
+                System.out.println("removed");
+            }            
+        } catch (Exception e) {
+            System.out.println("Something get wrong");
+        }    
+    }
+    
+    void list() {
+        try {
+            Set<String> keys = filemap.keySet();
+            Iterator<String> it = keys.iterator();
+            while (it.hasNext()) {
+                System.out.print(it.next() + ' ');                
+            }
+            System.out.println();
+        } catch (NoSuchElementException e) {
+            //if iterator has no more elements
+        } catch (Exception e) {
+            System.out.println("Something get wrong");
+        }
+    }
+    
+    void exit(DbMain db, RandomAccessFile dbfile) {
+        db.filemap = filemap;
+        db.write(dbfile);        
+    }
+    
+   public Map<String, String> filemap;
+}
+
+class Parser {
+    String[] pars(final String arg) {        
+        String[] answer = null;
+        String buffer = new String();
+        try {
+        buffer = arg.trim();    
+        answer = buffer.split(";");
+        } catch (PatternSyntaxException e) {
+            System.out.println("Ivalid command");
+        }
+        return answer;
+        
+    }
+    String[] pars2(final String arg) {
+        String[] answer = null;
+        String buffer = new String();
+        try {
+            buffer = arg.trim();
+            answer = buffer.split(" ");
+        } catch (PatternSyntaxException e) {
+            System.out.println("Ivalid command");
+        }
+        return answer;
+    }
+}
+
+class DbMain {   
+    DbMain() {
+        filemap = new TreeMap<String, String>();
+    }
+    void read(RandomAccessFile db) {
+        LinkedList<Integer> offset = new LinkedList<Integer>() ;
+        int counter;
+        counter = 0;        
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();  
+        List<String> keys = new LinkedList<String>();
+        Byte bt = null;
+        try {
+           do {
+                do {             
+                    bt = db.readByte();
+                    counter++;
+                    if (bt != 0) {
+                        buffer.write(bt);                        
+                    }
+                } while(bt != 0);
+                keys.add(buffer.toString("UTF-8"));
+                buffer.reset();
+                offset.add(db.readInt());
+                counter += 4;
+           } while (counter != offset.getFirst());
+           offset.add((int) db.length());
+           for (int i = 1; i < offset.size(); i++) {
+               while (offset.get(i) > counter) {
+                   bt = db.readByte();
+                   counter++;
+                   buffer.write(bt);
+               }
+               filemap.put(keys.get(i - 1), buffer.toString("UTF-8"));
+               buffer.reset();
+           }
+           buffer.close();
+        } catch (IOException e) {
+            System.out.println("Invalid input");
+        }     
+   }
+   void write(RandomAccessFile db) {
+       try {
+           db.setLength(0);
+           LinkedList<Integer> offset = new LinkedList<Integer>();
+           Set<String> keys = filemap.keySet();
+           Iterator<String> it = keys.iterator();
+           while (it.hasNext()) {                            
+               db.write(it.next().getBytes("UTF-8"));
+               db.write('\0');
+               offset.add((int) db.getFilePointer());
+               db.writeInt(0);
+           }
+           Collection<String> val = filemap.values();
+           it = val.iterator();
+           int i = 0;
+           int pointer = 0;
+           while (it.hasNext()) {
+               pointer = (int) db.getFilePointer(); 
+               db.seek(offset.get(i));
+               i++;
+               db.writeInt(pointer);
+               db.seek(pointer);
+               db.write(it.next().getBytes("UTF-8"));               
+           }
+       } catch (Exception e) {
+           System.out.println("Something get wrong");
+       }
+   }
+   public Map<String, String> filemap;
+}
+
+class Switcher {
+    void swch(String[] args, DbMain db, RandomAccessFile dbfile) {
+        Scanner in = new Scanner(System.in);
+        Commands command = new Commands(db);        
+        String request = new String();              
+        Parser parser = new Parser();
+        String[] arg = null;
+        String[] arg2 = null;
+        String key = new String();
+        String value = new String();
+        int i = 0;
+        do {            
+            if (args.length == 0) {
+                System.out.print("$ ");
+                request = in.nextLine();
+            } else {
+                for (i = 0; i < args.length; i++) {
+                    request += args[i];
+                }                
+                request = request + ";exit";
+            }            
+            arg = parser.pars(request);
+            try {
+                for (i = 0; i < arg.length; i++) {
+                    arg2 = parser.pars2(arg[i]);
+                    switch(arg2[0]) {                
+                        case "put":
+                            key = arg2[1];
+                            value = arg2[2];
+                            command.put(key, value);
+                            break;
+                        case "get":    
+                            key = arg2[1];  
+                            command.get(key);                        
+                            break;
+                        case "remove":
+                            key = arg2[1];
+                            command.remove(key);
+                            break;
+                        case "list": 
+                            command.list();
+                            break;
+                        case "exit":
+                            in.close();
+                            command.exit(db, dbfile);
+                            break;
+                        default:
+                            System.out.println("Invalid command");
+                            if (args.length > 0) {
+                                in.close();
+                                System.exit(1);
+                            }                        
+                            break;
+                    }    
+                }     
+            } catch (Exception e) {
+                System.out.println("Invalid input");
+            }
+        } while(!arg2[0].equals("exit"));        
+    }    
+}
