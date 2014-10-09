@@ -26,21 +26,20 @@ public final class ShellMain {
      */
     public static void main(final String[] args) {
         if (args.length != 0) {
+            String s = "";
+            for (String arg : args) {
+                s += arg + " ";
+            }
             int i = 0;
-            int j = 0;
-            for (i = 0; i <= args.length; i++) {
-                if (i == args.length || args[i].equals(";")) {
-                    try {
-                        Command cmd = Command.create(Arrays.copyOfRange(args,
-                                j, i));
-                        cmd.run();
-                    } catch (Exception e) {
-                        System.err.println(e.getMessage());
-                        System.exit(1);
-                    }
-                    j = i + 1;
-                } else {
-                    args[i] = args[i].trim();
+            String[] cmds = s.split(";");
+            for (i = 0; i < cmds.length; i++) {
+                cmds[i] = cmds[i].trim();
+                try {
+                    Command cmd = Command.create(cmds[i].split(" "));
+                    cmd.run();
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                    System.exit(1);
                 }
             }
         } else {
