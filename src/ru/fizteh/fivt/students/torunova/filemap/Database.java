@@ -6,13 +6,13 @@ import java.util.Set;
  * Created by nastya on 04.10.14.
  */
 public interface Database {
-	boolean put(final String key, final String value);
+    boolean put(final String key, final String value);
 
-	String get(final String key);
+    String get(final String key);
 
-	boolean remove(final String key);
+    boolean remove(final String key);
 
-	Set<String> list();
+    Set<String> list();
 
-	void close();
+    void close();
 }
