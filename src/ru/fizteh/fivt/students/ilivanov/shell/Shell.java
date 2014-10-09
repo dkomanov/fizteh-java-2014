@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * @author ilivanov
  */
-class Shell {
+public class Shell {
     public static File currentDirectory = new File(System.getProperty("user.dir"));
     private int exitCode = 0;
 
@@ -89,7 +89,7 @@ class Shell {
 
     private void executeCommands(final ArrayList<Command> commands) {
         for (Command command : commands) {
-            exitCode = command.execute();
+            exitCode += command.execute();
         }
     }
 
