@@ -105,7 +105,7 @@ public class DataBase {
             while (itKeys.hasNext()) {
                 String key = itKeys.next();
                 byte[] keyByte = key.getBytes("UTF-8");
-                byte[] valueByte = database.get(key).getByt es("UTF-8");
+                byte[] valueByte = database.get(key).getBytes("UTF-8");
                 
                 output.write(buffer.putInt(0, keyByte.length).array());
                 output.write(keyByte);
