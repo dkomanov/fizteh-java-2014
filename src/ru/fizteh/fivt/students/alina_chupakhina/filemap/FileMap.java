@@ -37,8 +37,10 @@ public class FileMap {
     }
 
     public static void getFile() throws Exception {
-        int n = 0, i = 0;
-        String key, value;
+        int n = 0;
+        int i = 0;
+        String key;
+        String value;
 
         boolean end = false;
         while (!end) {
@@ -59,7 +61,8 @@ public class FileMap {
     }
 
     public static void putFile() throws Exception {
-        String key, value;
+        String key;
+        String value;
         file.setLength(0);
         for (Map.Entry<String, String> i : fm.entrySet()) {
             key = i.getKey();
@@ -144,9 +147,10 @@ public class FileMap {
 
     public static void put(String[] args) throws Exception {
         if (args.length != 3) {
-            throw new Exception("rm: invalid number of arguments");
+            throw new Exception("put: invalid number of arguments");
         }
-        String key = args[1], value = args[2];
+        String key = args[1];
+        String value = args[2];
         String s;
         s = fm.put(key, value);
         if (s != null) {
@@ -159,7 +163,7 @@ public class FileMap {
 
     public static void get(String[] args) throws Exception {
         if (args.length != 2) {
-            throw new Exception("rm: invalid number of arguments");
+            throw new Exception("get: invalid number of arguments");
         }
         String key = args[1];
         String s = fm.get(key);
@@ -173,7 +177,7 @@ public class FileMap {
 
     public static void remove(String[] args) throws Exception {
         if (args.length != 2) {
-            throw new Exception("rm: invalid number of arguments");
+            throw new Exception("remove: invalid number of arguments");
         }
         String key = args[1];
         String s = fm.remove(key);
@@ -186,7 +190,7 @@ public class FileMap {
 
     public static void list(String[] args) throws Exception {
         if (args.length != 2) {
-            throw new Exception("rm: invalid number of arguments");
+            throw new Exception("list: invalid number of arguments");
         }
         String key = args[1];
         Set keySet = fm.keySet();
@@ -199,7 +203,7 @@ public class FileMap {
 
     public static void exit(String[] args) throws Exception {
         if (args.length != 1) {
-            throw new Exception("rm: invalid number of arguments");
+            throw new Exception("exit: invalid number of arguments");
         }
         putFile();
         fm.clear();
