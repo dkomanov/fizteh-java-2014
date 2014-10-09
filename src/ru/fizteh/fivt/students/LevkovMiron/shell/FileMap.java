@@ -1,12 +1,9 @@
 package ru.fizteh.fivt.students.LevkovMiron.shell;
 
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.*;
+import java.nio.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,19 +31,42 @@ class FileMap {
         catch (IOException e) {
             printStream.println("Incorrect file data. Didn't read");
             System.exit(-1);
+        } catch (OutOfMemoryError e) {
+            printStream.println(e.getMessage());
+            System.exit(-4);
         }
     }
 
-    static String readString(final FileInputStream inStream, int size) throws IOException {
-        byte[] utfData = new byte[size];
-        inStream.read(utfData);
-        String returned = new String(utfData, "UTF-8");
-        return new String(utfData, "UTF-8");
+    static String readString(final FileInputStream inStream, int size) throws IOException, OutOfMemoryError {
+        ArrayList<Byte> tempData = new ArrayList<Byte>();
+        for (int i = 0; i < size; i++) {
+            byte[] oneByte = new byte[1];
+            if (inStream.read(oneByte) == -1) {
+                throw new OutOfMemoryError("Incorrect data. Unexpected end of file.");
+            }
+            tempData.add(oneByte[0]);
+        }
+        try {
+            byte[] utfData = new byte[size];
+            for (int i = 0; i < tempData.size(); i++) {
+                utfData[i] = tempData.get(i);
+            }
+            String returned = new String(utfData, "UTF-8");
+            return new String(utfData, "UTF-8");
+        } catch (OutOfMemoryError e) {
+            throw new OutOfMemoryError("Data is too large.");
+        }
     }
-    static int readInt(final FileInputStream inStream) throws IOException {
+    static int readInt(final FileInputStream inStream) throws IOException, OutOfMemoryError {
         byte[] utfData = new byte[4];
-        inStream.read(utfData);
-        return ByteBuffer.wrap(utfData).getInt();
+        if (inStream.read(utfData) < 4) {
+            throw new OutOfMemoryError("Unexpected end of file.");
+        }
+        int value = ByteBuffer.wrap(utfData).getInt();
+        if (value < 0) {
+            throw new IOException();
+        }
+        return value;
     }
     static void writeIntAndString(FileOutputStream stream, String key) throws IOException {
         byte[] data = ByteBuffer.allocate(4).putInt(key.length()).array();

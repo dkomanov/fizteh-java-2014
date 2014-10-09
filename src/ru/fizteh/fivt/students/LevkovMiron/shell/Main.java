@@ -15,3 +15,14 @@ class Main {
         }
     }
 }
+
+/*
+@Test
+@Before
+@After
+@BeforeClass
+#AfterClass
+assertNull
+assertEquals
+verify(class, numberOfTimes).method_name
+ */
