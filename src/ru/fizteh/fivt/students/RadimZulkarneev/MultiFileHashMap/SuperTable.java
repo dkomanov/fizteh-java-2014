@@ -57,11 +57,11 @@ public class SuperTable {
         }
     }
     
-    public void put(String key, String value) throws IOException, DataBaseCorrupt, MapExcept {
+    public boolean put(String key, String value) throws IOException, DataBaseCorrupt, MapExcept {
         String dest = destinationOfKey(key);
 
         if (src.containsKey(dest)) {
-            src.get(dest).put(key, value);
+            return src.get(dest).put(key, value);
         } else {
             //
             try {
@@ -70,8 +70,8 @@ public class SuperTable {
                 //
             }
             Table newTable = new Table(tablePath.resolve(getDirName(dest)).resolve(getFileName(dest)).toString());
-            newTable.put(key, value);
             src.put(dest, newTable);
+            return newTable.put(key, value);
         }
     }
     
@@ -107,12 +107,13 @@ public class SuperTable {
             return new String(dest.substring(2, 4) + ".dat");
         }
     }
-    public void remove(String key) {
+    public boolean remove(String key) {
         String dest = destinationOfKey(key);
         if (src.containsKey(dest)) {
-            src.get(dest).remove(key);
+            return src.get(dest).remove(key);
         } else {
             System.out.println("not found");
+            return false;
         }
     }
     private String destinationOfKey(String key) {
@@ -142,6 +143,10 @@ public class SuperTable {
         }
 
     }
-    Path tablePath;
-    Map<String, Table> src;
+    
+    public String getTableName() {
+        return tablePath.getFileName().toString();
+    }
+    private Path tablePath;
+    private Map<String, Table> src;
 }

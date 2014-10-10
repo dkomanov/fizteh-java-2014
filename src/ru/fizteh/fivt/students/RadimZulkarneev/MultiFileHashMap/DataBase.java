@@ -47,7 +47,7 @@ public class DataBase {
             if (curName.matches("([0-9]|1[0-5])\\.dir")) {
                 c += tableRowCount(curDir);
             } else {
-                throw new DataBaseCorrupt("DataBase corrupted: incorrect directoryName");
+                throw new DataBaseCorrupt("DataBase corrupted: incorrect directoryName: " + curName);
             }
         }
         return c;
@@ -82,7 +82,7 @@ public class DataBase {
             System.out.println(cur + " " + tableRowCount.get(cur));
         }
     }
-    /*       
+    /*      Создание новой таблицы
      * */
     public void create(String tbName) throws MapExcept, IOException {
         if (tableRowCount.containsKey(tbName)) {
@@ -94,10 +94,15 @@ public class DataBase {
     }
     public void drop(String tbName) throws MapExcept, IOException {
         if (!tableRowCount.containsKey(tbName)) {
-            throw new MapExcept(tbName + ":  tablename not exists");
+            throw new MapExcept(tbName + ":  no table");
+        }
+        if (isChoose && sTable.getTableName().equals(tbName)) {
+            isChoose = false;
+            sTable = null;
         }
         Functions.rmDir(dataBasePath.resolve(tbName));
         tableRowCount.remove(tbName);
+        System.out.println("dropped");
     }
     public Path getPath() {
         return dataBasePath;
@@ -108,7 +113,7 @@ public class DataBase {
             throw new MapExcept("use: '" + tbName + "': tablename not exists");
         }
         if (isChoose) {
-            //
+            // Запись таблицы!!!! СДЕЛАТЬ епт
             this.commit();
         }
         
@@ -138,7 +143,9 @@ public class DataBase {
         if (!isChoose) {
             throw new MapExcept("no table");
         } else {
-            sTable.put(key, value);
+            if (!sTable.put(key, value)) {
+                tableRowCount.put(sTable.getTableName(), tableRowCount.get(sTable.getTableName()) + 1);
+            }
         }
     }
     public void get(String key) throws MapExcept {
@@ -148,12 +155,13 @@ public class DataBase {
             sTable.get(key);
         }
     }
-    
     public void remove(String key) throws MapExcept {
         if (!isChoose) {
             throw new MapExcept("no table");
         } else {
-            sTable.remove(key);
+            if (sTable.remove(key)) {
+                tableRowCount.put(sTable.getTableName(), tableRowCount.get(sTable.getTableName()) - 1);
+            }
         }
     }
     private boolean isChoose;

@@ -10,6 +10,4 @@ public class DataBaseCorrupt extends Exception {
     public final String toString() {
         return messageOfExcept;
     }
-
-
 }

@@ -9,7 +9,7 @@ public class Commander {
         if (com.length == 0) {
             return;
         }
-        switch (com[0]){
+        switch (com[0]) {
         case "create":
             dBase.create(com[1]);
             System.out.println("created");
@@ -47,12 +47,12 @@ public class Commander {
         }
     }
     
-    public static void commandExec(final ArrayList<String> com, DataBase dBase) 
-            throws IndexOutOfBoundsException, MapExcept, IOException, DataBaseCorrupt, TableConnectionError  {
+    public static void commandExec(final ArrayList<String> com, final DataBase dBase) 
+            throws MapExcept, IOException, DataBaseCorrupt, TableConnectionError  {
         if (com.size() == 0) {
             return;
         }
-        switch (com.get(0)){
+        switch (com.get(0)) {
         case "create":
             dBase.create(com.get(1));
             System.out.println("created");

@@ -51,7 +51,7 @@ public class Table {
             int wordlen = dbFile.readInt();
             byte[] word = new byte[wordlen];
             dbFile.read(word, 0, wordlen);
-            return new String(word);
+            return new String(word, "UTF-8");
         } catch (IOException e) {
             throw new MapExcept("Can't read from Table");
         }
@@ -109,15 +109,18 @@ public class Table {
             throw new MapExcept("Table: cant write");
         }
     }
-    public final void put(final String key, final String value) {
+    //returns TRUE if overwrite, FALSE else
+    public final boolean put(final String key, final String value) {
         if (dBase.containsKey(key)) {
             System.out.println("overwrite");
             System.out.println(dBase.get(key));
             dBase.remove(key);
             dBase.put(key, value);
+            return true;
         } else {
             System.out.println("new");
             dBase.put(key, value);
+            return false;
         }
     }
 
@@ -129,12 +132,15 @@ public class Table {
             System.out.println("not found");
         }
     }
-    public final void remove(final String key) {
+    // returns TRUE if el removed, FALSE else
+    public final boolean remove(final String key) {
         if (dBase.containsKey(key)) {
             System.out.println("removed");
             dBase.remove(key);
+            return true;
         } else {
             System.out.println("not found");
+            return false;
         }
     }
     

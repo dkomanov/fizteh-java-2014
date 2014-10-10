@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class InputParse {
+public final class InputParse {
     private InputParse() {
         //
     }
