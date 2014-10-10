@@ -7,28 +7,20 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellState;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
 
 /**
  *
  * @author Shakarim
  */
-public class RmCommand extends AbstractCommand<ShellState> {
+public class RmCommand extends AbstractCommand<ShellUtils> {
 
-    public RmCommand() {
-        super("rm", 1);
+    public RmCommand(ShellUtils context) {
+        super("rm", 1, context);
     }
 
     @Override
-    public void exec(ShellState state, String args)
-            throws FileNotFoundException, IOException {
-        String[] params = CommandParser.getParams(args);
-        boolean rec = CommandParser.isRec(args);
-        int opt = (rec ? 1 : 0);
-        if (this.getArgsNum() + opt != params.length) {
-            throw new IOException("invalid number of arguments");
-        }
-
-        state.getState().rm(params[0], rec);
+    public void exec(String[] args) throws FileNotFoundException, IOException {
+        context.rm(args[0], (args.length == 2));
     }
 }

@@ -27,15 +27,14 @@ public class ShellUtils {
     private Path workingDirectory;
 
     public ShellUtils() {
-        this.workingDirectory
-                = new File(System.getProperty("user.home")).toPath();
+        this.workingDirectory = new File(System.getProperty("user.home")).toPath();
     }
 
     public ShellUtils(Path workingDirectory) {
         this.workingDirectory = workingDirectory;
     }
 
-    private Path getPath(String fileName) {
+    public Path getPath(String fileName) {
         Path path = Paths.get(fileName);
         if (workingDirectory != null && !path.isAbsolute()) {
             path = workingDirectory.resolve(path);
@@ -142,18 +141,18 @@ public class ShellUtils {
             throw new IOException(String.format(exMsg, source, destination));
         }
         /*
-         if (destFile.isDirectory() && destFile.exists()) {
-         destFile = new File(destFile, srcFile.getName());
-         }
-         /*
-         if (!destFile.exists()) {
-         if (srcFile.isDirectory() && !destFile.mkdir()) {
-         throw new FileNotFoundException(destination);
-         }
-         if (srcFile.isFile() && !destFile.createNewFile()) {
-         throw new FileNotFoundException(destination);
-         }
-         }*/
+        if (destFile.isDirectory() && destFile.exists()) {
+        destFile = new File(destFile, srcFile.getName());
+        }
+        /*
+        if (!destFile.exists()) {
+        if (srcFile.isDirectory() && !destFile.mkdir()) {
+        throw new FileNotFoundException(destination);
+        }
+        if (srcFile.isFile() && !destFile.createNewFile()) {
+        throw new FileNotFoundException(destination);
+        }
+        }*/
         if (srcFile.isFile()) {
             if (destFile.isDirectory()) {
                 destFile = new File(destFile, source);
