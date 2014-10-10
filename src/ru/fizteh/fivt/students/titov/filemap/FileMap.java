@@ -13,7 +13,7 @@ public class FileMap {
     // path);
     private static File table;
 
-    static public String readWordFromFile(final DataInputStream dataInputStream)
+    public static String readWordFromFile(final DataInputStream dataInputStream)
             throws Exception {
         int length = dataInputStream.readInt();
         StringBuilder buf = new StringBuilder();
