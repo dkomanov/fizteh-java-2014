@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.EgorLunichkin.calculator;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Stack;
 
 public class Divide extends Operator {
@@ -10,7 +11,9 @@ public class Divide extends Operator {
 
     public void operate(Stack<Operand> nums) throws CalculatorException {
         try {
-            nums.push(new Operand(new BigDecimal(1).divide(nums.pop().value.divide(nums.pop().value))));
+            BigDecimal first = nums.pop().value;
+            BigDecimal second = nums.pop().value;
+            nums.push(new Operand(second.divide(first, MathContext.DECIMAL128)));
         } catch (Exception e) {
             throw new CalculatorException(e.getMessage());
         }
