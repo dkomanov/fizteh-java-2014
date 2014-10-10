@@ -7,7 +7,7 @@ public class ShellExecutor extends Executor {
         list();
     }
 
-    final void list() {
+    public final void list() {
 
         Command pwd = new Pwd();
         mapOfCmd.put(pwd.getName(), pwd);

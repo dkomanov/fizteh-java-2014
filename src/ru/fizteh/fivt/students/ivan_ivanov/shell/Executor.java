@@ -18,7 +18,7 @@ public abstract class Executor {
         return substr.trim().split("\\ ");
     }
 
-    final String cmdCheck(final String cmd) {
+    public final String cmdCheck(final String cmd) {
 
         String tmp;
         int space = cmd.indexOf(" ");
@@ -29,7 +29,7 @@ public abstract class Executor {
         return tmp;
     }
 
-    abstract void list();
+    public abstract void list();
 
     final void execute(final Shell shell, final String cmd) throws IOException {
 

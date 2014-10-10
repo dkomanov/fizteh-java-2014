@@ -26,7 +26,7 @@ public class Shell {
         state.setPath(inState);
     }
 
-    final void batchState(final String[] args, final Executor exec) throws IOException {
+    public final void batchState(final String[] args, final Executor exec) throws IOException {
 
         StringBuilder tmp = new StringBuilder();
         for (String arg : args) {
@@ -52,7 +52,7 @@ public class Shell {
         }
     }
 
-    final void interactiveState(final Executor exec) throws IOException {
+    public final void interactiveState(final Executor exec) throws IOException {
 
         try (Scanner scanner = new Scanner(System.in)) {
 
