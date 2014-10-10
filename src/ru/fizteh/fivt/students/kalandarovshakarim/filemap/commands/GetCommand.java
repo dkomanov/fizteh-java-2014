@@ -5,36 +5,35 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
 import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.filemap.FileMapShellState;
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
 
 /**
  *
  * @author shakarim
  */
-public class GetCommand extends AbstractCommand<FileMapShellState> {
+public class GetCommand extends AbstractCommand<OneTableBase> {
 
-    public GetCommand() {
-        super("get", 1);
+    public GetCommand(OneTableBase context) {
+        super("get", 1, context);
     }
 
     @Override
-    public void exec(FileMapShellState state, String args)
-            throws IOException {
-        String[] params = CommandParser.getParams(args);
+    public void exec(String[] args) throws IOException {
+        Table activeTable = context.getActiveTable();
 
-        if (this.getArgsNum() != params.length) {
-            throw new IOException("invalid number of arguments");
+        if (activeTable == null) {
+            throw new IOException("no table");
         }
 
-        String value = state.getState().get(params[0]);
+        String value = activeTable.get(args[0]);
+
         if (value == null) {
-            System.out.println("not found");
+            throw new IOException("not found");
         } else {
             System.out.println(value);
             System.out.println("found");
         }
     }
-
 }

@@ -5,35 +5,33 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
 import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.filemap.FileMapShellState;
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
 
 /**
  *
  * @author shakarim
  */
-public class RemoveCommand extends AbstractCommand<FileMapShellState> {
+public class RemoveCommand extends AbstractCommand<OneTableBase> {
 
-    public RemoveCommand() {
-        super("remove", 1);
+    public RemoveCommand(OneTableBase context) {
+        super("remove", 1, context);
     }
 
     @Override
-    public void exec(FileMapShellState state, String args) throws IOException {
-        String[] params = CommandParser.getParams(args);
+    public void exec(String[] args) throws IOException {
+        Table activeTable = context.getActiveTable();
 
-        if (this.getArgsNum() != params.length) {
-            throw new IOException("invalid number of arguments");
+        if (activeTable == null) {
+            throw new IOException("no table");
         }
-        String deleted = state.getState().remove(params[0]);
+        String deleted = activeTable.remove(args[0]);
 
         if (deleted == null) {
-            System.out.println("not found");
+            throw new IOException("not found");
         } else {
             System.out.println("removed");
         }
     }
-
-
 }

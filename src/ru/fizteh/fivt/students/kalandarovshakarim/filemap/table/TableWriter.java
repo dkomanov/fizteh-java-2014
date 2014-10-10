@@ -8,9 +8,6 @@ import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  *
@@ -20,8 +17,12 @@ public class TableWriter implements Closeable {
 
     private RandomAccessFile dbFile;
 
-    public TableWriter(String fileName) throws FileNotFoundException, IOException {
-        dbFile = new RandomAccessFile(fileName, "rw");
+    public TableWriter(String fileName) {
+        try {
+            dbFile = new RandomAccessFile(fileName, "rw");
+        } catch (FileNotFoundException e) {
+            dbFile = null;
+        }
     }
 
     @Override
@@ -33,29 +34,24 @@ public class TableWriter implements Closeable {
         }
     }
 
-    private long write(String word) throws IOException {
+    public long write(String word) throws IOException {
         byte[] bytes = word.getBytes();
         long retVal = 0;
         try {
             dbFile.writeInt(bytes.length);
             dbFile.write(bytes);
-            retVal =  4 + bytes.length;
-        } catch (IOException ex) {
+            retVal = 4 + bytes.length;
+        } catch (Exception ex) {
             throw new IOException("cannot write to File");
         }
         return retVal;
     }
 
-    public static void saveTable(String fileName, HashMap<String, String> table)
-            throws FileNotFoundException, IOException {
-        try (TableWriter writer = new TableWriter(fileName)) {
-            Set<Entry<String, String>> list = table.entrySet();
-            long fileLen = 0;
-            for (Entry<String, String> entry : list) {
-                fileLen += writer.write(entry.getKey());
-                fileLen += writer.write(entry.getValue());
-            }
-            writer.dbFile.setLength(fileLen);
+    public void setLength(long length) {
+        try {
+            dbFile.setLength(length);
+        } catch (Exception ex) {
+            //nothing
         }
     }
 }

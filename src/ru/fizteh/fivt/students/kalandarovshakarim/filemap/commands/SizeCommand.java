@@ -4,6 +4,7 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
+import java.io.IOException;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
@@ -12,19 +13,21 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand
  *
  * @author shakarim
  */
-public class ExitCommand extends AbstractCommand<OneTableBase> {
+public class SizeCommand extends AbstractCommand<OneTableBase> {
 
-    public ExitCommand(OneTableBase context) {
-        super("exit", 0, context);
+    public SizeCommand(OneTableBase context) {
+        super("size", 0, context);
     }
 
     @Override
-    public void exec(String[] args) {
+    public void exec(String[] args) throws IOException {
         Table activeTable = context.getActiveTable();
 
-        if (activeTable != null) {
-            activeTable.commit();
+        if (activeTable == null) {
+            throw new IOException("no table");
         }
-        System.exit(0);
+
+        int size = activeTable.size();
+        System.out.println(size);
     }
 }

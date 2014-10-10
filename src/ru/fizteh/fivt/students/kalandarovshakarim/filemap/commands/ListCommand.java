@@ -5,32 +5,32 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
 import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.filemap.FileMapShellState;
+import java.util.Iterator;
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
 
 /**
  *
  * @author shakarim
  */
-public class ListCommand extends AbstractCommand<FileMapShellState> {
+public class ListCommand extends AbstractCommand<OneTableBase> {
 
-    public ListCommand() {
-        super("list", 0);
+    public ListCommand(OneTableBase context) {
+        super("list", 0, context);
     }
 
     @Override
-    public void exec(FileMapShellState state, String args) throws IOException {
-        String[] params = CommandParser.getParams(args);
+    public void exec(String[] args) throws IOException {
+        Table activeTable = context.getActiveTable();
 
-        if (this.getArgsNum() != params.length) {
-            throw new IOException("invalid number of arguments");
+        if (activeTable == null) {
+            throw new IOException("no table");
         }
 
-        String[] keys = state.getState().list();
-
-        for (String key : keys) {
-            System.out.println(key);
+        Iterator<String> iterator = activeTable.list().iterator();
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
         }
     }
 }
