@@ -71,7 +71,7 @@ public class Shell {
             }
         }
         String[] cmdsBySemicolon = commandBuilder.toString().split("\\s*;\\s*");
-        String[][] newArgs = new String[5][cmdsBySemicolon.length];
+        String[][] newArgs = new String[cmdsBySemicolon.length][5];
         int arrayIterator = 0;
         for (int i = 0; i < cmdsBySemicolon.length; ++i) {
             if (!cmdsBySemicolon[i].equals("")) {
