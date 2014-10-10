@@ -50,10 +50,15 @@ public class DataBase {
             throw new Exception("list: too much arguments");
         }
         try {
+            boolean flag = true;
             Iterator it = dBase.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry) it.next();
                 System.out.print(entry.getKey() + " ");
+                flag = false;
+            }
+            if (!flag) {
+                System.out.println("");
             }
         } catch (Exception e) {
             throw new  Exception(e.getMessage());
@@ -73,9 +78,11 @@ public class DataBase {
                 if (dBase.containsKey(key)) {
                     System.out.println("overwrite");
                     System.out.println(dBase.get(key));
+                    dBase.remove(key);
+                    dBase.put(key, value);
                 } else {
                     System.out.println("new");
-                    System.out.println(dBase.put(key, value));
+                    dBase.put(key, value);
                 }
             } catch (Exception e) {
                 throw new Exception(e.getMessage());
@@ -86,11 +93,11 @@ public class DataBase {
     public void put(String key, String value) throws Exception {
         try {
             if (dBase.containsKey(key)) {
-            System.out.println("overwrite");
-            System.out.println(dBase.get(key));
+                System.out.println(dBase.get(key));
+                dBase.remove(key);
+                dBase.put(key, value);
             } else {
-                System.out.println("new");
-                System.out.println(dBase.put(key, value));
+                dBase.put(key, value);
             }
         } catch (Exception e) {
             throw new Exception(e.getMessage());
