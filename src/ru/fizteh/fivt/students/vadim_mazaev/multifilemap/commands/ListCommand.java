@@ -1,11 +1,12 @@
 package ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands;
 
-import java.util.Set;
+import java.util.List;
 
-import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.DbConnector;
+import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.Table;
+import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.TableManager;
 
 public final class ListCommand extends DbCommand {
-    public ListCommand(final DbConnector link) {
+    public ListCommand(final TableManager link) {
         super(link);
     }
 
@@ -21,12 +22,17 @@ public final class ListCommand extends DbCommand {
                     + ": Incorrect number of arguments");
         }
 
-        Set<String> keys = getConnector().getDataBase().keySet();
-        for (String current : keys) {
-            System.out.print(current);
-            System.out.print(" ");
+        Table link = getManager().getUsedTable();
+        if (link != null) {
+            List<String> keys = link.list();
+            for (String current : keys) {
+                System.out.print(current);
+                System.out.print(" ");
+            }
+            System.out.println();
+        } else {
+            System.out.println("no table");
         }
-        System.out.println();
     }
 
 }

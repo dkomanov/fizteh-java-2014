@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.vadim_mazaev.multifilemap;
 
+import ru.fizteh.fivt.students.vadim_mazaev.filemap.ThrowExit;
 
 public final class DbMain {
     private DbMain() {
@@ -7,12 +8,16 @@ public final class DbMain {
     }
 
     public static void main(final String[] args) throws Exception {
-        try (DbConnector link = new DbConnector()) {
+        try {
+            String dbDir = System.getProperty("fizteh.db.dir");
+            TableManager manager = new DbConnector().create(dbDir);
             if (args.length == 0) {
-                CommandParser.interactiveMode(link);
+                CommandParser.interactiveMode(manager);
             } else {
-                CommandParser.packageMode(link, args);
+                CommandParser.packageMode(manager, args);
             }
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         } catch (ThrowExit t) {
             if (t.getExitStatus()) {
                 System.exit(0);

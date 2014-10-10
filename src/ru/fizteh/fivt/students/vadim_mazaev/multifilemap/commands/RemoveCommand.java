@@ -1,11 +1,10 @@
 package ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands;
 
-import java.util.Map;
-
-import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.DbConnector;
+import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.Table;
+import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.TableManager;
 
 public final class RemoveCommand extends DbCommand {
-    public RemoveCommand(final DbConnector link) {
+    public RemoveCommand(final TableManager link) {
         super(link);
     }
 
@@ -21,12 +20,16 @@ public final class RemoveCommand extends DbCommand {
                     + ": Incorrect number of arguments");
         }
 
-        Map<String, String> dataBase = getConnector().getDataBase();
-        String removedValue = dataBase.remove(cmdWithArgs[1]);
-        if (removedValue != null) {
-            System.out.println("removed");
+        Table link = getManager().getUsedTable();
+        if (link != null) {
+            String removedValue = link.remove(cmdWithArgs[1]);
+            if (removedValue != null) {
+                System.out.println("removed");
+            } else {
+                System.out.println("not found");
+            }
         } else {
-            System.out.println("not found");
+            System.out.println("no table");
         }
     }
 

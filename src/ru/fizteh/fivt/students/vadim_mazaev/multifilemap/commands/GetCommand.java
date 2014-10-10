@@ -1,11 +1,10 @@
 package ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands;
 
-import java.util.Map;
-
-import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.DbConnector;
+import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.Table;
+import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.TableManager;
 
 public final class GetCommand extends DbCommand {
-    public GetCommand(final DbConnector link) {
+    public GetCommand(final TableManager link) {
         super(link);
     }
 
@@ -21,13 +20,17 @@ public final class GetCommand extends DbCommand {
                     + ": Incorrect number of arguments");
         }
 
-        Map<String, String> dataBase = getConnector().getDataBase();
-        String value = dataBase.get(cmdWithArgs[1]);
-        if (value != null) {
-            System.out.println("found");
-            System.out.println(value);
+        Table link = getManager().getUsedTable();
+        if (link != null) {
+            String value = link.get(cmdWithArgs[1]);
+            if (value != null) {
+                System.out.println("found");
+                System.out.println(value);
+            } else {
+                System.out.println("not found");
+            }
         } else {
-            System.out.println("not found");
+            System.out.println("no table");
         }
     }
 
