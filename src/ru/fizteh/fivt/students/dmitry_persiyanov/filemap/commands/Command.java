@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.dmitry_persiyanov.filemap.commands;
+package commands;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.filemap.FileMap;
 
