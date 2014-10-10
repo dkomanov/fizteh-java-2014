@@ -6,21 +6,27 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
 import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellState;
 
 /**
  *
  * @author Shakarim
  */
-public class LsCommand extends AbstractCommand<ShellUtils> {
+public class LsCommand extends AbstractCommand<ShellState> {
 
-    public LsCommand(ShellUtils context) {
-        super("ls", 0, context);
+    public LsCommand() {
+        super("ls", 0);
     }
 
     @Override
-    public void exec(String[] args) throws IOException {
-        String[] names = context.listFiles();
+    public void exec(ShellState state, String args) throws IOException {
+        String[] params = CommandParser.getParams(args);
+
+        if (this.getArgsNum() != params.length) {
+            throw new IOException("invalid number of arguments");
+        }
+
+        String[] names = state.getState().listFiles();
         for (String s : names) {
             if (s.charAt(0) != '.') {
                 System.out.println(s);

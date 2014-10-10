@@ -40,7 +40,8 @@ public class CommandParser {
     }
 
     public static boolean isRec(String command) {
-        return command.indexOf("-r") != -1;
+        int opt = command.indexOf("-r");
+        return opt != -1;
     }
 
     public static String getCmdName(String command) {

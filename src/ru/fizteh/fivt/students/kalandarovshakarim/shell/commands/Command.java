@@ -12,13 +12,14 @@ import java.nio.file.NoSuchFileException;
 /**
  *
  * @author Shakarim
+ * @param <State>
  */
-public interface Command {
+public interface Command<State> {
 
     String getName();
 
     int getArgsNum();
 
-    void exec(String[] args)
+    void exec(State state, String args)
             throws NoSuchFileException, FileNotFoundException, IOException;
 }

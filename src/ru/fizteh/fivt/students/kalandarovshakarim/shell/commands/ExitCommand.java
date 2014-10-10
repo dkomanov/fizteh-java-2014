@@ -5,20 +5,20 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellState;
 
 /**
  *
  * @author Shakarim
  */
-public class ExitCommand extends AbstractCommand<ShellUtils> {
+public class ExitCommand extends AbstractCommand<ShellState> {
 
-    public ExitCommand(ShellUtils context) {
-        super("exit", 0, context);
+    public ExitCommand() {
+        super("exit", 0);
     }
 
     @Override
-    public void exec(String[] args) {
+    public void exec(ShellState state, String args) {
         System.exit(0);
     }
 

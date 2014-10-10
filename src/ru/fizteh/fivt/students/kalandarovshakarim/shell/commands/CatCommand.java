@@ -7,20 +7,28 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellState;
 
 /**
  *
  * @author Shakarim
  */
-public class CatCommand extends AbstractCommand<ShellUtils> {
+public class CatCommand extends AbstractCommand<ShellState> {
 
-    public CatCommand(ShellUtils context) {
-        super("cat", 1, context);
+    public CatCommand() {
+        super("cat", 1);
     }
 
     @Override
-    public void exec(String[] args) throws FileNotFoundException, IOException {
-        context.cat(args[0]);
+    public void exec(ShellState state, String args)
+            throws FileNotFoundException, IOException {
+        String[] params = CommandParser.getParams(args);
+
+        if (this.getArgsNum() != params.length) {
+            throw new IOException("invalid number of arguments");
+        }
+
+        state.getState().cat(params[0]);
     }
+
 }
