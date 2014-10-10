@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
 
 import java.util.Scanner;
 
-final public class Interactive {
+public final class Interactive {
 
     private Interactive() {
         //
@@ -24,7 +24,7 @@ final public class Interactive {
                          current[i].trim();
                      }
                      try {
-                         Commander.CommandExec(current, dataBase);
+                         Commander.commandExec(current, dataBase);
                      } catch (MapExcept ex1) {
                          System.out.println(ex1.toString());
                      }

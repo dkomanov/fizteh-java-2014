@@ -4,12 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-final public class Functions {
+public final class Functions {
     private Functions() {
         //
     }
 
-    public static void MakeDbFile(final String fileName) throws MapExcept {
+    public static void makeDbFile(final String fileName) throws MapExcept {
         File ctFile = new File(fileName);
         if (ctFile.exists()) {
             throw new MapExcept("MakeDbFile: File already exist");
@@ -21,7 +21,7 @@ final public class Functions {
             }
         }
     }
-    public static void MakeDbFileHard(final String
+    public static void makeDbFileHard(final String
             fileName) throws MapExcept {
         File ctFile = new File(fileName);
         try {

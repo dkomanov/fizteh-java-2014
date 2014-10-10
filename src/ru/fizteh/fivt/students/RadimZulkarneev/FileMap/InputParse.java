@@ -2,11 +2,11 @@ package ru.fizteh.fivt.students.RadimZulkarneev.FileMap;
 
 import java.util.ArrayList;
 
-final public class InputParse {
+public final class InputParse {
     private InputParse() {
         //
     }
-    public static void Parse(final String[] arg) {
+    public static void parse(final String[] arg) {
         try {
             DataBase dataBase = new DataBase(
                     System.getProperty("db.file"));
@@ -24,7 +24,7 @@ final public class InputParse {
                         break;
                     }
                 }
-                Commander.CommandExec(current, dataBase);
+                Commander.commandExec(current, dataBase);
             }
             dataBase.writeInFile();
         } catch (MapExcept ex) {
