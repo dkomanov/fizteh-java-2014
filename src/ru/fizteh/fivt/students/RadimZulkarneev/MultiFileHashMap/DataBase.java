@@ -82,7 +82,7 @@ public class DataBase {
             System.out.println(cur + " " + tableRowCount.get(cur));
         }
     }
-    /*      Создание новой таблицы
+    /*       
      * */
     public void create(String tbName) throws MapExcept, IOException {
         if (tableRowCount.containsKey(tbName)) {
@@ -108,7 +108,7 @@ public class DataBase {
             throw new MapExcept("use: '" + tbName + "': tablename not exists");
         }
         if (isChoose) {
-            // Запись таблицы!!!! СДЕЛАТЬ епт
+            //
             this.commit();
         }
         
