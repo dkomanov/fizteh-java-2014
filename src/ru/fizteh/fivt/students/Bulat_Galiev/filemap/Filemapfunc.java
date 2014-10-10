@@ -9,7 +9,7 @@ public final class Filemapfunc {
     }
 
     public static void put(final Data link, final String arg1, final String arg2) {
-        if ((arg1 != "") && (arg2 != "")) {
+        if ((!arg1.equals("")) && (!arg2.equals(""))) {
             HashMap<String, String> fileMap = link.getDataBase();
             String putValue = fileMap.put(arg1, arg2);
             if (putValue == null) {
@@ -25,7 +25,7 @@ public final class Filemapfunc {
     }
 
     public static void get(final Data link, final String arg1) {
-        if (arg1 != "") {
+        if (!arg1.equals("")) {
             HashMap<String, String> fileMap = link.getDataBase();
             String getValue = fileMap.get(arg1);
             if (getValue == null) {
@@ -41,7 +41,7 @@ public final class Filemapfunc {
     }
 
     public static void remove(final Data link, final String arg1) {
-        if (arg1 != "") {
+        if (!arg1.equals("")) {
             HashMap<String, String> fileMap = link.getDataBase();
             String getValue = fileMap.remove(arg1);
             if (getValue != null) {
