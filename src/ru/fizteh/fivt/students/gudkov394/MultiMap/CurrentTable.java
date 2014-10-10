@@ -76,6 +76,7 @@ public class CurrentTable implements Table {
         } else {
             oldValue = get(currentArg);
             currentTable.remove(currentArg);
+            write();
         }
         return oldValue;
     }
@@ -92,7 +93,7 @@ public class CurrentTable implements Table {
 
     @Override
     public List<String> list() {
-        return (List<String>)  keySet();
+        return (List<String>) keySet();
     }
 
     public void create() {

@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
 import ru.fizteh.fivt.students.gudkov394.map.*;
+import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
+import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,6 +16,7 @@ import java.util.Set;
 public class Write {
 
     public Write(final CurrentTable currentTable, File f) {
+        clearDirectory(f);
         Set<String> set = currentTable.keySet();
         for (String s : set) {
             int hashcode = s.hashCode();
@@ -44,6 +47,16 @@ public class Write {
             writeWord(s, output);
             String tmp = currentTable.get(s).toString();
             writeWord(tmp, output);
+        }
+    }
+
+    private void clearDirectory(File f) {
+        String[] filesInDirectory = f.list();
+        for (String tmp : filesInDirectory) {
+            String[] arg = {"rm", "-r", tmp};
+            CurrentDirectory cd = new CurrentDirectory();
+            cd.changeCurrentDirectory(f.getPath());
+            RemoveDirectory remove = new RemoveDirectory(arg, cd);
         }
     }
 
