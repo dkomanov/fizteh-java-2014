@@ -4,6 +4,7 @@ package ru.fizteh.fivt.students.standy66.shell;
 import java.io.InputStream;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 /**
  * Created by astepanov on 20.09.14.
@@ -44,7 +45,8 @@ public final class Shell {
             String[] actions = line.split(";");
 
             for (int i = 0; i < actions.length; i++) {
-                String[] args = actions[i].split(" ");
+                String[] args = Stream.of(actions[i].split(" "))
+						.filter(s -> s.length() > 0).toArray(size -> new String[size]);
                 Action action = null;
                 switch (args[0]) {
                     case "cd":
