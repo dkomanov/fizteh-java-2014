@@ -1,9 +1,6 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.filemap.commands;
 
-import ru.fizteh.fivt.students.dmitry_persiyanov.filemap.FileMap;
-
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 public class ListCommand extends Command {
@@ -12,7 +9,7 @@ public class ListCommand extends Command {
     }
 
     @Override
-    public void execute() {
+    public final void execute() {
         if (args.length != 1) {
             throw new IllegalArgumentException("list: wrong syntax (arguments are prohibited)");
         }

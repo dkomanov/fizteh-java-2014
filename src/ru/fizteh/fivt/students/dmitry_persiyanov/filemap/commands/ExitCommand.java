@@ -10,9 +10,10 @@ public class ExitCommand extends Command {
     }
 
     @Override
-    public void execute() throws IOException {
+    public final void execute() throws IOException {
         if (args.length != 1) {
-            throw new IllegalArgumentException("exit: wrong syntax (arguments are prohibited)");
+            throw new IllegalArgumentException(
+                    "exit: wrong syntax (arguments are prohibited)");
         }
         FileMap.saveChangesToFile();
         FileMap.getDbFile().close();

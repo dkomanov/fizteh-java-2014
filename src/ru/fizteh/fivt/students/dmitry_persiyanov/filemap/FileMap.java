@@ -12,10 +12,10 @@ class CommandsParser {
             buf.append(arg);
             buf.append(" ");
         }
-        String[] str_commands = buf.toString().trim().split(";");
-        Command[] commands = new Command[str_commands.length];
-        for (int i = 0; i < str_commands.length; ++i) {
-            commands[i] = parseCommand(str_commands[i]);
+        String[] strCommands = buf.toString().trim().split(";");
+        Command[] commands = new Command[strCommands.length];
+        for (int i = 0; i < strCommands.length; ++i) {
+            commands[i] = parseCommand(strCommands[i]);
         }
         return commands;
     }
@@ -27,8 +27,8 @@ class CommandsParser {
         return cmds[0];
     }
 
-    private static Command parseCommand(final String str_command) {
-        String[] args = str_command.trim().split("\\s+");
+    private static Command parseCommand(final String strCommand) {
+        String[] args = strCommand.trim().split("\\s+");
         switch (args[0]) {
             case "put":
                 return new PutCommand(args);
@@ -41,7 +41,7 @@ class CommandsParser {
             case "exit":
                 return new ExitCommand(args);
             default:
-                throw new IllegalArgumentException("wrong command: " + str_command);
+                throw new IllegalArgumentException("wrong command: " + strCommand);
         }
     }
 }

@@ -1,16 +1,12 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.filemap.commands;
 
-import ru.fizteh.fivt.students.dmitry_persiyanov.filemap.FileMap;
-
-import java.util.Map;
-
 public class PutCommand extends Command {
     public PutCommand(final String[] args) {
         super(args);
     }
 
     @Override
-    public void execute() {
+    public final void execute() {
         if (args.length != 3) {
             throw new IllegalArgumentException("put: wrong syntax");
         }
