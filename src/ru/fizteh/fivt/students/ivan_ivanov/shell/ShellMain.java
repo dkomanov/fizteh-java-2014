@@ -5,8 +5,8 @@ import java.io.IOException;
 
 final class ShellMain {
 
-	private ShellMain() {
-	}
+    private ShellMain() {
+    }
 
     public static void main(final String[] args) throws IOException {
 

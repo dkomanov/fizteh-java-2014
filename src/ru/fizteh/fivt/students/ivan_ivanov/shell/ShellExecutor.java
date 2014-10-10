@@ -25,5 +25,7 @@ public class ShellExecutor extends Executor {
         mapOfCmd.put(rm.getName(), rm);
         Command exit = new Exit();
         mapOfCmd.put(exit.getName(), exit);
+        Command cat = new Cat();
+        mapOfCmd.put(cat.getName(), cat);
     }
 }
