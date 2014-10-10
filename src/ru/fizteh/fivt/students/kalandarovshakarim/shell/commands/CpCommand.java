@@ -5,33 +5,22 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellState;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
 
 /**
  *
  * @author Shakarim
  */
-public class CpCommand extends AbstractCommand<ShellState> {
+public class CpCommand extends AbstractCommand<ShellUtils> {
 
-    public CpCommand() {
-        super("cp", 2);
+    public CpCommand(ShellUtils context) {
+        super("cp", 2, context);
     }
 
     @Override
-    public void exec(ShellState state, String args)
-            throws FileNotFoundException, NoSuchFileException, IOException {
-        String[] params = CommandParser.getParams(args);
-        boolean rec = CommandParser.isRec(args);
-        int opt = (rec ? 1 : 0);
-
-        if (this.getArgsNum() + opt != params.length) {
-            throw new IOException("invalid number of arguments");
-        }
-
-        state.getState().cp(params[0], params[1], rec);
+    public void exec(String[] args) throws NoSuchFileException, IOException {
+        context.cp(args[0], args[1], (args.length == 3));
     }
-
 }

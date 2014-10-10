@@ -5,31 +5,23 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellState;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
 
 /**
  *
  * @author Shakarim
  */
-public class PwdCommand extends AbstractCommand<ShellState> {
+public class PwdCommand extends AbstractCommand<ShellUtils> {
 
-    public PwdCommand() {
-        super("pwd", 0);
+    public PwdCommand(ShellUtils context) {
+        super("pwd", 0, context);
     }
 
     @Override
-    public void exec(ShellState shellState, String args)
-            throws FileNotFoundException, IOException {
-        String[] params = CommandParser.getParams(args);
-
-        if (this.getArgsNum() != params.length) {
-            throw new IOException("invalid number of arguments");
-        }
-
-        String path = shellState.getState().getCwd();
-        System.out.println(path);
+    public void exec(String[] args) throws FileNotFoundException, IOException {
+        System.out.println(context.getCwd());
     }
 
 }

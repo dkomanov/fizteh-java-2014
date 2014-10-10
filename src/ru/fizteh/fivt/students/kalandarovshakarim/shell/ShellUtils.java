@@ -35,7 +35,7 @@ public class ShellUtils {
         this.workingDirectory = workingDirectory;
     }
 
-    private Path getPath(String fileName) {
+    public Path getPath(String fileName) {
         Path path = Paths.get(fileName);
         if (workingDirectory != null && !path.isAbsolute()) {
             path = workingDirectory.resolve(path);
