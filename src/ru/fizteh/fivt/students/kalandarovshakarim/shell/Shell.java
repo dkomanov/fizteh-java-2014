@@ -16,11 +16,12 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
 /**
  *
  * @author Shakarim
- * @param
+ * @param <State>
  */
-public class Shell {
+public class Shell<State> {
 
     private HashMap<String, Command> supportedCmds;
+    private State shellState;
     private final String[] args;
 
     public Shell() {
@@ -28,10 +29,11 @@ public class Shell {
         this.supportedCmds = new HashMap<>();
     }
 
-    public Shell(String[] args, Command[] commands) {
+    public Shell(State shellState, String[] args, Command<?>[] commands) {
+        this.shellState = shellState;
         this.args = args;
         this.supportedCmds = new HashMap<>();
-        for (Command cmd : commands) {
+        for (Command<?> cmd : commands) {
             this.supportedCmds.put(cmd.getName(), cmd);
         }
     }
@@ -69,21 +71,12 @@ public class Shell {
                 return false;
             }
             try {
-                String[] params = CommandParser.getParams(command);
-                boolean rec = CommandParser.isRec(command);
-                int opt = (rec ? 1 : 0);
-                int argsNum = supportedCmds.get(cmdName).getArgsNum();
-
-                if (params.length != argsNum + opt) {
-                    throw new IllegalArgumentException("Invalid number of arguments");
-                }
-
-                supportedCmds.get(cmdName).exec(params);
+                supportedCmds.get(cmdName).exec(shellState, command);
             } catch (FileNotFoundException | NoSuchFileException e) {
                 String msg = "%s: '%s' no such File or Directory\n";
                 System.err.printf(msg, cmdName, e.getMessage());
                 return false;
-            } catch (IllegalArgumentException | IllegalStateException | IOException e) {
+            } catch (IOException e) {
                 System.err.printf("%s: %s\n", cmdName, e.getMessage());
                 return false;
             }

@@ -7,20 +7,29 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
+import java.nio.file.NoSuchFileException;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellState;
 
 /**
  *
  * @author Shakarim
  */
-public class MvCommand extends AbstractCommand<ShellUtils> {
+public class MvCommand extends AbstractCommand<ShellState> {
 
-    public MvCommand(ShellUtils context) {
-        super("mv", 2, context);
+    public MvCommand() {
+        super("mv", 2);
     }
 
     @Override
-    public void exec(String[] args) throws FileNotFoundException, IOException {
-        context.mv(args[0], args[1]);
+    public void exec(ShellState state, String args)
+            throws FileNotFoundException, NoSuchFileException, IOException {
+        String[] params = CommandParser.getParams(args);
+
+        if (this.getArgsNum() != params.length) {
+            throw new IOException("invalid number of arguments");
+        }
+
+        state.getState().mv(params[0], params[1]);
     }
+
 }

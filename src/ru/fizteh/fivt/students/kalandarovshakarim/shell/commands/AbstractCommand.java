@@ -8,24 +8,21 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 /**
  *
  * @author Shakarim
- * @param <Type>
+ * @param <State>
  */
-public abstract class AbstractCommand<Type> implements Command {
+public abstract class AbstractCommand<State> implements Command<State> {
 
     private final String name;
     private final int argNum;
-    protected final Type context;
 
     public AbstractCommand() {
         this.name = null;
         this.argNum = 0;
-        this.context = null;
     }
 
-    public AbstractCommand(String name, int argNum, Type context) {
+    public AbstractCommand(String name, int argNum) {
         this.name = name;
         this.argNum = argNum;
-        this.context = context;
     }
 
     @Override

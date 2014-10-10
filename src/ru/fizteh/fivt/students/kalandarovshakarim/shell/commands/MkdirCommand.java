@@ -7,21 +7,28 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellState;
 
 /**
  *
  * @author Shakarim
  */
-public class MkdirCommand extends AbstractCommand<ShellUtils> {
+public class MkdirCommand extends AbstractCommand<ShellState> {
 
-    public MkdirCommand(ShellUtils context) {
-        super("mkdir", 1, context);
+    public MkdirCommand() {
+        super("mkdir", 1);
     }
 
     @Override
-    public void exec(String[] args)
+    public void exec(ShellState state, String args)
             throws NoSuchFileException, IOException {
-        context.mkDir(args[0]);
+        String[] params = CommandParser.getParams(args);
+
+        if (this.getArgsNum() != params.length) {
+            throw new IOException("invalid number of arguments");
+        }
+
+        state.getState().mkDir(params[0]);
     }
+
 }
