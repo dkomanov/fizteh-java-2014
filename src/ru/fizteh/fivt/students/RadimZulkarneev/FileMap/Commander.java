@@ -79,6 +79,7 @@ public final class Commander {
         case "exit":
             dataBase.writeInFile();
             System.exit(0);
+            break;
         default:
             throw new MapExcept(command.get(0)
                     + ": No such command");
