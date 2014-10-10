@@ -33,7 +33,8 @@ public class Utils {
         return byteOutputStream.toString(StandardCharsets.UTF_8.toString());
     }
 
-    private static String readValue(final DataInputStream dis, final long offset1, final long offset2, final long position, final long len) throws IOException {
+    private static String readValue(final DataInputStream dis, final long offset1,
+            final long offset2, final long position, final long len) throws IOException {
         dis.mark((int) len);
         dis.skip(offset1 - position);
         byte[] buffer = new byte[(int) (offset2 - offset1)];
