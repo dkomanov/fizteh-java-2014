@@ -159,7 +159,9 @@ public class DataBaseFile {
         for (String v : data.keySet()) {
             s.append(v).append(" ");
         }
-        if (s.length() != 0) s.deleteCharAt(s.length() - 1);
+        if (s.length() != 0) {
+            s.deleteCharAt(s.length() - 1);
+        }
         return s.toString();
     }
 }
