@@ -140,19 +140,7 @@ public class ShellUtils {
             String exMsg = "'%s' and '%s' are the same";
             throw new IOException(String.format(exMsg, source, destination));
         }
-        /*
-        if (destFile.isDirectory() && destFile.exists()) {
-        destFile = new File(destFile, srcFile.getName());
-        }
-        /*
-        if (!destFile.exists()) {
-        if (srcFile.isDirectory() && !destFile.mkdir()) {
-        throw new FileNotFoundException(destination);
-        }
-        if (srcFile.isFile() && !destFile.createNewFile()) {
-        throw new FileNotFoundException(destination);
-        }
-        }*/
+
         if (srcFile.isFile()) {
             if (destFile.isDirectory()) {
                 destFile = new File(destFile, source);
