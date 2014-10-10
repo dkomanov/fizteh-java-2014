@@ -17,9 +17,10 @@ public class MkdirCommand extends Command {
     /**
      * .
      */
+    @Override
     public final void run() {
-        if (args.length < 2) {
-            System.out.println("missing operand");
+        if (args.length != 2) {
+            System.out.println("Wrong number of arguments");
             return;
         }
         File folder = new File(System.getProperty("user.dir"), args[1]);

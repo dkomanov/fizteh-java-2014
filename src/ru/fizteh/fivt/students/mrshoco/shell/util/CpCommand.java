@@ -19,9 +19,10 @@ public class CpCommand extends Command {
     /**
      * @see Command#run()
      */
+    @Override
     public final void run() throws Exception {
-        if (args.length < 3 || (args[1].equals("-r") && args.length < 4)) {
-            throw new Exception("cp: missing file operand");
+        if (args.length != 3 || (args[1].equals("-r") && args.length != 4)) {
+            throw new Exception("Wrong number of arguments");
         }
         File src;
         File dest;

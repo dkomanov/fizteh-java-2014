@@ -1,7 +1,6 @@
-package util;
+import util.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -18,7 +17,6 @@ public final class ShellMain {
      */
     private ShellMain() {
     }
-
     /**
      *
      *
@@ -34,6 +32,9 @@ public final class ShellMain {
             String[] cmds = s.split(";");
             for (i = 0; i < cmds.length; i++) {
                 cmds[i] = cmds[i].trim();
+                if (cmds[i].length() == 0) {
+                    continue;
+                }
                 try {
                     Command cmd = Command.create(cmds[i].split(" "));
                     cmd.run();

@@ -16,6 +16,7 @@ public class ExitCommand extends Command {
     /**
      * .
      */
+    @Override
     public final void run() throws Exception {
         throw new IOException("Exit");
     }

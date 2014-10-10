@@ -16,7 +16,11 @@ public class CdCommand extends Command {
     /**
      * .
      */
+    @Override
     public final void run() throws Exception {
+        if (args.length > 2) {
+            throw new Exception("Wrong number of arguments");
+        }
         if (args.length == 1) {
             System.setProperty("user.dir", System.getProperty("user.home"));
         } else {
@@ -28,9 +32,9 @@ public class CdCommand extends Command {
             }
 
             if (folder.isDirectory()) {
-                System.setProperty("user.dir", folder.getAbsolutePath());
+                System.setProperty("user.dir", folder.getCanonicalPath());
             } else {
-                System.out.println("No such file or directory");
+                throw new Exception("No such file or directory");
             }
         }
     }

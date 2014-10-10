@@ -17,9 +17,10 @@ public class RmCommand extends Command {
     /**
      * .
      */
+    @Override
     public final void run() throws Exception {
-        if (args.length < 2 || (args[1].equals("-r") && args.length < 3)) {
-            throw new Exception("rm: missing operand");
+        if (args.length != 2 || (args[1].equals("-r") && args.length != 3)) {
+            throw new Exception("Wrong number of arguments");
         }
         File file;
 

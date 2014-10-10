@@ -15,9 +15,10 @@ public class MvCommand extends Command {
     /**
      * .
      */
+    @Override
     public final void run() throws Exception {
-        if (args.length < 3) {
-            System.out.println("missing file operand");
+        if (args.length != 3) {
+            System.out.println("Wrong number of arguments");
             return;
         }
 

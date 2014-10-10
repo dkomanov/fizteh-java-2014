@@ -18,9 +18,10 @@ public class CatCommand extends Command {
     /**
      * .
      */
+    @Override
     public final void run() throws Exception {
-        if (args.length < 2) {
-            throw new Exception("missing operand");
+        if (args.length != 2) {
+            throw new Exception("Wrong number of arguments");
         }
         File file = new File(System.getProperty("user.dir"), args[1]);
         if (file.isDirectory()) {

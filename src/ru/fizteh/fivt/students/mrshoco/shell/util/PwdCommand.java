@@ -15,7 +15,11 @@ public class PwdCommand extends Command {
     /**
      * .
      */
-    public final void run() {
+    @Override
+    public final void run() throws Exception {
+        if (args.length > 1) {
+            throw new Exception("Wrong number of arguments");
+        }
         System.out.println(System.getProperty("user.dir"));
     }
 }
