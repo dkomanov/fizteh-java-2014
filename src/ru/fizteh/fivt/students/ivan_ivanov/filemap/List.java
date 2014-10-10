@@ -1,0 +1,23 @@
+package ru.fizteh.fivt.students.ivan_ivanov.filemap;
+
+import ru.fizteh.fivt.students.ivan_ivanov.shell.Shell;
+import ru.fizteh.fivt.students.ivan_ivanov.shell.Command;
+
+import java.io.IOException;
+import java.util.Set;
+
+public class List implements Command {
+
+    public String getName() {
+        return "list";
+    }
+
+    public void executeCmd(Shell filemap, String[] args) throws IOException {
+        Set<String> keys = ((FileMap) filemap).getFileMapState().getDataBase().keySet();
+        for (String every : keys) {
+            System.out.print(every);
+            System.out.print(' ');
+        }
+        System.out.println();
+    }
+}
