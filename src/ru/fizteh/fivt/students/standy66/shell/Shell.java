@@ -46,7 +46,7 @@ public final class Shell {
 
             for (int i = 0; i < actions.length; i++) {
                 String[] args = Stream.of(actions[i].split(" "))
-						.filter(s -> s.length() > 0).toArray(size -> new String[size]);
+                        .filter(s -> s.length() > 0).toArray(size -> new String[size]);
                 Action action = null;
                 switch (args[0]) {
                     case "cd":
