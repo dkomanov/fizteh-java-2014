@@ -1,14 +1,13 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
+import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class CurrentTable {
+public class CurrentTable implements Table {
     String name;
     Map currentTable = new HashMap<String, String>();
     private int number = 0;
@@ -45,21 +44,55 @@ public class CurrentTable {
     }
 
     public String get(String s) {
+        if (s == null) {
+            throw new IllegalArgumentException();
+        }
+        if (!currentTable.containsKey(s)) {
+            return null;
+        }
         return String.valueOf(currentTable.get(s));
     }
 
-    public void put(String key, String value) {
+    public String put(String key, String value) {
         ++number;
+        String oldValue = null;
+        if (currentTable.containsKey(key)) {
+            oldValue = get(key);
+        }
         currentTable.put(key, value);
+        return oldValue;
+
     }
 
     public boolean containsKey(String currentArg) {
         return currentTable.containsKey(currentArg);
     }
 
-    public Object remove(String currentArg) {
+    public String remove(String currentArg) {
         --number;
-        return currentTable.remove(currentArg);
+        String oldValue = null;
+        if (!currentTable.containsKey(currentArg)) {
+            throw new IllegalFormatCodePointException(2);
+        } else {
+            oldValue = get(currentArg);
+            currentTable.remove(currentArg);
+        }
+        return oldValue;
+    }
+
+    @Override
+    public int commit() {
+        return 0;
+    }
+
+    @Override
+    public int rollback() {
+        return 0;
+    }
+
+    @Override
+    public List<String> list() {
+        return (List<String>)  keySet();
     }
 
     public void create() {
@@ -83,7 +116,7 @@ public class CurrentTable {
         System.out.println("Deleted");
     }
 
-    public int getNumber() {
+    public int size() {
         return number;
     }
 

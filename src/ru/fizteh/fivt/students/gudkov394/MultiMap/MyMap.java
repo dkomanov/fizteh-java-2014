@@ -52,11 +52,15 @@ public class MyMap {
             }
         } else if ("remove".equals(currentArgs[0])) {
             if (obvious()) {
-                Remove remove = new Remove(currentArgs, ct);
+                if (currentArgs.length != 2) {
+                    System.err.println("wrong number of argument to Create");
+                    System.exit(1);
+                }
+                ct.remove(currentArgs[1]);
             }
         } else if ("list".equals(currentArgs[0])) {
             if (obvious()) {
-                ListTable listTable = new ListTable(currentArgs, tables);
+                ListTable listTable = new ListTable(currentArgs, ct);
             }
         } else if ("exit".equals(currentArgs[0])) {
             Exit exit = new Exit(currentArgs);
@@ -98,7 +102,7 @@ public class MyMap {
             Set<String> set = tables.keySet();
             System.out.println("table_name row_count");
             for (String s : set) {
-                System.out.println(s + " " + ((Integer) tables.get(s).getNumber()).toString());
+                System.out.println(s + " " + ((Integer) tables.get(s).size()).toString());
             }
             System.out.println();
         } else if ("size".equals(currentArgs[0])) {
@@ -108,7 +112,7 @@ public class MyMap {
             }
             int size = 0;
             for (String s : tables.keySet()) {
-                size += tables.get(s).getNumber();
+                size += tables.get(s).size();
             }
             System.out.println(size);
         } else {
