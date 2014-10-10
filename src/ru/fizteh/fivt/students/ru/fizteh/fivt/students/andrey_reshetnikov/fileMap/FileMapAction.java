@@ -12,7 +12,7 @@ public class FileMapAction implements CommandFromString {
 
     @Override
     public Command fromString(String s) throws UnknownCommand {
-        String[] mas = s.trim().split("\\s+");
+        final String[] mas = s.trim().split("\\s+");
 
         switch (mas[0]) {
             case "get":
