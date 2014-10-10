@@ -8,11 +8,11 @@ import java.util.Set;
 
 public class List implements Command {
 
-    public String getName() {
+    public final String getName() {
         return "list";
     }
 
-    public void executeCmd(Shell filemap, String[] args) throws IOException {
+    public final void executeCmd(final Shell filemap, final String[] args) throws IOException {
         Set<String> keys = ((FileMap) filemap).getFileMapState().getDataBase().keySet();
         for (String every : keys) {
             System.out.print(every);

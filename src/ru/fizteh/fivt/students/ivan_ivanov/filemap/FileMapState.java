@@ -9,15 +9,15 @@ public class FileMapState {
     public Map<String, String> dataBase;
     public File dataFile;
 
-    public Map<String, String> getDataBase() {
+    public final Map<String, String> getDataBase() {
         return dataBase;
     }
 
-    public File getDataFile() {
+    public final File getDataFile() {
         return dataFile;
     }
 
-    public FileMapState(File currentFile) {
+    public FileMapState(final File currentFile) {
         dataBase = new HashMap<String, String>();
         dataFile = currentFile;
     }

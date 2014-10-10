@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class FileMapMain {
-    public static void main(String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException {
 
         String currentProperty = System.getProperty("db.file");
         File base = new File(currentProperty);

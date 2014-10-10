@@ -9,7 +9,7 @@ public class FileMapExecutor extends Executor {
         list();
     }
 
-    public void list() {
+    public final void list() {
         Command put = new Put();
         mapOfCmd.put(put.getName(), put);
         Command get = new Get();

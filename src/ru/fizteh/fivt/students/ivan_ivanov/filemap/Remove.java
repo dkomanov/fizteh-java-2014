@@ -7,11 +7,11 @@ import ru.fizteh.fivt.students.ivan_ivanov.shell.Shell;
 
 public class Remove implements Command {
 
-    public String getName() {
+    public final String getName() {
         return "remove";
     }
 
-    public void executeCmd(Shell filemap, String[] args) throws IOException {
+    public final void executeCmd(final Shell filemap, final String[] args) throws IOException {
         String key = args[0];
         String value = ((FileMap) filemap).getFileMapState().getDataBase().remove(key);
         if (value == null) {

@@ -9,12 +9,11 @@ import java.util.Map;
 
 public class Utils {
 
-	
     private static final long MAX_SIZE = 1024 * 1024;
-    private static final int pos_step = 5;
-    private static final int buf_size = 4096;
+    private static final int POS_STEP = 5;
+    private static final int BUF_SIZE = 4096;
 
-    private static String readKey(DataInputStream dataStream) throws IOException {
+    private static String readKey(final DataInputStream dataStream) throws IOException {
 
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         byte b = dataStream.readByte();
@@ -34,7 +33,7 @@ public class Utils {
         return byteOutputStream.toString(StandardCharsets.UTF_8.toString());
     }
 
-    private static String readValue(DataInputStream dis, long offset1, long offset2, long position, long len) throws IOException {
+    private static String readValue(final DataInputStream dis, final long offset1, final long offset2, final long position, final long len) throws IOException {
         dis.mark((int) len);
         dis.skip(offset1 - position);
         byte[] buffer = new byte[(int) (offset2 - offset1)];
@@ -44,13 +43,13 @@ public class Utils {
         return value;
     }
 
-    public static void readDataBase(FileMapState state) throws IOException {
+    public static void readDataBase(final FileMapState state) throws IOException {
         if (state.getDataFile().length() == 0) {
             return;
         }
 
         InputStream currentStream = new FileInputStream(state.getDataFile());
-        BufferedInputStream bufferStream = new BufferedInputStream(currentStream, buf_size);
+        BufferedInputStream bufferStream = new BufferedInputStream(currentStream, BUF_SIZE);
         DataInputStream dataStream = new DataInputStream(bufferStream);
 
         int fileLength = (int) state.getDataFile().length();
@@ -61,13 +60,13 @@ public class Utils {
             position += key1.getBytes(StandardCharsets.UTF_8).length;
             int offset1 = dataStream.readInt();
             int firstOffset = offset1;
-            position += pos_step;
+            position += POS_STEP;
 
             while (position != firstOffset) {
                 String key2 = readKey(dataStream);
                 position += key2.getBytes(StandardCharsets.UTF_8).length;
                 int offset2 = dataStream.readInt();
-                position += pos_step;
+                position += POS_STEP;
                 String value = readValue(dataStream, offset1, offset2, position, fileLength);
                 state.getDataBase().put(key1, value);
                 offset1 = offset2;
@@ -81,19 +80,19 @@ public class Utils {
 
     }
 
-    private static void closeStream(Closeable stream) throws IOException {
+    private static void closeStream(final Closeable stream) throws IOException {
         stream.close();
     }
 
-    public static void write(Map<String, String> dataBase, File currentFile) throws IOException {
+    public static void write(final Map<String, String> dataBase, final File currentFile) throws IOException {
 
         OutputStream currentStream = new FileOutputStream(currentFile);
-        BufferedOutputStream bufferStream = new BufferedOutputStream(currentStream, buf_size);
+        BufferedOutputStream bufferStream = new BufferedOutputStream(currentStream, BUF_SIZE);
         DataOutputStream dataStream = new DataOutputStream(bufferStream);
         long biasing = 0;
 
         for (String key : dataBase.keySet()) {
-            biasing += key.getBytes(StandardCharsets.UTF_8).length + pos_step;
+            biasing += key.getBytes(StandardCharsets.UTF_8).length + POS_STEP;
         }
         List<String> values = new ArrayList<String>(dataBase.keySet().size());
         for (String key : dataBase.keySet()) {

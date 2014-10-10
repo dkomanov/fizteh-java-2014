@@ -8,11 +8,11 @@ public class FileMap extends Shell {
 
     private FileMapState state;
 
-    public FileMapState getFileMapState() {
+    public final FileMapState getFileMapState() {
         return state;
     }
 
-    public FileMap(File currentFile) throws IOException {
+    public FileMap(final File currentFile) throws IOException {
         state = new FileMapState(currentFile);
         Utils.readDataBase(state);
     }
