@@ -116,7 +116,6 @@ public class DataBase {
             }
         } catch (Exception except) {
             output.close();
-            output.close();
             filemapErrorWrite("write");
         }
         output.close();
