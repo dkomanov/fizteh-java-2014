@@ -11,7 +11,7 @@ import java.util.*;
 public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
 
     private RandomAccessFile binFile;
-    private TreeMap<String, String> data;
+    private Map<String, String> data;
 
     TableFileDAT() {
         data = new TreeMap<>();
