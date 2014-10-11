@@ -11,9 +11,9 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         ShellState s = new ShellState();
-        Shell<ShellState> shell = new Shell<ShellState>(s);
+        Shell<ShellState> shell = new Shell<>(s);
 
-        ArrayList<Command> commands = new ArrayList();
+        ArrayList<Command> commands = new ArrayList<>();
         RmCommand rm = new RmCommand(shell);
         commands.add(rm);
         CpCommand cp = new CpCommand(shell);
