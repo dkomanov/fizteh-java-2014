@@ -17,40 +17,38 @@ import java.util.Map;
 public class DataBaseEditor {
 
     private static Map<String, String> data;
-    private static RandomAccessFile dataBase;
 
-    public DataBaseEditor()  throws Exception {
+    public DataBaseEditor() throws Exception {
         data = new TreeMap<>();
         Path dataBasePath;
-        try  {
+        try {
             dataBasePath = Paths.get(System.getProperty("db.file"));
-            try (RandomAccessFile dBase
+            try (RandomAccessFile  dataBase
                     = new RandomAccessFile(dataBasePath.toString(), "r")) {
-                dataBase = dBase;
                 if (dataBase.length() > 0) {
-                    importData();
+                    importData(dataBase);
                 }
             } catch (FileNotFoundException e) {
                 dataBasePath.toFile().createNewFile();
                 }
         } catch (Exception e) {
             throw new Exception("cannot open file ");
-            }
+          }
     }
 
     public final void closeDataBase() throws Exception {
-        try (RandomAccessFile dBase
+        try (RandomAccessFile  dataBase
                 = new RandomAccessFile(Paths.get(
                         System.getProperty("db.file")).toString(), "rw")) {
-            dataBase = dBase;
-            exportData();
+            exportData(dataBase);
             dataBase.close();
-            } catch (Exception e) {
+         } catch (Exception e) {
                 throw new Exception("Error writing data base to file");
-            }
+           }
     }
 
-    public static void importData() throws IOException {
+    public static void importData(
+            final RandomAccessFile dataBase) throws IOException {
         ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
         List<Integer> offsets = new LinkedList<Integer>();
         List<String> keys = new LinkedList<String>();
@@ -94,11 +92,12 @@ public class DataBaseEditor {
         bytesBuffer.close();
     }
 
-    public static void exportData() throws IOException {
+    public static void exportData(
+            final RandomAccessFile dataBase) throws IOException {
         int offset = 0;
         dataBase.setLength(0);
         for (Map.Entry<String, String> entry : data.entrySet()) {
-            offset += entry.getKey().length() + 5; //  /0 + sizeof(int) = 5 ?
+            offset += entry.getKey().length() + 5;
         }
         for (Map.Entry<String, String> entry : data.entrySet()) {
             dataBase.write(entry.getKey().getBytes("UTF-8"));
