@@ -11,15 +11,14 @@ public class Main {
      * @throws IOException
      */
     public static boolean functionHandler(String[] comAndParams, int bIndex,
-            int eIndex, FileMap fm) throws IOException { // returns false if
-                                                         // exit got
+            int eIndex, FileMap fm) throws IOException { // Returns false if exit command got.
         final int optAm = 5;
-        String[] options = new String[optAm]; // Initializing options list
-        options[0] = "exit"; //
-        options[1] = "put"; //
-        options[2] = "remove"; //
-        options[3] = "get"; //
-        options[4] = "list"; //
+        String[] options = new String[optAm]; // Initializing options list.
+        options[0] = "exit";
+        options[1] = "put";
+        options[2] = "remove";
+        options[3] = "get";
+        options[4] = "list";
 
         int functionNumber;
         for (functionNumber = 0; functionNumber < options.length; functionNumber++) {
@@ -27,7 +26,6 @@ public class Main {
                 break;
             }
         }
-        // PrintWriter pw = new PrintWriter(System.out);
         boolean res = true;
         if (0 == functionNumber) {
             res = false;
@@ -40,7 +38,7 @@ public class Main {
                 throw e;
             }
             break;
-        case 1: // put
+        case 1: // Put.
             if (bIndex + 3 > eIndex) {
                 System.out.println("Not enough parametres for put");
             } else {
@@ -48,14 +46,14 @@ public class Main {
                         comAndParams[bIndex + 2]));
             }
             break;
-        case 2: // remove
+        case 2: // Remove.
             if (bIndex + 2 > eIndex) {
                 System.out.println("Not enough parametres for remove");
             } else {
                 System.out.println(fm.remove(comAndParams[bIndex + 1]));
             }
             break;
-        case 3:
+        case 3: // Get.
             if (bIndex + 2 > eIndex) {
                 System.out.println("Not enough parametres for get");
             } else {
@@ -65,19 +63,16 @@ public class Main {
         case 4:
             PrintWriter pw = new PrintWriter(System.out);
             fm.list(pw);
-            // pw.close();
             break;
         default:
-            System.out.println("Command not found\n");
+            System.out.println("Command not found");
             break;
         }
-        // pw.flush();
-        // pw.close();
         return res;
     }
 
     public static boolean commandSplitting(String command, FileMap fm)
-            throws IOException { // returns false if exit got
+            throws IOException { // Returns false if exit command got.
         String[] firstSplitted = command.split(" ");
         String[] toGive = new String[firstSplitted.length];
         int j = 0;
@@ -93,7 +88,7 @@ public class Main {
         return functionHandler(toGive, 0, j, fm);
     }
 
-    public static void packetMode(String[] args, String path)
+    public static void batchMode(String[] args, String path)
             throws IOException {
         if (null == path) {
             System.err.println("System property db.file is undefined");
@@ -129,7 +124,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         String path = System.getProperty("db.file");
         if (0 != args.length) {
-            packetMode(args, path);
+            batchMode(args, path);
         }
         Scanner in = new Scanner(System.in);
         if (null == path) {
