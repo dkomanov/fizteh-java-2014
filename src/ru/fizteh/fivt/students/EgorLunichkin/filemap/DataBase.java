@@ -8,11 +8,10 @@ import java.util.Iterator;
 public class DataBase {
     public DataBase(String path) throws FileMapException {
         File file = new File(path).getAbsoluteFile();
+        dbPath = file.getPath();
         if (file.exists()) {
-            dbPath = file.getPath();
             db = readDataBase();
-        }
-        else {
+        } else {
             try {
                 file.createNewFile();
             } catch (Exception ex) {

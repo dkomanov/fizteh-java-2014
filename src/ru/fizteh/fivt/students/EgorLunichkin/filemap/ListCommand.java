@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class ListCommand implements Command {
-    public ListCommand(DataBase _db) {
-        this.dataBase = _db;
+    public ListCommand(DataBase db) {
+        this.dataBase = db;
     }
 
     private DataBase dataBase;

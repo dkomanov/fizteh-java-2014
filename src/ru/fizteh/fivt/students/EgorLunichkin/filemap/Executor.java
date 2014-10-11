@@ -17,8 +17,7 @@ public class Executor {
                 System.err.println(ex.getMessage());
                 System.exit(1);
             }
-        }
-        else {
+        } else {
             try {
                 packageMode(args);
             } catch (FileMapException ex) {
