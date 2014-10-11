@@ -88,11 +88,11 @@ public class DataBase {
                 
                 database.put(key, value);
             }
+            input.close();
         } catch (Exception except) {
             input.close();
             filemapErrorRead("read");
         }
-        input.close();
     }
 
     public void writeOnDisk() throws Exception {
@@ -114,11 +114,11 @@ public class DataBase {
                 output.write(valueByte);
                 output.write(database.get(key).getBytes("UTF-8"));
             }
+            output.close();
         } catch (Exception except) {
             output.close();
             filemapErrorWrite("write");
         }
-        output.close();
     }
 
     private void filemapErrorRead (final String commandName) throws Exception {
