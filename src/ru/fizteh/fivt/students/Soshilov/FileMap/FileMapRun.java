@@ -61,7 +61,7 @@ public class FileMapRun {
      */
     public static Boolean checkName(final String name) {
         String[] s = {"put", "exit", "get", "remove", "list"};
-        for(String c : s) {
+        for (String c : s) {
             if (name.equals(c)) {
                 return true;
             }
@@ -73,7 +73,7 @@ public class FileMapRun {
      * Package mode: we enter command constantly.
      * @param currentArgs Commands that were entered: name, its' arguments.
      */
-    public static void packageMode(final String[] currentArgs) {
+    public static void batchMode(final String[] currentArgs) {
         Map currentTable = new HashMap<String, String>();
         Initialization.initialization(currentTable, System.getProperty("db.file"));
         StringBuilder builder = new StringBuilder();
@@ -118,7 +118,7 @@ public class FileMapRun {
         if (currentArgs.length == 0) {
             interactiveMode();
         } else {
-            packageMode(currentArgs);
+            batchMode(currentArgs);
         }
     }
 }
