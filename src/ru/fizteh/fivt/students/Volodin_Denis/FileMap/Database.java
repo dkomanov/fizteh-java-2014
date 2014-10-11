@@ -97,31 +97,29 @@ public class DataBase {
 
     public void writeOnDisk() throws Exception {
         FileOutputStream output = new FileOutputStream(databasePath);
-        FileOutputStream output2 = new FileOutputStream("home\student\info.txt");
         Set<String> keyList = database.keySet();
-        ByteBuffer buffer = ByteBuffer.allocate(4);
         Iterator<String> itKeys = keyList.iterator();
         try {
             while (itKeys.hasNext()) {
                 String key = itKeys.next();
-                byte[] keyByte = key.getBytes("UTF-8");
-                byte[] valueByte = database.get(key).getBytes("UTF-8");
                 
-                output.write(buffer.putInt(0, keyByte.length).array());
+                ByteBuffer buffer1 = ByteBuffer.allocate(4);
+                byte[] keyByte = buffer1.putInt(key.getBytes("UTF-8").length).array();
                 output.write(keyByte);
+                output.write(key.getBytes("UTF-8"));
                 
-                output2.write(key, " ", database.get(key), "\n");
                 
-                output.write(buffer.putInt(0, valueByte.length).array());
-                output.write(valueByte, "\n");
+                ByteBuffer buffer2 = ByteBuffer.allocate(4);
+                byte[] valueByte = buffer2.putInt(database.get(key).getBytes("UTF-8").length).array();
+                output.write(valueByte);
+                output.write(database.get(key).getBytes("UTF-8"));
             }
         } catch (Exception except) {
             output.close();
-            output2.close();
+            output.close();
             filemapErrorWrite("write");
         }
         output.close();
-        output2.close();
     }
 
     private void filemapErrorRead (final String commandName) throws Exception {
