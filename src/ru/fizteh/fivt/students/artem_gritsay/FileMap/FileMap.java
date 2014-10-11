@@ -1,5 +1,4 @@
 package ru.fizteh.fivt.students.artem_gritsay.FileMap;
-
 import java.util.Scanner;
 import java.io.*;
 import java.util.*;
@@ -13,7 +12,7 @@ public class FileMap {
     private static void exit(Path pathtoFile, HashMap<String, String> filemap)  {
         try (RandomAccessFile dataBaseFile
                 = new RandomAccessFile(pathtoFile.toString(), "rw")) {
-            DataTrance.putD(dataBaseFile, filemap);
+            DaTrance.putD(dataBaseFile, filemap);
         } catch (Exception e) {
             System.err.println("Cannot writing to file");
         }
@@ -37,7 +36,7 @@ public class FileMap {
                 case "exit":
                     throw new ShellexitException();
                 default:
-                    System.out.println("Invalid comannd");
+                    System.out.println("Invalid command");
             }
     }
 
@@ -139,7 +138,7 @@ public class FileMap {
             try (RandomAccessFile dataBaseFile
                          = new RandomAccessFile(pathFile.toString(), "r")) {
                 if (dataBaseFile.length() > 0) {
-                    DataTrance.getNewData(dataBaseFile, filemap);
+                    DaTrance.getNewData(dataBaseFile, filemap);
                 }
             } catch (FileNotFoundException e) {
                 pathFile.toFile().createNewFile();

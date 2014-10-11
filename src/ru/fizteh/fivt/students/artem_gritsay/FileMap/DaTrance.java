@@ -1,12 +1,10 @@
 package ru.fizteh.fivt.students.artem_gritsay.FileMap;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
 
-
-public class DataTrance {
+public class DaTrance {
     public static void putD(RandomAccessFile dataFile, HashMap<String, String> fileMap)
             throws IOException {
         List<Integer> reserveplace = new LinkedList<>();
