@@ -8,6 +8,7 @@ import java.util.Scanner;
  */
 public class DbMain {
 
+    public static final String INCORRECT_NUMBER_OF_ARGUMENTS = "Incorrect number of arguments";
     private static boolean batchMode;
     private static boolean isExit;
     private static DataBaseCache cache;
@@ -74,28 +75,28 @@ public class DbMain {
                     if (parts.length == 3) {
                         cache.put(parts[1], parts[2], "db.file");
                     } else {
-                        System.out.println("Incorrect number of arguments");
+                        System.out.println(INCORRECT_NUMBER_OF_ARGUMENTS);
                     }
                     break;
                 case "get":
                     if (parts.length == 2) {
                         cache.get(parts[1]);
                     } else {
-                        System.out.println("Incorrect number of arguments");
+                        System.out.println(INCORRECT_NUMBER_OF_ARGUMENTS);
                     }
                     break;
                 case "list":
                     if (parts.length == 1) {
                         cache.list("db.file");
                     } else {
-                        System.out.println("Incorrect number of arguments");
+                        System.out.println(INCORRECT_NUMBER_OF_ARGUMENTS);
                     }
                     break;
                 case "remove":
                     if (parts.length == 2) {
                         cache.remove(parts[1]);
                     } else {
-                        System.out.println("Incorrect number of arguments");
+                        System.out.println(INCORRECT_NUMBER_OF_ARGUMENTS);
                     }
                     break;
                 case "exit":
