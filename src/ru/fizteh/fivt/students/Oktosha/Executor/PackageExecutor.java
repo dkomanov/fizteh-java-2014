@@ -21,9 +21,6 @@ public class PackageExecutor extends Executor {
             for (Command cmd : commands) {
                 utility.run(cmd);
             }
-        } catch (ExecutorParseException e) {
-            System.err.println("invalid syntax: empty command between two semicolons");
-            System.exit(Executor.SYNTAX_ERROR);
         } catch (ConsoleUtilitySyntaxException e) {
             System.err.println(e.getMessage());
             System.exit(Executor.SYNTAX_ERROR);
