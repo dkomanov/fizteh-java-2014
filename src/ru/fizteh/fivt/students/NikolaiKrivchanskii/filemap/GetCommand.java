@@ -1,9 +1,8 @@
 package ru.fizteh.fivt.students.NikolaiKrivchanskii.filemap;
-import java.util.ArrayList;
 
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell.*;
 
-public class GetCommand implements Commands<FileMapShellState>{
+public class GetCommand implements Commands<FileMapShellState> {
 
     public String getCommandName() {
         return "get";
@@ -15,8 +14,8 @@ public class GetCommand implements Commands<FileMapShellState>{
 
     public void implement(String[] args, FileMapShellState state)
             throws SomethingIsWrongException {
-        if(state.table == null) {
-            throw new SomethingIsWrongException ("Table not found.");
+        if (state.table == null) {
+            throw new SomethingIsWrongException("Table not found.");
         }
         String value = state.table.get(args[0]);
         if (value == null) {

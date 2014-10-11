@@ -15,8 +15,7 @@ public class FileMapWritingUtils implements Closeable {
     public FileMapWritingUtils(String filePath) throws IOException {
         try {
                 dataFile = new RandomAccessFile(filePath, "rw");
-            }
-            catch (FileNotFoundException e) {
+            } catch (FileNotFoundException e) {
                 throw new IOException(String.format("error while creating file: '%s'", filePath));
             }
             try {
@@ -36,12 +35,12 @@ public class FileMapWritingUtils implements Closeable {
         FileMapWritingUtils write = new FileMapWritingUtils(file);
         int shift = GlobalUtils.getKeysLength(keys, GlobalUtils.ENCODING);
         for (String key : keys) {
-        	write.writeKey(key);
-        	write.writeOffset(shift);
-        	shift += GlobalUtils.countBytes(builder.get(key), GlobalUtils.ENCODING);
+            write.writeKey(key);
+            write.writeOffset(shift);
+            shift += GlobalUtils.countBytes(builder.get(key), GlobalUtils.ENCODING);
         }
         for (String key : keys) {
-        	write.writeValue(builder.get(key));
+            write.writeValue(builder.get(key));
         }
         write.close();
     }

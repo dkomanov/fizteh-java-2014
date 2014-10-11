@@ -16,9 +16,8 @@ public class WritingUtils {
     public WritingUtils(String filePath) throws SomethingIsWrongException {
         try {
                 dataFile = new RandomAccessFile(filePath, "rw");
-            }
-            catch (FileNotFoundException e) {
-                throw new SomethingIsWrongException (String.format("error while creating file: '%s'", filePath));
+            } catch (FileNotFoundException e) {
+                throw new SomethingIsWrongException(String.format("error while creating file: '%s'", filePath));
             }
             try {
                 dataFile.setLength(0);

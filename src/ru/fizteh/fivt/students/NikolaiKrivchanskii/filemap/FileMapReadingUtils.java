@@ -35,7 +35,7 @@ public class FileMapReadingUtils implements Closeable{
         }
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         byte b = tempFile.readByte();
-        while(b != 0) {
+        while (b != 0) {
             bytes.write(b);
             b = tempFile.readByte();
         }
@@ -48,7 +48,7 @@ public class FileMapReadingUtils implements Closeable{
         long currentOffset;
         currentOffset = tempFile.getFilePointer();
         tempFile.seek(offset);
-        int valueLength = nextOffset-offset;
+        int valueLength = nextOffset - offset;
         byte[] bytes = new byte[valueLength];
         tempFile.read(bytes, 0, valueLength);
         tempFile.seek(currentOffset);
@@ -77,7 +77,7 @@ public class FileMapReadingUtils implements Closeable{
         try {
             result = (tempFile.getFilePointer() == valueShift);
         } catch (EOFException e) {
-            
+            System.err.println("Reached end of file");
         }
         return result;
     }
@@ -87,7 +87,7 @@ public class FileMapReadingUtils implements Closeable{
         int nextOffset = 0;
         long currentOffset = tempFile.getFilePointer();
         if (readKey() == null) {
-            nextOffset = (int)tempFile.length();
+            nextOffset = (int) tempFile.length();
         } else {
             nextOffset = readOffset();
         }
@@ -106,7 +106,7 @@ public class FileMapReadingUtils implements Closeable{
             return tempFile.readInt();
         }
         
-        public void close () {
-        	GlobalUtils.closeCalm(tempFile);
+        public void close() {
+            GlobalUtils.closeCalm(tempFile);
         }
 }

@@ -13,17 +13,17 @@ import java.util.regex.Pattern;
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell.ShellState;
 
 public class GlobalUtils {
-	public static final Charset ENCODING = StandardCharsets.UTF_8;
-	public static final int DIR_QUANTITY = 16;
+    public static final Charset ENCODING = StandardCharsets.UTF_8;
+    public static final int DIR_QUANTITY = 16;
     public static final int FILES_PER_DIR = 16;
-	private static final Pattern DIR_PATTERN = Pattern.compile("([^\\.]+).dir");
+    private static final Pattern DIR_PATTERN = Pattern.compile("([^\\.]+).dir");
     private static final Pattern FILE_PATTERN = Pattern.compile("([^\\.]+).dat");
-	
+    
     public static String uniteItems(Collection<?> items, String separator) {
         boolean isFirstIteration = true;
         StringBuilder joinBuilder = new StringBuilder();
         for (Object item: items) {
-            if(isFirstIteration) {
+            if (isFirstIteration) {
                 isFirstIteration = false;
             } else {
                 joinBuilder.append(separator);
@@ -46,7 +46,7 @@ public class GlobalUtils {
     public static File getAbsoluteName(String fileName, ShellState state) {
         File file = new File(fileName);
         
-        if (!file.isAbsolute()){
+        if (!file.isAbsolute()) {
             file = new File(state.getCurDir(), fileName);
         }
         return file;
@@ -88,7 +88,7 @@ public class GlobalUtils {
         } else if (key1 == null || key2 == null) {
             return false;
         } else {
-        	return key1.equals(key2);
+            return key1.equals(key2);
         }
     }
     
@@ -122,18 +122,15 @@ public class GlobalUtils {
         throw new IllegalArgumentException("incorrect file name");
     }
     
-    public static void checkKeyPlacement(String key, int currentDir, int currentFile)
-    {
+    public static void checkKeyPlacement(String key, int currentDir, int currentFile) {
         if (currentDir != getDirNumber(key) || currentFile != getFileNumber(key)) {
             throw new IllegalArgumentException("invalid key placement");
         }
     }
     
-    public static String parseTableName(String params)
-    {
+    public static String parseTableName(String params) {
         int index = params.indexOf(' ');
-        if (index == -1)
-        {
+        if (index == -1) {
             return params;
         }
         return params.substring(0, index);

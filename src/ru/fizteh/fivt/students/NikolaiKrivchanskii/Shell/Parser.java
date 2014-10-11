@@ -5,9 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parser {
-	
-	
-	public static ArrayList<String> parseCommandArgs(String params) {
+    
+    
+    public static ArrayList<String> parseCommandArgs(String params) {
         ArrayList<String> matchList = new ArrayList<String>();
         Pattern regex = Pattern.compile("[^\\s\"']+|\"[^\"]*\"|'[^']*'");
         Matcher regexMatcher = regex.matcher(params);
@@ -17,8 +17,8 @@ public class Parser {
         }
         return matchList;
     }
-	
-	public static String getName(String command) {
+    
+    public static String getName(String command) {
         int spiltIndex = command.indexOf(' ');
         if (spiltIndex == -1) {
             return command;
@@ -27,7 +27,7 @@ public class Parser {
         }
     }
 
-	public static String[] parseFullCommand(String commands) {
+    public static String[] parseFullCommand(String commands) {
         String[] commandArray = commands.split(";");
         for (int i = 0; i < commandArray.length; ++i) {
             commandArray[i] = commandArray[i].trim();

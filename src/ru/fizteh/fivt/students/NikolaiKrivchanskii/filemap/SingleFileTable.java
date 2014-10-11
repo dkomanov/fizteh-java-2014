@@ -24,15 +24,15 @@ public class SingleFileTable extends SomeTable {
     }
     
     private String getPathToDatabase() {
-    	File curDir = new File(new File(".").getAbsolutePath());
+        File curDir = new File(new File(".").getAbsolutePath());
         File databaseFile;
-		try {
-			databaseFile = new File (curDir.getCanonicalPath(), DATABASENAME);
-	        return databaseFile.getAbsolutePath();
-		} catch (IOException e) {
-			e.getMessage();
-		}
-		return "";
+        try {
+            databaseFile = new File(curDir.getCanonicalPath(), DATABASENAME);
+            return databaseFile.getAbsolutePath();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+        return "";
     }
     
 

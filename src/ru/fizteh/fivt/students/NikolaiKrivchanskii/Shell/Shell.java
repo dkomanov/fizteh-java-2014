@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -11,12 +10,12 @@ import java.util.Set;
 
 public class Shell<State> {
     private final Map<String, Commands> availableCommands;
-    private static final String greeting = "$ ";
+    private static final String GREETING = "$ ";
     State state;
     
     
-    public Shell (Set<Commands> commands) {
-        Map <String, Commands> tempCommands = new HashMap<String, Commands>();
+    public Shell(Set<Commands> commands) {
+        Map<String, Commands> tempCommands = new HashMap<String, Commands>();
         for (Commands<State> temp : commands) {
             tempCommands.put(temp.getCommandName(), temp);
         }
@@ -29,16 +28,18 @@ public class Shell<State> {
     
     private void runCommand(String[] data, State state) throws SomethingIsWrongException {
         if (data[0].length() == 0) {
-            throw new SomethingIsWrongException ("Empty string.");
+            throw new SomethingIsWrongException("Empty string.");
         }
         Commands<State> usedOne = availableCommands.get(data[0]);
         if (usedOne == null) {
-            throw new SomethingIsWrongException ("Unknown command.");
-        } else if (data.length - 1 != usedOne.getArgumentQuantity() ) {
-        	if(!(usedOne.getCommandName().equals("rm") && data.length - 1 == usedOne.getArgumentQuantity() + 1)
-        			&& !(usedOne.getCommandName().equals("cp") && data.length - 1 == usedOne.getArgumentQuantity() + 1)) { 
-        		throw new SomethingIsWrongException ("Wrong number of arguments. Correct argument quantity = " + (data.length-1) + 
-        				"\nTo correctly run this command use " + usedOne.getArgumentQuantity() + " arguments.");
+            throw new SomethingIsWrongException("Unknown command.");
+        } else if (data.length - 1 != usedOne.getArgumentQuantity()) {
+        	if (!(usedOne.getCommandName().equals("rm") && data.length - 1 == usedOne.getArgumentQuantity() + 1)
+        			&& !(usedOne.getCommandName().equals("cp") && data.length - 1 ==
+        			usedOne.getArgumentQuantity() + 1)) { 
+        		throw new SomethingIsWrongException("Wrong number of arguments. Correct argument quantity = "
+        			+ (data.length - 1) + "\nTo correctly run this command use "
+        				+ usedOne.getArgumentQuantity() + " arguments.");
         	}
         }
         String[] commandArguments = Arrays.copyOfRange(data, 1, data.length);
@@ -68,7 +69,7 @@ public class Shell<State> {
     public void consoleWay(State state) {
         Scanner forInput = new Scanner(System.in);
         while (!Thread.currentThread().isInterrupted()) {
-            System.out.print(greeting);
+            System.out.print(GREETING);
             try {
                 runLine(forInput.nextLine(), state);                  
             } catch (SomethingIsWrongException exc) {
@@ -85,8 +86,10 @@ public class Shell<State> {
     
    /* public static void notmain(String[] args) {
     	ShellState state = new ShellState(System.getProperty("user.dir"));
-        Set<Commands> commands =  new HashSet<Commands>() {{ /*add(new WhereAreWeCommand()); add(new CopyCommand()); add(new DirectoryInfoCommand());
-        	add(new ExitCommand()); add(new MakeDirectoryCommand()); add(new MoveCommand()); add(new RemoveCommand());  }};*/
+        Set<Commands> commands =  new HashSet<Commands>() {{
+         /*add(new WhereAreWeCommand()); add(new CopyCommand()); add(new DirectoryInfoCommand());
+        	add(new ExitCommand()); add(new MakeDirectoryCommand());
+        	 add(new MoveCommand()); add(new RemoveCommand());  }};*/
      /*   Shell<ShellState> shell = new Shell<ShellState>(commands);
         
         if (args.length != 0) {
@@ -110,3 +113,4 @@ public class Shell<State> {
     
 
 }
+

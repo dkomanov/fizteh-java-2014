@@ -40,7 +40,7 @@ public class ReadingUtils {
             }
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             byte b = tempFile.readByte();
-            while(b != 0) {
+            while (b != 0) {
                 bytes.write(b);
                 b = tempFile.readByte();
             }
@@ -64,7 +64,7 @@ public class ReadingUtils {
             try {
                 currentOffset = tempFile.getFilePointer();
                 tempFile.seek(offset);
-                int valueLength = nextOffset-offset;
+                int valueLength = nextOffset - offset;
                 byte[] bytes = new byte[valueLength];
                 tempFile.read(bytes, 0, valueLength);
                 tempFile.seek(currentOffset);
@@ -99,7 +99,7 @@ public class ReadingUtils {
             try {
                 int currentOffset = (int) tempFile.getFilePointer();
                 if (readKey() == null) {
-                    nextOffset = (int)tempFile.length();
+                    nextOffset = (int) tempFile.length();
                 } else {
                     nextOffset = readOffset();
                 }

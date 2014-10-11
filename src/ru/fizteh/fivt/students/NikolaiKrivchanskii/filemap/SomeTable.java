@@ -2,8 +2,7 @@ package ru.fizteh.fivt.students.NikolaiKrivchanskii.filemap;
 
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell.*;
 
-import java.io.File;
-import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -73,9 +72,9 @@ public abstract class SomeTable implements MyTable {
         return unchangedOldData.get(key);
     }
     
-    public String put(String key, String Value) {
+    public String put(String key, String newValue) {
         String value = oldValue(key);
-        currentData.put(key, Value);
+        currentData.put(key, newValue);
         if (value == null) {
             ++size;
         }
@@ -119,12 +118,12 @@ public abstract class SomeTable implements MyTable {
     public void writeOnDisk(Set<String> keys, String file) throws SomethingIsWrongException {
         WritingUtils write = new WritingUtils(file);
         int temp = keySize(keys);
-        for(String key : keys) {
+        for (String key : keys) {
             write.writeKey(key);
             write.writeOffset(temp);
             temp += UtilMethods.countBytes(unchangedOldData.get(key), UtilMethods.ENCODING);
         }
-        for(String key : keys) {
+        for (String key : keys) {
             String tempCheck = unchangedOldData.get(key);
             if (tempCheck != null) {
                 write.writeValue(tempCheck);   
@@ -138,7 +137,7 @@ public abstract class SomeTable implements MyTable {
             throw new SomethingIsWrongException("Unable to scan from disc.");
         }
         ReadingUtils read = new ReadingUtils(file);
-        while(!read.endOfFile()) {
+        while (!read.endOfFile()) {
             String key = read.readKey();
             String value = read.readValue();
             unchangedOldData.put(key, value);

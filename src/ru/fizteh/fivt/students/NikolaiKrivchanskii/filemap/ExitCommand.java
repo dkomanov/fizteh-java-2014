@@ -12,12 +12,12 @@ public class ExitCommand implements Commands<FileMapShellState> {
         return 0;
     }
     public void implement(String[] args, FileMapShellState state) throws SomethingIsWrongException {
-		MyTable temp = (MyTable) state.table;
-		if (state.table != null && !temp.getAutoCommit()) {
-			temp.rollback();
-		} else if (temp.getAutoCommit() && state.table != null) {
-			temp.commit();
-		}
+        MyTable temp = (MyTable) state.table;
+        if (state.table != null && !temp.getAutoCommit()) {
+            temp.rollback();
+        } else if (temp.getAutoCommit() && state.table != null) {
+            temp.commit();
+        }
         throw new SomethingIsWrongException("EXIT");
     }
 
