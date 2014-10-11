@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by denny_000 on 08.10.2014.
  */
-public interface TableInterface {
+public interface Table {
     String put(String key, String value);
 
     String get(String key);

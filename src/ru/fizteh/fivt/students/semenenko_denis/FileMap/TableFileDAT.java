@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Created by denny_000 on 08.10.2014.
  */
-public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
+public class TableFileDAT implements Table, SaveInMemoryInterface {
 
     private RandomAccessFile binFile;
     private Map<String, String> data;

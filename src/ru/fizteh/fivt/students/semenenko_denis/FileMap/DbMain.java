@@ -75,28 +75,28 @@ public class DbMain {
                     if (parts.length == 3) {
                         cache.put(parts[1], parts[2], "db.file");
                     } else {
-                        System.out.println(INCORRECT_NUMBER_OF_ARGUMENTS);
+                        errorCntArguments(parts[0]);
                     }
                     break;
                 case "get":
                     if (parts.length == 2) {
                         cache.get(parts[1]);
                     } else {
-                        System.out.println(INCORRECT_NUMBER_OF_ARGUMENTS);
+                        errorCntArguments(parts[0]);
                     }
                     break;
                 case "list":
                     if (parts.length == 1) {
                         cache.list("db.file");
                     } else {
-                        System.out.println(INCORRECT_NUMBER_OF_ARGUMENTS);
+                        errorCntArguments(parts[0]);
                     }
                     break;
                 case "remove":
                     if (parts.length == 2) {
                         cache.remove(parts[1]);
                     } else {
-                        System.out.println(INCORRECT_NUMBER_OF_ARGUMENTS);
+                        errorCntArguments(parts[0]);
                     }
                     break;
                 case "exit":
@@ -117,6 +117,13 @@ public class DbMain {
         }
 
     }
+
+    private static void errorCntArguments(String command)
+            throws InvalidCommandException {
+        throw new InvalidCommandException(
+                command + ": invalid number of arguments");
+    }
+
 
     private static void errorUnknownCommand(String command)
             throws InvalidCommandException {
