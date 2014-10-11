@@ -47,39 +47,39 @@ class CommandsParser {
 }
 
 public final class FileMap {
-    private static final String DbFilePath = System.getProperty("db.file");
-    private static RandomAccessFile DbFile = null;
-    private static Map<String, String> FileHashMap = null;
+    private static final String DB_FILE_PATH = System.getProperty("db.file");
+    private static RandomAccessFile dbFile = null;
+    private static Map<String, String> fileHashMap = null;
 
-    public static Map<String, String> getFileHashMap() { return FileHashMap; }
-    public static RandomAccessFile getDbFile() { return DbFile; }
+    public static Map<String, String> getFileHashMap() { return fileHashMap; }
+    public static RandomAccessFile getDbFile() { return dbFile; }
 
     private static void fillFileHashMap() throws IOException {
-        FileHashMap = new HashMap<String, String>();
-        if (DbFile.length() != 0) {
+        fileHashMap = new HashMap<String, String>();
+        if (dbFile.length() != 0) {
             try (ByteArrayOutputStream buf = new ByteArrayOutputStream()) {
                 long currentSeek = 0;
                 int b = -1;
                 LinkedList<String> keys = new LinkedList<>();
                 LinkedList<Integer> offsets = new LinkedList<>();
                 // reading keys and offsets
-                while ((b = (int) DbFile.readByte()) != 0) {
+                while ((b = (int) dbFile.readByte()) != 0) {
                     currentSeek++;
                     buf.write(b);
                 }
                 keys.add(buf.toString("UTF-8"));
                 buf.reset();
-                int firstOffset = DbFile.readInt();
+                int firstOffset = dbFile.readInt();
                 offsets.add(firstOffset);
                 currentSeek += 4;
                 while (currentSeek != firstOffset) {
-                    while ((b = (int) DbFile.readByte()) != 0) {
+                    while ((b = (int) dbFile.readByte()) != 0) {
                         currentSeek++;
                         buf.write(b);
                     }
                     keys.add(buf.toString("UTF-8"));
                     buf.reset();
-                    offsets.add(DbFile.readInt());
+                    offsets.add(dbFile.readInt());
                     currentSeek += 4;
                 }
                 // end of reading keys and offsets
@@ -90,50 +90,50 @@ public final class FileMap {
                 while (offsetIter.hasNext()) {
                     int nextOffset = offsetIter.next();
                     while (currentSeek != nextOffset) {
-                        buf.write(DbFile.readByte());
+                        buf.write(dbFile.readByte());
                         currentSeek++;
                     }
-                    FileHashMap.put(keysIter.next(), buf.toString("UTF-8"));
+                    fileHashMap.put(keysIter.next(), buf.toString("UTF-8"));
                     buf.reset();
                 }
                 // reading last value
-                while (currentSeek != DbFile.length()) {
-                    buf.write(DbFile.readByte());
+                while (currentSeek != dbFile.length()) {
+                    buf.write(dbFile.readByte());
                     currentSeek++;
                 }
-                FileHashMap.put(keysIter.next(), buf.toString("UTF-8"));
+                fileHashMap.put(keysIter.next(), buf.toString("UTF-8"));
                 buf.reset();
             }
         }
     }
 
     public static void saveChangesToFile() throws IOException {
-        DbFile.setLength(0);
-        Set<String> keys = FileHashMap.keySet();
+        dbFile.setLength(0);
+        Set<String> keys = fileHashMap.keySet();
         LinkedList<Integer> offsetsPlaces = new LinkedList<>();
         for (String key : keys) {
-            DbFile.write(key.getBytes("UTF-8"));
-            DbFile.write('\0');
-            offsetsPlaces.add((int) DbFile.getFilePointer());
-            DbFile.writeInt(0);
+            dbFile.write(key.getBytes("UTF-8"));
+            dbFile.write('\0');
+            offsetsPlaces.add((int) dbFile.getFilePointer());
+            dbFile.writeInt(0);
         }
-        Collection<String> values = FileHashMap.values();
-        int currentOffset = (int) DbFile.getFilePointer();
+        Collection<String> values = fileHashMap.values();
+        int currentOffset = (int) dbFile.getFilePointer();
         Iterator<Integer> offsetsPlacesIter = offsetsPlaces.iterator();
         for (String val : values) {
             byte[] valBytes = val.getBytes("UTF-8");
-            DbFile.write(valBytes);
+            dbFile.write(valBytes);
             int offsetPlace = offsetsPlacesIter.next();
-            DbFile.seek(offsetPlace);
-            DbFile.writeInt(currentOffset);
+            dbFile.seek(offsetPlace);
+            dbFile.writeInt(currentOffset);
             currentOffset += valBytes.length;
-            DbFile.seek(currentOffset);
+            dbFile.seek(currentOffset);
         }
     }
 
     public static void main(final String[] args) {
         try {
-            DbFile = new RandomAccessFile(DbFilePath, "rw");
+            dbFile = new RandomAccessFile(DB_FILE_PATH, "rw");
             fillFileHashMap();
             if (args.length == 0) {
                 interactiveMode();
