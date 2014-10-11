@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.kotsurba.filemap.shell;
 
-public final class CommandParser {
+public class CommandParser {
     private StringBuilder commands;
 
     public CommandParser(final String[] args) {

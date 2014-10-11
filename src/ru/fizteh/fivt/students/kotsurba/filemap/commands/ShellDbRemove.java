@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.kotsurba.filemap.commands;
 import ru.fizteh.fivt.students.kotsurba.filemap.database.DataBase;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
 
-public final class ShellDbRemove extends SimpleShellCommand {
+public class ShellDbRemove extends SimpleShellCommand {
     private DataBase dataBase;
 
     public ShellDbRemove(final DataBase newDataBase) {

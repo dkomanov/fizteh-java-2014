@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.kotsurba.filemap.database;
 
 import java.io.IOException;
 
-public final class DataBase {
+public class DataBase {
     private String dataBaseDirectory;
     private DataBaseFile fileDb;
 

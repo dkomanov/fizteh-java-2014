@@ -157,9 +157,10 @@ public class DataBaseFile {
         StringBuilder s = new StringBuilder();
 
         for (String v : data.keySet()) {
-            s.append(v).append(" ");
+            s.append(v).append(", ");
         }
         if (s.length() != 0) {
+            s.deleteCharAt(s.length() - 1);
             s.deleteCharAt(s.length() - 1);
         }
         return s.toString();

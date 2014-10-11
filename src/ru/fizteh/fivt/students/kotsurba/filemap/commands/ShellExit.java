@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.kotsurba.filemap.commands;
 
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
 
-public final class ShellExit extends SimpleShellCommand {
+public class ShellExit extends SimpleShellCommand {
 
     public ShellExit() {
         setName("exit");

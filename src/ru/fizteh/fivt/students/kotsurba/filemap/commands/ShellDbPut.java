@@ -5,7 +5,7 @@ import ru.fizteh.fivt.students.kotsurba.filemap.shell.CommandString;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.InvalidCommandException;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
 
-public final class ShellDbPut extends SimpleShellCommand {
+public class ShellDbPut extends SimpleShellCommand {
     private DataBase dataBase;
 
     public ShellDbPut(final DataBase newDataBase) {

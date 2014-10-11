@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.kotsurba.filemap.shell;
 
-public final class CommandString {
+public class CommandString {
     private String nativeCommand;
     private String[] argList;
 
