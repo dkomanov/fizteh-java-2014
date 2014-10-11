@@ -34,13 +34,13 @@ public class Shell<State> {
         if (usedOne == null) {
             throw new SomethingIsWrongException("Unknown command.");
         } else if (data.length - 1 != usedOne.getArgumentQuantity()) {
-        	if (!(usedOne.getCommandName().equals("rm") && data.length - 1 == usedOne.getArgumentQuantity() + 1)
-        			&& !(usedOne.getCommandName().equals("cp") && data.length - 1 ==
-        			usedOne.getArgumentQuantity() + 1)) { 
-        		throw new SomethingIsWrongException("Wrong number of arguments. Correct argument quantity = "
-        			+ (data.length - 1) + "\nTo correctly run this command use "
-        				+ usedOne.getArgumentQuantity() + " arguments.");
-        	}
+            if (!(usedOne.getCommandName().equals("rm") && data.length - 1 == usedOne.getArgumentQuantity() + 1)
+                    && !(usedOne.getCommandName().equals("cp") && data.length - 1 
+                    		== usedOne.getArgumentQuantity() + 1)) { 
+                throw new SomethingIsWrongException("Wrong number of arguments. Correct argument quantity = "
+                    + (data.length - 1) + "\nTo correctly run this command use "
+                        + usedOne.getArgumentQuantity() + " arguments.");
+            }
         }
         String[] commandArguments = Arrays.copyOfRange(data, 1, data.length);
         usedOne.implement(commandArguments, state);
@@ -85,11 +85,11 @@ public class Shell<State> {
     }
     
    /* public static void notmain(String[] args) {
-    	ShellState state = new ShellState(System.getProperty("user.dir"));
+        ShellState state = new ShellState(System.getProperty("user.dir"));
         Set<Commands> commands =  new HashSet<Commands>() {{
          /*add(new WhereAreWeCommand()); add(new CopyCommand()); add(new DirectoryInfoCommand());
-        	add(new ExitCommand()); add(new MakeDirectoryCommand());
-        	 add(new MoveCommand()); add(new RemoveCommand());  }};*/
+            add(new ExitCommand()); add(new MakeDirectoryCommand());
+             add(new MoveCommand()); add(new RemoveCommand());  }};*/
      /*   Shell<ShellState> shell = new Shell<ShellState>(commands);
         
         if (args.length != 0) {
