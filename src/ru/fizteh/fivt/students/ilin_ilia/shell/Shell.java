@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Shell {
-    public static void interactiveMode () {
+    public static void interactiveMode() {
         String [] commands = {"ls", "cat", "rm", "cd",
                 "cp", "exit", "mkdir", "mv", "pwd"};
         Scanner scan = new Scanner(System.in);
@@ -64,6 +64,7 @@ public class Shell {
                     break;
                 case "exit":
                     System.exit(0);
+                    break;
                 case "mkdir":
                     MkDir.run(scan.next());
                     break;
@@ -153,6 +154,7 @@ public class Shell {
                 break;
             case "exit":
                 System.exit(0);
+                break;
             case "mkdir":
                 if (arg2.length == 1) {
                     System.out.println("MkDir doesn't have argument");
