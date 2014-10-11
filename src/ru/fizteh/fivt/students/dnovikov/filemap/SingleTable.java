@@ -15,7 +15,7 @@ public class SingleTable implements Table {
 
     private Path dataBasePath;
 
-    public SingleTable(Path path) throws Exception {
+    public SingleTable(Path path) throws IOException {
         dataBase = new HashMap<String, String>();
         dataBasePath = path;
         this.load();
@@ -38,7 +38,7 @@ public class SingleTable implements Table {
         return dataBase.remove(key);
     }
 
-    public void save() throws Exception {
+    public void save() throws IOException {
 
         try (DataOutputStream outputStream = new DataOutputStream(Files.newOutputStream(dataBasePath))) {
             Set<Entry<String, String>> list = dataBase.entrySet();
@@ -47,12 +47,12 @@ public class SingleTable implements Table {
                 writeString(outputStream, entry.getValue());
             }
         } catch (IOException e) {
-            throw new Exception("cannot write to database");
+            throw new IOException("cannot write to database");
         }
     }
 
 
-    public void load() throws Exception {
+    public void load() throws IOException {
 
         try (DataInputStream inputStream = new DataInputStream(Files.newInputStream(dataBasePath))) {
             dataBase.clear();
@@ -62,37 +62,37 @@ public class SingleTable implements Table {
         } catch (IOException e) {
             try (DataOutputStream outputStream = new DataOutputStream(Files.newOutputStream(dataBasePath))) {
                 outputStream.flush();
-            } catch (Exception ex) {
-                throw new Exception("cannot create file with database");
+            } catch (IOException ioEx) {
+                throw new IOException("cannot create file with database");
+            } catch (SecurityException secEx) {
+                throw new IOException("cannot create file with database");
             }
-        } catch (Exception e) {
-            throw new Exception("cannot read from database");
         }
     }
 
-    public String readString(DataInputStream inputStream) throws Exception {
+    public String readString(DataInputStream inputStream) throws IOException {
         try {
             int length = inputStream.readInt();
             if (length <= 0) {
-                throw new Exception("cannot read from database");
+                throw new IOException("cannot read from database");
             }
             byte[] byteString = new byte[length];
             inputStream.readFully(byteString);
             return new String(byteString, "UTF-8");
         } catch (EOFException eof) {
-            throw new Exception("cannot read from database");
+            throw new IOException("cannot read from database");
         } catch (IOException ioe) {
-            throw new Exception("cannot read from database");
+            throw new IOException("cannot read from database");
         }
     }
 
-    public void writeString(DataOutputStream outputStream, String string) throws Exception {
+    public void writeString(DataOutputStream outputStream, String string) throws IOException {
         try {
             byte[] stringByte = string.getBytes("UTF-8");
             outputStream.writeInt(stringByte.length);
             outputStream.write(stringByte);
         } catch (IOException ioe) {
-            throw new Exception("cannot write to database");
+            throw new IOException("cannot write to database");
         }
     }
 }
