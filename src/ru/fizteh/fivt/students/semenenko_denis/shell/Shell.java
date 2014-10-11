@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 import ru.fizteh.fivt.students.semenenko_denis.shell.src.InvalidCommandException;
 
 
@@ -42,26 +40,8 @@ public class Shell {
     }
 
     private static void execInteractiveMode() {
-        try {
-            Scanner sc = new Scanner(System.in);
-            while (true) {
-                System.out.print("$ ");
-                String commandsLine = sc.nextLine();
-                String[] commandsArr = commandsLine.trim().split(";");
-                for (String command : commandsArr) {
-                    execCommand(command);
-                    if (isExit) {
-                        break;
-                    }
-                }
-                if (isExit) {
-                    break;
-                }
-            }
-        } catch (NoSuchElementException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
+
+
     }
 
     private static void execBatchMode(String[] args) {
