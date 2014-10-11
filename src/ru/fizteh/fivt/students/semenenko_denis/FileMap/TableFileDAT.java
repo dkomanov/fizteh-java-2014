@@ -115,7 +115,7 @@ public class TableFileDAT implements Table, SaveInMemoryInterface {
                 keys.add(bytesBuffer.toString("UTF-8"));
                 bytesBuffer.reset();
             } while (bytesCounter < firstOffset);
-            //reading values until reaching the end of file
+            //Reading values until reaching the end of file.
             offsets.add((int) whereFrom.length());
             Iterator<String> keyIter = keys.iterator();
             Iterator<Integer> offIter = offsets.iterator();
@@ -129,7 +129,7 @@ public class TableFileDAT implements Table, SaveInMemoryInterface {
                     data.put(keyIter.next(), bytesBuffer.toString("UTF-8"));
                     bytesBuffer.reset();
                 } else {
-                    //if file ends before reading last value
+                    //If file ends before reading last value.
                     throw new IOException();
                 }
             }
