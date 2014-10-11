@@ -12,9 +12,9 @@ public class RemoveCommand extends Command {
         }
         String value = hashMap.remove(args[1]);
         if (value == null) {
-            System.out.println("not found");
+            msg = new String("not found");
         } else {
-            System.out.println("removed");
+            msg = new String("removed");
         }
     }
 }

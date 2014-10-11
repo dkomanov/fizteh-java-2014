@@ -12,10 +12,9 @@ public class PutCommand extends Command {
         }
         String oldValue = hashMap.put(args[1], args[2]);
         if (oldValue == null) {
-            System.out.println("new");
+            msg = new String("new");
         } else {
-            System.out.println("overwrite");
-            System.out.println(oldValue);
+            msg = new String("overwrite" + System.lineSeparator() + oldValue);
         }
     }
 }

@@ -21,11 +21,12 @@ public final class FileMap {
                 int b = -1;
                 LinkedList<String> keys = new LinkedList<>();
                 LinkedList<Integer> offsets = new LinkedList<>();
-                // reading keys and offsets
+                // Reading keys and offsets.
                 while ((b = (int) dbFile.readByte()) != 0) {
                     currentSeek++;
                     buf.write(b);
                 }
+                currentSeek++;
                 keys.add(buf.toString("UTF-8"));
                 buf.reset();
                 int firstOffset = dbFile.readInt();
@@ -36,13 +37,14 @@ public final class FileMap {
                         currentSeek++;
                         buf.write(b);
                     }
+                    currentSeek++;
                     keys.add(buf.toString("UTF-8"));
                     buf.reset();
                     offsets.add(dbFile.readInt());
                     currentSeek += 4;
                 }
-                // end of reading keys and offsets
-                // reading values and filling hashmap
+                // End of reading keys and offsets.
+                // Reading values and filling hashmap.
                 Iterator<String> keysIter = keys.iterator();
                 Iterator<Integer> offsetIter = offsets.iterator();
                 offsetIter.next();
@@ -55,7 +57,7 @@ public final class FileMap {
                     fileHashMap.put(keysIter.next(), buf.toString("UTF-8"));
                     buf.reset();
                 }
-                // reading last value
+                // Reading last value.
                 while (currentSeek != dbFile.length()) {
                     buf.write(dbFile.readByte());
                     currentSeek++;
@@ -98,7 +100,7 @@ public final class FileMap {
                 interactiveMode();
             } else {
                 Command[] commands = CommandsParser.parse(args);
-                packetMode(commands);
+                batchMode(commands);
             }
         } catch (FileNotFoundException e) {
             System.err.println("trouble with file: " + e.getMessage());
@@ -113,15 +115,23 @@ public final class FileMap {
     public static void interactiveMode() throws IOException {
         try (Scanner in = new Scanner(System.in)) {
             while (in.hasNextLine()) {
-                Command cmd = CommandsParser.parse(in.nextLine());
-                cmd.execute();
+                try {
+                    Command cmd = CommandsParser.parse(in.nextLine());
+                    cmd.execute();
+                    if (!cmd.getMsg().equals("")) {
+                        System.out.println(cmd.getMsg());
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.err.println(e.getMessage());
+                }
             }
         }
     }
 
-    public static void packetMode(final Command[] commands) throws IOException {
+    public static void batchMode(final Command[] commands) throws IOException {
         for (Command cmd : commands) {
             cmd.execute();
+            System.out.println(cmd.getMsg());
         }
     }
 }

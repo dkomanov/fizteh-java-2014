@@ -15,13 +15,15 @@ public class ListCommand extends Command {
         }
         Set<String> keySet = hashMap.keySet();
         Iterator<String> keySetIter = keySet.iterator();
+        StringBuilder keysList = new StringBuilder();
         while (keySetIter.hasNext()) {
             String key = keySetIter.next();
             if (keySetIter.hasNext()) {
-                System.out.print(key + ", ");
+                keysList.append(key + ", ");
             } else {
-                System.out.println(key);
+                keysList.append(key);
             }
         }
+        msg = new String(keysList.toString());
     }
 }

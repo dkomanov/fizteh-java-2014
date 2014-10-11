@@ -12,10 +12,9 @@ public class GetCommand extends Command {
         }
         String value = hashMap.get(args[1]);
         if (value == null) {
-            System.out.println("not found");
+            msg = new String("not found");
         } else {
-            System.out.println("found");
-            System.out.println(value);
+            msg = new String("found" + System.lineSeparator() + value);
         }
     }
 }
