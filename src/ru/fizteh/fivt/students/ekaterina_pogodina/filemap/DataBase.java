@@ -34,7 +34,7 @@ public class DataBase {
                 }
                 dbFile.close();
             } catch (Exception e) {
-                throw new Exception("DataBase: " + "I don't know-exception");
+                throw new Exception();
             }
         } else {
             try {
@@ -180,9 +180,7 @@ public class DataBase {
         } while (bytesCounter < firstOffset);
         offsets.add((int) dbFile.length());
         Iterator<String> keyIter = keys.iterator();
-        Iterator<Integer> offIter = offsets.iterator();
-        while (offIter.hasNext()) {
-            int nextOffset = offIter.next();
+        for (int nextOffset : offsets) {
             while (bytesCounter < nextOffset) {
                 bytesBuffer.write(dbFile.readByte());
                 bytesCounter++;
@@ -204,3 +202,4 @@ public class DataBase {
         }
     }
 }
+
