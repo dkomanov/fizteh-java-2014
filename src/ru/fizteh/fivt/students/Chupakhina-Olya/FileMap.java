@@ -40,8 +40,10 @@ public class FileMap {
     }
 
     public static void getFile() throws Exception {
-        int n = 0, i = 0;
-        String key, value;
+        int n = 0;
+        int i = 0;
+        String key;
+        String value;
         boolean notEnd = true;
         while (notEnd) {
             try {
@@ -61,7 +63,8 @@ public class FileMap {
     }
 
     public static void putFile() throws Exception {
-        String key, value;
+        String key;
+        String value;
         file.setLength(0);
         for (Map.Entry<String, String> i : map.entrySet()) {
             key = i.getKey();
@@ -88,7 +91,7 @@ public class FileMap {
         separationLine(commands.toString());
     }
 
-    private static void interactiveMode() throws Exception{
+    private static void interactiveMode() throws Exception {
         Scanner scanner = new Scanner(System.in);
         try  {
             while (true) {
@@ -150,7 +153,8 @@ public class FileMap {
         if (args.length != 3) {
             throw new Exception("put: invalid number of arguments");
         }
-        String key = args[1], value = args[2];
+        String key = args[1];
+        String value = args[2];
         String s;
         s = map.put(key, value);
         if (s != null) {
@@ -187,7 +191,7 @@ public class FileMap {
     }
 
     public static void list(String[] args) throws Exception {
-        if (args.length != 2) {
+        if (args.length != 1) {
             throw new Exception("list: invalid number of arguments");
         }
         Set<String> keySet = map.keySet();
