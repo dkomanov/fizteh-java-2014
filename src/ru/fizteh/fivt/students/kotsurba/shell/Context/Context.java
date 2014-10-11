@@ -171,10 +171,13 @@ public final class Context {
             if (f.exists() && f.isFile()) {
                 BufferedReader fin = new BufferedReader(new FileReader(f.getCanonicalFile()));
                 String line;
-                while ((line = fin.readLine()) != null) System.out.println(line);
+                while ((line = fin.readLine()) != null) {
+                    System.out.println(line);
+                }
                 isOk = true;
             }
         } catch (FileNotFoundException e) {
+            System.out.println("File not found!");
         } catch (IOException e) {
             System.out.println("Bad file!");
         }
