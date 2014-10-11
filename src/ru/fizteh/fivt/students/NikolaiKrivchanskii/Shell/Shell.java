@@ -36,7 +36,7 @@ public class Shell<State> {
         } else if (data.length - 1 != usedOne.getArgumentQuantity()) {
             if (!(usedOne.getCommandName().equals("rm") && data.length - 1 == usedOne.getArgumentQuantity() + 1)
                     && !(usedOne.getCommandName().equals("cp") && data.length - 1 
-                    		== usedOne.getArgumentQuantity() + 1)) { 
+                            == usedOne.getArgumentQuantity() + 1)) { 
                 throw new SomethingIsWrongException("Wrong number of arguments. Correct argument quantity = "
                     + (data.length - 1) + "\nTo correctly run this command use "
                         + usedOne.getArgumentQuantity() + " arguments.");
