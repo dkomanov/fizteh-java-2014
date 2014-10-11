@@ -6,7 +6,7 @@ import java.io.RandomAccessFile;
 import java.util.*;
 
 
-public class dataTrance {
+public class DataTrance {
     public static void putD(RandomAccessFile dataFile, HashMap<String, String> fileMap)
             throws IOException {
         List<Integer> reserveplace = new LinkedList<>();
@@ -29,7 +29,7 @@ public class dataTrance {
             dataFile.writeInt(k.next());
         }
     }
-    public static void getNewData(HashMap<String,String> filemap, RandomAccessFile dataFile)
+    public static void getNewData(RandomAccessFile dataFile, HashMap<String, String> filemap)
             throws IOException {
         byte b;
         int bytenumber = 0;

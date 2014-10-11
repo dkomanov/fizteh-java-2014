@@ -8,12 +8,12 @@ import java.nio.file.*;
 
 
 public class FileMap {
-    private static HashMap<String,String> filemap;
-    private static Path PathFile;
-    private static void exit(Path PathtoFile, HashMap<String, String> filemap)  {
+    private static HashMap<String, String> filemap;
+    private static Path pathFile;
+    private static void exit(Path pathtoFile, HashMap<String, String> filemap)  {
         try (RandomAccessFile dataBaseFile
-                = new RandomAccessFile(PathtoFile.toString(), "rw")) {
-            dataTrance.putD(dataBaseFile, filemap);
+                = new RandomAccessFile(pathtoFile.toString(), "rw")) {
+            DataTrance.putD(dataBaseFile, filemap);
         } catch (Exception e) {
             System.err.println("Cannot writing to file");
         }
@@ -76,13 +76,13 @@ public class FileMap {
     }
     private static void put(String[] args) {
         System.out.println("oops");
-        if(args.length==3) {
+        if (args.length == 3) {
             System.out.println("oops");
-            String V = filemap.put(args[1],args[2]);
+            String v = filemap.put(args[1], args[2]);
             System.out.println("oops");
-            if(V!=null) {
+            if (v != null) {
                 System.out.println("overwrite");
-                System.out.println(V);
+                System.out.println(v);
             } else {
                 System.out.println("new");
             }
@@ -91,11 +91,11 @@ public class FileMap {
         }
     }
     private static void get(String[] args) {
-        if(args.length==2) {
-            String V = filemap.get(args[1]);
-            if(V!=null) {
+        if (args.length == 2) {
+            String v = filemap.get(args[1]);
+            if (v != null) {
                 System.out.println("found");
-                System.out.println(V);
+                System.out.println(v);
             } else {
                 System.out.println("not found");
             }
@@ -104,13 +104,13 @@ public class FileMap {
         }
     }
     private static void list(String[] args) {
-        if(args.length==1) {
+        if (args.length == 1) {
             Set<String> keys = filemap.keySet();
-            Integer i=0;
-            for(String key : keys) {
+            Integer i = 0;
+            for (String key : keys) {
                 System.out.print(key);
                 i++;
-                if(i<keys.size()) {
+                if (i < keys.size()) {
                     System.out.print(", ");
                 } else {
                     System.out.println();
@@ -121,9 +121,9 @@ public class FileMap {
         }
     }
     private static void remove(String[] args) {
-        if(args.length==2) {
+        if (args.length == 2) {
             String s = filemap.remove(args[1]);
-            if(s!=null) {
+            if (s != null) {
                 System.out.println("removed");
             } else {
                 System.out.println("not found");
@@ -135,14 +135,14 @@ public class FileMap {
     private static void makefile() {
         filemap = new HashMap<>();
         try {
-            PathFile = Paths.get(System.getProperty("db.file"));
+            pathFile = Paths.get(System.getProperty("db.file"));
             try (RandomAccessFile dataBaseFile
-                         = new RandomAccessFile(PathFile.toString(), "r")) {
+                         = new RandomAccessFile(pathFile.toString(), "r")) {
                 if (dataBaseFile.length() > 0) {
-                    dataTrance.getNewData(filemap, dataBaseFile);
+                    DataTrance.getNewData(dataBaseFile, filemap);
                 }
             } catch (FileNotFoundException e) {
-                PathFile.toFile().createNewFile();
+                pathFile.toFile().createNewFile();
             }
         } catch (Exception e) {
             System.err.println("Can't find or create data base file");
@@ -158,7 +158,7 @@ public class FileMap {
                 parsLine(args);
             }
         } catch (ShellexitException t) {
-            exit(PathFile, filemap);
+            exit(pathFile, filemap);
             System.exit(0);
         }
 
