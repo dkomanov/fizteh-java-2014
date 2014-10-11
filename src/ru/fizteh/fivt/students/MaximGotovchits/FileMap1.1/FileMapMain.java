@@ -2,9 +2,6 @@ package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.util.HashMap;
 
-/**
- * Created by Maxim on 07.10.2014.
- */
 public class FileMapMain {
     static HashMap<String, String> storage;
     static String [] cmdBuffer;

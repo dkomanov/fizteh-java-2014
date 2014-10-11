@@ -1,8 +1,5 @@
 package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
-/**
- * Created by Maxim on 07.10.2014.
- */
 public class Remove extends FileMapMain {
     void removeFunction() {
         if (cmdBuffer.length == 2) {

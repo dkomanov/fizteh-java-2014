@@ -5,9 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Created by Maxim on 07.10.2014.
- */
 public class FillingStorage extends FileMapMain {
     void fillingStorageFunction() throws Exception {
         File file = new File(System.getProperty("db.file"));

@@ -2,9 +2,6 @@ package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.util.*;
 
-/**
- * Created by Maxim on 07.10.2014.
- */
 public class List extends FileMapMain {
     void listFunction() {
         Integer size = 0;

@@ -1,16 +1,10 @@
-
 package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-/**
- * Created by Maxim on 07.10.2014.
- */
-
 public class FillingDB extends FileMapMain {
-
     public void fillingDBFunction() throws Exception {
         File file = new File(System.getProperty("db.file"));
         DataOutputStream stream = new DataOutputStream(new FileOutputStream(System.getProperty("db.file"), true));

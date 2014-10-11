@@ -1,9 +1,7 @@
 package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.util.*;
-/**
- * Created by Maxim on 07.10.2014.
- */
+
 public class InteractiveMode extends FileMapMain {
     void interactiveModeFunction() throws Exception {
         Scanner sc = new Scanner(System.in);
@@ -31,4 +29,3 @@ public class InteractiveMode extends FileMapMain {
         }
     }
 }
-
