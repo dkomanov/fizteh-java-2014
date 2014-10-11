@@ -6,8 +6,8 @@ import java.util.HashMap;
  * Created by Maxim on 07.10.2014.
  */
 public class FileMapMain {
-    static HashMap<String, String> storage;
-    static String [] cmdBuffer;
+    protected HashMap<String, String> storage;
+    protected String [] cmdBuffer;
     public static void main(String[] args) throws Exception {
         storage = new HashMap<String, String>();
         new FillingStorage().fillingStorageFunction();
