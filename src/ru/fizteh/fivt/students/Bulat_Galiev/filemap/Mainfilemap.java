@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.Bulat_Galiev.filemap;
 
 public final class Mainfilemap {
     private Mainfilemap() {
-        // not called
+        // Disable instantiation to this class.
     }
 
     public static void main(final String[] args) {
@@ -11,7 +11,7 @@ public final class Mainfilemap {
             if (args.length == 0) {
                 Modesfilemap.interactiveMode(link);
             } else {
-                Modesfilemap.packageMode(link, args);
+                Modesfilemap.batchMode(link, args);
             }
         } catch (Exception e) {
             // TODO Auto-generated catch block

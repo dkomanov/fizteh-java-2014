@@ -5,7 +5,7 @@ import java.util.Set;
 
 public final class Filemapfunc {
     private Filemapfunc() {
-        // not called
+        // Disable instantiation to this class.
     }
 
     public static void put(final Data link, final String arg1, final String arg2) {
@@ -66,7 +66,7 @@ public final class Filemapfunc {
                 System.out.print(", ");
             }
         }
-        System.out.print("\n");
+        System.out.println();
     }
 
     public static void exit(final Data link) {

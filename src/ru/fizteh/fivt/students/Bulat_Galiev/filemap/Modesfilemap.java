@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 public final class Modesfilemap {
     private Modesfilemap() {
-        // not called
+        // Disable instantiation to this class.
     }
 
     public static void interactiveMode(final Data link) {
@@ -26,7 +26,7 @@ public final class Modesfilemap {
         } while (!input.equals("exit"));
     }
 
-    public static void packageMode(final Data link, final String[] input) {
+    public static void batchMode(final Data link, final String[] input) {
         StringBuilder cmd = new StringBuilder();
         for (String argument : input) {
             if (cmd.length() != 0) {
