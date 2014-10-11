@@ -124,7 +124,6 @@ public class DbMain {
                 command + ": invalid number of arguments");
     }
 
-
     private static void errorUnknownCommand(String command)
             throws InvalidCommandException {
         throw new InvalidCommandException(
