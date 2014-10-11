@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.filemap.commands;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class ListCommand extends Command {
@@ -15,15 +17,10 @@ public class ListCommand extends Command {
         }
         Set<String> keySet = hashMap.keySet();
         Iterator<String> keySetIter = keySet.iterator();
-        StringBuilder keysList = new StringBuilder();
+        List<String> keysList = new LinkedList<>();
         while (keySetIter.hasNext()) {
-            String key = keySetIter.next();
-            if (keySetIter.hasNext()) {
-                keysList.append(key + ", ");
-            } else {
-                keysList.append(key);
-            }
+            keysList.add(keySetIter.next());
         }
-        msg = new String(keysList.toString());
+        msg = String.join(", ", keysList);
     }
 }
