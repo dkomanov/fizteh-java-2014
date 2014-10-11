@@ -1,4 +1,4 @@
-package ru.fizteh;
+package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.util.HashMap;
 

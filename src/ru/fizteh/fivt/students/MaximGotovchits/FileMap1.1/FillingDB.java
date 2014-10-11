@@ -1,5 +1,5 @@
 
-package filemap;
+package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
