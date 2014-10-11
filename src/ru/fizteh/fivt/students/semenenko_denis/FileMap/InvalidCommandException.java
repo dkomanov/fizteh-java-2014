@@ -5,7 +5,6 @@ package ru.fizteh.fivt.students.semenenko_denis.FileMap;
  */
 public class InvalidCommandException extends Exception {
     public InvalidCommandException(String message) {
-
         super(message);
     }
 }

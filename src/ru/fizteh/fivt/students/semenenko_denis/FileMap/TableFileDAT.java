@@ -16,6 +16,7 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
     TableFileDAT() {
         data = new TreeMap<>();
     }
+
     @Override
     public String put(String key, String value) {
         String result = data.put(key, value);
@@ -56,8 +57,9 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
     public List<String> list() {
         ArrayList<String> result = new ArrayList<>(data.size());
         for (String key : data.keySet()) {
-            System.out.println(key);
+            System.out.print(key + ", ");
         }
+        System.out.println();
         return result;
     }
 
@@ -145,8 +147,8 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
         binFile = dbFile;
     }
 
-    private void create(){}
-
-
+    private void create() {
+    }
 }
+
 

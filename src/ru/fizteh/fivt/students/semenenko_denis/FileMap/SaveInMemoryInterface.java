@@ -7,5 +7,6 @@ import java.io.RandomAccessFile;
  */
 public interface SaveInMemoryInterface {
     void write(final RandomAccessFile whereTo);
+
     void read(final RandomAccessFile whereFrom);
 }

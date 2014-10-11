@@ -122,5 +122,5 @@ public class DbMain {
         throw new InvalidCommandException(
                 command + ": unknown command");
     }
-
 }
+
