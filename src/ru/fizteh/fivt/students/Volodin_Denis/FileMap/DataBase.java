@@ -72,7 +72,8 @@ public class DataBase {
     }
 
     public void readFromDisk() throws Exception {
-        String key, value;
+        String key;
+        String value;
         FileInputStream input = new FileInputStream(databasePath);
         FileChannel channel = input.getChannel();
         ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
@@ -121,15 +122,15 @@ public class DataBase {
         }
     }
 
-    private void filemapErrorRead (final String commandName) throws Exception {
+    private void filemapErrorRead(final String commandName) throws Exception {
         throw new Exception(commandName + " : error reading from file");
     }
     
-    private void filemapErrorWrite (final String commandName) throws Exception {
+    private void filemapErrorWrite(final String commandName) throws Exception {
         throw new Exception(commandName + " : error writing to file");
     }
     
-    private void filemapSmthWrong (final String commandName, final String message) throws Exception {
+    private void filemapSmthWrong(final String commandName, final String message) throws Exception {
         throw new Exception(commandName + " :" + message);
     }
 }
