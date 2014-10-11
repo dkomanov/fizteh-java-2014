@@ -51,7 +51,6 @@ public class SingleTable implements Table {
         }
     }
 
-
     public void load() throws IOException {
 
         try (DataInputStream inputStream = new DataInputStream(Files.newInputStream(dataBasePath))) {
@@ -62,9 +61,9 @@ public class SingleTable implements Table {
         } catch (IOException e) {
             try (DataOutputStream outputStream = new DataOutputStream(Files.newOutputStream(dataBasePath))) {
                 outputStream.flush();
-            } catch (IOException ioEx) {
+            } catch (IOException exception) {
                 throw new IOException("cannot create file with database");
-            } catch (SecurityException secEx) {
+            } catch (SecurityException exception) {
                 throw new IOException("cannot create file with database");
             }
         }
@@ -79,9 +78,9 @@ public class SingleTable implements Table {
             byte[] byteString = new byte[length];
             inputStream.readFully(byteString);
             return new String(byteString, "UTF-8");
-        } catch (EOFException eof) {
+        } catch (EOFException e) {
             throw new IOException("cannot read from database");
-        } catch (IOException ioe) {
+        } catch (IOException e) {
             throw new IOException("cannot read from database");
         }
     }
@@ -91,7 +90,7 @@ public class SingleTable implements Table {
             byte[] stringByte = string.getBytes("UTF-8");
             outputStream.writeInt(stringByte.length);
             outputStream.write(stringByte);
-        } catch (IOException ioe) {
+        } catch (IOException e) {
             throw new IOException("cannot write to database");
         }
     }

@@ -13,10 +13,10 @@ public class FileMap {
         FileMap fileMap = new FileMap();
         try {
             fileMap.run(args);
-        } catch (IOException ioEx) {
-            System.err.println(ioEx.getMessage());
-        } catch (NullPointerException nulPtEx) {
-            System.err.println(nulPtEx.getMessage());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        } catch (NullPointerException e) {
+            System.err.println(e.getMessage());
             System.exit(1);
         }
     }
@@ -31,28 +31,26 @@ public class FileMap {
     }
 
     private void interactiveMode() {
-        String str;
         System.out.print("$ ");
         try (Scanner scanner = new Scanner(System.in)) {
-            do {
-                str = scanner.nextLine();
+            while (true) {
+                String str = scanner.nextLine();
                 try {
                     runCommands(str);
                 } catch (IOException e) {
                     System.err.println(e.getMessage());
-                } catch (IllegalArgumentException e) {
+                } catch (WrongNumberOfArgumentsException e) {
                     System.err.println(e.getMessage());
                 }
                 System.out.print("$ ");
-            } while (true);
+            }
         }
     }
 
     private void batchMode(String[] str) {
         String commands = new String();
         for (String it : str) {
-            it += " ";
-            commands += it;
+            commands += it + " ";
         }
         try {
             runCommands(commands);
@@ -61,16 +59,22 @@ public class FileMap {
             System.err.println(e.getMessage());
             try {
                 dbConnector.saveTable();
-            } catch (IOException saveErr) {
-                System.out.println(saveErr.getMessage());
+            } catch (IOException exception) {
+                System.err.println(e.getMessage());
             }
             System.exit(1);
-        } catch (IllegalArgumentException e) {
+        } catch (WrongNumberOfArgumentsException e) {
             System.err.println(e.getMessage());
+            try {
+                dbConnector.saveTable();
+            } catch (IOException exception) {
+                System.err.println(e.getMessage());
+            }
+            System.exit(1);
         }
     }
 
-    private void runCommands(String str) throws IOException, IllegalArgumentException {
+    private void runCommands(String str) throws IOException, WrongNumberOfArgumentsException {
         ArrayList<ArrayList<String>> commands = new ArrayList<ArrayList<String>>();
         ArrayList<String> tempStr = new ArrayList<String>(Arrays.asList(str.trim().split(";")));
 
@@ -95,10 +99,7 @@ public class FileMap {
                     listCommand(it);
                     break;
                 case "exit":
-                    if (it.size() > 1) {
-                        throw new IllegalArgumentException(cmd + ": too much arguments");
-                    }
-                    exitCommand();
+                    exitCommand(it);
                     break;
                 default:
                     throw new IOException(cmd + ": no such command");
@@ -106,14 +107,22 @@ public class FileMap {
         }
     }
 
+    private void exitCommand(ArrayList<String> cmds) throws IOException, WrongNumberOfArgumentsException {
+        if (cmds.size() > 1) {
+            throw new WrongNumberOfArgumentsException(cmds.get(0));
+        }
+        dbConnector.saveTable();
+        System.exit(0);
+    }
+
     private void exitCommand() throws IOException {
         dbConnector.saveTable();
         System.exit(0);
     }
 
-    private void putCommand(ArrayList<String> cmds) throws IllegalArgumentException {
+    private void putCommand(ArrayList<String> cmds) throws WrongNumberOfArgumentsException {
         if (cmds.size() != 3) {
-            throw new IllegalArgumentException(cmds.get(0) + ": wrong number of arguments");
+            throw new WrongNumberOfArgumentsException(cmds.get(0));
         }
         String oldValue = dbConnector.getState().put(cmds.get(1), cmds.get(2));
         if (oldValue == null) {
@@ -124,9 +133,9 @@ public class FileMap {
         }
     }
 
-    private void getCommand(ArrayList<String> cmds) throws IllegalArgumentException {
+    private void getCommand(ArrayList<String> cmds) throws WrongNumberOfArgumentsException {
         if (cmds.size() != 2) {
-            throw new IllegalArgumentException(cmds.get(0) + ": wrong nubmer of arguments");
+            throw new WrongNumberOfArgumentsException(cmds.get(0));
         }
         String value = dbConnector.getState().get(cmds.get(1));
         if (value == null) {
@@ -137,9 +146,9 @@ public class FileMap {
         }
     }
 
-    private void listCommand(ArrayList<String> cmds) throws IllegalArgumentException {
+    private void listCommand(ArrayList<String> cmds) throws WrongNumberOfArgumentsException {
         if (cmds.size() != 1) {
-            throw new IllegalArgumentException(cmds.get(0) + ": wrong number of arguments");
+            throw new WrongNumberOfArgumentsException(cmds.get(0));
         }
         Set<String> keys = dbConnector.getState().list();
         int num = 0;
@@ -153,9 +162,9 @@ public class FileMap {
         System.out.println();
     }
 
-    private void removeCommand(ArrayList<String> cmds) throws IllegalArgumentException {
+    private void removeCommand(ArrayList<String> cmds) throws WrongNumberOfArgumentsException {
         if (cmds.size() != 2) {
-            throw new IllegalArgumentException(cmds.get(0) + ": wrong number of arguments");
+            throw new WrongNumberOfArgumentsException(cmds.get(0));
         }
         String deleted = dbConnector.getState().remove(cmds.get(1));
 

@@ -5,19 +5,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class DataBaseConnector {
-    private SingleTable table = null;
+    private Table table = null;
 
     public DataBaseConnector() throws NullPointerException, IOException {
 
         try {
             Path dataBasePath = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("db.file"));
             table = new SingleTable(dataBasePath);
-        } catch (NullPointerException nulPtEx) {
+        } catch (NullPointerException e) {
             throw new NullPointerException("database file not set");
         }
     }
 
-    public SingleTable getState() {
+    public Table getState() {
         return table;
     }
 
