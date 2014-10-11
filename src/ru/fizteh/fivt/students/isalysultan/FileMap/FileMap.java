@@ -13,7 +13,7 @@ public class FileMap {
                 Interactive.interactiveMode(object);
             }
         } catch (IOException e) {
-            System.out.println("error create table");
+            System.err.println("error create table");
         }
     }
 }
