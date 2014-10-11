@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.dnovikov.filemap;
 
 public class WrongNumberOfArgumentsException extends IllegalArgumentException {
-    private String cmd;
+    private final String cmd;
 
     WrongNumberOfArgumentsException(String cmdName) {
         cmd = new String(cmdName);
