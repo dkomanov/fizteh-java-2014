@@ -14,8 +14,9 @@ public class FileMap extends Runner {
     public FileMap(String newDbFile) {
         dbFile = newDbFile;
         db = new HashMap<>();
-        if (new File(dbFile).exists())
+        if (new File(dbFile).exists()) {
             readDb();
+        }
     }
 
     @Override
@@ -54,8 +55,9 @@ public class FileMap extends Runner {
     }
 
     private String readToken(DataInputStream stream) throws IOException {
-        if (stream.available() == 0)
+        if (stream.available() == 0) {
             return null;
+        }
         int size = stream.readInt();
         StringBuilder buf = new StringBuilder("");
         for (int i = 0; i < size; i++) {
@@ -106,8 +108,9 @@ public class FileMap extends Runner {
     }
 
     public void put(String[] args) throws InvalidCommandException {
-        if (!checkArguments(2, 2, args.length - 1))
+        if (!checkArguments(2, 2, args.length - 1)) {
             errorCntArguments("put");
+        }
         String key = args[1];
         String value = args[2];
         if (!db.containsKey(key)) {
@@ -120,8 +123,9 @@ public class FileMap extends Runner {
     }
 
     public void get(String[] args) throws InvalidCommandException {
-        if (!checkArguments(1, 1, args.length - 1))
+        if (!checkArguments(1, 1, args.length - 1)) {
             errorCntArguments("get");
+        }
         String key = args[1];
         if (db.containsKey(key)) {
             System.out.println("found");
@@ -132,8 +136,9 @@ public class FileMap extends Runner {
     }
 
     public void remove(String[] args) throws InvalidCommandException {
-        if (!checkArguments(1, 1, args.length - 1))
+        if (!checkArguments(1, 1, args.length - 1)) {
             errorCntArguments("remove");
+        }
         String key = args[1];
         if (db.containsKey(key)) {
             db.remove(key);
@@ -144,13 +149,15 @@ public class FileMap extends Runner {
     }
 
     public void list(String[] args) throws InvalidCommandException {
-        if (!checkArguments(0, 0, args.length - 1))
+        if (!checkArguments(0, 0, args.length - 1)) {
             errorCntArguments("list");
+        }
         String keys = db.keySet().toString();
-        if (!"[]".equals(keys))
+        if (!"[]".equals(keys)) {
             System.out.println(keys.substring(1, keys.length() - 1));
-        else
+        } else {
             System.out.println();
+        }
     }
 
     private void exit(String[] args) throws InvalidCommandException {
