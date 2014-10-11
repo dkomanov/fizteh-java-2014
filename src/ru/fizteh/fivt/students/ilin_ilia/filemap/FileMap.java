@@ -13,8 +13,8 @@ import java.util.Set;
 
 public class FileMap {
     
-    static private Map<String, String> map;
-    static private RandomAccessFile file;
+    private static Map<String, String> map;
+    private static RandomAccessFile file;
     
     FileMap(final String path) {
         map = new HashMap<>();
