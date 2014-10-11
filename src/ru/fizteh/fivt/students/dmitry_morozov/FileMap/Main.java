@@ -115,7 +115,7 @@ public class Main {
                     }
                 }
             }
-            if(exitCode){
+            if (exitCode) {
                 fm.exit();
             }
             System.exit(0);
@@ -128,7 +128,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         String path = System.getProperty("db.file");
-        if(0 != args.length){
+        if (0 != args.length) {
             packetMode(args, path);
         }
         Scanner in = new Scanner(System.in);

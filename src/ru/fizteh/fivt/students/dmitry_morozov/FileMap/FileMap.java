@@ -14,31 +14,32 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class FileMap {
-    private Map<String, String> _table;
-    private File _dbFile;
+    private Map<String, String> table;
+    private File dbFile;
 
     public FileMap(String path) throws IOException, Throwable {
-        _table = new HashMap<String, String>();
-        _dbFile = new File(path);
-        if (!_dbFile.exists()) {
-            if (!_dbFile.createNewFile()) {
+        table = new HashMap<String, String>();
+        dbFile = new File(path);
+        if (!dbFile.exists()) {
+            if (!dbFile.createNewFile()) {
                 throw new Throwable("Couldldn't create db file");
             }
         } else {
-            if (!_dbFile.isFile()) {
+            if (!dbFile.isFile()) {
                 throw new Throwable("Is not a file");
             }
         }
-        if (!(_dbFile.setReadable(true)) && _dbFile.setWritable(true)) {
+        if (!(dbFile.setReadable(true)) && dbFile.setWritable(true)) {
             throw new Throwable("Couldn't set rw options");
         }
-        DataInputStream in = new DataInputStream(new FileInputStream(_dbFile));
+        DataInputStream in = new DataInputStream(new FileInputStream(dbFile));
 
         final int sizeOfInt = 4;
 
         while (true) {
             int len;
-            String key = "", value = "";
+            String key = "";
+            String value = "";
             if (in.available() >= sizeOfInt) {
                 len = in.readInt();
                 if (0 != len % 2 || in.available() < len) {
@@ -66,7 +67,7 @@ public class FileMap {
                 value += curChar;
                 len--;
             }
-            _table.put(key, value);
+            table.put(key, value);
         }
         in.close();
 
@@ -74,19 +75,19 @@ public class FileMap {
 
     public String put(String key, String value) {
         String res = "";
-        if (_table.containsKey(key)) {
+        if (table.containsKey(key)) {
             res = "overwrite\n";
-            res += _table.get(key);
-            _table.put(key, value);
+            res += table.get(key);
+            table.put(key, value);
         } else {
             res = "new";
-            _table.put(key, value);
+            table.put(key, value);
         }
         return res;
     }
 
     public String get(String key) {
-        String val = _table.get(key);
+        String val = table.get(key);
         String res = "";
         if (null != val) {
             res = "found\n" + val;
@@ -97,9 +98,9 @@ public class FileMap {
     }
 
     public void list(PrintWriter pw) {
-        Set<Entry<String, String>> _tableSet = _table.entrySet();
-        Iterator<Entry<String, String>> it = _tableSet.iterator();
-        Iterator<Entry<String, String>> checkLast = _tableSet.iterator();
+        Set<Entry<String, String>> tableSet = table.entrySet();
+        Iterator<Entry<String, String>> it = tableSet.iterator();
+        Iterator<Entry<String, String>> checkLast = tableSet.iterator();
         if (checkLast.hasNext()) {
             checkLast.next();
         }
@@ -116,7 +117,7 @@ public class FileMap {
     }
 
     public String remove(String key) {
-        String val = _table.remove(key);
+        String val = table.remove(key);
         if (null == val) {
             return "not found";
         } else {
@@ -126,9 +127,9 @@ public class FileMap {
 
     public void exit() throws IOException {
         DataOutputStream out = new DataOutputStream(new FileOutputStream(
-                _dbFile));
-        Set<Entry<String, String>> _tableSet = _table.entrySet();
-        Iterator<Entry<String, String>> it = _tableSet.iterator();
+                dbFile));
+        Set<Entry<String, String>> tableSet = table.entrySet();
+        Iterator<Entry<String, String>> it = tableSet.iterator();
         while (it.hasNext()) {
             Entry<String, String> cur = it.next();
             String key = cur.getKey();
