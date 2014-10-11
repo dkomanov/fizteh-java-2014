@@ -133,10 +133,10 @@ public class Table {
                 }
                 endFile.close();
             } catch (IOException e) {
-                System.out.println("can't open file for write");
+                System.err.println("can't open file for write");
             }
         } catch (FileNotFoundException e) {
-            System.out.println("error open write");
+            System.err.println("error open write");
         }
     }
 }
