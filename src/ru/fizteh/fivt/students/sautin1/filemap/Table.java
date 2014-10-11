@@ -29,7 +29,7 @@ public class Table<MappedValue> {
         this(name, true);
     }
 
-    public MappedValue putEntry(String key, MappedValue value) {
+    public MappedValue put(String key, MappedValue value) {
         MappedValue committedValue = committedEntries.get(key);
         MappedValue addedValue = addedEntries.get(key);
         MappedValue overwrittenValue = overwrittenEntries.get(key);
@@ -70,13 +70,13 @@ public class Table<MappedValue> {
         }
 
         if (autoCommit) {
-            commitChanges();
+            commit();
         }
 
         return returnValue;
     }
 
-    public MappedValue getEntry(String key) {
+    public MappedValue get(String key) {
         MappedValue committedValue = committedEntries.get(key);
         MappedValue addedValue = addedEntries.get(key);
         MappedValue overwrittenValue = overwrittenEntries.get(key);
@@ -93,7 +93,7 @@ public class Table<MappedValue> {
         return returnValue;
     }
 
-    public MappedValue removeEntry(String key) {
+    public MappedValue remove(String key) {
         MappedValue committedValue = committedEntries.get(key);
         MappedValue addedValue = addedEntries.get(key);
         MappedValue overwrittenValue = overwrittenEntries.get(key);
@@ -116,13 +116,13 @@ public class Table<MappedValue> {
         }
 
         if (autoCommit) {
-            commitChanges();
+            commit();
         }
 
         return returnValue;
     }
 
-    public int commitChanges() {
+    public int commit() {
         for (Map.Entry<String, MappedValue> addedEntry : addedEntries.entrySet()) {
             committedEntries.put(addedEntry.getKey(), addedEntry.getValue());
         }
@@ -139,7 +139,7 @@ public class Table<MappedValue> {
         return diffCounter;
     }
 
-    public int rollbackChanges() {
+    public int rollback() {
         int diffCounter = diffCount();
         addedEntries.clear();
         overwrittenEntries.clear();
