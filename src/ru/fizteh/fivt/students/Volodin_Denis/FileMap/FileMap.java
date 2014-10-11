@@ -3,8 +3,8 @@ package ru.fizteh.fivt.students.Volodin_Denis.FileMap;
 import java.util.Scanner;
 
 public class FileMap {
-    private final static int SUCCESS = 0;
-    private final static int ERROR = 1;
+    private static final int SUCCESS = 0;
+    private static final int ERROR = 1;
 
     private static String dbPath;
     private static DataBase database;
@@ -177,7 +177,7 @@ public class FileMap {
                 break;
             case "exit":
                 filemapExit(args);
-                //break;
+                break;
             default:
                 System.err.println("Command does not exist: [" + args[0] + "]");
         }
