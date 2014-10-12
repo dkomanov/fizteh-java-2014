@@ -97,8 +97,9 @@ public class Initialization {
      */
     public static int bytesToInt(final DataInputStream input) {
         byte[] data = new byte[4];
-        try { input.read(data); }
-        catch (IOException e) {
+        try {
+            input.read(data);
+        } catch (IOException e) {
             System.err.println("cannot read argument");
             System.exit(1);
         }
@@ -114,13 +115,15 @@ public class Initialization {
     public static String bytesToString(final DataInputStream input, int size) {
         byte[] data = new byte[size];
         String returnValue = new String();
-        try { input.read(data); }
-        catch (IOException e) {
+        try {
+            input.read(data);
+        } catch (IOException e) {
             System.err.println("cannot read argument");
             System.exit(1);
         }
-        try { returnValue = new String(data, "UTF-8"); }
-        catch (IOException e) {
+        try {
+            returnValue = new String(data, "UTF-8");
+        } catch (IOException e) {
             System.err.println("cannot make string of bytes");
             System.exit(1);
         }
