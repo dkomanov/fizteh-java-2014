@@ -9,9 +9,6 @@ public final class List {
         if (param.length > argNum) {
             ThrowExc.tooManyArg(name, usage);
         }
-        if (param.length < argNum) {
-            ThrowExc.notEnoughArg(name, usage);
-        }
         
         String[] list = db.list();
         if (list.length == 0) {
@@ -22,8 +19,6 @@ public final class List {
             }
             System.out.println(list[list.length - 1]);  
         }
-      
     }
     
-
 }

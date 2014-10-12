@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.pavel_voropaev.filemap;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,12 +10,13 @@ import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class Database {
 
     private String dbFilePath;
-    private HashMap<String, String> database;
+    private Map<String, String> database;
 
     public Database(String dbPath) throws Exception {
         dbFilePath = dbPath;
@@ -29,28 +31,24 @@ public class Database {
 
     private void load() throws Exception {
         DataInputStream stream = new DataInputStream(new FileInputStream(dbFilePath));
-
-        boolean finished = false;
-            while (!finished) {
-                try {
-                    int length = stream.readInt();
-                    byte[] word = new byte[length];
-                    stream.readFully(word);
-                    String key = new String(word, "UTF-8");
-                    
-                    length = stream.readInt();
-                    word = new byte[length];
-                    stream.readFully(word);
-                    String value = new String(word, "UTF-8");
-                    database.put(key, value);
-                } catch (IOException e) {
-                    finished = true;
-                }
+        while (true) {
+            try {
+                database.put(readWord(stream), readWord(stream));
+            } catch (EOFException e) {
+                break;
             }
-            
-            stream.close();
         }
-    
+
+        stream.close();
+    }
+
+    private String readWord(DataInputStream stream) throws EOFException,
+            IOException {
+        int length = stream.readInt();
+        byte[] word = new byte[length];
+        stream.readFully(word);
+        return new String(word, "UTF-8");
+    }
 
     public void write() throws Exception {
         FileOutputStream output = new FileOutputStream(dbFilePath);

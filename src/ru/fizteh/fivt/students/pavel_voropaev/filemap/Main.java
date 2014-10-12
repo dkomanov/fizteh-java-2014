@@ -21,7 +21,7 @@ public class Main {
 
         if (args.length > 0) {
             try {
-                packageMode(args);
+                batchMode(args);
             } catch (Exception e) {
                 System.err.print(e.getMessage());
                 System.exit(1);
@@ -36,7 +36,7 @@ public class Main {
         }
     }
 
-    private static void packageMode(String[] args) throws Exception {
+    private static void batchMode(String[] args) throws Exception {
         StringBuilder commandsLine = new StringBuilder();
         for (String arg : args) {
             if (!arg.equals(" ")) {
@@ -49,7 +49,7 @@ public class Main {
         for (String comm : command) {
             execCommand(comm.trim());
         }
-
+        execCommand("exit");
     }
 
     private static void interactiveMode() {
@@ -77,8 +77,7 @@ public class Main {
         scan.close();
     }
 
-    private static boolean execCommand(String p)
-            throws Exception {
+    private static boolean execCommand(String p) throws Exception {
         String[] command = p.split("\\s+");
         if (command[0].equals("")) {
             return false;
@@ -100,10 +99,7 @@ public class Main {
             return false;
         }
         if (command[0].equals("exit")) {
-            if (command.length != 1) {
-                ThrowExc.tooManyArg("exit", "Usage: exit");
-            }
-            database.write();
+            Exit.exec(database, command);
             return true;
         }
 

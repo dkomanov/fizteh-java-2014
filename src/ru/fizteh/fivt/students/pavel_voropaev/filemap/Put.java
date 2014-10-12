@@ -17,9 +17,8 @@ public final class Put {
             System.out.println("new");
         } else {
             System.out.println("Overwrite");
-            System.out.print(tmp);
+            System.out.println(tmp);
         }
     }
     
-
 }
