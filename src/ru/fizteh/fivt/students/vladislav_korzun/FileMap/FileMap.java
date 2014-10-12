@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
@@ -29,14 +28,12 @@ public class FileMap {
             }             
             CommandExecutor commands = new CommandExecutor();
             commands.executeCommands(args, db, dbfile);
-              dbfile.close();                     
-            
-        } catch (Exception e) {
+            dbfile.close();                    
+            } catch (Exception e) {
                 System.err.println("Error connecting database");
+            }
         }
     }
-    
-}
 
 class Commands {
     
@@ -90,14 +87,9 @@ class Commands {
     
     void list() {
         try {
-            Set<String> keys = filemap.keySet();
-            Iterator<String> it = keys.iterator();
-            while (it.hasNext()) {
-                System.out.print(it.next() + ' ');                
-            }
-            System.out.println();
-        } catch (NoSuchElementException e) {
-            //if iterator has no more elements
+            Set<String> keys = filemap.keySet();         
+            String joined = String.join(", ", keys);          
+            System.out.println(joined);       
         } catch (Exception e) {
             System.err.println("Something get wrong");
         }
@@ -114,24 +106,16 @@ class Parser {
     String[] semicolonparser(final String arg) {        
         String[] answer = null;
         String buffer = new String();
-        try {
-            buffer = arg.trim();    
-            answer = buffer.split(";");
-        } catch (PatternSyntaxException e) {
-            System.err.println("Ivalid command");
-        }
-        return answer;
-        
+        buffer = arg.trim();    
+        answer = buffer.split(";");       
+        return answer;        
     }
+    
     String[] spaceparser(final String arg) {
         String[] answer = null;
         String buffer = new String();
-        try {
-            buffer = arg.trim();
-            answer = buffer.split(" ");
-        } catch (PatternSyntaxException e) {
-            System.err.println("Invalid command");
-        }
+        buffer = arg.trim();
+        answer = buffer.split(" ");      
         return answer;
     }
 }
@@ -145,13 +129,13 @@ class DbMain {
     }
     
     void read(RandomAccessFile db) {
-        LinkedList<Integer> offset = new LinkedList<Integer>() ;
+        List<Integer> offset = new LinkedList<Integer>() ;
         int counter = 0;               
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();  
         List<String> keys = new LinkedList<String>();
         Byte bt = null;
         try {
-           do {
+            do {
                 do {             
                     bt = db.readByte();
                     counter++;
@@ -163,51 +147,51 @@ class DbMain {
                 buffer.reset();
                 offset.add(db.readInt());
                 counter += 4;
-           } while (counter != offset.getFirst());
-           offset.add((int) db.length());
-           for (int i = 1; i < offset.size(); i++) {
-               while (offset.get(i) > counter) {
-                   bt = db.readByte();
-                   counter++;
-                   buffer.write(bt);
-               }
-               filemap.put(keys.get(i - 1), buffer.toString("UTF-8"));
-               buffer.reset();
-           }
-           buffer.close();
+            } while (counter != ((LinkedList<Integer>) offset).getFirst());
+            offset.add((int) db.length());
+            for (int i = 1; i < offset.size(); i++) {
+                while (offset.get(i) > counter) {
+                    bt = db.readByte();
+                    counter++;
+                    buffer.write(bt);
+                }
+                filemap.put(keys.get(i - 1), buffer.toString("UTF-8"));
+                buffer.reset();
+            }
+            buffer.close();
         } catch (IOException e) {
             System.err.println("Invalid input");
         }     
-   }
+    }
     
-   void write(RandomAccessFile db) {     
-       try {
-           db.setLength(0);
-           LinkedList<Integer> offset = new LinkedList<Integer>();
-           Set<String> keys = filemap.keySet();
-           Iterator<String> it = keys.iterator();
-           while (it.hasNext()) {                            
-               db.write(it.next().getBytes("UTF-8"));
-               db.write('\0');
-               offset.add((int) db.getFilePointer());
-               db.writeInt(0);
-           }
-           Collection<String> val = filemap.values();
-           it = val.iterator();
-           int i = 0;
-           int pointer = 0;
-           while (it.hasNext()) {
-               pointer = (int) db.getFilePointer(); 
-               db.seek(offset.get(i));
-               i++;
-               db.writeInt(pointer);
-               db.seek(pointer);
-               db.write(it.next().getBytes("UTF-8"));               
-           }
-       } catch (Exception e) {
-           System.err.println("Something get wrong");
-       }
-   } 
+    void write(RandomAccessFile db) {     
+        try {
+            db.setLength(0);
+            LinkedList<Integer> offset = new LinkedList<Integer>();
+            Set<String> keys = filemap.keySet();
+            Iterator<String> it = keys.iterator();
+            for (@SuppressWarnings("unused") String key : keys) {                            
+                db.write(it.next().getBytes("UTF-8"));
+                db.write('\0');
+                offset.add((int) db.getFilePointer());
+                db.writeInt(0);
+            }
+            Collection<String> vals = filemap.values();
+            it = vals.iterator();
+            int i = 0;
+            int pointer = 0;
+            for (@SuppressWarnings("unused") String val: vals) {
+                pointer = (int) db.getFilePointer(); 
+                db.seek(offset.get(i));
+                i++;
+                db.writeInt(pointer);
+                db.seek(pointer);
+                db.write(it.next().getBytes("UTF-8"));               
+            }
+        } catch (Exception e) {
+            System.err.println("Something get wrong");
+        }
+    }
 }
 
 class CommandExecutor {
@@ -233,42 +217,41 @@ class CommandExecutor {
             }            
             arg = parser.semicolonparser(request);
             for (i = 0; i < arg.length; i++) {
-                arg2 = parser.spaceparser(arg[i]);
-            
-            try {
-                switch(arg2[0]) {                
-                    case "put":                        
-                        key = arg2[1];
-                        value = arg2[2];
-                        command.put(key, value);
-                        break;
-                    case "get":    
-                        key = arg2[1];  
-                        command.get(key);                        
-                        break;
-                    case "remove":
-                        key = arg2[1];
-                        command.remove(key);
-                        break;
-                    case "list": 
-                        command.list();
-                        break;
-                    case "exit":
-                        in.close();
-                        command.exit(db, dbfile);
-                        break;
-                    default:
-                        System.err.println("Invalid command");
-                        if (args.length > 0) {
+                arg2 = parser.spaceparser(arg[i]);            
+                try {
+                    switch(arg2[0]) {                
+                        case "put":                        
+                            key = arg2[1];
+                            value = arg2[2];
+                            command.put(key, value);
+                            break;
+                        case "get":    
+                            key = arg2[1];  
+                            command.get(key);                        
+                            break;
+                        case "remove":
+                            key = arg2[1];
+                            command.remove(key);
+                            break;
+                        case "list": 
+                            command.list();
+                            break;
+                        case "exit":
                             in.close();
-                            System.exit(1);
-                        }                        
-                        break;
-                    }               
+                            command.exit(db, dbfile);
+                            break;
+                        default:
+                            System.err.println("Invalid command");
+                            if (args.length > 0) {
+                                in.close();
+                                System.exit(1);
+                            }                        
+                            break;
+                        }               
                 } catch (Exception e) {
-                System.err.println("Invalid input");
+                    System.err.println("Invalid input");
+                }
             }
-        }
         } while(!arg2[0].equals("exit"));        
     }    
 }
