@@ -45,26 +45,28 @@ class DataBaseTable {
         load(targetPath);
     }
 
-    private static String nextWord(DataInputStream dataStream) throws Exception {
+    private static String nextWord(DataInputStream dataStream) throws IOException {
         byte[] intBytes = new byte[4];
         intBytes[0] = dataStream.readByte(); // throws EOF
 
         try {
             dataStream.readFully(intBytes, 1, 3);
         } catch (EOFException e) {
-            throw new InterruptedIOException("Database is corrupted");
+            throw new IOException("Database is corrupted");
         }
         int length = ByteBuffer.wrap(intBytes).getInt();
         if (length < 0) {
-            throw new Exception("Database is corrupted");
+            throw new IOException("Database is corrupted");
         }
-        byte[] wordBytes = new byte[length];
-        try {
-            dataStream.readFully(wordBytes);
-        } catch (EOFException e) {
-            throw new InterruptedIOException("Database is corrupted");
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        for (int i = 0; i < length; i++) {
+            try {
+                byteStream.write(dataStream.readByte());
+            } catch (EOFException e) {
+                throw new IOException("Database is corrupted");
+            }
         }
-        return new String(wordBytes, "UTF-8");
+        return new String(byteStream.toByteArray(), "UTF-8");
     }
 
     private void load(String path) throws Exception {
