@@ -42,7 +42,7 @@ public class DataBase {
         } catch (Exception e) {
             filemapSmthWrong("list", e.getMessage());
         }
-        return new String[0]; //warning
+        return new String[0]; // Unreachable code, add return to ignore Eclipse warning.
     }
 
     public void put(final String key, final String value) throws Exception {
@@ -59,7 +59,7 @@ public class DataBase {
         } catch (Exception e) {
             filemapSmthWrong("search", e.getMessage());
         }
-        return database.get(key); //warning
+        return database.get(key); // Unreachable code, add return to ignore Eclipse warning.
     }
 
     public void remove(final String key) throws Exception {
