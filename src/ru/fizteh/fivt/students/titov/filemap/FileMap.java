@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.Arrays;
 
 public class FileMap {
 
@@ -45,9 +46,7 @@ public class FileMap {
                 new FileOutputStream(table));
 
         Set<String> keySet = hashTable.keySet();
-        Iterator<String> iterator = keySet.iterator();
-        while (iterator.hasNext()) {
-            String iteratorSet = iterator.next();
+        for (String iteratorSet: keySet) {
             writeToFileStream.writeInt(iteratorSet.length());
             writeToFileStream.writeChars(iteratorSet);
             writeToFileStream.writeInt(hashTable.get(iteratorSet).length());
@@ -114,38 +113,38 @@ public class FileMap {
             return true;
         }
 
-        int i = tokens[0].equals("") ? 1 : 0;
+        if (tokens[0].equals("")) tokens = Arrays.copyOfRange(tokens, 1, tokens.length);;
 
-        if (tokens[i].equals("put")) {
-            if (tokens.length == i + 3) {
-                return put(tokens[i + 1], tokens[i + 2]);
+        if (tokens[0].equals("put")) {
+            if (tokens.length == 3) {
+                return put(tokens[1], tokens[2]);
             } else {
                 System.err.println("Error: put: wrong count of arguments");
                 return false;
             }
-        } else if (tokens[i].equals("get")) {
-            if (tokens.length == i + 2) {
-                return get(tokens[i + 1], createHashTable());
+        } else if (tokens[0].equals("get")) {
+            if (tokens.length == 2) {
+                return get(tokens[1], createHashTable());
             } else {
                 System.err.println("Error: get: wrong count of arguments");
                 return false;
             }
-        } else if (tokens[i].equals("remove")) {
-            if (tokens.length == i + 2) {
-                return remove(tokens[i + 1]);
+        } else if (tokens[0].equals("remove")) {
+            if (tokens.length == 2) {
+                return remove(tokens[1]);
             } else {
                 System.err.println("Error: removie: wrong count of arguments");
                 return false;
             }
-        } else if (tokens[i].equals("list")) {
-            if (tokens.length == i + 1) {
+        } else if (tokens[0].equals("list")) {
+            if (tokens.length == 1) {
                 return list();
             } else {
                 System.err.println("Error: list: wrong count of arguments");
                 return false;
             }
-        } else if (tokens[i].equals("exit")) {
-            if (tokens.length == i + 1) {
+        } else if (tokens[0].equals("exit")) {
+            if (tokens.length == 1) {
                 System.exit(0);
             } else {
                 System.err.println("Error: exit: wrong count of arguments");
