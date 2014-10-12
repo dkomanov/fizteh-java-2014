@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.vladislav_korzun.FileMap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,20 +15,20 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class FileMap {
-    public static void main(final String[] args) {        
-        try {            
+    public static void main(final String[] args) {
+        try {
             String path = System.getProperty("db.file");
             if (!Paths.get(path).toFile().exists()) {
                 Paths.get(path).toFile().createNewFile();
             }
             RandomAccessFile dbfile = new RandomAccessFile(path, "rw");
             DbMain db = new DbMain();
-            if (dbfile.length() > 0) {                    
+            if (dbfile.length() > 0) {
                 db.read(dbfile);
-            }             
+            }
             CommandExecutor commands = new CommandExecutor();
             commands.executeCommands(args, db, dbfile);
-            dbfile.close();                    
+            dbfile.close();
             } catch (Exception e) {
                 System.err.println("Error connecting database");
             }
@@ -43,7 +44,7 @@ class Commands {
     }
     
     void put(String key, String value) {
-        try {            
+        try {
             String val = filemap.put(key, value);
             if (val == null) {
                 System.out.println("new");
@@ -51,10 +52,9 @@ class Commands {
                 System.out.println("owerwrite");
                 System.out.println(val);
             }            
-        } catch (Exception e) {
-            System.err.println("Something get wrong");
+        } catch (NullPointerException e) {
+            System.err.println("Key or value is null");
         }
-        
     }
     
     void get(String key) {
@@ -66,9 +66,9 @@ class Commands {
                 System.out.println("found");
                 System.out.println(val);
             }            
-        } catch (Exception e) {
-            System.err.println("Something get wrong");
-        }      
+        } catch (NullPointerException e) {
+            System.err.println("Key or value is null");
+        } 
     }
     
     void remove(String key) {
@@ -79,42 +79,38 @@ class Commands {
             } else {
                 System.out.println("removed");
             }            
-        } catch (Exception e) {
-            System.err.println("Something get wrong");
-        }    
+        } catch (NullPointerException e) {
+            System.err.println("Key or value is null");
+        } 
     }
     
     void list() {
-        try {
-            Set<String> keys = filemap.keySet();         
-            String joined = String.join(", ", keys);          
-            System.out.println(joined);       
-        } catch (Exception e) {
-            System.err.println("Something get wrong");
-        }
+        Set<String> keys = filemap.keySet();
+        String joined = String.join(", ", keys);
+        System.out.println(joined);
     }
     
     void exit(DbMain db, RandomAccessFile dbfile) {
         db.filemap = filemap;
-        db.write(dbfile);        
+        db.write(dbfile);
     }   
   
 }
 
 class Parser {
-    String[] semicolonparser(final String arg) {        
+    String[] semicolonparser(final String arg) {
         String[] answer = null;
         String buffer = new String();
         buffer = arg.trim();    
-        answer = buffer.split(";");       
-        return answer;        
+        answer = buffer.split(";");
+        return answer;
     }
     
     String[] spaceparser(final String arg) {
         String[] answer = null;
         String buffer = new String();
         buffer = arg.trim();
-        answer = buffer.split(" ");      
+        answer = buffer.split(" ");
         return answer;
     }
 }
@@ -130,16 +126,16 @@ class DbMain {
     void read(RandomAccessFile db) {
         List<Integer> offset = new LinkedList<Integer>() ;
         int counter = 0;               
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();  
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         List<String> keys = new LinkedList<String>();
         Byte bt = null;
         try {
             do {
-                do {             
+                do {
                     bt = db.readByte();
                     counter++;
                     if (bt != 0) {
-                        buffer.write(bt);                        
+                        buffer.write(bt);
                     }
                 } while (bt != 0);
                 keys.add(buffer.toString("UTF-8"));
@@ -158,9 +154,11 @@ class DbMain {
                 buffer.reset();
             }
             buffer.close();
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("Named charset is not supported");
         } catch (IOException e) {
             System.err.println("Invalid input");
-        }     
+        } 
     }
     
     void write(RandomAccessFile db) {     
@@ -169,7 +167,7 @@ class DbMain {
             LinkedList<Integer> offset = new LinkedList<Integer>();
             Set<String> keys = filemap.keySet();
             Iterator<String> it = keys.iterator();
-            for (@SuppressWarnings("unused") String key : keys) {                            
+            for (@SuppressWarnings("unused") String key : keys) {
                 db.write(it.next().getBytes("UTF-8"));
                 db.write('\0');
                 offset.add((int) db.getFilePointer());
@@ -185,10 +183,12 @@ class DbMain {
                 i++;
                 db.writeInt(pointer);
                 db.seek(pointer);
-                db.write(it.next().getBytes("UTF-8"));               
+                db.write(it.next().getBytes("UTF-8"));
             }
-        } catch (Exception e) {
-            System.err.println("Something get wrong");
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("Named charset is not supported ");
+        } catch (IOException e) {
+            System.err.println("Pos is less than 0 or if an I/O error occurs");
         }
     }
 }
@@ -196,15 +196,15 @@ class DbMain {
 class CommandExecutor {
     void executeCommands(String[] args, DbMain db, RandomAccessFile dbfile) {
         Scanner in = new Scanner(System.in);
-        Commands command = new Commands(db);        
-        String request = new String();              
+        Commands command = new Commands(db);
+        String request = new String();
         Parser parser = new Parser();
         String[] arg = null;
         String[] arg2 = null;
         String key = new String();
         String value = new String();
         int i = 0;
-        do {            
+        do {
             if (args.length == 0) {
                 System.out.print("$ ");
                 request = in.nextLine();
@@ -216,17 +216,17 @@ class CommandExecutor {
             }            
             arg = parser.semicolonparser(request);
             for (i = 0; i < arg.length; i++) {
-                arg2 = parser.spaceparser(arg[i]);            
+                arg2 = parser.spaceparser(arg[i]);
                 try {
-                    switch(arg2[0]) {                
-                        case "put":                        
+                    switch(arg2[0]) {
+                        case "put":
                             key = arg2[1];
                             value = arg2[2];
                             command.put(key, value);
                             break;
-                        case "get":    
-                            key = arg2[1];  
-                            command.get(key);                        
+                        case "get":
+                            key = arg2[1];
+                            command.get(key);
                             break;
                         case "remove":
                             key = arg2[1];
@@ -244,13 +244,13 @@ class CommandExecutor {
                             if (args.length > 0) {
                                 in.close();
                                 System.exit(1);
-                            }                        
+                            }
                             break;
-                        }               
+                        }
                 } catch (Exception e) {
                     System.err.println("Invalid input");
                 }
             }
-        } while(!arg2[0].equals("exit"));        
-    }    
+        } while(!arg2[0].equals("exit"));
+    }
 }
