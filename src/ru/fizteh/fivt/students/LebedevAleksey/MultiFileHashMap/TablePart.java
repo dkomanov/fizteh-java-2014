@@ -17,7 +17,6 @@ public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Ta
         fileNum = fileNumber;
     }
 
-
     @Override
     public void loadWork() throws LoadOrSaveError {
         File file = getSaveFilePath();
@@ -26,10 +25,10 @@ public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Ta
                 throw new DatabaseFileStructureException("'" + file.getAbsolutePath() + "' is directory");
             } else {
                 super.loadWork();
-            }
-            for (String key : data.keySet()) {
-                if (table.getPartForKey(key) != this) {
-                    throw new LoadOrSaveError("Wrong key '" + key + "' in file " + file.getAbsolutePath());
+                for (String key : data.keySet()) {
+                    if (table.getPartForKey(key) != this) {
+                        throw new LoadOrSaveError("Wrong key '" + key + "' in file " + file.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -37,7 +36,26 @@ public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Ta
 
     @Override
     public void save() throws LoadOrSaveError {
-        super.save();
+        if (empty()) {
+            File path = getSaveFilePath();
+            try {
+                if (path.exists()) {
+                    if (!path.delete()) {
+                        throw new LoadOrSaveError("Can't delete file.");
+                    }
+                }
+                File parent = new File(path.getParent());
+                if (parent.list().length == 0) {
+                    if (!parent.delete()) {
+                        throw new LoadOrSaveError("Can't delete folder.");
+                    }
+                }
+            } catch (SecurityException ex) {
+                throw new LoadOrSaveError("Access denied on save.", ex);
+            }
+        } else {
+            super.save();
+        }
     }
 
     @Override
@@ -47,5 +65,18 @@ public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Ta
 
     private Path getFolderPath() throws DatabaseFileStructureException {
         return table.getDirectory().resolve(folderNum + ".dir");
+    }
+
+    public int count() {
+        return data.size();
+    }
+
+    public boolean empty() {
+        return count() == 0;
+    }
+
+    public void drop() throws LoadOrSaveError {
+        data.clear();
+        save();
     }
 }
