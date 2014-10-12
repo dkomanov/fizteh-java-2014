@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.vadim_mazaev.multifilemap;
 
-import ru.fizteh.fivt.students.vadim_mazaev.filemap.ThrowExit;
-
 public final class DbMain {
     private DbMain() {
         //Not called, only for checkstyle.

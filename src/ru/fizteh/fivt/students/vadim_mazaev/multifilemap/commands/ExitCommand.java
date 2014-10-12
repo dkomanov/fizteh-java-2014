@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands;
 
 import java.io.IOException;
 
-import ru.fizteh.fivt.students.vadim_mazaev.filemap.ThrowExit;
+import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.ThrowExit;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.TableManager;
 
 public final class ExitCommand {

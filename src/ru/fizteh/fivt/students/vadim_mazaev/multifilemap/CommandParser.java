@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.vadim_mazaev.multifilemap;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import ru.fizteh.fivt.students.vadim_mazaev.filemap.ThrowExit;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.CreateCommand;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.DropCommand;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.ExitCommand;
