@@ -8,7 +8,7 @@ public class Interactive {
        // Disable instantiation to this class.
     }
 
-    public static void interactiveMode(Table tables) {
+    public static void interactiveMode(Table tables) throws IOException {
         Scanner in = new Scanner(System.in);
         String[] parserComand;
         Comands object = new Comands();
