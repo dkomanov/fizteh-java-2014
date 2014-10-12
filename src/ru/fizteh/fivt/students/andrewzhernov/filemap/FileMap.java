@@ -78,8 +78,13 @@ public class FileMap {
                 if (cmd.length != 1) {
                     throw new Exception("Usage: exit");
                 }
-                dataBase.saveToDisk();
-                System.exit(0);
+                try {
+                    dataBase.saveToDisk();
+                    System.exit(0);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                    System.exit(1);
+                }
             } else {
                 throw new Exception(cmd[0] + ": no such command");
             }

@@ -10,10 +10,13 @@ public class DataBase {
     private String dbPath;
 
     public DataBase(String name) throws Exception {
+        if (name == null) {
+            throw new Exception("Usage: java -Ddb.file=<name> ...");
+        }
         dataBase = new HashMap<String, String>();
         File dbFile = openFile(name);
         if (dbFile.isDirectory()) {
-            throw new Exception("Database: it's a directory");
+            throw new Exception("Can't create file, " + name + " is a directory");
         } else { 
             dbPath = dbFile.getCanonicalPath();
             if (dbFile.exists()) {
