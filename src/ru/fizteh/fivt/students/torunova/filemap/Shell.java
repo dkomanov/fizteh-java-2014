@@ -45,7 +45,7 @@ public class Shell {
                 if (commands.containsKey(name)) {
                     boolean res = commands.get(name).run(args, db);
                     if (!interactive && !res) {
-						db.close();
+                        db.close();
                         System.exit(1);
                     }
                 } else if (name.equals("exit")) {
@@ -57,10 +57,10 @@ public class Shell {
                     }
                 } else if (!Pattern.matches("\\s+", name)) {
                     System.err.println("Command not found.");
-					if (!interactive) {
-						db.close();
-						System.exit(1);
-					}
+                    if (!interactive) {
+                        db.close();
+                        System.exit(1);
+                    }
                 }
             }
         }

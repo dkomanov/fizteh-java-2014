@@ -7,7 +7,7 @@ public class Remove extends Action {
     @Override
     public boolean run(String[] args, Database db) {
         if (args.length < 1) {
-          	tooFewArguments();
+            tooFewArguments();
             return false;
         } else if (args.length > 1) {
             tooManyArguments();

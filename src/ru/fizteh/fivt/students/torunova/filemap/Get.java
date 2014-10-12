@@ -7,10 +7,10 @@ public class Get extends Action {
     @Override
     public boolean run(String[] args, Database db) {
         if (args.length < 1) {
-          	tooFewArguments();
+            tooFewArguments();
             return false;
         } else if (args.length > 1) {
-           	tooManyArguments();
+            tooManyArguments();
             return false;
         }
         String value = db.get(args[0]);
@@ -18,7 +18,7 @@ public class Get extends Action {
             System.out.println("not found");
         } else {
             System.out.println("found");
-			System.out.println(value);
+            System.out.println(value);
         }
         return true;
     }

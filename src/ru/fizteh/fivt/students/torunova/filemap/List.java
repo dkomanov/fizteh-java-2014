@@ -13,8 +13,8 @@ public class List extends Action {
             return false;
         }
         Set<String> keys = db.list();
-		String result = String.join(", ", keys);
-   		System.out.println(result);
+        String result = String.join(", ", keys);
+        System.out.println(result);
         return true;
     }
 

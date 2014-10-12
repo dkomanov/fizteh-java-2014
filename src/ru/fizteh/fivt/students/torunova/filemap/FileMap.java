@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.torunova.filemap;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,25 +15,25 @@ public class FileMap implements Database {
     public FileMap(final String f) {
         DataInputStream fis = null;
         file = f;
-		File f1 = new File(file);
-		try {
-			if (!f1.getAbsoluteFile().exists()) {
-				f1.createNewFile();
-			}
-		} catch (IOException e) {
-			System.err.println("Caught IOException: " + e.getMessage());
-			System.exit(1);
-		}
+        File f1 = new File(file);
         try {
-			fis = new DataInputStream(new FileInputStream(file));
-		} catch (FileNotFoundException e) {
-			System.err.println("Caught FileNotFoundException: " + e.getMessage());
-			System.exit(1);
-		}
-       	int  length = 0;
+            if (!f1.getAbsoluteFile().exists()) {
+                f1.createNewFile();
+            }
+        } catch (IOException e) {
+            System.err.println("Caught IOException: " + e.getMessage());
+            System.exit(1);
+        }
+        try {
+            fis = new DataInputStream(new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            System.err.println("Caught FileNotFoundException: " + e.getMessage());
+            System.exit(1);
+        }
+        int  length = 0;
         try {
             while (fis.available() > 0) {
-				length = fis.readInt();
+                length = fis.readInt();
                 byte[] key = new byte[length];
                 if (fis.read(key) != length) {
                     System.err.println("Incorrect file.");
@@ -98,9 +97,9 @@ public class FileMap implements Database {
         Set<String> keys = map.keySet();
         for (String key : keys) {
             try {
-             	fos.writeInt(key.length());
+                fos.writeInt(key.length());
                 fos.write(key.getBytes("UTF-8"));
-              	fos.writeInt(map.get(key).length());
+                fos.writeInt(map.get(key).length());
                 fos.write(map.get(key).getBytes("UTF-8"));
             } catch (IOException e) {
                 System.err.println("Caught IOException: " + e.getMessage());

@@ -19,7 +19,7 @@ public class Put extends Action {
             System.out.println("new");
         } else {
             System.out.println("overwrite");
-			System.out.println(value);
+            System.out.println(value);
         }
         return true;
     }
