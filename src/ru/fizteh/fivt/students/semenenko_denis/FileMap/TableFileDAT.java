@@ -11,7 +11,7 @@ import java.util.*;
 public class TableFileDAT implements Table, SaveInMemoryInterface {
 
     private RandomAccessFile binFile;
-    private Map<String, String> data = new TreeMap< >();
+    private Map<String, String> data = new TreeMap<>();
 
     @Override
     public String put(String key, String value) {
@@ -53,7 +53,7 @@ public class TableFileDAT implements Table, SaveInMemoryInterface {
     public List<String> list() {
         List<String> result = new ArrayList<>(data.size());
         Set<String> keys = data.keySet();
-        for (String key: keys) {
+        for (String key : keys) {
             result.add(key);
         }
         String joined = String.join(", ", result);
@@ -66,7 +66,7 @@ public class TableFileDAT implements Table, SaveInMemoryInterface {
         try {
             whereTo.setLength(0);
             Set<String> keys = data.keySet();
-            List<Integer> offsetsPos = new LinkedList<Integer>();
+            List<Integer> offsetsPos = new LinkedList<~>();
             for (String currentKey : keys) {
                 whereTo.write(currentKey.getBytes("UTF-8"));
                 whereTo.write('\0');
