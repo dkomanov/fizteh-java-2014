@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.IsalySultan.FileMap;
 
 import java.util.Scanner;
+import java.io.IOException;
 
 public class Interactive {
 
