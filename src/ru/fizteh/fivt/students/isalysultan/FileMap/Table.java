@@ -32,7 +32,7 @@ public class Table {
         }
     }
 
-    public void readFile(RandomAccessFile file) {
+    public void readFile(RandomAccessFile file) throws IOException {
         ByteArrayOutputStream buff = new ByteArrayOutputStream();
         ArrayList<String> key = new ArrayList<String>();
         ArrayList<Integer> offset = new ArrayList<Integer>();
@@ -58,7 +58,7 @@ public class Table {
                 key.add(buff.toString("UTF-8"));
                 buff.reset();
             } catch (IOException e) {
-                System.err.println("Error read file");
+                System.err.println(e.getMessage());
                 return;
             }
         }
@@ -95,12 +95,12 @@ public class Table {
                 count = afterCount;
             }
         } catch (IOException e) {
-            System.err.println("error in file");
+            System.err.println(e.getMessage());
         }
         try {
             buff.close();
         } catch (IOException e) {
-            System.err.println("error ByteArrayOutputStream");
+            System.err.println(e.getMessage());
         }
     }
 
@@ -133,10 +133,10 @@ public class Table {
                 }
                 endFile.close();
             } catch (IOException e) {
-                System.err.println("can't open file for write");
+                System.err.println(e.getMessage());
             }
         } catch (FileNotFoundException e) {
-            System.err.println("error open write");
+            System.err.println(e.getMessage());
         }
     }
 }
