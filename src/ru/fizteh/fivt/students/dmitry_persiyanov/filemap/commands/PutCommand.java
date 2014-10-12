@@ -8,7 +8,7 @@ public class PutCommand extends Command {
     @Override
     public final void execute() {
         if (args.length != 3) {
-            throw new IllegalArgumentException("put: wrong syntax");
+            throw new WrongSyntaxException("put");
         }
         String oldValue = hashMap.put(args[1], args[2]);
         if (oldValue == null) {

@@ -10,10 +10,14 @@ public final class FileMap {
     private static RandomAccessFile dbFile = null;
     private static Map<String, String> fileHashMap = null;
 
-    public static Map<String, String> getFileHashMap() { return fileHashMap; }
-    public static RandomAccessFile getDbFile() { return dbFile; }
+    public static Map<String, String> getFileHashMap() {
+        return fileHashMap;
+    }
+    public static RandomAccessFile getDbFile() {
+        return dbFile;
+    }
 
-    private static void fillFileHashMap() throws IOException {
+    private static void loadHashMap() throws IOException {
         fileHashMap = new HashMap<String, String>();
         if (dbFile.length() != 0) {
             try (ByteArrayOutputStream buf = new ByteArrayOutputStream()) {
@@ -68,7 +72,7 @@ public final class FileMap {
         }
     }
 
-    public static void saveChangesToFile() throws IOException {
+    public static void dumpHashMap() throws IOException {
         dbFile.setLength(0);
         Set<String> keys = fileHashMap.keySet();
         LinkedList<Integer> offsetsPlaces = new LinkedList<>();
@@ -95,8 +99,9 @@ public final class FileMap {
     public static void main(final String[] args) {
         try {
             dbFile = new RandomAccessFile(DB_FILE_PATH, "rw");
-            fillFileHashMap();
+            loadHashMap();
             if (args.length == 0) {
+                System.out.print("$ ");
                 interactiveMode();
             } else {
                 Command[] commands = CommandsParser.parse(args);
@@ -120,6 +125,7 @@ public final class FileMap {
                     cmd.execute();
                     if (!cmd.getMsg().equals("")) {
                         System.out.println(cmd.getMsg());
+                        System.out.print("$ ");
                     }
                 } catch (IllegalArgumentException e) {
                     System.err.println(e.getMessage());
@@ -133,5 +139,6 @@ public final class FileMap {
             cmd.execute();
             System.out.println(cmd.getMsg());
         }
+        dumpHashMap();
     }
 }

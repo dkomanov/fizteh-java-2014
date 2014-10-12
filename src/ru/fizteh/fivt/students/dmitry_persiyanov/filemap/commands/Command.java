@@ -10,8 +10,14 @@ public abstract class Command {
     protected String msg = null;
     protected Map<String, String> hashMap = FileMap.getFileHashMap();
 
-    public Command(final String[] arguments) { args = arguments; }
-    public String getName() { return args[0]; }
-    public String getMsg() { return msg; }
+    public Command(final String[] arguments) {
+        args = arguments;
+    }
+    public String getName() {
+        return args[0];
+    }
+    public String getMsg() {
+        return msg;
+    }
     public abstract void execute() throws IOException;
 }

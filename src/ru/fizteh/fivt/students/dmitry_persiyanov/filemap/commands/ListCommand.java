@@ -13,7 +13,7 @@ public class ListCommand extends Command {
     @Override
     public final void execute() {
         if (args.length != 1) {
-            throw new IllegalArgumentException("list: wrong syntax (arguments are prohibited)");
+            throw new WrongSyntaxException("list");
         }
         Set<String> keySet = hashMap.keySet();
         Iterator<String> keySetIter = keySet.iterator();

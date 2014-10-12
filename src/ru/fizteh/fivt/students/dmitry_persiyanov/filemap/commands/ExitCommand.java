@@ -6,16 +6,15 @@ import java.io.IOException;
 
 public class ExitCommand extends Command {
     public ExitCommand(final String[] args) {
-        super(args);
+       super(args);
     }
 
     @Override
     public final void execute() throws IOException {
         if (args.length != 1) {
-            throw new IllegalArgumentException(
-                    "exit: wrong syntax (arguments are prohibited)");
+            throw new WrongSyntaxException("exit");
         }
-        FileMap.saveChangesToFile();
+        FileMap.dumpHashMap();
         FileMap.getDbFile().close();
         System.exit(0);
     }

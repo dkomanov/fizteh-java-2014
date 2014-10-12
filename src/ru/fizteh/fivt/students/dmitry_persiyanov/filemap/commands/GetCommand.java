@@ -8,7 +8,7 @@ public class GetCommand extends Command {
     @Override
     public final void execute() {
         if (args.length != 2) {
-            throw new IllegalArgumentException("put: wrong syntax");
+            throw new WrongSyntaxException("get");
         }
         String value = hashMap.get(args[1]);
         if (value == null) {

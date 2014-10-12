@@ -8,7 +8,7 @@ public class RemoveCommand extends Command {
     @Override
     public final void execute() {
         if (args.length != 2) {
-            throw new IllegalArgumentException("remove: wrong syntax");
+            throw new WrongSyntaxException("remove");
         }
         String value = hashMap.remove(args[1]);
         if (value == null) {
