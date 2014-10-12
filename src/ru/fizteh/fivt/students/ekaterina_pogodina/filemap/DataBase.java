@@ -25,7 +25,6 @@ public class DataBase {
             throw new Exception("It is a directory");
         }
         if (file.exists()) {
-            try {
                 RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "r");
                 if (dbFile.length() > 0) {
                     while (dbFile.getFilePointer() < dbFile.length()) {
@@ -33,9 +32,6 @@ public class DataBase {
                     }
                 }
                 dbFile.close();
-            } catch (Exception e) {
-                throw new Exception();
-            }
         } else {
             try {
                 Files.createFile(file.toPath());
@@ -49,19 +45,15 @@ public class DataBase {
         if (args.length > 1) {
             throw new Exception("list: too much arguments");
         }
-        try {
-            boolean flag = true;
-            Iterator it = dBase.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                System.out.print(entry.getKey() + " ");
-                flag = false;
-            }
-            if (!flag) {
-                System.out.println("");
-            }
-        } catch (Exception e) {
-            throw new  Exception(e.getMessage());
+        boolean flag = true;
+        Iterator it = dBase.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            System.out.print(entry.getKey() + " ");
+            flag = false;
+        }
+        if (!flag) {
+            System.out.println("");
         }
     }
 
@@ -72,67 +64,51 @@ public class DataBase {
             if (args.length > 3) {
                 throw new Exception("put: too much  arguments");
             }
-            try {
-                String key = args[1];
-                String value = args[2];
-                if (dBase.containsKey(key)) {
-                    System.out.println("overwrite");
-                    System.out.println(dBase.get(key));
-                    dBase.remove(key);
-                    dBase.put(key, value);
-                } else {
-                    System.out.println("new");
-                    dBase.put(key, value);
-                }
-            } catch (Exception e) {
-                throw new Exception(e.getMessage());
+            String key = args[1];
+            String value = args[2];
+            if (dBase.containsKey(key)) {
+                System.out.println("overwrite");
+                System.out.println(dBase.get(key));
+                dBase.remove(key);
+                dBase.put(key, value);
+            } else {
+                System.out.println("new");
+                dBase.put(key, value);
             }
         }
 
     }
     public void put(String key, String value) throws Exception {
-        try {
-            if (dBase.containsKey(key)) {
-                System.out.println(dBase.get(key));
-                dBase.remove(key);
-                dBase.put(key, value);
-            } else {
-                dBase.put(key, value);
-            }
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+        if (dBase.containsKey(key)) {
+            System.out.println(dBase.get(key));
+            dBase.remove(key);
+            dBase.put(key, value);
+        } else {
+            dBase.put(key, value);
         }
     }
     public void get(String[] args) throws Exception {
         if (args.length > 2) {
             throw new Exception("get: too much arguments");
         }
-        try {
-            String key = args[1];
-            if (dBase.containsKey(key)) {
-                System.out.println("found");
-                System.out.println(dBase.get(key));
-            } else {
-                System.out.println("not found");
-            }
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+        String key = args[1];
+        if (dBase.containsKey(key)) {
+            System.out.println("found");
+            System.out.println(dBase.get(key));
+        } else {
+            System.out.println("not found");
         }
     }
     public void remove(String[] args) throws Exception {
         if (args.length > 2) {
             throw new Exception("remove: too much arguments");
         }
-        try {
-            String key = args[1];
-            if (dBase.containsKey(key)) {
-                System.out.println("removed");
-                dBase.remove(key);
-            } else {
-                System.out.println("not found");
-            }
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+        String key = args[1];
+        if (dBase.containsKey(key)) {
+            System.out.println("removed");
+            dBase.remove(key);
+        } else {
+            System.out.println("not found");
         }
     }
     private void writeDbToFile(final RandomAccessFile dbFile) throws Exception {
