@@ -29,6 +29,7 @@ public final class CommandParser {
         for (String current : cmds) {
             parse(manager, current.trim().split("\\s+"), true);
         }
+        ExitCommand.execute(manager);
     }
 
     public static void interactiveMode(TableManager manager)
@@ -90,8 +91,7 @@ public final class CommandParser {
                     list.execute(command);
                     break;
                 case "exit":
-                    ExitCommand exit = new ExitCommand(link);
-                    exit.execute(command);
+                    ExitCommand.execute(link);
                     break;
                 default:
                     throw new

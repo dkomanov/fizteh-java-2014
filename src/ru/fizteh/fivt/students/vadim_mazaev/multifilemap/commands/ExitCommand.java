@@ -6,11 +6,11 @@ import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.ThrowExit;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.TableManager;
 
 public final class ExitCommand {
-    public ExitCommand(TableManager manager) {
-        this.manager = manager;
+    private ExitCommand() {
+        //Not called, only for checkstyle.
     }
 
-    public void execute(String[] cmdWithArgs) throws ThrowExit {
+    public static void execute(TableManager manager) throws ThrowExit {
         if (manager.getUsedTable() != null) {
             try {
                 manager.getUsedTable().commit();
@@ -21,5 +21,4 @@ public final class ExitCommand {
         }
         throw new ThrowExit(true);
     }
-    private TableManager manager;
 }
