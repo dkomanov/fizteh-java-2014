@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.kotsurba.shell.shellcommands;
 
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
-import ru.fizteh.fivt.students.kotsurba.shell.Context.Context;
+import ru.fizteh.fivt.students.kotsurba.shell.context.Context;
 
 public final class ShellLs extends SimpleShellCommand {
     private Context context;
@@ -16,8 +16,8 @@ public final class ShellLs extends SimpleShellCommand {
     @Override
     public void run() {
         String[] content = context.getDirContent();
-        for (int i = 0; i < content.length; ++i) {
-            System.out.println(content[i]);
+        for (String aContent : content) {
+            System.out.println(aContent);
         }
     }
 

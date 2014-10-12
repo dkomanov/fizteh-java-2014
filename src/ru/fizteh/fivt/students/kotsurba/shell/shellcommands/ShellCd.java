@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.kotsurba.shell.shellcommands;
 
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.InvalidCommandException;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
-import ru.fizteh.fivt.students.kotsurba.shell.Context.*;
+import ru.fizteh.fivt.students.kotsurba.shell.context.*;
 
 import java.io.IOException;
 
