@@ -125,11 +125,11 @@ public final class FileMap {
                     cmd.execute();
                     if (!cmd.getMsg().equals("")) {
                         System.out.println(cmd.getMsg());
-                        System.out.print("$ ");
                     }
                 } catch (IllegalArgumentException e) {
                     System.err.println(e.getMessage());
                 }
+                System.out.print("$ ");
             }
         }
     }
