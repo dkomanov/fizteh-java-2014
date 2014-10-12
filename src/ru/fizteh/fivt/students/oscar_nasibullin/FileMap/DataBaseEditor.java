@@ -21,19 +21,15 @@ public class DataBaseEditor {
     public DataBaseEditor() throws Exception {
         data = new TreeMap<>();
         Path dataBasePath;
-        try {
-            dataBasePath = Paths.get(System.getProperty("db.file"));
-            try (RandomAccessFile  dataBase
-                    = new RandomAccessFile(dataBasePath.toString(), "r")) {
-                if (dataBase.length() > 0) {
-                    importData(dataBase);
-                }
-            } catch (FileNotFoundException e) {
-                dataBasePath.toFile().createNewFile();
-                }
-        } catch (Exception e) {
-            throw new Exception("cannot open file ");
-          }
+        dataBasePath = Paths.get(System.getProperty("db.file"));
+        try (RandomAccessFile  dataBase
+                = new RandomAccessFile(dataBasePath.toString(), "r")) {
+            if (dataBase.length() > 0) {
+                importData(dataBase);
+            }
+        } catch (FileNotFoundException e) {
+            dataBasePath.toFile().createNewFile();
+        }
     }
 
     public final void closeDataBase() throws Exception {
@@ -42,9 +38,7 @@ public class DataBaseEditor {
                         System.getProperty("db.file")).toString(), "rw")) {
             exportData(dataBase);
             dataBase.close();
-        } catch (Exception e) {
-                throw new Exception("Error writing DataBase to file");
-          }
+        }
     }
 
     public static void importData(
