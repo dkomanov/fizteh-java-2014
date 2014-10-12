@@ -66,7 +66,7 @@ public class TableFileDAT implements Table, SaveInMemoryInterface {
         try {
             whereTo.setLength(0);
             Set<String> keys = data.keySet();
-            List<Integer> offsetsPos = new LinkedList<~>();
+            List<Integer> offsetsPos = new LinkedList<Integer>();
             for (String currentKey : keys) {
                 whereTo.write(currentKey.getBytes("UTF-8"));
                 whereTo.write('\0');
