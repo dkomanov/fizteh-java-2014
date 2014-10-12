@@ -20,8 +20,9 @@ public class FileMap {
         }
     }
     private static boolean checkarguments(String[] args, Integer k) {
-        if (args.length == k) return true;
-        else {
+        if (args.length == k) {
+            return true;
+        } else {
             System.out.println("Incorrect arguments");
             return false;
         }
