@@ -55,11 +55,9 @@ public class DataBase {
 
     public void saveToDisk() throws Exception {
         RandomAccessFile file = new RandomAccessFile(dbPath, "rw");
-        Iterator<Map.Entry<String, String>> it = dataBase.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, String> pair = it.next();
-            writeToDataBase(file, pair.getKey());
-            writeToDataBase(file, pair.getValue());
+        for (String key : dataBase.keySet()) {
+            writeToDataBase(file, key);
+            writeToDataBase(file, dataBase.get(key));
         }
         file.close();
     }
@@ -95,14 +93,6 @@ public class DataBase {
     }
 
     public void list() {
-        StringBuilder output = new StringBuilder();
-        Iterator<String> it = dataBase.keySet().iterator();
-        if (it.hasNext()) {
-            output.append(it.next());
-            while (it.hasNext()) {
-                output.append(", ").append(it.next());
-            }
-        }
-        System.out.println(output.toString());
+        System.out.println(String.join(", ", dataBase.keySet()));
     }
 }
