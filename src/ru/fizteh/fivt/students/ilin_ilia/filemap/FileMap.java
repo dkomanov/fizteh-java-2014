@@ -21,8 +21,10 @@ public class FileMap {
         try {
             file = new RandomAccessFile(path, "rw");
             getFile();
-        } catch (FileNotFoundException | SecurityException e) {
-            System.out.println("Cant find or use the following file:" + path);
+        } catch (FileNotFoundException e) {
+            System.out.println("Can't findthe following file:" + path);
+        } catch (SecurityException e) {
+            System.out.println("Can't use the following file:" + path);
         }
     }
     
@@ -62,7 +64,7 @@ public class FileMap {
             }
         }
         if (count == 0) {
-            System.out.println();
+            System.out.println("\n");
         }
     }
     
@@ -92,7 +94,7 @@ public class FileMap {
                 }
                 bytesCounter += 4;
                 keys.add((buf.toString("UTF-8")));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 System.out.println("Can't read db file");
                 System.exit(-1);
             }
@@ -101,9 +103,8 @@ public class FileMap {
             offsets.add((int) file.length());
             Iterator<String> keyIter = keys.iterator();
             Iterator<Integer> offIter = offsets.iterator();
-            while (offIter.hasNext()) {
-                int nextOff = offIter.next();
-                while (bytesCounter < nextOff) {
+            for (int nextOffset : offsets) {
+                while (bytesCounter < nextOffset) {
                     buf.write(file.read());
                     bytesCounter++;
                 }
@@ -114,14 +115,17 @@ public class FileMap {
                     throw new Exception();
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Can't read db file");
+            System.exit(-1);
+        } catch (Exception e) {
+            System.out.println("Wrong input file");
             System.exit(-1);
         }
         try {
             buf.close();
         } catch (IOException e) {
-            System.out.println("Cant close db file");
+            System.out.println("Can't close db file");
             System.exit(-1);
         }
     }
@@ -147,7 +151,7 @@ public class FileMap {
                 file.seek(pos);
                 file.writeInt(offIter.next());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Can't write into a db file");
             System.exit(-1);
         }
