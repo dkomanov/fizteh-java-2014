@@ -1,14 +1,11 @@
 package ru.fizteh.fivt.students.sautin1.filemap;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by sautin1 on 10/10/14.
  */
-public class Table<MappedValue> {
+public class GeneralTable<MappedValue> {
     private Map<String, MappedValue> committedEntries;
     private Map<String, MappedValue> addedEntries;
     private Map<String, MappedValue> overwrittenEntries;
@@ -16,17 +13,29 @@ public class Table<MappedValue> {
     private final String name;
     protected final boolean autoCommit;
 
-    Table(String name, boolean autoCommit) {
+    GeneralTable(String name, boolean autoCommit) {
         this.name = name;
         this.autoCommit = autoCommit;
-        committedEntries = new HashMap<String, MappedValue>();
-        addedEntries = new HashMap<String, MappedValue>();
-        overwrittenEntries = new HashMap<String, MappedValue>();
-        deletedEntries = new HashSet<String>();
+        committedEntries = new HashMap<>();
+        addedEntries = new HashMap<>();
+        overwrittenEntries = new HashMap<>();
+        deletedEntries = new HashSet<>();
     }
 
-    Table(String name) {
+    GeneralTable(String name) {
         this(name, true);
+    }
+
+    public int size() {
+        return committedEntries.size() + addedEntries.size() - deletedEntries.size();
+    }
+
+    public int diffCount() {
+        return addedEntries.size() + overwrittenEntries.size() + deletedEntries.size();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public MappedValue put(String key, MappedValue value) {
@@ -38,7 +47,7 @@ public class Table<MappedValue> {
         boolean isAdded = (addedValue != null);
         boolean isOverwritten = (overwrittenValue != null);
 
-        MappedValue returnValue = null;
+        MappedValue returnValue;
         if (isCommitted && !isDeleted && !isOverwritten) {
             // overwrite existing old entry (key-value pair)
             if (!committedValue.equals(value)) {
@@ -51,7 +60,7 @@ public class Table<MappedValue> {
         } else if (isDeleted) {
             // add recently deleted entry
             deletedEntries.remove(key);
-            if (!committedValue.equals(value)) {
+            if (isCommitted && !committedValue.equals(value)) {
                 overwrittenEntries.put(key, value);
             }
             returnValue = null;
@@ -147,7 +156,13 @@ public class Table<MappedValue> {
         return diffCounter;
     }
 
-    public int diffCount() {
-        return addedEntries.size() + overwrittenEntries.size() + deletedEntries.size();
+    public List<String> list() {
+        Set<String> keySet = addedEntries.keySet();
+        keySet.addAll(overwrittenEntries.keySet());
+        keySet.addAll(committedEntries.keySet());
+        keySet.removeAll(deletedEntries);
+        List<String> keyList = new ArrayList<>();
+        keyList.addAll(keySet);
+        return keyList;
     }
 }
