@@ -39,43 +39,57 @@ public final class Modesfilemap {
         }
         String arg = cmd.toString();
         parser(link, arg, true);
+        Filemapfunctions.exit(link);
     }
 
     public static void commandHandler(final DatabaseSerializer link,
             final String[] arg, final boolean mode) {
+        boolean argproblem = false;
         switch (arg[0]) {
         case "put":
             if (arg.length == 3) {
                 Filemapfunctions.put(link, arg[1], arg[2]);
-                break;
+            } else {
+                argproblem = true;
             }
+            break;
         case "get":
             if (arg.length == 2) {
                 Filemapfunctions.get(link, arg[1]);
-                break;
+            } else {
+                argproblem = true;
             }
+            break;
         case "remove":
             if (arg.length == 2) {
                 Filemapfunctions.remove(link, arg[1]);
-                break;
+            } else {
+                argproblem = true;
             }
+            break;
         case "list":
             if (arg.length == 1) {
                 Filemapfunctions.list(link);
-                break;
+            } else {
+                argproblem = true;
             }
+            break;
         case "exit":
             if (arg.length == 1) {
                 Filemapfunctions.exit(link);
                 System.exit(0);
+            } else {
+                argproblem = true;
             }
-
+            break;
         default:
             System.out.println("Please enter proper command");
             if (mode) {
                 System.exit(-1);
             }
-
+        }
+        if (argproblem) {
+            System.out.println("Wrong number of arguments");
         }
     }
 
