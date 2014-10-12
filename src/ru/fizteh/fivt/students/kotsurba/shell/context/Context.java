@@ -66,7 +66,7 @@ public final class Context {
         return new File(currentDir).list();
     }
 
-    private void Remove(final File file) throws IOException {
+    private void internalRemove(final File file) throws IOException {
         if (file.isFile()) {
             if (!file.delete()) {
                 throw new IOException("File " + file.getCanonicalPath() + " is undeletable");
@@ -102,7 +102,7 @@ public final class Context {
         if (newPath.equals(currentDir)) {
             throw new IOException("I can't delete current directory!");
         }
-        Remove(new File(newPath));
+        internalRemove(new File(newPath));
     }
 
     public void removeWithParameter(final String path) throws IOException {
