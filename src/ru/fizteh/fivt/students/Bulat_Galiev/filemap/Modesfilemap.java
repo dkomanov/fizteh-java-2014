@@ -47,27 +47,37 @@ public final class Modesfilemap {
         case "put":
             if (arg.length == 3) {
                 Filemapfunctions.put(link, arg[1], arg[2]);
+            } else {
+                System.out.println("wrong number of arguments");
             }
             break;
         case "get":
             if (arg.length == 2) {
                 Filemapfunctions.get(link, arg[1]);
+            } else {
+                System.out.println("wrong number of arguments");
             }
             break;
         case "remove":
             if (arg.length == 2) {
                 Filemapfunctions.remove(link, arg[1]);
+            } else {
+                System.out.println("wrong number of arguments");
             }
             break;
         case "list":
             if (arg.length == 1) {
                 Filemapfunctions.list(link);
+            } else {
+                System.out.println("wrong number of arguments");
             }
             break;
         case "exit":
             if (arg.length == 1) {
                 Filemapfunctions.exit(link);
                 System.exit(0);
+            } else {
+                System.out.println("wrong number of arguments");
             }
             break;
 

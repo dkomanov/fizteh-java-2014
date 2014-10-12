@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.Bulat_Galiev.filemap;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
@@ -16,19 +17,12 @@ public class DatabaseSerializer {
 
     public DatabaseSerializer() throws Exception {
         fileMap = new HashMap<>();
-        try {
-            filePathdb = Paths.get(System.getProperty("db.file"));
-            try (RandomAccessFile filedb = new RandomAccessFile(
-                    filePathdb.toString(), "r")) {
-                if (filedb.length() > 0) {
-                    DatabaseSerializer.getData(filedb);
-                }
-            } catch (Exception e) {
-                filePathdb.toFile().createNewFile();
-            }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            System.exit(-1);
+        filePathdb = Paths.get(System.getProperty("db.file"));
+        try (RandomAccessFile filedb = new RandomAccessFile(
+                filePathdb.toString(), "r")) {
+            DatabaseSerializer.getData(filedb);
+        } catch (FileNotFoundException e) {
+            filePathdb.toFile().createNewFile();
         }
     }
 
