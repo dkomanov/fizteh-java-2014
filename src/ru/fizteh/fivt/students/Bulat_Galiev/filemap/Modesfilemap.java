@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.Bulat_Galiev.filemap;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public final class Modesfilemap {
@@ -10,7 +12,7 @@ public final class Modesfilemap {
         // Disable instantiation to this class.
     }
 
-    public static void interactiveMode(final Data link) {
+    public static void interactiveMode(final DatabaseSerializer link) {
         String input = "";
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         do {
@@ -26,7 +28,8 @@ public final class Modesfilemap {
         } while (!input.equals("exit"));
     }
 
-    public static void batchMode(final Data link, final String[] input) {
+    public static void batchMode(final DatabaseSerializer link,
+            final String[] input) {
         StringBuilder cmd = new StringBuilder();
         for (String argument : input) {
             if (cmd.length() != 0) {
@@ -38,32 +41,32 @@ public final class Modesfilemap {
         parser(link, arg, true);
     }
 
-    public static void commandHandler(final Data link, final String[] arg,
-            final boolean mode) {
+    public static void commandHandler(final DatabaseSerializer link,
+            final String[] arg, final boolean mode) {
         switch (arg[0]) {
         case "put":
             if (arg.length == 3) {
-                Filemapfunc.put(link, arg[1], arg[2]);
+                Filemapfunctions.put(link, arg[1], arg[2]);
             }
             break;
         case "get":
             if (arg.length == 2) {
-                Filemapfunc.get(link, arg[1]);
+                Filemapfunctions.get(link, arg[1]);
             }
             break;
         case "remove":
             if (arg.length == 2) {
-                Filemapfunc.remove(link, arg[1]);
+                Filemapfunctions.remove(link, arg[1]);
             }
             break;
         case "list":
             if (arg.length == 1) {
-                Filemapfunc.list(link);
+                Filemapfunctions.list(link);
             }
             break;
         case "exit":
             if (arg.length == 1) {
-                Filemapfunc.exit(link);
+                Filemapfunctions.exit(link);
                 System.exit(0);
             }
             break;
@@ -77,7 +80,8 @@ public final class Modesfilemap {
         }
     }
 
-    public static void parser(final Data link, final String input, final boolean mod) {
+    public static void parser(final DatabaseSerializer link,
+            final String input, final boolean mod) {
         final StringTokenizer tok = new StringTokenizer(input, ";", false);
         while (tok.hasMoreTokens()) {
             int i = 0;
@@ -92,5 +96,79 @@ public final class Modesfilemap {
         if (mod) {
             System.exit(0);
         }
+    }
+
+    public static final class Filemapfunctions {
+        private Filemapfunctions() {
+            // Disable instantiation to this class.
+        }
+
+        public static void put(final DatabaseSerializer link,
+                final String arg1, final String arg2) {
+            if ((!arg1.equals("")) && (!arg2.equals(""))) {
+                Map<String, String> fileMap = link.getDataBase();
+                String putValue = fileMap.put(arg1, arg2);
+                if (putValue == null) {
+                    System.out.println("new");
+                } else {
+                    System.out.println("overwrite");
+                    System.out.println(putValue);
+                }
+            } else {
+                System.out.println("incorrect arguments");
+                return;
+            }
+        }
+
+        public static void get(final DatabaseSerializer link, final String arg1) {
+            if (!arg1.equals("")) {
+                Map<String, String> fileMap = link.getDataBase();
+                String getValue = fileMap.get(arg1);
+                if (getValue == null) {
+                    System.out.println("not found");
+                } else {
+                    System.out.println("found");
+                    System.out.println(getValue);
+                }
+            } else {
+                System.out.println("incorrect arguments");
+                return;
+            }
+        }
+
+        public static void remove(final DatabaseSerializer link,
+                final String arg1) {
+            if (!arg1.equals("")) {
+                Map<String, String> fileMap = link.getDataBase();
+                String getValue = fileMap.remove(arg1);
+                if (getValue != null) {
+                    System.out.println("removed");
+                } else {
+                    System.out.println("not found");
+                }
+            } else {
+                System.out.println("incorrect arguments");
+                return;
+            }
+        }
+
+        public static void list(final DatabaseSerializer link) {
+            Map<String, String> fileMap = link.getDataBase();
+            Set<String> keys = fileMap.keySet();
+            int iteration = 0;
+            for (String current : keys) {
+                iteration++;
+                System.out.print(current);
+                if (iteration != keys.size()) {
+                    System.out.print(", ");
+                }
+            }
+            System.out.println();
+        }
+
+        public static void exit(final DatabaseSerializer link) {
+            link.close();
+        }
+
     }
 }

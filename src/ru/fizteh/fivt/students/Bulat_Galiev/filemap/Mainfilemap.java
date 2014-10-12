@@ -7,7 +7,7 @@ public final class Mainfilemap {
 
     public static void main(final String[] args) {
         try {
-            Data link = new Data();
+            DatabaseSerializer link = new DatabaseSerializer();
             if (args.length == 0) {
                 Modesfilemap.interactiveMode(link);
             } else {
