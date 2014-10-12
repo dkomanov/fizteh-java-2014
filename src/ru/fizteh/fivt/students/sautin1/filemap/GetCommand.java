@@ -15,6 +15,15 @@ public class GetCommand extends AbstractStringDatabaseCommand {
     @Override
     public void execute(StringDatabaseState state, String... args)
             throws UserInterruptException, CommandExecuteException {
-
+        if (checkArgumentNumber(args) != CheckArgumentNumber.EQUAL) {
+            throw new CommandExecuteException(toString() + ": wrong number of arguments");
+        }
+        String value = state.getActiveTable().get(args[1]);
+        if (value == null) {
+            System.out.println("not found");
+        } else {
+            System.out.println("found");
+            System.out.println(value);
+        }
     }
 }

@@ -14,6 +14,9 @@ public class GeneralTable<MappedValue> {
     protected final boolean autoCommit;
 
     GeneralTable(String name, boolean autoCommit) {
+        if (name == null) {
+            throw new IllegalArgumentException("No table name provided");
+        }
         this.name = name;
         this.autoCommit = autoCommit;
         committedEntries = new HashMap<>();

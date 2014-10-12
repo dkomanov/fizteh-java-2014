@@ -15,6 +15,11 @@ public class ListCommand extends AbstractStringDatabaseCommand {
     @Override
     public void execute(StringDatabaseState state, String... args)
             throws UserInterruptException, CommandExecuteException {
-
+        if (checkArgumentNumber(args) != CheckArgumentNumber.EQUAL) {
+            throw new CommandExecuteException(toString() + ": wrong number of arguments");
+        }
+        for (String key : state.getActiveTable().list()) {
+            System.out.println(key);
+        }
     }
 }

@@ -15,6 +15,14 @@ public class RemoveCommand extends AbstractStringDatabaseCommand {
     @Override
     public void execute(StringDatabaseState state, String... args)
             throws UserInterruptException, CommandExecuteException {
-
+        if (checkArgumentNumber(args) != CheckArgumentNumber.EQUAL) {
+            throw new CommandExecuteException(toString() + ": wrong number of arguments");
+        }
+        String value = state.getActiveTable().remove(args[1]);
+        if (value == null) {
+            System.out.println("not found");
+        } else {
+            System.out.println("removed");
+        }
     }
 }

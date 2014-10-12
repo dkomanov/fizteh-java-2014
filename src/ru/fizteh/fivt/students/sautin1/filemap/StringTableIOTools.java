@@ -15,7 +15,7 @@ public class StringTableIOTools implements TableIOTools<String, StringTable> {
     }
 
     public StringTableIOTools() {
-        this(1, 1);
+        this(0, 1);
     }
 
     @Override

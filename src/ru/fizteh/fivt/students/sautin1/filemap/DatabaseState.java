@@ -11,10 +11,9 @@ public class DatabaseState<MappedValue, T extends GeneralTable<MappedValue>> {
         tableProvider = null;
     }
 
-    public DatabaseState(GeneralTableProvider<MappedValue, T> tableProvider)
-            throws NullPointerException {
+    public DatabaseState(GeneralTableProvider<MappedValue, T> tableProvider) {
         if (tableProvider == null) {
-            throw new NullPointerException("Wrong provider");
+            throw new IllegalArgumentException("Wrong provider");
         }
         this.tableProvider = tableProvider;
     }

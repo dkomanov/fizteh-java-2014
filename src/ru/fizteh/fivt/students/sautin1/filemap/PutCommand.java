@@ -15,6 +15,15 @@ public class PutCommand extends AbstractStringDatabaseCommand {
     @Override
     public void execute(StringDatabaseState state, String... args)
             throws UserInterruptException, CommandExecuteException {
-
+        if (checkArgumentNumber(args) != CheckArgumentNumber.EQUAL) {
+            throw new CommandExecuteException(toString() + ": wrong number of arguments");
+        }
+        String value = state.getActiveTable().put(args[1], args[2]);
+        if (value == null) {
+            System.out.println("new");
+        } else {
+            System.out.println("overwrite");
+            System.out.println(value);
+        }
     }
 }

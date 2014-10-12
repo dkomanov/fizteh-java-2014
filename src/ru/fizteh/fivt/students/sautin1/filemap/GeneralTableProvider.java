@@ -21,7 +21,7 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
             throw new IllegalArgumentException("Wrong TableIOTools instance");
         }
         this.rootDir = rootDir;
-        tableMap = new HashMap<String, T>();
+        tableMap = new HashMap<>();
         this.tableIOTools = tableIOTools;
         this.autoCommit = autoCommit;
     }
