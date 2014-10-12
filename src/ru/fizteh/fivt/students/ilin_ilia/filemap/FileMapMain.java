@@ -5,7 +5,7 @@ public class FileMapMain {
         if (args.length == 0) {
             FileMapDistributor.interactiveMode();
         } else {
-            FileMapDistributor.commandMode(args);
+            FileMapDistributor.batchMode(args);
         }
     }
 }
