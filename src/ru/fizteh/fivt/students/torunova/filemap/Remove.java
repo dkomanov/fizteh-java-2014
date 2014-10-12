@@ -3,14 +3,14 @@ package ru.fizteh.fivt.students.torunova.filemap;
 /**
  * Created by nastya on 09.10.14.
  */
-public class Remove implements Action {
+public class Remove extends Action {
     @Override
     public boolean run(String[] args, Database db) {
         if (args.length < 1) {
-            System.err.println("remove:too few arguments.");
+          	tooFewArguments();
             return false;
         } else if (args.length > 1) {
-            System.err.println("remove:too many arguments.");
+            tooManyArguments();
             return false;
         }
         boolean result = db.remove(args[0]);

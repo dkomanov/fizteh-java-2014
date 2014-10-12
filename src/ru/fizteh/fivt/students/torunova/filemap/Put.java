@@ -3,14 +3,14 @@ package ru.fizteh.fivt.students.torunova.filemap;
 /**
  * Created by nastya on 08.10.14.
  */
-public class Put implements Action {
+public class Put extends Action {
     @Override
     public boolean run(String[] args, Database db) {
         if (args.length < 2) {
-            System.err.println("put:too few arguments.");
+            tooFewArguments();
             return false;
         } else if (args.length > 2) {
-            System.err.println("put:too many arguments.");
+            tooManyArguments();
             return false;
         }
         String value = db.get(args[0]);
@@ -18,7 +18,8 @@ public class Put implements Action {
         if (result) {
             System.out.println("new");
         } else {
-            System.out.println("overwrite\n" + value);
+            System.out.println("overwrite");
+			System.out.println(value);
         }
         return true;
     }

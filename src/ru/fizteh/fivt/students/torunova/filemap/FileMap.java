@@ -1,48 +1,48 @@
 package ru.fizteh.fivt.students.torunova.filemap;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by nastya on 04.10.14.
  */
 public class FileMap implements Database {
-    HashMap<String, String> map = new HashMap<>();
+    Map<String, String> map = new HashMap<>();
     String file;
 
     public FileMap(final String f) {
-        FileInputStream fis = null;
+        DataInputStream fis = null;
         file = f;
+		File f1 = new File(file);
+		try {
+			if (!f1.getAbsoluteFile().exists()) {
+				f1.createNewFile();
+			}
+		} catch (IOException e) {
+			System.err.println("Caught IOException: " + e.getMessage());
+			System.exit(1);
+		}
         try {
-            fis = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            System.err.println("Caught FileNotFoundException: " + e.getMessage());
-            System.exit(1);
-        }
-        byte[] length = new byte[4];
+			fis = new DataInputStream(new FileInputStream(file));
+		} catch (FileNotFoundException e) {
+			System.err.println("Caught FileNotFoundException: " + e.getMessage());
+			System.exit(1);
+		}
+       	int  length = 0;
         try {
-            while (fis.read(length) != -1) {
-                int lk = (length[0] << 24) + (length[1] << 16) + (length[2] << 8) + length[3];
-                byte[] key = new byte[lk];
-                if (fis.read(key) != lk) {
-                    //TODO:There will be exception;
+            while (fis.available() > 0) {
+				length = fis.readInt();
+                byte[] key = new byte[length];
+                if (fis.read(key) != length) {
                     System.err.println("Incorrect file.");
                     System.exit(1);
                 }
-                if (fis.read(length) != 4) {
-                    //TODO:There will be exception;
-                    System.err.println("Incorrect file.");
-                    System.exit(1);
-                }
-                int lv = (length[0] << 24) + (length[1] << 16) + (length[2] << 8) + length[3];
-                byte[] value = new byte[lv];
-                if (fis.read(value) != lv) {
-                    //TODO:There will be exception;
+                length = fis.readInt();
+                byte[] value = new byte[length];
+                if (fis.read(value) != length) {
                     System.err.println("Incorrect file.");
                     System.exit(1);
                 }
@@ -88,23 +88,19 @@ public class FileMap implements Database {
 
     @Override
     public void close() {
-        FileOutputStream fos = null;
+        DataOutputStream fos = null;
         try {
-            fos = new FileOutputStream(file);
+            fos = new DataOutputStream(new FileOutputStream(file));
         } catch (FileNotFoundException e) {
-            System.out.println("Caught FileNotFoundException: " + e.getMessage());
+            System.err.println("Caught FileNotFoundException: " + e.getMessage());
             System.exit(1);
         }
         Set<String> keys = map.keySet();
         for (String key : keys) {
             try {
-                ByteBuffer bb1 = ByteBuffer.allocate(4);
-                byte[] lk = bb1.putInt(key.getBytes("UTF-8").length).array();
-                fos.write(lk);
+             	fos.writeInt(key.length());
                 fos.write(key.getBytes("UTF-8"));
-                ByteBuffer bb2 = ByteBuffer.allocate(4);
-                byte[] lv = bb2.putInt(map.get(key).getBytes("UTF-8").length).array();
-                fos.write(lv);
+              	fos.writeInt(map.get(key).length());
                 fos.write(map.get(key).getBytes("UTF-8"));
             } catch (IOException e) {
                 System.err.println("Caught IOException: " + e.getMessage());

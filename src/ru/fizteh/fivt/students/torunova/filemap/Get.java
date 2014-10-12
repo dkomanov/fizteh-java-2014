@@ -3,21 +3,22 @@ package ru.fizteh.fivt.students.torunova.filemap;
 /**
  * Created by nastya on 08.10.14.
  */
-public class Get implements Action {
+public class Get extends Action {
     @Override
     public boolean run(String[] args, Database db) {
         if (args.length < 1) {
-            System.err.println("get:too few arguments.");
+          	tooFewArguments();
             return false;
         } else if (args.length > 1) {
-            System.err.println("get:too many arguments.");
+           	tooManyArguments();
             return false;
         }
         String value = db.get(args[0]);
         if (value == null) {
             System.out.println("not found");
         } else {
-            System.out.println("found " + value);
+            System.out.println("found");
+			System.out.println(value);
         }
         return true;
     }

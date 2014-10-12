@@ -10,14 +10,10 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
         Set<Action> actions = new HashSet<Action>();
-        Put put = new Put();
-        List list = new List();
-        Get get = new Get();
-        Remove rm = new Remove();
-        actions.add(put);
-        actions.add(get);
-        actions.add(list);
-        actions.add(rm);
+        actions.add(new Put());
+        actions.add(new Get());
+        actions.add(new List());
+        actions.add(new Remove());
         Shell shell;
         if (args.length > 0) {
             ByteArrayInputStream is = new ByteArrayInputStream(parseCommandsFromArray(args).getBytes());

@@ -5,17 +5,16 @@ import java.util.Set;
 /**
  * Created by nastya on 08.10.14.
  */
-public class List implements Action {
+public class List extends Action {
     @Override
     public boolean run(String[] args, Database db) {
         if (args.length > 0) {
-            System.err.println("list:too many arguments.");
+            tooManyArguments();
             return false;
         }
         Set<String> keys = db.list();
-        for (String key : keys) {
-            System.out.println(key);
-        }
+		String result = String.join(", ", keys);
+   		System.out.println(result);
         return true;
     }
 
