@@ -8,13 +8,12 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 public class DataBase {
 
     private String databasePath;
-    private Map<String, String> database;
+    private HashMap<String, String> database;
 
     public DataBase(final String dbPath) throws Exception {
         databasePath = dbPath;
