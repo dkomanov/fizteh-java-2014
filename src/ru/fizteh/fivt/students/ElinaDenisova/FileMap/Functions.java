@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public  class Functions {
-    public static void makeDbFile( String fileName) throws DataBaseException {
+    public static void makeDbFile(String fileName) throws DataBaseException {
         File ctFile = new File(fileName);
         if (ctFile.isDirectory()) {
             throw new DataBaseException("It is a directory");
@@ -20,8 +20,7 @@ public  class Functions {
             }
         }
     }
-    public static void makeDbFileHard( String
-            fileName) throws DataBaseException {
+    public static void makeDbFileHard(String fileName) throws DataBaseException {
         File ctFile = new File(fileName);
         try {
             Files.deleteIfExists(ctFile.toPath());

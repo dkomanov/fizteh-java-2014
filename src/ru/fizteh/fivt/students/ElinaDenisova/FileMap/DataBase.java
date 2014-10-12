@@ -106,7 +106,7 @@ public class DataBase {
             throw new DataBaseException("DataBase: cant write");
         }
     }
-    public void put( String key,  String value) {
+    public void put(String key,  String value) {
         if (dBase.containsKey(key)) {
             System.out.println("overwrite");
             System.out.println(dBase.get(key));
@@ -118,7 +118,7 @@ public class DataBase {
         }
     }
 
-    public void get( String key) {
+    public void get(String key) {
         if (dBase.containsKey(key)) {
             System.out.println("found");
             System.out.println(dBase.get(key));
@@ -126,7 +126,7 @@ public class DataBase {
             System.out.println("not found");
         }
     }
-    public void remove( String key) {
+    public void remove(String key) {
         if (dBase.containsKey(key)) {
             System.out.println("removed");
             dBase.remove(key);

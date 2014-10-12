@@ -54,6 +54,6 @@ public class ParserCommands {
         }
         String[] com = new String[command.size()];
         com = command.toArray(com);
-        commandExec(com,dataBase);
+        commandExec(com, dataBase);
     }
 }

@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.ElinaDenisova.FileMap;
 import java.util.ArrayList;
 
 public class InputParse {
-    public static void parse( String[] arg) {
+    public static void parse(String[] arg) {
         try {
             DataBase dataBase = new DataBase(
                     System.getProperty("db.file"));
