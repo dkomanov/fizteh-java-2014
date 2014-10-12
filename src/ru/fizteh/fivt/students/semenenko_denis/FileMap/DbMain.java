@@ -8,13 +8,11 @@ import java.util.Scanner;
  */
 public class DbMain {
 
-    public static final String INCORRECT_NUMBER_OF_ARGUMENTS = "Incorrect number of arguments";
     private static boolean batchMode;
     private static boolean isExit;
-    private static DataBaseCache cache;
+    private static DataBaseCache cache = new DataBaseCache();
 
     public static void main(String[] args) {
-        cache = new DataBaseCache();
         cache.init("db.file");
         if (args.length == 0) {
             batchMode = false;
@@ -121,13 +119,13 @@ public class DbMain {
     private static void errorCntArguments(String command)
             throws InvalidCommandException {
         throw new InvalidCommandException(
-                command + ": invalid number of arguments");
+                command + ": invalid number of arguments.");
     }
 
     private static void errorUnknownCommand(String command)
             throws InvalidCommandException {
         throw new InvalidCommandException(
-                command + ": unknown command");
+                command + ": unknown command.");
     }
 }
 

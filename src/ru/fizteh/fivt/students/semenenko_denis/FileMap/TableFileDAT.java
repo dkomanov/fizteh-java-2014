@@ -11,11 +11,7 @@ import java.util.*;
 public class TableFileDAT implements Table, SaveInMemoryInterface {
 
     private RandomAccessFile binFile;
-    private Map<String, String> data;
-
-    TableFileDAT() {
-        data = new TreeMap<>();
-    }
+    private Map<String, String> data = new TreeMap< >();
 
     @Override
     public String put(String key, String value) {
@@ -115,7 +111,7 @@ public class TableFileDAT implements Table, SaveInMemoryInterface {
                 keys.add(bytesBuffer.toString("UTF-8"));
                 bytesBuffer.reset();
             } while (bytesCounter < firstOffset);
-            //Reading values until reaching the end of file.
+            // Reading values until reaching the end of file.
             offsets.add((int) whereFrom.length());
             Iterator<String> keyIter = keys.iterator();
             Iterator<Integer> offIter = offsets.iterator();
@@ -129,7 +125,7 @@ public class TableFileDAT implements Table, SaveInMemoryInterface {
                     data.put(keyIter.next(), bytesBuffer.toString("UTF-8"));
                     bytesBuffer.reset();
                 } else {
-                    //If file ends before reading last value.
+                    // If file ends before reading last value.
                     throw new IOException();
                 }
             }

@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.semenenko_denis.FileMap;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,11 +11,10 @@ import java.nio.file.Paths;
  */
 
 public class DataBaseCache {
-    TableFileDAT table;
+    TableFileDAT table = new TableFileDAT();
 
     public void init(String dbpath) {
-       try {
-            table = new TableFileDAT();
+        try {
             Path dbFilePath = Paths.get(System.getProperty("db.file"));
             try {
                 RandomAccessFile dbFile
@@ -30,19 +30,21 @@ public class DataBaseCache {
                         = new RandomAccessFile(dbFilePath.toString(), "r");
                 table.setBinFile(dbFile);
             }
-       } catch (Exception e) {
-            System.err.println("Error connecting database");
+        } catch (IOException e) {
+            System.err.println("Error connecting database.");
+            System.err.println("Reason: " + e.getMessage());
             System.exit(-1);
-       }
-   }
+        }
+    }
 
     public void commit() {
-       table.write(table.getBinFile());
+        table.write(table.getBinFile());
     }
 
     public void put(String key, String value, String table) {
         this.table.put(key, value);
     }
+
     public void get(String key) {
         table.get(key);
     }
