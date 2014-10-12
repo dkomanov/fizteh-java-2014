@@ -9,51 +9,38 @@ public class FileMap {
             if (args.length == 0) {
                 interactiveMode(dataBase);
             } else {
-                packageMode(args, dataBase);
+                batchMode(args, dataBase);
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 
-    public static void interactiveMode(DataBase dataBase) {
-        Scanner input = null;
-        try {
-            input = new Scanner(System.in);
+    public static void interactiveMode(DataBase dataBase) throws Exception {
+        Scanner input = new Scanner(System.in);
+        System.out.print("$ ");
+        while (input.hasNextLine()) {
+            try {
+                executeCommand(parseCommand(input.nextLine()), dataBase);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
             System.out.print("$ ");
-            while (input.hasNextLine()) {
-                try {
-                    executeCommand(parseCommand(input.nextLine()), dataBase);
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
-                }
-                System.out.print("$ ");
-            }
-            dataBase.writeInFile();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        } finally {
-            System.out.println();
-            input.close(); 
         }
+        dataBase.saveToDisk();
+        input.close(); 
     }
 
-    public static void packageMode(String[] args, DataBase dataBase) {
-        int isError = 0;
-        try {
-            String[] input = parseInput(args);
-            for (String cmd : input) {
-                executeCommand(parseCommand(cmd), dataBase);
-            }
-            dataBase.writeInFile();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            isError = 1;
+    public static void batchMode(String[] args, DataBase dataBase) throws Exception {
+        String[] input = parseInput(args);
+        for (String cmd : input) {
+            executeCommand(parseCommand(cmd), dataBase);
         }
-        System.exit(isError);
+        dataBase.saveToDisk();
     }
 
-    private static String[] parseInput(String[] args) {
+    private static String[] parseInput(String[] args) throws Exception {
         StringBuilder input = new StringBuilder();
         for (String cmd : args) {
             input.append(cmd).append(' ');
@@ -61,25 +48,40 @@ public class FileMap {
         return input.toString().split("\\s*;\\s*");
     }
 
-    private static String[] parseCommand(String cmd) {
-        return cmd.split("\\s+");
+    private static String[] parseCommand(String cmd) throws Exception {
+        return cmd.trim().split("\\s+");
     }
 
-    public static void executeCommand(String[] cmds, DataBase dataBase) throws Exception {
-        if (cmds.length > 0 && cmds[0].length() > 0) {
-            if (cmds[0].equals("put")) {
-                dataBase.put(cmds[1], cmds[2]);
-            } else if (cmds[0].equals("get")) {
-                dataBase.get(cmds[1]);
-            } else if (cmds[0].equals("remove")) {
-                dataBase.remove(cmds[1]);
-            } else if (cmds[0].equals("list")) {
+    public static void executeCommand(String[] cmd, DataBase dataBase) throws Exception {
+        if (cmd.length > 0 && cmd[0].length() > 0) {
+            if (cmd[0].equals("put")) {
+                if (cmd.length != 3) {
+                    throw new Exception("Usage: put <key> <value>");
+                }
+                dataBase.put(cmd[1], cmd[2]);
+            } else if (cmd[0].equals("get")) {
+                if (cmd.length != 2) {
+                    throw new Exception("Usage: get <key>");
+                }
+                dataBase.get(cmd[1]);
+            } else if (cmd[0].equals("remove")) {
+                if (cmd.length != 2) {
+                    throw new Exception("Usage: remove <key>");
+                }
+                dataBase.remove(cmd[1]);
+            } else if (cmd[0].equals("list")) {
+                if (cmd.length != 1) {
+                    throw new Exception("Usage: list");
+                }
                 dataBase.list();
-            } else if (cmds[0].equals("exit")) {
-                dataBase.writeInFile();
+            } else if (cmd[0].equals("exit")) {
+                if (cmd.length != 1) {
+                    throw new Exception("Usage: exit");
+                }
+                dataBase.saveToDisk();
                 System.exit(0);
             } else {
-                throw new Exception(cmds[0] + ": command not found");
+                throw new Exception(cmd[0] + ": no such command");
             }
         }
     }

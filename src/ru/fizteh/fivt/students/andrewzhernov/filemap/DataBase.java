@@ -2,14 +2,28 @@ package ru.fizteh.fivt.students.andrewzhernov.filemap;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
 public class DataBase {
-    private HashMap<String, String> dataBase;
+    private Map<String, String> dataBase;
     private String dbPath;
 
-    public static File openFile(String name) {
+    public DataBase(String name) throws Exception {
+        dataBase = new HashMap<String, String>();
+        File dbFile = openFile(name);
+        if (dbFile.isDirectory()) {
+            throw new Exception("Database: it's a directory");
+        } else { 
+            dbPath = dbFile.getCanonicalPath();
+            if (dbFile.exists()) {
+                loadFromDisk();
+            }
+        }
+    }
+
+    private static File openFile(String name) throws Exception {
         if (name.charAt(0) == File.separatorChar) {
             return new File(name);
         } else {
@@ -17,58 +31,37 @@ public class DataBase {
         }
     }
 
-    public DataBase(String name) throws Exception {
-        dataBase = new HashMap<String, String>();
-        File path = openFile(name);
-        if (path.isDirectory()) {
-            throw new Exception("database: it is a directory");
-        } else { 
-            dbPath = path.getCanonicalPath();
-            if (path.exists()) {
-                RandomAccessFile file = new RandomAccessFile(dbPath, "r");
-                while (file.getFilePointer() < file.length()) {
-                    String key = readFromDataBase(file);
-                    String value = readFromDataBase(file);
-                    dataBase.put(key, value);
-                }
-                file.close();
-            }
-        }
-    }
-
     private String readFromDataBase(RandomAccessFile file) throws Exception {
-        try {
-            int wordSize = file.readInt();
-            byte[] word = new byte[wordSize];
-            file.read(word, 0, wordSize);
-            return new String(word);
-        } catch (Exception e) {
-            throw new Exception("database: input error");
-        }
+        int wordSize = file.readInt();
+        byte[] word = new byte[wordSize];
+        file.read(word, 0, wordSize);
+        return new String(word);
     }
 
     private void writeToDataBase(RandomAccessFile file, String word) throws Exception {
-        try {
-            file.writeInt(word.getBytes("UTF-8").length);
-            file.write(word.getBytes("UTF-8"));
-        } catch (Exception e) {
-            throw new Exception("database: output error");
-        }
+        file.writeInt(word.getBytes("UTF-8").length);
+        file.write(word.getBytes("UTF-8"));
     }
 
-    public void writeInFile() throws Exception {
-        try {
-            RandomAccessFile file = new RandomAccessFile(dbPath, "rw");
-            Iterator<HashMap.Entry<String, String>> it = dataBase.entrySet().iterator();
-            while (it.hasNext()) {
-                HashMap.Entry<String, String> pairs = it.next();
-                writeToDataBase(file, pairs.getKey());
-                writeToDataBase(file, pairs.getValue());
-            }
-            file.close();
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+    public void loadFromDisk() throws Exception {
+        RandomAccessFile file = new RandomAccessFile(dbPath, "r");
+        while (file.getFilePointer() < file.length()) {
+            String key = readFromDataBase(file);
+            String value = readFromDataBase(file);
+            dataBase.put(key, value);
         }
+        file.close();
+    }
+
+    public void saveToDisk() throws Exception {
+        RandomAccessFile file = new RandomAccessFile(dbPath, "rw");
+        Iterator<Map.Entry<String, String>> it = dataBase.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, String> pair = it.next();
+            writeToDataBase(file, pair.getKey());
+            writeToDataBase(file, pair.getValue());
+        }
+        file.close();
     }
 
     public void put(String key, String value) {
@@ -102,9 +95,14 @@ public class DataBase {
     }
 
     public void list() {
-        for (String key : dataBase.keySet()) {
-            System.out.print(key + " ");
+        StringBuilder output = new StringBuilder();
+        Iterator<String> it = dataBase.keySet().iterator();
+        if (it.hasNext()) {
+            output.append(it.next());
+            while (it.hasNext()) {
+                output.append(", ").append(it.next());
+            }
         }
-        System.out.println();
+        System.out.println(output.toString());
     }
 }
