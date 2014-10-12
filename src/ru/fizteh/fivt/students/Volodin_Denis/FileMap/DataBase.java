@@ -33,8 +33,7 @@ public class DataBase {
             Set<String> keysList = database.keySet();
             String[] listKeys = new String[database.size()];
             int i = 0;
-            for (String key : keysList)
-            {
+            for (String key : keysList) {
                 listKeys[i] = key;
                 ++i;
             }
