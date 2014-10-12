@@ -87,9 +87,13 @@ public class Shell {
     }
 
     private void terminate(int status) {
-        ExitCommand exit = (ExitCommand) supportedCmds.get("exit");
-        exit.setExitStatus(status);
-        exit.exec(args);
+        try {
+            ExitCommand exit = (ExitCommand) supportedCmds.get("exit");
+            exit.setExitStatus(status);
+            exit.exec(args);
+        } catch (ClassCastException e) {
+            System.exit(status);
+        }
     }
 
     public void exec() {
