@@ -238,7 +238,7 @@ public class FileMap {
         }
         return true;
     }
-    private boolean remove(String[] args){
+    private boolean remove(String[] args) {
         if (args.length != 2) {
             System.err.println("Incorrect number of arguments in args");
             return false;
