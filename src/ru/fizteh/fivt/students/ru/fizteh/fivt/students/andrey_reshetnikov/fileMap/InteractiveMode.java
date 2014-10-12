@@ -15,6 +15,8 @@ public class InteractiveMode implements CommandProcess{
                     commandFromString.getCommandByName(s).execute();
                 } catch (StopProcess e) {
                     flag = true;
+                } catch (IncorrectInputException e) {
+                    continue;
                 }
                 if (flag) {
                     break;

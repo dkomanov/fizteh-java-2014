@@ -1,126 +1,47 @@
 package ru.fizteh.fivt.students.ru.fizteh.fivt.students.andrey_reshetnikov.fileMap;
 
+
+import java.util.HashMap;
+
 /**
  * Created by Hoderu on 09.10.14.
  */
 public class FileMapAction implements CommandContainer {
     private FileBase data;
+    private HashMap<String[], Command> hash;
 
     public FileMapAction(FileBase data) {
+        hash = new HashMap<String[], Command>();
         this.data = data;
     }
 
     @Override
     public Command getCommandByName(String s) throws UnknownCommand {
-        final String[] array = s.trim().split("\\s+");
-
+        String[] array = s.trim().split("\\s+");
+        if (hash.containsKey(array)) {
+            return hash.get(array);
+        }
+        Command res = null;
         switch (array[0]) {
             case "get":
-                return new Command() {
-                    @Override
-                    public void execute() {
-                           if (array.length != 2) {
-                               System.err.println("get accepts 1 parameter");
-                               System.exit(1);
-                           }
-                          String value = data.m.get(array[1]);
-                          if (value == null) {
-                              System.out.println("not found");
-                          } else {
-                              System.out.println(value);
-                          }
-                    }
-
-                    @Override
-                    public String name() {
-                        return "get";
-                    }
-                };
-
+                res = new Command.GetCommand(array, data);
+                break;
             case "remove":
-                return new Command() {
-                    @Override
-                    public void execute() {
-                        if (array.length != 2) {
-                            System.err.println("remove accepts 1 parameters");
-                            System.exit(1);
-                        }
-                        if (data.m.remove(array[1]) == null) {
-                            System.out.println("not found");
-                        } else {
-                            System.out.println("removed");
-                        }
-                    }
-
-                    @Override
-                    public String name() {
-                        return "remove";
-                    }
-                };
-
+                res =  new Command.RemoveCommand(array, data);
+                break;
             case "list":
-                return new Command() {
-                    @Override
-                    public void execute() {
-                        if (array.length != 1) {
-                            System.err.println("list haven't any parameters");
-                            System.exit(1);
-                        }
-                        StringBuilder allkeys = new StringBuilder();
-                        for (String k : data.m.keySet()) {
-                            if (allkeys.length() > 0) {
-                                allkeys.append(", ");
-                            }
-                            allkeys.append(k);
-                        }
-                        System.out.println(allkeys.toString());
-                    }
-
-                    @Override
-                    public String name() {
-                        return "list";
-                    }
-            };
-
+                res =  new Command.ListCommand(array, data);
+                break;
             case "exit":
-                return new Command() {
-                    @Override
-                    public void execute() throws StopProcess {
-                        if (array.length != 1) {
-                            System.err.println("exit haven't any parameters");
-                            System.exit(1);
-                        }
-                        throw new StopProcess();
-                    }
-                    @Override
-                    public String name() {
-                        return "exit";
-                    }
-                };
+                res =  new Command.ExitCommand(array, data);
+                break;
             case "put":
-                return new Command() {
-                    @Override
-                    public String name() {
-                        return "put";
-                    }
-
-                    @Override
-                    public void execute() throws StopProcess {
-                        if (array.length != 3) {
-                            System.err.println("put accepts 2 parameters");
-                            System.exit(1);
-                        }
-                        String s = data.m.put(array[1], array[2]);
-                        if (s == null) {
-                            System.out.println("new");
-                        } else {
-                            System.out.println("overwrite");
-                            System.out.println(s);
-                        }
-                    }
-                };
+                res =  new Command.PutCommand(array, data);
+                break;
             default:
                 throw new UnknownCommand();
         }
+        hash.put(array, res);
+        return res;
     }
 }

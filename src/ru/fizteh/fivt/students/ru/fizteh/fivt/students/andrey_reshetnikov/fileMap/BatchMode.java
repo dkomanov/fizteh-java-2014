@@ -21,7 +21,7 @@ public class BatchMode implements CommandProcess {
             boolean flag = true;
             try {
                 commandFromString.getCommandByName(s).execute();
-            } catch (StopProcess e) {
+            } catch (StopProcess | IncorrectInputException e) {
                 flag = false;
             }
             if (!flag) {
