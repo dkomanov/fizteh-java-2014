@@ -8,7 +8,7 @@ public class PocketParser {
      // Disable instantiation to this class.
     }
 
-    public static void batchMode(Table object, String[] argv) {
+    public static void batchMode(Table object, String[] argv) throws IOException {
         Scanner in = new Scanner(System.in);
         String comand = new String();
         int comandCount = 0;
