@@ -34,7 +34,7 @@ public class Interactive {
                 System.out.println("exit");
                 return;
             default:
-                System.out.println("команда не распознана");
+                System.out.println("Command is not recognized.");
             }
         }
     }
