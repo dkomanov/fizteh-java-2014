@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.semenenko_denis.FileMap;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -110,10 +111,7 @@ public class DbMain {
             if (batchMode) {
                 System.exit(-1);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
     }
 
     private static void errorCntArguments(String command)
