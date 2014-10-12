@@ -8,6 +8,7 @@ public final class Main {
     private Main() {
         //
     }
+
     public static void main(final String[] args) {
         List<String> cmdWithArgs = new ArrayList<String>();
         if (args.length > 0) {
@@ -21,25 +22,23 @@ public final class Main {
                     }
                 }
                 String[] commands = line.split(" ; ");
-                for (int k = 0; k < commands.length; k++) {
+                for (String command: commands) {
                     int index;
-                    int j;
                     index = 0;
-                    j = 0;
-                    for (int i = 0; i < commands[k].length(); i++) {
-                        if (commands[k].charAt(i) == ' ') {
-                            cmdWithArgs.add(commands[k].substring(index, i));
-                            j++;
+                    for (int i = 0; i < command.length(); i++) {
+                        if (command.charAt(i) == ' ') {
+                            cmdWithArgs.add(command.substring(index, i));
                             index = i + 1;
                         }
                     }
-                    cmdWithArgs.add(commands[k].substring(index, commands[k].length()));
+                    cmdWithArgs.add(command.substring(index, command.length()));
                     String[] arg = new String [cmdWithArgs.size()];
                     for (int i = 0; i < arg.length; i++) {
                         arg[i] = cmdWithArgs.get(i);
                     }
                     try {
                         Parser.parse(arg, dataBase);
+                        dataBase.close();
                     } catch (Exception e) {
                         System.err.println(e.getMessage());
                         System.exit(1);
@@ -64,26 +63,19 @@ public final class Main {
                             System.exit(0);
                         }
                         String[] commands = line.split(" ; ");
-                            for (int k = 0; k < commands.length; k++) {
-                            boolean flag = false;
+                        for (String command: commands) {
                             int index;
-                            int j;
                             index = 0;
-                            j = 0;
-                            for (int i = 0; i < commands[k].length(); i++) {
-                                if (commands[k].charAt(i) == ' ') {
-                                    cmdWithArgs.add(commands[k].substring(index, i));
-                                    j++;
+                            for (int i = 0; i < command.length(); i++) {
+                                if (command.charAt(i) == ' ') {
+                                    cmdWithArgs.add(command.substring(index, i));
                                     index = i + 1;
                                 }
                             }
-                            cmdWithArgs.add(commands[k].substring(index, commands[k].length()));
+                            cmdWithArgs.add(command.substring(index, command.length()));
                             String[] arg = new String[cmdWithArgs.size()];
                             for (int i = 0; i < arg.length; i++) {
-                                arg[i] = cmdWithArgs.get(i);
-                            }
-                            if (j != 0 && arg[1].equals("-r")) {
-                                flag = true;
+                                 arg[i] = cmdWithArgs.get(i);
                             }
                             try {
                                 Parser.parse(arg, dataBase);
@@ -97,7 +89,6 @@ public final class Main {
                     System.err.println(e.getMessage());
                     System.exit(1);
                 }
-            //writeln ??
             } catch (Exception e) {
                 System.err.println(e.getMessage());
                 System.exit(1);

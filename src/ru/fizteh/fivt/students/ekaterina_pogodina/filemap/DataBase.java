@@ -16,13 +16,13 @@ import java.util.Map;
 
 public class DataBase {
     private Path dBasePath;
-    private HashMap<String, String> dBase;
+    private Map<String, String> dBase;
     public DataBase(String name) throws Exception {
         dBasePath = Paths.get(name);
         dBase = new HashMap<String, String>();
         File file = new File(name);
         if (file.isDirectory()) {
-            throw new Exception("It is a directory");
+            throw new Exception("can't create file" + name + ": is a directory");
         }
         if (file.exists()) {
                 RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "r");
@@ -36,7 +36,7 @@ public class DataBase {
             try {
                 Files.createFile(file.toPath());
             } catch (IOException e) {
-                throw new Exception("MakeDbFile: some errors");
+                throw new Exception("MakeDbFile: can't create file");
             }
         }
     }
@@ -45,16 +45,7 @@ public class DataBase {
         if (args.length > 1) {
             throw new Exception("list: too much arguments");
         }
-        boolean flag = true;
-        Iterator it = dBase.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            System.out.print(entry.getKey() + " ");
-            flag = false;
-        }
-        if (!flag) {
-            System.out.println("");
-        }
+        System.out.println(String.join("; ", dBase.keySet()));
     }
 
     public void put(String[] args) throws Exception {
@@ -78,6 +69,7 @@ public class DataBase {
         }
 
     }
+
     public void put(String key, String value) throws Exception {
         if (dBase.containsKey(key)) {
             System.out.println(dBase.get(key));
@@ -87,6 +79,7 @@ public class DataBase {
             dBase.put(key, value);
         }
     }
+
     public void get(String[] args) throws Exception {
         if (args.length > 2) {
             throw new Exception("get: too much arguments");
@@ -99,6 +92,7 @@ public class DataBase {
             System.out.println("not found");
         }
     }
+
     public void remove(String[] args) throws Exception {
         if (args.length > 2) {
             throw new Exception("remove: too much arguments");
@@ -132,6 +126,7 @@ public class DataBase {
             dbFile.writeInt(offIter.next());
         }
     }
+
     private void readDbFromFile(final RandomAccessFile dbFile) throws Exception {
         ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
         List<Integer> offsets = new LinkedList<Integer>();
@@ -170,6 +165,7 @@ public class DataBase {
         }
         bytesBuffer.close();
     }
+
     public void close() throws Exception {
         try (RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "rw")) {
             writeDbToFile(dbFile);
