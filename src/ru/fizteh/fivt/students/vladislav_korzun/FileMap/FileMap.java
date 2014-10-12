@@ -6,7 +6,6 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +141,7 @@ class DbMain {
                 buffer.reset();
                 offset.add(db.readInt());
                 counter += 4;
-            } while (counter != ((LinkedList<Integer>) offset).getFirst());
+            } while (counter != offset.get(0));
             offset.add((int) db.length());
             for (int i = 1; i < offset.size(); i++) {
                 while (offset.get(i) > counter) {
@@ -165,25 +164,23 @@ class DbMain {
         try {
             db.setLength(0);
             LinkedList<Integer> offset = new LinkedList<Integer>();
-            Set<String> keys = filemap.keySet();
-            Iterator<String> it = keys.iterator();
-            for (@SuppressWarnings("unused") String key : keys) {
-                db.write(it.next().getBytes("UTF-8"));
+            Set<String> keys = filemap.keySet();            
+            for (String key : keys) {
+                db.write(key.getBytes("UTF-8"));
                 db.write('\0');
                 offset.add((int) db.getFilePointer());
                 db.writeInt(0);
             }
-            Collection<String> vals = filemap.values();
-            it = vals.iterator();
+            Collection<String> vals = filemap.values();           
             int i = 0;
             int pointer = 0;
-            for (@SuppressWarnings("unused") String val: vals) {
+            for (String val: vals) {
                 pointer = (int) db.getFilePointer(); 
                 db.seek(offset.get(i));
                 i++;
                 db.writeInt(pointer);
                 db.seek(pointer);
-                db.write(it.next().getBytes("UTF-8"));
+                db.write(val.getBytes("UTF-8"));
             }
         } catch (UnsupportedEncodingException e) {
             System.err.println("Named charset is not supported ");
