@@ -41,67 +41,54 @@ public class Table {
         byte part;
         boolean dontReadFirstOffset = false;
         while (count < firstoffset || !dontReadFirstOffset) {
-            try {
-                while ((part = file.readByte()) != 0) {
-                    ++count;
-                    buff.write(part);
-                }
+            while ((part = file.readByte()) != 0) {
                 ++count;
-                if (firstoffset == -1) {
-                    firstoffset = file.readInt();
-                    offset.add(firstoffset);
-                    dontReadFirstOffset = true;
-                } else {
-                    offset.add(file.readInt());
-                }
-                count += 4;
-                key.add(buff.toString("UTF-8"));
-                buff.reset();
-            } catch (IOException e) {
-                System.err.println(e.getMessage());
-                return;
+                buff.write(part);
             }
+            ++count;
+            if (firstoffset == -1) {
+                firstoffset = file.readInt();
+                offset.add(firstoffset);
+                dontReadFirstOffset = true;
+            } else {
+                offset.add(file.readInt());
+            }
+            count += 4;
+            key.add(buff.toString("UTF-8"));
+            buff.reset();
         }
         Iterator<String> itKey = key.iterator();
         Iterator<Integer> itOffset = offset.iterator();
         Iterator<Integer> itForEndOffset = offset.iterator();
-        try {
-            int size = (int) file.length();
-            count = itForEndOffset.next();
-            int afterCount = count;
-            boolean forEnd = true;
-            while (itOffset.hasNext() && forEnd) {
-                if (size < count) {
-                    System.err.println("Error with offset.");
-                }
-                boolean endFile = false;
-                if (!itForEndOffset.hasNext()) {
-                    while (count < size) {
-                        forEnd = false;
-                        buff.write(file.readByte());
-                        ++count;
-                    }
-                    endFile = true;
-                }
-                if (!endFile) {
-                    afterCount = itOffset.next();
-                    while (count < afterCount) {
-                        buff.write(file.readByte());
-                        ++count;
-                    }
-                }
-                storage.put(itKey.next(), buff.toString("UTF-8"));
-                buff.reset();
-                count = afterCount;
+        int size = (int) file.length();
+        count = itForEndOffset.next();
+        int afterCount = count;
+        boolean forEnd = true;
+        while (itOffset.hasNext() && forEnd) {
+            if (size < count) {
+                System.err.println("Error with offset.");
             }
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
+            boolean endFile = false;
+            if (!itForEndOffset.hasNext()) {
+                while (count < size) {
+                    forEnd = false;
+                    buff.write(file.readByte());
+                    ++count;
+                }
+                endFile = true;
+            }
+            if (!endFile) {
+                afterCount = itOffset.next();
+                while (count < afterCount) {
+                    buff.write(file.readByte());
+                    ++count;
+                }
+            }
+            storage.put(itKey.next(), buff.toString("UTF-8"));
+            buff.reset();
+            count = afterCount;
         }
-        try {
-            buff.close();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
+        buff.close();
     }
 
     public void writeFile() {
