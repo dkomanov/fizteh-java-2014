@@ -51,7 +51,8 @@ public final class Shell {
 					boolean quoteOpened = false;
 					for (int i = 0; i < currentCmd.length; i++) {
 						if (Character.isWhitespace(currentCmd[i])
-								&& !quoteOpened) {
+								&& !quoteOpened) 
+						{
 							if (builder.length() != 0) {
 								cmdWithArgs.add(builder.toString());
 								builder.setLength(0);
