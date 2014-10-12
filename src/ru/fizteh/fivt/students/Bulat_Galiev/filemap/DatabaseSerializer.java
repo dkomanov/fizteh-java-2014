@@ -20,13 +20,16 @@ public class DatabaseSerializer {
         filePathdb = Paths.get(System.getProperty("db.file"));
         try (RandomAccessFile filedb = new RandomAccessFile(
                 filePathdb.toString(), "r")) {
-            DatabaseSerializer.getData(filedb);
+            if (filedb.length() > 0) {
+                DatabaseSerializer.getData(filedb);
+            }
         } catch (FileNotFoundException e) {
             filePathdb.toFile().createNewFile();
         }
     }
 
-    public static String getSomeData(final int dataLength) throws IOException {
+    public static String readUTF8String(final int dataLength)
+            throws IOException {
         byte[] byteData = new byte[dataLength];
         int read = inputStream.read(byteData);
         if (read < 0 || read != dataLength) {
@@ -46,13 +49,13 @@ public class DatabaseSerializer {
 
             bytesLeft -= 8;
 
-            String key = getSomeData(keyLength);
-            String value = getSomeData(valueLength);
+            String key = readUTF8String(keyLength);
+            String value = readUTF8String(valueLength);
             fileMap.put(key, value);
 
             bytesLeft -= keyLength + valueLength;
         }
-
+        inputStream.close();
     }
 
     protected static void putData(final RandomAccessFile filedb)
@@ -72,7 +75,6 @@ public class DatabaseSerializer {
         try (RandomAccessFile filedb = new RandomAccessFile(
                 filePathdb.toString(), "rw")) {
             DatabaseSerializer.putData(filedb);
-            inputStream.close();
             outputStream.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
