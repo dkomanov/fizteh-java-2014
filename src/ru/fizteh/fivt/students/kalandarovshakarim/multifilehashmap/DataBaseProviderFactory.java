@@ -24,8 +24,6 @@ public class DataBaseProviderFactory implements TableProviderFactory {
             utils.chDir(dir);
             retVal = new DataBaseProvider(dir);
         } catch (NullPointerException e) {
-            e.printStackTrace();
-            //System.err.println(e.getMessage());
             throw new IllegalArgumentException("DataBase dir is not specified");
         } catch (FileNotFoundException e) {
             throw new IllegalArgumentException(dir + " No such Directory");
