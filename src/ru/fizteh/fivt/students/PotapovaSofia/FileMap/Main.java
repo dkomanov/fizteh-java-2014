@@ -18,7 +18,7 @@ public class Main {
         }
     }
 
-    public static void interMode() {
+    public static void interMode() throws Exception {
         System.out.print("$ ");
         try (Scanner in = new Scanner(System.in)) {
             while (in.hasNextLine()) {
@@ -27,7 +27,7 @@ public class Main {
                 for (String cmd : cmds) {
                     try {
                         commandParse(cmd);
-                    } catch (IOException e) {
+                    } catch (IOException | IllegalArgumentException e) {
                         System.err.println(e.getMessage());
                     }
                 }
@@ -40,7 +40,7 @@ public class Main {
         System.out.println();
     }
 
-    public static void batchMode(String[] args) {
+    public static void batchMode(String[] args) throws Exception {
         StringBuilder cmd = new StringBuilder();
         for (String a : args) {
             cmd.append(a);
@@ -100,7 +100,7 @@ public class Main {
         }
     }
 
-    public static void put(DataBase db, String key, String value) throws IOException{
+    public static void put(DataBase db, String key, String value) throws IOException {
         if (!db.getDataBase().containsKey(key)) {
             System.out.println("new");
         } else {

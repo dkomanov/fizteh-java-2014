@@ -39,7 +39,7 @@ public class DataBase {
                 String key = readWord(dataInputStream);
                 String value = readWord(dataInputStream);
                 resultFileMap.put(key, value);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 break;
             }
         }
