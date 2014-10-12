@@ -72,7 +72,7 @@ public class Table {
             boolean forEnd = true;
             while (itOffset.hasNext() && forEnd) {
                 if (size < count) {
-                    System.err.println("error with offset");
+                    System.err.println("Error with offset.");
                 }
                 boolean endFile = false;
                 if (!itForEndOffset.hasNext()) {
