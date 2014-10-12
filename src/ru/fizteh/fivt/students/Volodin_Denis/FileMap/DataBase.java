@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
 
 public class DataBase {
@@ -32,11 +31,11 @@ public class DataBase {
                 return new String[0];
             }
             Set<String> keysList = database.keySet();
-            Iterator<String> itKeys = keysList.iterator();
             String[] listKeys = new String[database.size()];
             int i = 0;
-            while (itKeys.hasNext()) {
-                listKeys[i] = itKeys.next();
+            for (String key : keysList)
+            {
+                listKeys[i] = key;
                 ++i;
             }
             return listKeys;
@@ -99,11 +98,8 @@ public class DataBase {
     public void writeOnDisk() throws Exception {
         FileOutputStream output = new FileOutputStream(databasePath);
         Set<String> keyList = database.keySet();
-        Iterator<String> itKeys = keyList.iterator();
         try {
-            while (itKeys.hasNext()) {
-                String key = itKeys.next();
-                
+            for (String key : keyList) {
                 ByteBuffer buffer1 = ByteBuffer.allocate(4);
                 byte[] keyByte = buffer1.putInt(key.getBytes("UTF-8").length).array();
                 output.write(keyByte);
