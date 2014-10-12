@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap;
+package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database;
 
 import java.io.File;
 import java.io.FileNotFoundException;

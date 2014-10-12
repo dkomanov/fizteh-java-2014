@@ -5,8 +5,8 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.commands;
 
 import java.util.List;
-import ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.DataBase;
-import ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.DataBaseProvider;
+import ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database.DataBase;
+import ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database.DataBaseProvider;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
 
 /**

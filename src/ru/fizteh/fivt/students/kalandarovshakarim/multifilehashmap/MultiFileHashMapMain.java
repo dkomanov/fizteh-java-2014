@@ -4,6 +4,7 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap;
 
+import ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database.DataBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.Shell;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.Command;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands.*;
