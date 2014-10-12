@@ -11,14 +11,14 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
  *
  * @author Shakarim
  */
-public class ExitCommand extends AbstractCommand<ShellUtils> {
+public class ExitCommand extends ExitStrategy<ShellUtils> {
 
     public ExitCommand(ShellUtils context) {
-        super("exit", 0, context);
+        super(context);
     }
 
     @Override
-    public void exec(String[] args) {
-        System.exit(0);
+    protected void onExit() {
+        // Nothing to do before exit.
     }
 }

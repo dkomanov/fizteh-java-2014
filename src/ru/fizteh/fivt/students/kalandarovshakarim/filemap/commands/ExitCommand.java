@@ -6,25 +6,24 @@ package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.ExitStrategy;
 
 /**
  *
  * @author shakarim
  */
-public class ExitCommand extends AbstractCommand<OneTableBase> {
+public class ExitCommand extends ExitStrategy<OneTableBase> {
 
     public ExitCommand(OneTableBase context) {
-        super("exit", 0, context);
+        super(context);
     }
 
     @Override
-    public void exec(String[] args) {
+    protected void onExit() {
         Table activeTable = context.getActiveTable();
 
         if (activeTable != null) {
             activeTable.commit();
         }
-        System.exit(0);
     }
 }

@@ -11,6 +11,7 @@ import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands.ExitCommand;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.Command;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
 
@@ -31,7 +32,7 @@ public class Shell {
         this.args = args;
     }
 
-    private void interactiveMode() {
+    private int interactiveMode() {
         try (Scanner input = new Scanner(System.in)) {
             System.out.print("$ ");
             while (input.hasNextLine()) {
@@ -41,19 +42,17 @@ public class Shell {
             }
             System.out.println();
         }
-        processCommand("exit");
+        return 0;
     }
 
-    private void batchMode() {
+    private int batchMode() {
         String[] commands = CommandParser.parseArgs(args);
-        int exitValue = 0;
-
         for (String cmd : commands) {
             if (!processCommand(cmd)) {
-                exitValue = 1;
+                return 1;
             }
         }
-        System.exit(exitValue);
+        return 0;
     }
 
     private boolean processCommand(String command) {
@@ -87,11 +86,19 @@ public class Shell {
         return true;
     }
 
+    private void terminate(int status) {
+        ExitCommand exit = (ExitCommand) supportedCmds.get("exit");
+        exit.setExitStatus(status);
+        exit.exec(args);
+    }
+
     public void exec() {
+        int status;
         if (args.length == 0) {
-            interactiveMode();
+            status = interactiveMode();
         } else {
-            batchMode();
+            status = batchMode();
         }
+        terminate(status);
     }
 }

@@ -30,6 +30,7 @@ public class ShellMain {
         };
 
         Shell shell = new Shell(commands, args);
+
         shell.exec();
     }
 }
