@@ -39,7 +39,7 @@ public class CommandParser {
         return command.split("\\s+");
     }
 
-    public static boolean isRec(String command) {
+    public static boolean isRecursive(String command) {
         return command.indexOf("-r") != -1;
     }
 

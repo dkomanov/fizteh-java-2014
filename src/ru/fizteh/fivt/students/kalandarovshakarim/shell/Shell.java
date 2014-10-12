@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.Command;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
@@ -19,47 +20,43 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
  */
 public class Shell {
 
-    private HashMap<String, Command> supportedCmds;
+    private final Map<String, Command> supportedCmds;
     private final String[] args;
 
-    public Shell() {
-        this.args = new String[0];
-        this.supportedCmds = new HashMap<>();
-    }
-
-    public Shell(String[] args, Command[] commands) {
-        this.args = args;
+    public Shell(Command[] commands, String[] args) {
         this.supportedCmds = new HashMap<>();
         for (Command cmd : commands) {
             this.supportedCmds.put(cmd.getName(), cmd);
         }
+        this.args = args;
     }
 
-    public void interactiveMode() {
-        Scanner input = new Scanner(System.in);
-        System.out.print("$ ");
-        while (input.hasNextLine()) {
-            String command = input.nextLine();
-            processCommand(command);
+    private void interactiveMode() {
+        try (Scanner input = new Scanner(System.in)) {
             System.out.print("$ ");
+            while (input.hasNextLine()) {
+                String command = input.nextLine();
+                processCommand(command);
+                System.out.print("$ ");
+            }
+            System.out.println();
         }
-        System.out.println();
         processCommand("exit");
     }
 
-    public void packageMode() {
+    private void batchMode() {
         String[] commands = CommandParser.parseArgs(args);
-        int exitVal = 0;
+        int exitValue = 0;
 
         for (String cmd : commands) {
             if (!processCommand(cmd)) {
-                exitVal = 1;
+                exitValue = 1;
             }
         }
-        System.exit(exitVal);
+        System.exit(exitValue);
     }
 
-    public boolean processCommand(String command) {
+    private boolean processCommand(String command) {
         command = command.trim();
         if (command.length() > 0) {
             String cmdName = CommandParser.getCmdName(command);
@@ -69,7 +66,7 @@ public class Shell {
             }
             try {
                 String[] params = CommandParser.getParams(command);
-                boolean rec = CommandParser.isRec(command);
+                boolean rec = CommandParser.isRecursive(command);
                 int opt = (rec ? 1 : 0);
                 int argsNum = supportedCmds.get(cmdName).getArgsNum();
 
@@ -92,9 +89,9 @@ public class Shell {
 
     public void exec() {
         if (args.length == 0) {
-            this.interactiveMode();
+            interactiveMode();
         } else {
-            this.packageMode();
+            batchMode();
         }
     }
 }

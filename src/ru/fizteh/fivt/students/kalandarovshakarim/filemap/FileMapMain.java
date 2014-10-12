@@ -5,6 +5,7 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap;
 
 import java.io.IOException;
+import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands.*;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.SingleFileTable;
@@ -20,15 +21,15 @@ public class FileMapMain {
     public static void main(String[] args) {
         String fileName = System.getProperty("db.file");
         OneTableBase base = new OneTableBase();
-        SingleFileTable fileMap = null;
+        Table fileMap = null;
 
         try {
             fileMap = new SingleFileTable(fileName);
-        } catch (NullPointerException ex) {
-            System.out.println("db.file is not specified");
+        } catch (NullPointerException e) {
+            System.err.println("db.file is not specified");
             System.exit(1);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
             System.exit(1);
         }
 
@@ -42,7 +43,7 @@ public class FileMapMain {
             new RemoveCommand(base)
         };
 
-        Shell shell = new Shell(args, commands);
+        Shell shell = new Shell(commands, args);
         shell.exec();
     }
 }

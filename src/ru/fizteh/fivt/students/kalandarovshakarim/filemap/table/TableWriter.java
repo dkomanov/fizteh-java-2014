@@ -26,32 +26,23 @@ public class TableWriter implements Closeable {
     }
 
     @Override
-    public void close() {
-        try {
+    public void close() throws IOException {
+        if (dbFile != null) {
             dbFile.close();
-        } catch (Exception e) {
-            //nothing
         }
     }
 
     public long write(String word) throws IOException {
         byte[] bytes = word.getBytes();
-        long retVal = 0;
-        try {
-            dbFile.writeInt(bytes.length);
-            dbFile.write(bytes);
-            retVal = 4 + bytes.length;
-        } catch (Exception ex) {
-            throw new IOException("cannot write to File");
-        }
+        long retVal = 4 + bytes.length;
+        dbFile.writeInt(bytes.length);
+        dbFile.write(bytes);
         return retVal;
     }
 
-    public void setLength(long length) {
-        try {
+    public void setLength(long length) throws IOException {
+        if (dbFile != null) {
             dbFile.setLength(length);
-        } catch (Exception ex) {
-            //nothing
         }
     }
 }

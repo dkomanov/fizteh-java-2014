@@ -6,7 +6,6 @@ package ru.fizteh.fivt.students.kalandarovshakarim.filemap.table;
 
 import java.io.IOException;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  *
@@ -29,7 +28,6 @@ public final class SingleFileTable extends AbstractTable {
                 key = reader.read();
                 value = reader.read();
                 table.put(key, value);
-                //System.out.println(key + " " + value);
             }
         }
     }
@@ -37,9 +35,8 @@ public final class SingleFileTable extends AbstractTable {
     @Override
     protected void save() throws IOException {
         try (TableWriter writer = new TableWriter(getName())) {
-            Set<Entry<String, String>> list = table.entrySet();
             long fileLen = 0;
-            for (Entry<String, String> entry : list) {
+            for (Entry<String, String> entry : table.entrySet()) {
                 fileLen += writer.write(entry.getKey());
                 fileLen += writer.write(entry.getValue());
             }

@@ -4,6 +4,7 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map.Entry;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.AbstractTable;
@@ -17,59 +18,69 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
  */
 public final class MultiFileTable extends AbstractTable {
 
-    protected ShellUtils tableUtil = new ShellUtils();
+    private ShellUtils utils = new ShellUtils();
 
-    public MultiFileTable(String directory, String tableName) throws IOException {
+    public MultiFileTable(String directory, String tableName)
+            throws FileNotFoundException, IOException {
         super(tableName);
-        chDirTry(directory);
-        if (!mkDirTry(tableName)) {
+        utils.chDir(directory);
+        try {
+            utils.mkDir(tableName);
+        } catch (IOException e) {
             load();
         }
     }
 
     @Override
     protected void load() throws IOException {
-        if (chDirTry(getName())) {
-            for (int dir = 0; dir < 16; ++dir) {
-                if (chDirTry(getDirName(dir))) {
-                    readDir();
-                    chDirTry("..");
-                }
+        utils.chDir(getName());
+        for (String dir : utils.listFiles()) {
+            try {
+                utils.chDir(dir);
+                readDir();
+                utils.chDir("..");
+            } catch (IOException e) {
+                // Dir is not Directory.
             }
-            chDirTry("..");
         }
+        utils.chDir("..");
     }
 
     @Override
     protected void save() throws IOException {
-        rmTry(getName());
-        mkDirTry(getName());
-        chDirTry(getName());
+        utils.rm(getName(), true);
+        utils.mkDir(getName());
+        utils.chDir(getName());
 
         for (Entry<String, String> entry : table.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-
             int hashCode = Math.abs(key.hashCode());
 
-            mkDirTry(getDirName(hashCode));
-            chDirTry(getDirName(hashCode));
+            try {
+                utils.mkDir(getDirName(hashCode));
+            } catch (IOException e) {
+                // Directory already exists.
+            }
 
-            String fileName = tableUtil.getPath(getFileName(hashCode)).toString();
+            utils.chDir(getDirName(hashCode));
 
-            try (TableWriter writer = new TableWriter(fileName)) {
+            String filePath = utils.getPath(getFileName(hashCode)).toString();
+
+            try (TableWriter writer = new TableWriter(filePath)) {
                 writer.write(key);
                 writer.write(value);
             }
-            chDirTry("..");
+
+            utils.chDir("..");
         }
-        chDirTry("..");
+        utils.chDir("..");
     }
 
     private void readDir() throws IOException {
         for (int file = 0; file < 16; ++file) {
             String fileName = getFileName(file * 16);
-            String pathToFile = tableUtil.getPath(fileName).toString();
+            String pathToFile = utils.getPath(fileName).toString();
             try (TableReader reader = new TableReader(pathToFile)) {
                 String key;
                 String value;
@@ -78,37 +89,8 @@ public final class MultiFileTable extends AbstractTable {
                     key = reader.read();
                     value = reader.read();
                     table.put(key, value);
-                    //System.out.println(key + " " + value);
                 }
             }
-        }
-    }
-
-    private boolean chDirTry(String pathName) {
-        try {
-            tableUtil.chDir(pathName);
-            System.out.println(tableUtil.getCwd());
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private boolean mkDirTry(String dirName) {
-        try {
-            tableUtil.mkDir(dirName);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private boolean rmTry(String dirName) {
-        try {
-            tableUtil.rm(dirName, true);
-            return true;
-        } catch (Exception e) {
-            return false;
         }
     }
 

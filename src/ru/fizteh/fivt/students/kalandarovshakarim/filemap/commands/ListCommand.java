@@ -5,7 +5,6 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
 import java.io.IOException;
-import java.util.Iterator;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
@@ -27,10 +26,14 @@ public class ListCommand extends AbstractCommand<OneTableBase> {
         if (activeTable == null) {
             throw new IOException("no table");
         }
-
-        Iterator<String> iterator = activeTable.list().iterator();
-        while (iterator.hasNext()) {
-            System.out.println(iterator.next());
+        StringBuilder keyList = new StringBuilder();
+        for (String key : activeTable.list()) {
+            keyList.append(key);
+            keyList.append(", ");
+        }
+        if (keyList.lastIndexOf(", ") != -1) {
+            keyList.setLength(keyList.length() - 2);
+            System.out.println(keyList);
         }
     }
 }

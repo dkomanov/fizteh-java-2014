@@ -32,7 +32,8 @@ public class UseCommand extends AbstractCommand<DataBase> {
 
         if (changes == 0) {
             context.setActiveTable(newTable);
-            System.out.printf("using %s\n", args[0]);
+            System.out.printf("using %s", args[0]);
+            System.out.println();
         } else {
             String msg = "%d unsaved changes";
             throw new IOException(String.format(msg, changes));

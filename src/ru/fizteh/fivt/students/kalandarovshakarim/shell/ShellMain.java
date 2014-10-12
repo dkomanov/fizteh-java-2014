@@ -29,7 +29,7 @@ public class ShellMain {
             new MkdirCommand(mainContext)
         };
 
-        Shell shell = new Shell(args, commands);
+        Shell shell = new Shell(commands, args);
         shell.exec();
     }
 }

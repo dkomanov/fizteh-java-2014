@@ -4,10 +4,13 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
@@ -18,8 +21,8 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
  */
 public class DataBaseProvider implements TableProvider {
 
-    private HashMap<String, MultiFileTable> tables = null;
-    private String directory;
+    private Map<String, Table> tables = null;
+    private final String directory;
 
     public DataBaseProvider(String directory) throws IOException {
         this.tables = new HashMap<>();
@@ -30,7 +33,7 @@ public class DataBaseProvider implements TableProvider {
     @Override
     public Table getTable(String name) {
         if (name == null) {
-            throw new IllegalArgumentException("null cannot be an argument");
+            throw new IllegalArgumentException("Null cannot be an argument");
         }
         if (!tables.containsKey(name)) {
             throw new IllegalArgumentException(name + " not found");
@@ -41,18 +44,20 @@ public class DataBaseProvider implements TableProvider {
     @Override
     public Table createTable(String name) {
         if (name == null) {
-            throw new IllegalArgumentException("null cannot be an argument");
+            throw new IllegalArgumentException("Null cannot be an argument");
         }
         if (tables.containsKey(name)) {
             throw new IllegalArgumentException(name + " exists");
         }
-        MultiFileTable newTable = null;
+        Table newTable = null;
         try {
             newTable = new MultiFileTable(directory, name);
-        } catch (IOException ex) {
-            //nothing
+        } catch (IOException e) {
+            /*
+             * Предполагается что при создании базы данных вся коррекстность
+             * путей была проверена в TableProviderFactory.
+             */
         }
-        System.out.println("created");
         tables.put(name, newTable);
         return newTable;
     }
@@ -60,35 +65,33 @@ public class DataBaseProvider implements TableProvider {
     @Override
     public void removeTable(String name) {
         if (name == null) {
-            throw new IllegalArgumentException("null cannot be an argument");
+            throw new IllegalArgumentException("Null cannot be an argument");
         }
         if (!tables.containsKey(name)) {
             throw new IllegalStateException(name + " not found");
         } else {
             try {
-                tables.get(name).tableUtil.rm(name, true);
+                ShellUtils utils = new ShellUtils();
+                utils.chDir(directory);
+                utils.rm(name, true);
                 tables.remove(name);
-            } catch (IOException ex) {
-                //nothing
+            } catch (FileNotFoundException e) {
+                // Аналогично.
+            } catch (IOException e) {
+                // Аналогично.
             }
-            System.out.println("dropped");
         }
     }
 
     public List<String> listTables() {
-        return Arrays.asList(tables.keySet().toArray(new String[0]));
+        String[] array = tables.keySet().toArray(new String[0]);
+        return Arrays.asList(array);
     }
 
     private void load() throws IOException {
-        ShellUtils util = new ShellUtils();
-        try {
-            util.chDir(directory);
-        } catch (Exception ex) {
-            //nothing
-        }
-        for (String tableName : util.listFiles()) {
-            System.out.println(tableName);
-            MultiFileTable table = new MultiFileTable(directory, tableName);
+        String[] list = new File(directory).list();
+        for (String tableName : list) {
+            Table table = new MultiFileTable(directory, tableName);
             tables.put(tableName, table);
         }
     }

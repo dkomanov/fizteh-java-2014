@@ -20,5 +20,6 @@ public class CreateCommand extends AbstractCommand<DataBase> {
     @Override
     public void exec(String[] args) {
         context.getProvider().createTable(args[0]);
+        System.out.println("created");
     }
 }

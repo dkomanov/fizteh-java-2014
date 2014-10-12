@@ -18,21 +18,19 @@ public class DataBaseProviderFactory implements TableProviderFactory {
 
     @Override
     public TableProvider create(String dir) {
-        ShellUtils shell = new ShellUtils();
+        ShellUtils utils = new ShellUtils();
+        TableProvider retVal = null;
         try {
-            shell.chDir(dir);
-        } catch (NullPointerException ex) {
-            throw new IllegalArgumentException("DataBase dir is not specified");
-        } catch (FileNotFoundException ex) {
-            throw new IllegalArgumentException(dir + " No such Directory");
-        } catch (IOException ex) {
-            throw new IllegalArgumentException(ex.getMessage());
-        }
-        DataBaseProvider retVal = null;
-        try {
+            utils.chDir(dir);
             retVal = new DataBaseProvider(dir);
-        } catch (IOException ex) {
-            //nothing
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            //System.err.println(e.getMessage());
+            throw new IllegalArgumentException("DataBase dir is not specified");
+        } catch (FileNotFoundException e) {
+            throw new IllegalArgumentException(dir + " No such Directory");
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
         return retVal;
     }

@@ -20,6 +20,7 @@ public class MultiFileHashMapMain {
         try {
             dataBase = new DataBase();
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
             System.err.println(e.getMessage());
             System.exit(1);
         }
@@ -39,7 +40,7 @@ public class MultiFileHashMapMain {
             new ShowTablesCommand(dataBase)
         };
 
-        Shell shell = new Shell(args, commands);
+        Shell shell = new Shell(commands, args);
         shell.exec();
     }
 }

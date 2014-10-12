@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import ru.fizteh.fivt.storage.strings.Table;
 
@@ -17,8 +18,8 @@ import ru.fizteh.fivt.storage.strings.Table;
  */
 public abstract class AbstractTable implements Table {
 
-    protected HashMap<String, String> table = new HashMap<>();
-    protected HashMap<String, String> old = new HashMap<>();
+    protected Map<String, String> table = new HashMap<>();
+    protected Map<String, String> old = new HashMap<>();
     private String tableName = null;
 
     public AbstractTable(String tableName) {
@@ -86,8 +87,8 @@ public abstract class AbstractTable implements Table {
         try {
             save();
             old.clear();
-        } catch (IOException ex) {
-            //
+        } catch (IOException e) {
+            // Nothing
         }
         return uncommited;
     }

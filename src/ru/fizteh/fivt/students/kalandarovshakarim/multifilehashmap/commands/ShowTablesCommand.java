@@ -5,7 +5,6 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.commands;
 
 import java.util.List;
-import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.DataBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.DataBaseProvider;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
@@ -27,8 +26,8 @@ public class ShowTablesCommand extends AbstractCommand<DataBase> {
             throw new IllegalArgumentException(args[0] + " Unknown argument");
         }
 
-        TableProvider provider = context.getProvider();
-        List<String> list = ((DataBaseProvider) provider).listTables();
+        DataBaseProvider provider = (DataBaseProvider) context.getProvider();
+        List<String> list = provider.listTables();
         System.out.printf("%-25srow_num%n", "table_name");
         String format = "%-25s%d%n";
         for (String tableName : list) {

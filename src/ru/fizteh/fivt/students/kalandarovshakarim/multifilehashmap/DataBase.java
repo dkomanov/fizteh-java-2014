@@ -18,6 +18,7 @@ public class DataBase extends OneTableBase {
 
     public DataBase() {
         String pathToDb = System.getProperty("fizteh.db.dir");
+        System.out.println(pathToDb);
         this.factory = new DataBaseProviderFactory();
         this.provider = factory.create(pathToDb);
     }

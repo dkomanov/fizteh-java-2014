@@ -21,5 +21,6 @@ public class DropCommand extends AbstractCommand<DataBase> {
     public void exec(String[] args) {
         context.getProvider().removeTable(args[0]);
         context.setActiveTable(null);
+        System.out.println("dropped");
     }
 }

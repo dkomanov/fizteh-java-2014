@@ -26,23 +26,17 @@ public class TableReader implements Closeable {
     }
 
     @Override
-    public void close() {
-        try {
+    public void close() throws IOException {
+        if (dbFile != null) {
             dbFile.close();
-        } catch (Exception e) {
-            //nothing
         }
     }
 
     public String read() throws IOException {
-        try {
-            int length = dbFile.readInt();
-            byte[] word = new byte[length];
-            dbFile.read(word, 0, length);
-            return new String(word);
-        } catch (Exception ex) {
-            throw new IOException("cannot read from file");
-        }
+        int length = dbFile.readInt();
+        byte[] word = new byte[length];
+        dbFile.read(word, 0, length);
+        return new String(word);
     }
 
     public boolean eof() {
