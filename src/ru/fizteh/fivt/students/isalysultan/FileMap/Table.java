@@ -91,39 +91,31 @@ public class Table {
         buff.close();
     }
 
-    public void writeFile() {
-        try {
-            RandomAccessFile endFile = new RandomAccessFile(
-                    filePath.toString(), "rwd");
-            try {
-                endFile.setLength(0);
-                Set<String> keys = storage.keySet();
-                Iterator<String> itKey = keys.iterator();
-                ArrayList<Integer> offSetsForKey = new ArrayList<Integer>();
-                while (itKey.hasNext()) {
-                    endFile.write((itKey.next()).getBytes("UTF-8"));
-                    endFile.write('\0');
-                    offSetsForKey.add((int) endFile.getFilePointer());
-                    endFile.writeInt(0);
-                }
-                itKey = keys.iterator();
-                ArrayList<Integer> offSetsForValue = new ArrayList<Integer>();
-                while (itKey.hasNext()) {
-                    offSetsForValue.add((int) endFile.getFilePointer());
-                    endFile.write(storage.get(itKey.next()).getBytes("UTF-8"));
-                }
-                Iterator<Integer> itOffSetKey = offSetsForKey.iterator();
-                Iterator<Integer> itOffSetValue = offSetsForValue.iterator();
-                while (itOffSetKey.hasNext()) {
-                    endFile.seek(itOffSetKey.next());
-                    endFile.writeInt(itOffSetValue.next());
-                }
-                endFile.close();
-            } catch (IOException e) {
-                System.err.println(e.getMessage());
-            }
-        } catch (FileNotFoundException e) {
-            System.err.println(e.getMessage());
+    public void writeFile() throws IOException {
+        RandomAccessFile endFile = new RandomAccessFile(
+            filePath.toString(), "rwd");
+        endFile.setLength(0);
+        Set<String> keys = storage.keySet();
+        Iterator<String> itKey = keys.iterator();
+        ArrayList<Integer> offSetsForKey = new ArrayList<Integer>();
+        while (itKey.hasNext()) {
+            endFile.write((itKey.next()).getBytes("UTF-8"));
+            endFile.write('\0');
+            offSetsForKey.add((int) endFile.getFilePointer());
+            endFile.writeInt(0);
         }
+        itKey = keys.iterator();
+        ArrayList<Integer> offSetsForValue = new ArrayList<Integer>();
+        while (itKey.hasNext()) {
+            offSetsForValue.add((int) endFile.getFilePointer());
+            endFile.write(storage.get(itKey.next()).getBytes("UTF-8"));
+        }
+        Iterator<Integer> itOffSetKey = offSetsForKey.iterator();
+        Iterator<Integer> itOffSetValue = offSetsForValue.iterator();
+        while (itOffSetKey.hasNext()) {
+            endFile.seek(itOffSetKey.next());
+            endFile.writeInt(itOffSetValue.next());
+        }
+        endFile.close();
     }
 }
