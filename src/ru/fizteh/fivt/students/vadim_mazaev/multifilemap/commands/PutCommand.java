@@ -1,23 +1,24 @@
 package ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands;
 
+import java.io.IOException;
+
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.Table;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.TableManager;
 
 public final class PutCommand extends DbCommand {
-    public PutCommand(final TableManager link) {
+    public PutCommand(TableManager link) {
        super(link);
     }
 
     @Override
-    public boolean checkArgs(final int argLen) {
+    public boolean checkArgs(int argLen) {
         return (argLen == 3);
     }
 
     @Override
-    public void execute(final String[] cmdWithArgs) {
+    public void execute(String[] cmdWithArgs) throws IOException {
         if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalArgumentException(getName()
-                    + ": Incorrect number of arguments");
+            throw new IllegalNumberOfArguments(getName());
         }
 
         Table link = getManager().getUsedTable();

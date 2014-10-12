@@ -1,25 +1,25 @@
 package ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands;
 
+import java.io.IOException;
 import java.util.List;
 
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.Table;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.TableManager;
 
 public final class ListCommand extends DbCommand {
-    public ListCommand(final TableManager link) {
+    public ListCommand(TableManager link) {
         super(link);
     }
 
     @Override
-    public boolean checkArgs(final int argLen) {
+    public boolean checkArgs(int argLen) {
         return (argLen == 1);
     }
 
     @Override
-    public void execute(final String[] cmdWithArgs) {
+    public void execute(String[] cmdWithArgs) throws IOException {
         if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalArgumentException(getName()
-                    + ": Incorrect number of arguments");
+            throw new IllegalNumberOfArguments(getName());
         }
 
         Table link = getManager().getUsedTable();
@@ -27,6 +27,7 @@ public final class ListCommand extends DbCommand {
             List<String> keys = link.list();
             for (String current : keys) {
                 System.out.print(current);
+                //TODO add ","
                 System.out.print(" ");
             }
             System.out.println();
@@ -34,5 +35,4 @@ public final class ListCommand extends DbCommand {
             System.out.println("no table");
         }
     }
-
 }

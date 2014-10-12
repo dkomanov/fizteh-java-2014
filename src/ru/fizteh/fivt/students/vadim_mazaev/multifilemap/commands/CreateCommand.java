@@ -15,8 +15,7 @@ public final class CreateCommand extends DbCommand {
     @Override
     public void execute(String[] cmdWithArgs) {
         if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalArgumentException(getName()
-                    + ": Incorrect number of arguments");
+            throw new IllegalNumberOfArguments(getName());
         }
         
         if (getManager().createTable(cmdWithArgs[1]) != null) {
@@ -25,5 +24,4 @@ public final class CreateCommand extends DbCommand {
             System.out.println(cmdWithArgs[1] + " exists");
         }
     }
-
 }

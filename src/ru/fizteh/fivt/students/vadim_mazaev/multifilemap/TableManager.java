@@ -9,10 +9,17 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public final class TableManager {
+    private Map<String, Table> tableLinks;
+    private Path tablesDirPath;
+    private Table usedTable;
+    
     public TableManager(String dir) throws IllegalArgumentException {
         usedTable = null;
         try {
             tablesDirPath = Paths.get(dir);
+            if (!tablesDirPath.toFile().exists()) {
+                tablesDirPath.toFile().mkdir();
+            }
             if (!tablesDirPath.toFile().isDirectory()) {
                 throw new IllegalArgumentException("Error connecting database"
                         + ": path is incorrect or does not lead to a directory");
@@ -89,6 +96,7 @@ public final class TableManager {
             if (tableLinks.get(name) != null) {
                 return null;
             }
+            newTablePath.toFile().mkdir();
             Table newTable = new Table(newTablePath, name);
             tableLinks.put(name, newTable);
             return newTable;
@@ -110,8 +118,10 @@ public final class TableManager {
             if (removedTable == null) {
                 throw new IllegalStateException("There is no such table");
             } else {
+                if (usedTable == removedTable) {
+                    usedTable = null;
+                }
                 removedTable.deleteTable();
-                usedTable = null;
             }
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException("Illegal table name");
@@ -123,8 +133,4 @@ public final class TableManager {
     public Set<String> getTablesSet() {
         return tableLinks.keySet();
     }
-    
-    private Map<String, Table> tableLinks;
-    private Path tablesDirPath;
-    private Table usedTable;
 }

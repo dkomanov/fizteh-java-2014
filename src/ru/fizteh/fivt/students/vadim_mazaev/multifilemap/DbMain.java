@@ -4,17 +4,17 @@ import ru.fizteh.fivt.students.vadim_mazaev.filemap.ThrowExit;
 
 public final class DbMain {
     private DbMain() {
-        //not called
+        //Not called, only for checkstyle.
     }
 
-    public static void main(final String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         try {
             String dbDir = System.getProperty("fizteh.db.dir");
             TableManager manager = new DbConnector().create(dbDir);
             if (args.length == 0) {
                 CommandParser.interactiveMode(manager);
             } else {
-                CommandParser.packageMode(manager, args);
+                CommandParser.batchMode(manager, args);
             }
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());

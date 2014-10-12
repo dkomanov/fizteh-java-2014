@@ -7,48 +7,184 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
+/**
+ * Class represents a single file of type *.dir/*.dat.
+ * @author Vadim Mazaev
+ */
 public final class TablePart {
+    private Map<String, String> data;
+    private Path tablePartDirPath;
+    private int fileNumber;
+    private int dirNumber;
+    private boolean isConnected;
+    private int numberOfRecords;
+    
+    /**
+     * Constructs a TablePart. Don't get any data from disk, only check
+     * file and count number of records.
+     * @param tableDirPath Path to represented file in such format:
+     * "[path to the table directory]/*.dir/*.dat".
+     * @param dirNumber Directory number.
+     * @param fileNumber File number.
+     * @throws IOException If file checking failed.
+     */
     public TablePart(Path tableDirPath, int dirNumber, int fileNumber) throws IOException {
-        Path subpath = Paths.get(Integer.valueOf(dirNumber).toString() + ".dir");
-        subpath = subpath.resolve(Integer.valueOf(fileNumber).toString() + ".dat");
-        tablePartDirPath = tableDirPath.resolve(subpath);
+        tablePartDirPath = tableDirPath.resolve(
+                Paths.get(Integer.valueOf(dirNumber).toString() + ".dir",
+                Integer.valueOf(fileNumber).toString() + ".dat"));
         this.dirNumber = dirNumber;
         this.fileNumber = fileNumber;
-        data = new TreeMap<String, String>();
-        readFile();
+        isConnected = false;
+        numberOfRecords = 0;
+        data = new HashMap<String, String>();
+        if (!setNumberOfRecords()) {
+            throw new IOException();
+        }
     }
     
-    public String get(String key) {
+    /**
+     * Reads data from disk and saves it in memory. 
+     * @throws IOException If {@link TablePart#readFile readFile}
+     * has thrown an I/O Exception.
+     */
+    private void connect() throws IOException {
+        try {
+            readFile();
+        } catch (IOException e) {
+            throw new IOException("Cannot read file: " + tablePartDirPath.toString());
+        }
+        isConnected = true;
+    }
+    
+    /**
+     * Closes working session, move all data from memory to disk.
+     * @throws IOException If {@link TablePart#writeToFile writeToFile}
+     * has thrown an I/O Exception.
+     */
+    public void disconnect() throws IOException {
+        if (isConnected && numberOfRecords > 0) {
+            try {
+                writeToFile();
+            } catch (IOException e) {
+                throw new IOException("Cannot write to file: " + tablePartDirPath.toString());
+            }
+            data.clear();
+            isConnected = false;
+        }
+    }
+    
+    /**
+     * Method will automatically call {@link TablePart#connect connect}
+     * if data hasn't been read from disk yet.
+     * @param key Key.
+     * @return The value associated with the key or null if this
+     * {@link TablePart} doesn't contain such key. 
+     * @throws IOException If {@link TablePart#connect connect} method fails.
+     * @throws IllegalArgumentException If key is a null-string or cannot be in this file.
+     */
+    public String get(String key) throws IOException {
+        if (key == null || !keyIsInValidPath(key)) {
+            throw new IllegalArgumentException(key + " cannot be in this file");
+        }
+        if (!isConnected) {
+            connect();
+        }
         return data.get(key);
     }
     
-    public String put(String key, String value) {
-        return data.put(key, value);
+    /**
+     * Method will automatically call {@link TablePart#connect connect}
+     * if data hasn't been read from disk yet.
+     * @param key Key.
+     * @param value Value.
+     * @return The value which was associated with this key before
+     * or null if the key is a new one.
+     * @throws IOException If {@link TablePart#connect connect} method fails.
+     * @throws IllegalArgumentException If key is a null-string or cannot be in this file.
+     */
+    public String put(String key, String value) throws IOException {
+        if (key == null || !keyIsInValidPath(key)) {
+            throw new IllegalArgumentException(key + " cannot be in this file");
+        }
+        if (!isConnected) {
+            connect();
+        }
+        String oldValue = data.put(key, value);
+        if (oldValue == null) {
+            numberOfRecords++;
+        }
+        return oldValue;
     }
     
-    public String remove(String key) {
-        return data.remove(key);
+    /**
+     * Method will automatically call {@link TablePart#connect connect}
+     * if data hasn't been read from disk yet.
+     * @param key Key.
+     * @return The value which was associated with this key before removing
+     * or null-string if there wasn't such key in this {@link TablePart}. 
+     * @throws IOException If {@link TablePart#connect connect} method fails.
+     * @throws IllegalArgumentException If key is a null-string or cannot be in this file.
+     */
+    public String remove(String key) throws IOException {
+        if (key == null || !keyIsInValidPath(key)) {
+            throw new IllegalArgumentException(key + " cannot be in this file");
+        }
+        if (!isConnected) {
+            connect();
+        }
+        String removedValue = data.remove(key);
+        if (removedValue != null) {
+            numberOfRecords--;
+        }
+        return removedValue;
     }
     
-    public Set<String> list() {
+    /**
+     * Method will automatically call {@link TablePart#connect connect}
+     * if data hasn't been read from disk yet.
+     * @return Set of keys which are stored in this {@link TablePart}.
+     * @throws IOException If {@link TablePart#connect connect} method fails.
+     */
+    public Set<String> list() throws IOException {
+        if (!isConnected) {
+            connect();
+        }
         return data.keySet();
     }
-    public static int getNumberOfRecords(Path tableDirPath,
-            int dirNumber, int fileNumber) throws IOException {
-        int numberOfRecords = 0;
-        Path filePath = tableDirPath.resolve(Integer.valueOf(dirNumber).toString() + ".dir");
-        filePath = filePath.resolve(Integer.valueOf(fileNumber).toString() + ".dat");
+    
+    /**
+     * This method doesn't require to read data from disk.
+     * @return Number of Records stored in this {@link TablePart}.
+     */
+    public int getNumberOfRecords() {
+        return numberOfRecords;
+    }
+    
+    /**
+     * Counts the number of records stored in file on disk.
+     * @return True if file looks good.
+     */
+    private boolean setNumberOfRecords() {
+        if (!tablePartDirPath.toFile().exists()) {
+            try {
+                tablePartDirPath.getParent().toFile().mkdir();
+                tablePartDirPath.toFile().createNewFile();
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        }
         try (RandomAccessFile dbFile
-                = new RandomAccessFile(filePath.toString(), "r")) {
+                = new RandomAccessFile(tablePartDirPath.toString(), "r")) {
             if (dbFile.length() == 0) {
-                throw new IOException();
+                return false;
             }
             int bytesCounter = 0;
             int firstOffset = -1;
@@ -60,7 +196,7 @@ public final class TablePart {
                     if (firstByte) {
                         if (fileNumber != Math.abs((Byte.valueOf(b) / 16) % 16)
                                 || dirNumber != Math.abs(Byte.valueOf(b) % 16)) {
-                            throw new IOException();
+                            return false;
                         }
                         firstByte = false;
                         numberOfRecords++;
@@ -76,21 +212,31 @@ public final class TablePart {
                 firstByte = true;
             } while (bytesCounter < firstOffset);
             if (lastOffset >= dbFile.length()) {
-                throw new IOException();
+                return false;
             }
+        } catch (IOException e) {
+            return false;
         }
-        return numberOfRecords;
+        return true;
     }
     
+    /**
+     * Reads file from disk and saves all data into memory.
+     * @throws IOException If file was corrupted.
+     * @throws IllegalArgumentException If this {@link TablePart} represents a missing file.
+     */
     private void readFile() throws IOException {
         try (RandomAccessFile file = new RandomAccessFile(tablePartDirPath.toString(), "r")) {
+            if (file.length() == 0) {
+                return;
+            }
             ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
             List<Integer> offsets = new LinkedList<Integer>();
             List<String> keys = new LinkedList<String>();
             int bytesCounter = 0;
             byte b;
-            //reading keys and offsets until reaching
-            //the byte with first offset number
+            //Reading keys and offsets until reaching
+            //the byte with first offset number.
             do {
                 while ((b = file.readByte()) != 0) {
                     bytesCounter++;
@@ -102,12 +248,12 @@ public final class TablePart {
                 String key = bytesBuffer.toString("UTF-8");
                 bytesBuffer.reset();
                 if (!keyIsInValidPath(key)) {
-                    //if key is in a wrong file or directory
+                    //If key is in a wrong file or directory.
                     throw new IOException();
                 }
                 keys.add(key);
             } while (bytesCounter < offsets.get(0));
-            //reading values until reaching the end of file
+            //Reading values until reaching the end of file.
             offsets.add((int) file.length());
             offsets.remove(0);
             Iterator<String> keyIter = keys.iterator();
@@ -120,7 +266,7 @@ public final class TablePart {
                     data.put(keyIter.next(), bytesBuffer.toString("UTF-8"));
                     bytesBuffer.reset();
                 } else {
-                    //if file ends before reading last value
+                    //If file ends before expected last value.
                     throw new IOException();
                 }
             }
@@ -128,11 +274,16 @@ public final class TablePart {
         } catch (FileNotFoundException e) {
             throw new IllegalArgumentException();
         } catch (UnsupportedEncodingException e) {
-            //if key or value can't be encoded to UTF-8
+            //If key or value can't be encoded to UTF-8.
             throw new IOException();
         }
     }
     
+    /**
+     * @param key Key.
+     * @return True if key can be in this {@link TablePart}.
+     * @throws UnsupportedEncodingException If key bytes cannot be encode to UTF-8.
+     */
     private boolean keyIsInValidPath(String key)
             throws UnsupportedEncodingException {
         int expectedDirNumber = Math.abs(key.getBytes("UTF-8")[0] % 16);
@@ -140,7 +291,13 @@ public final class TablePart {
         return (dirNumber == expectedDirNumber && fileNumber == expectedFileNumber);
     }
     
-    public void writeToFile() throws IOException {
+    /**
+     * Writes all data from memory to file on disk.
+     * @throws IOException If cannot write to file.
+     * @throws IllegalArgumentException If file doesn't exist and cannot be created.
+     */
+    private void writeToFile() throws IOException {
+        tablePartDirPath.getParent().toFile().mkdir();
         try (RandomAccessFile file = new RandomAccessFile(tablePartDirPath.toString(), "rw")) {
             Set<String> keys = data.keySet();
             List<Integer> offsetsPos = new LinkedList<Integer>();
@@ -164,9 +321,4 @@ public final class TablePart {
             throw new IllegalArgumentException();
         }
     }
-    
-    private Map<String, String> data;
-    private Path tablePartDirPath;
-    private int fileNumber;
-    private int dirNumber;
 }

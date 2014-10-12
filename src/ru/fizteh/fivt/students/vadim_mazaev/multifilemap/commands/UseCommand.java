@@ -16,8 +16,7 @@ public final class UseCommand extends DbCommand {
 
     public void execute(String[] cmdWithArgs) throws IOException {
         if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalArgumentException(getName()
-                    + ": Incorrect number of arguments");
+            throw new IllegalNumberOfArguments(getName());
         }
 
         if (getManager().useTable(cmdWithArgs[1])) {
@@ -26,5 +25,4 @@ public final class UseCommand extends DbCommand {
             System.out.println(cmdWithArgs[1] + " not exists");
         }
     }
-
 }

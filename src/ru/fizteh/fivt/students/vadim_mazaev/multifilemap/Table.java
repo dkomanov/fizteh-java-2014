@@ -4,57 +4,67 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
+/**
+ * Represents a data table.
+ * @author Vadim Mazaev
+ */
 public final class Table {
+    private String name;
+    private Path tableDirPath;
+    private Map<Integer, TablePart> parts;
+    
+    /**
+     * Constructs a Table which represents a table directory on disk.
+     * @see {@link Table#readTableDir readTableDir} to know about reading and checking data.
+     * @param tableDirPath Path to table directory. Doesn't check it.
+     * @param name Table name. Doesn't check for equality of table name and directory name. 
+     * @throws IllegalArgumentException If table directory is corrupted.
+     */
     public Table(Path tableDirPath, String name) {
-        parts = new TreeMap<Integer, TablePart>();
+        parts = new HashMap<Integer, TablePart>();
         this.tableDirPath = tableDirPath;
         this.name = name;
-        numberOfRecords = 0;
-        isConnected = false;
         try {
-            readTableDir(true);
+            readTableDir();
         } catch (IOException e) {
             throw new IllegalArgumentException("Error reading table '" + getName()
                     + "': directory is corrupted");
         }
     }
     
-    private void connect() {
-        System.err.println("<debug> Table '" + getName() + "' connect method was called");
-        try {
-            readTableDir(false);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Error reading table '" + getName()
-                    + "': directory is corrupted");
-        }
-        isConnected = true;
-    }
-    
+    /**
+     * Writes all data from {@link TablePart}'s to table directory
+     * @throws IOException If cannot write data to files.
+     */
     public void commit() throws IOException {
-        System.err.println("<debug> Table '"
-                + getName() + "' commit method was called");
+//        System.err.println("<debug> Table '"
+//                + getName() + "' commit method was called");
         try {
-            if (isConnected) {
-                writeTableToDir();
-                //TODO checks
-                isConnected = false;
-            }
+            writeTableToDir();
         } catch (IOException e) {
             throw new IOException("Error writing table '" + getName()
                     + "' to directory");
         }
     }
     
+    /**
+     * @return Name of the table.
+     */
     public String getName() {
         return name;
     }
     
+    /**
+     * Returns file and directory numbers where the key should be placed.
+     * @param key Key.
+     * @return Integer code of file number and its directory number in such format: ddff.
+     */
     private int getDirFileNumbersCode(String key) {
         int dirNumber = 0;
         int fileNumber = 0;
@@ -67,52 +77,80 @@ public final class Table {
         return dirNumber * 100 + fileNumber;
     }
     
-    public String get(String key) {
+    /**
+     * Gets the value of the specified key.
+     * @param key Key.
+     * @return Value, if key contains in this table, otherwise null.
+     * @throws IOException If {@link TablePart#get(String) TablePart.get()}
+     * method fails.
+     */
+    public String get(String key) throws IOException {
         if (key == null) {
             throw new IllegalArgumentException("Key is a null-string");
         }
-        if (!isConnected) {
-            connect();
+        TablePart part = parts.get(getDirFileNumbersCode(key));
+        if (part == null) {
+            return null;
         }
-        return parts.get(getDirFileNumbersCode(key)).get(key);
+        return part.get(key);
     }
     
-    public String put(String key, String value) {
+    /**
+     * Sets the value of the specified key.
+     * @param key Key.
+     * @param value Value.
+     * @return Previous value associated with the key or null if the key is new.
+     * @throws IOException If {@link TablePart#put(String, String) TablePart.put()}
+     * method fails.
+     */
+    public String put(String key, String value) throws IOException {
         if (key == null || value == null) {
             throw new IllegalArgumentException("Key or value is a null-string");
         }
-        if (!isConnected) {
-            connect();
+        TablePart part = parts.get(getDirFileNumbersCode(key));
+        if (part == null) {
+            int dirNumber = Math.abs(key.getBytes("UTF-8")[0] % 16);
+            int fileNumber = Math.abs((key.getBytes("UTF-8")[0] / 16) % 16);
+            part = new TablePart(tableDirPath, dirNumber, fileNumber);
+            parts.put(dirNumber * 100 + fileNumber, part);
         }
-        String prevValue = parts.get(getDirFileNumbersCode(key)).put(key, value);
-        if (prevValue == null) {
-            numberOfRecords++;
-        }
-        return prevValue;
+        return part.put(key, value);
     }
     
-    public String remove(String key) {
+    /**
+     * Removes the associated with the key value.
+     * @param key Key.
+     * @return Removed associated value.
+     * @throws IOException If {@link TablePart#remove(String) TablePart.remove()}
+     * method fails.
+     */
+    public String remove(String key) throws IOException {
         if (key == null) {
             throw new IllegalArgumentException("Key is a null-string");
         }
-        if (!isConnected) {
-            connect();
+        TablePart part = parts.get(getDirFileNumbersCode(key));
+        if (part == null) {
+            return null;
         }
-        String oldValue = parts.get(getDirFileNumbersCode(key)).remove(key);
-        if (oldValue != null) {
-            numberOfRecords--;
-        }
-        return oldValue;
+        return part.remove(key);
     }
     
+    /**
+     * @return Number of records stored in this table.
+     */
     public int size() {
-        return numberOfRecords; 
+        int numberOfRecords = 0;
+        for (Entry<Integer, TablePart> part : parts.entrySet()) {
+            numberOfRecords += part.getValue().getNumberOfRecords();
+        }
+        return numberOfRecords;
     }
     
-    public List<String> list() {
-        if (!isConnected) {
-            connect();
-        }
+    /**
+     * @return List of the keys stored in this table in all parts.
+     * @throws IOException If {@link TablePart#list()} method fails.
+     */
+    public List<String> list() throws IOException {
         List<String> list = new LinkedList<String>();
         for (Entry<Integer, TablePart> pair : parts.entrySet()) {
             list.addAll(pair.getValue().list());
@@ -120,13 +158,25 @@ public final class Table {
         return list;
     }
 
+    /**
+     * Deletes all {@link TablePart}s of this table and table directory.
+     * @throws IOException If directory cannot be deleted.
+     */
     public void deleteTable() throws IOException {
         clearTableDir();
         parts.clear();
         tableDirPath.toFile().delete();
     }
     
-    private void readTableDir(boolean onlyGetNumberOfRecords) throws IOException {
+    /**
+     * Reads table directory, checks it, creates new {@link TablePart}
+     * for every file in directory.
+     * @see
+     * {@link TablePart#TablePart(Path tableDirPath, int dirNumber, int fileNumber)
+     * TablePart Constructor} to know about saving data in memory.  
+     * @throws IOException If directory checking fails.
+     */
+    private void readTableDir() throws IOException {
         String[] dirList = tableDirPath.toFile().list();
         for (String dir : dirList) {
             Path curDir = tableDirPath.resolve(dir);
@@ -146,18 +196,17 @@ public final class Table {
                 }
                 int dirNumber = Integer.parseInt(dir.substring(0, dir.length() - 4));
                 int fileNumber = Integer.parseInt(file.substring(0, file.length() - 4));
-                if (!onlyGetNumberOfRecords) {
-                    TablePart part = new TablePart(tableDirPath, dirNumber, fileNumber);
-                    parts.put(dirNumber * 100 + fileNumber, part);
-                } else {
-                    numberOfRecords += TablePart
-                            .getNumberOfRecords(tableDirPath, dirNumber, fileNumber);
-                }
+                TablePart part = new TablePart(tableDirPath, dirNumber, fileNumber);
+                parts.put(dirNumber * 100 + fileNumber, part);
             }
         }
     }
     
-    private void clearTableDir() {
+    /**
+     * Clears table directory.
+     * @throws IOException If directory cannot be cleared.
+     */
+    private void clearTableDir() throws IOException {
         String[] dirList = tableDirPath.toFile().list();
         for (String curDir : dirList) {
             String[] fileList = tableDirPath.resolve(curDir).toFile().list();
@@ -168,18 +217,15 @@ public final class Table {
         }
     }
     
+    /**
+     * Write all data to table directory.
+     * @throws IOException If table directory cannot be cleared
+     * or some files cannot be wrote. 
+     */
     private void writeTableToDir() throws IOException {
         clearTableDir();
         for (Entry<Integer, TablePart> part : parts.entrySet()) {
-            int dirNumber = part.getKey() / 100;
-            tableDirPath.resolve(Integer.valueOf(dirNumber).toString() + ".dir").toFile().mkdir();
-            part.getValue().writeToFile();
+            part.getValue().disconnect();
         }
     }
-    
-    private String name;
-    private Path tableDirPath;
-    private boolean isConnected;
-    private int numberOfRecords;
-    private Map<Integer, TablePart> parts;
 }

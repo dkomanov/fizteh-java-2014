@@ -15,8 +15,7 @@ public final class DropCommand extends DbCommand {
     @Override
     public void execute(String[] cmdWithArgs) {
         if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalArgumentException(getName()
-                    + ": Incorrect number of arguments");
+            throw new IllegalNumberOfArguments(getName());
         }
         
         try {
@@ -26,5 +25,4 @@ public final class DropCommand extends DbCommand {
             System.out.println(cmdWithArgs[1] + " not exists");
         }
     }
-
 }

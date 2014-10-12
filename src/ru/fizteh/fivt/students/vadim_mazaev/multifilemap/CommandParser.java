@@ -1,12 +1,12 @@
 package ru.fizteh.fivt.students.vadim_mazaev.multifilemap;
 
-import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import ru.fizteh.fivt.students.vadim_mazaev.filemap.ThrowExit;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.CreateCommand;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.DropCommand;
+import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.ExitCommand;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.GetCommand;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.ListCommand;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.PutCommand;
@@ -16,11 +16,11 @@ import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands.UseCommand;
 
 public final class CommandParser {
     private CommandParser() {
-        //not called
+        //Not called, only for checkstyle.
     }
 
-    public static void packageMode(final TableManager manager,
-            final String[] args) throws ThrowExit {
+    public static void batchMode(TableManager manager,
+            String[] args) throws ThrowExit {
         StringBuilder builder = new StringBuilder();
         for (String current : args) {
             builder.append(current);
@@ -32,7 +32,7 @@ public final class CommandParser {
         }
     }
 
-    public static void interactiveMode(final TableManager manager)
+    public static void interactiveMode(TableManager manager)
             throws ThrowExit {
         String[] cmds;
         try (Scanner in = new Scanner(System.in)) {
@@ -48,8 +48,8 @@ public final class CommandParser {
         }
     }
 
-    public static void parse(final TableManager link,
-        final String[] command, final boolean exitOnError) throws ThrowExit {
+    private static void parse(TableManager link,
+        String[] command, boolean exitOnError) throws ThrowExit {
         try {
             if (command.length > 0 && !command[0].isEmpty()) {
                 switch(command[0]) {
@@ -91,24 +91,21 @@ public final class CommandParser {
                     list.execute(command);
                     break;
                 case "exit":
-                    if (link.getUsedTable() != null) {
-                        try {
-                            link.getUsedTable().commit();
-                        } catch (IOException e) {
-                            System.err.println("Error writeing table to file");
-                            throw new ThrowExit(false);
-                        }
-                    }
-                    throw new ThrowExit(true);
+                    ExitCommand exit = new ExitCommand(link);
+                    exit.execute(command);
+                    break;
                 default:
                     throw new
                         IllegalArgumentException("No such command declared");
                 }
             }
         } catch (Exception e) {
-            //if (e.getMessage() != null) {
+            if (e.getMessage() != null) {
                 System.err.println(e.getMessage());
-            //}
+            } else {
+                System.err.println("Something went wrong. Unexpected error");
+                throw new ThrowExit(false);
+            }
             if (exitOnError) {
                 throw new ThrowExit(false);
             }
