@@ -15,7 +15,7 @@ public class Cat implements Command {
 
     public static void catenate(final String fileName) {
         String buffer = "";
-        try (FileReader filescan =  new FileReader(fileName); 
+        try (FileReader filescan =  new FileReader(fileName);
                 BufferedReader bufreader = new BufferedReader(filescan)) {
             while ((buffer = bufreader.readLine()) != null) {
                 System.out.println(buffer);

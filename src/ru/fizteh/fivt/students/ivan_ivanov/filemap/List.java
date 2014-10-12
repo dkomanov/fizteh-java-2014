@@ -14,8 +14,8 @@ public class List implements Command {
 
     public final void executeCmd(final Shell filemap, final String[] args) throws IOException {
         Set<String> keys = ((FileMap) filemap).getFileMapState().getDataBase().keySet();
-        for (String every : keys) {
-            System.out.print(every);
+        for (String key : keys) {
+            System.out.print(key);
             System.out.print(' ');
         }
         System.out.println();

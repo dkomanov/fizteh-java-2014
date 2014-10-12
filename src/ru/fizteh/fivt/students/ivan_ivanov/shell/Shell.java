@@ -37,12 +37,8 @@ public class Shell {
 
         String cmd = "";
 
-        for (int i = 0; i < command.length - 1; ++i) {
-
+        for (int i = 0; i < command.length; ++i) {
             cmd = command[i].trim();
-            if (cmd.equals("exit")) {
-                break;
-            }
             try {
                 exec.execute(this, cmd);
             } catch (Exception e) {
@@ -50,6 +46,7 @@ public class Shell {
                 System.exit(1);
             }
         }
+        exec.execute(this, "exit");
     }
 
     public final void interactiveState(final Executor exec) throws IOException {
