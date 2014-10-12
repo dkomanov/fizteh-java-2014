@@ -71,7 +71,7 @@ public class DbMain {
             switch (parts[0]) {
                 case "put":
                     if (parts.length == 3) {
-                        cache.put(parts[1], parts[2], "db.file");
+                        cache.put(parts[1], parts[2]);
                     } else {
                         errorCntArguments(parts[0]);
                     }

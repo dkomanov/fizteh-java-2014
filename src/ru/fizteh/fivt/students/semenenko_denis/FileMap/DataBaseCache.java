@@ -15,7 +15,7 @@ public class DataBaseCache {
 
     public void init(String dbpath) {
         try {
-            Path dbFilePath = Paths.get(System.getProperty("db.file"));
+            Path dbFilePath = Paths.get(System.getProperty(dbpath));
             try {
                 RandomAccessFile dbFile
                         = new RandomAccessFile(dbFilePath.toString(), "rw");
@@ -41,7 +41,7 @@ public class DataBaseCache {
         table.write(table.getBinFile());
     }
 
-    public void put(String key, String value, String table) {
+    public void put(String key, String value) {
         this.table.put(key, value);
     }
 
