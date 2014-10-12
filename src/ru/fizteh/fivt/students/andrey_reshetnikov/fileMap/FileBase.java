@@ -1,12 +1,13 @@
-package ru.fizteh.fivt.students.ru.fizteh.fivt.students.andrey_reshetnikov.fileMap;
+package ru.fizteh.fivt.students.andrey_reshetnikov.fileMap;
 
 /**
  * Created by Hoderu on 09.10.14.
  */
+
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ArrayList;
 
 public class FileBase {
     public Map<String, String> m;

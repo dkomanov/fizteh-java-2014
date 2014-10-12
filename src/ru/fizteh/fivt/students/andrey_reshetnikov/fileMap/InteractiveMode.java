@@ -1,8 +1,8 @@
-package ru.fizteh.fivt.students.ru.fizteh.fivt.students.andrey_reshetnikov.fileMap;
+package ru.fizteh.fivt.students.andrey_reshetnikov.fileMap;
 
 import java.util.Scanner;
 
-public class InteractiveMode implements CommandProcess{
+public class InteractiveMode implements CommandProcess {
 
     @Override
     public void process(CommandContainer commandFromString) throws UnknownCommand {

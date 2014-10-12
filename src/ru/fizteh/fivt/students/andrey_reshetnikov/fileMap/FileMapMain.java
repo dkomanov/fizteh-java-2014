@@ -1,5 +1,5 @@
 
-package ru.fizteh.fivt.students.ru.fizteh.fivt.students.andrey_reshetnikov.fileMap;
+package ru.fizteh.fivt.students.andrey_reshetnikov.fileMap;
 
 import java.io.IOException;
 
