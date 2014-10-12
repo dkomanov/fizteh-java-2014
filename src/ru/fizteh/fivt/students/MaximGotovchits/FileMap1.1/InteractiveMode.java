@@ -9,7 +9,15 @@ public class InteractiveMode extends FileMapMain {
         while (true) {
             System.out.print("$ ");
             cmd = sc.nextLine();
+            cmd = cmd.replaceAll("\\s+", " ");
             cmdBuffer = cmd.split(" ");
+            if (cmdBuffer[0].equals("") && cmdBuffer.length > 0) {
+                cmd = "";
+                for (int ind = 1; ind < cmdBuffer.length; ++ind) {
+                    cmd = cmd + cmdBuffer[ind] + " ";
+                }
+                cmdBuffer = cmd.split(" ");
+            }
             if (cmdBuffer[0].equals("put")) {
                 new Put().putFunction();
             }
@@ -29,3 +37,4 @@ public class InteractiveMode extends FileMapMain {
         }
     }
 }
+
