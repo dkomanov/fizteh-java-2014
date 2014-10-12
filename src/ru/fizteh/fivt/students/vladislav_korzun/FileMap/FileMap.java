@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.regex.PatternSyntaxException;
 
 public class FileMap {
     public static void main(final String[] args) {        
