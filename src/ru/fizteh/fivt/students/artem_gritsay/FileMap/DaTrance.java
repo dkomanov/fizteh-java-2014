@@ -1,4 +1,6 @@
 package ru.fizteh.fivt.students.artem_gritsay.FileMap;
+
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -11,22 +13,27 @@ public class DaTrance {
         dataFile.setLength(0);
         Set<String> key = fileMap.keySet();
         List<Integer> offset = new LinkedList<>();
+
         for (String i : key) {
             dataFile.write(i.getBytes("UTF-8"));
             dataFile.write('\0');
             reserveplace.add((int) dataFile.getFilePointer());
-            dataFile.writeInt(1);
+            dataFile.writeInt(0);
         }
+
         for (String i : key) {
             offset.add((int) dataFile.getFilePointer());
             dataFile.write(fileMap.get(i).getBytes("UTF-8"));
         }
+
         Iterator<Integer> k = offset.iterator();
+
         for (int i : reserveplace) {
             dataFile.seek(i);
             dataFile.writeInt(k.next());
         }
     }
+
     public static void getNewData(RandomAccessFile dataFile, HashMap<String, String> filemap)
             throws IOException {
         byte b;
@@ -35,6 +42,7 @@ public class DaTrance {
         List<String> key = new LinkedList<>();
         List<Integer> offset = new LinkedList<>();
         ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+
         while (bytenumber < first) {
             while ((b = dataFile.readByte()) > 0) {
                 bytestream.write(b);
@@ -49,8 +57,10 @@ public class DaTrance {
             }
             bytenumber += 5;
         }
+
         offset.add((int) dataFile.length());
         Iterator<String> keyIterator = key.iterator();
+
         for (Integer i : offset) {
             while (i > bytenumber) {
                 bytestream.write(dataFile.readByte());

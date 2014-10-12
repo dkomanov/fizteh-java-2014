@@ -1,4 +1,6 @@
 package ru.fizteh.fivt.students.artem_gritsay.FileMap;
+
+
 import java.util.Scanner;
 import java.io.*;
 import java.util.*;
@@ -14,10 +16,18 @@ public class FileMap {
                 = new RandomAccessFile(pathtoFile.toString(), "rw")) {
             DaTrance.putD(dataBaseFile, filemap);
         } catch (Exception e) {
-            System.err.println("Cannot writing to file");
+            System.err.println(e.getMessage());
         }
     }
-    private static void getLine(String com) throws ShellexitException, IOException {
+    private static boolean checkarguments(String[] args, Integer k) {
+        if (args.length == k) return true;
+        else {
+            System.out.println("Incorrect arguments");
+            return false;
+        }
+    }
+
+    private static void getLine(String com) throws ShellExitException, IOException {
         com = com.trim();
         String[] s = com.split("\\s+");
             switch (s[0]) {
@@ -34,37 +44,39 @@ public class FileMap {
                     list(s);
                     break;
                 case "exit":
-                    throw new ShellexitException();
+                    throw new ShellExitException();
                 default:
-                    System.out.println("Invalid command");
+                    System.err.println("Invalid command");
             }
     }
 
-    private static void switchCommands(String[] s) throws ShellexitException {
+    private static void switchCommands(String[] s) throws ShellExitException {
         try {
             for (String command : s) {
                 getLine(command);
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
-            System.exit(0);
+            System.exit(1);
         }
     }
 
-    private static void parsLine(String[] args) throws ShellexitException {
+    private static void parsLine(String[] args) throws ShellExitException {
         StringBuilder com = new StringBuilder();
         for (String arg : args) {
             com.append(arg);
             com.append(' ');
         }
         switchLine(com.toString());
+        exit(pathFile, filemap);
     }
 
-    private static void switchLine(String line) throws ShellexitException {
+    private static void switchLine(String line) throws ShellExitException {
         String[] commands = line.trim().split(";");
         switchCommands(commands);
     }
-    private static void interactive() throws ShellexitException {
+
+    private static void interactive() throws ShellExitException {
             Scanner scan = new Scanner(System.in);
             while (true) {
                 System.out.print("$ ");
@@ -73,8 +85,9 @@ public class FileMap {
             }
 
     }
+
     private static void put(String[] args) {
-        if (args.length == 3) {
+        if (checkarguments(args, args.length)) {
             String v = filemap.put(args[1], args[2]);
             if (v != null) {
                 System.out.println("overwrite");
@@ -82,12 +95,11 @@ public class FileMap {
             } else {
                 System.out.println("new");
             }
-        } else {
-            System.out.println("Incorrect arguments");
         }
     }
+
     private static void get(String[] args) {
-        if (args.length == 2) {
+        if (checkarguments(args, args.length)) {
             String v = filemap.get(args[1]);
             if (v != null) {
                 System.out.println("found");
@@ -95,12 +107,11 @@ public class FileMap {
             } else {
                 System.out.println("not found");
             }
-        } else {
-            System.out.println("Incorrect arguments");
         }
     }
+
     private static void list(String[] args) {
-        if (args.length == 1) {
+        if (checkarguments(args, args.length)) {
             Set<String> keys = filemap.keySet();
             Integer i = 0;
             for (String key : keys) {
@@ -112,22 +123,20 @@ public class FileMap {
                     System.out.println();
                 }
             }
-        } else {
-            System.out.println("Incorrect arguments");
         }
     }
+
     private static void remove(String[] args) {
-        if (args.length == 2) {
+        if (checkarguments(args, args.length)) {
             String s = filemap.remove(args[1]);
             if (s != null) {
                 System.out.println("removed");
             } else {
                 System.out.println("not found");
             }
-        } else {
-            System.out.println("Incorrect arguments");
         }
     }
+
     private static void makefile() {
         filemap = new HashMap<>();
         try {
@@ -145,6 +154,7 @@ public class FileMap {
             System.exit(-1);
         }
     }
+
     public static void main(String[] args) {
         try {
             makefile();
@@ -153,7 +163,7 @@ public class FileMap {
             } else {
                 parsLine(args);
             }
-        } catch (ShellexitException t) {
+        } catch (ShellExitException t) {
             exit(pathFile, filemap);
             System.exit(0);
         }
@@ -161,6 +171,6 @@ public class FileMap {
     }
 
 }
-class ShellexitException extends Exception {}
+class ShellExitException extends Exception {}
 
 
