@@ -20,6 +20,5 @@ public final class Get {
             System.out.println(tmp);
         }
     }
-    
 
 }

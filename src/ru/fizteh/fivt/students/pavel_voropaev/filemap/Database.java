@@ -53,11 +53,9 @@ public class Database {
     public void write() throws Exception {
         FileOutputStream output = new FileOutputStream(dbFilePath);
         Set<String> keyList = database.keySet();
-        ByteBuffer buffer = ByteBuffer.allocate(4);
-        Iterator<String> it = keyList.iterator();
+        ByteBuffer buffer = ByteBuffer.allocate(4);  
         try {
-            while (it.hasNext()) {
-                String key = it.next();
+            for (String key : keyList) {
                 byte[] keyByte = key.getBytes("UTF-8");
                 byte[] valueByte = database.get(key).getBytes("UTF-8");
 
