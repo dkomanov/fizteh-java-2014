@@ -51,11 +51,13 @@ public class TableFileDAT implements Table, SaveInMemoryInterface {
 
     @Override
     public List<String> list() {
-        ArrayList<String> result = new ArrayList<>(data.size());
-        for (String key : data.keySet()) {
-            System.out.print(key + ", ");
+        List<String> result = new ArrayList<>(data.size());
+        Set<String> keys = data.keySet();
+        for (String key: keys) {
+            result.add(key);
         }
-        System.out.println();
+        String joined = String.join(", ", result);
+        System.out.println(joined);
         return result;
     }
 
