@@ -20,8 +20,9 @@ public class MultiFileHashMap extends CommandParser {
             MultiFileHashMap map = new MultiFileHashMap();
             map.run(args);
             if (args.length != 0) {
-                if(!map.tryToSave())
+                if (!map.tryToSave()) {
                     System.exit(2);
+                }
             }
         } catch (LoadOrSaveError ex) {
             System.err.println(ex.getMessage());
