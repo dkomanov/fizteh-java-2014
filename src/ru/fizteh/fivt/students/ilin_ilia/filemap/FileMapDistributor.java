@@ -17,7 +17,6 @@ public class FileMapDistributor {
                 System.out.println("There isn't input command");
                 System.exit(-1);
             }
-            String com;
             switch (str) {
                 case "put":
                     try {
@@ -56,7 +55,7 @@ public class FileMapDistributor {
         }
     }
 
-    public static void commandMode(final String[] args) {
+    public static void batchMode(final String[] args) {
         FileMap db = new FileMap(System.getProperty("db.file"));
         String arg = "";
         String [] arg1 = null;
