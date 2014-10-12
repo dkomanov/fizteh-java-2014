@@ -17,14 +17,17 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
         if (rootDir == null) {
             throw new IllegalArgumentException("Wrong directory");
         }
+        if (tableIOTools == null) {
+            throw new IllegalArgumentException("Wrong TableIOTools instance");
+        }
         this.rootDir = rootDir;
         tableMap = new HashMap<String, T>();
         this.tableIOTools = tableIOTools;
         this.autoCommit = autoCommit;
     }
 
-    protected GeneralTableProvider(Path rootDir) {
-        this(rootDir, true, new TableIOTools<>(1, 1));
+    protected GeneralTableProvider(Path rootDir, TableIOTools<MappedValue, T> tableIOTools) {
+        this(rootDir, true, tableIOTools);
     }
 
     public Path getRootDir() {

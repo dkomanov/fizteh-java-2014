@@ -5,14 +5,17 @@ import java.nio.file.Path;
 /**
  * Created by sautin1 on 10/12/14.
  */
-public class StringTableIOTools extends TableIOTools<String, StringTable> {
+public class StringTableIOTools implements TableIOTools<String, StringTable> {
+    private int dirQuantity;
+    private int fileQuantity;
 
     public StringTableIOTools(int dirQuantity, int fileQuantity) {
-        super(dirQuantity, fileQuantity);
+        this.dirQuantity = dirQuantity;
+        this.fileQuantity = fileQuantity;
     }
 
     public StringTableIOTools() {
-        super(1, 1);
+        this(1, 1);
     }
 
     @Override

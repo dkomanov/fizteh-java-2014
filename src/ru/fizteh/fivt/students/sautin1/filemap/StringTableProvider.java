@@ -9,7 +9,7 @@ import java.nio.file.Path;
  */
 public class StringTableProvider extends GeneralTableProvider<String, StringTable> implements TableProvider {
 
-    public StringTableProvider(Path rootDir, boolean autoCommit, TableIOTools tableIOTools) {
+    public StringTableProvider(Path rootDir, boolean autoCommit, TableIOTools<String, StringTable> tableIOTools) {
         super(rootDir, autoCommit, tableIOTools);
     }
 

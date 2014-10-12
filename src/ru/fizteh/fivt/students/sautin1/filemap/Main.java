@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.sautin1.filemap;
 
 import ru.fizteh.fivt.students.sautin1.shell.Command;
+import ru.fizteh.fivt.students.sautin1.shell.ExitCommand;
 import ru.fizteh.fivt.students.sautin1.shell.Shell;
 import ru.fizteh.fivt.students.sautin1.shell.UserInterruptException;
 
@@ -22,9 +23,11 @@ public class Main {
         databaseState.setActiveTable(table);
 
         Command[] commands = {
-
+            new PutCommand(), new GetCommand(),
+            new RemoveCommand(), new ExitCommand<StringDatabaseState>()
         };
 
+        @SuppressWarnings("unchecked")
         Shell<StringDatabaseState> shell = new Shell<>(databaseState, commands);
         int exitStatus = 0;
         try {
@@ -35,8 +38,8 @@ public class Main {
             System.err.println(e.getMessage());
             exitStatus = 1;
         }
+        tableIOTools.writeTable(filePath.getParent(), table);
         System.exit(exitStatus);
-
     }
 
 }
