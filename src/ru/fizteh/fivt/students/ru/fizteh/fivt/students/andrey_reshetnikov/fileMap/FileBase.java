@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.ru.fizteh.fivt.students.andrey_reshetnikov.fileM
 /**
  * Created by Hoderu on 09.10.14.
  */
-import java.awt.*;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,15 +13,15 @@ public class FileBase {
     private DataInputStream stream;
     private DataOutputStream streamOut;
 
-    public void loading(String path) throws IOException {
+    public void load(String path) throws IOException {
         try {
             stream = new DataInputStream(new FileInputStream(path));
         } catch (FileNotFoundException e) {
-            throw new IOException("Database file not found");
+            FileOutputStream out = new FileOutputStream(path);
+            stream = new DataInputStream(new FileInputStream(path));
         }
         m = new HashMap<>();
-        boolean eof = false;
-        while (!eof) {
+        while (true) {
             try {
                 String key = nextWord();
                 String value = nextWord();
@@ -31,7 +30,7 @@ public class FileBase {
                 }
                 m.put(key, value);
             } catch (EOFException e) {
-                eof = true;
+                break;
             }
         }
         stream.close();
@@ -40,7 +39,7 @@ public class FileBase {
     private String nextWord() throws IOException {
         int length = stream.readInt();
         if (length < 0) {
-            throw new IOException("Error of length");
+            throw new IOException("Invalid length in database found");
         }
         ArrayList<Byte> wordBuilder = new ArrayList<>();
         try {

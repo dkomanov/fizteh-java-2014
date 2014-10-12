@@ -1,14 +1,12 @@
 package ru.fizteh.fivt.students.ru.fizteh.fivt.students.andrey_reshetnikov.fileMap;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Created by Hoderu on 09.10.14.
  */
-public class PackageMode implements CommandProcess {
+public class BatchMode implements CommandProcess {
 
     public String[] commands;
-    public PackageMode(String[] args) {
+    public BatchMode(String[] args) {
         StringBuilder s1 = new StringBuilder();
         for (String s : args) {
             s1.append(s);
@@ -18,15 +16,15 @@ public class PackageMode implements CommandProcess {
     }
 
     @Override
-    public void process(CommandFromString commandFromString) throws UnknownCommand {
+    public void process(CommandContainer commandFromString) throws UnknownCommand {
         for (String s : commands) {
-            AtomicBoolean flag = new AtomicBoolean(true);
+            boolean flag = true;
             try {
-                commandFromString.fromString(s).execute();
+                commandFromString.getCommandByName(s).execute();
             } catch (StopProcess e) {
-                flag.set(false);
+                flag = false;
             }
-            if (!flag.get()) {
+            if (!flag) {
                 break;
             }
         }

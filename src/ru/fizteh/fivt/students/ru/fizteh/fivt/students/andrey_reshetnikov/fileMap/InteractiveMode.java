@@ -1,26 +1,25 @@
 package ru.fizteh.fivt.students.ru.fizteh.fivt.students.andrey_reshetnikov.fileMap;
 
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class InteractiveMode implements CommandProcess{
 
     @Override
-    public void process(CommandFromString commandFromString) throws UnknownCommand {
+    public void process(CommandContainer commandFromString) throws UnknownCommand {
         Scanner sc = new Scanner(System.in);
-        AtomicBoolean flag = new AtomicBoolean(false);
+        boolean flag = false;
         do {
             System.out.print("$ ");
             for (String s : sc.nextLine().split(";")) {
                 try {
-                    commandFromString.fromString(s).execute();
+                    commandFromString.getCommandByName(s).execute();
                 } catch (StopProcess e) {
-                    flag.set(true);
+                    flag = true;
                 }
-                if (flag.get()) {
+                if (flag) {
                     break;
                 }
             }
-        } while (!flag.get());
+        } while (!flag);
     }
 }

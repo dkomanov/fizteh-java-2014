@@ -4,5 +4,5 @@ package ru.fizteh.fivt.students.ru.fizteh.fivt.students.andrey_reshetnikov.fileM
  * Created by Hoderu on 09.10.14.
  */
 public interface CommandProcess{
-    void process(CommandFromString commandFromString) throws UnknownCommand;
+    void process(CommandContainer commandFromString) throws UnknownCommand;
 }

@@ -20,7 +20,7 @@ public class FileMapMain {
 
         FileBase base = new FileBase();
         try {
-            base.loading(path);
+            base.load(path);
         } catch (Exception e) {
             System.err.println("error");
             System.err.println(e.getMessage());
@@ -31,7 +31,7 @@ public class FileMapMain {
         if (selectMode) {
             commandProcess = new InteractiveMode();
         } else {
-            commandProcess = new PackageMode(args);
+            commandProcess = new BatchMode(args);
         }
 
         try {

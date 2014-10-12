@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.ru.fizteh.fivt.students.andrey_reshetnikov.fileM
 /**
  * Created by Hoderu on 09.10.14.
  */
-public class FileMapAction implements CommandFromString {
+public class FileMapAction implements CommandContainer {
     private FileBase data;
 
     public FileMapAction(FileBase data) {
@@ -11,19 +11,19 @@ public class FileMapAction implements CommandFromString {
     }
 
     @Override
-    public Command fromString(String s) throws UnknownCommand {
-        final String[] mas = s.trim().split("\\s+");
+    public Command getCommandByName(String s) throws UnknownCommand {
+        final String[] array = s.trim().split("\\s+");
 
-        switch (mas[0]) {
+        switch (array[0]) {
             case "get":
                 return new Command() {
                     @Override
                     public void execute() {
-                           if (mas.length != 2) {
-                               System.err.println("get have 1 parameters");
+                           if (array.length != 2) {
+                               System.err.println("get accepts 1 parameter");
                                System.exit(1);
                            }
-                          String value = data.m.get(mas[1]);
+                          String value = data.m.get(array[1]);
                           if (value == null) {
                               System.out.println("not found");
                           } else {
@@ -41,11 +41,11 @@ public class FileMapAction implements CommandFromString {
                 return new Command() {
                     @Override
                     public void execute() {
-                        if (mas.length != 2) {
-                            System.err.println("remove have 1 parameters");
+                        if (array.length != 2) {
+                            System.err.println("remove accepts 1 parameters");
                             System.exit(1);
                         }
-                        if (data.m.remove(mas[1]) == null) {
+                        if (data.m.remove(array[1]) == null) {
                             System.out.println("not found");
                         } else {
                             System.out.println("removed");
@@ -62,13 +62,18 @@ public class FileMapAction implements CommandFromString {
                 return new Command() {
                     @Override
                     public void execute() {
-                        if (mas.length != 1) {
+                        if (array.length != 1) {
                             System.err.println("list haven't any parameters");
                             System.exit(1);
                         }
+                        StringBuilder allkeys = new StringBuilder();
                         for (String k : data.m.keySet()) {
-                            System.out.println(k);
+                            if (allkeys.length() > 0) {
+                                allkeys.append(", ");
+                            }
+                            allkeys.append(k);
                         }
+                        System.out.println(allkeys.toString());
                     }
 
                     @Override
@@ -81,7 +86,7 @@ public class FileMapAction implements CommandFromString {
                 return new Command() {
                     @Override
                     public void execute() throws StopProcess {
-                        if (mas.length != 1) {
+                        if (array.length != 1) {
                             System.err.println("exit haven't any parameters");
                             System.exit(1);
                         }
@@ -101,11 +106,11 @@ public class FileMapAction implements CommandFromString {
 
                     @Override
                     public void execute() throws StopProcess {
-                        if (mas.length != 3) {
-                            System.err.println("put have 2 parameters");
+                        if (array.length != 3) {
+                            System.err.println("put accepts 2 parameters");
                             System.exit(1);
                         }
-                        String s = data.m.put(mas[1], mas[2]);
+                        String s = data.m.put(array[1], array[2]);
                         if (s == null) {
                             System.out.println("new");
                         } else {
