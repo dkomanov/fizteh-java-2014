@@ -42,9 +42,9 @@ public class DataBaseEditor {
                         System.getProperty("db.file")).toString(), "rw")) {
             exportData(dataBase);
             dataBase.close();
-         } catch (Exception e) {
-                throw new Exception("Error writing data base to file");
-           }
+        } catch (Exception e) {
+                throw new Exception("Error writing DataBase to file");
+          }
     }
 
     public static void importData(
@@ -74,9 +74,7 @@ public class DataBaseEditor {
 
         offsets.add((int) dataBase.length());
         Iterator<String> keyIter = keys.iterator();
-        Iterator<Integer> offIter = offsets.iterator();
-        while (offIter.hasNext()) {
-            int nextOffset = offIter.next();
+        for (int nextOffset : offsets) {
             while (bytesCounter < nextOffset) {
                 bytesBuffer.write(dataBase.readByte());
                 bytesCounter++;
@@ -85,7 +83,6 @@ public class DataBaseEditor {
                 data.put(keyIter.next(), bytesBuffer.toString("UTF-8"));
                 bytesBuffer.reset();
             } else {
-                //if file ends before reading last value
                 throw new IOException();
             }
         }
@@ -111,55 +108,63 @@ public class DataBaseEditor {
     }
 
 
-    public final  boolean put(final List<String> args) throws Exception {
+    public final  String put(final List<String> args) throws Exception {
        if (args.size() != 3) {
-           return true;
+           return null;
        }
+       String rezultMessage = new String();
        if (data.containsKey(args.get(1))) {
-           System.out.println("\noverwrite");
-           System.out.println("\n" + data.get(args.get(1)));
+           rezultMessage = "overwrite\n" + data.get(args.get(1));
            data.remove(args.get(1));
            data.put(args.get(1), args.get(2));
        } else {
-           System.out.println("\nnew");
+           rezultMessage = "new";
            data.put(args.get(1), args.get(2));
        }
-       return false;
+       return rezultMessage;
     }
 
-    public final  boolean get(final List<String> args) {
+    public final  String get(final List<String> args) {
         if (args.size() != 2) {
-            return true;
+            return null;
         }
+        String rezultMessage = new String();
         if (data.containsKey(args.get(1))) {
-            System.out.println("\nfound");
-            System.out.println("\n" + data.get(args.get(1)));
+            rezultMessage = "found\n" + data.get(args.get(1));
         } else {
-            System.out.println("\nnot found");
+            rezultMessage =  "not found";
         }
-        return false;
+        return rezultMessage;
     }
 
-    public final  boolean remove(final List<String> args) {
+    public final  String remove(final List<String> args) {
         if (args.size() != 2) {
-            return true;
+            return null;
         }
+        String rezultMessage = new String();
         if (data.containsKey(args.get(1))) {
-            System.out.println("\nremoved");
+            rezultMessage = "removed";
             data.remove(args.get(1));
         } else {
-            System.out.println("\nnot found");
+            rezultMessage = "not found";
         }
-        return false;
+        return rezultMessage;
     }
 
-    public final  boolean list(final List<String> args) {
+    public final  String list(final List<String> args) {
         if (args.size() != 1) {
-            return true;
+            return null;
         }
+        boolean firstWord = true;
+        String rezultMessage = new String();
         for (Map.Entry<String, String> entry : data.entrySet()) {
-            System.out.println(entry.getKey() + ", ");
+            if (firstWord) {
+                rezultMessage = entry.getKey();
+                firstWord = false;
+            } else {
+                rezultMessage += ", " + entry.getKey();
+            }
         }
-        return false;
+        return rezultMessage;
     }
 }

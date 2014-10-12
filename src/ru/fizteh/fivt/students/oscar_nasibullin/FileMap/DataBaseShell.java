@@ -11,43 +11,41 @@ public final class DataBaseShell {
     private static DataBaseEditor dataBase;
 
     private DataBaseShell() {
-        //nothing to do here
+     // Disable instantiation to this class.
     }
 
     public static void main(final String[] args) {
-
         if (args.length > 0) {
-            runPocket(args);
+            runBatch(args);
         } else {
             runInteractive();
         }
-
     }
 
 
 
     public static void runInteractive() {
-            System.out.print("interactive\n");
-            List<List<String>> commands = new ArrayList<>();
-            try (Scanner in = new Scanner(System.in)) {
-                while (true) {
-                    System.out.print("$ ");
-                    String input = null;
-                    if (in.hasNext()) {
-                        input = in.nextLine();
-                    } else {
-                        System.exit(0);
-                    }
-                    String[] args = new String[1];
-                    args[0] = input;
-                    commands = parse(args);
-                    activator(commands, false);
+        List<List<String>> commands = new ArrayList<>();
+        try (Scanner in = new Scanner(System.in)) {
+            // "Try with resources" doesn't have to have a catch block.
+            while (true) {
+                System.out.print("$ ");
+                String input = null;
+                if (in.hasNext()) {
+                    input = in.nextLine();
+                } else {
+                    System.exit(0);
                 }
+                String[] args = new String[1];
+                args[0] = input;
+                commands = parse(args);
+                activator(commands, false);
             }
+        }
     }
 
 
-    public static void runPocket(final String[] args) {
+    public static void runBatch(final String[] args) {
         List<List<String>> commands = new ArrayList<>();
 
         commands = parse(args);
@@ -57,51 +55,61 @@ public final class DataBaseShell {
     }
 
     public static void activator(final List<List<String>> commands,
-            final boolean pocketMode) {
+            final boolean batchMode) {
+        boolean exitWithError = false;
+        String rezultMessage = new String();
         try {
             if (dataBase == null) {
                 dataBase = new DataBaseEditor();
             }
-
             for (int i = 0; i < commands.size(); i++) {
                 switch(commands.get(i).get(0)) {
                 case "exit":
-                  //  pocketMode = true;
-                    dataBase.closeDataBase(); //???
+                    exitWithError = true;
+                    dataBase.closeDataBase();
                     System.exit(0);
                     break;
                 case "put":
-                    if (dataBase.put(commands.get(i))) {
-                        throw new Exception("Illegal arguments for put");
+                    rezultMessage = dataBase.put(commands.get(i));
+                    if (rezultMessage == null) {
+                        throw new
+                        IllegalArgumentException("Illegal arguments for put");
                     }
                     break;
                 case "get":
-                    if (dataBase.get(commands.get(i))) {
-                        throw new Exception("Illegal arguments for get");
+                    rezultMessage = dataBase.get(commands.get(i));
+                    if (rezultMessage == null) {
+                        throw new
+                        IllegalArgumentException("Illegal arguments for get");
                     }
                     break;
                 case "remove":
-                    if (dataBase.remove(commands.get(i))) {
-                        throw new Exception("Illegal arguments for remove");
+                    rezultMessage = dataBase.remove(commands.get(i));
+                    if (rezultMessage == null) {
+                        throw new
+                        IllegalArgumentException("Illegal argument for remove");
                     }
                     break;
                 case "list":
-                    if (dataBase.list(commands.get(i))) {
-                        throw new Exception("Illegal arguments for list");
+                    rezultMessage = dataBase.list(commands.get(i));
+                    if (rezultMessage == null) {
+                        throw new
+                        IllegalArgumentException("Illegal arguments for list");
                     }
                     break;
                 default:
                     System.err.println(commands.get(i).get(0)
                             + ": no such command");
-                    if (pocketMode) {
+                    if (batchMode) {
                         dataBase.closeDataBase();
                         System.exit(1);
                     }
                 }
+                System.out.println(rezultMessage);
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
-            if (pocketMode) {
+            if (batchMode || dataBase == null || exitWithError) {
                 System.exit(1);
             }
         }
@@ -113,17 +121,17 @@ public final class DataBaseShell {
         String[] arguments;
 
         if (args.length == 1) {
-            arguments = args[0].split(" ");  // interactive parse
+            arguments = args[0].split(" ");  // Interactive parse.
         } else {
-            arguments = args;    // pocket
+            arguments = args;    // Batch.
         }
 
 
         for (int i = 0; i < arguments.length; i++) {
-            if (arguments[i].charAt(arguments[i].length() - 1) == ';') {
+            if (arguments[i].endsWith(";")) {
                 int start = 0;
                 int end = arguments[i].length() - 1;
-                char[] buf = new char[end - start];
+                char[] buf = new char[end];
                 arguments[i].getChars(start, end, buf, 0);
                 String lastArg = new String(buf);
 
