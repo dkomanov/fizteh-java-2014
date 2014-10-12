@@ -27,21 +27,25 @@ public class FileMap {
             if (dbfile.length() > 0) {                    
                 db.read(dbfile);
             }             
-              Switcher swch = new Switcher();
-              swch.swch(args, db, dbfile);
+            CommandExecutor commands = new CommandExecutor();
+            commands.executeCommands(args, db, dbfile);
               dbfile.close();                     
             
         } catch (Exception e) {
-                System.out.println("Error connecting database");
+                System.err.println("Error connecting database");
         }
     }
     
 }
 
 class Commands {
+    
+    public Map<String, String> filemap;
+    
     Commands(DbMain db) {
         filemap = db.filemap;
     }
+    
     void put(String key, String value) {
         try {            
             String val = filemap.put(key, value);
@@ -52,7 +56,7 @@ class Commands {
                 System.out.println(val);
             }            
         } catch (Exception e) {
-            System.out.println("Something get wrong");
+            System.err.println("Something get wrong");
         }
         
     }
@@ -67,7 +71,7 @@ class Commands {
                 System.out.println(val);
             }            
         } catch (Exception e) {
-            System.out.println("Something get wrong");
+            System.err.println("Something get wrong");
         }      
     }
     
@@ -80,7 +84,7 @@ class Commands {
                 System.out.println("removed");
             }            
         } catch (Exception e) {
-            System.out.println("Something get wrong");
+            System.err.println("Something get wrong");
         }    
     }
     
@@ -95,52 +99,54 @@ class Commands {
         } catch (NoSuchElementException e) {
             //if iterator has no more elements
         } catch (Exception e) {
-            System.out.println("Something get wrong");
+            System.err.println("Something get wrong");
         }
     }
     
     void exit(DbMain db, RandomAccessFile dbfile) {
         db.filemap = filemap;
         db.write(dbfile);        
-    }
-    
-   public Map<String, String> filemap;
+    }   
+  
 }
 
 class Parser {
-    String[] pars(final String arg) {        
+    String[] semicolonparser(final String arg) {        
         String[] answer = null;
         String buffer = new String();
         try {
-        buffer = arg.trim();    
-        answer = buffer.split(";");
+            buffer = arg.trim();    
+            answer = buffer.split(";");
         } catch (PatternSyntaxException e) {
-            System.out.println("Ivalid command");
+            System.err.println("Ivalid command");
         }
         return answer;
         
     }
-    String[] pars2(final String arg) {
+    String[] spaceparser(final String arg) {
         String[] answer = null;
         String buffer = new String();
         try {
             buffer = arg.trim();
             answer = buffer.split(" ");
         } catch (PatternSyntaxException e) {
-            System.out.println("Ivalid command");
+            System.err.println("Invalid command");
         }
         return answer;
     }
 }
 
 class DbMain {   
+    
+    public Map<String, String> filemap;
+    
     DbMain() {
         filemap = new TreeMap<String, String>();
     }
+    
     void read(RandomAccessFile db) {
         LinkedList<Integer> offset = new LinkedList<Integer>() ;
-        int counter;
-        counter = 0;        
+        int counter = 0;               
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();  
         List<String> keys = new LinkedList<String>();
         Byte bt = null;
@@ -152,7 +158,7 @@ class DbMain {
                     if (bt != 0) {
                         buffer.write(bt);                        
                     }
-                } while(bt != 0);
+                } while (bt != 0);
                 keys.add(buffer.toString("UTF-8"));
                 buffer.reset();
                 offset.add(db.readInt());
@@ -170,10 +176,11 @@ class DbMain {
            }
            buffer.close();
         } catch (IOException e) {
-            System.out.println("Invalid input");
+            System.err.println("Invalid input");
         }     
    }
-   void write(RandomAccessFile db) {
+    
+   void write(RandomAccessFile db) {     
        try {
            db.setLength(0);
            LinkedList<Integer> offset = new LinkedList<Integer>();
@@ -198,14 +205,13 @@ class DbMain {
                db.write(it.next().getBytes("UTF-8"));               
            }
        } catch (Exception e) {
-           System.out.println("Something get wrong");
+           System.err.println("Something get wrong");
        }
-   }
-   public Map<String, String> filemap;
+   } 
 }
 
-class Switcher {
-    void swch(String[] args, DbMain db, RandomAccessFile dbfile) {
+class CommandExecutor {
+    void executeCommands(String[] args, DbMain db, RandomAccessFile dbfile) {
         Scanner in = new Scanner(System.in);
         Commands command = new Commands(db);        
         String request = new String();              
@@ -221,47 +227,48 @@ class Switcher {
                 request = in.nextLine();
             } else {
                 for (i = 0; i < args.length; i++) {
-                    request += args[i];
+                    request += (args[i] + " ");
                 }                
                 request = request + ";exit";
             }            
-            arg = parser.pars(request);
+            arg = parser.semicolonparser(request);
+            for (i = 0; i < arg.length; i++) {
+                arg2 = parser.spaceparser(arg[i]);
+            
             try {
-                for (i = 0; i < arg.length; i++) {
-                    arg2 = parser.pars2(arg[i]);
-                    switch(arg2[0]) {                
-                        case "put":
-                            key = arg2[1];
-                            value = arg2[2];
-                            command.put(key, value);
-                            break;
-                        case "get":    
-                            key = arg2[1];  
-                            command.get(key);                        
-                            break;
-                        case "remove":
-                            key = arg2[1];
-                            command.remove(key);
-                            break;
-                        case "list": 
-                            command.list();
-                            break;
-                        case "exit":
+                switch(arg2[0]) {                
+                    case "put":                        
+                        key = arg2[1];
+                        value = arg2[2];
+                        command.put(key, value);
+                        break;
+                    case "get":    
+                        key = arg2[1];  
+                        command.get(key);                        
+                        break;
+                    case "remove":
+                        key = arg2[1];
+                        command.remove(key);
+                        break;
+                    case "list": 
+                        command.list();
+                        break;
+                    case "exit":
+                        in.close();
+                        command.exit(db, dbfile);
+                        break;
+                    default:
+                        System.err.println("Invalid command");
+                        if (args.length > 0) {
                             in.close();
-                            command.exit(db, dbfile);
-                            break;
-                        default:
-                            System.out.println("Invalid command");
-                            if (args.length > 0) {
-                                in.close();
-                                System.exit(1);
-                            }                        
-                            break;
-                    }    
-                }     
-            } catch (Exception e) {
-                System.out.println("Invalid input");
+                            System.exit(1);
+                        }                        
+                        break;
+                    }               
+                } catch (Exception e) {
+                System.err.println("Invalid input");
             }
+        }
         } while(!arg2[0].equals("exit"));        
     }    
 }
