@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.semenenko_denis.FileMap;
 
-import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
