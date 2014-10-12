@@ -3,6 +3,9 @@ package ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap;
 import ru.fizteh.fivt.students.LebedevAleksey.FileMap.LoadOrSaveError;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.TablePart {
@@ -26,7 +29,7 @@ public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Ta
             } else {
                 super.loadWork();
                 for (String key : data.keySet()) {
-                    if (table.getPartForKey(key) != this) {
+                    if (table.selectPartForKey(key) != this) {
                         throw new LoadOrSaveError("Wrong key '" + key + "' in file " + file.getAbsolutePath());
                     }
                 }
@@ -36,8 +39,8 @@ public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Ta
 
     @Override
     public void save() throws LoadOrSaveError {
+        File path = getSaveFilePath();
         if (empty()) {
-            File path = getSaveFilePath();
             try {
                 if (path.exists()) {
                     if (!path.delete()) {
@@ -45,7 +48,7 @@ public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Ta
                     }
                 }
                 File parent = new File(path.getParent());
-                if (parent.list().length == 0) {
+                if (parent.exists() && parent.list().length == 0) {
                     if (!parent.delete()) {
                         throw new LoadOrSaveError("Can't delete folder.");
                     }
@@ -54,7 +57,19 @@ public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Ta
                 throw new LoadOrSaveError("Access denied on save.", ex);
             }
         } else {
-            super.save();
+            try {
+                File directory = path.getParentFile();
+                if (!directory.exists()) {
+                    Files.createDirectory(directory.toPath());
+                }
+                super.save();
+            } catch (SecurityException ex) {
+                throw new LoadOrSaveError("Access denied on creating folder", ex);
+            } catch (FileAlreadyExistsException ex) {
+                throw new LoadOrSaveError("Something strange in creating folder", ex);
+            } catch (IOException ex) {
+                throw new LoadOrSaveError("Error creating folder: " + ex.getMessage(), ex);
+            }
         }
     }
 

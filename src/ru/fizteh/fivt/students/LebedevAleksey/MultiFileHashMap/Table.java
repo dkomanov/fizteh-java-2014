@@ -15,6 +15,8 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table 
     private Database database;
 
     public Table(String name, Database databaseParent) {
+        super();
+        parts.clear();
         structuredParts = new TablePart[SUBDIRECTORIES_COUNT][];
         for (int i = 0; i < SUBDIRECTORIES_COUNT; ++i) {
             structuredParts[i] = new TablePart[FILES_COUNT];

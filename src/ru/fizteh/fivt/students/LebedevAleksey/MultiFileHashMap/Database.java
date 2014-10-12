@@ -34,6 +34,10 @@ public class Database {
         return currentTable;
     }
 
+    private void setCurrentTable(String name) throws TableNotFoundException {
+        currentTable = getTable(name);
+    }
+
     public File getRootDirectory() throws DatabaseFileStructureException {
         return rootDirectory;
     }
@@ -56,7 +60,10 @@ public class Database {
             if (root.exists() && root.isDirectory()) {
                 File[] subfolders = getTablesFromRoot(root);
                 for (File folder : subfolders) {
-                    tables.add(new Table(folder.getName(), this));
+                    String name = folder.getName();
+                    Table table = new Table(name, this);
+                    tables.add(table);
+                    tableNames.put(name, table);
                 }
             } else {
                 throw new DatabaseFileStructureException("Root directory not found");
@@ -99,8 +106,11 @@ public class Database {
         }
     }
 
-    public void useTable(String name) throws TableNotFoundException {
-        currentTable = getTable(name);
+    public void useTable(String name) throws TableNotFoundException, LoadOrSaveError {
+        if (currentTable != null) {
+            currentTable.save();
+        }
+        setCurrentTable(name);
     }
 
     Table createTable(String name) throws DatabaseException {
@@ -117,12 +127,12 @@ public class Database {
             tableNames.put(name, table);
             return table;
         } catch (UnsupportedOperationException ex) {
-            throw new LoadOrSaveError("Can't create table" + ex);
+            throw new LoadOrSaveError("Can't create table", ex);
         } catch (FileAlreadyExistsException ex) {
-            throw new DatabaseFileStructureException("Can't create table, directory already exists" + ex);
+            throw new DatabaseFileStructureException("Can't create table, directory already exists", ex);
         } catch (InvalidPathException ex) {
             throw new DatabaseFileStructureException(
-                    "Can't create table, directory name makes it impossible to create a directory" + ex);
+                    "Can't create table, directory name makes it impossible to create a directory", ex);
         } catch (IOException ex) {
             throw new LoadOrSaveError("Can't create table, I/O error", ex);
         } catch (SecurityException ex) {
@@ -137,36 +147,47 @@ public class Database {
         tableNames.remove(name);
     }
 
-    public void invokeCommand(ParsedCommand command) throws DatabaseException {
-        switch (command.getCommandName()) {
+    protected boolean isTableCommand(String command) {
+        switch (command) {
             case "put":
             case "get":
             case "remove":
             case "list":
-                if (currentTable != null) {
-                    currentTable.invokeCommand(command);
-                } else {
-                    System.out.println("no table");
-                }
-                break;
-            case "create":
-                tryCreateTable(ArgumentsUtils.get1Args(command));
-                break;
-            case "drop":
-                tryRemoveTable(ArgumentsUtils.get1Args(command));
-                break;
-            case "use":
-                tryUseTable(ArgumentsUtils.get1Args(command));
-                break;
-            case "show":
-                if (ArgumentsUtils.get1Args(command).equals("tables")) {
-                    showTables();
-                } else {
-                    throw new ArgumentException("Unknown argument in show command");
-                }
-                break;
+                return true;
             default:
-                throw new UnknownCommand();
+                return false;
+        }
+    }
+
+
+    public void invokeCommand(ParsedCommand command) throws DatabaseException {
+        if (isTableCommand(command.getCommandName())) {
+            if (currentTable != null) {
+                currentTable.invokeCommand(command);
+            } else {
+                System.out.println("no table");
+            }
+        } else {
+            switch (command.getCommandName()) {
+                case "create":
+                    tryCreateTable(ArgumentsUtils.get1Args(command));
+                    break;
+                case "drop":
+                    tryRemoveTable(ArgumentsUtils.get1Args(command));
+                    break;
+                case "use":
+                    tryUseTable(ArgumentsUtils.get1Args(command));
+                    break;
+                case "show":
+                    if (ArgumentsUtils.get1Args(command).equals("tables")) {
+                        showTables();
+                    } else {
+                        throw new ArgumentException("Unknown argument in show command");
+                    }
+                    break;
+                default:
+                    throw new UnknownCommand();
+            }
         }
     }
 
@@ -190,7 +211,7 @@ public class Database {
 
     private void tryUseTable(String name) throws DatabaseException {
         try {
-            removeTable(name);
+            useTable(name);
             System.out.println("using " + name);
         } catch (TableNotFoundException ex) {
             System.out.println(name + " not exists");

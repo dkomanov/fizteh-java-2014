@@ -19,26 +19,31 @@ public class MultiFileHashMap extends CommandParser {
         try {
             MultiFileHashMap map = new MultiFileHashMap();
             map.run(args);
-            if (args.length == 0) {
-                map.tryToSave();
+            if (args.length != 0) {
+                if(!map.tryToSave())
+                    System.exit(2);
             }
-        } catch (Exception ex) {
+        } catch (LoadOrSaveError ex) {
             System.err.println(ex.getMessage());
+            System.exit(3);
         }
     }
 
     @Override
     protected boolean invokeCommands(List<ParsedCommand> commands) throws ParserException {
         for (ParsedCommand command : commands) {
-            if (command.getCommandName().equals("exit")) {
-                if (tryToSave()) {
-                    return exit();
-                }
-            } else {
-                try {
-                    database.invokeCommand(command);
-                } catch (DatabaseException ex) {
-                    System.err.println(ex.getMessage());
+            if (command.getCommandName() != null) {
+                if (command.getCommandName().equals("exit")) {
+                    if (tryToSave()) {
+                        return exit();
+                    }
+                } else {
+                    try {
+                        database.invokeCommand(command);
+                    } catch (DatabaseException ex) {
+                        System.err.println(ex.getMessage());
+                        return false;
+                    }
                 }
             }
         }
@@ -58,12 +63,11 @@ public class MultiFileHashMap extends CommandParser {
     }
 
     private void save() throws LoadOrSaveError, TableNotFoundException {
-        if (database != null) {
-            database.getCurrentTable().save();
+        Table table = database.getCurrentTable();
+        if (table != null) {
+            table.save();
         } else {
             throw new TableNotFoundException("Table isn't selected");
         }
     }
-
-
 }
