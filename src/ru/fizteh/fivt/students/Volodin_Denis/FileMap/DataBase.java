@@ -8,12 +8,13 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class DataBase {
 
     private String databasePath;
-    private HashMap<String, String> database;
+    private Map<String, String> database;
 
     public DataBase(final String dbPath) throws Exception {
         databasePath = dbPath;
@@ -40,8 +41,8 @@ public class DataBase {
                 ++i;
             }
             return listKeys;
-        } catch (Exception except) {
-            filemapSmthWrong("list", except.getMessage());
+        } catch (Exception e) {
+            filemapSmthWrong("list", e.getMessage());
         }
         return new String[0]; //warning
     }
@@ -49,16 +50,16 @@ public class DataBase {
     public void put(final String key, final String value) throws Exception {
         try {
             database.put(key, value);
-        } catch (Exception except) {
-            filemapSmthWrong("put", except.getMessage());
+        } catch (Exception e) {
+            filemapSmthWrong("put", e.getMessage());
         }
     }
 
     public String search(final String key) throws Exception {
         try {
             return database.get(key);
-        } catch (Exception except) {
-            filemapSmthWrong("search", except.getMessage());
+        } catch (Exception e) {
+            filemapSmthWrong("search", e.getMessage());
         }
         return database.get(key); //warning
     }
@@ -66,8 +67,8 @@ public class DataBase {
     public void remove(final String key) throws Exception {
         try {
             database.remove(key);
-        } catch (Exception except) {
-            filemapSmthWrong("remove", except.getMessage());
+        } catch (Exception e) {
+            filemapSmthWrong("remove", e.getMessage());
         }
     }
 
@@ -90,7 +91,7 @@ public class DataBase {
                 database.put(key, value);
             }
             input.close();
-        } catch (Exception except) {
+        } catch (Exception e) {
             input.close();
             filemapErrorRead("read");
         }
@@ -116,7 +117,7 @@ public class DataBase {
                 output.write(database.get(key).getBytes("UTF-8"));
             }
             output.close();
-        } catch (Exception except) {
+        } catch (Exception e) {
             output.close();
             filemapErrorWrite("write");
         }
