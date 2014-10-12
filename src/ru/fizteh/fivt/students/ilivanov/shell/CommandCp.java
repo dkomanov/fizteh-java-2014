@@ -2,8 +2,10 @@ package ru.fizteh.fivt.students.ilivanov.shell;
 
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 public class CommandCp implements Command {
@@ -46,15 +48,16 @@ public class CommandCp implements Command {
                 Path destPath = Paths.get(Shell.currentDirectory.getCanonicalPath());
                 destPath = destPath.resolve(destination);
                 File destFile = new File(destPath.toAbsolutePath().toString());
-                if (!destFile.exists() || !destFile.isDirectory()) {
-                    System.err.println("cp: \"" + destination + "\": no such directory");
+
+                if (!destFile.isDirectory() && srcFile.isDirectory()) {
+                    System.err.println("cp: directory couldn't be copied into file");
                     return -1;
                 }
                 if (destFile.equals(srcFile)) {
                     System.err.println("cp: source and destination are the same");
                     return -1;
                 }
-                if (new File(destFile, source).exists()) {
+                if (destFile.isDirectory() && new File(destFile, source).exists()) {
                     System.err.println("cp: such file or directory already exists");
                     return -1;
                 }
@@ -68,7 +71,11 @@ public class CommandCp implements Command {
                             return -1;
                         }
                     } else {
-                        copyFile(srcFile, new File(destFile, source));
+                        if (!destFile.isDirectory()) {
+                            Files.copy(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                        } else {
+                            copyFile(srcFile, new File(destFile, source));
+                        }
                     }
                 }
 
