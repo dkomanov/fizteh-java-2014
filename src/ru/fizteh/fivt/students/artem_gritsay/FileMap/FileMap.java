@@ -74,11 +74,8 @@ public class FileMap {
 
     }
     private static void put(String[] args) {
-        System.out.println("oops");
         if (args.length == 3) {
-            System.out.println("oops");
             String v = filemap.put(args[1], args[2]);
-            System.out.println("oops");
             if (v != null) {
                 System.out.println("overwrite");
                 System.out.println(v);
