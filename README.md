@@ -17,6 +17,8 @@ Code Conventions.
 ## Лекции
 1. [Java, JVM, примитивные типы](https://yadi.sk/d/_ZgbGf9NbXraZ)
 2. [Object, String, исключения](https://yadi.sk/d/MCu6krbtbXrgZ)
+3. [IO Stream, инициализация объектов, enum](https://yadi.sk/d/MinWJhG0bteEr)
+4. [Лямбды, аннотации, обобщения, коллекции](https://yadi.sk/d/hxkoP81rbteTp)
 
 ## Список литературы
 * Брюс Эккель &mdash; Философия Java  (Thinking in Java)
