@@ -113,7 +113,9 @@ public class FileMap {
             return true;
         }
 
-        if (tokens[0].equals("")) tokens = Arrays.copyOfRange(tokens, 1, tokens.length);;
+        if (tokens[0].equals("")) {
+            tokens = Arrays.copyOfRange(tokens, 1, tokens.length);
+        }
 
         if (tokens[0].equals("put")) {
             if (tokens.length == 3) {
