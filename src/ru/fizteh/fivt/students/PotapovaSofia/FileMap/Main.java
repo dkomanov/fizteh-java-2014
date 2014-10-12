@@ -12,32 +12,27 @@ public class Main {
         dbPath = System.getProperty("db.file");
         db = new DataBase(dbPath);
         if (args.length == 0) {
-            interMode();
+            interactiveMode();
         } else {
             batchMode(args);
         }
     }
 
-    public static void interMode() {
+    public static void interactiveMode() {
         System.out.print("$ ");
-        try (Scanner in = new Scanner(System.in)) {
-            while (in.hasNextLine()) {
-                String str = in.nextLine();
-                String[] cmds = str.trim().split(";");
-                for (String cmd : cmds) {
-                    try {
-                        commandParse(cmd);
-                    } catch (IOException | IllegalArgumentException e) {
-                        System.err.println(e.getMessage());
-                    }
+        Scanner in = new Scanner(System.in);
+        while (in.hasNextLine()) {
+            String str = in.nextLine();
+            String[] cmds = str.trim().split(";");
+            for (String cmd : cmds) {
+                try {
+                    commandParse(cmd);
+                } catch (IOException | IllegalArgumentException e) {
+                    System.err.println(e.getMessage());
                 }
-                System.out.print("$ ");
             }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+            System.out.print("$ ");
         }
-        System.out.println();
     }
 
     public static void batchMode(String[] args) {
