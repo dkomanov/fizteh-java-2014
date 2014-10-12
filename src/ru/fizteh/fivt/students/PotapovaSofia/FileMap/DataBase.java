@@ -1,11 +1,7 @@
 package ru.fizteh.fivt.students.PoatpovaSofia.FileMap;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.*;
 import java.util.HashMap;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +22,7 @@ public class DataBase {
         }
     }
 
-    private String readWord(DataInputStream dataInputStream) throws Exception {
+    private String readWord(DataInputStream dataInputStream) throws IOException {
         int length = dataInputStream.readInt();
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < length; i++) {
@@ -35,7 +31,7 @@ public class DataBase {
         return stringBuilder.toString();
     }
 
-    public Map<String, String> readDataFromFile() throws Exception {
+    public Map<String, String> readDataFromFile() throws IOException {
         Map<String, String> resultFileMap = new HashMap<>();
         DataInputStream dataInputStream = new DataInputStream(new FileInputStream(dbPath));
         while (true) {
@@ -54,12 +50,12 @@ public class DataBase {
         return db;
     }
 
-    private void writeWord(DataOutputStream dataOutputStream, String str) throws Exception {
+    private void writeWord(DataOutputStream dataOutputStream, String str) throws IOException {
         dataOutputStream.writeInt(str.length());
         dataOutputStream.writeChars(str);
     }
 
-    public void writeDataToFile() throws Exception {
+    public void writeDataToFile() throws IOException {
         DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(dbPath));
         Set<String> keySet = db.keySet();
         Iterator<String> iterator = keySet.iterator();

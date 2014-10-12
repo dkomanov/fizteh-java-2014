@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.PoatpovaSofia.FileMap;
 
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class Main {
         }
     }
 
-    public static void interMode() throws Exception {
+    public static void interMode() {
         System.out.print("$ ");
         try (Scanner in = new Scanner(System.in)) {
             while (in.hasNextLine()) {
@@ -26,7 +27,7 @@ public class Main {
                 for (String cmd : cmds) {
                     try {
                         commandParse(cmd);
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                         System.err.println(e.getMessage());
                     }
                 }
@@ -39,7 +40,7 @@ public class Main {
         System.out.println();
     }
 
-    public static void batchMode(String[] args) throws Exception {
+    public static void batchMode(String[] args) {
         StringBuilder cmd = new StringBuilder();
         for (String a : args) {
             cmd.append(a);
@@ -49,14 +50,14 @@ public class Main {
         for (String c : cmds) {
             try {
                 commandParse(c);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 System.err.println(e.getMessage());
                 System.exit(1);
             }
         }
     }
 
-    public static void commandParse(String cmd) throws Exception {
+    public static void commandParse(String cmd) throws IOException {
         String[] runningCmd = cmd.trim().split("\\s+");
         if (runningCmd[0].equals("put")) {
             if (runningCmd.length > 3) {
@@ -95,11 +96,11 @@ public class Main {
             System.out.println("exit");
             System.exit(0);
         } else {
-            throw new Exception(runningCmd[0] + ": unknown command");
+            throw new IllegalArgumentException(runningCmd[0] + ": unknown command");
         }
     }
 
-    public static void put(DataBase db, String key, String value) throws Exception {
+    public static void put(DataBase db, String key, String value) throws IOException{
         if (!db.getDataBase().containsKey(key)) {
             System.out.println("new");
         } else {
@@ -111,7 +112,7 @@ public class Main {
         db.writeDataToFile();
     }
 
-    public static void get(DataBase db, String key) throws Exception {
+    public static void get(DataBase db, String key) {
         if (db.getDataBase().containsKey(key)) {
             System.out.println("found");
             System.out.println(db.getDataBase().get(key));
@@ -120,7 +121,7 @@ public class Main {
         }
     }
 
-    public static void remove(DataBase db, String key) throws Exception {
+    public static void remove(DataBase db, String key) throws IOException {
         if (db.getDataBase().containsKey(key)) {
             db.getDataBase().remove(key);
             System.out.println("removed");
@@ -136,11 +137,11 @@ public class Main {
         System.out.println(joined);
     }
 
-    private static void tooMuchArgs(String cmd) throws Exception {
-        throw new Exception(cmd + ": too much arguments");
+    private static void tooMuchArgs(String cmd) throws IllegalArgumentException {
+        throw new IllegalArgumentException(cmd + ": too much arguments");
     }
 
-    private static void fewArgs(String cmd) throws Exception {
-        throw new Exception(cmd + ": few arguments");
+    private static void fewArgs(String cmd) throws IllegalArgumentException {
+        throw new IllegalArgumentException(cmd + ": few arguments");
     }
 }
