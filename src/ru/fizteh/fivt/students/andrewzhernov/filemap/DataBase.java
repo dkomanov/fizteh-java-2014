@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class DataBase {
     private Map<String, String> dataBase;
