@@ -7,11 +7,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class DataBase {
     private static String dbPath;
-    private static HashMap<String, String> db;
+    private static Map<String, String> db;
+
     public DataBase(String path) throws Exception {
         dbPath = path;
         File file = new File(path).getAbsoluteFile();
@@ -20,8 +22,10 @@ public class DataBase {
         } else {
             file = new File(dbPath);
             file.createNewFile();
+            db = new HashMap<>();
         }
     }
+
     private String readWord(DataInputStream dataInputStream) throws Exception {
         int length = dataInputStream.readInt();
         StringBuilder stringBuilder = new StringBuilder();
@@ -30,8 +34,9 @@ public class DataBase {
         }
         return stringBuilder.toString();
     }
-    public HashMap<String, String> readDataFromFile() throws Exception {
-        HashMap<String, String> resultFileMap = new HashMap<>();
+
+    public Map<String, String> readDataFromFile() throws Exception {
+        Map<String, String> resultFileMap = new HashMap<>();
         DataInputStream dataInputStream = new DataInputStream(new FileInputStream(dbPath));
         while (true) {
             try {
@@ -44,16 +49,18 @@ public class DataBase {
         }
         return resultFileMap;
     }
-    public final HashMap<String, String> getDataBase() {
+
+    public final Map<String, String> getDataBase() {
         return db;
     }
-    private void writeWord(DataOutputStream dataOutputStream, String word) throws Exception {
-        dataOutputStream.writeInt(word.length());
-        dataOutputStream.writeChars(word);
+
+    private void writeWord(DataOutputStream dataOutputStream, String str) throws Exception {
+        dataOutputStream.writeInt(str.length());
+        dataOutputStream.writeChars(str);
     }
+
     public void writeDataToFile() throws Exception {
         DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(dbPath));
-
         Set<String> keySet = db.keySet();
         Iterator<String> iterator = keySet.iterator();
         while (iterator.hasNext()) {

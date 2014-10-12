@@ -1,29 +1,25 @@
 package ru.fizteh.fivt.students.PoatpovaSofia.FileMap;
 
 import java.util.Scanner;
+import java.util.Set;
 
 public class Main {
     private static String dbPath;
     private static DataBase db;
 
     public static void main(String[] args) throws Exception {
-        try {
-            dbPath = System.getProperty("db.file");
-            db = new DataBase(dbPath);
-            if (args.length == 0) {
-                interMode();
-            } else {
-                packMode(args);
-            }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+        dbPath = System.getProperty("db.file");
+        db = new DataBase(dbPath);
+        if (args.length == 0) {
+            interMode();
+        } else {
+            batchMode(args);
         }
-        System.exit(0);
     }
+
     public static void interMode() throws Exception {
+        System.out.print("$ ");
         try (Scanner in = new Scanner(System.in)) {
-            System.out.print("$ ");
             while (in.hasNextLine()) {
                 String str = in.nextLine();
                 String[] cmds = str.trim().split(";");
@@ -42,7 +38,8 @@ public class Main {
         }
         System.out.println();
     }
-    public static void packMode(String[] args) throws Exception {
+
+    public static void batchMode(String[] args) throws Exception {
         StringBuilder cmd = new StringBuilder();
         for (String a : args) {
             cmd.append(a);
@@ -58,58 +55,92 @@ public class Main {
             }
         }
     }
+
     public static void commandParse(String cmd) throws Exception {
         String[] runningCmd = cmd.trim().split("\\s+");
         if (runningCmd[0].equals("put")) {
-            try {
-                if (runningCmd.length > 3) {
-                    throw new Exception("put: too much arguments");
-                } else if (runningCmd.length < 3) {
-                    throw new Exception("put: few arguements");
-                } else {
-                    Command.put(db, runningCmd[1], runningCmd[2]);
-                }
-            } catch (IndexOutOfBoundsException e) {
-                throw new Exception("usage: put <key> <value>");
+            if (runningCmd.length > 3) {
+                tooMuchArgs("put");
+            } else if (runningCmd.length < 3) {
+                fewArgs("put");
+            } else {
+                put(db, runningCmd[1], runningCmd[2]);
             }
         } else if (runningCmd[0].equals("get")) {
-            try {
-                if (runningCmd.length > 2) {
-                    throw new Exception("get: too much arguments");
-                } else if (runningCmd.length < 2) {
-                    throw new Exception("get: few arguements");
-                } else {
-                    Command.get(db, runningCmd[1]);
-                }
-            } catch (IndexOutOfBoundsException e) {
-                throw new Exception("usage: get <key>");
+            if (runningCmd.length > 2) {
+                tooMuchArgs("get");
+            } else if (runningCmd.length < 2) {
+                fewArgs("get");
+            } else {
+                get(db, runningCmd[1]);
             }
         } else if (runningCmd[0].equals("remove")) {
-            try {
-                if (runningCmd.length > 2) {
-                    throw new Exception("remove: too much arguments");
-                } else if (runningCmd.length < 2) {
-                    throw new Exception("remove: few arguements");
-                } else {
-                    Command.remove(db, runningCmd[1]);
-                }
-            } catch (IndexOutOfBoundsException e) {
-                throw new Exception("usage: remove <key>");
+            if (runningCmd.length > 2) {
+                tooMuchArgs("remove");
+            } else if (runningCmd.length < 2) {
+                fewArgs("remove");
+            } else {
+                remove(db, runningCmd[1]);
             }
         } else if (runningCmd[0].equals("list")) {
             if (runningCmd.length > 1) {
-                throw new Exception("list: too much arguments");
+                tooMuchArgs("list");
             } else {
-                Command.list(db);
+                list(db);
             }
         } else if (runningCmd[0].equals("exit")) {
             if (runningCmd.length > 1) {
-                throw new Exception("exit: too much arguments");
+                tooMuchArgs("exit");
             }
             System.out.println("exit");
             System.exit(0);
         } else {
             throw new Exception(runningCmd[0] + ": unknown command");
         }
+    }
+
+    public static void put(DataBase db, String key, String value) throws Exception {
+        if (!db.getDataBase().containsKey(key)) {
+            System.out.println("new");
+        } else {
+            System.out.println("overwrite");
+            System.out.println(db.getDataBase().get(key));
+            db.getDataBase().remove(key);
+        }
+        db.getDataBase().put(key, value);
+        db.writeDataToFile();
+    }
+
+    public static void get(DataBase db, String key) throws Exception {
+        if (db.getDataBase().containsKey(key)) {
+            System.out.println("found");
+            System.out.println(db.getDataBase().get(key));
+        } else {
+            System.out.println("not found");
+        }
+    }
+
+    public static void remove(DataBase db, String key) throws Exception {
+        if (db.getDataBase().containsKey(key)) {
+            db.getDataBase().remove(key);
+            System.out.println("removed");
+        } else {
+            System.out.println("not found");
+        }
+        db.writeDataToFile();
+    }
+
+    public static void list(DataBase db) {
+        Set keySet = db.getDataBase().keySet();
+        String joined = String.join(", ", keySet);
+        System.out.println(joined);
+    }
+
+    private static void tooMuchArgs(String cmd) throws Exception {
+        throw new Exception(cmd + ": too much arguments");
+    }
+
+    private static void fewArgs(String cmd) throws Exception {
+        throw new Exception(cmd + ": few arguments");
     }
 }
