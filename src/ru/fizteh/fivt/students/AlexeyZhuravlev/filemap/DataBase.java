@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class DataBase {
 
-    private String dbFileName;
+    public String dbFileName;
     HashMap<String, String> data;
 
     public DataBase(String path) throws Exception {
@@ -23,6 +23,10 @@ public class DataBase {
         DbWriter writer = new DbWriter(dbFileName);
         writer.writeData(data);
         writer.close();
+    }
+
+    public int recordsNumber() {
+        return data.size();
     }
 
 }

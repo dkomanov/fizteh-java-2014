@@ -1,0 +1,18 @@
+package ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap;
+
+import java.util.Map;
+
+/**
+ * @author AlexeyZhuravlev
+ */
+public class ShowTablesCommand extends Command {
+
+    @Override
+    public void execute(DataBaseDir base) throws Exception {
+        for (Map.Entry<String, Table> entry: base.tables.entrySet()) {
+            String name = entry.getKey();
+            int size = entry.getValue().recordsNumber();
+            System.out.println(name + " " + size);
+        }
+    }
+}
