@@ -38,9 +38,7 @@ public class FileMap {
         int i = 0;
         String key;
         String value;
-
-        boolean end = false;
-        while (!end) {
+        while (true) {
             try {
                 int length = file.readInt();
                 byte[] bytes = new byte[length];
@@ -52,7 +50,7 @@ public class FileMap {
                 value = new String(bytes, "UTF-8");
                 fm.put(key, value);
             } catch (IOException e) {
-                end = true;
+                break;
             }
         }
     }
