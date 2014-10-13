@@ -17,19 +17,13 @@ public class TableReader implements Closeable {
 
     private RandomAccessFile dbFile;
 
-    public TableReader(String fileName) {
-        try {
-            dbFile = new RandomAccessFile(fileName, "r");
-        } catch (FileNotFoundException e) {
-            dbFile = null;
-        }
+    public TableReader(String fileName) throws FileNotFoundException {
+        dbFile = new RandomAccessFile(fileName, "r");
     }
 
     @Override
     public void close() throws IOException {
-        if (dbFile != null) {
-            dbFile.close();
-        }
+        dbFile.close();
     }
 
     public String read() throws IOException {
@@ -39,16 +33,7 @@ public class TableReader implements Closeable {
         return new String(word);
     }
 
-    public boolean eof() {
-        if (dbFile == null) {
-            return true;
-        }
-        boolean retVal = false;
-        try {
-            retVal = dbFile.getFilePointer() >= dbFile.length();
-        } catch (Exception e) {
-            return true;
-        }
-        return retVal;
+    public boolean eof() throws IOException {
+        return dbFile.getFilePointer() >= dbFile.length();
     }
 }

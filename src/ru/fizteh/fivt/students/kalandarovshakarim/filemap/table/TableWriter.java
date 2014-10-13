@@ -17,19 +17,13 @@ public class TableWriter implements Closeable {
 
     private RandomAccessFile dbFile;
 
-    public TableWriter(String fileName) {
-        try {
-            dbFile = new RandomAccessFile(fileName, "rw");
-        } catch (FileNotFoundException e) {
-            dbFile = null;
-        }
+    public TableWriter(String fileName) throws FileNotFoundException {
+        dbFile = new RandomAccessFile(fileName, "rw");
     }
 
     @Override
     public void close() throws IOException {
-        if (dbFile != null) {
-            dbFile.close();
-        }
+        dbFile.close();
     }
 
     public long write(String word) throws IOException {
@@ -41,8 +35,6 @@ public class TableWriter implements Closeable {
     }
 
     public void setLength(long length) throws IOException {
-        if (dbFile != null) {
-            dbFile.setLength(length);
-        }
+        dbFile.setLength(length);
     }
 }
