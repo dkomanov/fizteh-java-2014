@@ -53,12 +53,7 @@ public class FileMap {
     
     public void list() {
         int count = 0;
-        for (Map.Entry<String, String> pair : map.entrySet()) {
-            if (pair.getValue() != null) {
-                count++;
-                System.out.print(pair.getKey() + " ");
-            }
-        }
+        System.out.println(String.join(", ", map.keySet()));
         System.out.println();
     }
     
