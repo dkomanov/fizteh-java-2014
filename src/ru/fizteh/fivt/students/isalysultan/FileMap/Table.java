@@ -1,12 +1,15 @@
 package ru.fizteh.fivt.students.isalysultan.FileMap;
 
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -66,7 +69,7 @@ public class Table {
         boolean forEnd = true;
         while (itOffset.hasNext() && forEnd) {
             if (size < count) {
-                System.err.println("Error with offset.");
+                System.err.println("error with offset");
             }
             boolean endFile = false;
             if (!itForEndOffset.hasNext()) {
@@ -89,11 +92,12 @@ public class Table {
             count = afterCount;
         }
         buff.close();
+
     }
 
     public void writeFile() throws IOException {
-        RandomAccessFile endFile = new RandomAccessFile(
-            filePath.toString(), "rwd");
+        RandomAccessFile endFile = new RandomAccessFile(filePath.toString(),
+                "rwd");
         endFile.setLength(0);
         Set<String> keys = storage.keySet();
         Iterator<String> itKey = keys.iterator();
