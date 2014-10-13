@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.IsalySultan.FileMap;
+package ru.fizteh.fivt.students.isalysultan.FileMap;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
