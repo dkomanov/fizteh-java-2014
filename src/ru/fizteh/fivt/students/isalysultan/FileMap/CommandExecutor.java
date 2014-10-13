@@ -22,6 +22,7 @@ public class CommandExecutor {
             tables.writeFile();
             System.out.println("exit");
             System.exit(0);
+            break;
         default:
             System.out.println("Command is not recognized.");
         }
