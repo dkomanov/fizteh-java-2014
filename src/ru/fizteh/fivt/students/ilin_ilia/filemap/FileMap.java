@@ -16,22 +16,18 @@ public class FileMap {
     private static Map<String, String> map;
     private static RandomAccessFile file;
     
-    FileMap(final String path) {
+    FileMap(final String path) throws FileNotFoundException, IOException {
         map = new HashMap<>();
-        try {
-            file = new RandomAccessFile(path, "rw");
+        file = new RandomAccessFile(path, "rw");
+        if (file.length() > 0) {
             getFile();
-        } catch (FileNotFoundException e) {
-            System.out.println("Can't findthe following file:" + path);
-        } catch (SecurityException e) {
-            System.out.println("Can't use the following file:" + path);
         }
     }
     
     public void put(final String key, final String value) {
         String old = map.put(key, value);
         if (old != null) {
-            System.out.println("owerwrite\nold" + old);
+            System.out.println("owerwrite\nold " + old);
         } else {
             System.out.println("new");
         }
@@ -64,7 +60,7 @@ public class FileMap {
             }
         }
         if (count == 0) {
-            System.out.println("\n");
+            System.out.println();
         }
     }
     
@@ -73,7 +69,7 @@ public class FileMap {
         System.exit(0);
     }
     
-    public void getFile() {
+    public void getFile() throws IOException {
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         List<Integer> offsets = new LinkedList<Integer>();
         List<String> keys = new LinkedList<String>();
@@ -81,23 +77,18 @@ public class FileMap {
         int bytesCounter = 0;
         int off = -1;
         do {
-            try {
-                while ((b = file.readByte()) != 0) {
-                    bytesCounter++;
-                    buf.write(b);
-                }
+            while ((b = file.readByte()) != 0) {
                 bytesCounter++;
-                if (off == -1) {
-                    off = file.readInt();
-                } else {
-                    offsets.add(file.readInt());
-                }
-                bytesCounter += 4;
-                keys.add((buf.toString("UTF-8")));
-            } catch (IOException e) {
-                System.out.println("Can't read db file");
-                System.exit(-1);
+                buf.write(b);
             }
+            bytesCounter++;
+            if (off == -1) {
+                off = file.readInt();
+            } else {
+                offsets.add(file.readInt());
+            }
+            bytesCounter += 4;
+            keys.add((buf.toString("UTF-8")));
         } while (bytesCounter < off);
         try {
             offsets.add((int) file.length());
@@ -116,16 +107,16 @@ public class FileMap {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Can't read db file");
+            System.err.println("Can't read db file");
             System.exit(-1);
         } catch (Exception e) {
-            System.out.println("Wrong input file");
+            System.err.println("Wrong input file");
             System.exit(-1);
         }
         try {
             buf.close();
         } catch (IOException e) {
-            System.out.println("Can't close db file");
+            System.err.println("Can't close db file");
             System.exit(-1);
         }
     }
@@ -149,10 +140,10 @@ public class FileMap {
             }
             for (int pos :offsetsPos) {
                 file.seek(pos);
-                file.writeInt(offIter.next());
+                file.writeInt(pos);
             }
         } catch (IOException e) {
-            System.out.println("Can't write into a db file");
+            System.err.println("Can't write into a db file");
             System.exit(-1);
         }
     }
