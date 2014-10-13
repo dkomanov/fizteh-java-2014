@@ -5,14 +5,12 @@ import java.io.*;
 
 public class Write {
     private String filepath;
-    private HashMap<String, String> map;
 
     public Write(String path) {
         filepath = path;
     }
 
-    public void write(HashMap<String, String> locmap) {
-        map = locmap;
+    public void write(Map<String, String> map) {
         try (DataOutputStream out = new DataOutputStream(new FileOutputStream(
                 filepath))) {
             Set<String> st = map.keySet();
@@ -25,9 +23,9 @@ public class Write {
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("Not Found " + e.toString());
+            System.err.print("Not Found " + e.toString());
         } catch (IOException e) {
-            System.out.println("IOException " + e.toString());
+            System.err.print("IOException " + e.toString());
         }
     }
 }
