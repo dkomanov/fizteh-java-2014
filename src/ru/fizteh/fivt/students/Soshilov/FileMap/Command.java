@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.Soshilov.FileMap;
 
-import java.util.Vector;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,5 +9,5 @@ import java.util.Vector;
  * Time: 18:51
  */
 public interface Command {
-    void execute(Vector<String> args, FileMap fileMap);
+    void execute(final String[] currentArgs, Map<String, String> currentTable);
 }

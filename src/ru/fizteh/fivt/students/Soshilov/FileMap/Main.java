@@ -12,6 +12,8 @@ public class Main {
      * @param currentArgs Commands that were entered: name, its' arguments.
      */
     public static void main(final String[] currentArgs) {
+        //System.setProperty("db.file",
+        //        "/home/soshikan/IdeaProjects/FileMap/src/ru/fizteh/fivt/students/Soshilov/FileMap/db.file");
         FileMapRun.fileMapRun(currentArgs);
     }
 }
