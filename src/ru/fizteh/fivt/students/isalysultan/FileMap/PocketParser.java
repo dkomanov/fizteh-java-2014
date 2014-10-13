@@ -24,11 +24,11 @@ public class PocketParser {
         String allString = allStringBuild.toString();
         String[] commands = allString.split(";");
         int i = 0;
-        Parser newParser = new Parser();
+        CommandExecutor newParser = new CommandExecutor();
         while (i <= commands.length) {
             String[] command = commands[i].split(" ");
             ++i;
-            newParser.myParser(object, command);
+            newParser.execute(object, command);
         }
     }
 }
