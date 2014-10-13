@@ -54,7 +54,7 @@ public class FileMap {
                         continue;
                     }
                     if (!fileMapCommands.get(curCommand).execute(
-                            argv)) {errorOccurred = true;}
+                            argv)) { errorOccurred = true; }
                 }
             }
         } else {
