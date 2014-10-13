@@ -5,8 +5,8 @@ import java.util.*;
 class Functional {
     private Map<String, String> map;
 
-    public Functional(Map<String, String> map_) {
-        map = map_;
+    public Functional(Map<String, String> maptime) {
+        map = maptime;
     }
 
     void put(String key, String value) {
