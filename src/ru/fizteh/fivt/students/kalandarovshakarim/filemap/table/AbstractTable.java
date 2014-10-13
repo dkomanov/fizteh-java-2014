@@ -88,7 +88,7 @@ public abstract class AbstractTable implements Table {
             save();
             old.clear();
         } catch (IOException e) {
-            // Nothing
+            throw new RuntimeException(e);
         }
         return uncommited;
     }
@@ -96,7 +96,11 @@ public abstract class AbstractTable implements Table {
     @Override
     public int rollback() {
         for (Entry<String, String> entry : old.entrySet()) {
-            table.put(entry.getKey(), entry.getValue());
+            if (entry.getValue() != null) {
+                table.put(entry.getKey(), entry.getValue());
+            } else {
+                table.remove(entry.getKey());
+            }
         }
         int uncommited = old.size();
         old.clear();

@@ -5,6 +5,7 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.table;
 
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -16,9 +17,11 @@ import java.io.RandomAccessFile;
 public class TableReader implements Closeable {
 
     private RandomAccessFile dbFile;
+    private String fileName;
 
     public TableReader(String fileName) throws FileNotFoundException {
         dbFile = new RandomAccessFile(fileName, "rw");
+        this.fileName = fileName;
     }
 
     @Override
@@ -27,10 +30,15 @@ public class TableReader implements Closeable {
     }
 
     public String read() throws IOException {
-        int length = dbFile.readInt();
-        byte[] word = new byte[length];
-        dbFile.read(word, 0, length);
-        return new String(word);
+        byte[] word = null;
+        try {
+            int length = dbFile.readInt();
+            word = new byte[length];
+            dbFile.read(word, 0, length);
+        } catch (EOFException | OutOfMemoryError e) {
+            throw new IOException(fileName + ": Invalid file format");
+        }
+        return new String(word, "UTF-8");
     }
 
     public boolean eof() throws IOException {

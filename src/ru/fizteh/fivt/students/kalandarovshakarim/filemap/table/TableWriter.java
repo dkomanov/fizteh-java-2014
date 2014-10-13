@@ -27,7 +27,7 @@ public class TableWriter implements Closeable {
     }
 
     public long write(String word) throws IOException {
-        byte[] bytes = word.getBytes();
+        byte[] bytes = word.getBytes("UTF-8");
         long retVal = 4 + bytes.length;
         dbFile.writeInt(bytes.length);
         dbFile.write(bytes);

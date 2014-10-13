@@ -4,7 +4,6 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
-import java.io.IOException;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
@@ -20,11 +19,11 @@ public class PutCommand extends AbstractCommand<OneTableBase> {
     }
 
     @Override
-    public void exec(String[] args) throws IOException {
+    public void exec(String[] args) {
         Table activeTable = context.getActiveTable();
 
         if (activeTable == null) {
-            throw new IOException("no table");
+            throw new IllegalArgumentException("no table");
         }
 
         String oldValue = activeTable.put(args[0], args[1]);

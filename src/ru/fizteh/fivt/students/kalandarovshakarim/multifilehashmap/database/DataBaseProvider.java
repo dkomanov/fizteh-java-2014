@@ -5,8 +5,9 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -53,10 +54,7 @@ public class DataBaseProvider implements TableProvider {
         try {
             newTable = new MultiFileTable(directory, name);
         } catch (IOException e) {
-            /*
-             * Предполагается что при создании базы данных вся коррекстность
-             * путей была проверена в TableProviderFactory.
-             */
+            throw new RuntimeException(e);
         }
         tables.put(name, newTable);
         return newTable;
@@ -70,16 +68,14 @@ public class DataBaseProvider implements TableProvider {
         if (!tables.containsKey(name)) {
             throw new IllegalStateException(name + " not found");
         } else {
+            ShellUtils utils = new ShellUtils();
+            Path tablePath = Paths.get(directory, name);
             try {
-                ShellUtils utils = new ShellUtils();
-                utils.chDir(directory);
-                utils.rm(name, true);
-                tables.remove(name);
-            } catch (FileNotFoundException e) {
-                // Аналогично.
+                utils.rm(tablePath.toString(), true);
             } catch (IOException e) {
-                // Аналогично.
+                throw new RuntimeException(e);
             }
+            tables.remove(name);
         }
     }
 

@@ -24,7 +24,7 @@ public class RemoveCommand extends AbstractCommand<OneTableBase> {
         Table activeTable = context.getActiveTable();
 
         if (activeTable == null) {
-            throw new IOException("no table");
+            throw new IllegalArgumentException("no table");
         }
         String deleted = activeTable.remove(args[0]);
 

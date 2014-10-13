@@ -90,12 +90,7 @@ public class Shell {
             String[] strStatus = (status == 0 ? new String[0] : new String[1]);
             supportedCmds.get("exit").exec(strStatus);
         } catch (Exception e) {
-            /*
-             * Фактически кинуть может только NullPointerException,
-             * но т.к. в описании интерфейска комманды есть другие
-             * ислючения приходится ловить всe.
-             */
-            System.err.println("No suitable on exit action found");
+            System.err.println(e.getMessage());
             System.exit(1);
         }
     }
