@@ -40,13 +40,15 @@ public class FileMapRun {
      * Interactive Mode: do entered functions.
      */
     public static void interactiveMode() {
-        Scanner sc = new Scanner(System.in);
-        Map<String, String> currentTable = new HashMap<>();
-        Initialization.initialization(currentTable, System.getProperty("db.file"));
-        while (true) {
-            String currentString = sc.nextLine();
-            currentString = currentString.trim();
-            run(currentString.split("\\s+"), currentTable);
+        try (Scanner sc = new Scanner(System.in)) {
+            Map<String, String> currentTable = new HashMap<>();
+            Initialization.initialization(currentTable, System.getProperty("db.file"));
+            while (true) {
+                System.out.print("$ ");
+                String currentString = sc.nextLine();
+                currentString = currentString.trim();
+                run(currentString.split("\\s+"), currentTable);
+            }
         }
     }
 
