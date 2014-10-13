@@ -14,11 +14,8 @@ public class Get {
      * @param currentArgs Commands that were entered: name, its' arguments.
      * @param currentTable Our main table.
      */
-    public static void getRun(final String[] currentArgs, Map currentTable) {
-        if (currentArgs.length != 2) {
-            System.err.println("get: " + (currentArgs.length < 2 ? "not enough" : "too many") + " arguments");
-            System.exit(1);
-        }
+    public static void getRun(final String[] currentArgs, Map<String, String> currentTable) {
+        FileMapRun.checkArguments(currentArgs.length, 2);
         if (currentTable.containsKey(currentArgs[1])) {
             System.out.println("Found\nvalue = " + currentTable.get(currentArgs[1]));
         } else {

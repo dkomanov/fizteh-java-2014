@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.Soshilov.FileMap;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ public class Initialization {
      * @param currentTable The table we use.
      * @param filePath The path to a file, which is used.
      */
-    public static void initialization(Map currentTable, final String filePath) {
+    public static void initialization(Map<String, String> currentTable, final String filePath) {
         if (filePath == null) {
             System.err.println("a file was not pointed");
             System.exit(1);
@@ -31,22 +32,22 @@ public class Initialization {
         }
         try {
             while (currentFile.available() > 0) {
-//                size of key
+                //size of key
                 int length = bytesToInt(currentFile);
-//                the key
+                //the key
                 String key = bytesToString(currentFile, length);
-//                again size of key
-//                length = bytesToInt(currentFile);
-//                again key
-//                key = bytesToString(currentFile, length);
-//                size of value
+                //again size of key
                 length = bytesToInt(currentFile);
-//                the value
+                //again key
+                key = bytesToString(currentFile, length);
+                //size of value
+                length = bytesToInt(currentFile);
+                //the value
                 String value = bytesToString(currentFile, length);
-//                againg size of value
-//                length = bytesToInt(currentFile);
-//                again value
-//                value = bytesToString(currentFile, length);
+                //again size of value
+                length = bytesToInt(currentFile);
+                //again value
+                value = bytesToString(currentFile, length);
                 if (currentTable.containsKey(key)) {
                     System.err.println("existing keys");
                     System.exit(1);
@@ -65,12 +66,19 @@ public class Initialization {
         }
     }
 
-    /*private static byte[] read(final DataInputStream input, final int length) throws IOException {
+    /**
+     * Read function, that gets bytes from file.
+     * @param input DataInputStream.
+     * @param length Size of needed memory.
+     * @return Buffer of bytes, that were read.
+     * @throws IOException Can be got from read function.
+     */
+    private static byte[] readBytes(final DataInputStream input, final int length) throws IOException {
         if (length < 0) {
-            System.err.println("Incorrect data base file: negative length");
-            System.exit(2);
+            System.err.println("cannot work with file: incorrect data base");
+            System.exit(1);
         }
-        ArrayList<Byte> wordBuilder = new ArrayList<Byte>();
+        ArrayList<Byte> wordBuilder = new ArrayList<>();
         try {
             for (int i = 0; i < length; i++) {
                 byte symbol = input.readByte();
@@ -78,32 +86,27 @@ public class Initialization {
             }
         } catch (EOFException e) {
             System.err.println("unexpected end of file");
-            System.exit(2);
+            System.exit(1);
         } catch (OutOfMemoryError e) {
-            System.err.println("Not enough memory to store database");
-            System.exit(2);
+            System.err.println("not enough memory");
+            System.exit(1);
         }
         byte[] buffer = new byte[length];
         for (int i = 0; i < length; ++i) {
             buffer[i] = wordBuilder.get(i);
         }
         return buffer;
-    }*/
+    }
 
     /**
      * Convert bytes to int.
      * @param input The file, where read from.
      * @return Int: 4 bytes read from the file.
+     * @throws IOException Can be got by readBytes.
      */
-    public static int bytesToInt(final DataInputStream input) {
-        byte[] data = new byte[4];
-        try {
-            input.read(data);
-        } catch (IOException e) {
-            System.err.println("cannot read argument");
-            System.exit(1);
-        }
-        return ByteBuffer.wrap(data).getInt();
+    public static int bytesToInt(final DataInputStream input) throws IOException {
+        ByteBuffer wrapped = ByteBuffer.wrap(readBytes(input, 4));
+        return wrapped.getInt();
     }
 
     /**
@@ -111,22 +114,13 @@ public class Initialization {
      * @param input The file, where read from.
      * @param size The size to read.
      * @return Int: size bytes read from the file.
+     * @throws IOException Can be got by readBytes.
      */
-    public static String bytesToString(final DataInputStream input, int size) {
-        byte[] data = new byte[size];
-        String returnValue = new String();
-        try {
-            input.read(data);
-        } catch (IOException e) {
-            System.err.println("cannot read argument");
-            System.exit(1);
+    public static String bytesToString(final DataInputStream input, final int size) throws IOException {
+        if (size <= 0) {
+            throw new IOException("cannot work with file: incorrect data base");
         }
-        try {
-            returnValue = new String(data, "UTF-8");
-        } catch (IOException e) {
-            System.err.println("cannot make string of bytes");
-            System.exit(1);
-        }
-        return returnValue;
+        byte[] buffer = readBytes(input, size);
+        return new String(buffer, "UTF-8");
     }
 }

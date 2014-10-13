@@ -14,11 +14,8 @@ public class Put {
      * @param currentArgs Commands that were entered: name, its' arguments.
      * @param currentTable Our main table.
      */
-    public static void putRun(String[] currentArgs, final Map currentTable) {
-        if (currentArgs.length != 3) {
-            System.err.println("put: " + (currentArgs.length < 3 ? "not enough" : "too many") + " arguments");
-            System.exit(1);
-        }
+    public static void putRun(String[] currentArgs, final Map<String, String> currentTable) {
+        FileMapRun.checkArguments(currentArgs.length, 3);
         if (currentTable.containsKey(currentArgs[1])) {
             System.out.println("overwrite\n" + "old value = " + currentTable.get(currentArgs[1]));
         } else {

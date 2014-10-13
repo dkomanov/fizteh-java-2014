@@ -14,11 +14,8 @@ public class Exit {
      * @param currentArgs Commands that were entered: name, its' arguments.
      * @param currentTable Our main table.
      */
-    public static void exitRun(String[] currentArgs, final Map currentTable) {
-        if (currentArgs.length != 1) {
-            System.err.println("exit: too many arguments");
-            System.exit(1);
-        }
+    public static void exitRun(String[] currentArgs, final Map<String, String> currentTable) {
+        FileMapRun.checkArguments(currentArgs.length, 1);
         WriteToFile.writeToFile(currentTable);
         System.exit(0);
     }

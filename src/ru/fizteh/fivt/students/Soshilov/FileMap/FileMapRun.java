@@ -16,7 +16,7 @@ public class FileMapRun {
      * @param currentArgs Commands that were entered: name, its' arguments.
      * @param currentTable Our main table.
      */
-    public static void run(final String[] currentArgs, Map currentTable) {
+    public static void run(final String[] currentArgs, Map<String, String> currentTable) {
         switch (currentArgs[0]) {
             case "put":
                 Put.putRun(currentArgs, currentTable);
@@ -45,7 +45,7 @@ public class FileMapRun {
      */
     public static void interactiveMode() {
         Scanner sc = new Scanner(System.in);
-        Map currentTable = new HashMap<String, String>();
+        Map<String, String> currentTable = new HashMap<>();
         Initialization.initialization(currentTable, System.getProperty("db.file"));
         while (true) {
             String currentString = sc.nextLine();
@@ -74,7 +74,7 @@ public class FileMapRun {
      * @param currentArgs Commands that were entered: name, its' arguments.
      */
     public static void batchMode(final String[] currentArgs) {
-        Map currentTable = new HashMap<String, String>();
+        Map<String, String> currentTable = new HashMap<>();
         Initialization.initialization(currentTable, System.getProperty("db.file"));
         StringBuilder builder = new StringBuilder();
         for (String s : currentArgs) {
@@ -119,6 +119,13 @@ public class FileMapRun {
             interactiveMode();
         } else {
             batchMode(currentArgs);
+        }
+    }
+
+    public static void checkArguments(final int length, final int wrongLength) {
+        if (length != wrongLength) {
+            System.err.println("put: " + (length < wrongLength ? "not enough" : "too many") + " arguments");
+            System.exit(1);
         }
     }
 }

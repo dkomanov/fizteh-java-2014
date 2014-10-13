@@ -14,11 +14,8 @@ public class Remove {
      * @param currentArgs Commands that were entered: name, its' arguments.
      * @param currentTable Our main table.
      */
-    public static void removeRun(final String[] currentArgs, Map currentTable) {
-        if (currentArgs.length != 2) {
-            System.err.println("remove:" + (currentArgs.length < 2 ? "not enough" : "too many") + " arguments");
-            System.exit(1);
-        }
+    public static void removeRun(final String[] currentArgs, Map<String, String> currentTable) {
+        FileMapRun.checkArguments(currentArgs.length, 2);
         if (currentTable.remove(currentArgs[1]) != null) {
             System.out.println("removed");
         } else {

@@ -19,7 +19,7 @@ public class WriteToFile {
      * Write whole information into a table.
      * @param currentTable The table, we use in program.
      */
-    public static void writeToFile(final Map currentTable) {
+    public static void writeToFile(final Map<String, String> currentTable) {
         if (System.getProperty("db.file") == null) {
             System.err.println("file was not pointed");
             System.exit(1);
