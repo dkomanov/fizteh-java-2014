@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class Table {
+    private Map<String, String> dBase;
+    private Path dBasePath;
     public Table(final String dbName)
             throws MapExcept, DataBaseCorrupt {
         try {
@@ -188,7 +190,6 @@ public class Table {
     public Path tablePath() {
         return dBasePath;
     }
-    private Map<String, String> dBase;
-    private Path dBasePath;
+
 }
 

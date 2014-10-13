@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class DataBase {
+    private boolean isChoose;
+    private SuperTable sTable;
+    private Map<String, Integer> tableRowCount;
+    private Path dataBasePath;
     public DataBase() throws MapExcept, DataBaseCorrupt, TableConnectionError {
        try {
            dataBasePath = Functions.openDir();
@@ -164,8 +168,5 @@ public class DataBase {
             }
         }
     }
-    private boolean isChoose;
-    private SuperTable sTable;
-    private Map<String, Integer> tableRowCount;
-    private Path dataBasePath;
+
 }

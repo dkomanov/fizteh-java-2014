@@ -7,8 +7,8 @@ public class Intercative {
     public static void conv() throws MapExcept, DataBaseCorrupt, TableConnectionError {
         try (Scanner in = new Scanner(System.in)) {
             DataBase dBase = new DataBase();
-            while (true) {
-                System.out.print("$ ");
+            System.out.print("$ ");
+            while (in.hasNextLine()) {
                 String s;
                 s = in.nextLine();
                 s = s.trim();
@@ -25,6 +25,7 @@ public class Intercative {
                 } catch (Exception ex) {
                     System.out.println(ex.toString());
                 }
+                System.out.print("$ ");
             }
         }
     }

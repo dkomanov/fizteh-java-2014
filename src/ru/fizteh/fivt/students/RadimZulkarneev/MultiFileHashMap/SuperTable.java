@@ -13,6 +13,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class SuperTable {
+    private Path tablePath;
+    private Map<String, Table> src;
     public SuperTable(Path tableDir) throws TableConnectionError, DataBaseCorrupt, MapExcept {
         checkTableDir(tableDir);
         tablePath = tableDir;
@@ -147,6 +149,5 @@ public class SuperTable {
     public String getTableName() {
         return tablePath.getFileName().toString();
     }
-    private Path tablePath;
-    private Map<String, Table> src;
+
 }
