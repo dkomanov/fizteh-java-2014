@@ -28,7 +28,7 @@ public class PocketParser {
         while (i <= commands.length) {
             String[] command = commands[i].split(" ");
             ++i;
-            newParser.myParser(object,command);
+            newParser.myParser(object, command);
         }
     }
 }
