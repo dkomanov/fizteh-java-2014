@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.kotsurba.shell.Context;
+package ru.fizteh.fivt.students.kotsurba.shell.context;
 
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.InvalidCommandException;
 
@@ -66,6 +66,16 @@ public final class Context {
         return new File(currentDir).list();
     }
 
+    private void internalRemove(final File file) throws IOException {
+        if (file.isFile()) {
+            if (!file.delete()) {
+                throw new IOException("File " + file.getCanonicalPath() + " is undeletable");
+            }
+        } else {
+            throw new IOException("I can't delete a directory!");
+        }
+    }
+
     private void recursiveRemove(final File file) throws IOException {
         if (file.isFile()) {
             if (!file.delete()) {
@@ -73,8 +83,8 @@ public final class Context {
             }
         } else {
             String[] fileList = file.list();
-            for (int i = 0; i < fileList.length; ++i) {
-                recursiveRemove(new File(file.getCanonicalPath() + File.separator + fileList[i]));
+            for (String aFileList : fileList) {
+                recursiveRemove(new File(file.getCanonicalPath() + File.separator + aFileList));
             }
             if (!file.delete()) {
                 throw new IOException("Path " + file.getAbsolutePath() + " is undeletable.");
@@ -89,7 +99,20 @@ public final class Context {
             throw new IOException("Bad path/file name.");
         }
 
-        if (newPath == currentDir) {
+        if (newPath.equals(currentDir)) {
+            throw new IOException("I can't delete current directory!");
+        }
+        internalRemove(new File(newPath));
+    }
+
+    public void removeWithParameter(final String path) throws IOException {
+        String newPath = changePath(currentDir, path);
+
+        if (!existsFile(newPath)) {
+            throw new IOException("Bad path/file name.");
+        }
+
+        if (newPath.equals(currentDir)) {
             throw new IOException("I can't delete current directory!");
         }
         recursiveRemove(new File(newPath));
@@ -124,14 +147,34 @@ public final class Context {
         } else {
             makeFullDir(destination + addition);
             String[] list = file.list();
-            for (int i = 0; i < list.length; ++i) {
-                recursiveCopy(source + File.separator + list[i],
-                        destination, addition + File.separator + list[i]);
+            for (String aList : list) {
+                recursiveCopy(source + File.separator + aList,
+                        destination, addition + File.separator + aList);
             }
         }
     }
 
     public void copy(final String src, final String dest) throws IOException {
+        String source = changePath(currentDir, src);
+        String destination = changePath(currentDir, dest);
+        File file = new File(source);
+
+        if (!file.exists()) {
+            throw new InvalidCommandException("Source file doesn't exist!");
+        }
+
+        if (source.equals(destination)) {
+            throw new InvalidCommandException("Cannot move myself to myself.");
+        }
+
+        if (file.isFile()) {
+            copyFile(source, destination);
+        } else {
+            throw new IOException("I can't move a directory!");
+        }
+    }
+
+    public void copyWithParameter(final String src, final String dest) throws IOException {
         String source = changePath(currentDir, src);
         String destination = changePath(currentDir, dest);
         File file = new File(source);

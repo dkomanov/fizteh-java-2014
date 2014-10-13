@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.kotsurba.shell.shellcommands;
 
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
-import ru.fizteh.fivt.students.kotsurba.shell.Context.Context;
+import ru.fizteh.fivt.students.kotsurba.shell.context.Context;
 
 public class ShellCat extends SimpleShellCommand {
     private Context context;
