@@ -1,9 +1,6 @@
 package ru.fizteh.fivt.students.sautin1.filemap;
 
-import ru.fizteh.fivt.students.sautin1.shell.Command;
-import ru.fizteh.fivt.students.sautin1.shell.ExitCommand;
-import ru.fizteh.fivt.students.sautin1.shell.Shell;
-import ru.fizteh.fivt.students.sautin1.shell.UserInterruptException;
+import ru.fizteh.fivt.students.sautin1.shell.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,7 +22,7 @@ public class Main {
             StringTableIOTools tableIOTools = new StringTableIOTools();
             tableIOTools.readTable(filePath, table);
 
-            StringTableProvider provider = new StringTableProvider(filePath.getParent(), true, tableIOTools);
+            StringTableProvider provider = new StringTableProvider(filePath, true, tableIOTools);
             StringDatabaseState databaseState = new StringDatabaseState(provider);
             databaseState.setActiveTable(table);
             Command[] commands = {
@@ -34,11 +31,13 @@ public class Main {
             };
             @SuppressWarnings("unchecked")
             Shell<StringDatabaseState> shell = new Shell<>(databaseState, commands);
-            shell.startWork(args);
+            try {
+                shell.startWork(args);
+            } catch (UserInterruptException e) {
+                exitStatus = 0;
+            }
 
-            tableIOTools.writeTable(filePath.getParent(), table);
-        } catch (UserInterruptException e) {
-            exitStatus = 0;
+            tableIOTools.writeTable(filePath, table);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             exitStatus = 1;

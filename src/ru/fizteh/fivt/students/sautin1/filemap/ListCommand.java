@@ -18,8 +18,9 @@ public class ListCommand extends AbstractStringDatabaseCommand {
         if (checkArgumentNumber(args) != CheckArgumentNumber.EQUAL) {
             throw new CommandExecuteException(toString() + ": wrong number of arguments");
         }
-        for (String key : state.getActiveTable().list()) {
-            System.out.println(key);
-        }
+        System.out.println(String.join(", ", state.getActiveTable().list()));
+        /*for (String key : state.getActiveTable().list()) {
+            System.out.print(key);
+        }*/
     }
 }
