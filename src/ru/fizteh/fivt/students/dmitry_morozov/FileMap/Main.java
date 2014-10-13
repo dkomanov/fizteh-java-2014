@@ -13,64 +13,42 @@ public class Main {
     public static boolean functionHandler(String[] comAndParams, int bIndex,
             int eIndex, FileMap fm) throws IOException { // Returns false if
                                                          // exit command got.
-        final int optAm = 5;
-        String[] options = new String[optAm]; // Initializing options list.
-        options[0] = "exit";
-        options[1] = "put";
-        options[2] = "remove";
-        options[3] = "get";
-        options[4] = "list";
-
-        int functionNumber;
-        for (functionNumber = 0; functionNumber < options.length; functionNumber++) {
-            if (options[functionNumber].equals(comAndParams[bIndex])) {
-                break;
-            }
-        }
         boolean res = true;
-        if (0 == functionNumber) {
-            res = false;
-        }
-        switch (functionNumber) { // I use Java 1.6 and can't install 1.7 or
-                                  // 1.8, so I can't change it to
-                                  // switch(comAndParams[bIndex])...
-        case 0:
+
+        String com = comAndParams[bIndex];
+        if (com.equals("exit")) {
+            res = true;
             try {
                 fm.exit();
             } catch (IOException e) {
                 throw e;
             }
-            break;
-        case 1: // Put.
+        } else if (com.equals("put")) {
             if (bIndex + 3 > eIndex) {
                 System.out.println("Not enough parametres for put");
             } else {
                 System.out.println(fm.put(comAndParams[bIndex + 1],
                         comAndParams[bIndex + 2]));
             }
-            break;
-        case 2: // Remove.
+        } else if (com.equals("remove")) {
             if (bIndex + 2 > eIndex) {
                 System.out.println("Not enough parametres for remove");
             } else {
                 System.out.println(fm.remove(comAndParams[bIndex + 1]));
             }
-            break;
-        case 3: // Get.
+        } else if (com.equals("get")) {
             if (bIndex + 2 > eIndex) {
                 System.out.println("Not enough parametres for get");
             } else {
                 System.out.println(fm.get(comAndParams[bIndex + 1]));
             }
-            break;
-        case 4:
+        } else if (com.equals("list")) {
             PrintWriter pw = new PrintWriter(System.out);
             fm.list(pw);
-            break;
-        default:
+        } else {
             System.out.println("Command not found");
-            break;
         }
+
         return res;
     }
 
