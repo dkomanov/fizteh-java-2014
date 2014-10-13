@@ -3,11 +3,10 @@ package ru.fizteh.fivt.students.AndrewTimokhin.FileMap;
 import java.util.*;
 
 class Functional {
-    private HashMap<String, String> map;
+    private Map<String, String> map;
 
-    public Functional(HashMap<String, String> mapor) {
-
-        map = mapor;
+    public Functional(Map<String, String> map_) {
+        map = map_;
     }
 
     void put(String key, String value) {
