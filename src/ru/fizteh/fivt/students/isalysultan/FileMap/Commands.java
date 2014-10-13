@@ -48,7 +48,8 @@ public class Commands {
     void list(Table tables) {
         Set<String> result = tables.storage.keySet();
         Iterator<String> it = result.iterator();
-        String answer = String.join(",", result);
-        System.out.print(answer);
+        String answer = String.join(", ", result);
+        System.out.println(answer);
     }
 }
+
