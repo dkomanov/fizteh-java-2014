@@ -160,12 +160,11 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
     }
 
     public List<String> list() {
-        Set<String> keySet = addedEntries.keySet();
-        keySet.addAll(overwrittenEntries.keySet());
-        keySet.addAll(committedEntries.keySet());
-        keySet.removeAll(deletedEntries);
         List<String> keyList = new ArrayList<>();
-        keyList.addAll(keySet);
+        keyList.addAll(addedEntries.keySet());
+        keyList.addAll(overwrittenEntries.keySet());
+        keyList.addAll(committedEntries.keySet());
+        keyList.removeAll(deletedEntries);
         return keyList;
     }
 
