@@ -21,13 +21,20 @@ public class FileMap extends HashMap<String, String> {
         }
     }
 
-    void readKeyValue(DataInputStream is) throws IOException {
+    void readKeyValue(DataInputStream is) throws IOException, ConnectionInterruptException {
         int keyLen = is.readInt();
         byte[] key = new byte[keyLen];
-        is.read(key, 0, keyLen);
+        int keyRead = is.read(key, 0, keyLen);
+        if (keyRead != keyLen) {
+            throw new ConnectionInterruptException("database: db file is invalid");
+        }
         int valLen = is.readInt();
         byte[] value = new byte[valLen];
-        is.read(value, 0, valLen);
+        int valRead = is.read(value, 0, valLen);
+        if (valRead != valLen) {
+            throw new ConnectionInterruptException("database: db file is invalid");
+        }
+
         put(new String(key, "UTF-8"), new String(value, "UTF-8"));
     }
 
