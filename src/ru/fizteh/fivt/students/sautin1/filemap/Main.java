@@ -12,8 +12,8 @@ public class Main {
     private static final String FILENAME = "db.file";
 
     public static void main(String[] args) {
-        /**/System.setProperty(FILENAME,
-        /**/        "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/filemap/db.file");
+        //System.setProperty(FILENAME,
+        //        "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/filemap/db.file");
 
         int exitStatus = 0;
         try {
