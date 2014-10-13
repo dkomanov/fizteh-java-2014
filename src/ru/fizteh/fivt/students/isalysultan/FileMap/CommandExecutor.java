@@ -21,7 +21,7 @@ public class CommandExecutor {
         case "exit":
             tables.writeFile();
             System.out.println("exit");
-            //System.exit(0);
+            System.exit(0);
         default:
             System.out.println("Command is not recognized.");
         }
