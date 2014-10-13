@@ -1,6 +1,5 @@
 package ru.fiztech.fivt.students.theronsg.filemap;
 
-import java.io.FileNotFoundException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
