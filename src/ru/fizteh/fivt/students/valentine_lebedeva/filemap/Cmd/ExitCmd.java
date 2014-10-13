@@ -14,7 +14,7 @@ public class ExitCmd implements Cmd {
             throw new IllegalArgumentException(
                     "Wrong number of arguments");
         }
-        dataBase.write();
+        dataBase.close();
         System.exit(0);
     }
 }

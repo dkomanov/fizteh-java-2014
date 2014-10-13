@@ -60,6 +60,7 @@ public final class DB {
 
     public void close() throws IOException {
         this.write();
+        dbFile.close();
     }
 
     public Map<String, String> getBase() {

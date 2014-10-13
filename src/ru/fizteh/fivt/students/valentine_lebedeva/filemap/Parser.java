@@ -35,6 +35,7 @@ public final class Parser {
             case "exit":
                 ExitCmd exitCommand = new ExitCmd();
                 exitCommand.execute(dataBase, parseArgs);
+                break;
             default:
                 throw new Exception("Incorrect arguments");
             }

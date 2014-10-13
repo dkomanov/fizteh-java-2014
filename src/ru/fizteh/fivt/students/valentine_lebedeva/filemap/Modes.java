@@ -34,7 +34,11 @@ public final class Modes {
             for (int i = 0; i < cmdargs.length; i++) {
                 Parser.parse(cmdargs[i], true, dataBase);
             }
+           dataBase.close();
+           System.exit(0);
     }
+
     private Modes() {
+         //not called only for checkstyle
     }
 }
