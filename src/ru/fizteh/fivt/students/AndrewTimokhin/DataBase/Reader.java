@@ -30,7 +30,6 @@ public class Reader {
                         valueBuilder.append(rd.readChar());
 
                     }
-                    ;
                     map.put(keyBuilder.toString(), valueBuilder.toString());
                     keyBuilder.replace(0, keyBuilder.length(), "");
                     valueBuilder.replace(0, valueBuilder.length(), "");
