@@ -13,26 +13,27 @@ public class Reader {
     }
 
     public HashMap<String, String> read() {
-        StringBuilder st = new StringBuilder();
-        StringBuilder st2 = new StringBuilder();
-        int lenght;
+        StringBuilder keyBuilder = new StringBuilder();
+        StringBuilder valueBuilder = new StringBuilder();
+        int lenght = 0;
         try (DataInputStream rd = new DataInputStream(new FileInputStream(
                 filepath))) {
             while (true) {
                 try {
                     lenght = rd.readInt();
                     for (int i = 0; i < lenght; i++) {
-                        st.append(rd.readChar());
+                        keyBuilder.append(rd.readChar());
 
                     }
                     lenght = rd.readInt();
                     for (int i = 0; i < lenght; i++) {
-                        st2.append(rd.readChar());
+                        valueBuilder.append(rd.readChar());
 
                     }
-                    map.put(st.toString(), st2.toString());
-                    st.replace(0, st.length(), "");
-                    st2.replace(0, st2.length(), "");
+                    ;
+                    map.put(keyBuilder.toString(), valueBuilder.toString());
+                    keyBuilder.replace(0, keyBuilder.length(), "");
+                    valueBuilder.replace(0, valueBuilder.length(), "");
 
                 } catch (EOFException e) {
                     break;
@@ -41,9 +42,14 @@ public class Reader {
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("Not Found " + e.toString());
+            try {
+                File newdb = new File(filepath);
+                newdb.createNewFile();
+            } catch (IOException err) {
+                System.err.print(err.toString());
+            }
         } catch (IOException e) {
-            System.out.println("IOException " + e.toString());
+            System.err.print(e.toString());
         }
 
         return map;
