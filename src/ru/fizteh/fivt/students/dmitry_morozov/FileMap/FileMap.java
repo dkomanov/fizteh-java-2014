@@ -103,13 +103,13 @@ public class FileMap {
         if (checkLast.hasNext()) {
             checkLast.next();
         }
-        for(Entry<String, String> i : tableSet){
-           if(checkLast.hasNext()){
-               pw.print(i.getKey() + ", ");
-               checkLast.next();
-           } else {
-               pw.print(i.getKey());
-           }
+        for (Entry<String, String> i : tableSet) {
+            if (checkLast.hasNext()) {
+                pw.print(i.getKey() + ", ");
+                checkLast.next();
+            } else {
+                pw.print(i.getKey());
+            }
         }
         pw.println();
         pw.flush();
@@ -125,8 +125,8 @@ public class FileMap {
     }
 
     public void exit() throws IOException {
-        DataOutputStream out = new DataOutputStream(new FileOutputStream(
-                dbFile));
+        DataOutputStream out = new DataOutputStream(
+                new FileOutputStream(dbFile));
         Set<Entry<String, String>> tableSet = table.entrySet();
         for (Entry<String, String> it : tableSet) {
             String key = it.getKey();

@@ -11,7 +11,8 @@ public class Main {
      * @throws IOException
      */
     public static boolean functionHandler(String[] comAndParams, int bIndex,
-            int eIndex, FileMap fm) throws IOException { // Returns false if exit command got.
+            int eIndex, FileMap fm) throws IOException { // Returns false if
+                                                         // exit command got.
         final int optAm = 5;
         String[] options = new String[optAm]; // Initializing options list.
         options[0] = "exit";
@@ -30,7 +31,9 @@ public class Main {
         if (0 == functionNumber) {
             res = false;
         }
-        switch (functionNumber) {               // I use Java 1.6 and can't install 1.7 or 1.8, so I can't change it to switch(comAndParams[bIndex])... 
+        switch (functionNumber) { // I use Java 1.6 and can't install 1.7 or
+                                  // 1.8, so I can't change it to
+                                  // switch(comAndParams[bIndex])...
         case 0:
             try {
                 fm.exit();
@@ -88,8 +91,7 @@ public class Main {
         return functionHandler(toGive, 0, j, fm);
     }
 
-    public static void batchMode(String[] args, String path)
-            throws IOException {
+    public static void batchMode(String[] args, String path) throws IOException {
         if (null == path) {
             System.err.println("System property db.file is undefined");
             System.exit(1);
