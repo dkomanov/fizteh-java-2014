@@ -11,6 +11,11 @@ public class PutCommand implements Command {
         }
         String value = connector.db.get(args[1]);
         connector.db.put(args[1], args[2]);
+        try {
+            connector.db.unload();
+        } catch (ConnectionInterruptException e) {
+            throw new CommandInterruptException("put: " + e.getMessage());
+        }
         return value == null ? "new" : "overwrite\n" + value;
     }
 }

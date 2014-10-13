@@ -12,6 +12,11 @@ public class RemoveCommand implements Command {
         boolean exists = connector.db.containsKey(args[1]);
         if (exists) {
             connector.db.remove(args[1]);
+            try {
+                connector.db.unload();
+            } catch (ConnectionInterruptException e) {
+                throw new CommandInterruptException("put: " + e.getMessage());
+            }
             return "removed";
         } else {
             return "not found";
