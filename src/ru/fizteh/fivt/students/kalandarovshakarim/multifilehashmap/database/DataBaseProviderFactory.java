@@ -21,6 +21,11 @@ public class DataBaseProviderFactory implements TableProviderFactory {
         ShellUtils utils = new ShellUtils();
         TableProvider retVal = null;
         try {
+            try {
+                utils.mkDir(dir);
+            } catch (IOException e) {
+                // Если файл уже существует.
+            }
             utils.chDir(dir);
             retVal = new DataBaseProvider(dir);
         } catch (NullPointerException e) {

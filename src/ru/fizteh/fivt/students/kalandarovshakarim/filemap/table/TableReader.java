@@ -18,7 +18,7 @@ public class TableReader implements Closeable {
     private RandomAccessFile dbFile;
 
     public TableReader(String fileName) throws FileNotFoundException {
-        dbFile = new RandomAccessFile(fileName, "r");
+        dbFile = new RandomAccessFile(fileName, "rw");
     }
 
     @Override
