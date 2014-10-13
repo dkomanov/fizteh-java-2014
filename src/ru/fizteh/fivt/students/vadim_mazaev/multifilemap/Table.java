@@ -39,7 +39,7 @@ public final class Table {
     }
     
     /**
-     * Writes all data from {@link TablePart}'s to table directory
+     * Writes all data from {@link TablePart}s to table directory
      * @throws IOException If cannot write data to files.
      */
     public void commit() throws IOException {
@@ -163,9 +163,16 @@ public final class Table {
      * @throws IOException If directory cannot be deleted.
      */
     public void deleteTable() throws IOException {
-        clearTableDir();
-        parts.clear();
+        String[] dirList = tableDirPath.toFile().list();
+        for (String curDir : dirList) {
+            String[] fileList = tableDirPath.resolve(curDir).toFile().list();
+            for (String file : fileList) {
+                Paths.get(tableDirPath.toString(), curDir, file).toFile().delete();
+            }
+            tableDirPath.resolve(curDir).toFile().delete();
+        }
         tableDirPath.toFile().delete();
+        parts.clear();
     }
     
     /**
@@ -203,27 +210,11 @@ public final class Table {
     }
     
     /**
-     * Clears table directory.
-     * @throws IOException If directory cannot be cleared.
-     */
-    private void clearTableDir() throws IOException {
-        String[] dirList = tableDirPath.toFile().list();
-        for (String curDir : dirList) {
-            String[] fileList = tableDirPath.resolve(curDir).toFile().list();
-            for (String file : fileList) {
-                Paths.get(tableDirPath.toString(), curDir, file).toFile().delete();
-            }
-            tableDirPath.resolve(curDir).toFile().delete();
-        }
-    }
-    
-    /**
      * Write all data to table directory.
      * @throws IOException If table directory cannot be cleared
      * or some files cannot be wrote. 
      */
     private void writeTableToDir() throws IOException {
-        clearTableDir();
         for (Entry<Integer, TablePart> part : parts.entrySet()) {
             part.getValue().disconnect();
         }

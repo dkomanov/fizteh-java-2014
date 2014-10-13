@@ -69,7 +69,12 @@ public final class TablePart {
      * has thrown an I/O Exception.
      */
     public void disconnect() throws IOException {
-        if (isConnected && numberOfRecords > 0) {
+        if (numberOfRecords == 0) {
+            tablePartDirPath.toFile().delete();
+            tablePartDirPath.getParent().toFile().delete();
+        } else if (isConnected) {
+            tablePartDirPath.toFile().delete();
+            tablePartDirPath.getParent().toFile().delete();
             try {
                 writeToFile();
             } catch (IOException e) {
@@ -299,6 +304,7 @@ public final class TablePart {
     private void writeToFile() throws IOException {
         tablePartDirPath.getParent().toFile().mkdir();
         try (RandomAccessFile file = new RandomAccessFile(tablePartDirPath.toString(), "rw")) {
+            file.setLength(0);
             Set<String> keys = data.keySet();
             List<Integer> offsetsPos = new LinkedList<Integer>();
             for (String currentKey : keys) {
