@@ -24,18 +24,24 @@ public class Initialization {
             System.err.println("a file was not pointed");
             System.exit(1);
         }
-        File f = new File(filePath);
-        DataInputStream currentFile = null;
-        try {
-            currentFile = new DataInputStream(new FileInputStream(f));
-        } catch (FileNotFoundException e) {
+
+        if (!Files.exists(Paths.get(filePath))) {
             try {
                 Files.createFile(Paths.get(filePath));
             } catch (IOException exc) {
-                //System.err.println(filePath + ": file not found");
                 System.err.println("cannot create file");
                 System.exit(1);
             }
+        }
+
+        File f = new File(filePath);
+        DataInputStream currentFile = null;
+
+        try {
+            currentFile = new DataInputStream(new FileInputStream(f));
+        } catch (FileNotFoundException e) {
+            System.err.println(filePath + ": file not found");
+            System.exit(1);
         }
         try {
             while (currentFile.available() > 0) {

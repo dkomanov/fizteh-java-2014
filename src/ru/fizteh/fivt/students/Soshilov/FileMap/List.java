@@ -22,7 +22,7 @@ public class List implements Command {
         int counter = 0;
         for (String s : set) {
             ++counter;
-            if (counter == set.size()) {
+            if (counter == set.size() - 1) {
                 System.out.print(s + ", ");
             } else {
                 System.out.print(s);
