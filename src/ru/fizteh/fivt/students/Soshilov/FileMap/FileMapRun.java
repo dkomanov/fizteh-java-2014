@@ -11,32 +11,28 @@ import java.util.Scanner;
  * Time: 21:12
  */
 public class FileMapRun {
+    private static Map<String, Command> commandMap = new HashMap<>();
+
+    static {
+        commandMap.put("exit", new Exit());
+        commandMap.put("put", new Put());
+        commandMap.put("get", new Get());
+        commandMap.put("remove", new Remove());
+        commandMap.put("list", new List());
+    }
+
     /**
      * We switch commands into different classes.
      * @param currentArgs Commands that were entered: name, its' arguments.
      * @param currentTable Our main table.
      */
     public static void run(final String[] currentArgs, Map<String, String> currentTable) {
-        switch (currentArgs[0]) {
-            case "put":
-                Put.putRun(currentArgs, currentTable);
-                break;
-            case "exit":
-                Exit.exitRun(currentArgs, currentTable);
-                break;
-            case "get":
-                Get.getRun(currentArgs, currentTable);
-                break;
-            case "remove":
-                Remove.removeRun(currentArgs, currentTable);
-                break;
-            case "list":
-                List.listRun(currentArgs, currentTable);
-                break;
-            default:
-                System.err.println(currentArgs[0] + ": command not found");
-                System.exit(1);
-                break;
+        Command command = commandMap.get(currentArgs[0]);
+        if (command == null) {
+            System.err.println(currentArgs[0] + ": command not found");
+            System.exit(1);
+        } else {
+            command.execute(currentArgs, currentTable);
         }
     }
 
@@ -55,21 +51,6 @@ public class FileMapRun {
     }
 
     /**
-     * Check, whether entered command exists or not.
-     * @param name Name of command.
-     * @return Bool meaning: if command exists - true, otherwise - false.
-     */
-    public static Boolean checkName(final String name) {
-        String[] s = {"put", "exit", "get", "remove", "list"};
-        for (String c : s) {
-            if (name.equals(c)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Package mode: we enter command constantly.
      * @param currentArgs Commands that were entered: name, its' arguments.
      */
@@ -81,31 +62,9 @@ public class FileMapRun {
             builder.append(s).append(" ");
         }
         String string = new String(builder);
-        string = string.replaceAll("\\s*;\\s*", ";");
-        String[] commands = string.split(";|(\\s+)");
-        int i = 0;
-        while (i < commands.length) {
-            int first = i;
-            ++i;
-            while (i < commands.length && !checkName(commands[i])) {
-                ++i;
-            }
-            int size = 0;
-            for (int j = 0; j < i - first; ++j) {
-                if (commands[j + first].length() != 0) {
-                    ++size;
-                }
-            }
-
-            String[] s = new String[size];
-            int tmpSize = 0;
-            for (int j = 0; j < s.length; ++j) {
-                if (commands[j + first].length() != 0) {
-                    s[tmpSize] = commands[j + first];
-                    ++tmpSize;
-                }
-            }
-            run(s, currentTable);
+        String[] commands = string.split("\\s*;\\s*");
+        for (String commandParams : commands) {
+            run(commandParams.split("\\s+"), currentTable);
         }
         System.exit(0);
     }
@@ -122,9 +81,14 @@ public class FileMapRun {
         }
     }
 
-    public static void checkArguments(final int length, final int wrongLength) {
-        if (length != wrongLength) {
-            System.err.println("put: " + (length < wrongLength ? "not enough" : "too many") + " arguments");
+    /**
+     * Checking whether the arguments have normal count.
+     * @param length The sum of every argument.
+     * @param requiredLength The correct count.
+     */
+    public static void checkArguments(final int length, final int requiredLength) {
+        if (length != requiredLength) {
+            System.err.println("put: " + (length < requiredLength ? "not enough" : "too many") + " arguments");
             System.exit(1);
         }
     }
