@@ -4,9 +4,10 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
-public class FillingStorage extends FileMapMain {
-    void fillingStorageFunction() throws Exception {
+public class FillingStorage {
+    void fillingStorageFunction(Map<String, String> storage) throws Exception {
         File file = new File(System.getProperty("db.file"));
         if (!file.exists()) {
             file.createNewFile();

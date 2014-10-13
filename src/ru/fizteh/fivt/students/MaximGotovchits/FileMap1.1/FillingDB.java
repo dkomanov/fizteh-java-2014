@@ -4,8 +4,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-public class FillingDB extends FileMapMain {
-    public void fillingDBFunction() throws Exception {
+public class FillingDB {
+    public void fillingDBFunction(Map<String, String> storage) throws Exception {
         File file = new File(System.getProperty("db.file"));
         DataOutputStream stream = new DataOutputStream(new FileOutputStream(System.getProperty("db.file"), true));
         PrintWriter writer = new PrintWriter(file);

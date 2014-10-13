@@ -2,8 +2,8 @@ package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.util.*;
 
-public class List extends FileMapMain {
-    void listFunction() {
+public class List {
+    void listFunction(Map<String, String> storage) {
         Integer size = 0;
         Set k = storage.keySet();
         for (Object iter : k) {

@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 import java.util.*;
 
 public class InteractiveMode extends FileMapMain {
-    void interactiveModeFunction() throws Exception {
+    void interactiveModeFunction(Map<String, String> storage, String[] cmdBuffer) throws Exception {
         Scanner sc = new Scanner(System.in);
         String cmd = "";
         while (true) {
@@ -19,19 +19,19 @@ public class InteractiveMode extends FileMapMain {
                 cmdBuffer = cmd.split(" ");
             }
             if (cmdBuffer[0].equals("put")) {
-                new Put().putFunction();
+                new Put().putFunction(storage, cmdBuffer);
             }
             if (cmdBuffer[0].equals("get")) {
-                new Get().getFunction();
+                new Get().getFunction(storage, cmdBuffer);
             }
             if (cmdBuffer[0].equals("remove")) {
-                new Remove().removeFunction();
+                new Remove().removeFunction(storage, cmdBuffer);
             }
             if (cmdBuffer[0].equals("list")) {
-                new List().listFunction();
+                new List().listFunction(storage);
             }
             if (cmdBuffer[0].equals("exit")) {
-                new FillingDB().fillingDBFunction();
+                new FillingDB().fillingDBFunction(storage);
                 new Exit().exitFunction();
             }
         }

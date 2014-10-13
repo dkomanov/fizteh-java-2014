@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
-public class BatchMode extends FileMapMain {
-    void batchModeFunction(String commands)throws Exception {
+import java.util.Map;
+
+public class BatchMode extends Error {
+    void batchModeFunction(String commands, Map<String, String> storage, String[] cmdBuffer) throws Exception {
         commands = commands.replaceAll("\\s+", " ");
         String [] commandsSeq = commands.split(";");
         for (int ind = 0; ind < commandsSeq.length; ++ind) {
@@ -38,19 +40,19 @@ public class BatchMode extends FileMapMain {
             }
             if (cmdBuffer[0].equals("put")) {
                 if (cmdBuffer.length == 3) {
-                    new Put().putFunction();
+                    new Put().putFunction(storage, cmdBuffer);
                 } else {
-                    System.err.println("Incorrect syntax");
+                    errorFunction();
                 }
             }
             if (cmdBuffer[0].equals("get")) {
-                new Get().getFunction();
+                new Get().getFunction(storage, cmdBuffer);
             }
             if (cmdBuffer[0].equals("remove")) {
-                new Remove().removeFunction();
+                new Remove().removeFunction(storage, cmdBuffer);
             }
             if (cmdBuffer[0].equals("list")) {
-                new List().listFunction();
+                new List().listFunction(storage);
             }
         }
     }

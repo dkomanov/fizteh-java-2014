@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
-public class Get extends FileMapMain {
-    protected void getFunction() {
+import java.util.Map;
+
+public class Get extends Error {
+    protected void getFunction(Map<String, String> storage, String[] cmdBuffer) {
         if (cmdBuffer.length == 2) {
             String k = cmdBuffer[1];
             String v = storage.get(k);
@@ -12,7 +14,7 @@ public class Get extends FileMapMain {
                 System.out.println("not found");
             }
         } else {
-            System.err.println("incorrect syntax");
+            errorFunction();
         }
     }
 }
