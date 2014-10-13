@@ -49,7 +49,6 @@ public class Commands {
         Set<String> result = tables.storage.keySet();
         Iterator<String> it = result.iterator();
         String answer =   String.join(",", result);
-       // String answer = result.stream().collect(Collectors.joining(", "));
         System.out.print(answer);
     }
 }
