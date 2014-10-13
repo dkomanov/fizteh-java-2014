@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
+ * Main class.
  * Created by sautin1 on 10/12/14.
  */
 public class Main {

@@ -5,6 +5,7 @@ import ru.fizteh.fivt.storage.strings.TableProvider;
 import java.nio.file.Path;
 
 /**
+ * String table provider class.
  * Created by sautin1 on 10/12/14.
  */
 public class StringTableProvider extends GeneralTableProvider<String, StringTable> implements TableProvider {

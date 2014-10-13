@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Table provider class.
  * Created by sautin1 on 10/12/14.
  */
 public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<MappedValue>> {
@@ -31,16 +32,35 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
         this(rootDir, true, tableIOTools);
     }
 
+    /**
+     * Getter of rootDir field.
+     * @return rootDir field.
+     */
     public Path getRootDir() {
         return rootDir;
     }
 
+    /**
+     * Create a new table instance.
+     * @param name - name of the new table.
+     * @return new table instance.
+     */
     public abstract T establishTable(String name);
 
+    /**
+     * Getter of the table with given name.
+     * @param name - name of the table.
+     * @return table with corresponding name.
+     */
     public T getTable(String name) {
         return tableMap.get(name);
     }
 
+    /**
+     * Create new table with given name.
+     * @param name - name of the new table.
+     * @return new table.
+     */
     public T createTable(String name) {
         if (tableMap.get(name) != null) {
             return null;
@@ -54,6 +74,10 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
         return newTable;
     }
 
+    /**
+     * Remove table by its name.
+     * @param name - name of the table.
+     */
     public void removeTable(String name) {
         T oldTable = tableMap.remove(name);
         if (oldTable == null) {
@@ -62,6 +86,12 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
         // delete files recursively
     }
 
+    /**
+     * Load table from the file.
+     * @param root - path to the root directory.
+     * @param tableName - name of the table to load.
+     * @throws IOException if any IO error occured.
+     */
     public void loadTable(Path root, String tableName) throws IOException {
         T table = tableMap.get(tableName);
         if (table == null) {
@@ -70,6 +100,11 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
         tableIOTools.readTable(root, table);
     }
 
+    /**
+     * Save table to file.
+     * @param root - path to the root directory.
+     * @param tableName - name of the table to save.
+     */
     public void saveTable(Path root, String tableName) {
         T table = tableMap.get(tableName);
         if (table == null) {

@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.sautin1.shell.CommandExecuteException;
 import ru.fizteh.fivt.students.sautin1.shell.UserInterruptException;
 
 /**
+ * List command.
  * Created by sautin1 on 10/12/14.
  */
 public class ListCommand extends AbstractStringDatabaseCommand {
@@ -12,6 +13,13 @@ public class ListCommand extends AbstractStringDatabaseCommand {
         super("list", 0, 0);
     }
 
+    /**
+     * List all the keys from the active table.
+     * @param state - database state.
+     * @param args - command arguments.
+     * @throws UserInterruptException if user desires to exit.
+     * @throws CommandExecuteException if any error occurs.
+     */
     @Override
     public void execute(StringDatabaseState state, String... args)
             throws UserInterruptException, CommandExecuteException {

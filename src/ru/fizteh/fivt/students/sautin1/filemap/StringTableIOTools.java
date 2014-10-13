@@ -9,13 +9,13 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /**
+ * Tools for reading tables of strings from file and writing to file.
  * Created by sautin1 on 10/12/14.
  */
 public class StringTableIOTools implements TableIOTools<String, StringTable> {
     private int dirQuantity;
     private int fileQuantity;
     private final String encoding;
-    //private final int buffSize = 8192;
 
     public StringTableIOTools(int dirQuantity, int fileQuantity, String encoding) {
         this.dirQuantity = dirQuantity;
@@ -27,15 +27,31 @@ public class StringTableIOTools implements TableIOTools<String, StringTable> {
         this(0, 1, "UTF-8");
     }
 
+    /**
+     * Converts integer number to byte array.
+     * @param number - integer number.
+     * @return byte array.
+     */
     private byte[] intToByteArray(int number) {
         return ByteBuffer.allocate(4).putInt(number).array();
     }
 
+    /**
+     * Converts byte array to integer number.
+     * @param byteArr - byte array.
+     * @return integer number.
+     */
     private int byteArrayToInt(byte[] byteArr) {
         ByteBuffer wrapper = ByteBuffer.wrap(byteArr);
         return wrapper.getInt();
     }
 
+    /**
+     * Reads string from the file.
+     * @param inStream - input stream connected with the file.
+     * @return string read from file.
+     * @throws IOException if any IO error occurs.
+     */
     private String readEncodedString(InputStream inStream) throws IOException {
         String string = null;
         try {
@@ -61,6 +77,13 @@ public class StringTableIOTools implements TableIOTools<String, StringTable> {
         return string;
     }
 
+    /**
+     *
+     * Writes string to the file.
+     * @param outStream - output stream connected with the file.
+     * @param string - string to write to file.
+     * @throws IOException if any IO error occurs.
+     */
     private void writeEncodedString(OutputStream outStream, String string) throws IOException {
         try {
             byte[] stringBytes = string.getBytes(encoding);
@@ -71,6 +94,13 @@ public class StringTableIOTools implements TableIOTools<String, StringTable> {
         }
     }
 
+    /**
+     * Read the whole table of strings from the file.
+     * @param rootPath - path to the root directory.
+     * @param table - source table of strings.
+     * @return filled table.
+     * @throws IOException if any IO error occurs.
+     */
     @Override
     public StringTable readTable(Path rootPath, StringTable table) throws IOException {
         if (fileQuantity == 0) {
@@ -102,6 +132,11 @@ public class StringTableIOTools implements TableIOTools<String, StringTable> {
         return table;
     }
 
+    /**
+     * Write the whole table of strings to the file.
+     * @param rootPath - path to the root directory.
+     * @param table - string table to write.
+     */
     @Override
     public void writeTable(Path rootPath, StringTable table) {
         if (fileQuantity == 0) {

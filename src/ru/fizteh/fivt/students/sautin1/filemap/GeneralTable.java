@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.sautin1.filemap;
 import java.util.*;
 
 /**
+ * A typical database table class.
  * Created by sautin1 on 10/10/14.
  */
 public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, MappedValue>> {
@@ -29,18 +30,36 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
         this(name, true);
     }
 
+    /**
+     * Get size of the current table.
+     * @return size of the current table.
+     */
     public int size() {
         return committedEntries.size() + addedEntries.size() - deletedEntries.size();
     }
 
+    /**
+     * Get the number of differences between the current table now and the last commit.
+     * @return the number of differences between the current table now and the last commit.
+     */
     public int diffCount() {
         return addedEntries.size() + overwrittenEntries.size() + deletedEntries.size();
     }
 
+    /**
+     * Get the name of the table.
+     * @return name of the table.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Add a new entry to the table.
+     * @param key - key of the entry.
+     * @param value - value of the entry.
+     * @return overwritten value, if the key existed in the table. null, otherwise.
+     */
     public MappedValue put(String key, MappedValue value) {
         MappedValue committedValue = committedEntries.get(key);
         MappedValue addedValue = addedEntries.get(key);
@@ -88,6 +107,11 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
         return returnValue;
     }
 
+    /**
+     * Get an existing entry from the table.
+     * @param key - key of the entry.
+     * @return value, corresponding to the key.
+     */
     public MappedValue get(String key) {
         MappedValue committedValue = committedEntries.get(key);
         MappedValue addedValue = addedEntries.get(key);
@@ -105,6 +129,11 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
         return returnValue;
     }
 
+    /**
+     * Remove an entry from the table.
+     * @param key - key of the entry.
+     * @return value, corresponding to the key.
+     */
     public MappedValue remove(String key) {
         MappedValue committedValue = committedEntries.get(key);
         MappedValue addedValue = addedEntries.get(key);
@@ -134,6 +163,10 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
         return returnValue;
     }
 
+    /**
+     * Commit changes made to the table.
+     * @return the number of changes made to the table since the last commit.
+     */
     public int commit() {
         for (Map.Entry<String, MappedValue> addedEntry : addedEntries.entrySet()) {
             committedEntries.put(addedEntry.getKey(), addedEntry.getValue());
@@ -151,6 +184,10 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
         return diffCounter;
     }
 
+    /**
+     * Reject all the changes made to the table after the last commit.
+     * @return the number of changes rejected.
+     */
     public int rollback() {
         int diffCounter = diffCount();
         addedEntries.clear();
@@ -159,6 +196,10 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
         return diffCounter;
     }
 
+    /**
+     * List all the keys stored in the table.
+     * @return List of keys.
+     */
     public List<String> list() {
         List<String> keyList = new ArrayList<>();
         keyList.addAll(addedEntries.keySet());
@@ -168,6 +209,10 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
         return keyList;
     }
 
+    /**
+     * Iterator to a table entry.
+     * @return Iterator to a table entry.
+     */
     @Override
     public Iterator<Map.Entry<String, MappedValue>> iterator() {
         return committedEntries.entrySet().iterator();

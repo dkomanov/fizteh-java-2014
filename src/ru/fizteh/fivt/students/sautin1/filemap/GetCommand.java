@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.sautin1.shell.CommandExecuteException;
 import ru.fizteh.fivt.students.sautin1.shell.UserInterruptException;
 
 /**
+ * Get command.
  * Created by sautin1 on 10/12/14.
  */
 public class GetCommand extends AbstractStringDatabaseCommand {
@@ -12,6 +13,13 @@ public class GetCommand extends AbstractStringDatabaseCommand {
         super("get", 1, 1);
     }
 
+    /**
+     * Get value by key from the active table.
+     * @param state - database state.
+     * @param args - command arguments.
+     * @throws UserInterruptException if user desires to exit.
+     * @throws CommandExecuteException if any error occurs.
+     */
     @Override
     public void execute(StringDatabaseState state, String... args)
             throws UserInterruptException, CommandExecuteException {
