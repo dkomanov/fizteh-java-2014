@@ -43,17 +43,17 @@ public class DataBase {
 
     public void list(String[] args) throws Exception {
         if (args.length > 1) {
-            throw new Exception("list: too much arguments");
+            manyArgs("list");
         }
         System.out.println(String.join("; ", dBase.keySet()));
     }
 
     public void put(String[] args) throws Exception {
         if (args.length < 3) {
-            throw new Exception("put: missing operand");
+            missingOperand("put");
         } else {
             if (args.length > 3) {
-                throw new Exception("put: too much  arguments");
+                manyArgs("put");
             }
             String key = args[1];
             String value = args[2];
@@ -82,7 +82,7 @@ public class DataBase {
 
     public void get(String[] args) throws Exception {
         if (args.length > 2) {
-            throw new Exception("get: too much arguments");
+            manyArgs("get");
         }
         String key = args[1];
         if (dBase.containsKey(key)) {
@@ -95,7 +95,7 @@ public class DataBase {
 
     public void remove(String[] args) throws Exception {
         if (args.length > 2) {
-            throw new Exception("remove: too much arguments");
+            manyArgs("remove");
         }
         String key = args[1];
         if (dBase.containsKey(key)) {
@@ -173,5 +173,14 @@ public class DataBase {
             throw new Exception("Error writing database to file");
         }
     }
+
+    public void missingOperand(String operation) throws Exception {
+        throw new Exception(operation + ": missing operand");
+    }
+
+    public void manyArgs(String operation) throws Exception {
+        throw new Exception(operation + ": too many arguments");
+    }
 }
+
 
