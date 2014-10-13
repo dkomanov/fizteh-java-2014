@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.IsalySultan.FileMap;
+package ru.fizteh.fivt.students.isalysultan.FileMap;
 
 import java.io.IOException;
 
