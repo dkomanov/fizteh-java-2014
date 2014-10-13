@@ -39,6 +39,8 @@ public class PocketParser {
                 newParser.execute(object, command);
             }
             ++i;
+            object.writeFile();
+            System.exit(0);
         }
     }
 }
