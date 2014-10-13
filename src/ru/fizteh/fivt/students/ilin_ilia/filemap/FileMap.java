@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class FileMap {
     
@@ -17,7 +18,7 @@ public class FileMap {
     private static RandomAccessFile file;
     
     FileMap(final String path) throws FileNotFoundException, IOException {
-        map = new HashMap<>();
+        map = new TreeMap<>();
         file = new RandomAccessFile(path, "rw");
         if (file.length() > 0) {
             getFile();
@@ -35,7 +36,7 @@ public class FileMap {
     
     public void get(final String key) {
         String value = map.get(key);
-        if (key == null) {
+        if (value == null) {
             System.out.println("not found");
         } else {
             System.out.println("found\n" + value);
@@ -56,12 +57,10 @@ public class FileMap {
         for (Map.Entry<String, String> pair : map.entrySet()) {
             if (pair.getValue() != null) {
                 count++;
-                System.out.println(pair.getKey());
+                System.out.print(pair.getKey() + " ");
             }
         }
-        if (count == 0) {
-            System.out.println();
-        }
+        System.out.println();
     }
     
     public void exit() {
@@ -89,6 +88,7 @@ public class FileMap {
             }
             bytesCounter += 4;
             keys.add((buf.toString("UTF-8")));
+            buf.reset();
         } while (bytesCounter < off);
         try {
             offsets.add((int) file.length());
@@ -126,21 +126,21 @@ public class FileMap {
             file.setLength(0);
             Set<String> keys = map.keySet();
             List<Integer> offsetsPos = new LinkedList<Integer>();
-            List<Integer> offsets = new LinkedList<Integer>();
-            Iterator<Integer> offIter = offsets.iterator();
             for (String cur : keys) {
                 file.write(cur.getBytes("UTF-8"));
                 file.write('\0');
                 offsetsPos.add(((int) file.getFilePointer()));
                 file.writeInt(0);
             }
+            List<Integer> offsets = new LinkedList<Integer>();
             for (String cur : keys) {
                 offsets.add((int) file.getFilePointer());
                 file.write(map.get(cur).getBytes("UTF-8"));
             }
+            Iterator<Integer> offIter = offsets.iterator();
             for (int pos :offsetsPos) {
                 file.seek(pos);
-                file.writeInt(pos);
+                file.writeInt(offIter.next());
             }
         } catch (IOException e) {
             System.err.println("Can't write into a db file");
