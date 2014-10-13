@@ -30,7 +30,7 @@ public class Main {
         if (0 == functionNumber) {
             res = false;
         }
-        switch (functionNumber) {
+        switch (functionNumber) {               // I use Java 1.6 and can't install 1.7 or 1.8, so I can't change it to switch(comAndParams[bIndex])... 
         case 0:
             try {
                 fm.exit();
@@ -114,8 +114,8 @@ public class Main {
                 fm.exit();
             }
             System.exit(0);
-        } catch (Throwable e) {
-            System.err.println("Something wrong in db file");
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
             System.exit(2);
         }
         System.exit(0);
@@ -127,13 +127,14 @@ public class Main {
             batchMode(args, path);
         }
         Scanner in = new Scanner(System.in);
-        if (null == path) {
+        if (path == null) {
             System.out.println("System property db.file is undefined");
         }
         try {
             FileMap fm = new FileMap(path);
             boolean contFlag = true;
             while (contFlag) {
+                System.out.print("$ ");
                 String currentLine = in.nextLine();
                 String[] commands = currentLine.split(";");
                 for (int i = 0; i < commands.length; i++) {
@@ -143,7 +144,7 @@ public class Main {
                 }
             }
             in.close();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
             in.close();

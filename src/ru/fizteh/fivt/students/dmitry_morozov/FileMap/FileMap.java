@@ -17,20 +17,20 @@ public class FileMap {
     private Map<String, String> table;
     private File dbFile;
 
-    public FileMap(String path) throws IOException, Throwable {
+    public FileMap(String path) throws Exception {
         table = new HashMap<String, String>();
         dbFile = new File(path);
         if (!dbFile.exists()) {
             if (!dbFile.createNewFile()) {
-                throw new Throwable("Couldldn't create db file");
+                throw new Exception("Couldldn't create db file");
             }
         } else {
             if (!dbFile.isFile()) {
-                throw new Throwable("Is not a file");
+                throw new Exception("Is not a file");
             }
         }
         if (!(dbFile.setReadable(true)) && dbFile.setWritable(true)) {
-            throw new Throwable("Couldn't set rw options");
+            throw new Exception("Couldn't set rw options");
         }
         DataInputStream in = new DataInputStream(new FileInputStream(dbFile));
 
@@ -43,7 +43,7 @@ public class FileMap {
             if (in.available() >= sizeOfInt) {
                 len = in.readInt();
                 if (0 != len % 2 || in.available() < len) {
-                    throw new Throwable("File was damaged");
+                    throw new Exception("File was damaged");
                 }
                 len /= 2;
                 while (len > 0) {
@@ -55,11 +55,11 @@ public class FileMap {
                 break;
             }
             if (in.available() < sizeOfInt) {
-                throw new Throwable("Couldn't set rw options");
+                throw new Exception("Couldn't set rw options");
             }
             len = in.readInt();
             if (0 != len % 2 || in.available() < len) {
-                throw new Throwable("File was damaged");
+                throw new Exception("File was damaged");
             }
             len /= 2;
             while (len > 0) {
@@ -89,7 +89,7 @@ public class FileMap {
     public String get(String key) {
         String val = table.get(key);
         String res = "";
-        if (null != val) {
+        if (val != null) {
             res = "found\n" + val;
         } else {
             res = "not found";
@@ -99,18 +99,17 @@ public class FileMap {
 
     public void list(PrintWriter pw) {
         Set<Entry<String, String>> tableSet = table.entrySet();
-        Iterator<Entry<String, String>> it = tableSet.iterator();
         Iterator<Entry<String, String>> checkLast = tableSet.iterator();
         if (checkLast.hasNext()) {
             checkLast.next();
         }
-        while (it.hasNext()) {
-            if (checkLast.hasNext()) {
-                pw.print(it.next().getKey() + ", ");
-                checkLast.next();
-            } else {
-                pw.print(it.next().getKey());
-            }
+        for(Entry<String, String> i : tableSet){
+           if(checkLast.hasNext()){
+               pw.print(i.getKey() + ", ");
+               checkLast.next();
+           } else {
+               pw.print(i.getKey());
+           }
         }
         pw.println();
         pw.flush();
@@ -118,7 +117,7 @@ public class FileMap {
 
     public String remove(String key) {
         String val = table.remove(key);
-        if (null == val) {
+        if (val == null) {
             return "not found";
         } else {
             return "removed";
@@ -129,11 +128,9 @@ public class FileMap {
         DataOutputStream out = new DataOutputStream(new FileOutputStream(
                 dbFile));
         Set<Entry<String, String>> tableSet = table.entrySet();
-        Iterator<Entry<String, String>> it = tableSet.iterator();
-        while (it.hasNext()) {
-            Entry<String, String> cur = it.next();
-            String key = cur.getKey();
-            String value = cur.getValue();
+        for (Entry<String, String> it : tableSet) {
+            String key = it.getKey();
+            String value = it.getValue();
             int len = key.length();
             out.writeInt(len * 2);
             out.writeChars(key);
