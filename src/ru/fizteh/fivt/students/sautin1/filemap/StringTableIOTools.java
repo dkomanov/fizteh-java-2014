@@ -111,7 +111,7 @@ public class StringTableIOTools implements TableIOTools<String, StringTable> {
                 throw new IllegalArgumentException("Wrong file");
             }
             if (!Files.exists(rootPath)) {
-                throw new IllegalArgumentException("File doesn't exist");
+                Files.createFile(rootPath);
             }
             try (InputStream inStream = Files.newInputStream(rootPath)) {
                 while (true) {
