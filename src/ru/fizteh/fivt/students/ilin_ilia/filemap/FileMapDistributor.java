@@ -56,7 +56,7 @@ public class FileMapDistributor {
     }
 
     public static void batchMode(final String[] args) throws Exception {
-    	FileMap db = new FileMap(System.getProperty("db.file"));
+        FileMap db = new FileMap(System.getProperty("db.file"));
         String arg = "";
         String [] arg1 = null;
         String [] arg2 = null;
