@@ -13,12 +13,13 @@ public class Interactive {
         Scanner in = new Scanner(System.in);
         String[] parserCommand;
         Commands object = new Commands();
-        Parser newParser = new Parser();
+        CommandExecutor newParser = new CommandExecutor();
         while (true) {
             String command;
+            System.out.print("$");
             command = in.nextLine();
             parserCommand = command.split(" ");
-            newParser.myParser(tables, parserCommand);
+            newParser.execute(tables, parserCommand);
         }
     }
 }
