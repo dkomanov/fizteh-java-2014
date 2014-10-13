@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.isalysultan.FileMap;
 
 import java.util.Iterator;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Commands {
     void put(String key, String value, Table tables) {
