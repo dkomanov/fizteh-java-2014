@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.vadim_mazaev.multifilemap.commands;
 
 import java.io.IOException;
-import java.util.List;
 
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.Table;
 import ru.fizteh.fivt.students.vadim_mazaev.multifilemap.TableManager;
@@ -24,13 +23,7 @@ public final class ListCommand extends DbCommand {
 
         Table link = getManager().getUsedTable();
         if (link != null) {
-            List<String> keys = link.list();
-            for (String current : keys) {
-                System.out.print(current);
-                //TODO add ","
-                System.out.print(" ");
-            }
-            System.out.println();
+            System.out.println(String.join(", ", link.list()));
         } else {
             System.out.println("no table");
         }

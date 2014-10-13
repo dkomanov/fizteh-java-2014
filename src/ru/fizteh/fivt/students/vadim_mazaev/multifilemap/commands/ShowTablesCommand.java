@@ -20,7 +20,7 @@ public final class ShowTablesCommand extends DbCommand {
             throw new IllegalNumberOfArguments(getName());
         }
 
-        System.out.println("Tablename raw_count");
+        System.out.println("Table_name row_count");
         Set<String> tables = getManager().getTablesSet();
         for (String curTable : tables) {
             System.out.println(curTable + " " + getManager().getTable(curTable).size());

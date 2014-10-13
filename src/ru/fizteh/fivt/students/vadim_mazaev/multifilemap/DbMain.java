@@ -5,7 +5,7 @@ public final class DbMain {
         //Not called, only for checkstyle.
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
             String dbDir = System.getProperty("fizteh.db.dir");
             TableManager manager = new DbConnector().create(dbDir);
