@@ -9,7 +9,7 @@ public class FileMap {
     private static Map<String, String> fm;
     private static boolean out;
     private static RandomAccessFile file;
-    private static String message = "invalid number of arguments";
+    private final static String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE = "Invalid number of arguments";
 
     public static void main(final String[] args) {
         try {
@@ -65,18 +65,14 @@ public class FileMap {
         for (Map.Entry<String, String> i : fm.entrySet()) {
             key = i.getKey();
             value = i.getValue();
-            try {
-                byte[] byteWord = key.getBytes("UTF-8");
-                outStream.writeInt(byteWord.length);
-                outStream.write(byteWord);
-                outStream.flush();
-                byteWord = value.getBytes("UTF-8");
-                outStream.writeInt(byteWord.length);
-                outStream.write(byteWord);
-                outStream.flush();
-            } catch (Exception e) {
-                throw new Exception("Error with writing");
-            }
+            byte[] byteWord = key.getBytes("UTF-8");
+            outStream.writeInt(byteWord.length);
+            outStream.write(byteWord);
+            outStream.flush();
+            byteWord = value.getBytes("UTF-8");
+            outStream.writeInt(byteWord.length);
+            outStream.write(byteWord);
+            outStream.flush();
         }
     }
 
@@ -142,7 +138,7 @@ public class FileMap {
 
     public static void put(String[] args) throws Exception {
         if (args.length != 3) {
-            throw new IllegalArgumentException("put: " + message);
+            throw new IllegalArgumentException("put: " + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
         }
         String key = args[1];
         String value = args[2];
@@ -157,7 +153,7 @@ public class FileMap {
 
     public static void get(String[] args) throws Exception {
         if (args.length != 2) {
-            throw new IllegalArgumentException("get: " + message);
+            throw new IllegalArgumentException("get: " + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
         }
         String key = args[1];
         String s = fm.get(key);
@@ -171,7 +167,7 @@ public class FileMap {
 
     public static void remove(String[] args) throws Exception {
         if (args.length != 2) {
-            throw new IllegalArgumentException("remove: " + message);
+            throw new IllegalArgumentException("remove: " + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
         }
         String key = args[1];
         String s = fm.remove(key);
@@ -184,7 +180,7 @@ public class FileMap {
 
     public static void list(String[] args) throws Exception {
         if (args.length != 1) {
-            throw new IllegalArgumentException("list: " + message);
+            throw new IllegalArgumentException("list: " + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
         }
         Set<String> keySet = fm.keySet();
         int counter = 0;
@@ -200,10 +196,9 @@ public class FileMap {
 
     public static void exit(String[] args) throws Exception {
         if (args.length != 1) {
-            throw new IllegalArgumentException("exit: " + message);
+            throw new IllegalArgumentException("exit: " + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
         }
         putFile();
         System.exit(0);
     }
 }
-
