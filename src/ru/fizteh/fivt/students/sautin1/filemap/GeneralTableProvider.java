@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.sautin1.filemap;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +62,7 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
         // delete files recursively
     }
 
-    public void loadTable(Path root, String tableName) {
+    public void loadTable(Path root, String tableName) throws IOException {
         T table = tableMap.get(tableName);
         if (table == null) {
             throw new IllegalArgumentException("Wrong table name");

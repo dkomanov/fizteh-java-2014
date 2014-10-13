@@ -36,21 +36,27 @@ public class StringTableIOTools implements TableIOTools<String, StringTable> {
         return wrapper.getInt();
     }
 
-    private String readEncodedString(InputStream inStream) {
+    private String readEncodedString(InputStream inStream) throws IOException {
         String string = null;
         try {
             byte[] intByteBuf = new byte[4];
-            if (inStream.read(intByteBuf, 0, 4) == -1) {
-                return null;
+            int bytesRead = inStream.read(intByteBuf, 0, 4);
+            if (bytesRead < 4) {
+                if (bytesRead == -1) {
+                    return null;
+                } else {
+                    throw new IOException("File is corrupted");
+                }
             }
             int stringSize = byteArrayToInt(intByteBuf);
             byte[] stringByteBuf = new byte[stringSize];
-            if (inStream.read(stringByteBuf, 0, stringSize) == -1) {
-                throw new IOException("File corrupted");
+            bytesRead = inStream.read(stringByteBuf, 0, stringSize);
+            if (bytesRead < stringSize) {
+                throw new IOException("File is corrupted");
             }
             string = new String(stringByteBuf, encoding);
         } catch (IOException e) {
-            System.err.println("Read error: " + e.getMessage());
+            throw new IOException("Read error: " + e.getMessage());
         }
         return string;
     }
@@ -66,7 +72,7 @@ public class StringTableIOTools implements TableIOTools<String, StringTable> {
     }
 
     @Override
-    public StringTable readTable(Path rootPath, StringTable table) {
+    public StringTable readTable(Path rootPath, StringTable table) throws IOException {
         if (fileQuantity == 0) {
             return null;
         }
@@ -85,12 +91,12 @@ public class StringTableIOTools implements TableIOTools<String, StringTable> {
                     }
                     String value = readEncodedString(inStream);
                     if (value == null) {
-                        throw new IOException("File corrupted");
+                        throw new IOException("File is corrupted");
                     }
                     table.put(key, value);
                 }
             } catch (IOException e) {
-                System.err.println(e.getMessage());
+                throw new IOException(e.getMessage());
             }
         }
         return table;
