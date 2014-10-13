@@ -54,14 +54,10 @@ public class FileMap {
                         continue;
                     }
                     if (!fileMapCommands.get(curCommand).execute(
-                            argv)) {
-                        errorOccurred = true;
-                    }
+                            argv)) {errorOccurred = true;}
                 }
-
             }
-        }
-        else {
+        } else {
             StringBuilder joinedArgs = new StringBuilder();
             for (String s : args) {
                 joinedArgs.append(s);
@@ -74,12 +70,12 @@ public class FileMap {
                 if (curCommand.equals("")) {
                     continue;
                 }
-                    if (fileMapCommands.get(curCommand) == null) {
-                        System.out.println(curCommand
-                                + ": command not found");
-                        errorOccurred = true;
-                        continue;
-                    }
+                if (fileMapCommands.get(curCommand) == null) {
+                    System.out.println(curCommand
+                            + ": command not found");
+                    errorOccurred = true;
+                    continue;
+                }
                 if (!fileMapCommands.get(curCommand).execute(
                         argv)) {
                     errorOccurred = true;

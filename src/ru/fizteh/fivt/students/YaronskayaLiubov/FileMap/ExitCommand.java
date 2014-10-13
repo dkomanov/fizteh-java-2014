@@ -10,6 +10,7 @@ public class ExitCommand extends Command {
         name = "exit";
         numberOfArguements = 1;
     }
+
     boolean execute(String[] args) {
         if (args.length != numberOfArguements) {
             System.err.println(name + ": wrong number of arguements");

@@ -8,6 +8,7 @@ public class RemoveCommand extends Command {
         name = "remove";
         numberOfArguements = 2;
     }
+
     boolean execute(String[] args) {
         if (args.length != numberOfArguements) {
             System.err.println(name + ": wrong number of arguements");

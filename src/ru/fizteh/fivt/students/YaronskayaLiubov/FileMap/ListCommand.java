@@ -8,6 +8,7 @@ public class ListCommand extends Command {
         name = "list";
         numberOfArguements = 1;
     }
+
     boolean execute(String[] args) {
         if (args.length != numberOfArguements) {
             System.err.println(name + ": wrong number of arguements");
@@ -20,6 +21,6 @@ public class ListCommand extends Command {
             moreThenOne = true;
         }
         System.out.println();
-    return true;
+        return true;
     }
 }
