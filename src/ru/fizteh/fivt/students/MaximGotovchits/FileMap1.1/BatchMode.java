@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.util.Map;
 
-public class BatchMode extends Error {
+public class BatchMode extends Commands {
     void batchModeFunction(String commands, Map<String, String> storage, String[] cmdBuffer) throws Exception {
         commands = commands.replaceAll("\\s+", " ");
         String [] commandsSeq = commands.split(";");

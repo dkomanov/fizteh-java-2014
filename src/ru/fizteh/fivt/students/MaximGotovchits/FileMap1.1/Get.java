@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.util.Map;
 
-public class Get extends Error {
+public class Get extends Commands {
     protected void getFunction(Map<String, String> storage, String[] cmdBuffer) {
         if (cmdBuffer.length == 2) {
             String k = cmdBuffer[1];

@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.maxim_gotovchits.file_map;
 
 import java.util.Map;
 
-public class Put extends Error {
+public class Put extends Commands {
     void putFunction(Map<String, String> storage, String[] cmdBuffer) {
         if (cmdBuffer.length == 3) {
             String k = cmdBuffer[1];
