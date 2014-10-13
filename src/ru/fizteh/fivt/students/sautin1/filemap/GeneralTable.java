@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * Created by sautin1 on 10/10/14.
  */
-public class GeneralTable<MappedValue> {
+public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, MappedValue>> {
     private Map<String, MappedValue> committedEntries;
     private Map<String, MappedValue> addedEntries;
     private Map<String, MappedValue> overwrittenEntries;
@@ -167,5 +167,10 @@ public class GeneralTable<MappedValue> {
         List<String> keyList = new ArrayList<>();
         keyList.addAll(keySet);
         return keyList;
+    }
+
+    @Override
+    public Iterator<Map.Entry<String, MappedValue>> iterator() {
+        return committedEntries.entrySet().iterator();
     }
 }

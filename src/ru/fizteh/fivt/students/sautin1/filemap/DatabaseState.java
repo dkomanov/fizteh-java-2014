@@ -23,6 +23,9 @@ public class DatabaseState<MappedValue, T extends GeneralTable<MappedValue>> {
     }
 
     public void setActiveTable(GeneralTable<MappedValue> activeTable) {
+        if (activeTable == null) {
+            throw new IllegalArgumentException("Wrong table");
+        }
         this.activeTable = activeTable;
     }
 

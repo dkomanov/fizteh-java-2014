@@ -62,7 +62,11 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
     }
 
     public void loadTable(Path root, String tableName) {
-        tableIOTools.readTable(root, tableName);
+        T table = tableMap.get(tableName);
+        if (table == null) {
+            throw new IllegalArgumentException("Wrong table name");
+        }
+        tableIOTools.readTable(root, table);
     }
 
     public void saveTable(Path root, String tableName) {

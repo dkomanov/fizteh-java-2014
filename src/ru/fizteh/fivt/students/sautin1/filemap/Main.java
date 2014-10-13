@@ -23,6 +23,8 @@ public class Main {
             StringTable table = new StringTable(FILENAME, true);
             Path filePath = Paths.get(System.getProperty(FILENAME));
             StringTableIOTools tableIOTools = new StringTableIOTools();
+            tableIOTools.readTable(filePath, table);
+
             StringTableProvider provider = new StringTableProvider(filePath.getParent(), true, tableIOTools);
             StringDatabaseState databaseState = new StringDatabaseState(provider);
             databaseState.setActiveTable(table);
@@ -33,6 +35,7 @@ public class Main {
             @SuppressWarnings("unchecked")
             Shell<StringDatabaseState> shell = new Shell<>(databaseState, commands);
             shell.startWork(args);
+
             tableIOTools.writeTable(filePath.getParent(), table);
         } catch (UserInterruptException e) {
             exitStatus = 0;
