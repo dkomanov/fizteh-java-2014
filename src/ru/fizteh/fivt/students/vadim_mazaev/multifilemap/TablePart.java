@@ -73,8 +73,6 @@ public final class TablePart {
             tablePartDirPath.toFile().delete();
             tablePartDirPath.getParent().toFile().delete();
         } else if (isConnected) {
-            tablePartDirPath.toFile().delete();
-            tablePartDirPath.getParent().toFile().delete();
             try {
                 writeToFile();
             } catch (IOException e) {

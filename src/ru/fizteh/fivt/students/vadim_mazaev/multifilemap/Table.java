@@ -217,6 +217,9 @@ public final class Table {
     private void writeTableToDir() throws IOException {
         for (Entry<Integer, TablePart> part : parts.entrySet()) {
             part.getValue().disconnect();
+            if (part.getValue().getNumberOfRecords() == 0) {
+                parts.remove(part.getKey());
+            }
         }
     }
 }
