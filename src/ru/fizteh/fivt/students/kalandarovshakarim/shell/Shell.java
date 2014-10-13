@@ -11,7 +11,6 @@ import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands.ExitCommand;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.Command;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
 
@@ -88,11 +87,11 @@ public class Shell {
 
     private void terminate(int status) {
         try {
-            ExitCommand exit = (ExitCommand) supportedCmds.get("exit");
-            exit.setExitStatus(status);
-            exit.exec(args);
-        } catch (ClassCastException e) {
-            System.exit(status);
+            String[] strStatus = (status == 0 ? new String[0] : new String[1]);
+            supportedCmds.get("exit").exec(strStatus);
+        } catch (Exception e) {
+            System.err.println("No suitable on exit action found");
+            System.exit(1);
         }
     }
 

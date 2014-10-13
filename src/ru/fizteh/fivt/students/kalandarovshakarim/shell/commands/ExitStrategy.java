@@ -11,21 +11,14 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
  */
 public abstract class ExitStrategy<Type> extends AbstractCommand<Type> {
 
-    protected int status;
-
     public ExitStrategy(Type context) {
         super("exit", 0, context);
-        this.status = 0;
-    }
-
-    public void setExitStatus(int status) {
-        this.status = status;
     }
 
     @Override
     public void exec(String[] args) {
         onExit();
-        System.exit(status);
+        System.exit(args.length);
     }
 
     protected abstract void onExit();
