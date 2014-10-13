@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.Soshilov.FileMap;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -27,8 +29,13 @@ public class Initialization {
         try {
             currentFile = new DataInputStream(new FileInputStream(f));
         } catch (FileNotFoundException e) {
-            System.err.println(filePath + ": file not found");
-            System.exit(1);
+            try {
+                Files.createFile(Paths.get(filePath));
+            } catch (IOException exc) {
+                //System.err.println(filePath + ": file not found");
+                System.err.println("cannot create file");
+                System.exit(1);
+            }
         }
         try {
             while (currentFile.available() > 0) {
