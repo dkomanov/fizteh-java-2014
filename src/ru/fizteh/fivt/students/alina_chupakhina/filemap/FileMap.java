@@ -9,7 +9,7 @@ public class FileMap {
     private static Map<String, String> fm;
     private static boolean out;
     private static RandomAccessFile file;
-    private final static String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE = "Invalid number of arguments";
+    private static final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE = "Invalid number of arguments";
 
     public static void main(final String[] args) {
         try {
