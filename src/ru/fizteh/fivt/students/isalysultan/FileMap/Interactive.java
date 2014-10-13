@@ -16,7 +16,7 @@ public class Interactive {
         CommandExecutor newParser = new CommandExecutor();
         while (true) {
             String command;
-            System.out.print("$");
+            System.out.print("$ ");
             command = in.nextLine();
             parserCommand = command.split(" ");
             newParser.execute(tables, parserCommand);
