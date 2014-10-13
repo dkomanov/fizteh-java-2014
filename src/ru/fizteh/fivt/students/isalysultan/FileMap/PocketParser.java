@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.isalysultan.FileMap;
 
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 
 public class PocketParser {
 
@@ -28,7 +27,7 @@ public class PocketParser {
         CommandExecutor newParser = new CommandExecutor();
         boolean firstElement = true;
         while (i <= commands.length) {
-            if (firstElement == true) {
+            if (firstElement) {
                 String[] command = commands[0].split(" ");
                 newParser.execute(object, command);
                 firstElement = false;
