@@ -35,9 +35,6 @@ public class PocketParser {
                 String[] command = commands[i].trim().split(",");
                 int j = 1;
                 String newString = command[0];
-                while (j < command.length) {
-                    newString = newString + " " + command[j];
-                }
                 String[] endCommand = newString.trim().split(" ");
                 newParser.execute(object, endCommand);
             }
