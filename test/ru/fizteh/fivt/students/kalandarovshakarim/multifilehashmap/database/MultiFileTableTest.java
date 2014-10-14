@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database;
+package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap;
 
+import ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database.DataBaseProviderFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,16 +20,15 @@ import static org.junit.Assert.*;
  */
 public class MultiFileTableTest {
 
+    private final String testDirectory = "/home/shakarim/test.db.dir";
     private final String tableName = "TestTable";
     private final int size = 30;
     private TableProviderFactory factory;
     private TableProvider provider;
     private Table instance;
-    private String testDirectory;
 
     @Before
     public void setUp() {
-        testDirectory = System.getProperty("test.dir") + "/test.db.dir";
         factory = new DataBaseProviderFactory();
         provider = factory.create(testDirectory);
         instance = provider.createTable(tableName);
@@ -177,24 +177,6 @@ public class MultiFileTableTest {
         Collections.sort(result);
         Collections.sort(expResult);
         assertEquals(expResult, result);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetNull() {
-        System.out.println("get null");
-        instance.get(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testPutNull() {
-        System.out.println("put null");
-        instance.put(null, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testRemoveNull() {
-        System.out.println("remove null");
-        instance.remove(null);
     }
 
     private String getKey(int order) {
