@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.andreyzakharov.filemap;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -11,7 +12,11 @@ public class DbConnector implements AutoCloseable {
 
     DbConnector(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
-            throw new ConnectionInterruptException("connection: file does not exist");
+            try {
+                Files.createFile(dbPath);
+            } catch (IOException e) {
+                throw new ConnectionInterruptException("connection: file does not exist, can't be created");
+            }
         }
         if (Files.isDirectory(dbPath)) {
             throw new ConnectionInterruptException("connection: destination is a directory");
