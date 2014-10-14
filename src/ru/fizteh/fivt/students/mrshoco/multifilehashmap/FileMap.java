@@ -9,7 +9,7 @@ import java.util.Scanner;
 public final class FileMap {
 
     public static void main(final String[] args) {
-        File fl = new File("db.dat"/*System.getProperty("db.file")*/);
+        File fl = new File(System.getProperty("db.file"));
         HashMap<String, String> hm;
         try {
             hm = Data.load(fl);
