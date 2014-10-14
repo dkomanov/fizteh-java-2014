@@ -3,6 +3,9 @@ package ru.fizteh.fivt.students.gudkov394.map;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -13,11 +16,19 @@ public class Init {
             System.exit(4);
         }
         File f = new File(property);
+        if (!Files.exists(Paths.get(property))) {
+            try {
+                Files.createFile(Paths.get(property));
+            } catch (IOException e) {
+                System.err.println("I can't create file");
+                System.exit(4);
+            }
+        }
         DataInputStream input = null;
         try {
             input = new DataInputStream(new FileInputStream(f));
         } catch (FileNotFoundException e) {
-            System.err.println("Input file didn't find");
+            System.err.println("Input file didn't find, I will create it");
             System.exit(4);
         }
         try {
