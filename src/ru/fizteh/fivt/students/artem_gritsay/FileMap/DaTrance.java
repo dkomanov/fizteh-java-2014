@@ -7,9 +7,9 @@ import java.io.RandomAccessFile;
 import java.util.*;
 
 public class DaTrance {
-    public static void putD(RandomAccessFile dataFile, HashMap<String, String> fileMap)
+    public static void putData(RandomAccessFile dataFile, HashMap<String, String> fileMap)
             throws IOException {
-        List<Integer> reserveplace = new LinkedList<>();
+        List<Integer> camelCase = new LinkedList<>();
         dataFile.setLength(0);
         Set<String> key = fileMap.keySet();
         List<Integer> offset = new LinkedList<>();
@@ -17,7 +17,7 @@ public class DaTrance {
         for (String i : key) {
             dataFile.write(i.getBytes("UTF-8"));
             dataFile.write('\0');
-            reserveplace.add((int) dataFile.getFilePointer());
+            camelCase.add((int) dataFile.getFilePointer());
             dataFile.writeInt(0);
         }
 
@@ -28,7 +28,7 @@ public class DaTrance {
 
         Iterator<Integer> k = offset.iterator();
 
-        for (int i : reserveplace) {
+        for (int i : camelCase) {
             dataFile.seek(i);
             dataFile.writeInt(k.next());
         }
@@ -38,25 +38,24 @@ public class DaTrance {
             throws IOException {
         byte b;
         int bytenumber = 0;
-        int first = 1;
+        int first = 0;
         List<String> key = new LinkedList<>();
         List<Integer> offset = new LinkedList<>();
         ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
-
-        while (bytenumber < first) {
+        do  {
             while ((b = dataFile.readByte()) > 0) {
                 bytestream.write(b);
                 bytenumber++;
             }
             key.add(bytestream.toString("UTF-8"));
             bytestream.reset();
-            if (first == 1) {
+            if (first == 0) {
                 first = dataFile.readInt();
             } else {
                 offset.add(dataFile.readInt());
             }
             bytenumber += 5;
-        }
+        } while (bytenumber < first);
 
         offset.add((int) dataFile.length());
         Iterator<String> keyIterator = key.iterator();

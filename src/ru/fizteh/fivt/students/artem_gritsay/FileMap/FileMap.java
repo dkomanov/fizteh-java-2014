@@ -14,11 +14,12 @@ public class FileMap {
     private static void exit(Path pathtoFile, HashMap<String, String> filemap)  {
         try (RandomAccessFile dataBaseFile
                 = new RandomAccessFile(pathtoFile.toString(), "rw")) {
-            DaTrance.putD(dataBaseFile, filemap);
+            DaTrance.putData(dataBaseFile, filemap);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }
+
     private static boolean checkarguments(String[] args, Integer k) {
         if (args.length == k) {
             return true;
@@ -69,7 +70,7 @@ public class FileMap {
             com.append(' ');
         }
         switchLine(com.toString());
-        exit(pathFile, filemap);
+        throw new ShellExitException();
     }
 
     private static void switchLine(String line) throws ShellExitException {
@@ -88,7 +89,7 @@ public class FileMap {
     }
 
     private static void put(String[] args) {
-        if (checkarguments(args, args.length)) {
+        if (checkarguments(args, 3)) {
             String v = filemap.put(args[1], args[2]);
             if (v != null) {
                 System.out.println("overwrite");
@@ -100,7 +101,7 @@ public class FileMap {
     }
 
     private static void get(String[] args) {
-        if (checkarguments(args, args.length)) {
+        if (checkarguments(args, 2)) {
             String v = filemap.get(args[1]);
             if (v != null) {
                 System.out.println("found");
@@ -112,7 +113,7 @@ public class FileMap {
     }
 
     private static void list(String[] args) {
-        if (checkarguments(args, args.length)) {
+        if (checkarguments(args, 1)) {
             Set<String> keys = filemap.keySet();
             Integer i = 0;
             for (String key : keys) {
@@ -128,7 +129,7 @@ public class FileMap {
     }
 
     private static void remove(String[] args) {
-        if (checkarguments(args, args.length)) {
+        if (checkarguments(args, 2)) {
             String s = filemap.remove(args[1]);
             if (s != null) {
                 System.out.println("removed");
