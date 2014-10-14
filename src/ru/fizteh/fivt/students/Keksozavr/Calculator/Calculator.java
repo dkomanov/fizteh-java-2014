@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Keksozavr.Сalculator;
+package ru.fizteh.fivt.students.Keksozavr.Calculator;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
