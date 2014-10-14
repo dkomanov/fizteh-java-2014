@@ -19,7 +19,7 @@ public class ChangeDirectory {
                 cd.changeCurrentDirectory(f.getParent());
             } else
          if (!".".equals(currentArgs[1])) {
-				File f = new File(currentArgs[1]);
+                File f = new File(currentArgs[1]);
                 if (!f.isAbsolute()) {
                     f = new File(cd.getCurrentDirectory(), currentArgs[1]);
                     if (!f.exists()) {
