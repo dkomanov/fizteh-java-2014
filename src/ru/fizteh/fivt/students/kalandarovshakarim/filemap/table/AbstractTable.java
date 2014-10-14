@@ -19,7 +19,7 @@ import ru.fizteh.fivt.storage.strings.Table;
 public abstract class AbstractTable implements Table {
 
     protected Map<String, String> table = new HashMap<>();
-    protected Map<String, String> old = new HashMap<>();
+    protected Map<String, String> oldData = new HashMap<>();
     private String tableName = null;
 
     public AbstractTable(String tableName) {
@@ -44,11 +44,19 @@ public abstract class AbstractTable implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null");
         }
+
+        if (table.containsKey(key) && value.equals(table.get(key))) {
+            // If same value was overwritten.
+            return value;
+        }
+
         String oldValue = table.put(key, value);
-        if (!old.containsKey(key)) {
-            old.put(key, oldValue);
-        } else if (value.equals(old.get(key))) {
-            old.remove(key);
+        if (!oldData.containsKey(key)) {
+            // Value in key is changed first time.
+            oldData.put(key, oldValue);
+        } else if (value.equals(oldData.get(key))) {
+            // If overwritten value matches first commited value.
+            oldData.remove(key);
         }
         return oldValue;
     }
@@ -64,10 +72,12 @@ public abstract class AbstractTable implements Table {
 
         String oldValue = table.remove(key);
 
-        if (old.containsKey(key) && old.get(key) == null) {
-            old.remove(key);
-        } else if (!old.containsKey(key)) {
-            old.put(key, oldValue);
+        if (oldData.containsKey(key) && oldData.get(key) == null) {
+            // If (key,value) which wasn't in first committed state removed.
+            oldData.remove(key);
+        } else if (!oldData.containsKey(key)) {
+            // If (key,value) which was in first committed state removed.
+            oldData.put(key, oldValue);
         }
         return oldValue;
     }
@@ -79,14 +89,14 @@ public abstract class AbstractTable implements Table {
 
     @Override
     public int commit() {
-        int uncommited = old.size();
+        int uncommited = oldData.size();
         if (uncommited == 0) {
             return 0;
         }
 
         try {
             save();
-            old.clear();
+            oldData.clear();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -95,15 +105,15 @@ public abstract class AbstractTable implements Table {
 
     @Override
     public int rollback() {
-        for (Entry<String, String> entry : old.entrySet()) {
+        for (Entry<String, String> entry : oldData.entrySet()) {
             if (entry.getValue() != null) {
                 table.put(entry.getKey(), entry.getValue());
             } else {
                 table.remove(entry.getKey());
             }
         }
-        int uncommited = old.size();
-        old.clear();
+        int uncommited = oldData.size();
+        oldData.clear();
         return uncommited;
     }
 
@@ -117,7 +127,7 @@ public abstract class AbstractTable implements Table {
     }
 
     public int changes() {
-        return old.size();
+        return oldData.size();
     }
 
     protected abstract void save() throws IOException;
