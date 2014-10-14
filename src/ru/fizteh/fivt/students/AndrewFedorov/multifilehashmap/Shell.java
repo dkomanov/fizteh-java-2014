@@ -10,9 +10,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.NoActiveTableException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Log;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
 
 //java -Dfizteh.db.dir=/home/phoenix/test/DB ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.Shell
 
@@ -40,7 +45,7 @@ public class Shell {
     /**
      * Available commands for invocation.
      */
-    private Map<String, Class<?>> classesMap;
+    private Map<String, Class<? extends Command>> classesMap;
 
     private Database activeDatabase;
 
@@ -57,16 +62,20 @@ public class Shell {
      * Do some minor optimizations - delete empty files and directories.
      */
     public void cleanup() {
-	// delete empty files and directories inside tables' directories
-	try (DirectoryStream<Path> dirStream = Files
-		.newDirectoryStream(activeDatabase.getDbDirectory())) {
-	    for (Path tableDirectory : dirStream) {
-		Utility.removeEmptyFilesAndFolders(tableDirectory);
-	    }
+	// Delete empty files and directories inside tables' directories
+	Path dbDirectory = (activeDatabase == null ? null : activeDatabase.getDbDirectory());
 
-	    Log.log(Shell.class, "Cleaned up successfully");
-	} catch (IOException exc) {
-	    Log.log(Shell.class, exc, "Failed to clean up");
+	if (dbDirectory != null) {
+	    try (DirectoryStream<Path> dirStream = Files
+		    .newDirectoryStream(dbDirectory)) {
+		for (Path tableDirectory : dirStream) {
+		    Utility.removeEmptyFilesAndFolders(tableDirectory);
+		}
+
+		Log.log(Shell.class, "Cleaned up successfully");
+	    } catch (IOException exc) {
+		Log.log(Shell.class, exc, "Failed to clean up");
+	    }
 	}
     }
 
@@ -78,7 +87,7 @@ public class Shell {
      * @return returns true if execution finished correctly; false otherwise;
      */
     public boolean execute(String command) {
-	String[] args = command.trim().split("[ ]{1,}");
+	String[] args = command.trim().split("[ \t]{1,}");
 	if (args[0].isEmpty()) {
 	    return true;
 	}
@@ -144,8 +153,12 @@ public class Shell {
 	Log.log(Shell.class, "Shell starting");
 
 	try {
-	    activeDatabase = Database.establishDatabase(Paths.get(System
-		    .getProperty(DB_DIRECTORY_PROPERTY_NAME)));
+	    String dbDirPath = System.getProperty(DB_DIRECTORY_PROPERTY_NAME);
+	    if (dbDirPath == null) {
+		Utility.handleError("Please mention database directory");
+	    }
+
+	    activeDatabase = Database.establishDatabase(Paths.get(dbDirPath));
 	} catch (HandledException exc) {
 	    this.exit(1);
 	}
@@ -155,18 +168,18 @@ public class Shell {
 	classesMap = new HashMap<>(classes.length);
 
 	for (int i = 0, len = classes.length; i < len; i++) {
-	    boolean isShellCommand = true;
+	    Class<? extends Command> commandClass = null;
+	    
 	    try {
-		classes[i].asSubclass(Command.class);
+		commandClass = classes[i].asSubclass(Command.class);
 	    } catch (ClassCastException exc) {
-		isShellCommand = false;
 	    }
 
-	    if (isShellCommand) {
+	    if (commandClass != null) {
 		String simpleName = Utility.simplifyClassName(classes[i]
 			.getSimpleName());
 
-		classesMap.put(simpleName, classes[i]);
+		classesMap.put(simpleName, commandClass);
 		Log.log(Shell.class, String.format(
 			"Class registered: %s as '%s'", classes[i].getName(),
 			simpleName));
@@ -178,8 +191,8 @@ public class Shell {
 	return interactive;
     }
 
-    public Iterator<Entry<String, Class<?>>> listCommands() {
-	return classesMap.entrySet().iterator();
+    public Set<Entry<String, Class<? extends Command>>> listCommands() {
+	return classesMap.entrySet();
     }
 
     /**

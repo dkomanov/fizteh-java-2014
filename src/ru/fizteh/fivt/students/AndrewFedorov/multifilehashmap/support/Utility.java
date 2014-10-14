@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
+package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -9,7 +9,10 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Iterator;
 
-class Utility {
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.Commands;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+
+public class Utility {
 
     /**
      * File visitor that deletes empty files and empty folders.
@@ -17,7 +20,7 @@ class Utility {
      * @author phoenix
      * 
      */
-    static class EmptyFilesRemover extends FileTreeRemover {
+    public static class EmptyFilesRemover extends FileTreeRemover {
 	private Path rootDirectory;
 
 	/**
@@ -67,7 +70,7 @@ class Utility {
      * @author phoenix
      * 
      */
-    static class FileTreeRemover extends MyTreeWalker<Path> {
+    public static class FileTreeRemover extends MyTreeWalker<Path> {
 	@Override
 	public FileVisitResult postVisitDirectory(Path path, IOException exc)
 		throws IOException {
@@ -110,7 +113,7 @@ class Utility {
      * @author phoenix
      * @see FileVisitor
      */
-    static abstract class MyTreeWalker<T> implements FileVisitor<T> {
+    public static abstract class MyTreeWalker<T> implements FileVisitor<T> {
 	@Override
 	public FileVisitResult postVisitDirectory(T path, IOException exc)
 		throws IOException {
@@ -146,7 +149,7 @@ class Utility {
      *         {@code null} if everything is ok.
      * @throws IOException
      */
-    static Path checkDirectoryContainsOnlyDirectories(final Path directory,
+    public static Path checkDirectoryContainsOnlyDirectories(final Path directory,
 	    final int depth) throws IOException {
 	class DirChecker extends MyTreeWalker<Path> {
 	    Path invalidPath = null;
@@ -198,7 +201,7 @@ class Utility {
      * @param message
      *            message that can be reported to user and is written to log.
      */
-    static void handleError(String message) {
+    public static void handleError(String message) {
 	handleError(null, message, true);
     }
 
@@ -213,7 +216,7 @@ class Utility {
      * @param reportToUser
      *            if true, message is printed to {@link System#err}.
      */
-    static void handleError(Throwable exc, String message, boolean reportToUser)
+    public static void handleError(Throwable exc, String message, boolean reportToUser)
 	    throws HandledException {
 	if (reportToUser) {
 	    System.err.println(message == null ? exc.getMessage() : message);
@@ -226,7 +229,7 @@ class Utility {
 	}
     }
 
-    static byte[] insertArray(byte[] source, int sourceOffset, int sourceSize,
+    public static byte[] insertArray(byte[] source, int sourceOffset, int sourceSize,
 	    byte[] target, int targetOffset) {
 	if (sourceSize + targetOffset > target.length) {
 	    int newLength = Math.max(target.length * 2, sourceSize
@@ -247,7 +250,7 @@ class Utility {
 	return target;
     }
 
-    static void removeEmptyFilesAndFolders(Path rootDirectory)
+    public static void removeEmptyFilesAndFolders(Path rootDirectory)
 	    throws IOException {
 	Files.walkFileTree(rootDirectory, new EmptyFilesRemover(rootDirectory));
     }
@@ -277,10 +280,30 @@ class Utility {
 	}
     }
 
-    static String simplifyClassName(String name) {
+    public static String simplifyClassName(String name) {
 	name = name.substring(name.lastIndexOf('.') + 1);
 	name = name.substring(name.lastIndexOf('$') + 1);
 	name = name.toLowerCase();
 	return name;
+    }
+
+    /**
+     * Safely performs some action. Exceptions thrown while its execution are
+     * given to handler.
+     * 
+     * @param action
+     *            action to be performed
+     * @param handler
+     *            exception handler
+     * @param additionalData
+     *            some additional data used by handler to form messages
+     */
+    public static <T> void performAccurately(AccurateAction action,
+	    AccurateExceptionHandler<T> handler, T additionalData) {
+	try {
+	    action.perform();
+	} catch (Exception exc) {
+	    handler.handleException(exc, additionalData);
+	}
     }
 }

@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
 
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+
 /**
  * This class represents an executable shell command
  * 

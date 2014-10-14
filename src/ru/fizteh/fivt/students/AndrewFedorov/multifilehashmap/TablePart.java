@@ -14,6 +14,11 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.DBFileCorruptException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.DatabaseException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
+
 /**
  * This class represents a table part implemented as usual {@link HashMap} and
  * stored in a separate file.
@@ -43,7 +48,7 @@ public class TablePart {
      *             if failed to create database file or {@code dbFileName} is
      *             null.
      */
-    public TablePart(Path tablePartFilePath) throws HandledException {
+    public TablePart(Path tablePartFilePath) throws DatabaseException {
 	if (tablePartFilePath == null) {
 	    Utility.handleError("Please specify database file path");
 	}
@@ -57,8 +62,7 @@ public class TablePart {
 		Files.createDirectories(tablePartFilePath.getParent());
 		Files.createFile(tablePartFilePath);
 	    } catch (IOException exc) {
-		Utility.handleError(exc,
-			"Cannot establish proper db connection", true);
+		throw new DatabaseException("Cannot establish proper db connection", exc);
 	    }
 	}
     }
@@ -104,7 +108,7 @@ public class TablePart {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public void readFromFile() throws IOException, DBFileCorruptException {
+    public void readFromFile() throws DBFileCorruptException {
 	/*
 	 * if an exception occurs and database is cloned, recover if cloned
 	 * object is null - no recover is performed.
@@ -153,7 +157,7 @@ public class TablePart {
 		if (i == nextValue) {
 		    throw new DBFileCorruptException(
 			    String.format(
-				    "attempt to read key part from %s to %s, but value should start here",
+				    "Attempt to read key part from %s to %s, but value should start here",
 				    bufferOffset, i));
 		}
 		if (buffer[i] == 0) {
@@ -163,7 +167,7 @@ public class TablePart {
 		    if (i + 4 >= bufferSize) {
 			throw new DBFileCorruptException(
 				String.format(
-					"there is no value offset for key '%s' after byte %s",
+					"There is no value offset for key '%s' after byte %s",
 					currentKey, i));
 		    }
 		    int valueShift = 0;
@@ -179,7 +183,7 @@ public class TablePart {
 		    if (i > nextValue) {
 			throw new DBFileCorruptException(
 				String.format(
-					"value shift for key '%s' is to early: %s; current position: %s",
+					"Value shift for key '%s' is to early: %s; current position: %s",
 					currentKey, valueShift, i));
 		    } else if (i == nextValue) {
 			break;
@@ -218,12 +222,12 @@ public class TablePart {
 	    String value = new String(buffer, bufferOffset, bufferSize
 		    - bufferOffset);
 	    tablePartMap.put(currentKey, value);
-	} catch (Throwable exc) {
+	} catch (IOException exc) {
 	    // recover
 	    if (cloneDBMap != null) {
 		tablePartMap = cloneDBMap;
 	    }
-	    throw exc;
+	    throw new DBFileCorruptException(exc);
 	}
     }
 

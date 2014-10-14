@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
+package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception;
 
 /**
  * This exception wraps another exception that was caught and handled by a

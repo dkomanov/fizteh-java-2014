@@ -1,4 +1,7 @@
-package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
+package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception;
+
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.Command;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
 
 public class WrongArgsNumberException extends IllegalArgumentException {
 

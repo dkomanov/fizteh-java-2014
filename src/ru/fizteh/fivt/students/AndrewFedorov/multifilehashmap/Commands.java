@@ -1,115 +1,117 @@
 package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
 
-import static ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.Utility.handleError;
+import static ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility.handleError;
 
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class Commands {
-    static class Create implements Command {
-	@Override
-	public void execute(Shell shell, String[] args) throws HandledException {
-	    if (args.length != 2) {
-		handleError(new WrongArgsNumberException(this), null, true);
-	    }
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.DatabaseException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.AccurateAction;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.AccurateExceptionHandler;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
 
+public class Commands {
+    /**
+     * Used for unsafe calls. Catches all extensions of {@link DatabaseException }.
+     */
+    private final static AccurateExceptionHandler<Shell> tableCorruptionHandler = new AccurateExceptionHandler<Shell>() {
+
+	@Override
+	public void handleException(Exception exc, Shell shell) {
+	    if (exc instanceof RuntimeException) {
+		throw (RuntimeException) exc;
+	    } else if (exc instanceof DatabaseException) {
+		handleError(exc, String.format("Table %s is corrupt: " + exc.getMessage(), shell
+			.getActiveTable().getTableName()), true);
+	    } else {
+		throw new RuntimeException("Unexpected exception", exc);
+	    }
+	}
+
+    };
+
+    static class Create extends AbstractCommand implements Command {
+	public Create() {
+	    super("<tablename>", "creates a new table with the given name", 2);
+	}
+
+	@Override
+	public void executeAfterChecking(Shell shell, String[] args)
+		throws HandledException {
 	    shell.getActiveDatabase().createTable(args[1]);
 	}
-
-	@Override
-	public String getInfo() {
-	    return "creates a new table with the given name";
-	}
-
-	@Override
-	public String getInvocation() {
-	    return "<tablename>";
-	}
     }
 
-    static class Drop implements Command {
-	@Override
-	public void execute(Shell shell, String[] args) throws HandledException {
-	    if (args.length != 2) {
-		handleError(new WrongArgsNumberException(this), null, true);
-	    }
+    static class Drop extends AbstractCommand implements Command {
+	public Drop() {
+	    super("<tablename>",
+		    "deletes table with the given name from file system", 2);
+	}
 
+	@Override
+	public void executeAfterChecking(Shell shell, String[] args)
+		throws HandledException {
 	    shell.getActiveDatabase().dropTable(args[1]);
 	}
-
-	@Override
-	public String getInfo() {
-	    return "deletes table with the given name from file system";
-	}
-
-	@Override
-	public String getInvocation() {
-	    return "<tablename>";
-	}
     }
 
-    static class Exit implements Command {
+    static class Exit extends AbstractCommand implements Command {
+	public Exit() {
+	    super(null,
+		    "saves all data to file system and stops interpretation", 1);
+	}
+
 	@Override
-	public void execute(Shell shell, String[] args) throws HandledException {
-	    if (args.length != 1) {
-		handleError(new WrongArgsNumberException(this), null, true);
-	    }
+	public void executeAfterChecking(Shell shell, String[] args)
+		throws HandledException {
 	    shell.persistDatabase();
 	    shell.exit(0);
 	}
+    }
 
-	@Override
-	public String getInfo() {
-	    return "saves all data to file and stops interpretation";
+    static class Get extends AbstractCommand implements Command {
+	public Get() {
+	    super("<key", "obtains value by the key", 2);
 	}
 
 	@Override
-	public String getInvocation() {
-	    return null;
+	public void executeAfterChecking(final Shell shell, final String[] args)
+		throws HandledException {
+	    Utility.performAccurately(new AccurateAction() {
+		@Override
+		public void perform() throws Exception {
+		    String key = args[1];
+
+		    String value = shell.getActiveTable().get(key);
+
+		    if (value == null) {
+			System.out.println("not found");
+		    } else {
+			System.out.println("found");
+			System.out.println(value);
+		    }
+		}
+	    }, tableCorruptionHandler, shell);
 	}
     }
 
-    static class Get implements Command {
+    static class Help extends AbstractCommand implements Command {
+	public Help() {
+	    // If someone needs help, no matter which arguments are given
+	    super(null, "prints out description of shell commands", 1,
+		    Integer.MAX_VALUE);
+	}
+
+	@Override
+	public void executeAfterChecking(Shell shell, String[] args)
+		throws HandledException {
+	}
+
 	@Override
 	public void execute(Shell shell, String[] args) throws HandledException {
-	    if (args.length != 2) {
-		handleError(new WrongArgsNumberException(this), null, true);
-	    }
-	    String key = args[1];
-
-	    String value = null;
-	    try {
-		value = shell.getActiveTable().get(key);
-	    } catch (DBFileCorruptException | IOException exc) {
-		handleError(exc, String.format("Table %s is corrupt", shell
-			.getActiveTable().getTableName()), true);
-	    }
-
-	    if (value == null) {
-		System.out.println("not found");
-	    } else {
-		System.out.println("found");
-		System.out.println(value);
-	    }
-	}
-
-	@Override
-	public String getInfo() {
-	    return "obtains value by the key";
-	}
-
-	@Override
-	public String getInvocation() {
-	    return "<key>";
-	}
-    }
-
-    static class Help implements Command {
-	@Override
-	public void execute(Shell shell, String[] args) throws HandledException {
-	    Iterator<Entry<String, Class<?>>> commands = shell.listCommands();
+	    Set<Entry<String, Class<? extends Command>>> commands = shell
+		    .listCommands();
 
 	    System.out
 		    .println("MultiFileHashMap is an utility that lets you work with simple database");
@@ -119,8 +121,7 @@ public class Commands {
 			    .format("You can set database directory to work with using environment variable '%s'",
 				    Shell.DB_DIRECTORY_PROPERTY_NAME));
 
-	    while (commands.hasNext()) {
-		Entry<String, Class<?>> cmdEntry = commands.next();
+	    for (Entry<String, Class<? extends Command>> cmdEntry : commands) {
 		String cmdName = cmdEntry.getKey();
 		Class<?> cmd = cmdEntry.getValue();
 
@@ -138,135 +139,99 @@ public class Commands {
 		}
 	    }
 	}
+    }
 
-	@Override
-	public String getInfo() {
-	    return "prints out description of shell commands";
+    static class List extends AbstractCommand implements Command {
+	public List() {
+	    super(null, "prints all keys stored in the map", 1);
 	}
 
 	@Override
-	public String getInvocation() {
-	    return null;
+	public void executeAfterChecking(final Shell shell, final String[] args)
+		throws HandledException {
+	    Utility.performAccurately(new AccurateAction() {
+
+		@Override
+		public void perform() throws Exception {
+		    Set<String> keySet = shell.getActiveTable().keySet();
+		    StringBuilder sb = new StringBuilder();
+
+		    boolean comma = false;
+
+		    for (String key : keySet) {
+			sb.append(comma ? ", " : "").append(key);
+			comma = true;
+		    }
+
+		    System.out.println(sb);
+		}
+	    }, tableCorruptionHandler, shell);
 	}
     }
 
-    static class List implements Command {
-	@Override
-	public void execute(Shell shell, String[] args) throws HandledException {
-	    if (args.length != 1) {
-		handleError(new WrongArgsNumberException(this), null, true);
-	    }
-	    Set<String> keySet = null;
-
-	    try {
-		keySet = shell.getActiveTable().keySet();
-	    } catch (DBFileCorruptException | IOException exc) {
-		handleError(exc, String.format("Table %s is corrupt", shell
-			.getActiveTable().getTableName()), true);
-	    }
-	    StringBuilder sb = new StringBuilder();
-
-	    boolean comma = false;
-
-	    for (String key : keySet) {
-		sb.append(comma ? ", " : "").append(key);
-		comma = true;
-	    }
-
-	    System.out.println(sb);
+    static class Put extends AbstractCommand implements Command {
+	public Put() {
+	    super("<key> <value>", "assigns new value to the key", 3);
 	}
 
 	@Override
-	public String getInfo() {
-	    return "prints all keys stored in the map";
-	}
+	public void executeAfterChecking(final Shell shell, final String[] args)
+		throws HandledException {
+	    Utility.performAccurately(new AccurateAction() {
+		@Override
+		public void perform() throws Exception {
+		    String key = args[1];
+		    String value = args[2];
 
-	@Override
-	public String getInvocation() {
-	    return null;
+		    String oldValue = shell.getActiveTable().put(key, value);
+
+		    if (oldValue == null) {
+			System.out.println("new");
+		    } else {
+			System.out.println("overwrite");
+			System.out.println("old " + oldValue);
+		    }
+		}
+	    }, tableCorruptionHandler, shell);
 	}
     }
 
-    static class Put implements Command {
-
-	@Override
-	public void execute(Shell shell, String[] args) throws HandledException {
-	    if (args.length != 3) {
-		handleError(new WrongArgsNumberException(this), null, true);
-	    }
-	    String key = args[1];
-	    String value = args[2];
-
-	    String oldValue = null;
-
-	    try {
-		oldValue = shell.getActiveTable().put(key, value);
-	    } catch (DBFileCorruptException | IOException exc) {
-		handleError(exc, String.format("Table %s is corrupt", shell
-			.getActiveTable().getTableName()), true);
-	    }
-
-	    if (oldValue == null) {
-		System.out.println("new");
-	    } else {
-		System.out.println("overwrite");
-		System.out.println("old " + oldValue);
-	    }
+    static class Remove extends AbstractCommand implements Command {
+	public Remove() {
+	    super("<key>", "removes value by the key", 2);
 	}
 
 	@Override
-	public String getInfo() {
-	    return "assigns new value to the key";
-	}
+	public void executeAfterChecking(final Shell shell, final String[] args)
+		throws HandledException {
+	    Utility.performAccurately(new AccurateAction() {
 
-	@Override
-	public String getInvocation() {
-	    return "<key> <value>";
+		@Override
+		public void perform() throws Exception {
+		    String key = args[1];
+		    String oldValue = shell.getActiveTable().remove(key);
+
+		    if (oldValue == null) {
+			System.out.println("not found");
+		    } else {
+			System.out.println("removed");
+		    }
+		}
+	    }, tableCorruptionHandler, shell);
 	}
     }
 
-    static class Remove implements Command {
-	@Override
-	public void execute(Shell shell, String[] args) throws HandledException {
-	    if (args.length != 2) {
-		handleError(new WrongArgsNumberException(this), null, true);
-	    }
-
-	    String key = args[1];
-	    String oldValue = null;
-
-	    try {
-		oldValue = shell.getActiveTable().remove(key);
-	    } catch (DBFileCorruptException | IOException exc) {
-		handleError(exc, String.format("Table %s is corrupt", shell
-			.getActiveTable().getTableName()), true);
-	    }
-
-	    if (oldValue == null) {
-		System.out.println("not found");
-	    } else {
-		System.out.println("removed");
-	    }
+    static class Show extends AbstractCommand implements Command {
+	public Show() {
+	    super(
+		    "tables",
+		    "prints info on all tables assigned to the working database",
+		    2);
 	}
 
 	@Override
-	public String getInfo() {
-	    return "removes value by the key";
-	}
-
-	@Override
-	public String getInvocation() {
-	    return "<key>";
-	}
-    }
-
-    static class Show implements Command {
-	@Override
-	public void execute(Shell shell, String[] args) throws HandledException {
-	    if (args.length != 2) {
-		handleError(new WrongArgsNumberException(this), null, true);
-	    }
-
+	public void executeAfterChecking(Shell shell, String[] args)
+		throws HandledException {
 	    switch (args[1]) {
 	    case "tables": {
 		shell.getActiveDatabase().showTables();
@@ -277,36 +242,20 @@ public class Commands {
 	    }
 	    }
 	}
-
-	@Override
-	public String getInfo() {
-	    return "prints info on all tables assigned to the working database";
-	}
-
-	@Override
-	public String getInvocation() {
-	    return "tables";
-	}
     }
 
-    static class Use implements Command {
-	@Override
-	public void execute(Shell shell, String[] args) throws HandledException {
-	    if (args.length != 2) {
-		handleError(new WrongArgsNumberException(this), null, true);
-	    }
+    static class Use extends AbstractCommand implements Command {
+	public Use() {
+	    super(
+		    "<tablename>",
+		    "saves all changes made to the current table (if present) and makes table with the given name the current one",
+		    2);
+	}
 
+	@Override
+	public void executeAfterChecking(Shell shell, String[] args)
+		throws HandledException {
 	    shell.getActiveDatabase().useTable(args[1]);
-	}
-
-	@Override
-	public String getInfo() {
-	    return "saves all changes made to the current table (if present) and makes table with the given name the current one";
-	}
-
-	@Override
-	public String getInvocation() {
-	    return "<tablename>";
 	}
     }
 }

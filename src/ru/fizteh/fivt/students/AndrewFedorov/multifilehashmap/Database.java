@@ -1,11 +1,17 @@
 package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
 
-import static ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.Utility.handleError;
+import static ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility.handleError;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.DatabaseException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.NoActiveTableException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Log;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
 
 /**
  * Database class responsible for a set of tables assigned to it.
@@ -49,10 +55,19 @@ public class Database {
 
 	try {
 	    if (!Files.exists(dbDirectory)) {
-		Files.createDirectories(dbDirectory);
+		Path parent = dbDirectory.getParent();
+		if (parent != null && Files.isDirectory(parent)) {
+		    Files.createDirectory(dbDirectory);
+		} else {
+		    handleError("Parent path of the database folder does not exist or is not a directory");
+		}
 	    } else {
+		if (!Files.isDirectory(dbDirectory)) {
+		    handleError("Database path is not a directory");
+		}
+
 		/*
-		 * checking that this directory contains only directories and
+		 * Checking that this directory contains only directories and
 		 * subdirectories contain only directories
 		 */
 		Path problemFile = Utility
@@ -131,7 +146,16 @@ public class Database {
 	Path tablePath = dbDirectory.resolve(tableName);
 
 	if (!Files.exists(tablePath)) {
-	    handleError("tablename not exists");
+	    if (activeTable != null
+		    && !activeTable.getTableName().equals(tableName)) {
+		activeTable = null;
+	    } else {
+		handleError("tablename not exists");
+	    }
+	}
+
+	if (activeTable != null && activeTable.getTableName().equals(tableName)) {
+	    activeTable = null;
 	}
 
 	Utility.rm(tablePath, "drop");
@@ -166,10 +190,11 @@ public class Database {
 		.newDirectoryStream(dbDirectory)) {
 	    System.out.println("table_name row_count");
 
-	    // remember, that changes in the current table can be not persisted
-	    // yet.
+	    // Changes in the current table can be not persisted yet.
 	    String currentTableName = (activeTable == null ? null : activeTable
 		    .getTableName());
+
+	    boolean scanFailed = false;
 
 	    for (Path tableRoot : dirStream) {
 		try {
@@ -182,10 +207,14 @@ public class Database {
 		} catch (Throwable thr) {
 		    System.out.println(String.format("%s corrupt",
 			    tableRoot.getFileName()));
-		    handleError(thr,
-			    "Cannot open table: " + tableRoot.getFileName(),
-			    false);
+		    Log.log(Database.class, thr, "Cannot open table: "
+			    + tableRoot.getFileName());
+		    scanFailed = true;
 		}
+	    }
+
+	    if (scanFailed) {
+		handleError(null, "show tables finished with errors", false);
 	    }
 	} catch (IOException exc) {
 	    handleError(exc, "Failed to scan database directory", true);
@@ -218,9 +247,13 @@ public class Database {
 	    handleError("tablename not exists");
 	}
 
+	Table lastTable = activeTable;
+
 	try {
 	    activeTable = new Table(tablePath);
-	} catch (IOException | DBFileCorruptException exc) {
+	} catch (DatabaseException exc) {
+	    // Will be using old table after this
+	    activeTable = lastTable;
 	    handleError(exc, "Failed to load new table: " + tableName, true);
 	}
 

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
+package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,7 +11,7 @@ import java.nio.file.Paths;
  * @author phoenix
  * 
  */
-class Log {
+public class Log {
     /**
      * If logging is disabled, no messages are output
      */

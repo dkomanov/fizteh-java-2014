@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
+package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception;
 
-public class NoActiveTableException extends Exception {
+public class NoActiveTableException extends DatabaseException {
     private static final long serialVersionUID = 7115979649947958701L;
 
     public NoActiveTableException() {

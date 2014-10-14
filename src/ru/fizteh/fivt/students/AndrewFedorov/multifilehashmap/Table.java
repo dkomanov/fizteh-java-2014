@@ -8,6 +8,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.DBFileCorruptException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.DatabaseException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Log;
+
 /**
  * This class represents table stored in file system and parted into directories
  * and files.<br/>
@@ -37,7 +41,7 @@ public class Table {
 	 *            table part should have the same hash as this number.
 	 */
 	public void visitTablePart(TablePart fmap, int hash)
-		throws DBFileCorruptException;
+		throws DatabaseException;
     }
 
     private final static int DIRECTORIES_COUNT = 16;
@@ -94,7 +98,7 @@ public class Table {
 
     private final String tableName;
 
-    public Table(Path tableRoot) throws IOException, DBFileCorruptException {
+    public Table(Path tableRoot) throws DatabaseException {
 	this.tableName = tableRoot.getFileName().toString();
 	this.tableRoot = tableRoot;
 	tableParts = new HashMap<>();
@@ -110,20 +114,23 @@ public class Table {
 	this.tableName = tableName;
     }
 
-    private void checkFSConsistency() throws IOException,
-	    DBFileCorruptException {
+    private void checkFSConsistency() throws DatabaseException {
 	walkTableParts(new TablePartWalker() {
 
 	    @Override
-	    public void visitTablePart(TablePart fmap, int hash)
-		    throws DBFileCorruptException {
+	    public void visitTablePart(TablePart fmap, int expectedHash)
+		    throws DatabaseException {
 		// check that proper keys are stored here
 		Set<String> keySet = fmap.keySet();
 		for (String key : keySet) {
 		    int keyHash = getHash(key);
-		    if (keyHash != hash) {
+		    if (keyHash != expectedHash) {
+			Log.log(Table.class,
+				String.format(
+					"key '%s' with hash %d is stored in file with hash %d",
+					key, keyHash, expectedHash));
 			throw new DBFileCorruptException(
-				"inproper keys are stored in some table parts");
+				"Inproper keys are stored in some table parts");
 		    }
 		}
 	    }
@@ -145,7 +152,7 @@ public class Table {
 	return cloneTable;
     }
 
-    public String get(String key) throws IOException, DBFileCorruptException {
+    public String get(String key) throws DatabaseException {
 	return obtainTablePart(getHash(key)).get(key);
     }
 
@@ -161,7 +168,7 @@ public class Table {
      * @throws IOException
      * @throws DBFileCorruptException
      */
-    public Set<String> keySet() throws IOException, DBFileCorruptException {
+    public Set<String> keySet() throws DatabaseException {
 	class KeySetCollector implements TablePartWalker {
 	    TreeSet<String> set = new TreeSet<>();
 
@@ -198,8 +205,7 @@ public class Table {
      * @throws IOException
      * @throws DBFileCorruptException
      */
-    private TablePart obtainTablePart(int hash) throws IOException,
-	    DBFileCorruptException {
+    private TablePart obtainTablePart(int hash) throws DatabaseException {
 	TablePart fmap = tableParts.get(hash);
 	if (fmap == null) {
 	    fmap = new TablePart(makeTablePartFilePath(hash));
@@ -222,12 +228,11 @@ public class Table {
 	}
     }
 
-    public String put(String key, String value) throws IOException,
-	    DBFileCorruptException {
+    public String put(String key, String value) throws DatabaseException {
 	return obtainTablePart(getHash(key)).put(key, value);
     }
 
-    public String remove(String key) throws IOException, DBFileCorruptException {
+    public String remove(String key) throws DatabaseException {
 	return obtainTablePart(getHash(key)).remove(key);
     }
 
@@ -239,7 +244,7 @@ public class Table {
      * @throws IOException
      * @throws DBFileCorruptException
      */
-    public long rowsNumber() throws IOException, DBFileCorruptException {
+    public long rowsNumber() throws DatabaseException {
 	class KeySetCollector implements TablePartWalker {
 	    long rowsNumber = 0L;
 
@@ -269,7 +274,7 @@ public class Table {
      * @throws DBFileCorruptException
      */
     protected void walkTableParts(TablePartWalker walker, boolean simulateLoad)
-	    throws IOException, DBFileCorruptException {
+	    throws DatabaseException {
 	for (int dir = 0; dir < DIRECTORIES_COUNT; dir++) {
 	    for (int file = 0; file < FILES_COUNT; file++) {
 		int hash = buildHash(dir, file);
