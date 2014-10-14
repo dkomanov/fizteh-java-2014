@@ -78,7 +78,7 @@ public class Table {
                 endFile = true;
             }
             if (!endFile) {
-                afterCount = itOffset.next();
+                afterCount = itForEndOffset.next();
                 while (count < afterCount) {
                     buff.write(file.readByte());
                     ++count;
