@@ -11,7 +11,7 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
  *
  * @author Shakarim
  */
-public class ExitCommand extends ExitStrategy<ShellUtils> {
+public class ExitCommand extends AbstractExit<ShellUtils> {
 
     public ExitCommand(ShellUtils context) {
         super(context);

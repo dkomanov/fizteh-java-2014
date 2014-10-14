@@ -4,8 +4,8 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -23,11 +23,11 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
 public class DataBaseProvider implements TableProvider {
 
     private Map<String, Table> tables = null;
-    private final String directory;
+    private final Path directory;
 
     public DataBaseProvider(String directory) throws IOException {
         this.tables = new HashMap<>();
-        this.directory = directory;
+        this.directory = Paths.get(directory);
         load();
     }
 
@@ -52,7 +52,7 @@ public class DataBaseProvider implements TableProvider {
         }
         Table newTable = null;
         try {
-            newTable = new MultiFileTable(directory, name);
+            newTable = new MultiFileTable(directory.toString(), name);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,7 +69,7 @@ public class DataBaseProvider implements TableProvider {
             throw new IllegalStateException(name + " not found");
         } else {
             ShellUtils utils = new ShellUtils();
-            Path tablePath = Paths.get(directory, name);
+            Path tablePath = directory.resolve(name);
             try {
                 utils.rm(tablePath.toString(), true);
             } catch (IOException e) {
@@ -85,10 +85,17 @@ public class DataBaseProvider implements TableProvider {
     }
 
     private void load() throws IOException {
-        String[] list = new File(directory).list();
+        String[] list = directory.toFile().list();
         for (String tableName : list) {
-            Table table = new MultiFileTable(directory, tableName);
-            tables.put(tableName, table);
+            Path pathToTable = directory.resolve(tableName);
+            if (Files.isDirectory(pathToTable)) {
+                Table table = new MultiFileTable(directory.toString(), tableName);
+                tables.put(tableName, table);
+            } else {
+                String format = "'%s' contains non-directory files";
+                String eMessage = String.format(format, directory);
+                throw new IOException(eMessage);
+            }
         }
     }
 }

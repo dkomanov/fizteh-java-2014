@@ -7,25 +7,19 @@ package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 import java.io.IOException;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
 
 /**
  *
  * @author shakarim
  */
-public class RemoveCommand extends AbstractCommand<OneTableBase> {
+public class RemoveCommand extends AbstractTableCommand {
 
     public RemoveCommand(OneTableBase context) {
         super("remove", 1, context);
     }
 
     @Override
-    public void exec(String[] args) throws IOException {
-        Table activeTable = context.getActiveTable();
-
-        if (activeTable == null) {
-            throw new IllegalArgumentException("no table");
-        }
+    protected void onActiveTable(Table activeTable, String[] args) throws IOException {
         String deleted = activeTable.remove(args[0]);
 
         if (deleted == null) {

@@ -6,13 +6,13 @@ package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.ExitStrategy;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractExit;
 
 /**
  *
  * @author shakarim
  */
-public class ExitCommand extends ExitStrategy<OneTableBase> {
+public class ExitCommand extends AbstractExit<OneTableBase> {
 
     public ExitCommand(OneTableBase context) {
         super(context);

@@ -9,9 +9,9 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
  *
  * @author Shakarim
  */
-public abstract class ExitStrategy<Type> extends AbstractCommand<Type> {
+public abstract class AbstractExit<Type> extends AbstractCommand<Type> {
 
-    public ExitStrategy(Type context) {
+    public AbstractExit(Type context) {
         super("exit", 0, context);
     }
 

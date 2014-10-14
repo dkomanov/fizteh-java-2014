@@ -6,26 +6,19 @@ package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
 
 /**
  *
  * @author shakarim
  */
-public class PutCommand extends AbstractCommand<OneTableBase> {
+public class PutCommand extends AbstractTableCommand {
 
     public PutCommand(OneTableBase context) {
         super("put", 2, context);
     }
 
     @Override
-    public void exec(String[] args) {
-        Table activeTable = context.getActiveTable();
-
-        if (activeTable == null) {
-            throw new IllegalArgumentException("no table");
-        }
-
+    protected void onActiveTable(Table activeTable, String[] args) {
         String oldValue = activeTable.put(args[0], args[1]);
 
         if (oldValue == null) {
