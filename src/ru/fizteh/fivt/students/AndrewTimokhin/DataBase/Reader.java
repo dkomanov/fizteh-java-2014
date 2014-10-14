@@ -15,21 +15,22 @@ public class Reader {
     public HashMap<String, String> read() {
         StringBuilder keyBuilder = new StringBuilder();
         StringBuilder valueBuilder = new StringBuilder();
-        int lenght = 0;
+        int length = 0;
         try (DataInputStream rd = new DataInputStream(new FileInputStream(
                 filepath))) {
             while (true) {
                 try {
-                    lenght = rd.readInt();
-                    for (int i = 0; i < lenght; i++) {
+                    length = rd.readInt();
+                    for (int i = 0; i < length; i++) {
                         keyBuilder.append(rd.readChar());
 
                     }
-                    lenght = rd.readInt();
-                    for (int i = 0; i < lenght; i++) {
+                    length = rd.readInt();
+                    for (int i = 0; i < length; i++) {
                         valueBuilder.append(rd.readChar());
 
                     }
+                    ;
                     map.put(keyBuilder.toString(), valueBuilder.toString());
                     keyBuilder.replace(0, keyBuilder.length(), "");
                     valueBuilder.replace(0, valueBuilder.length(), "");
