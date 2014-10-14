@@ -45,6 +45,10 @@ public class DataBaseProvider implements TableProvider {
             throw new IllegalArgumentException("Null cannot be an argument");
         }
 
+        if (tables.containsKey(name)) {
+            throw new IllegalStateException(name + " exists");
+        }
+
         Table newTable = null;
 
         try {
@@ -53,7 +57,9 @@ public class DataBaseProvider implements TableProvider {
             throw new RuntimeException(e);
         }
 
-        return tables.put(name, newTable);
+        tables.put(name, newTable);
+
+        return newTable;
     }
 
     @Override
