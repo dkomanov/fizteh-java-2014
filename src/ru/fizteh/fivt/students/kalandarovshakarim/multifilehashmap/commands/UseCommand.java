@@ -23,6 +23,12 @@ public class UseCommand extends AbstractCommand<DataBase> {
     @Override
     public void exec(String[] args) throws IOException {
         Table newTable = context.getProvider().getTable(args[0]);
+
+        if (newTable == null) {
+            String eMessage = String.format("%s not exists", args[0]);
+            throw new IOException(eMessage);
+        }
+
         Table currentTable = context.getActiveTable();
         int changes = 0;
 

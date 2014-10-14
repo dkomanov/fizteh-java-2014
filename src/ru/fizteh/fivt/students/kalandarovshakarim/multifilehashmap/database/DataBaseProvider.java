@@ -36,9 +36,6 @@ public class DataBaseProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("Null cannot be an argument");
         }
-        if (!tables.containsKey(name)) {
-            throw new IllegalArgumentException(name + " not found");
-        }
         return tables.get(name);
     }
 
@@ -47,17 +44,16 @@ public class DataBaseProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("Null cannot be an argument");
         }
-        if (tables.containsKey(name)) {
-            throw new IllegalArgumentException(name + " exists");
-        }
+
         Table newTable = null;
+
         try {
             newTable = new MultiFileTable(directory.toString(), name);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        tables.put(name, newTable);
-        return newTable;
+
+        return tables.put(name, newTable);
     }
 
     @Override
