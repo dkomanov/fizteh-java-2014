@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.standy66.filemap;
 
 import com.sun.istack.internal.NotNull;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,6 +23,16 @@ public class Database {
 
     public Database(@NotNull final String databaseFilePath) {
         dbFilePath = databaseFilePath;
+
+        File f = new File(databaseFilePath);
+        if (!f.getAbsoluteFile().exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                System.err.println("Error creating file");
+                System.exit(1);
+            }
+        }
         cache = new HashMap<>();
         reload();
     }

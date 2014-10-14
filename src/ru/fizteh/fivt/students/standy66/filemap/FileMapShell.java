@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.standy66.filemap;
 import com.sun.istack.internal.NotNull;
 
 import java.io.InputStream;
+import java.util.IllegalFormatException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -47,71 +48,73 @@ public class FileMapShell {
             for (int i = 0; i < actions.length; i++) {
                 String[] args =
                         Stream.of(actions[i].split(" "))
+                                
                                 .filter((s) -> (s.length() > 0))
                                 .toArray((size) -> (new String[size]));
                 if (args.length == 0) {
                     continue;
                 }
-                switch (args[0]) {
-                    case "put":
-                        if (args.length != 3) {
-                            System.err.println("Invalid number of arguments");
-                            continue;
-                        }
-                        if (db.get(args[1]) == null) {
-                            System.out.println("new");
-                        } else {
-                            System.out.println("overwrite");
-                            System.out.println(db.get(args[1]));
-                        }
-                        db.put(args[1], args[2]);
-                        break;
-                    case "get":
-                        if (args.length != 2) {
-                            System.err.println("Invalid number of arguments");
-                            continue;
-                        }
-                        if (db.get(args[1]) == null) {
-                            System.out.println("not found");
-                        } else {
-                            System.out.println("found");
-                            System.out.println(db.get(args[1]));
-                        }
-                        break;
+                try {
+                    switch (args[0]) {
+                        case "put":
+                            if (args.length != 3) {
+                                throw new IllegalArgumentException("Invalid number of arguments");
+                            }
+                            if (db.get(args[1]) == null) {
+                                System.out.println("new");
+                            } else {
+                                System.out.println("overwrite");
+                                System.out.println(db.get(args[1]));
+                            }
+                            db.put(args[1], args[2]);
+                            break;
+                        case "get":
+                            if (args.length != 2) {
+                                throw new IllegalArgumentException("Invalid number of arguments");
+                            }
+                            if (db.get(args[1]) == null) {
+                                System.out.println("not found");
+                            } else {
+                                System.out.println("found");
+                                System.out.println(db.get(args[1]));
+                            }
+                            break;
 
-                    case "remove":
-                        if (args.length != 2) {
-                            System.err.println("Invalid number of arguments");
-                            continue;
-                        }
-                        if (db.get(args[1]) == null) {
-                            System.out.println("not found");
-                        } else {
-                            System.out.println("removed");
-                            db.remove(args[1]);
-                        }
-                        break;
+                        case "remove":
+                            if (args.length != 2) {
+                                throw new IllegalArgumentException("Invalid number of arguments");
+                            }
+                            if (db.get(args[1]) == null) {
+                                System.out.println("not found");
+                            } else {
+                                System.out.println("removed");
+                                db.remove(args[1]);
+                            }
+                            break;
 
-                    case "list":
-                        if (args.length != 1) {
-                            System.err.println("Invalid number of arguments");
-                            continue;
-                        }
-                        System.out.println(
-                                Stream.of(db.list().toArray(new String[0]))
-                                        .collect(Collectors.joining(", ")));
-                        break;
-                    case "exit":
-                        if (args.length != 1) {
-                            System.err.println("Invalid number of arguments");
-                            continue;
-                        }
-                        db.flush();
-                        System.exit(0);
-                        break;
+                        case "list":
+                            if (args.length != 1) {
+                                throw new IllegalArgumentException("Invalid number of arguments");
+                            }
+                            System.out.println(
+                                    Stream.of(db.list().toArray(new String[0]))
+                                            .collect(Collectors.joining(", ")));
+                            break;
+                        case "exit":
+                            if (args.length != 1) {
+                                throw new IllegalArgumentException("Invalid number of arguments");
+                            }
+                            db.flush();
+                            System.exit(0);
+                            break;
 
-                    default:
-                        System.err.println("Unknown command");
+                        default:
+                            throw new IllegalArgumentException("Unknown command");
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.err.println(e.getMessage());
+                    if (!interactive)
+                        System.exit(1);
                 }
             }
         }
