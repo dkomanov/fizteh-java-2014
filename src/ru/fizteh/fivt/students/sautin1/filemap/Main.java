@@ -31,7 +31,7 @@ public class Main {
                     new RemoveCommand(), new ExitCommand<StringDatabaseState>()
             };
             @SuppressWarnings("unchecked")
-            Shell<StringDatabaseState> shell = new Shell<>(databaseState, commands);
+            Shell<StringDatabaseState> shell = new Shell<>(databaseState, commands, new ShellCommandParser());
             try {
                 shell.startWork(args);
             } catch (UserInterruptException e) {
