@@ -22,14 +22,6 @@ public class Shell<T> {
         }
     }
 
-    public Shell(T state, Command<T>[] commands) {
-        this.state = state;
-        this.parser = new ShellCommandParser();
-        for (Command<T> command : commands) {
-            commandsMap.put(command.toString(), command);
-        }
-    }
-
     /**
      * Tries executing command with parameters commandWithParams.
      * @param commandWithParams - Array of command parameters. Zero-element is a command.
