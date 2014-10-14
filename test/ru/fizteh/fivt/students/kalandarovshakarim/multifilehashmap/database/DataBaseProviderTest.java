@@ -1,0 +1,168 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database;
+
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.strings.TableProvider;
+
+/**
+ *
+ * @author shakarim
+ */
+public class DataBaseProviderTest {
+
+    private TableProvider instance;
+    private String testDirestory = System.getProperty("test.dir");
+    private int tableCount = 25;
+    private Path dbPath;
+
+    @Before
+    public void setUp() throws IOException {
+        dbPath = Paths.get(testDirestory, "test.db.dir");
+        if (!Files.exists(dbPath)) {
+            Files.createDirectory(dbPath);
+        }
+        for (int order = 0; order < tableCount; ++order) {
+            Files.createDirectory(dbPath.resolve("table" + order));
+        }
+        instance = new DataBaseProviderFactory().create(dbPath.toString());
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        String[] list = dbPath.toFile().list();
+        for (String file : list) {
+            Files.delete(dbPath.resolve(file));
+        }
+    }
+
+    /**
+     * Test of getTable method, of class DataBaseProvider.
+     */
+    @Test
+    public void testGetTable() {
+        System.out.println("getTable");
+        for (int order = 0; order < 25; order++) {
+            String name = "table" + order;
+            Table result = instance.getTable(name);
+            assertNotNull(result);
+        }
+    }
+
+    /**
+     * Test of getTable method, of class DataBaseProvider.
+     */
+    @Test
+    public void testGetTableIfNotExists() {
+        System.out.println("getTable if table not exists");
+        for (int order = 0; order < 25; order++) {
+            String name = "таблица" + order;
+            Table result = instance.getTable(name);
+            assertNull(result);
+        }
+    }
+
+    /**
+     * Test of getTable method, of class DataBaseProvider.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetTableIfNameIsNull() {
+        System.out.println("getTable if name null");
+        instance.getTable(null);
+    }
+
+    /**
+     * Test of createTable method, of class DataBaseProvider.
+     */
+    @Test
+    public void testCreateTable() {
+        System.out.println("createTable if not exists");
+        for (int order = 0; order < 25; order++) {
+            String name = "таблица" + order;
+            Table result = instance.createTable(name);
+            assertNotNull(result);
+        }
+    }
+
+    /**
+     * Test of createTable method, of class DataBaseProvider.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testCreateTableIfExists() {
+        System.out.println("createTable if exists");
+        String name = "table" + 0;
+        instance.createTable(name);
+    }
+
+    /**
+     * Test of createTable method, of class DataBaseProvider.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNull() {
+        instance.createTable(null);
+    }
+
+    /**
+     * Test of removeTable method, of class DataBaseProvider.
+     */
+    @Test
+    public void testRemoveTable() {
+        System.out.println("removeTable if exists");
+        for (int order = 0; order < 25; order++) {
+            String name = "table" + order;
+            instance.removeTable(name);
+        }
+    }
+
+    /**
+     * Test of removeTable method, of class DataBaseProvider.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testRemoveNull() {
+        instance.removeTable(null);
+    }
+
+    /**
+     * Test of removeTable method, of class DataBaseProvider.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testRemoveTableIfNotExists() {
+        System.out.println("removeTable if not exists");
+        String name = "таблица";
+        instance.removeTable(name);
+    }
+
+    /**
+     * Test of listTables method, of class DataBaseProvider.
+     */
+    @Test
+    public void testListTables() {
+        System.out.println("listTables");
+        List<String> expResult = new ArrayList<>();
+        List<String> result = ((DataBaseProvider) instance).listTables();
+
+        for (int order = 0; order < tableCount; order++) {
+            String name = "table" + order;
+            expResult.add(name);
+        }
+
+        Collections.sort(expResult);
+        Collections.sort(result);
+
+        assertEquals(expResult, result);
+    }
+}
