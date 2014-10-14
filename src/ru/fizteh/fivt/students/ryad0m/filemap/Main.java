@@ -5,7 +5,8 @@ import java.nio.file.Paths;
 
 public class Main {
 
-    public static TableNode tableNode = new TableNode(Paths.get(System.getProperty("db.file")).toAbsolutePath().normalize());
+    public static TableNode tableNode = new TableNode(
+            Paths.get(System.getProperty("db.file")).toAbsolutePath().normalize());
 
     public static void main(String[] args) {
         Shell shell = new Shell();

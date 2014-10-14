@@ -56,10 +56,12 @@ public class Shell {
             throw new ShellException();
         } else {
             String[] keys = Main.tableNode.getKeys();
-            for (int i = 0; i + 1 < keys.length; ++i)
+            for (int i = 0; i + 1 < keys.length; ++i) {
                 System.out.print(keys[i] + ", ");
-            if (keys.length > 0)
+            }
+            if (keys.length > 0) {
                 System.out.println(keys[keys.length - 1]);
+            }
 
         }
     }

@@ -20,8 +20,9 @@ public class TableNode {
     }
 
     private int byteToInt(byte[] bytes, int off, int len) throws BadFormatException {
-        if (off + len > bytes.length)
+        if (off + len > bytes.length) {
             throw new BadFormatException();
+        }
         int res = 0;
         for (int i = off; i - off < len; ++i) {
             res <<= 8;
@@ -39,9 +40,11 @@ public class TableNode {
         return bytes;
     }
 
-    private String byteToString(byte[] bytes, int off, int len) throws UnsupportedEncodingException, BadFormatException {
-        if (off + len > bytes.length)
+    private String byteToString(byte[] bytes, int off, int len)
+        throws UnsupportedEncodingException, BadFormatException {
+        if (off + len > bytes.length) {
             throw new BadFormatException();
+        }
         return new String(bytes, off, len, "UTF-8");
     }
 
@@ -72,8 +75,9 @@ public class TableNode {
     }
 
     public void save() throws IOException {
-        if (!file.getParent().toFile().exists())
+        if (!file.getParent().toFile().exists()) {
             file.getParent().toFile().mkdirs();
+        }
         file.toFile().delete();
         file.toFile().createNewFile();
         FileOutputStream fileOutputStream = new FileOutputStream(file.toFile());
