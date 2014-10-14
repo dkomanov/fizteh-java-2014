@@ -11,15 +11,14 @@ import java.util.Map.Entry;
  *
  * @author shakarim
  */
-public final class SingleFileTable extends AbstractTable {
+public class SingleFileTable extends AbstractTable {
 
     public SingleFileTable(String tableName) throws IOException {
         super(tableName);
         load();
     }
 
-    @Override
-    protected void load() throws IOException {
+    private void load() throws IOException {
         try (TableReader reader = new TableReader(getName())) {
             String key;
             String value;

@@ -39,8 +39,7 @@ public final class MultiFileTable extends AbstractTable {
         }
     }
 
-    @Override
-    protected void load() throws IOException {
+    private void load() throws IOException {
         for (String dirName : directoryPath.toFile().list()) {
             File dirFile = directoryPath.resolve(dirName).toFile();
             if (!dirFile.isDirectory()) {

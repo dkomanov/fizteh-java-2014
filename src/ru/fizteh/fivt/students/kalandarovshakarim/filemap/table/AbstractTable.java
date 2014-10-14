@@ -120,7 +120,5 @@ public abstract class AbstractTable implements Table {
         return old.size();
     }
 
-    protected abstract void load() throws IOException;
-
     protected abstract void save() throws IOException;
 }
