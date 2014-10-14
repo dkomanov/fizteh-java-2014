@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.standy66.filemap;
 
-import com.sun.istack.internal.NotNull;
-
 import java.io.InputStream;
 import java.util.IllegalFormatException;
 import java.util.NoSuchElementException;
@@ -19,7 +17,7 @@ public class FileMapShell {
     private boolean interactive;
     private Database db;
 
-    public FileMapShell(@NotNull final InputStream inputStream, final boolean isInteractive) {
+    public FileMapShell(final InputStream inputStream, final boolean isInteractive) {
         scanner = new Scanner(inputStream);
         interactive = isInteractive;
         String dbFile = System.getProperty("db.file");

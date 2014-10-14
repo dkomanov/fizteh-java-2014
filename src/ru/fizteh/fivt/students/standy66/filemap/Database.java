@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.standy66.filemap;
 
-import com.sun.istack.internal.NotNull;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,7 +19,7 @@ public class Database {
     private String dbFilePath;
     private Map<String, String> cache;
 
-    public Database(@NotNull final String databaseFilePath) {
+    public Database(final String databaseFilePath) {
         dbFilePath = databaseFilePath;
 
         File f = new File(databaseFilePath);
@@ -68,15 +66,15 @@ public class Database {
         return cache.keySet();
     }
 
-    public String get(@NotNull final String key) {
+    public String get(final String key) {
         return cache.get(key);
     }
 
-    public void put(@NotNull final String key, @NotNull final String value) {
+    public void put(final String key, final String value) {
         cache.put(key, value);
     }
 
-    public boolean remove(@NotNull final String key) {
+    public boolean remove(final String key) {
         if (cache.containsKey(key)) {
             cache.remove(key);
             return true;
