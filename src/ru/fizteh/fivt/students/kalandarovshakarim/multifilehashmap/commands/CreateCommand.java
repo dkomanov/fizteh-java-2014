@@ -21,11 +21,7 @@ public class CreateCommand extends AbstractCommand<DataBase> {
 
     @Override
     public void exec(String[] args) throws IOException {
-        Table table = context.getProvider().createTable(args[0]);
-        if (table != null) {
-            System.out.println("created");
-        } else {
-            throw new IOException("not found");
-        }
+        context.getProvider().createTable(args[0]);
+        System.out.println("created");
     }
 }
