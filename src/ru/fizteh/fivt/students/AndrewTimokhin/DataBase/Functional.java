@@ -5,8 +5,8 @@ import java.util.*;
 class Functional {
     private Map<String, String> map;
 
-    public Functional(Map<String, String> maptime) {
-        map = maptime;
+    public Functional(Map<String, String> map) {
+        this.map = map;
     }
 
     void put(String key, String value) {
@@ -39,12 +39,18 @@ class Functional {
 
     void list() {
         Set<String> st = map.keySet();
+        int counterKeys = 0;
         if (st.size() == 0) {
             System.out.println();
         } else {
             for (String key : st) {
-                System.out.println(key);
+                System.out.print(key);
+                if (st.size() > 1 && (counterKeys + 1) != st.size()) {
+                    System.out.print(", ");
+                    counterKeys++;
+                }
             }
+            System.out.println();
         }
     }
 }
