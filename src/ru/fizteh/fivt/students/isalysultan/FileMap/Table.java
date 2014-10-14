@@ -37,18 +37,18 @@ public class Table {
         ArrayList<String> key = new ArrayList<String>();
         ArrayList<Integer> offset = new ArrayList<Integer>();
         int count = 0;
-        int firstoffset = -1;
+        int camelCase = -1;
         byte part;
         boolean dontReadFirstOffset = false;
-        while (count < firstoffset || !dontReadFirstOffset) {
+        while (count < camelCase || !dontReadFirstOffset) {
             while ((part = file.readByte()) != 0) {
                 ++count;
                 buff.write(part);
             }
             ++count;
-            if (firstoffset == -1) {
-                firstoffset = file.readInt();
-                offset.add(firstoffset);
+            if (camelCase == -1) {
+                camelCase = file.readInt();
+                offset.add(camelCase);
                 dontReadFirstOffset = true;
             } else {
                 offset.add(file.readInt());
@@ -64,9 +64,10 @@ public class Table {
         count = itForEndOffset.next();
         int afterCount = count;
         boolean forEnd = true;
-        while (itOffset.hasNext() && forEnd) {
+        while (forEnd) {
             if (size < count) {
                 System.err.println("error with offset");
+                System.exit(2);
             }
             boolean endFile = false;
             if (!itForEndOffset.hasNext()) {
@@ -84,6 +85,7 @@ public class Table {
                     ++count;
                 }
             }
+            String a = buff.toString("UTF-8");
             storage.put(itKey.next(), buff.toString("UTF-8"));
             buff.reset();
             count = afterCount;
@@ -120,4 +122,3 @@ public class Table {
         endFile.close();
     }
 }
-
