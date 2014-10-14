@@ -9,7 +9,7 @@ class ModeWork {
         map = time;
     }
 
-    int stepmode(String[] array, Functional f, int index) {
+    int stepMode(String[] array, Functional f, int index) {
         switch (array[0 + index]) {
         case "put":
             f.put(array[1 + index], array[2 + index]);
@@ -33,13 +33,13 @@ class ModeWork {
     void usermode() {
         Functional func = new Functional(map);
         String str = new String();
-        String[] commandAgregat;
+        String[] array;
         Scanner rd = new Scanner(System.in);
         while (true) {
             System.out.print("$ ");
             str = rd.nextLine().toString();
-            commandAgregat = str.trim().split(" ");
-            if (stepmode(commandAgregat, func, 0) == -1) {
+            array = str.trim().split(" ");
+            if (stepMode(array, func, 0) == -1) {
                 break;
             }
         }
@@ -47,16 +47,20 @@ class ModeWork {
     }
 
     void interactive(String[] mass) {
+        int offset = 0;
         Functional func = new Functional(map);
-        String str = new String();
-        String[] filtr = mass[0].trim().split("\\s+");
         int i = 0;
         while (true) {
-            str = filtr[i].toString();
-            if (stepmode(filtr, func, i) == -1) {
+            if (i < mass.length) {
+                offset = stepMode(mass, func, i);
+                i += offset;
+                if (offset == -1) {
+                    break;
+                }
+                i++;
+            } else {
                 break;
             }
-            i++;
         }
 
     }
