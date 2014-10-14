@@ -1,4 +1,4 @@
-## Shell (Оболочка)
+	## Shell (Оболочка)
 Консольное приложение, частично эмулирующее оболочку
 [shell](http://en.wikipedia.org/wiki/Unix_shell).
 
@@ -49,65 +49,10 @@ java Shell [COMMAND1 [; COMMAND2 ...]]
 не должно (в финальном коде вся debug-информация должна отсутствовать).
 
 ```(bash)
-$ cd /noexistingdir
-cd: '/noexistingdir': No such file or directory
-$ cd /home/user
-$ pwd
-/home/user
-$ ls
-Folder
-file.txt
-$ mkdir MyFolder
-$ ls
-Folder
-MyFolder
-file.txt
-$ cp file.txt MyFolder
-$ cd MyFolder
-$ ls
-file.txt
-$ mv file.txt file2.txt
-$ ls
-file2.txt
-$ rm file.txt
-rm: cannot remove 'file.txt': No such file or directory
-$ rm file2.txt
-$ ls
-$ cd ..
-$ ls
-Folder
-MyFolder
-file.txt
-$ mv Folder MyFolder
-$ ls
-MyFolder
-file.txt
-$ cp MyFolder NewFolder
-cp: MyFolder is a directory (not copied).
-$ ls
-Folder
-MyFolder
-file.txt
-$ cp -r MyFolder NewFolder
-$ ls
-Folder
-MyFolder
-NewFolder
-file.txt
-$ rm NewFolder
-rm: NewFolder: is a directory
-$ ls
-Folder
-MyFolder
-NewFolder
-file.txt
-$ rm -r NewFolder
-$ ls
-Folder
-MyFolder
-file.txt
-$ cat file.text
-Hello World!
+
+
+
+
 $ cat wrongfile.txt
 cat: wrongfile.txt: No such file or directory
 $ exit
