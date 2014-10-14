@@ -2,16 +2,13 @@ package ru.fizteh.fivt.students.valentine_lebedeva.filemap.Cmd;
 
 import ru.fizteh.fivt.students.valentine_lebedeva.filemap.DB;
 
-public class PutCmd implements Cmd {
+public class PutCmd extends Cmd {
     public final String getName() {
         return "put";
     }
 
     public final void execute(final DB dataBase, final String[] args) {
-        if (args.length != 3) {
-            throw new IllegalArgumentException(
-                    "Wrong number of arguments");
-        }
+        checkArgs(3, args);
         if (dataBase.getBase().get(args[1]) != null) {
             System.out.println("overwrite");
             System.out.println(args[2]);

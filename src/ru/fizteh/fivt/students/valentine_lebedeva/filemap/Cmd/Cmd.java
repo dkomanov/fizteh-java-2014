@@ -4,9 +4,16 @@ import java.io.IOException;
 
 import ru.fizteh.fivt.students.valentine_lebedeva.filemap.DB;
 
-public interface Cmd {
-    String getName();
-    void execute(
-            DB dataBase, String[] args) throws IOException;
-}
+public abstract class Cmd {
+    public abstract String getName();
 
+    public abstract void execute(DB dataBase,
+            String[] args) throws IOException;
+
+    public static void checkArgs(final int count, final String[] args) {
+        if (args.length != count) {
+            throw new IllegalArgumentException(
+                    "Wrong number of arguments");
+        }
+    }
+}

@@ -1,43 +1,40 @@
 package ru.fizteh.fivt.students.valentine_lebedeva.filemap;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ru.fizteh.fivt.students.valentine_lebedeva.filemap.Cmd.ListCmd;
 import ru.fizteh.fivt.students.valentine_lebedeva.filemap.Cmd.PutCmd;
 import ru.fizteh.fivt.students.valentine_lebedeva.filemap.Cmd.ExitCmd;
 import ru.fizteh.fivt.students.valentine_lebedeva.filemap.Cmd.GetCmd;
 import ru.fizteh.fivt.students.valentine_lebedeva.filemap.Cmd.RemoveCmd;
+import ru.fizteh.fivt.students.valentine_lebedeva.filemap.Cmd.Cmd;
 
 public final class Parser {
-    private Parser() {
-         //not called only for checkstyle
+    private Map<String, Cmd> commands;
+
+    public Parser() {
+        commands = new HashMap<>(5);
+        Cmd[] tmp = new Cmd[5];
+        tmp[0] = new ListCmd();
+        tmp[1] = new PutCmd();
+        tmp[2] = new ExitCmd();
+        tmp[3] = new GetCmd();
+        tmp[4] = new RemoveCmd();
+        for (int i = 0; i < 4; i++) {
+            commands.put(tmp[i].getName(), tmp[i]);
+        }
     }
 
-    public static void parse(final String cmdArgs,
-            final Boolean cmdMode, final DB dataBase) throws Exception {
+    public void parse(final String cmdArgs,
+            final Boolean cmdMode,
+            final DB dataBase) throws Exception {
         try {
             String[] parseArgs = cmdArgs.split(" ");
-            switch (parseArgs[0]) {
-            case "put":
-                PutCmd putCommand = new PutCmd();
-                putCommand.execute(dataBase, parseArgs);
-                break;
-            case "get":
-                GetCmd getCommand = new GetCmd();
-                getCommand.execute(dataBase, parseArgs);
-                break;
-            case "remove":
-                RemoveCmd removeCommand = new RemoveCmd();
-                removeCommand.execute(dataBase, parseArgs);
-                break;
-            case "list":
-                ListCmd listCommand = new ListCmd();
-                listCommand.execute(dataBase, parseArgs);
-                break;
-            case "exit":
-                ExitCmd exitCommand = new ExitCmd();
-                exitCommand.execute(dataBase, parseArgs);
-                break;
-            default:
-                throw new Exception("Incorrect arguments");
+            if (commands.get(parseArgs[0]) != null) {
+            commands.get(parseArgs[0]).execute(dataBase, parseArgs);
+            } else {
+                throw new IllegalArgumentException("Wrong arguments");
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());

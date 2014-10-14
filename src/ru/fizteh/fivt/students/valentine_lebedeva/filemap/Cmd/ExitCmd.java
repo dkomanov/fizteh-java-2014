@@ -4,16 +4,14 @@ import java.io.IOException;
 
 import ru.fizteh.fivt.students.valentine_lebedeva.filemap.DB;
 
-public class ExitCmd implements Cmd {
+public class ExitCmd extends Cmd {
     public final String getName() {
         return "exit";
     }
-    public final void execute(final DB dataBase
-            , final String[] args) throws IOException {
-        if (args.length != 1) {
-            throw new IllegalArgumentException(
-                    "Wrong number of arguments");
-        }
+
+    public final void execute(final DB dataBase, final String[] args)
+            throws IOException {
+        checkArgs(1, args);
         dataBase.close();
         System.exit(0);
     }

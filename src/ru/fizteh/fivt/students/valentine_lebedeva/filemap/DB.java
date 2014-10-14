@@ -9,17 +9,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public final class DB {
+    private RandomAccessFile dbFile;
+    private Map<String, String> base;
+
     public DB() throws IOException {
-        dbFile = new RandomAccessFile(
-                System.getProperty("db.file"), "rw");
-        base = new HashMap<String, String>();
+        dbFile = new RandomAccessFile(System.getProperty("db.file"), "rw");
+        base = new HashMap<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         byte symbol;
         int offset;
         String[] pair = new String[2];
         int j = 0;
-        while (dbFile.length()
-                - dbFile.getFilePointer() > 4) {
+        while (dbFile.length() - dbFile.getFilePointer() > 4) {
             offset = dbFile.readInt();
             dbFile.seek(dbFile.getFilePointer() + 2);
             for (int i = 0; i < offset; i++) {
@@ -36,26 +37,21 @@ public final class DB {
             j++;
             buffer.reset();
         }
-
     }
 
     public void write() throws IOException {
         dbFile.setLength(0);
         for (Entry<String, String> item : base.entrySet()) {
-            dbFile.writeInt(item.getKey().getBytes(
-                    StandardCharsets.UTF_8).length);
-            dbFile.writeChar(' ');
-            dbFile.write(item.getKey().getBytes(
-                    StandardCharsets.UTF_8));
-            dbFile.writeChar(' ');
-            dbFile.writeInt(item.getValue().getBytes(
-                    StandardCharsets.UTF_8).length);
-            dbFile.writeChar(' ');
-            dbFile.write(item.getValue().getBytes(
-                    StandardCharsets.UTF_8));
-            dbFile.writeChar(' ');
+            writeItem(item.getKey());
+            writeItem(item.getValue());
         }
+    }
 
+    public void writeItem(final String arg) throws IOException {
+        dbFile.writeInt(arg.getBytes(StandardCharsets.UTF_8).length);
+        dbFile.writeChar(' ');
+        dbFile.write(arg.getBytes(StandardCharsets.UTF_8));
+        dbFile.writeChar(' ');
     }
 
     public void close() throws IOException {
@@ -74,7 +70,4 @@ public final class DB {
     public void removeBase(final String key) {
         base.remove(key);
     }
-
-    private RandomAccessFile dbFile;
-    private Map<String, String> base;
 }
