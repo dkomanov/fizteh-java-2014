@@ -8,12 +8,13 @@ public class FileMap {
         try {
             Table object = new Table();
             if (argv.length > 0) {
-                PocketParser.batchMode(object, argv);
+                BatchParser.batchMode(object, argv);
             } else {
                 Interactive.interactiveMode(object);
             }
         } catch (IOException e) {
-            System.out.println("error create table");
+            System.err.println("error create table");
+            System.exit(1);
         }
     }
 }
