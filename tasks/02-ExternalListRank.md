@@ -26,3 +26,6 @@ java ExternalListRank <in_filename> <out_filename>
 ```
 
 Ограничения: программа должна работать с памятью -Xmx64M и уметь сортировать файлы до 1Гб. Должна делать O(nlogn) операций ввода/вывода во внешнюю память.
+
+Теория тут: 
+http://db.cis.upenn.edu/DL/wpe2-lucian.ps
