@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.standy66.filemap;
 
 import java.io.InputStream;
-import java.util.IllegalFormatException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -111,8 +110,9 @@ public class FileMapShell {
                     }
                 } catch (IllegalArgumentException e) {
                     System.err.println(e.getMessage());
-                    if (!interactive)
+                    if (!interactive) {
                         System.exit(1);
+                    }
                 }
             }
         }
