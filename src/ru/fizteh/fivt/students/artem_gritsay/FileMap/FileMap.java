@@ -1,3 +1,4 @@
+
 package ru.fizteh.fivt.students.artem_gritsay.FileMap;
 
 
@@ -14,7 +15,7 @@ public class FileMap {
     private static void exit(Path pathtoFile, HashMap<String, String> filemap)  {
         try (RandomAccessFile dataBaseFile
                 = new RandomAccessFile(pathtoFile.toString(), "rw")) {
-            DaTrance.putData(dataBaseFile, filemap);
+            DataCommunicator.putData(dataBaseFile, filemap);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -146,7 +147,7 @@ public class FileMap {
             try (RandomAccessFile dataBaseFile
                          = new RandomAccessFile(pathFile.toString(), "r")) {
                 if (dataBaseFile.length() > 0) {
-                    DaTrance.getNewData(dataBaseFile, filemap);
+                    DataCommunicator.getNewData(dataBaseFile, filemap);
                 }
             } catch (FileNotFoundException e) {
                 pathFile.toFile().createNewFile();

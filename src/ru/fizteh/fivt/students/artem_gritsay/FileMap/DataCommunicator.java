@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
 
-public class DaTrance {
+public class DataCommunicator {
     public static void putData(RandomAccessFile dataFile, HashMap<String, String> fileMap)
             throws IOException {
         List<Integer> camelCase = new LinkedList<>();
