@@ -142,6 +142,9 @@ public class Database {
 
     void removeTable(String name) throws TableNotFoundException, LoadOrSaveError {
         Table table = getTable(name);
+        if (table == currentTable) {
+            currentTable = null;
+        }
         table.drop();
         tables.remove(table);
         tableNames.remove(name);
