@@ -46,7 +46,7 @@ public class DataBaseProvider implements TableProvider {
         }
 
         if (tables.containsKey(name)) {
-            throw new IllegalStateException(name + " exists");
+            return null;
         }
 
         Table newTable = null;
