@@ -7,8 +7,6 @@ import ru.fizteh.fivt.students.irina_karatsapova.filemap.commands.RemoveCommand;
 
 public class Main {
     public static void main(String[] args) {
-        System.setProperty("db.file", "D:/tmp/db.txt");
-
         Shell shell = new Shell();
         shell.addCommand(new PutCommand());
         shell.addCommand(new GetCommand());
