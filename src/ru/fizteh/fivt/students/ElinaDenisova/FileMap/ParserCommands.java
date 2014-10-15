@@ -17,7 +17,7 @@ public class ParserCommands {
             try {
                 dataBase.put(command[1], command[2]);
             } catch (ArrayIndexOutOfBoundsException ex) {
-                throw new DataBaseException("put: need two arguments");
+                throw new DataBaseException("put: need two arguments", ex);
 
             }
             break;
@@ -25,14 +25,14 @@ public class ParserCommands {
             try {
                 dataBase.get(command[1]);
             } catch (ArrayIndexOutOfBoundsException ex) {
-                throw new DataBaseException("get: need argument");
+                throw new DataBaseException("get: need argument", ex);
             }
             break;
         case REMOVECOMMAND:
             try {
                 dataBase.remove(command[1]);
             } catch (ArrayIndexOutOfBoundsException ex) {
-                throw new DataBaseException("remove: need argument");
+                throw new DataBaseException("remove: need argument", ex);
             }
             break;
         case LISTCOMMAND:
@@ -43,7 +43,7 @@ public class ParserCommands {
             System.exit(0);
             break;
         default:
-            throw new DataBaseException(command[0] + ": unknown command");
+            throw new DataBaseException(String.join(command[0], ": unknown command"));
         }
     }
 

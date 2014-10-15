@@ -6,7 +6,6 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -32,9 +31,10 @@ public class DataBase {
                     dbFile.close();
                 } catch (FileNotFoundException e) {
                     throw new DataBaseException(
-                            "DataBase: Not found file");
+                            "DataBase: Not found file", e);
                 } catch (IOException e) {
-                    throw ex;
+                    throw new DataBaseException(
+                            "DataBase: File error", e);
                 }
             } 
             if (ex.toString().equals("It is a directory")) {
@@ -48,12 +48,12 @@ public class DataBase {
                     throws DataBaseException {
 
         try {
-            int wordlen = dbFile.readInt();
-            byte[] word = new byte[wordlen];
-            dbFile.read(word, 0, wordlen);
+            int wordLength = dbFile.readInt();
+            byte[] word = new byte[wordLength];
+            dbFile.read(word, 0, wordLength);
             return new String(word, "UTF-8");
         } catch (IOException e) {
-            throw new DataBaseException("Can't read from database");
+            throw new DataBaseException("Can't read from database", e);
         }
     }
 
@@ -64,7 +64,7 @@ public class DataBase {
             dbFile.writeInt(word.getBytes("UTF-8").length);
             dbFile.write(word.getBytes("UTF-8"));
         } catch (Exception ex) {
-            throw new DataBaseException("Can't write in file");
+            throw new DataBaseException("Can't write in file", ex);
         }
 
     }
@@ -74,36 +74,27 @@ public class DataBase {
         try {
             dBase.put(key, value);
         } catch (Exception ex) {
-            throw new DataBaseException("Database addValue: Unknown exception");
+            throw new DataBaseException("Database addValue: Unknown exception", ex);
         }
     }
     public void listCommand() {
         Set<Entry<String, String>> baseSet = dBase.entrySet();
-        Iterator<Entry<String, String>> it = baseSet.iterator();
-        while (it.hasNext()) {
-            Entry<String, String> current =
-                    (Entry<String, String>) it.next();
-            System.out.print(current.getKey() + " ");
-        }
+        System.out.print(String.join(", ", dBase.keySet()));
         System.out.println("");
 
     }
     public void writeInFile() throws DataBaseException {
         try {
             Set<Entry<String, String>> baseSet = dBase.entrySet();
-            Iterator<Entry<String, String>> it = baseSet.iterator();
             Functions.makeDbFileHard(dBasePath.toString());
             RandomAccessFile dbFile = new
                     RandomAccessFile(dBasePath.toString(), "rw");
-            while (it.hasNext()) {
-                Entry<String, String> current =
-                        (Entry<String, String>) it.next();
+            for (Entry<String, String> current : baseSet){
                 writeToDataBase(dbFile, current.getKey());
                 writeToDataBase(dbFile, current.getValue());
             }
         } catch (Exception ex) {
-            System.err.println(ex.toString());
-            throw new DataBaseException("DataBase: cant write");
+            throw new DataBaseException("DataBase: cant write", ex);
         }
     }
     public void put(String key,  String value) {

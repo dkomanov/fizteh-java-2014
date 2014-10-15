@@ -16,7 +16,7 @@ public  class Functions {
             try {
                 Files.createFile(ctFile.toPath());
             } catch (IOException e) {
-                throw new DataBaseException("MakeDbFile: some errors");
+                throw new DataBaseException("MakeDbFile: some errors", e);
             }
         }
     }
@@ -26,7 +26,7 @@ public  class Functions {
             Files.deleteIfExists(ctFile.toPath());
             Files.createFile(ctFile.toPath());
         } catch (IOException e) {
-            throw new DataBaseException(e.getMessage());
+            throw new DataBaseException(e.getMessage(), e);
         }
     }
 }
