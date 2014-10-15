@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.artem_gritsay.FileMap;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
