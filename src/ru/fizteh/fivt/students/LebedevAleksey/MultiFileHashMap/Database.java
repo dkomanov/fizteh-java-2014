@@ -222,8 +222,6 @@ public class Database {
     }
 
     private void showTables() throws LoadOrSaveError {
-        for (Table table : tables) {
-            System.out.println(table.getTableName() + " " + table.count());
-        }
+        list();
     }
 }

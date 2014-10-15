@@ -30,11 +30,6 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table 
     }
 
     @Override
-    public void invokeCommand(ParsedCommand command) throws DatabaseException {
-        super.invokeCommand(command);
-    }
-
-    @Override
     protected ru.fizteh.fivt.students.LebedevAleksey.FileMap.TablePart selectPartForKey(String key)
             throws LoadOrSaveError {
         int hashcode = key.hashCode();
