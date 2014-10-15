@@ -23,10 +23,10 @@ public class FileMap {
                 try {
                     do {
                         System.out.print("$ ");
-                        String[] filemapIn = scanner.nextLine().split(";");
-                        for (int i = 0; i < filemapIn.length; ++i) {
-                            if (filemapIn[i].length() > 0) {
-                                String[] buffer = filemapIn[i].trim().split("\\s+");
+                        String[] input = scanner.nextLine().split(";");
+                        for (int i = 0; i < input.length; ++i) {
+                            if (input[i].length() > 0) {
+                                String[] buffer = input[i].trim().split("\\s+");
                                 try {
                                     filemapParser(buffer);
                                 } catch (Exception except) {
@@ -48,10 +48,10 @@ public class FileMap {
                         helpArray.append(args[i]).append(' ');
                     }
                     String longStr = helpArray.toString();
-                    String[] filemapIn = longStr.split(";");
-                    for (int i = 0; i < filemapIn.length; ++i) {
-                        if (filemapIn[i].length() > 0) {
-                            String[] buffer = filemapIn[i].trim().split("\\s+");
+                    String[] input = longStr.split(";");
+                    for (int i = 0; i < input.length; ++i) {
+                        if (input[i].length() > 0) {
+                            String[] buffer = input[i].trim().split("\\s+");
                             try {
                                 filemapParser(buffer);
                             } catch (Exception except) {
