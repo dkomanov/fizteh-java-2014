@@ -43,7 +43,7 @@ public class ParserCommands {
             System.exit(0);
             break;
         default:
-            throw new DataBaseException(String.join(command[0], ": unknown command"));
+            throw new DataBaseException(command[0] + ": unknown command");
         }
     }
 

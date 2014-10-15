@@ -17,7 +17,7 @@ public enum ReqType {
                 return ctType;
             }
         }
-        throw new IllegalArgumentException(String.join(type, ": unknown command"));
+        throw new IllegalArgumentException(type + ": unknown command");
     }
 
     public String getTypeValue() {
