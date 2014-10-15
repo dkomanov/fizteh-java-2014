@@ -128,6 +128,7 @@ public class Shell {
     public void exit(int code) {
 	cleanup();
 
+	Log.close();
 	System.exit(code);
     }
 
@@ -292,6 +293,6 @@ public class Shell {
 	} catch (HandledException exc) {
 	    this.exit(1);
 	}
-	Log.close();
+	this.exit(0);
     }
 }
