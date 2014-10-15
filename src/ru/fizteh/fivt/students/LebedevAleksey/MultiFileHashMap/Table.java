@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.LebedevAleksey.FileMap.DatabaseException;
 import ru.fizteh.fivt.students.LebedevAleksey.FileMap.LoadOrSaveError;
-import ru.fizteh.fivt.students.LebedevAleksey.Shell01.ParsedCommand;
 
 import java.io.File;
 import java.nio.file.Path;
