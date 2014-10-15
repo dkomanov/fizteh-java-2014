@@ -22,6 +22,7 @@ public class MFHMap extends HashMap<String, String> {
                 Files.createDirectory(path);
             } catch (IOException e) {
                 System.err.println("can't create directory: " + path.toString());
+                System.exit(-1);
             }
         }
     }

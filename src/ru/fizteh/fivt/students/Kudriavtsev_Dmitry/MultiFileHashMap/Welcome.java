@@ -12,7 +12,8 @@ public class Welcome {
     public static void main(String[] args) {
         Path dbPath;
         try {
-            dbPath = new File(System.getProperty("fizteh.db.dir")).toPath().normalize();
+            //dbPath = new File(System.getProperty("fizteh.db.dir")).toPath().normalize();
+            dbPath = new File("C:\\Users\\Дмитрий\\Documents\\Test").toPath().normalize();
         } catch (NullPointerException e) {
             System.err.println("your directory is null");
             System.exit(-1);
@@ -43,6 +44,10 @@ public class Welcome {
                         System.exit(-1);
                         return;
                     }
+                    if (whatToDo.name.equals("show") && !arguments[j+1].equals("tables")) {
+                        System.err.println("Bad show tables command.");
+                        System.exit(-1);
+                    }
                     String[] newArgs = new String[arguments.length - j - 1];
                     System.arraycopy(arguments, j + 1, newArgs, 0, newArgs.length);
                     dbConnector.run(whatToDo.name, newArgs);
@@ -72,6 +77,10 @@ public class Welcome {
                     System.out.println("Not found command: " + arguments[0]);
                     System.exit(-1);
                     return;
+                }
+                if (whatToDo.name.equals("show") && !arguments[1].equals("tables")) {
+                    System.err.println("Bad show tables command.");
+                    System.exit(-1);
                 }
                 String[] newArgs = new String[arguments.length - 1];
                 System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);

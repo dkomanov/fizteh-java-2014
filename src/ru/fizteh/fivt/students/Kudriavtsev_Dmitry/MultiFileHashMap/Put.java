@@ -16,6 +16,10 @@ public class Put extends Command {
             System.err.println("Incorrect number of arguments in " + name);
             return false;
         }
+        if (dbConnector.activeTable == null) {
+            System.err.println("No table are used now");
+            System.exit(-1);
+        }
         String value = dbConnector.activeTable.put(args[0], args[1]);
         if (value != null) {
             System.out.println("Overwrite:\n" + value);
