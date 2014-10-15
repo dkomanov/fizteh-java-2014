@@ -5,7 +5,6 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,7 +55,7 @@ public class DataBaseProviderTest {
     @Test
     public void testGetTable() {
         System.out.println("getTable");
-        for (int order = 0; order < 25; order++) {
+        for (int order = 0; order < tableCount; order++) {
             String name = "table" + order;
             Table result = instance.getTable(name);
             assertNotNull(result);
@@ -69,7 +68,7 @@ public class DataBaseProviderTest {
     @Test
     public void testGetTableIfNotExists() {
         System.out.println("getTable if table not exists");
-        for (int order = 0; order < 25; order++) {
+        for (int order = 0; order < tableCount; order++) {
             String name = "таблица" + order;
             Table result = instance.getTable(name);
             assertNull(result);
@@ -91,7 +90,7 @@ public class DataBaseProviderTest {
     @Test
     public void testCreateTable() {
         System.out.println("createTable if not exists");
-        for (int order = 0; order < 25; order++) {
+        for (int order = 0; order < tableCount; order++) {
             String name = "таблица" + order;
             Table result = instance.createTable(name);
             assertNotNull(result);
@@ -101,11 +100,12 @@ public class DataBaseProviderTest {
     /**
      * Test of createTable method, of class DataBaseProvider.
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testCreateTableIfExists() {
         System.out.println("createTable if exists");
         String name = "table" + 0;
-        instance.createTable(name);
+        Table result = instance.createTable(name);
+        assertNull(result);
     }
 
     /**
@@ -113,6 +113,7 @@ public class DataBaseProviderTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNull() {
+        System.out.println("createTable null");
         instance.createTable(null);
     }
 
@@ -122,7 +123,7 @@ public class DataBaseProviderTest {
     @Test
     public void testRemoveTable() {
         System.out.println("removeTable if exists");
-        for (int order = 0; order < 25; order++) {
+        for (int order = 0; order < tableCount; order++) {
             String name = "table" + order;
             instance.removeTable(name);
         }
@@ -133,6 +134,7 @@ public class DataBaseProviderTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testRemoveNull() {
+        System.out.println("removeTable null");
         instance.removeTable(null);
     }
 
