@@ -17,8 +17,13 @@ public class List extends Command {
             return false;
         }
         Set<String> keySet = dbConnector.activeTable.keySet();
+        int count = 0;
         for (String key : keySet) {
-            System.out.print(key + " , ");
+            System.out.print(key);
+            if (count != keySet.size() - 1) {
+                System.out.println(" ,");
+                ++count;
+            }
         }
         System.out.println();
         return true;

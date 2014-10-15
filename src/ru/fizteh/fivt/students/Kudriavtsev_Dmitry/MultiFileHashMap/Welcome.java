@@ -12,10 +12,10 @@ public class Welcome {
     public static void main(String[] args) {
         Path dbPath;
         try {
-            //dbPath = new File(System.getProperty("fizteh.db.dir")).toPath().normalize();
-            dbPath = new File("C:\\Users\\Дмитрий\\Documents\\Test").toPath().normalize();
+            dbPath = new File(System.getProperty("fizteh.db.dir")).toPath().normalize();
+            //dbPath = new File("C:\\Users\\Дмитрий\\Documents\\Test").toPath().normalize();
         } catch (NullPointerException e) {
-            System.err.println("your directory is null");
+            System.err.println("Your directory is null");
             System.exit(-1);
             return;
         }

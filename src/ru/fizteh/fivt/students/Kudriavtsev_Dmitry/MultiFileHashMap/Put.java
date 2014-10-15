@@ -18,7 +18,7 @@ public class Put extends Command {
         }
         if (dbConnector.activeTable == null) {
             System.err.println("No table are used now");
-            System.exit(-1);
+            return false;
         }
         String value = dbConnector.activeTable.put(args[0], args[1]);
         if (value != null) {

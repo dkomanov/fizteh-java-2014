@@ -21,7 +21,7 @@ public class Use extends Command {
             System.out.println(args[0] + " not exists");
             return true;
         }
-        if (dbConnector != null) {
+        if (dbConnector.activeTable != null) {
             dbConnector.activeTable.unload();
         }
         dbConnector.activeTable = map;

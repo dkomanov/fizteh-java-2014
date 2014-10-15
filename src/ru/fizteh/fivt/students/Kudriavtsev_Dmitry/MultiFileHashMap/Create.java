@@ -16,8 +16,11 @@ public class Create extends Command {
             return false;
         }
         MFHMap map = new MFHMap(dbConnector.dbRoot.resolve(args[0]));
-        dbConnector.tables.put(args[0], map);
-        System.out.println("created");
+        if (dbConnector.tables.put(args[0], map) != null) {
+            System.out.println(args[0] + " exists");
+        } else {
+            System.out.println("created");
+        }
         return true;
     }
 }

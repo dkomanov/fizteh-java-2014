@@ -24,11 +24,13 @@ public class Drop extends Command {
             return false;
         }
         if (dbConnector.activeTable == map) {
-            dbConnector = null;
+            dbConnector.tables.remove(args[0]);
+            dbConnector.activeTable = null;
         }
         try {
-            assert dbConnector != null;
-            dbConnector.tables.remove(args[0]);
+            if (dbConnector != null) {
+                dbConnector.tables.remove(args[0]);
+            }
             map.clear();
             Files.delete(map.dbPath);
         } catch (Exception e) {

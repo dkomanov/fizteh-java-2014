@@ -53,9 +53,8 @@ public class MFHMap extends HashMap<String, String> {
                         while (stream.available() > 0) {
                             readFromFile(stream);
                         }
-                    } catch (IOException e) {
-                        System.err.println("can't create DataInputStream : " + e.getMessage());
-                        System.exit(-1);
+                    } catch (IOException ignore) {
+                        continue;
                     }
             }
         }

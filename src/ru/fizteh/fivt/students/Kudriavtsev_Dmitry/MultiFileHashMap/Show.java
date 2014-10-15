@@ -19,14 +19,15 @@ public class Show extends Command {
         }
 
         if (dbConnector.tables.isEmpty()) {
-            System.out.println();
             return true;
         }
         String s = "";
         for (Map.Entry<String, MFHMap> a: dbConnector.tables.entrySet()) {
-            s = a.getKey() + " " + a.getValue().size() + "\\n";
+            s = a.getKey() + " " + a.getValue().size() + "\n";
         }
-        System.out.println(s.substring(0, s.length() - 1));
+        if (!s.substring(0, s.length() - 1).equals("")) {
+            System.out.println(s.substring(0, s.length() - 1));
+        }
         return true;
     }
 }
