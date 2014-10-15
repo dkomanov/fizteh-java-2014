@@ -39,7 +39,7 @@ public class Launcher {
             if (cmd.length != 1) {
                 throw new IndexOutOfBoundsException("Wrong number of arguments");
             }
-            throw new Exception("Exit");
+            throw new ExitException("Exit");
         default:
             System.out.println("Bad command");
         }

@@ -1,57 +1,38 @@
 import util.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public final class FileMap {
 
     public static void main(final String[] args) {
-        File fl = new File(System.getProperty("db.file"));
-        HashMap<String, String> hm;
+        File file = null;
         try {
-            hm = Data.load(fl);
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found");
-            return;
-        } catch (IOException e) {
-            System.out.println("Error while reading file");
-            return;
+            file = new File(System.getProperty("fizteh.db.dir"));
+        } catch (Exception e) {
+            System.err.println("Directory doesnt exist");
+            System.exit(1);
         }
-        Launcher lnch = new Launcher(hm);
-        if (args.length != 0) {
+        TableLauncher tableLauncher = null;
+        try {
+            tableLauncher = new TableLauncher(file);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        Scanner sc = new Scanner(System.in);
+        while (true) {
             try {
-                lnch.run(args);
-            } catch (Exception e) {
+                System.out.print(tableLauncher.getCurrentDb() + "$ ");
+                String input = sc.nextLine().trim();
+                tableLauncher.run(input.split(" "));
+            } catch (ExitException e) {
+                sc.close();
                 System.out.println(e.getMessage());
+                System.exit(1);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
             }
-        } else {
-            Scanner sc = new Scanner(System.in);
-            while (true) {
-                try {
-                        System.out.print("$ ");
-                        String input = sc.nextLine().trim();
-                        lnch.run(input.split(" "));
-                } catch (IndexOutOfBoundsException e) {
-                    System.out.println(e.getMessage());
-                } catch (Exception e) {
-                    sc.close();
-                    System.out.println(e.getMessage());
-                    break;
-                }
-            }
-        }
-
-        try {
-            Data.save(fl, hm);
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found");
-            return;
-        } catch (IOException e) {
-            System.out.println("Error while reading file");
-            return;
         }
     }
 }

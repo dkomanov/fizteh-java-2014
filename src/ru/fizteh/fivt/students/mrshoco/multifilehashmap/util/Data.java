@@ -11,18 +11,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Data {
-    public static HashMap<String, String> load(File fl) throws 
-                                        IOException, FileNotFoundException {
+    public static HashMap<String, String> load(File fl) throws Exception {
         HashMap<String, String> hm = new HashMap<String, String>();
         DataInputStream dis = new DataInputStream(new FileInputStream(fl));
 
         while (dis.available() > 0) {
             int keyLen = dis.readInt();
+            if (keyLen <= 0 || keyLen > 100000) {
+                dis.close();
+                throw new Exception("Strange key length");
+            }
             byte[] key = new byte[keyLen];
             for (int i = 0; i < keyLen; i++) {
                 key[i] = dis.readByte();
             }
             int valLen = dis.readInt();
+            if (valLen <= 0 || valLen > 100000) {
+                dis.close();
+                throw new Exception("Strange value length");
+            }
             byte[] val = new byte[valLen];
             for (int i = 0; i < valLen; i++) {
                 val[i] = dis.readByte();
