@@ -89,7 +89,7 @@ public class DataBase {
             Functions.makeDbFileHard(dBasePath.toString());
             RandomAccessFile dbFile = new
                     RandomAccessFile(dBasePath.toString(), "rw");
-            for (Entry<String, String> current : baseSet){
+            for (Entry<String, String> current : baseSet) {
                 writeToDataBase(dbFile, current.getKey());
                 writeToDataBase(dbFile, current.getValue());
             }
