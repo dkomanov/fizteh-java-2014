@@ -17,6 +17,10 @@ public class FileMap {
         dataBase = new HashMap<>();
     }
 
+    public void setDiskFile(String newDiskFile) {
+        diskFile = newDiskFile;
+    }
+
     public String get(String key) {
         return dataBase.get(key);
     }
@@ -34,66 +38,74 @@ public class FileMap {
     }
 
     public boolean init() {
-        try (FileInputStream inStream = new FileInputStream(diskFile)) {
-            FileChannel inputChannel;
-            inputChannel = inStream.getChannel();
-            ByteBuffer bufferFromDisk;
-            try {
-                bufferFromDisk =
-                        inputChannel.map(MapMode.READ_ONLY, 0, inputChannel.size());
-            } catch (IOException e) {
-                System.out.println("io exception");
-                return false;
-            }
-            try {
-                while (bufferFromDisk.hasRemaining()) {
-                    byte[] key;
-                    byte[] value;
-                    int keySize;
-                    int valueSize;
-                    if (bufferFromDisk.remaining() >= 4) {
-                        keySize = bufferFromDisk.getInt();
-                        key = new byte[keySize];
-                    } else {
-                        throw new BadFileException();
-                    }
-
-                    if (bufferFromDisk.remaining() >= keySize) {
-                        bufferFromDisk.get(key, 0, key.length);
-                    } else {
-                        throw new BadFileException();
-                    }
-
-                    if (bufferFromDisk.remaining() >= 4) {
-                        valueSize = bufferFromDisk.getInt();
-                        value = new byte[valueSize];
-                    } else {
-                        throw new BadFileException();
-                    }
-                    if (bufferFromDisk.remaining() >= valueSize) {
-                        bufferFromDisk.get(value, 0, value.length);
-                    } else {
-                        throw new BadFileException();
-                    }
+        String[] listOfDirectoriess = new File(diskFile).list();
+        for (String oneDirectory: listOfDirectoriess) {
+            String currentDirectory = diskFile + System.getProperty("file.separator")
+                    + oneDirectory;
+            String[] listOfFiles = new File(currentDirectory).list();
+            for (String oneFile : listOfFiles) {
+                try (FileInputStream inStream = new FileInputStream(oneFile)) {
+                    FileChannel inputChannel;
+                    inputChannel = inStream.getChannel();
+                    ByteBuffer bufferFromDisk;
                     try {
-                        dataBase.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        System.out.println("unsupported encoding");
+                        bufferFromDisk =
+                                inputChannel.map(MapMode.READ_ONLY, 0, inputChannel.size());
+                    } catch (IOException e) {
+                        System.out.println("io exception");
                         return false;
                     }
+                    try {
+                        while (bufferFromDisk.hasRemaining()) {
+                            byte[] key;
+                            byte[] value;
+                            int keySize;
+                            int valueSize;
+                            if (bufferFromDisk.remaining() >= 4) {
+                                keySize = bufferFromDisk.getInt();
+                                key = new byte[keySize];
+                            } else {
+                                throw new BadFileException();
+                            }
+
+                            if (bufferFromDisk.remaining() >= keySize) {
+                                bufferFromDisk.get(key, 0, key.length);
+                            } else {
+                                throw new BadFileException();
+                            }
+
+                            if (bufferFromDisk.remaining() >= 4) {
+                                valueSize = bufferFromDisk.getInt();
+                                value = new byte[valueSize];
+                            } else {
+                                throw new BadFileException();
+                            }
+                            if (bufferFromDisk.remaining() >= valueSize) {
+                                bufferFromDisk.get(value, 0, value.length);
+                            } else {
+                                throw new BadFileException();
+                            }
+                            try {
+                                dataBase.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+                            } catch (UnsupportedEncodingException e) {
+                                System.out.println("unsupported encoding");
+                                return false;
+                            }
+                        }
+                    } catch (NullPointerException e) {
+                        System.out.println("null pointer exception");
+                    }
+                } catch (FileNotFoundException e) {
+                    System.out.println("file not found");
+                    return false;
+                } catch (BadFileException e) {
+                    System.out.println("problems with database file");
+                    return false;
+                } catch (IOException e) {
+                    System.out.println("io exception");
+                    return false;
                 }
-            } catch (NullPointerException e) {
-                System.out.println("null pointer exception");
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("file not found");
-            return false;
-        } catch (BadFileException e) {
-            System.out.println("problems with database file");
-            return false;
-        } catch (IOException e) {
-            System.out.println("io exception");
-            return false;
         }
         return true;
     }
