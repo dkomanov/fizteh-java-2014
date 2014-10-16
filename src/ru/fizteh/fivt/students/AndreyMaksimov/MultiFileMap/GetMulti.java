@@ -13,9 +13,9 @@ public class GetMulti extends Command {
     @Override
     public void startNeedMultiInstruction(DataBaseDir base) throws Exception {
         if (base.getUsing() == null) {
-            System.out.println("ERROR: No such table");
+            System.out.println("no table");
         } else {
-            int hashCode = key.hashCode();
+            int hashCode = Math.abs(key.hashCode());
             int dir = hashCode % 16;
             int file = hashCode / 16 % 16;
 
@@ -26,7 +26,7 @@ public class GetMulti extends Command {
             Get get = new Get();
             DataBase database = base.getUsing().databases[dir][file];
             if (database == null) {
-                System.out.println("ERROR: No such DataBase");
+                System.out.println("not found");
             } else {
                 get.startNeedInstruction(s, base.getUsing().databases[dir][file]);
             }

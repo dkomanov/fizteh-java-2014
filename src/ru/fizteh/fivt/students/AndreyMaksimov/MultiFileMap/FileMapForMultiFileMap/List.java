@@ -1,27 +1,25 @@
 package ru.fizteh.fivt.students.MaksimovAndrey.MultiFileMap.FileMapForMultiFileMap;
 
-import java.util.Iterator;
-import java.util.Set;
-
 public class List extends Instruction {
 
-   public List() {
-            nameOfInstruction = "list";
-        }
+    public List() {
+        nameOfInstruction = "list";
+    }
 
-        @Override
-        public boolean startNeedInstruction(String[] arguments, DataBase needbase) throws  Exception {
-            Set<String> keysSet = needbase.needdatabase.keySet();
-            Iterator<String> iteratorkeysSet = keysSet.iterator();
-            int checkvalue = 0;
-            while (iteratorkeysSet.hasNext()) {
-                if (checkvalue > 0) {
-                    System.out.print(", ");
-                }
-                System.out.print(iteratorkeysSet.next());
-                ++checkvalue;
+    public String getList(DataBase needbase) {
+        StringBuilder keys = new StringBuilder();
+        for (String key : needbase.needdatabase.keySet()) {
+            if (keys.length() > 0) {
+                keys.append(", ");
             }
-            System.out.println();
-            return true;
+            keys.append(key);
+        }
+        return keys.toString();
+    }
+
+    @Override
+    public boolean startNeedInstruction(String[] arguments, DataBase needbase) throws Exception {
+        System.out.println(getList(needbase));
+        return true;
     }
 }

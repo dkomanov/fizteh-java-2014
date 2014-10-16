@@ -10,6 +10,7 @@ public class ListMulti extends Command {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
+            StringBuilder keys = new StringBuilder();
             List list = new List();
 
             String[] s = new String[1];
@@ -19,10 +20,17 @@ public class ListMulti extends Command {
                 for (int j = 0; j < 16; j++) {
                     DataBase cur = base.getUsing().databases[i][j];
                     if (cur != null) {
-                        list.startNeedInstruction(s, cur);
+                        String addList = list.getList(cur);
+                        if (addList.length() > 0) {
+                            if (keys.length() > 0) {
+                                keys.append(", ");
+                            }
+                            keys.append(addList);
+                        }
                     }
                 }
             }
+            System.out.println(keys.toString());
         }
     }
 }
