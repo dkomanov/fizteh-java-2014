@@ -24,9 +24,10 @@ public class MultiPutCommand extends Command {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
-            int hashCode = key.hashCode();
+            int hashCode = Math.abs(key.hashCode());
             int dir = hashCode % 16;
             int file = hashCode / 16 % 16;
+            System.out.println(dir + " " + file);
             PutCommand put = new PutCommand(key, value);
             if (base.getUsing().databases[dir][file] == null) {
                 File subDir = new File(base.getUsing().mainDir, String.valueOf(dir) + ".dir");

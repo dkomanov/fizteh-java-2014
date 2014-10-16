@@ -15,7 +15,7 @@ public abstract class Command {
         if (s.length() < 1) {
             throw new Exception("Empty command");
         }
-        String[] tokens = s.replaceFirst(" *", "").split(" ");
+        String[] tokens = s.replaceFirst(" *", "").split("\\s+");
         switch(tokens[0]) {
             case "create":
                 checkArgumentsNumber(1, tokens.length - 1);

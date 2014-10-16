@@ -19,7 +19,7 @@ public class MultiGetCommand extends Command {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
-            int hashCode = key.hashCode();
+            int hashCode = Math.abs(key.hashCode());
             int dir = hashCode % 16;
             int file = hashCode / 16 % 16;
             GetCommand get = new GetCommand(key);
