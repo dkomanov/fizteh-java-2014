@@ -15,10 +15,15 @@ public class MultiFileHashMap {
     private ArrayList<FileMap> tables;
     public MultiFileHashMap(String newDirectory) {
         dataBaseDirectory = newDirectory;
+        tables = new ArrayList<>();
     }
 
     public String getDataBaseDirectory() {
         return dataBaseDirectory;
+    }
+
+    public int getNumberOfTables() {
+        return tables.size();
     }
 
     public boolean init() {

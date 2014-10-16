@@ -18,14 +18,19 @@ public class Main {
         boolean allRight = true;
         MultiFileHashMap myMultiFileHashMap;
         myMultiFileHashMap = new MultiFileHashMap(dataBaseDirectory);
+        if (!myMultiFileHashMap.init()) {
+            System.out.println("error while init");
+        }
+        System.out.println("numberoftables = " + myMultiFileHashMap.getNumberOfTables());
         Shell<MultiFileHashMap> myShell = new Shell<>(myMultiFileHashMap);
+
 
         /* commands zone
             myShell.addCommand();
          */
 
 
-        if (args.length > 0) {
+        /*if (args.length > 0) {
             allRight = myShell.packetMode(args);
         } else {
             allRight = myShell.interactiveMode();
@@ -34,6 +39,6 @@ public class Main {
             System.exit(0);
         } else {
             System.exit(1);
-        }
+        }*/
     }
 }
