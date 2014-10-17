@@ -7,8 +7,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class DBTable {
-    File workingDirectory;
-    HashMap<Integer, HashMap<Integer, DBFile>> mapOfDBFiles;
+    private File workingDirectory;
+    private HashMap<Integer, HashMap<Integer, DBFile>> mapOfDBFiles;
+
+    public HashMap<Integer, HashMap<Integer, DBFile>> getMapOfDBFiles()
+    {
+        return mapOfDBFiles;
+    }
 
     private void checkSubDirectory(String path) throws Exception {
         String exceptionText = workingDirectory.getAbsolutePath() + " is not a database table";

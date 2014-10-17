@@ -35,13 +35,14 @@ public class CommandGet extends Command {
         int nDirectory = hashCode % 16;
         int nFile = (hashCode / 16) % 16;
 
-        if (dataBaseFile.getHashMap().containsKey(key)) {
+        DBFile dbFile = dbTable.getMapOfDBFiles().get(nDirectory).get(nFile);
+
+        if (dbFile.getHashMap().containsKey(key)) {
             AbstractShell.printInformation("found");
+            AbstractShell.printInformation(dbFile.getHashMap().get(key));
         } else {
             AbstractShell.printInformation("not found");
         }
-
-        AbstractShell.printInformation(dataBaseFile.getHashMap().get(key));
     }
 
 }

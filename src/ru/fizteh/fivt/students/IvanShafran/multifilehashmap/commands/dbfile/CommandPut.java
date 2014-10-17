@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbfile;
 
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.DBFile;
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.DBTable;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.AbstractShell;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.Command;
 
@@ -8,7 +9,11 @@ import java.util.ArrayList;
 
 
 public class CommandPut extends Command {
-    private DBFile dataBaseFile;
+    private DBTable dbTable;
+
+    public void setDBTable(DBTable newDBTable) {
+        dbTable = newDBTable;
+    }
 
     @Override
     public void checkArgs(ArrayList<String> args) throws Exception {
@@ -21,8 +26,8 @@ public class CommandPut extends Command {
         }
     }
 
-    private void putValue(String key, String value) {
-        dataBaseFile.getHashMap().put(key, value);
+    private void putValue(DBFile dbFile, String key, String value) {
+        dbFile.getHashMap().put(key, value);
     }
 
     public void execute(ArrayList<String> args) throws Exception {
@@ -31,17 +36,18 @@ public class CommandPut extends Command {
         String key = args.get(0);
         String value = args.get(1);
 
-        if (dataBaseFile.getHashMap().containsKey(key)) {
+        int hashCode = key.hashCode();
+        int nDirectory = hashCode % 16;
+        int nFile = (hashCode / 16) % 16;
+
+        DBFile dbFile = dbTable.getMapOfDBFiles().get(nDirectory).get(nFile);
+
+        if (dbFile.getHashMap().containsKey(key)) {
             AbstractShell.printInformation("overwrite old value");
         } else {
             AbstractShell.printInformation("new");
         }
 
-        putValue(key, value);
-        dataBaseFile.writeHashMapToFile();
-    }
-
-    public CommandPut(DBFile file) {
-        dataBaseFile = file;
+        putValue(dbFile, key, value);
     }
 }
