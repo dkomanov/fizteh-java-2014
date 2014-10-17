@@ -26,7 +26,7 @@ public class CommandRemove extends Command {
         checkArgs(args);
 
         if (dbTable == null) {
-            throw new Exception("not selected any table");
+            AbstractShell.printInformation("no table");
         }
 
         String key = args.get(0);

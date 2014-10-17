@@ -32,7 +32,7 @@ public class CommandList extends Command {
 
     public void execute(ArrayList<String> args) throws Exception {
         if (dbTable == null) {
-            throw new Exception("not selected any table");
+            AbstractShell.printInformation("no table");
         }
 
         StringBuilder list = new StringBuilder();

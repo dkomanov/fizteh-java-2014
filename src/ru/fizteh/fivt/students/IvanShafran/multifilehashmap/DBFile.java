@@ -1,6 +1,10 @@
 package ru.fizteh.fivt.students.IvanShafran.multifilehashmap;
 
 
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.Command;
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbfile.CommandRemove;
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.shell.CommandRM;
+
 import java.io.*;
 import java.util.HashMap;
 
@@ -104,7 +108,10 @@ public class DBFile {
             throw new Exception(e.getMessage());
         }
 
-
+        if (hashMap.size() == 0) {
+            CommandRM remove = new CommandRM();
+            remove.execute(workingFile.getAbsoluteFile().toString());
+        }
     }
 
 }

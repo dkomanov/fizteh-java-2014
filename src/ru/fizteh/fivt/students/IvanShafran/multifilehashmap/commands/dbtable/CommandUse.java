@@ -30,7 +30,8 @@ public class CommandUse extends Command {
         }
 
         if (!(new HashSet<>(Arrays.asList(multiFileHashMap.getWorkingDirectory().list()))).contains(tableName)) {
-            throw new Exception("wrong name of table");
+            multiFileHashMap.printInformation(tableName + " not exists");
+            return;
         }
 
         DBTable dbTable = new DBTable(tableFile);
@@ -40,6 +41,7 @@ public class CommandUse extends Command {
         }
 
         multiFileHashMap.setWorkingDBTable(dbTable);
+        multiFileHashMap.printInformation("using " + tableName);
     }
 
     public CommandUse(MultiFileHashMap fileMap) {

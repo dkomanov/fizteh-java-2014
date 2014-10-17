@@ -53,6 +53,13 @@ public class CommandRM extends Command {
         }
     }
 
+    public void execute(String path) throws Exception {
+        ArrayList<String> args = new ArrayList<>();
+        args.add(path);
+        args.add("-r");
+        this.execute(args);
+    }
+
     private void deleteFile(File file, boolean recursiveRemove) throws Exception {
         try {
             if (!recursiveRemove) {
