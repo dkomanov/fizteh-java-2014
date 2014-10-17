@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.IvanShafran.multifilehashmap;
 
 
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.shell.CommandRM;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -95,6 +97,16 @@ public class DBTable {
         for (HashMap<Integer, DBFile> directory : mapOfDBFiles.values()) {
             for (DBFile dbFile : directory.values()) {
                 dbFile.writeHashMapToFile();
+            }
+        }
+
+        for (int i = 0; i < 16; ++i) {
+            String subDirectory = Paths.get(workingDirectory.getAbsolutePath(),
+                    Integer.toString(i) + ".dir").toString();
+
+            if (Paths.get(subDirectory).toFile().list().length == 0) {
+                CommandRM remove = new CommandRM();
+                remove.execute(subDirectory);
             }
         }
     }
