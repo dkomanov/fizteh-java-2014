@@ -24,11 +24,11 @@ public class CommandGet extends Command {
 
         if (dataBaseFile.getHashMap().containsKey(key)) {
             AbstractShell.printInformation("found");
+            AbstractShell.printInformation(dataBaseFile.getHashMap().get(key));
+
         } else {
             AbstractShell.printInformation("not found");
         }
-
-        AbstractShell.printInformation(dataBaseFile.getHashMap().get(key));
     }
 
     public CommandGet(DBFile file) {
