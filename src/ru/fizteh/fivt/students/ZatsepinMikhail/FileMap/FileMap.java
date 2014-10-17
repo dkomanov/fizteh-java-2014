@@ -21,6 +21,10 @@ public class FileMap {
         diskFile = newDiskFile;
     }
 
+    public String getDiskFile() {
+        return diskFile;
+    }
+
     public String get(String key) {
         return dataBase.get(key);
     }

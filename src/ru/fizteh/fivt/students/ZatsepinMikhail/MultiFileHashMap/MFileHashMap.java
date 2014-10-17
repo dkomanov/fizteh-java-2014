@@ -10,10 +10,10 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 /**
  * Created by mikhail on 16.10.14.
  */
-public class MultiFileHashMap {
+public class MFileHashMap {
     private String dataBaseDirectory;
     private ArrayList<FileMap> tables;
-    public MultiFileHashMap(String newDirectory) {
+    public MFileHashMap(String newDirectory) {
         dataBaseDirectory = newDirectory;
         tables = new ArrayList<>();
     }
@@ -24,6 +24,12 @@ public class MultiFileHashMap {
 
     public int getNumberOfTables() {
         return tables.size();
+    }
+
+    public void printTables() {
+        for (FileMap oneTable: tables) {
+            System.out.println(oneTable.getDiskFile());
+        }
     }
 
     public boolean init() {

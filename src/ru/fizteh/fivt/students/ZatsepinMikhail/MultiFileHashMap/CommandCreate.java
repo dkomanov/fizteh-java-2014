@@ -15,8 +15,8 @@ public class CommandCreate extends CommandMultiFileHashMap {
     }
 
     @Override
-    public boolean run(MultiFileHashMap myMultiDataBase, String[] args) {
-        if (args.length != numberOfArguments) {
+    public boolean run(MFileHashMap myMultiDataBase, String[] args) {
+        if (numberOfArguments != args.length) {
             System.out.println(name + ": wrong number of arguments");
             return false;
         }
