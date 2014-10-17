@@ -99,7 +99,7 @@ public class DBTable {
         }
     }
 
-    DBTable(File file) throws Exception {
+    public DBTable(File file) throws Exception {
         workingDirectory = file;
         try {
             checkWorkingDirectory();

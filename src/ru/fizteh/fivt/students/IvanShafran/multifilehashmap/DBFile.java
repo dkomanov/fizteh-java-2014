@@ -44,6 +44,7 @@ public class DBFile {
 
     public void readFile() throws Exception {
         if (!workingFile.exists()) {
+            hashMap = new HashMap<>();
             return;
         }
 
@@ -76,6 +77,23 @@ public class DBFile {
     }
 
     public void writeHashMapToFile() throws Exception {
+        if (!workingFile.getParentFile().exists()) {
+            File parent = workingFile.getParentFile();
+            try {
+                parent.mkdir();
+            } catch (Exception e) {
+                throw new Exception(parent.toString() + "didn't create");
+            }
+        }
+
+        if (!workingFile.exists()) {
+            try {
+                workingFile.createNewFile();
+            } catch (Exception e) {
+                throw new Exception(workingFile.toString() + "didn't create");
+            }
+        }
+
         try (DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(workingFile))) {
             for (String key : hashMap.keySet()) {
                 writeString(dataOutputStream, key);
@@ -85,6 +103,8 @@ public class DBFile {
         catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+
+
     }
 
 }

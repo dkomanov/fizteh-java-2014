@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.IvanShafran.multifilehashmap;
 
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbtable.CommandUse;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.shell.*;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.AbstractShell;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.shell.CommandExit;
@@ -11,6 +12,19 @@ import java.util.HashMap;
 public class MultiFileHashMap extends AbstractShell {
     File workingDirectory;
     DBTable workingDBTable;
+
+    public File getWorkingDirectory() {
+        return workingDirectory;
+    }
+
+    public DBTable getWorkingDBTable() {
+        return workingDBTable;
+    }
+
+    public void setWorkingDBTable(DBTable dbTable) {
+        workingDBTable = dbTable;
+    }
+
 
     private void checkWorkingDirectory() throws Exception {
         File workingDirectoryTest;
@@ -58,6 +72,7 @@ public class MultiFileHashMap extends AbstractShell {
         this.command = new HashMap<>();
 
         this.command.put("exit", new CommandExit());
+        this.command.put("use", new CommandUse(this));
     }
 
     MultiFileHashMap() {
