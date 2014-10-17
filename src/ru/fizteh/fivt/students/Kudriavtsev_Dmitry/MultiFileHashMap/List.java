@@ -12,8 +12,10 @@ public class List extends Command {
 
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
-        if (args.length != argLen) {
-            System.err.println("Incorrect number of arguments in " + name);
+        if (!checkArguments(args.length)) {
+            return false;
+        }
+        if (dbConnector.activeTable == null) {
             return false;
         }
         Set<String> keySet = dbConnector.activeTable.keySet();
@@ -21,7 +23,7 @@ public class List extends Command {
         for (String key : keySet) {
             System.out.print(key);
             if (count != keySet.size() - 1) {
-                System.out.println(" ,");
+                System.out.print(" ,");
                 ++count;
             }
         }

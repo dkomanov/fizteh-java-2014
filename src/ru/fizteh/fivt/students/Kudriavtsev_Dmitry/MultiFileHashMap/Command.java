@@ -19,6 +19,14 @@ public abstract class Command {
         this.argLen = 0;
     }
 
+    public boolean checkArguments(int argLen) {
+        if (argLen != this.argLen) {
+            System.err.println("Incorrect number of arguments in " + name);
+            return false;
+        }
+        return true;
+    }
+
     public abstract boolean exec(Connector dbConnector, String[] args);
 
     @Override

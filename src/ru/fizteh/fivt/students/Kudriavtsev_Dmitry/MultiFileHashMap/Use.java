@@ -11,8 +11,7 @@ public class Use extends Command {
 
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
-        if (args.length != argLen) {
-            System.err.println("Incorrect number of arguments in " + name);
+        if (!checkArguments(args.length)) {
             return false;
         }
 

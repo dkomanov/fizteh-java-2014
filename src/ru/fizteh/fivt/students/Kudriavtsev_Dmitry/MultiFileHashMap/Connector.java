@@ -71,7 +71,6 @@ public class Connector {
             command.exec(this, args);
         } else if (!args[0].equals("")) {
             System.err.println("args[0] + : command not found");
-            System.exit(-1);
         }
     }
 }

@@ -58,10 +58,10 @@ public class Welcome {
             }
         } else {
             String[] arguments;
+            Scanner sc = new Scanner(System.in);
             while (true) {
                 try {
                     System.out.print("$ ");
-                    Scanner sc = new Scanner(System.in);
                     String s1 = sc.nextLine();
                     arguments = s1.split("\\s+");
                 } catch (Exception e) {
@@ -75,15 +75,12 @@ public class Welcome {
                 Command whatToDo = dbConnector.commands.get(arguments[0]);
                 if (whatToDo == null) {
                     System.out.println("Not found command: " + arguments[0]);
-                    System.exit(-1);
-                    return;
-                }
-                if (whatToDo.name.equals("show") && !arguments[1].equals("tables")) {
-                    System.err.println("Bad show tables command.");
-                    System.exit(-1);
+                    continue;
                 }
                 String[] newArgs = new String[arguments.length - 1];
-                System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);
+                if (arguments.length != 0) {
+                    System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);
+                }
                 dbConnector.run(whatToDo.name, newArgs);
             }
         }

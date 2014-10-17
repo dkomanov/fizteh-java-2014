@@ -12,8 +12,7 @@ public class Put extends Command {
 
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
-        if (args.length != argLen) {
-            System.err.println("Incorrect number of arguments in " + name);
+        if (!checkArguments(args.length)) {
             return false;
         }
         if (dbConnector.activeTable == null) {
@@ -22,7 +21,8 @@ public class Put extends Command {
         }
         String value = dbConnector.activeTable.put(args[0], args[1]);
         if (value != null) {
-            System.out.println("Overwrite:\n" + value);
+            System.out.println("overwrite\n" + value);
+            //dbConnector.activeTable.changedFiles.add(value);
         } else {
             System.out.println("new");
         }

@@ -13,20 +13,22 @@ public class Show extends Command {
 
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
-        if (args.length != argLen) {
-            System.err.println("Incorrect number of arguments in " + name);
+        if (!checkArguments(args.length)) {
             return false;
         }
-
+        if (!args[0].equals("tables")) {
+            System.err.println("Bad show tables command.");
+            return false;
+        }
         if (dbConnector.tables.isEmpty()) {
             return true;
         }
         String s = "";
-        for (Map.Entry<String, MFHMap> a: dbConnector.tables.entrySet()) {
+        for (Map.Entry<String, MFHMap> a : dbConnector.tables.entrySet()) {
             s = a.getKey() + " " + a.getValue().size() + "\n";
-        }
-        if (!s.substring(0, s.length() - 1).equals("")) {
-            System.out.println(s.substring(0, s.length() - 1));
+            if (!s.substring(0, s.length() - 1).equals("")) {
+                System.out.println(s.substring(0, s.length() - 1));
+            }
         }
         return true;
     }

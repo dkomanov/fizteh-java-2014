@@ -13,8 +13,7 @@ public class Drop extends Command {
 
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
-        if (args.length != argLen) {
-            System.err.println("Incorrect number of arguments in " + name);
+        if (!checkArguments(args.length)) {
             return false;
         }
 
@@ -32,6 +31,7 @@ public class Drop extends Command {
                 dbConnector.tables.remove(args[0]);
             }
             map.clear();
+            map.deleteFiles();
             Files.delete(map.dbPath);
         } catch (Exception e) {
             System.err.println("Exception in drop: " + e.getMessage());
