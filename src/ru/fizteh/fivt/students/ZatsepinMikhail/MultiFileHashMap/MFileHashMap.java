@@ -13,6 +13,7 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 public class MFileHashMap {
     private String dataBaseDirectory;
     private ArrayList<FileMap> tables;
+    private FileMap currentTable;
     public MFileHashMap(String newDirectory) {
         dataBaseDirectory = newDirectory;
         tables = new ArrayList<>();
@@ -30,6 +31,10 @@ public class MFileHashMap {
         for (FileMap oneTable: tables) {
             System.out.println(oneTable.getDiskFile());
         }
+    }
+
+    public void setCurrentTable(FileMap newCurrentTable) {
+        currentTable = newCurrentTable;
     }
 
     public boolean init() {
