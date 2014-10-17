@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.IvanShafran.filemap;
+package ru.fizteh.fivt.students.IvanShafran.multifilehashmap;
 
 
 import java.io.*;
@@ -22,6 +22,7 @@ public class DBFile {
 
     DBFile(File file) {
         setWorkingFile(file);
+        hashMap = new HashMap<>();
     }
 
     private String readString(DataInputStream inputStream) throws Exception {

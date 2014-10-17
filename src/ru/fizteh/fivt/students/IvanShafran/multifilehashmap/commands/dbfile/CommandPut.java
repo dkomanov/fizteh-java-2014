@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands;
+package ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbfile;
 
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.DBFile;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.AbstractShell;

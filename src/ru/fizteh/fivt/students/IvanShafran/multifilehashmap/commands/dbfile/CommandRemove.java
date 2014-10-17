@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands;
+package ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbfile;
 
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.DBFile;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.AbstractShell;
@@ -7,7 +7,7 @@ import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.Comman
 import java.util.ArrayList;
 
 
-public class CommandGet extends Command {
+public class CommandRemove extends Command {
     private DBFile dataBaseFile;
 
     @Override
@@ -23,15 +23,16 @@ public class CommandGet extends Command {
         String key = args.get(0);
 
         if (dataBaseFile.getHashMap().containsKey(key)) {
-            AbstractShell.printInformation("found");
+            AbstractShell.printInformation("remove");
         } else {
             AbstractShell.printInformation("not found");
         }
 
-        AbstractShell.printInformation(dataBaseFile.getHashMap().get(key));
+        dataBaseFile.getHashMap().remove(key);
+        dataBaseFile.writeHashMapToFile();
     }
 
-    public CommandGet(DBFile file) {
+    public CommandRemove(DBFile file) {
         dataBaseFile = file;
     }
 }
