@@ -18,7 +18,7 @@ public class AbstractShell {
         while (true) {
             System.out.print('$');
             String userRequest;
-            if (in.hasNext()) {
+            if (in.hasNextLine()) {
                 userRequest = in.nextLine();
                 processUserRequest(userRequest);
             } else {
