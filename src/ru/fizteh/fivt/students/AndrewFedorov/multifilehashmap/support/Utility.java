@@ -286,6 +286,30 @@ public class Utility {
 	name = name.toLowerCase();
 	return name;
     }
+    
+
+    /**
+     * Checks whether given table name is correct.
+     * 
+     * @param databaseRoot
+     *            path to database root. Used only as a path example. No checks
+     *            in file system are made.
+     * @param tableName
+     *            potential name of the table
+     * @throws IllegalArgumentException
+     *             if name is not correct or null
+     */
+    public static void checkTableNameIsCorrect(Path databaseRoot,
+	    String tableName) throws IllegalArgumentException {
+	if (tableName == null) {
+	    throw new IllegalArgumentException("Table name must not be null");
+	}
+
+	Path tableRoot = databaseRoot.resolve(tableName).normalize();
+	if (!databaseRoot.equals(tableRoot.getParent())) {
+	    throw new IllegalArgumentException("Table name is not correct");
+	}
+    }
 
     /**
      * Safely performs some action. Exceptions thrown while its execution are

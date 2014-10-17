@@ -120,7 +120,9 @@ public class Database {
      *             I/O errors and name duplication errors are here
      */
     public void createTable(String tableName) throws HandledException {
+	checkTableNameIsCorrect(tableName);
 	Path tablePath = dbDirectory.resolve(tableName);
+
 	if (Files.exists(tablePath)) {
 	    handleError("tablename exists");
 	} else {
@@ -143,6 +145,7 @@ public class Database {
      *             if tablename does not exist or failed to delete
      */
     public void dropTable(String tableName) throws HandledException {
+	checkTableNameIsCorrect(tableName);
 	Path tablePath = dbDirectory.resolve(tableName);
 
 	if (!Files.exists(tablePath)) {
@@ -171,6 +174,14 @@ public class Database {
 
     public Path getDbDirectory() {
 	return dbDirectory;
+    }
+    
+    private void checkTableNameIsCorrect (String tableName) throws HandledException {
+	try {
+	    Utility.checkTableNameIsCorrect(dbDirectory, tableName);
+	} catch (IllegalArgumentException exc) {
+	    handleError(exc, exc.getMessage(), true);
+	}
     }
 
     /**
@@ -232,6 +243,7 @@ public class Database {
      *             new table.
      */
     public void useTable(String tableName) throws HandledException {
+	checkTableNameIsCorrect(tableName);
 	Path tablePath = dbDirectory.resolve(tableName);
 
 	if (activeTable != null) {
