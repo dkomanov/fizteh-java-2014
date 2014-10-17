@@ -43,6 +43,10 @@ public class DBFile {
     }
 
     public void readFile() throws Exception {
+        if (!workingFile.exists()) {
+            return;
+        }
+
         HashMap readingHashMap = new HashMap();
 
         try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(workingFile))) {

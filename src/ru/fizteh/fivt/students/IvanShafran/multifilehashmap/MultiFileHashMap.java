@@ -1,12 +1,12 @@
 package ru.fizteh.fivt.students.IvanShafran.multifilehashmap;
 
-import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.*;
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.shell.*;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.AbstractShell;
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.shell.CommandExit;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 public class MultiFileHashMap extends AbstractShell {
     File workingDirectory;
@@ -37,8 +37,7 @@ public class MultiFileHashMap extends AbstractShell {
             File tableFile;
             try {
                 tableFile = new File(Paths.get(workingDirectory.getAbsolutePath(), table).toString());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new Exception("wrong table format: "
                         + Paths.get(workingDirectory.getAbsolutePath(), table).toString());
             }
@@ -49,17 +48,23 @@ public class MultiFileHashMap extends AbstractShell {
 
             try {
                 DBTable dbTable = new DBTable(tableFile);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new Exception(e.getMessage());
             }
         }
+    }
+
+    private void initCommands() {
+        this.command = new HashMap<>();
+
+        this.command.put("exit", new CommandExit());
     }
 
     MultiFileHashMap() {
         try {
             checkWorkingDirectory();
             checkDBTables();
+            initCommands();
         } catch (Exception e) {
             printException(e.getMessage());
         }

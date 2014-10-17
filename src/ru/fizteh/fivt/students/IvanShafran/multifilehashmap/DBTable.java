@@ -10,8 +10,7 @@ public class DBTable {
     private File workingDirectory;
     private HashMap<Integer, HashMap<Integer, DBFile>> mapOfDBFiles;
 
-    public HashMap<Integer, HashMap<Integer, DBFile>> getMapOfDBFiles()
-    {
+    public HashMap<Integer, HashMap<Integer, DBFile>> getMapOfDBFiles() {
         return mapOfDBFiles;
     }
 
@@ -21,8 +20,7 @@ public class DBTable {
         File subDirectory;
         try {
             subDirectory = new File(Paths.get(workingDirectory.getAbsolutePath(), path).toString());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new Exception(exceptionText);
         }
 
@@ -43,8 +41,7 @@ public class DBTable {
             File file;
             try {
                 file = new File(Paths.get(workingDirectory.getAbsolutePath(), filename).toString());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new Exception(exceptionText);
             }
 
@@ -67,14 +64,15 @@ public class DBTable {
 
             try {
                 checkSubDirectory(directory);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new Exception(e.getMessage());
             }
         }
     }
 
     private void initDBTable() throws Exception {
+        mapOfDBFiles = new HashMap<>();
+
         for (int i = 0; i < 16; ++i) {
             mapOfDBFiles.put(i, new HashMap<>());
 
@@ -83,12 +81,20 @@ public class DBTable {
                 try {
                     file = new File(Paths.get(workingDirectory.getAbsolutePath(), Integer.toString(i) + ".dir",
                             Integer.toString(j) + ".dat").toString());
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new Exception("error during database table initialization");
                 }
 
                 mapOfDBFiles.get(i).put(j, new DBFile(file));
+                mapOfDBFiles.get(i).get(j).readFile();
+            }
+        }
+    }
+
+    public void writeToFile() throws Exception {
+        for (HashMap<Integer, DBFile> directory : mapOfDBFiles.values()) {
+            for (DBFile dbFile : directory.values()) {
+                dbFile.writeHashMapToFile();
             }
         }
     }
@@ -97,15 +103,13 @@ public class DBTable {
         workingDirectory = file;
         try {
             checkWorkingDirectory();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
 
         try {
             initDBTable();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new Exception("error during database table initialization");
         }
     }

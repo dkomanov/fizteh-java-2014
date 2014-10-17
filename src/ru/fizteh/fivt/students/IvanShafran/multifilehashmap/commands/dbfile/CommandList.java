@@ -31,6 +31,10 @@ public class CommandList extends Command {
     }
 
     public void execute(ArrayList<String> args) throws Exception {
+        if (dbTable == null) {
+            throw new Exception("not selected any table");
+        }
+
         StringBuilder list = new StringBuilder();
         int index = 0;
 

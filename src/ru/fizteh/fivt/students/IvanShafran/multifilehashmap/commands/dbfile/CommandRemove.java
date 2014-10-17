@@ -25,6 +25,10 @@ public class CommandRemove extends Command {
     public void execute(ArrayList<String> args) throws Exception {
         checkArgs(args);
 
+        if (dbTable == null) {
+            throw new Exception("not selected any table");
+        }
+
         String key = args.get(0);
 
         int hashCode = key.hashCode();
