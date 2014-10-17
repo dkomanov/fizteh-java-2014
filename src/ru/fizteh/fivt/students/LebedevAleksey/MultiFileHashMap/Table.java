@@ -33,6 +33,12 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table 
         int hashcode = key.hashCode();
         int ndirectory = hashcode % 16;
         int nfile = hashcode / 16 % 16;
+        if (ndirectory < 0) {
+            ndirectory += 16;
+        }
+        if (nfile < 0) {
+            nfile += 16;
+        }
         return structuredParts[ndirectory][nfile];
     }
 
