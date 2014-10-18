@@ -13,9 +13,15 @@ class DbReader {
 
     public DbReader(String path) throws Exception {
         try {
+            File dbFile = new File(path);
+            if (!dbFile.exists()) {
+                if (!dbFile.createNewFile()) {
+                    throw new Exception("Cannot create new database file");
+                }
+            }
             stream = new DataInputStream(new FileInputStream(path));
-        } catch (FileNotFoundException e) {
-            throw new Exception("Database file not found");
+        } catch (IOException | SecurityException e) {
+            throw new Exception("Cannot create new database file");
         }
     }
 
