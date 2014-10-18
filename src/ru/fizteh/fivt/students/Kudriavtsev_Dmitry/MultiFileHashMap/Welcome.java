@@ -28,7 +28,7 @@ public class Welcome {
             }
             try {
                 s = merged.split(";");
-                for (String newCommand :s) {
+                for (String newCommand : s) {
                     int j = 0;
                     String[] arguments = newCommand.split("\\s+");
                     while (arguments[j].equals("")) {

@@ -21,7 +21,8 @@ public class Put extends Command {
         }
         String value = dbConnector.activeTable.put(args[0], args[1]);
         if (value != null) {
-            System.out.println("overwrite\n" + value);
+            System.out.println("overwrite");
+            System.out.println(value);
         } else {
             System.out.println("new");
         }
