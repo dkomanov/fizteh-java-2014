@@ -16,11 +16,7 @@ public final class GetCommand extends DbCommand {
     }
 
     @Override
-    public void execute(String[] cmdWithArgs) throws IOException {
-        if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalNumberOfArguments(getName());
-        }
-
+    public void run(String[] cmdWithArgs) throws IOException {
         Table link = getManager().getUsedTable();
         if (link != null) {
             String value = link.get(cmdWithArgs[1]);

@@ -25,5 +25,12 @@ public abstract class DbCommand implements Command {
     public abstract boolean checkArgs(int argLen);
 
     @Override
-    public abstract void execute(String[] cmdWithArgs) throws Exception;    
+    public void execute(String[] cmdWithArgs) throws Exception {
+        if (!checkArgs(cmdWithArgs.length)) {
+            throw new IllegalNumberOfArguments(getName());
+        }
+        run(cmdWithArgs);
+    }
+    
+    public abstract void run(String[] cmdWithArgs) throws Exception;
 }

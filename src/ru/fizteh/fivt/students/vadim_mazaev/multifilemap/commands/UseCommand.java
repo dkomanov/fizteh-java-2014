@@ -14,11 +14,7 @@ public final class UseCommand extends DbCommand {
         return (argLen == 2);
     }
 
-    public void execute(String[] cmdWithArgs) throws IOException {
-        if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalNumberOfArguments(getName());
-        }
-
+    public void run(String[] cmdWithArgs) throws IOException {
         if (getManager().useTable(cmdWithArgs[1])) {
             System.out.println("using " + cmdWithArgs[1]);
         } else {

@@ -13,11 +13,7 @@ public final class DropCommand extends DbCommand {
     }
 
     @Override
-    public void execute(String[] cmdWithArgs) {
-        if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalNumberOfArguments(getName());
-        }
-        
+    public void run(String[] cmdWithArgs) {
         try {
             getManager().removeTable(cmdWithArgs[1]);
             System.out.println("dropped");

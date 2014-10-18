@@ -15,11 +15,7 @@ public final class ShowTablesCommand extends DbCommand {
     }
 
     @Override
-    public void execute(String[] cmdWithArgs) {
-        if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalNumberOfArguments(getName());
-        }
-
+    public void run(String[] cmdWithArgs) {
         System.out.println("Table_name row_count");
         Set<String> tables = getManager().getTablesSet();
         for (String curTable : tables) {

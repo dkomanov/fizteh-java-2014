@@ -13,11 +13,7 @@ public final class CreateCommand extends DbCommand {
     }
 
     @Override
-    public void execute(String[] cmdWithArgs) {
-        if (!checkArgs(cmdWithArgs.length)) {
-            throw new IllegalNumberOfArguments(getName());
-        }
-        
+    public void run(String[] cmdWithArgs) {
         if (getManager().createTable(cmdWithArgs[1]) != null) {
             System.out.println("created");
         } else {
