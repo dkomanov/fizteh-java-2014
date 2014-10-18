@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class Database {
-    File rootDirectory;
+    private File rootDirectory;
     private Table currentTable = null;
     private ArrayList<Table> tables = new ArrayList<>();
     private Map<String, Table> tableNames = new TreeMap<>();

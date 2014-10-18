@@ -6,7 +6,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table {
-    public static final int FILES_COUNT = 16;
+    protected static final int FILES_COUNT = 16;
     protected static final int SUBDIRECTORIES_COUNT = 16;
     private TablePart[][] structuredParts;
     private String tableName;
