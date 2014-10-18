@@ -12,9 +12,8 @@ public class RemoveCommand implements Command {
         if (connector.activeTable == null) {
             throw new CommandInterruptException("no table");
         }
-        boolean exists = connector.activeTable.containsKey(args[1]);
-        if (exists) {
-            connector.activeTable.remove(args[1]);
+        String old = connector.activeTable.remove(args[1]);
+        if (old != null) {
             return "removed";
         } else {
             return "not found";

@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.andreyzakharov.stringfilemap;
 
+import java.util.List;
+
 public class ListCommand implements Command {
     @Override
     public String execute(DbConnector connector, String... args) throws CommandInterruptException {
@@ -9,15 +11,11 @@ public class ListCommand implements Command {
         if (connector.activeTable == null) {
             throw new CommandInterruptException("no table");
         }
-        if (connector.activeTable.isEmpty()) {
+        List<String> keys = connector.activeTable.list();
+        if (keys.isEmpty()) {
             return "";
         } else {
-            StringBuilder sb = new StringBuilder();
-            for (String key : connector.activeTable.keySet()) {
-                sb.append(key);
-                sb.append(", ");
-            }
-            return sb.substring(0, sb.length() - 2);
+            return String.join(", ", keys);
         }
     }
 }

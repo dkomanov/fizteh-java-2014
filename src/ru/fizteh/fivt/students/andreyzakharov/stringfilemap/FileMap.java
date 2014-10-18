@@ -1,17 +1,27 @@
 package ru.fizteh.fivt.students.andreyzakharov.stringfilemap;
 
+import ru.fizteh.fivt.storage.strings.Table;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class FileMap extends HashMap<String, String> {
+public class FileMap implements Table {
+    Map<String, String> data = new HashMap<>();
+    Map<String, String> oldData = new HashMap<>();
     Path dbPath;
+    String name;
+    int pending = 0;
 
     public FileMap(Path path) {
         dbPath = path;
+        name = path.getFileName().toString();
         if (!Files.exists(path)) {
             try {
                 Files.createDirectory(path);
@@ -19,6 +29,58 @@ public class FileMap extends HashMap<String, String> {
                 //
             }
         }
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String get(String key) {
+        return data.get(key);
+    }
+
+    @Override
+    public String put(String key, String value) {
+        ++pending;
+        return data.put(key, value);
+    }
+
+    @Override
+    public String remove(String key) {
+        ++pending;
+        return data.remove(key);
+    }
+
+    @Override
+    public int size() {
+        return data.size();
+    }
+
+    @Override
+    public int commit() {
+        int p = pending;
+        if (p > 0) {
+            oldData = new HashMap<>(data);
+            pending = 0;
+        }
+        return p;
+    }
+
+    @Override
+    public int rollback() {
+        int p = pending;
+        if (p > 0) {
+            data = new HashMap<>(oldData);
+            pending = 0;
+        }
+        return p;
+    }
+
+    @Override
+    public List<String> list() {
+        return new ArrayList<>(data.keySet());
     }
 
     void readKeyValue(DataInputStream is) throws IOException {
@@ -69,7 +131,7 @@ public class FileMap extends HashMap<String, String> {
             if (!Files.exists(dbPath)) {
                 Files.createDirectory(dbPath);
             }
-            for (HashMap.Entry<String, String> entry : entrySet()) {
+            for (HashMap.Entry<String, String> entry : data.entrySet()) {
                 int hash = entry.getKey().hashCode();
                 int d = (hash % 16 < 0) ? hash % 16 + 16 : hash % 16;
                 hash /= 16;

@@ -1,5 +1,8 @@
 package ru.fizteh.fivt.students.andreyzakharov.stringfilemap;
 
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.strings.TableProvider;
+
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -7,33 +10,39 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DbConnector implements AutoCloseable {
-    Map<String, Command> commands = new HashMap<>();
+public class DbConnector implements AutoCloseable, TableProvider {
     Path dbRoot;
     Map<String, FileMap> tables;
     FileMap activeTable;
 
     DbConnector(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
-            throw new ConnectionInterruptException("connection: destination does not exist");
+            try {
+                Files.createFile(dbPath);
+            } catch (IOException e) {
+                throw new ConnectionInterruptException("connection: destination does not exist, can't be created");
+            }
         }
         if (!Files.isDirectory(dbPath)) {
             throw new ConnectionInterruptException("connection: destination is not a directory");
         }
         dbRoot = dbPath;
         open();
+    }
 
-        commands.put("create", new CreateCommand());
-        commands.put("drop", new DropCommand());
-        commands.put("use", new UseCommand());
-        commands.put("show", new ShowCommand());
+    @Override
+    public Table getTable(String name) {
+        return null;
+    }
 
-        commands.put("put", new PutCommand());
-        commands.put("get", new GetCommand());
-        commands.put("list", new ListCommand());
-        commands.put("remove", new RemoveCommand());
+    @Override
+    public Table createTable(String name) {
+        return null;
+    }
 
-        commands.put("exit", new ExitCommand());
+    @Override
+    public void removeTable(String name) {
+        return;
     }
 
     public void open() throws ConnectionInterruptException {
@@ -68,16 +77,5 @@ public class DbConnector implements AutoCloseable {
                 // suppress the exception
             }
         }
-    }
-
-    public String run(String argString) throws CommandInterruptException {
-        String[] args = argString.trim().split("\\s+");
-        Command command = commands.get(args[0]);
-        if (command != null) {
-            return command.execute(this, args);
-        } else if (!args[0].equals("")) {
-            throw new CommandInterruptException(args[0] + ": command not found");
-        }
-        return null;
     }
 }
