@@ -23,11 +23,11 @@ public abstract class AbstractTableCommand extends AbstractCommand<OneTableBase>
     public void exec(String[] args) throws IOException {
         Table activeTable = context.getActiveTable();
         if (activeTable == null) {
-            throw new IllegalArgumentException("no table");
+            System.out.println("no table");
         } else {
             onActiveTable(activeTable, args);
         }
     }
 
-    protected abstract void onActiveTable(Table activeTable, String[] args) throws IOException;
+    protected abstract void onActiveTable(Table activeTable, String[] args);
 }

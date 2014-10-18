@@ -7,6 +7,7 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +75,11 @@ public class Shell {
 
                 supportedCmds.get(cmdName).exec(params);
             } catch (FileNotFoundException | NoSuchFileException e) {
-                String msg = "%s: '%s' no such File or Directory\n";
+                String msg = "%s: %s: No such File or Directory\n";
+                System.err.printf(msg, cmdName, e.getMessage());
+                return false;
+            } catch (AccessDeniedException e) {
+                String msg = "Cannot perform: %s: %s: Access denied\n";
                 System.err.printf(msg, cmdName, e.getMessage());
                 return false;
             } catch (IllegalArgumentException | IllegalStateException | IOException e) {

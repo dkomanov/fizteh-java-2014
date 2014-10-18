@@ -5,7 +5,6 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.table;
 
 import java.io.Closeable;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -15,9 +14,9 @@ import java.io.RandomAccessFile;
  */
 public class TableWriter implements Closeable {
 
-    private RandomAccessFile dbFile;
+    private final RandomAccessFile dbFile;
 
-    public TableWriter(String fileName) throws FileNotFoundException {
+    public TableWriter(String fileName) throws IOException {
         dbFile = new RandomAccessFile(fileName, "rw");
     }
 
@@ -28,10 +27,9 @@ public class TableWriter implements Closeable {
 
     public long write(String word) throws IOException {
         byte[] bytes = word.getBytes("UTF-8");
-        long retVal = 4 + bytes.length;
         dbFile.writeInt(bytes.length);
         dbFile.write(bytes);
-        return retVal;
+        return 4 + bytes.length;
     }
 
     public void setLength(long length) throws IOException {

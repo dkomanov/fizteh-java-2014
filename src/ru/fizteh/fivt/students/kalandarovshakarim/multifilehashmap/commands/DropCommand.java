@@ -20,7 +20,9 @@ public class DropCommand extends AbstractCommand<DataBase> {
     @Override
     public void exec(String[] args) {
         context.getProvider().removeTable(args[0]);
-        context.setActiveTable(null);
+        if (args[0].equals(context.getActiveTable().getName())) {
+            context.setActiveTable(null);
+        }
         System.out.println("dropped");
     }
 }

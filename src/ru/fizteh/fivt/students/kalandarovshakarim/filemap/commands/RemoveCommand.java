@@ -4,7 +4,6 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
-import java.io.IOException;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 
@@ -19,11 +18,11 @@ public class RemoveCommand extends AbstractTableCommand {
     }
 
     @Override
-    protected void onActiveTable(Table activeTable, String[] args) throws IOException {
+    protected void onActiveTable(Table activeTable, String[] args) {
         String deleted = activeTable.remove(args[0]);
 
         if (deleted == null) {
-            throw new IOException("not found");
+            System.out.println("not found");
         } else {
             System.out.println("removed");
         }

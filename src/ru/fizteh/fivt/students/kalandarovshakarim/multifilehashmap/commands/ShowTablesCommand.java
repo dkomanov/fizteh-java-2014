@@ -31,8 +31,12 @@ public class ShowTablesCommand extends AbstractCommand<DataBase> {
         System.out.printf("%-25srow_num%n", "table_name");
         String format = "%-25s%d%n";
         for (String tableName : list) {
-            int rowNum = provider.getTable(tableName).size();
-            System.out.printf(format, tableName, rowNum);
+            if (provider.getTable(tableName) != null) {
+                int rowNumber = provider.getTable(tableName).size();
+                System.out.printf(format, tableName, rowNumber);
+            } else {
+                System.out.printf("%-25s%d%n", tableName, "corrupted or access denied");
+            }
         }
     }
 }

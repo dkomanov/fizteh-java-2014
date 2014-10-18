@@ -41,8 +41,8 @@ public class UseCommand extends AbstractCommand<DataBase> {
             System.out.printf("using %s", args[0]);
             System.out.println();
         } else {
-            String msg = "%d unsaved changes";
-            throw new IOException(String.format(msg, changes));
+            System.out.printf("%d unsaved changes", changes);
+            System.out.println();
         }
     }
 }

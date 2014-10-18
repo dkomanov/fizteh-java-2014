@@ -19,7 +19,7 @@ public class MultiFileHashMapMain {
     public static void main(String[] args) {
         DataBase dataBase = null;
         try {
-            dataBase = new DataBase();
+            dataBase = new DataBase(System.getProperty("fizteh.db.dir"));
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
             System.exit(1);

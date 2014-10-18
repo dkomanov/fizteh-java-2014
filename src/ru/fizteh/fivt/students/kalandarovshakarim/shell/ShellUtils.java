@@ -5,6 +5,7 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.shell;
 
+import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
@@ -89,37 +90,35 @@ public class ShellUtils {
         Files.copy(file.toPath(), System.out);
     }
 
-    private void rmDir(File dir) {
-        File[] dirList = dir.listFiles();
-        for (File file : dirList) {
-            if (file.isDirectory()) {
+    private void rmDir(Path path) throws IOException {
+        DirectoryStream<Path> newDirectoryStream = Files.newDirectoryStream(path);
+        for (Path file : newDirectoryStream) {
+            if (Files.isDirectory(file)) {
                 rmDir(file);
             }
-            file.delete();
+            Files.delete(file);
         }
-        dir.delete();
+        Files.delete(path);
     }
 
     public void rm(String fileName, boolean recursive)
             throws FileNotFoundException, IOException {
+        Path file = getPath(fileName);
 
-        File file = getPath(fileName).toFile();
-
-        if (!file.exists()) {
+        if (Files.notExists(file)) {
             throw new FileNotFoundException(fileName);
         }
 
-        if (file.isDirectory() && !recursive) {
+        if (Files.isDirectory(file) && !recursive) {
             String exMsg = "'%s' is Directory";
             throw new IOException(String.format(exMsg, fileName));
         }
 
-        if (file.isFile()) {
-            file.delete();
-        } else {
+        if (Files.isDirectory(file)) {
             rmDir(file);
+        } else {
+            Files.delete(file);
         }
-
     }
 
     public void cp(String source, String destination, boolean recursive)
