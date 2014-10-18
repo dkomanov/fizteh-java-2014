@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
+package ru.fizteh.fivt.students.andreyzakharov.stringfilemap;
 
 public class UseCommand implements Command {
     @Override

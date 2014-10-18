@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
+package ru.fizteh.fivt.students.andreyzakharov.stringfilemap;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
+package ru.fizteh.fivt.students.andreyzakharov.stringfilemap;
 
 public class ListCommand implements Command {
     @Override
