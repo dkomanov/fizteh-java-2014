@@ -14,11 +14,11 @@ public class List implements DBCommand {
 
     @Override
     public boolean execute() {
-        if (DbMain.currentTable == null) {
-            System.out.println("no table");
-            return false;
-        }
-
+		if (DbMain.currentTable == null) {
+			System.out.println("no table");
+			return false;
+		}
+		
         String[] keys = IoLib.getTableKeyList(DbMain.currentTable, false);
 
         if (keys == null) {

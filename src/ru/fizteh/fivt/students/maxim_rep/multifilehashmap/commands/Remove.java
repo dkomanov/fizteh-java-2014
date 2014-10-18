@@ -16,7 +16,7 @@ public class Remove implements DBCommand {
     }
 
     public static boolean removeFromDB(String filePath, String keyName) {
-        filePath = IoLib.getDataFilePath(keyName)[0];
+    	filePath = IoLib.getDataFilePath(keyName)[0];
         String[] keysUnformed = IoLib.getKeyList(filePath, true, false);
 
         if (keysUnformed == null) {
@@ -70,11 +70,11 @@ public class Remove implements DBCommand {
 
     @Override
     public boolean execute() {
-        if (DbMain.currentTable == null) {
-            System.out.println("no table");
-            return false;
-        }
-
+		if (DbMain.currentTable == null) {
+			System.out.println("no table");
+			return false;
+		}
+		
         boolean result = removeFromDB(filePath, keyName);
         if (result) {
             System.out.println("REMOVED");
