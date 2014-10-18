@@ -31,6 +31,7 @@ public class CommandRemove extends Command {
 
         if (dbTable == null) {
             AbstractShell.printInformation("no table");
+            return;
         }
 
         String key = args.get(0);

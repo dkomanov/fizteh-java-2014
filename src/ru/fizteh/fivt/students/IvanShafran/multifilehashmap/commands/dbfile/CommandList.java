@@ -36,6 +36,7 @@ public class CommandList extends Command {
 
         if (dbTable == null) {
             AbstractShell.printInformation("no table");
+            return;
         }
 
         StringBuilder list = new StringBuilder();
