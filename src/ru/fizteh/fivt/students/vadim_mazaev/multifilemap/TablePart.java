@@ -58,7 +58,7 @@ public final class TablePart {
         try {
             readFile();
         } catch (IOException e) {
-            throw new IOException("Cannot read file: " + tablePartDirPath.toString());
+            throw new IOException("Cannot read file: " + tablePartDirPath.toString(), e);
         }
         isConnected = true;
     }
@@ -76,7 +76,7 @@ public final class TablePart {
             try {
                 writeToFile();
             } catch (IOException e) {
-                throw new IOException("Cannot write to file: " + tablePartDirPath.toString());
+                throw new IOException("Cannot write to file: " + tablePartDirPath.toString(), e);
             }
             data.clear();
             isConnected = false;
@@ -251,8 +251,7 @@ public final class TablePart {
                 String key = bytesBuffer.toString("UTF-8");
                 bytesBuffer.reset();
                 if (!keyIsInValidPath(key)) {
-                    //If key is in a wrong file or directory.
-                    throw new IOException();
+                    throw new IOException("Key is in a wrong file or directory.");
                 }
                 keys.add(key);
             } while (bytesCounter < offsets.get(0));
@@ -269,16 +268,14 @@ public final class TablePart {
                     data.put(keyIter.next(), bytesBuffer.toString("UTF-8"));
                     bytesBuffer.reset();
                 } else {
-                    //If file ends before expected last value.
-                    throw new IOException();
+                    throw new IOException("File ends before expected last value.");
                 }
             }
             bytesBuffer.close();
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(e);
         } catch (UnsupportedEncodingException e) {
-            //If key or value can't be encoded to UTF-8.
-            throw new IOException();
+            throw new IOException("Key or value can't be encoded to UTF-8.", e);
         }
     }
     
@@ -322,7 +319,7 @@ public final class TablePart {
                 file.writeInt(offIter.next());
             }
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(e);
         }
     }
 }

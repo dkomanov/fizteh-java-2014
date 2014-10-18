@@ -44,7 +44,7 @@ public final class CommandParser {
                 }
             }
         } catch (NoSuchElementException e) {
-            throw new ThrowExit(false);
+            throw new ThrowExit(false, e);
         }
     }
 
@@ -103,10 +103,10 @@ public final class CommandParser {
                 System.err.println(e.getMessage());
             } else {
                 System.err.println("Something went wrong. Unexpected error");
-                throw new ThrowExit(false);
+                throw new ThrowExit(false, e);
             }
             if (exitOnError) {
-                throw new ThrowExit(false);
+                throw new ThrowExit(false, e);
             }
         }
     }

@@ -17,7 +17,7 @@ public final class DbMain {
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         } catch (ThrowExit t) {
-            if (t.getExitStatus()) {
+            if (t.isExitSuccess()) {
                 System.exit(0);
             } else {
                 System.exit(1);

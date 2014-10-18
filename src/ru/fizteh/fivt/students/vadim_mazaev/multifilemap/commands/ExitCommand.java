@@ -16,9 +16,9 @@ public final class ExitCommand {
                 manager.getUsedTable().commit();
             } catch (IOException e) {
                 System.err.println("Error writing table to file");
-                throw new ThrowExit(false);
+                throw new ThrowExit(false, e);
             }
         }
-        throw new ThrowExit(true);
+        throw new ThrowExit(true, null);
     }
 }

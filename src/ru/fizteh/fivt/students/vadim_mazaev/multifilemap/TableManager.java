@@ -26,7 +26,7 @@ public final class TableManager {
             }
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException("Error connecting database"
-                    + ": illegal directory name");
+                    + ": illegal directory name", e);
         }
         tableLinks = new TreeMap<>();
         String[] tablesDirlist = tablesDirPath.toFile().list();
@@ -64,7 +64,7 @@ public final class TableManager {
                 return true;
             }
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException("Illegal table name");
+            throw new IllegalArgumentException("Illegal table name", e);
         }
         return false;
     }
@@ -80,7 +80,7 @@ public final class TableManager {
             }
             return tableLinks.get(name);
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException("Illegal table name");
+            throw new IllegalArgumentException("Illegal table name", e);
         }
     }
 
@@ -101,7 +101,7 @@ public final class TableManager {
             tableLinks.put(name, newTable);
             return newTable;
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException("Illegal table name");
+            throw new IllegalArgumentException("Illegal table name", e);
         }
     }
 
@@ -124,9 +124,9 @@ public final class TableManager {
                 removedTable.deleteTable();
             }
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException("Illegal table name");
+            throw new IllegalArgumentException("Illegal table name", e);
         } catch (IOException e) {
-            throw new IllegalStateException("Table can't be removed from disk");
+            throw new IllegalStateException("Table can't be removed from disk", e);
         }
     }
     

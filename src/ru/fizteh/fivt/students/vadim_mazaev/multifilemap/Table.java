@@ -34,7 +34,7 @@ public final class Table {
             readTableDir();
         } catch (IOException e) {
             throw new IllegalArgumentException("Error reading table '" + getName()
-                    + "': directory is corrupted");
+                    + "': directory is corrupted", e);
         }
     }
     
@@ -49,7 +49,7 @@ public final class Table {
             writeTableToDir();
         } catch (IOException e) {
             throw new IOException("Error writing table '" + getName()
-                    + "' to directory");
+                    + "' to directory", e);
         }
     }
     
@@ -72,7 +72,7 @@ public final class Table {
             dirNumber = Math.abs(key.getBytes("UTF-8")[0] % 16);
             fileNumber = Math.abs((key.getBytes("UTF-8")[0] / 16) % 16);
         } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unable to encode key to UTF-8");
+            throw new IllegalArgumentException("Unable to encode key to UTF-8", e);
         }
         return dirNumber * 100 + fileNumber;
     }
