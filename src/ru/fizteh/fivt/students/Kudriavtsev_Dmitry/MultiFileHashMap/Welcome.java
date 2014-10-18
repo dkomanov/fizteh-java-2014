@@ -13,7 +13,6 @@ public class Welcome {
         Path dbPath;
         try {
             dbPath = new File(System.getProperty("fizteh.db.dir")).toPath().normalize();
-            //dbPath = new File("C:\\Users\\Дмитрий\\Documents\\Test").toPath().normalize();
         } catch (NullPointerException e) {
             System.err.println("Your directory is null");
             System.exit(-1);

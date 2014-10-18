@@ -23,7 +23,7 @@ public class List extends Command {
         for (String key : keySet) {
             System.out.print(key);
             if (count != keySet.size() - 1) {
-                System.out.print(" ,");
+                System.out.print(", ");
                 ++count;
             }
         }

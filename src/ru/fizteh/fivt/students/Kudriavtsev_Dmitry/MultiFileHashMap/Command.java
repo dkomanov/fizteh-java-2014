@@ -19,7 +19,7 @@ public abstract class Command {
         this.argLen = 0;
     }
 
-    public boolean checkArguments(int argLen) {
+    protected boolean checkArguments(int argLen) {
         if (argLen != this.argLen) {
             System.err.println("Incorrect number of arguments in " + name);
             return false;

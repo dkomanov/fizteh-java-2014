@@ -84,21 +84,29 @@ public class MFHMap extends HashMap<String, String> {
         oStream.write(valueInBytes);
     }
 
+    private Path nameOfPath(int i, int j) {
+        return dbPath.resolve(i + ".dir" + File.separator + j + ".dat");
+    }
+
+    private Path nameOfPath(int i) {
+        return dbPath.resolve(i + ".dir" + File.separator);
+    }
+
     public void deleteFiles() {
         try {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
-                    if (changedFiles.contains(dbPath.resolve(i + ".dir" + File.separator + j + ".dat").toString())) {
-                        if (Files.exists(dbPath.resolve(i + ".dir" + File.separator + j + ".dat"))) {
-                            Files.delete(dbPath.resolve(i + ".dir" + File.separator + j + ".dat"));
+                    if (changedFiles.contains(nameOfPath(i, j).toString())) {
+                        if (Files.exists(nameOfPath(i, j))) {
+                            Files.delete(nameOfPath(i, j));
                         }
-                        if (Files.exists(dbPath.resolve(i + ".dir" + File.separator))) {
-                            Files.delete(dbPath.resolve(i + ".dir" + File.separator));
+                        if (Files.exists(nameOfPath(i))) {
+                            Files.delete(nameOfPath(i));
                         }
                     }
                 }
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("Can't delete from disk: " + e.getMessage());
             System.exit(-1);
         }
@@ -125,7 +133,7 @@ public class MFHMap extends HashMap<String, String> {
                             dir[d] = true;
                         }
                         streams[d][f] = new DataOutputStream(Files.newOutputStream(
-                                dbPath.resolve(d + ".dir" + File.separator + f + ".dat")));
+                                nameOfPath(d, f)));
                         file[d][f] = true;
                     }
                     writeToFile(streams[d][f], entry.getKey(), entry.getValue());
@@ -135,9 +143,9 @@ public class MFHMap extends HashMap<String, String> {
 
         } catch (IOException e) {
             System.err.println("Can't write to disk: " + e.getMessage());
+            changedFiles.clear();
             System.exit(-1);
         } finally {
-            //changedFiles.clear();
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
                     if (streams[i][j] != null) {

@@ -18,7 +18,8 @@ public class Get extends Command {
         }
         String value = dbConnector.activeTable.get(args[0]);
         if (value != null) {
-            System.out.println("found\n" + value);
+            System.out.println("found");
+            System.out.println(value);
         } else {
             System.out.println("not found");
         }
