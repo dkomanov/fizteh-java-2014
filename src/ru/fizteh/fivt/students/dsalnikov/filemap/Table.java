@@ -1,10 +1,6 @@
 package ru.fizteh.fivt.students.dsalnikov.filemap;
 
-public interface Table {
-
-    String get(String key);
-
-    String put(String key, String value);
+public interface Table extends ru.fizteh.fivt.storage.strings.Table {
 
     void list();
 
@@ -12,4 +8,3 @@ public interface Table {
 
     int exit();
 }
-

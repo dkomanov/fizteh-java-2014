@@ -16,7 +16,12 @@ public class PutCommand implements Command {
         if (args.length != 3) {
             throw new IllegalArgumentException("wrong amount of arguments");
         } else {
-            db.put(args[1], args[2]);
+            String result = db.put(args[1], args[2]);
+            if (result == null) {
+                System.out.println("new");
+            } else {
+                System.out.println(String.format("overwrite\n'%s'", result));
+            }
         }
     }
 

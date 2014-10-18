@@ -11,7 +11,7 @@ import java.util.*;
 public class Shell<State extends ShellState> {
 
     private ShellState state;
-    private Map<String, Command> commandMap = new HashMap<String, Command>();
+    private Map<String, Command> commandMap = new HashMap<>();
 
     //годный шелл
     public Shell() {
@@ -20,6 +20,20 @@ public class Shell<State extends ShellState> {
 
     public Shell(State o) {
         state = o;
+    }
+
+    public static String join(Collection<?> objects, String separator) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (Object o : objects) {
+            if (!first) {
+                sb.append(separator);
+            } else {
+                first = false;
+            }
+            sb.append(o.toString());
+        }
+        return (sb.toString());
     }
 
     public void setCommands(List<Command> cs) throws IllegalArgumentException {
@@ -46,20 +60,6 @@ public class Shell<State extends ShellState> {
                 c.execute(cmdArgs);
             }
         }
-    }
-
-    public static String join(Collection<?> objects, String separator) {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (Object o : objects) {
-            if (!first) {
-                sb.append(separator);
-            } else {
-                first = false;
-            }
-            sb.append(o.toString());
-        }
-        return (sb.toString());
     }
 
     public void batchMode() throws Exception {

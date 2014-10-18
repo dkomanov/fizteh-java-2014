@@ -17,7 +17,12 @@ public class RemoveCommand implements Command {
         if (args.length != 2) {
             throw new IllegalArgumentException("wrong amount of arguments");
         } else {
-            db.remove(args[1]);
+            String result = db.remove(args[1]);
+            if (result == null) {
+                System.out.println("not found");
+            } else {
+                System.out.println("removed");
+            }
         }
     }
 

@@ -85,11 +85,15 @@ public class FileMapUtils {
 
     public static void flush(File file, Map<String, String> map) throws IOException {
         try {
+            File tmp = file.getParentFile();
+            tmp.mkdirs();
+            file.createNewFile();
             OutputStream os = new FileOutputStream(file);
             BufferedOutputStream bos = new BufferedOutputStream(os, 4096);
             DataOutputStream dos = new DataOutputStream(bos);
 
             try {
+
                 long offset = 0;
                 for (String key : map.keySet()) {
                     offset += key.getBytes(StandardCharsets.UTF_8).length + 5;

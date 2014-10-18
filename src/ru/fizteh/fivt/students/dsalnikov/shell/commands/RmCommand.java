@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
-import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
+import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 
 import java.io.File;
 import java.io.IOException;

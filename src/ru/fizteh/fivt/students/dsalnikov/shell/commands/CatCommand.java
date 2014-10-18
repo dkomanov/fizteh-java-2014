@@ -1,8 +1,8 @@
 package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
 
-import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
+import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +25,7 @@ public class CatCommand implements Command {
             File path = StringUtils.processFile(link.getState().getState(), args[1]);
             FileInputStream fis = new FileInputStream(path);
             try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path),
-                                                                              StandardCharsets.UTF_8))) {
+                    StandardCharsets.UTF_8))) {
                 String line = br.readLine();
                 while (line != null) {
                     System.out.println(line);

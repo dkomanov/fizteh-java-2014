@@ -3,35 +3,30 @@ package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
-public class GetCommand implements Command {
+public class SizeCommand implements Command {
 
-    private Table db;
+    Table db;
 
-    public GetCommand(Table t) {
+    public SizeCommand(Table t) {
         db = t;
     }
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 2) {
+        if (args.length != 1) {
             throw new IllegalArgumentException("wrong amount of arguments");
         } else {
-            String result = db.get(args[1]);
-            if (result == null) {
-                System.out.println("not found");
-            } else {
-                System.out.println(String.format("found\n'%s'", result));
-            }
+            System.out.println(db.size());
         }
     }
 
     @Override
     public String getName() {
-        return "get";
+        return "size";
     }
 
     @Override
     public int getArgsCount() {
-        return 2;
+        return 1;
     }
 }
