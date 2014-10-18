@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbtable;
 
 
-import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.DBTable;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.MultiFileHashMap;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.AbstractShell;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.Command;
@@ -10,8 +9,6 @@ import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.shell.Comma
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class CommandDrop extends Command {
     private MultiFileHashMap multiFileHashMap;

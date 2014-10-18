@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbtable;
 
 
-import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.DBTable;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.MultiFileHashMap;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.AbstractShell;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.Command;
@@ -9,8 +8,6 @@ import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.Comman
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class CommandCreate extends Command {
     private MultiFileHashMap multiFileHashMap;
