@@ -6,6 +6,7 @@ package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -28,10 +29,13 @@ public class DataBaseProviderFactory implements TableProviderFactory {
                 Files.createDirectory(dirPath);
             }
             retVal = new DataBaseProvider(dir);
+        } catch (AccessDeniedException e) {
+            String eMessage = String.format("%s: Access denied", e.getMessage());
+            throw new IllegalArgumentException(eMessage);
         } catch (NullPointerException e) {
             throw new IllegalArgumentException("fizteh.db.dir is not specified");
         } catch (FileNotFoundException | NoSuchFileException e) {
-            throw new IllegalArgumentException(dir + " No such Directory");
+            throw new IllegalArgumentException(dir + ": No such Directory");
         } catch (IOException e) {
             throw new IllegalArgumentException(e.getMessage());
         }

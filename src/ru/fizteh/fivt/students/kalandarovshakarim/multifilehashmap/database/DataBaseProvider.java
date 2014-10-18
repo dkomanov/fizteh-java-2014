@@ -5,6 +5,7 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.multifilehashmap.database;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,17 +34,13 @@ public class DataBaseProvider implements TableProvider {
 
     @Override
     public Table getTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Null cannot be an argument");
-        }
+        checkTableName(name);
         return tables.get(name);
     }
 
     @Override
     public Table createTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Null cannot be an argument");
-        }
+        checkTableName(name);
 
         if (tables.containsKey(name)) {
             return null;
@@ -64,9 +61,8 @@ public class DataBaseProvider implements TableProvider {
 
     @Override
     public void removeTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Null cannot be an argument");
-        }
+        checkTableName(name);
+
         if (!tables.containsKey(name)) {
             throw new IllegalStateException(name + " not found");
         } else {
@@ -87,9 +83,9 @@ public class DataBaseProvider implements TableProvider {
     }
 
     private void load() throws IOException {
-        String[] list = directory.toFile().list();
-        for (String tableName : list) {
-            Path pathToTable = directory.resolve(tableName);
+        DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory);
+        for (Path pathToTable : directoryStream) {
+            String tableName = pathToTable.getFileName().toString();
             if (Files.isDirectory(pathToTable)) {
                 Table table = new MultiFileTable(directory.toString(), tableName);
                 tables.put(tableName, table);
@@ -98,6 +94,12 @@ public class DataBaseProvider implements TableProvider {
                 String eMessage = String.format(format, directory);
                 throw new IOException(eMessage);
             }
+        }
+    }
+
+    void checkTableName(String tableName) {
+        if (tableName == null) {
+            throw new IllegalArgumentException("Null cannot be an argument");
         }
     }
 }

@@ -13,13 +13,12 @@ import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
  */
 public class DataBase extends OneTableBase {
 
-    private TableProviderFactory factory;
-    private TableProvider provider;
+    private final TableProviderFactory factory;
+    private final TableProvider provider;
 
-    public DataBase() {
-        String pathToDb = System.getProperty("fizteh.db.dir");
+    public DataBase(String pathToDataBase) {
         this.factory = new DataBaseProviderFactory();
-        this.provider = factory.create(pathToDb);
+        this.provider = factory.create(pathToDataBase);
     }
 
     public TableProvider getProvider() {

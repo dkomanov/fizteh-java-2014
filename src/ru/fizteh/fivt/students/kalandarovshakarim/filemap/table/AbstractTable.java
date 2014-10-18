@@ -33,18 +33,14 @@ public abstract class AbstractTable implements Table {
 
     @Override
     public String get(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException("null");
-        }
+        checkArgument(key);
         return table.get(key);
     }
 
     @Override
     public String put(String key, String value) {
-        if (key == null || value == null) {
-            throw new IllegalArgumentException("null");
-        }
-
+        checkArgument(value);
+        
         if (table.containsKey(key) && value.equals(table.get(key))) {
             // If same value was overwritten.
             return value;
@@ -63,9 +59,7 @@ public abstract class AbstractTable implements Table {
 
     @Override
     public String remove(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException("null");
-        }
+        checkArgument(key);
         if (!table.containsKey(key)) {
             return null;
         }
@@ -131,4 +125,10 @@ public abstract class AbstractTable implements Table {
     }
 
     protected abstract void save() throws IOException;
+
+    void checkArgument(String argument) {
+        if (argument == null) {
+            throw new IllegalArgumentException("null");
+        }
+    }
 }
