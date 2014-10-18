@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.SurkovaEkaterina.FileMap;
 
 import ru.fizteh.fivt.students.SurkovaEkaterina.shell.ACommand;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandList<FileMapShellOperations
@@ -23,7 +24,11 @@ public class CommandList<FileMapShellOperations
         List<String> list = operations.list();
         StringBuilder sb = new StringBuilder();
         for (String s : list) {
-            sb.append(s + " ");
+            if (!s.equals(list.toArray()[list.toArray().length - 1])) {
+                sb.append(s + ", ");
+            } else {
+                sb.append(s);
+            }
         }
         System.out.println(sb.toString());
     }
