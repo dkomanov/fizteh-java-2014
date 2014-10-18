@@ -45,11 +45,11 @@ public class CommandList extends Command {
             for (int j = 0; j < 16; ++j) {
                 String dbFileList = getList(dbTable.getMapOfDBFiles().get(i).get(j));
 
-                if (index != 0) {
-                    list.append(", ");
-                }
-
                 if (dbFileList.length() != 0) {
+                    if (index != 0) {
+                        list.append(", ");
+                    }
+
                     ++index;
                     list.append(dbFileList);
                 }

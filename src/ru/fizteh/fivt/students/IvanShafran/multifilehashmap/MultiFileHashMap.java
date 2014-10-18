@@ -1,5 +1,9 @@
 package ru.fizteh.fivt.students.IvanShafran.multifilehashmap;
 
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbfile.CommandGet;
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbfile.CommandList;
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbfile.CommandPut;
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbfile.CommandRemove;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbtable.CommandUse;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.shell.*;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.AbstractShell;
@@ -73,6 +77,10 @@ public class MultiFileHashMap extends AbstractShell {
 
         this.command.put("exit", new CommandExit());
         this.command.put("use", new CommandUse(this));
+        this.command.put("put", new CommandPut(this));
+        this.command.put("get", new CommandGet(this));
+        this.command.put("list", new CommandList(this));
+        this.command.put("remove", new CommandRemove(this));
     }
 
     MultiFileHashMap() {

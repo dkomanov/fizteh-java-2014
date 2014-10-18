@@ -55,8 +55,8 @@ public class CommandRM extends Command {
 
     public void execute(String path) throws Exception {
         ArrayList<String> args = new ArrayList<>();
-        args.add(path);
         args.add("-r");
+        args.add(path);
         this.execute(args);
     }
 
