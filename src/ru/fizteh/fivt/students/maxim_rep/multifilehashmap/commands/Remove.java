@@ -16,7 +16,7 @@ public class Remove implements DBCommand {
     }
 
     public static boolean removeFromDB(String filePath, String keyName) {
-    	filePath = IoLib.getDataFilePath(keyName)[0];
+        filePath = IoLib.getDataFilePath(keyName)[0];
         String[] keysUnformed = IoLib.getKeyList(filePath, true, false);
 
         if (keysUnformed == null) {
@@ -32,7 +32,7 @@ public class Remove implements DBCommand {
                     curLine.length() - 10)))) {
                 int deltaSize = HexConverter.stringToHex(
                         StringConverter.convertToUTF8(Get.getValueByKey(
-                                filePath, keyName, false))).length();
+                                keyName, false))).length();
                 for (int j = i + 1; j < keysUnformed.length; j++) {
 
                     String curLine2 = keysUnformed[j];
@@ -47,14 +47,14 @@ public class Remove implements DBCommand {
                             + StringConverter.convertIntTo8(newSize);
 
                     dataAll = dataAll
-                            + Get.getValueByKey(filePath, curLine2.substring(0,
+                            + Get.getValueByKey(curLine2.substring(0,
                                     curLine2.length() - 10), true);
                 }
                 break;
             } else {
                 keysAll = keysAll + keysUnformed[i];
                 dataAll = dataAll
-                        + Get.getValueByKey(filePath,
+                        + Get.getValueByKey(
                                 curLine.substring(0, curLine.length() - 10),
                                 true);
             }
@@ -70,11 +70,11 @@ public class Remove implements DBCommand {
 
     @Override
     public boolean execute() {
-		if (DbMain.currentTable == null) {
-			System.out.println("no table");
-			return false;
-		}
-		
+        if (DbMain.currentTable == null) {
+            System.out.println("no table");
+            return false;
+        }
+
         boolean result = removeFromDB(filePath, keyName);
         if (result) {
             System.out.println("REMOVED");

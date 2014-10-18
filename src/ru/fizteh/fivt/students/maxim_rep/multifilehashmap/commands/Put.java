@@ -15,7 +15,7 @@ public class Put implements DBCommand {
 
     public static boolean putData(String keyName, String dataText,
             String filePath) {
-    	filePath = IoLib.getDataFilePath(keyName)[0];
+        filePath = IoLib.getDataFilePath(keyName)[0];
         String[] keys = IoLib.getKeyList(filePath, true, false);
         String data = IoLib.getData(filePath);
 
@@ -30,7 +30,7 @@ public class Put implements DBCommand {
                 allKeysInHex = allKeysInHex + tmp;
             }
         }
-    	
+
         String newDataInHex = HexConverter.stringToHex(StringConverter
                 .convertToUTF8(dataText));
         String newKeyInHex = HexConverter.stringToHex(StringConverter
@@ -40,23 +40,22 @@ public class Put implements DBCommand {
 
         return IoLib.writeToDB(filePath, allKeysInHex + newKeyInHex
                 + allDataInHex + newDataInHex, false, keyName);
-    	
 
     }
 
     @Override
     public boolean execute() {
-		if (DbMain.currentTable == null) {
-			System.out.println("no table");
-			return false;
-		}
-		
-		if (!IoLib.tableExists(DbMain.currentTable)) {
-			System.out.println(DbMain.currentTable +" not exists");
-			return false;
-		}
-		
-        String result = Get.getValueByKey(filePath, keyName, false);
+        if (DbMain.currentTable == null) {
+            System.out.println("no table");
+            return false;
+        }
+
+        if (!IoLib.tableExists(DbMain.currentTable)) {
+            System.out.println(DbMain.currentTable + " not exists");
+            return false;
+        }
+
+        String result = Get.getValueByKey(keyName, false);
         if (result != null) {
             System.out.println("OVERWRITE");
             System.out.println(result);

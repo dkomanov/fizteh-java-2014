@@ -5,22 +5,22 @@ import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.IoLib;
 
 public class Use implements DBCommand {
 
-	String tableName;
+    String tableName;
 
-	public Use(String tableName) {
-		this.tableName = tableName;
-	}
+    public Use(String tableName) {
+        this.tableName = tableName;
+    }
 
-	@Override
-	public boolean execute() {
-		if (!IoLib.tableExists(tableName)) {
-			System.out.println(tableName +" not exists");
-			return false;
-		} else {
-			System.out.println("using " + tableName);
-			DbMain.currentTable = tableName;
-		}
-		return true;
-	}
+    @Override
+    public boolean execute() {
+        if (!IoLib.tableExists(tableName)) {
+            System.out.println(tableName + " not exists");
+            return false;
+        } else {
+            System.out.println("using " + tableName);
+            DbMain.currentTable = tableName;
+        }
+        return true;
+    }
 
 }
