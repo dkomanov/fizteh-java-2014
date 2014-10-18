@@ -52,5 +52,7 @@ public class FileMapShellOperations implements
     }
 
     @Override
-    public final int exit() { return table.exit(); }
+    public final int exit() {
+        return table.exit();
+    }
 }
