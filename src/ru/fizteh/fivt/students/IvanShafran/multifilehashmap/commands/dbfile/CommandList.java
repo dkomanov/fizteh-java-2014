@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.dbfile;
 
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.DBFile;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.DBTable;
+import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.MultiFileHashMap;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.AbstractShell;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.Command;
 
@@ -9,10 +10,10 @@ import java.util.ArrayList;
 
 
 public class CommandList extends Command {
-    private DBTable dbTable;
+    MultiFileHashMap multiFileHashMap;
 
-    public void setDBTable(DBTable newDBTable) {
-        dbTable = newDBTable;
+    public CommandList(MultiFileHashMap map) {
+        multiFileHashMap = map;
     }
 
     private String getList(DBFile dbFile) {
@@ -31,6 +32,8 @@ public class CommandList extends Command {
     }
 
     public void execute(ArrayList<String> args) throws Exception {
+        DBTable dbTable = multiFileHashMap.getWorkingDBTable();
+
         if (dbTable == null) {
             AbstractShell.printInformation("no table");
         }
