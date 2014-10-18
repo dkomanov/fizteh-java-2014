@@ -32,11 +32,17 @@ public class DbConnector implements AutoCloseable, TableProvider {
 
     @Override
     public Table getTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("null argument");
+        }
         return tables.get(name);
     }
 
     @Override
     public Table createTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("null argument");
+        }
         if (!tables.containsKey(name)) {
             tables.put(name, new FileMap(dbRoot.resolve(name)));
             return tables.get(name);
@@ -47,6 +53,9 @@ public class DbConnector implements AutoCloseable, TableProvider {
 
     @Override
     public void removeTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("null argument");
+        }
         FileMap table = tables.get(name);
         if (table != null) {
             if (activeTable == table) {

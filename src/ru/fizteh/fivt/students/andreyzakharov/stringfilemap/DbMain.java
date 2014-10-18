@@ -33,8 +33,12 @@ public class DbMain {
 
         commands.put("put", new PutCommand());
         commands.put("get", new GetCommand());
+        commands.put("size", new SizeCommand());
         commands.put("list", new ListCommand());
         commands.put("remove", new RemoveCommand());
+
+        commands.put("commit", new CommitCommand());
+        commands.put("rollback", new RollbackCommand());
 
         commands.put("exit", new ExitCommand());
     }

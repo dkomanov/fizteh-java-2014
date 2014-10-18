@@ -13,6 +13,9 @@ public class UseCommand implements Command {
         FileMap table = connector.tables.get(args[1]);
         if (table != null) {
             if (connector.activeTable != null) {
+                if (connector.activeTable.pending() > 0) {
+                    return connector.activeTable.pending() + " unsaved changes";
+                }
                 try {
                     connector.activeTable.unload();
                 } catch (ConnectionInterruptException e) {
