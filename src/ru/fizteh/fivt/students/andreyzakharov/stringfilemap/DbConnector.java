@@ -68,6 +68,8 @@ public class DbConnector implements AutoCloseable, TableProvider {
             } catch (ConnectionInterruptException | IOException e) {
                 //
             }
+        } else {
+            throw new IllegalStateException("table does not exist");
         }
     }
 

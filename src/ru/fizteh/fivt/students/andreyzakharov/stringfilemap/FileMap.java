@@ -12,10 +12,9 @@ import java.util.*;
 public class FileMap implements Table {
     Map<String, String> data = new HashMap<>();
     Map<String, String> oldData = new HashMap<>();
-    Map<String, String> diff = new HashMap<>();
-    Set<String> del = new HashSet<>();
     Path dbPath;
     String name;
+    int pending = 0;
 
     public FileMap(Path path) {
         dbPath = path;
@@ -47,24 +46,16 @@ public class FileMap implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
-        data.put(key, value);
-        del.remove(key);
-        String oldValue = oldData.get(key);
-        if (oldValue == null) {
-            return diff.put(key, value);
-        } else {
-            if (oldValue.equals(value)) {
-                diff.remove(key);
-                return value;
-            } else {
-                if (diff.containsKey(key)) {
-                    return diff.put(key, value);
-                } else {
-                    diff.put(key, value);
-                    return oldValue;
-                }
-            }
+        String old = oldData.get(key);
+        String current = data.get(key);
+        if (current == null && old == null
+         || current != null && current.equals(old) && !old.equals(value)) {
+            ++pending;
+        } else if (current == null && old.equals(value)
+                || current != null && !current.equals(old) && old != null && old.equals(value)) {
+            --pending;
         }
+        return data.put(key, value);
     }
 
     @Override
@@ -72,13 +63,14 @@ public class FileMap implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        data.remove(key);
-        del.add(key);
-        if (diff.containsKey(key)) {
-            return diff.remove(key);
-        } else {
-            return oldData.get(key);
+        String old = oldData.get(key);
+        String current = data.get(key);
+        if (old != null && old.equals(current)) {
+            ++pending;
+        } else if (old == null && current != null) {
+            --pending;
         }
+        return data.remove(key);
     }
 
     @Override
@@ -87,7 +79,7 @@ public class FileMap implements Table {
     }
 
     public int pending() {
-        return del.size() + diff.size();
+        return pending;
     }
 
     @Override
@@ -98,19 +90,17 @@ public class FileMap implements Table {
         } catch (ConnectionInterruptException e) {
             return -1;
         }
-        int pending = del.size() + diff.size();
-        del.clear();
-        diff.clear();
-        return pending;
+        int p = pending;
+        pending = 0;
+        return p;
     }
 
     @Override
     public int rollback() {
-        int pending = del.size() + diff.size();
         data = new HashMap<>(oldData);
-        del.clear();
-        diff.clear();
-        return pending;
+        int p = pending;
+        pending = 0;
+        return p;
     }
 
     @Override
@@ -148,6 +138,7 @@ public class FileMap implements Table {
                 }
             }
         }
+        oldData = new HashMap<>(data);
     }
 
     void writeKeyValue(DataOutputStream os, String keyString, String valueString) throws IOException {
@@ -160,6 +151,10 @@ public class FileMap implements Table {
     }
 
     public void unload() throws ConnectionInterruptException {
+        if (pending == 0) {
+            return;
+        }
+
         try {
             clearFiles();
         } catch (ConnectionInterruptException e) {
