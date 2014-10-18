@@ -9,6 +9,10 @@ public class DbMain {
     Path dbPath;
 
     public DbMain(String[] args) {
+        if (System.getProperty("db.file") == null) {
+            System.err.println("Database root directory is not set.");
+            System.exit(1);
+        }
         dbPath = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("db.file"));
         batch = args.length > 0;
         run(args);
