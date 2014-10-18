@@ -17,7 +17,7 @@ public class Remove extends Command {
         }
         if (dbConnector.activeTable.remove(args[0]) != null) {
             System.out.println("removed");
-            dbConnector.activeTable.changedFiles.add(dbConnector.activeTable.whereToSave(args[0]));
+            dbConnector.activeTable.changedFiles.add(dbConnector.activeTable.whereToSave(args[0]).getKey());
         } else {
             System.out.println("not found");
         }

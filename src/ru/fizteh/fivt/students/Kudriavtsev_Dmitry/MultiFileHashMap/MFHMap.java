@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.MultiFileHashMap;
 
+import javafx.util.Pair;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -30,11 +32,13 @@ public class MFHMap extends HashMap<String, String> {
         }
     }
 
-    public String whereToSave(String value) {
+    public  SimpleEntry<String, SimpleEntry<Integer, Integer>> whereToSave(String value) {
         int hashCode = value.hashCode();
         int d = hashCode % 16;
         int f = hashCode / 16 % 16;
-        return dbPath.resolve(d + ".dir" + File.separator + f + ".dat").toString();
+        return new SimpleEntry<>(
+                dbPath.resolve(d + ".dir" + File.separator + f + ".dat").toString(),
+                new SimpleEntry<>(d, f));
     }
 
     void readFromFile(DataInputStream iStream) {
@@ -123,10 +127,10 @@ public class MFHMap extends HashMap<String, String> {
                 Files.createDirectory(dbPath);
             }
             for (Map.Entry<String, String> entry : entrySet()) {
-                if (changedFiles.contains(whereToSave(entry.getKey()))) {
-                    int hashCode = entry.getKey().hashCode();
-                    int d = hashCode % 16;
-                    int f = hashCode / 16 % 16;
+                SimpleEntry<String, SimpleEntry<Integer, Integer>> pathOfFile = whereToSave(entry.getKey());
+                if (changedFiles.contains(pathOfFile.getKey())) {
+                    int d = pathOfFile.getValue().getKey();
+                    int f = pathOfFile.getValue().getValue();
                     if (!file[d][f]) {
                         if (!dir[d]) {
                             Files.createDirectory(dbPath.resolve(d + ".dir/"));
@@ -137,7 +141,7 @@ public class MFHMap extends HashMap<String, String> {
                         file[d][f] = true;
                     }
                     writeToFile(streams[d][f], entry.getKey(), entry.getValue());
-                    changedFiles.remove(whereToSave(entry.getValue()));
+                    changedFiles.remove(pathOfFile.getKey());
                 }
             }
 

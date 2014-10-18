@@ -25,7 +25,7 @@ public class Put extends Command {
         } else {
             System.out.println("new");
         }
-        dbConnector.activeTable.changedFiles.add(dbConnector.activeTable.whereToSave(args[0]));
+        dbConnector.activeTable.changedFiles.add(dbConnector.activeTable.whereToSave(args[0]).getKey());
         return true;
     }
 }
