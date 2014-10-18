@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -215,10 +216,12 @@ public final class Table {
      * or some files cannot be wrote. 
      */
     private void writeTableToDir() throws IOException {
-        for (Entry<Integer, TablePart> part : parts.entrySet()) {
+        Iterator<Entry<Integer, TablePart>> it = parts.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<Integer, TablePart> part = it.next();
             part.getValue().disconnect();
             if (part.getValue().getNumberOfRecords() == 0) {
-                parts.remove(part.getKey());
+                it.remove();
             }
         }
     }
