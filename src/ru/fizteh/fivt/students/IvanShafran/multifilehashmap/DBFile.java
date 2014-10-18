@@ -70,6 +70,10 @@ public class DBFile {
         hashMap = readingHashMap;
     }
 
+    public int getNumberOfItems() {
+        return hashMap.size();
+    }
+
     private void writeString(DataOutputStream outputStream, String string) throws Exception {
         try {
             byte[] stringByte = string.getBytes("UTF-8");

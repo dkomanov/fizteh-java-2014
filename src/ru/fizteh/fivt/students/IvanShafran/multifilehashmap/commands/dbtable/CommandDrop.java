@@ -43,7 +43,7 @@ public class CommandDrop extends Command {
         try {
             CommandRM commandRM = new CommandRM();
             commandRM.execute(tableFile.getAbsoluteFile().toString());
-            if (multiFileHashMap.getWorkingDBTable().
+            if (multiFileHashMap.getWorkingDBTable() != null && multiFileHashMap.getWorkingDBTable().
                     getWorkingDirectory().getAbsolutePath().equals(tableFile.getAbsolutePath())) {
                 multiFileHashMap.setWorkingDBTable(null);
             }

@@ -115,6 +115,17 @@ public class DBTable {
         }
     }
 
+    public int getNumberOfItems() {
+        int result = 0;
+        for (HashMap<Integer, DBFile> directory : mapOfDBFiles.values()) {
+            for (DBFile dbFile : directory.values()) {
+                result += dbFile.getNumberOfItems();
+            }
+        }
+
+        return result;
+    }
+
     public DBTable(File file) throws Exception {
         workingDirectory = file;
         try {
