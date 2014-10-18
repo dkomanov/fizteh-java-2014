@@ -32,17 +32,34 @@ public class DbConnector implements AutoCloseable, TableProvider {
 
     @Override
     public Table getTable(String name) {
-        return null;
+        return tables.get(name);
     }
 
     @Override
     public Table createTable(String name) {
-        return null;
+        if (!tables.containsKey(name)) {
+            tables.put(name, new FileMap(dbRoot.resolve(name)));
+            return tables.get(name);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public void removeTable(String name) {
-        return;
+        FileMap table = tables.get(name);
+        if (table != null) {
+            if (activeTable == table) {
+                activeTable = null;
+            }
+            tables.remove(name);
+            try {
+                table.clearFiles();
+                Files.delete(table.dbPath);
+            } catch (ConnectionInterruptException | IOException e) {
+                //
+            }
+        }
     }
 
     public void open() throws ConnectionInterruptException {
