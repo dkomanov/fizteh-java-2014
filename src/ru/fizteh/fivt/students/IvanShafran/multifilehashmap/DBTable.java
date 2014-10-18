@@ -12,6 +12,10 @@ public class DBTable {
     private File workingDirectory;
     private HashMap<Integer, HashMap<Integer, DBFile>> mapOfDBFiles;
 
+    public File getWorkingDirectory() {
+        return workingDirectory;
+    }
+
     public HashMap<Integer, HashMap<Integer, DBFile>> getMapOfDBFiles() {
         return mapOfDBFiles;
     }
