@@ -16,7 +16,7 @@ import java.util.TreeSet;
  */
 public class MFHMap extends HashMap<String, String> {
     Path dbPath;
-    //Set<String> changedFiles = new TreeSet<>();
+    Set<String> changedFiles = new TreeSet<>();
 
     public MFHMap(Path path) {
         dbPath = path.normalize();
@@ -28,6 +28,13 @@ public class MFHMap extends HashMap<String, String> {
                 System.exit(-1);
             }
         }
+    }
+
+    public String whereToSave(String value) {
+        int hashCode = value.hashCode();
+        int d = hashCode % 16;
+        int f = hashCode / 16 % 16;
+        return dbPath.resolve(d + ".dir" + File.separator + f + ".dat").toString();
     }
 
     void readFromFile(DataInputStream iStream) {
@@ -81,15 +88,17 @@ public class MFHMap extends HashMap<String, String> {
         try {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
-                    if (Files.exists(dbPath.resolve(i + ".dir" + File.separator + j + ".dat"))) {
-                        Files.delete(dbPath.resolve(i + ".dir" + File.separator + j + ".dat"));
+                    if (changedFiles.contains(dbPath.resolve(i + ".dir" + File.separator + j + ".dat").toString())) {
+                        if (Files.exists(dbPath.resolve(i + ".dir" + File.separator + j + ".dat"))) {
+                            Files.delete(dbPath.resolve(i + ".dir" + File.separator + j + ".dat"));
+                        }
+                        if (Files.exists(dbPath.resolve(i + ".dir" + File.separator))) {
+                            Files.delete(dbPath.resolve(i + ".dir" + File.separator));
+                        }
                     }
                 }
-                if (Files.exists(dbPath.resolve(i + ".dir" + File.separator))) {
-                    Files.delete(dbPath.resolve(i + ".dir" + File.separator));
-                }
             }
-        } catch (IOException e) {
+        }catch (IOException e) {
             System.err.println("Can't delete from disk: " + e.getMessage());
             System.exit(-1);
         }
@@ -106,7 +115,7 @@ public class MFHMap extends HashMap<String, String> {
                 Files.createDirectory(dbPath);
             }
             for (Map.Entry<String, String> entry : entrySet()) {
-                //if (changedFiles.contains(entry.getValue())) {
+                if (changedFiles.contains(whereToSave(entry.getKey()))) {
                     int hashCode = entry.getKey().hashCode();
                     int d = hashCode % 16;
                     int f = hashCode / 16 % 16;
@@ -120,9 +129,9 @@ public class MFHMap extends HashMap<String, String> {
                         file[d][f] = true;
                     }
                     writeToFile(streams[d][f], entry.getKey(), entry.getValue());
+                    changedFiles.remove(whereToSave(entry.getValue()));
                 }
-            //}
-            //changedFiles.clear();
+            }
 
         } catch (IOException e) {
             System.err.println("Can't write to disk: " + e.getMessage());

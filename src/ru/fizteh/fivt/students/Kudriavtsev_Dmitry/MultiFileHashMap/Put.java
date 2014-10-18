@@ -22,10 +22,10 @@ public class Put extends Command {
         String value = dbConnector.activeTable.put(args[0], args[1]);
         if (value != null) {
             System.out.println("overwrite\n" + value);
-            //dbConnector.activeTable.changedFiles.add(value);
         } else {
             System.out.println("new");
         }
+        dbConnector.activeTable.changedFiles.add(dbConnector.activeTable.whereToSave(args[0]));
         return true;
     }
 }
