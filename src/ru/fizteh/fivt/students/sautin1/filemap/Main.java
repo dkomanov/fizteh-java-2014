@@ -19,6 +19,10 @@ public class Main {
         int exitStatus = 0;
         try {
             StringTable table = new StringTable(FILENAME, true);
+            String filePathString = System.getProperty(FILENAME);
+            if (filePathString == null) {
+                System.setProperty(FILENAME, Paths.get("db.dat").toString());
+            }
             Path filePath = Paths.get(System.getProperty(FILENAME));
             StringTableIOTools tableIOTools = new StringTableIOTools();
             tableIOTools.readTable(filePath, table);
