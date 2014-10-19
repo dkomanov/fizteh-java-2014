@@ -34,13 +34,14 @@ public class MultiFileTable extends AbstractTable {
     }
 
     private void load() throws IOException {
-        DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directoryPath);
-        for (Path file : directoryStream) {
-            if (!Files.isDirectory(file)) {
-                String format = "%s: Table directory contains illegal files";
-                throw new IOException(String.format(format, getName()));
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directoryPath)) {
+            for (Path file : directoryStream) {
+                if (!Files.isDirectory(file)) {
+                    String format = "%s: Table directory contains illegal files";
+                    throw new IOException(String.format(format, getName()));
+                }
+                readDir(file);
             }
-            readDir(file);
         }
     }
 
@@ -86,27 +87,28 @@ public class MultiFileTable extends AbstractTable {
     }
 
     private void readDir(Path directory) throws IOException {
-        DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory);
-        for (Path path : directoryStream) {
-            String fileName = path.toString();
-            try (TableReader reader = new TableReader(fileName)) {
-                String key;
-                String value;
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory)) {
+            for (Path path : directoryStream) {
+                String fileName = path.toString();
+                try (TableReader reader = new TableReader(fileName)) {
+                    String key;
+                    String value;
 
-                while (!reader.eof()) {
-                    key = reader.read();
-                    value = reader.read();
+                    while (!reader.eof()) {
+                        key = reader.read();
+                        value = reader.read();
 
-                    Path subDirectoryPath = getDirectoryPath(key);
-                    Path filePath = getFilePath(key);
+                        Path subDirectoryPath = getDirectoryPath(key);
+                        Path filePath = getFilePath(key);
 
-                    if (directory.compareTo(subDirectoryPath) != 0
-                            || path.compareTo(filePath) != 0) {
-                        String format = "%s: contains wrong key";
-                        String eMassage = String.format(format, fileName);
-                        throw new IOException(eMassage);
+                        if (directory.compareTo(subDirectoryPath) != 0
+                                || path.compareTo(filePath) != 0) {
+                            String format = "%s: contains wrong key";
+                            String eMassage = String.format(format, fileName);
+                            throw new IOException(eMassage);
+                        }
+                        table.put(key, value);
                     }
-                    table.put(key, value);
                 }
             }
         }

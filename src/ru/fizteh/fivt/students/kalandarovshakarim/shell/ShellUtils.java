@@ -91,14 +91,15 @@ public class ShellUtils {
     }
 
     private void rmDir(Path path) throws IOException {
-        DirectoryStream<Path> newDirectoryStream = Files.newDirectoryStream(path);
-        for (Path file : newDirectoryStream) {
-            if (Files.isDirectory(file)) {
-                rmDir(file);
+        try (DirectoryStream<Path> newDirectoryStream = Files.newDirectoryStream(path)) {
+            for (Path file : newDirectoryStream) {
+                if (Files.isDirectory(file)) {
+                    rmDir(file);
+                }
+                Files.delete(file);
             }
-            Files.delete(file);
+            Files.delete(path);
         }
-        Files.delete(path);
     }
 
     public void rm(String fileName, boolean recursive)
