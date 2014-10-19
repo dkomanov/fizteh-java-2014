@@ -13,7 +13,7 @@ public class FileMap {
         try {
             map = new TreeMap<String, String>();
             try {
-                path = System.getProperty("db.file");
+                path = "D:\\ol.txt";
                 try {
                     file = new RandomAccessFile(path, "r");
                     getFile();
@@ -192,9 +192,13 @@ public class FileMap {
             throw new Exception("list: invalid number of arguments");
         }
         Set<String> keySet = map.keySet();
-        Iterator it = keySet.iterator();
-        while (it.hasNext()) {
-            System.out.print(it.next() + ", ");
+        int counter = 0;
+        for (String current : keySet) {
+            ++counter;
+            System.out.print(current);
+            if (counter != keySet.size()) {
+                System.out.print(", ");
+            }
         }
         System.out.println();
     }
