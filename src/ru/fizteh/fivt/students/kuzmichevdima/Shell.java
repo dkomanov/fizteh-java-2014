@@ -4,33 +4,31 @@
 
 package ru.fizteh.fivt.students.kuzmichevdima.shell.src;
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Shell {
     private static final int WRONG_COMMAND_EXIT_CODE = 2;
 
+    private final HashMap<String, CommandInterface> commandsHashMap = new HashMap<String, CommandInterface>() { {
+       put("cd", new ChangeDir());
+       put("mkdir", new MakeDir());
+       put("pwd", new Pwd());
+       put("rm", new Remove());
+       put("cp", new Copy());
+       put("mv", new Move());
+       put("ls", new List());
+       put("exit", new Exit());
+       put("cat", new Cat()); }};
+
+
     private void runCommand(final String[] args, final CurrentDir dir) {
-        if (args[0].equals("cd")) {
-            new ChangeDir(args, dir);
-        } else if (args[0].equals("mkdir")) {
-            new MakeDir(args, dir);
-        } else if (args[0].equals("pwd")) {
-            new Pwd(args, dir);
-        } else if (args[0].equals("rm")) {
-            new Remove(args, dir);
-        } else if (args[0].equals("cp")) {
-            new Copy(args, dir);
-        } else if (args[0].equals("mv")) {
-            new Move(args, dir);
-        } else if (args[0].equals("ls")) {
-            new List(args, dir);
-        } else if (args[0].equals("exit")) {
-            new Exit(args);
-        } else if (args[0].equals("cat")) {
-            new Cat(args, dir);
-        } else {
-            System.err.println("there is no such command:" + args[0]);
+        CommandInterface commandClass = commandsHashMap.get(args[0]);
+        if (commandClass == null) {
+            System.err.println("there is no such command: " + args[0]);
             System.exit(WRONG_COMMAND_EXIT_CODE);
+        } else {
+            commandClass.apply(args, dir);
         }
     }
 

@@ -6,7 +6,7 @@ package ru.fizteh.fivt.students.kuzmichevdima.shell.src;
 
 import java.io.File;
 
-public class CurrentDir {
+public class CurrentDir{
     private String currentDir;
 
     public CurrentDir() {

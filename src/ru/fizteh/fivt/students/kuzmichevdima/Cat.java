@@ -8,11 +8,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class Cat{
+public class Cat implements CommandInterface{
     private static final int INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE = 20;
     private static final int DOESNT_EXIST_EXIT_CODE = 21;
     private static final int CAT_EXCEPTION_EXIT_CODE = 22;
-    public Cat(final String [] args, final CurrentDir dir) {
+    public void apply(final String [] args, final CurrentDir dir) {
         if (args.length != 2) {
             System.err.println("invalid number of arguments for cat");
             System.exit(INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE);
@@ -33,6 +33,6 @@ public class Cat{
             System.err.println("cat exception");
             System.exit(CAT_EXCEPTION_EXIT_CODE);
         }
-
     }
+    public Cat(){}
 }

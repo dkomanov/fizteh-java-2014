@@ -7,12 +7,12 @@ package ru.fizteh.fivt.students.kuzmichevdima.shell.src;
 import java.io.File;
 import java.io.IOException;
 
-public class ChangeDir {
+public class ChangeDir implements CommandInterface{
     private static final int INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE = 3;
     private static final int NO_DIRECTORY_EXIT_CODE = 4;
     private static final int CD_EXCEPTION_EXIT_CODE = 5;
 
-    public ChangeDir(final String[] args, final CurrentDir dir) {
+    public void apply(final String[] args, final CurrentDir dir) {
         if (args.length == 1) {
             dir.changeCurrentDir(dir.getHome());
             return;
@@ -44,4 +44,5 @@ public class ChangeDir {
             System.exit(CD_EXCEPTION_EXIT_CODE);
         }
     }
+    public ChangeDir(){}
 }

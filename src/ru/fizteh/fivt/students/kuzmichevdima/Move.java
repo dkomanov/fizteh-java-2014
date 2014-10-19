@@ -12,11 +12,11 @@ import java.nio.file.Files;
 
 
 
-public class Move {
+public class Move implements CommandInterface{
     private static final int INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE = 14;
     private static final int SRC_DOESNT_EXIST_EXIT_CODE = 15;
     private static final int MOVE_EXCEPTION_EXIT_CODE = 16;
-    public Move(final String [] args, final CurrentDir dir) {
+    public void apply(final String [] args, final CurrentDir dir) {
         if (args.length != 3) {
             System.err.println("invalid number of arguments for mv");
             System.exit(INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE);
@@ -46,4 +46,5 @@ public class Move {
             System.exit(MOVE_EXCEPTION_EXIT_CODE);
         }
     }
+    public Move() {}
 }

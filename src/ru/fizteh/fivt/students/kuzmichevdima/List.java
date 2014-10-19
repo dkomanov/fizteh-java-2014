@@ -6,10 +6,10 @@ package ru.fizteh.fivt.students.kuzmichevdima.shell.src;
 
 import java.io.File;
 
-public class List {
+public class List implements CommandInterface{
     private static final int INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE = 17;
     private static final int LISTFILES_EXCEPTION_EXIT_CODE = 18;
-    public List(final String [] args, final CurrentDir dir) {
+    public void apply(final String [] args, final CurrentDir dir) {
         if (args.length > 1) {
             System.err.println("invalid number of arguments for ls");
             System.exit(INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE);
@@ -28,4 +28,5 @@ public class List {
             }
         }
     }
+    public List() {}
 }

@@ -10,7 +10,7 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-public class Copy {
+public class Copy implements CommandInterface{
     private static final int INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE = 23;
     private static final int NO_SRC_EXIT_CODE = 24;
     private static final int SRC_DEST_EQ_EXIT_CODE = 25;
@@ -46,7 +46,7 @@ public class Copy {
 
     }
 
-    public Copy(final String [] args, final CurrentDir dir) {
+    public void apply(final String [] args, final CurrentDir dir) {
         if (args.length > 4 || args.length < 3) {
             System.err.println("invalid number of arguments for cp");
             System.exit(INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE);
@@ -113,4 +113,5 @@ public class Copy {
             }
         }
     }
+    public Copy() {}
 }

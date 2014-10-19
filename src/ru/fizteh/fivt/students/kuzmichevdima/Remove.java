@@ -6,7 +6,7 @@ package ru.fizteh.fivt.students.kuzmichevdima.shell.src;
 
 import java.io.File;
 
-public class Remove {
+public class Remove implements CommandInterface{
     private static final int INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE = 9;
     private static final int DOESNT_EXIST_EXIT_CODE = 10;
     private static final int CANT_DELETE_EXIT_CODE = 11;
@@ -39,7 +39,7 @@ public class Remove {
         }
     }
 
-    public Remove(final String [] args, final CurrentDir dir) {
+    public void apply(final String [] args, final CurrentDir dir) {
         if (args.length < 2 || args.length > 3) {
             System.err.println("invalid number of arguments for rm");
             System.exit(INVALID_NUMBER_OF_ARGUMENTS_EXIT_CODE);
@@ -73,4 +73,5 @@ public class Remove {
         }
         recursiveDelete(f);
     }
+    public Remove() {}
 }
