@@ -24,6 +24,13 @@ public class FileMap {
             return false;
         }
         curDB = new File(curDBPath);
+        if (!curDB.exists()) {
+            try {
+                curDB.createNewFile();
+            } catch (IOException e) {
+                System.err.println("cann't create file " + curDBPath) ;
+            }
+        }
         fileMapCommands = new HashMap<String, Command>();
         data = new HashMap<String, String>();
         fileMapCommands.put("exit", new ExitCommand());
@@ -54,7 +61,9 @@ public class FileMap {
                         continue;
                     }
                     if (!fileMapCommands.get(curCommand).execute(
-                            argv)) { errorOccurred = true; }
+                            argv)) {
+                        errorOccurred = true;
+                    }
                 }
             }
         } else {
