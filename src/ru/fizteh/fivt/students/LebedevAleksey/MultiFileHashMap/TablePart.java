@@ -48,7 +48,8 @@ public class TablePart extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Ta
                     }
                 }
                 File parent = new File(path.getParent());
-                if (parent.exists() && parent.list().length == 0) {
+                String[] list = parent.list();
+                if (parent.exists() && (list == null || list.length == 0)) {
                     if (!parent.delete()) {
                         throw new LoadOrSaveError("Can't delete folder.");
                     }
