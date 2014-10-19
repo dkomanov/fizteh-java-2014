@@ -12,10 +12,10 @@ public class TableManager {
     private Map<String, Table> tableManagerMap;
     private Table currentTable;
     private final Path databasePath;
-    protected final static int magicNumber = 16;
-    protected final static String folderNamePattern = "([0-9]|1[0-5])\\.dir";
-    protected final static String fileNamePattern = "([0-9]|1[0-5])\\.dat";
-    private final static String illegalTableNamePattern = ".*\\.|\\..*|.*(/|\\\\).*";
+    protected static final int MAGIC_NUMBER = 16;
+    protected static final String FOLDER_NAME_PATTERN = "([0-9]|1[0-5])\\.dir";
+    protected static final String FILE_NAME_PATTERN = "([0-9]|1[0-5])\\.dat";
+    private static final String ILLEGAL_TABLE_NAME_PATTERN = ".*\\.|\\..*|.*(/|\\\\).*";
 
     public TableManager(String path) throws IllegalArgumentException {
         currentTable = null;
@@ -65,7 +65,7 @@ public class TableManager {
         if (name == null) {
             throw new IllegalArgumentException("getTableSize: null argument");
         }
-        if (tableManagerMap.get((name)) == null){
+        if (tableManagerMap.get((name)) == null) {
             throw new IllegalArgumentException("No such Table found");
         }
         return tableManagerMap.get(name).size();
@@ -76,7 +76,7 @@ public class TableManager {
             throw new IllegalArgumentException("createTable: null argument");
         }
         Path newTablePath = databasePath.resolve(name);
-        if (name.matches(illegalTableNamePattern)) {
+        if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
             throw new IllegalArgumentException("Illegal table name");
         }
         if (tableManagerMap.get(name) != null) {
@@ -92,7 +92,7 @@ public class TableManager {
         if (name == null) {
             throw new IllegalArgumentException("Table name is null");
         }
-        if (name.matches(illegalTableNamePattern)) {
+        if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
             throw new IllegalArgumentException("Illegal table name");
         }
         Table removedTable = tableManagerMap.remove(name);
@@ -106,30 +106,30 @@ public class TableManager {
         }
     }
 
-    protected static int getHash (int fileIndex, int folderIndex) throws IllegalArgumentException {
+    protected static int getHash(int fileIndex, int folderIndex) throws IllegalArgumentException {
         // Returns key that will be used in Table.tableMap.
-        return fileIndex + folderIndex * magicNumber;
+        return fileIndex + folderIndex * MAGIC_NUMBER;
     }
-    protected static int getHash (String key) throws IllegalArgumentException {
+    protected static int getHash(String key) throws IllegalArgumentException {
         // Returns key that will be used in Table.tableMap.
-        if (key == null){
+        if (key == null) {
             throw new IllegalArgumentException("Error: key == null");
         }
         int folderIndex;
         int fileIndex;
         try {
-            folderIndex = Math.abs(key.getBytes("UTF-8")[0] % magicNumber);
-            fileIndex = Math.abs((key.getBytes("UTF-8")[0] / magicNumber) % magicNumber);
+            folderIndex = Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER);
+            fileIndex = Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException("Encoding exception if function getHash");
         }
         return getHash(fileIndex, folderIndex);
     }
 
-    protected static int excludeFolderNumber(String folderName){
+    protected static int excludeFolderNumber(String folderName) {
         return Integer.parseInt(folderName.substring(0, folderName.length() - 4));
     }
-    protected static int excludeDataFileNumber(String fileName){
+    protected static int excludeDataFileNumber(String fileName) {
         return Integer.parseInt(fileName.substring(0, fileName.length() - 4));
     }
 

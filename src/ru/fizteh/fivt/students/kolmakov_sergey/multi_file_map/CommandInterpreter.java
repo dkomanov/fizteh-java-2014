@@ -10,8 +10,9 @@ public class CommandInterpreter {
         manager = newManager;
     }
 
-    private static void checkArguments(int from, int value, int to, String commandName) throws  WrongNumberOfArgumentsException {
-        if (from > value || value > to){
+    private static void checkArguments(int from, int value, int to, String commandName)
+            throws  WrongNumberOfArgumentsException {
+        if (from > value || value > to) {
             throw new  WrongNumberOfArgumentsException(commandName + ": Incorrect number of arguments");
         }
     }

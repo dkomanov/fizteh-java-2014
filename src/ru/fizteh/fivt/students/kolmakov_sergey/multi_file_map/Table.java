@@ -19,7 +19,7 @@ public class Table {
         String[] folders = tablePath.toFile().list();
         for (String currentFolderName : folders) {
             Path currentFolderPath = tablePath.resolve(currentFolderName);
-            if (!currentFolderName.matches(TableManager.folderNamePattern)
+            if (!currentFolderName.matches(TableManager.FOLDER_NAME_PATTERN)
                     || !currentFolderPath.toFile().isDirectory()) {
                 throw new IllegalArgumentException("Unexpected files in directory");
             }
@@ -29,7 +29,7 @@ public class Table {
             }
             for (String file : fileList) {
                 Path filePath = currentFolderPath.resolve(file);
-                if (!file.matches(TableManager.fileNamePattern)
+                if (!file.matches(TableManager.FILE_NAME_PATTERN)
                         || !filePath.toFile().isFile()) {
                     throw new IllegalArgumentException("Unexpected files in folder");
                 }
@@ -38,7 +38,7 @@ public class Table {
                 try {
                     DataFile part = new DataFile(tablePath, folderIndex, fileIndex);
                     tableMap.put(TableManager.getHash(fileIndex, folderIndex), part);
-                } catch (IOException e){
+                } catch (IOException e) {
                     throw new IllegalArgumentException(tablePath.resolve(
                             Paths.get(Integer.toString(folderIndex) + ".dir",
                                     Integer.toString(fileIndex) + ".dat")).toString() + " corrupted");
@@ -77,8 +77,8 @@ public class Table {
     protected String put(String key, String value) throws IOException {
         DataFile expectedDataFile = tableMap.get(TableManager.getHash(key));
         if (expectedDataFile == null) {
-            int folderIndex = Math.abs(key.getBytes("UTF-8")[0] % TableManager.magicNumber);
-            int fileIndex = Math.abs((key.getBytes("UTF-8")[0] / TableManager.magicNumber) % TableManager.magicNumber);
+            int folderIndex = Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER);
+            int fileIndex = Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER) % TableManager.MAGIC_NUMBER);
             expectedDataFile = new DataFile(tablePath, folderIndex, fileIndex);
             tableMap.put(TableManager.getHash(key), expectedDataFile);
         }
@@ -121,7 +121,7 @@ public class Table {
                 for (File currentFile : directory.listFiles()) {
                     deleteRecursively(currentFile);
                 }
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 System.out.println("Error while recursive deleting directory.");
             }
             directory.delete();

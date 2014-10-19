@@ -29,14 +29,14 @@ public class DatabaseMain {
 }
 
 class DatabaseExitException extends Exception {
-    public int status;
-    public DatabaseExitException(int s){
+    public final int status;
+    public DatabaseExitException(int s) {
         status = s;
     }
 }
 
 class WrongNumberOfArgumentsException extends IllegalArgumentException {
-    WrongNumberOfArgumentsException(String message){
+    WrongNumberOfArgumentsException(String message) {
         super(message);
     }
 }

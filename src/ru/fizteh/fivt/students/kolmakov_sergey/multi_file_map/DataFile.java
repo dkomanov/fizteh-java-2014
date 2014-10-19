@@ -40,8 +40,8 @@ public class DataFile { // Interacts with .dat file.
                 // First byte check.
                 b = dataBaseFile.readByte();
                 ++counter;
-                if (this.fileIndex != Math.abs((Byte.valueOf(b) / TableManager.magicNumber) % TableManager.magicNumber)
-                        || this.directoryIndex != Math.abs(Byte.valueOf(b) % TableManager.magicNumber)) {
+                if (this.fileIndex != Math.abs((Byte.valueOf(b) / TableManager.MAGIC_NUMBER) % TableManager.MAGIC_NUMBER)
+                        || this.directoryIndex != Math.abs(Byte.valueOf(b) % TableManager.MAGIC_NUMBER)) {
                     throw new IllegalArgumentException("Unexpected key in file " + filePath.toString());
                 }
                 // Get others bytes of key.
@@ -148,7 +148,7 @@ public class DataFile { // Interacts with .dat file.
 
     protected String putValue(String key, String value) throws IOException {
         checkKey(key);
-        if (value == null){
+        if (value == null) {
             throw new IllegalArgumentException("Error: value == null");
         }
         if (!actuality) {
@@ -192,19 +192,19 @@ public class DataFile { // Interacts with .dat file.
         return size;
     }
 
-    private Path makeAbsolutePath (Path tablePath, int dirIndex, int argFileIndex ){
+    private Path makeAbsolutePath(Path tablePath, int folderIndex, int fileIndex) {
         return tablePath.resolve(
-                Paths.get(Integer.toString(dirIndex) + ".dir",
-                        Integer.toString(argFileIndex) + ".dat"));
+                Paths.get(Integer.toString(folderIndex) + ".dir",
+                        Integer.toString(fileIndex) + ".dat"));
     }
 
     private void checkKey(String key) throws UnsupportedEncodingException, IllegalArgumentException {
-        if (key == null){
+        if (key == null) {
             throw new IllegalArgumentException("Error: key == null");
         }
-        if (!(directoryIndex == Math.abs(key.getBytes("UTF-8")[0] % TableManager.magicNumber) &&
-                fileIndex == Math.abs((key.getBytes("UTF-8")[0] / TableManager.magicNumber) %
-                        TableManager.magicNumber))){
+        if (!(directoryIndex == Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER)
+                && fileIndex == Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER)
+                % TableManager.MAGIC_NUMBER))) {
             throw new IllegalArgumentException("Wrong key in file " + filePath.toString());
         }
     }
