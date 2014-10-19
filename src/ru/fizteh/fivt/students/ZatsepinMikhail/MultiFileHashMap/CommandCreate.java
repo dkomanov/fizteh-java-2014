@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
+import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,6 +31,7 @@ public class CommandCreate extends CommandMultiFileHashMap {
         try{
             Files.createDirectory(pathOfNewTable);
             System.out.println("created");
+            myMultiDataBase.addTable(args[1], new FileMap(pathOfNewTable.toString()));
         } catch (IOException e) {
             System.out.println(name + ": error while creating directory");
             return false;

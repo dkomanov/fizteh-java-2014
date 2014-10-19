@@ -35,6 +35,7 @@ public class CommandDrop extends CommandMultiFileHashMap {
         };
         if (myRemover.run(argsArray)) {
             System.out.println("dropped");
+            myDataBase.dropTable(args[1]);
             return true;
         } else {
             System.err.println(name + " : error while removing table's directory");

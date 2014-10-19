@@ -22,8 +22,6 @@ public class Main {
         if (!myMFileHashMap.init()) {
             System.out.println("error while init");
         }
-        System.out.println("numberoftables = " + myMFileHashMap.getNumberOfTables());
-        myMFileHashMap.printTables();
         Shell<MFileHashMap> myShell = new Shell<>(myMFileHashMap);
         myShell.addCommand(new CommandCreate());
         myShell.addCommand(new CommandDrop());
@@ -32,7 +30,6 @@ public class Main {
         myShell.addCommand(new CommandPutDistribute());
         myShell.addCommand(new CommandListDistribute());
         myShell.addCommand(new CommandRemoveDistribute());
-
 
         if (args.length > 0) {
             allRight = myShell.packetMode(args);

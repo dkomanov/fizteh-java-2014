@@ -15,8 +15,8 @@ public class FileMap {
     private HashMap<String, String> dataBase;
     private String directoryOfTable;
 
-    public FileMap(String newDiskFile) {
-        directoryOfTable = newDiskFile;
+    public FileMap(String newDirectoryFile) {
+        directoryOfTable = newDirectoryFile;
         dataBase = new HashMap<>();
     }
 
@@ -48,6 +48,22 @@ public class FileMap {
         return dataBase.size();
     }
 
+    public int getNumberOfDirectory(int hash) {
+        int result = hash % 16;
+        if (result < 0) {
+            result += 16;
+        }
+        return result;
+    }
+
+    public int getNumberOfFile(int hash) {
+        int result = hash / 16 % 16;
+        if (result < 0) {
+            result += 16;
+        }
+        return result;
+    }
+
     public boolean init() {
         String[] listOfDirectories = new File(directoryOfTable).list();
         for (String oneDirectory: listOfDirectories) {
@@ -55,7 +71,9 @@ public class FileMap {
                     + oneDirectory;
             String[] listOfFiles = new File(currentDirectory).list();
             for (String oneFile : listOfFiles) {
-                try (FileInputStream inStream = new FileInputStream(oneFile)) {
+                String currentFile = currentDirectory + System.getProperty("file.separator")
+                        + oneFile;
+                try (FileInputStream inStream = new FileInputStream(currentFile)) {
                     FileChannel inputChannel;
                     inputChannel = inStream.getChannel();
                     ByteBuffer bufferFromDisk;
@@ -134,8 +152,9 @@ public class FileMap {
         for (String key : keySet) {
             Path directoryForLoad;
             Path fileForLoad;
-            int hashCode = key.hashCode();
-            directoryForLoad = Paths.get(directoryOfTable, hashCode % 16 + ".dir");
+            int numberOfDirectory = getNumberOfDirectory(key.hashCode());
+            int numberOfFiles = getNumberOfFile(key.hashCode());
+            directoryForLoad = Paths.get(directoryOfTable, numberOfDirectory + ".dir");
             if (!Files.exists(directoryForLoad)) {
                 try {
                     Files.createDirectory(directoryForLoad);
@@ -144,7 +163,8 @@ public class FileMap {
                     return false;
                 }
             }
-            fileForLoad = Paths.get(directoryForLoad.toString(), hashCode / 16 % 16 + ".dat");
+            fileForLoad = Paths.get(directoryForLoad.toString(), numberOfFiles + ".dat");
+
             if (!Files.exists(fileForLoad)) {
                 try {
                     Files.createFile(fileForLoad);
@@ -153,6 +173,10 @@ public class FileMap {
                     return false;
                 }
             }
+
+            System.out.println(directoryForLoad.toString());
+            System.out.println(fileForLoad.toString());
+
             try (FileOutputStream outputStream
                          = new FileOutputStream(fileForLoad.toString(), appendFile)) {
                 try {

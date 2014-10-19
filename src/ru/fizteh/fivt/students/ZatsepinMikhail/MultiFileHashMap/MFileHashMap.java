@@ -22,6 +22,17 @@ public class MFileHashMap {
         tables = new HashMap<>();
     }
 
+    public void addTable(String tableName, FileMap newFileMap) {
+        tables.put(tableName, newFileMap);
+    }
+
+    public void dropTable(String tableName) {
+        if (tables.get(tableName).equals(currentTable)) {
+            currentTable = null;
+        }
+        tables.remove(tableName);
+    }
+
     public String getDataBaseDirectory() {
         return dataBaseDirectory;
     }
