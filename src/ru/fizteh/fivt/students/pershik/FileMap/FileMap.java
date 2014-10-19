@@ -8,8 +8,8 @@ import java.util.Map;
  * Created by pershik on 9/25/14.
  */
 public class FileMap extends Runner {
-    private Map<String, String> db;
-    private String dbFile;
+    protected Map<String, String> db;
+    protected String dbFile;
 
     public FileMap(String newDbFile) {
         dbFile = newDbFile;
@@ -54,20 +54,17 @@ public class FileMap extends Runner {
         }
     }
 
-    private String readToken(DataInputStream stream) throws IOException {
+    protected String readToken(DataInputStream stream) throws IOException {
         if (stream.available() == 0) {
             return null;
         }
         int size = stream.readInt();
-        StringBuilder buf = new StringBuilder("");
-        for (int i = 0; i < size; i++) {
-            char c = stream.readChar();
-            buf.append(c);
-        }
-        return buf.toString();
+        byte[] buf = new byte[size];
+        stream.readFully(buf);
+        return new String(buf, "UTF-8");
     }
 
-    private void readDb() {
+    protected void readDb() {
         try {
             try (DataInputStream stream = new DataInputStream(
                     new FileInputStream(dbFile))) {
@@ -86,13 +83,14 @@ public class FileMap extends Runner {
         }
     }
 
-    private void writeToken(DataOutputStream stream, String str)
+    protected void writeToken(DataOutputStream stream, String str)
             throws IOException {
-        stream.writeInt(str.length());
-        stream.writeChars(str);
+        byte[] strBytes = str.getBytes("UTF-8");
+        stream.writeInt(strBytes.length);
+        stream.write(strBytes);
     }
 
-    private void writeDb() {
+    protected void writeDb() {
         try {
             try (DataOutputStream stream = new DataOutputStream(
                     new FileOutputStream(dbFile))) {
@@ -107,7 +105,7 @@ public class FileMap extends Runner {
         }
     }
 
-    public void put(String[] args) throws InvalidCommandException {
+    protected void put(String[] args) throws InvalidCommandException {
         if (!checkArguments(2, 2, args.length - 1)) {
             errorCntArguments("put");
         }
@@ -122,7 +120,7 @@ public class FileMap extends Runner {
         db.put(key, value);
     }
 
-    public void get(String[] args) throws InvalidCommandException {
+    protected void get(String[] args) throws InvalidCommandException {
         if (!checkArguments(1, 1, args.length - 1)) {
             errorCntArguments("get");
         }
@@ -135,7 +133,7 @@ public class FileMap extends Runner {
         }
     }
 
-    public void remove(String[] args) throws InvalidCommandException {
+    protected void remove(String[] args) throws InvalidCommandException {
         if (!checkArguments(1, 1, args.length - 1)) {
             errorCntArguments("remove");
         }
@@ -148,7 +146,7 @@ public class FileMap extends Runner {
         }
     }
 
-    public void list(String[] args) throws InvalidCommandException {
+    protected void list(String[] args) throws InvalidCommandException {
         if (!checkArguments(0, 0, args.length - 1)) {
             errorCntArguments("list");
         }
@@ -160,7 +158,7 @@ public class FileMap extends Runner {
         }
     }
 
-    private void exit(String[] args) throws InvalidCommandException {
+    protected void exit(String[] args) throws InvalidCommandException {
         if (!checkArguments(0, 0, args.length - 1)) {
             errorCntArguments("exit");
         }
