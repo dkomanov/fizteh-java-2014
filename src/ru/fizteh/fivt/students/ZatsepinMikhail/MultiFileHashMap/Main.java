@@ -28,6 +28,11 @@ public class Main {
         myShell.addCommand(new CommandCreate());
         myShell.addCommand(new CommandDrop());
         myShell.addCommand(new CommandUse());
+        myShell.addCommand(new CommandGetDistribute());
+        myShell.addCommand(new CommandPutDistribute());
+        myShell.addCommand(new CommandListDistribute());
+        myShell.addCommand(new CommandRemoveDistribute());
+
 
         if (args.length > 0) {
             allRight = myShell.packetMode(args);

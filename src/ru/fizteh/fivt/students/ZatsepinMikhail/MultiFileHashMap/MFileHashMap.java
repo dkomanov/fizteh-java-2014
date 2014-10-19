@@ -33,7 +33,7 @@ public class MFileHashMap {
     public void printTables() {
         Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneTable: pairSet) {
-            System.out.println(oneTable.getValue().getDiskFile());
+            System.out.println(oneTable.getValue().getDirectoryOfTable());
         }
     }
 
@@ -41,7 +41,9 @@ public class MFileHashMap {
         currentTable = newCurrentTable;
     }
 
-
+    public FileMap getCurrentTable() {
+        return currentTable;
+    }
 
     public boolean init() {
         String[] listOfFiles = new File(dataBaseDirectory).list();

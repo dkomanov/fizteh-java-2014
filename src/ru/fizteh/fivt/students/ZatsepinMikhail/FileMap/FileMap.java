@@ -4,25 +4,28 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public class FileMap {
     private HashMap<String, String> dataBase;
-    private String diskFile;
+    private String directoryOfTable;
 
     public FileMap(String newDiskFile) {
-        diskFile = newDiskFile;
+        directoryOfTable = newDiskFile;
         dataBase = new HashMap<>();
     }
 
-    public void setDiskFile(String newDiskFile) {
-        diskFile = newDiskFile;
+    public void setDirectoryOfTable(String newDiskFile) {
+        directoryOfTable = newDiskFile;
     }
 
-    public String getDiskFile() {
-        return diskFile;
+    public String getDirectoryOfTable() {
+        return directoryOfTable;
     }
 
     public String get(String key) {
@@ -41,10 +44,14 @@ public class FileMap {
         return dataBase.keySet();
     }
 
+    public int getNumberOfPairs() {
+        return dataBase.size();
+    }
+
     public boolean init() {
-        String[] listOfDirectoriess = new File(diskFile).list();
-        for (String oneDirectory: listOfDirectoriess) {
-            String currentDirectory = diskFile + System.getProperty("file.separator")
+        String[] listOfDirectories = new File(directoryOfTable).list();
+        for (String oneDirectory: listOfDirectories) {
+            String currentDirectory = directoryOfTable + System.getProperty("file.separator")
                     + oneDirectory;
             String[] listOfFiles = new File(currentDirectory).list();
             for (String oneFile : listOfFiles) {
@@ -119,34 +126,56 @@ public class FileMap {
         boolean appendFile = false;
         if (addKey != null) {
             appendFile = true;
+            keySet.clear();
             keySet.add(addKey);
         }
-        try (FileOutputStream outputStream = new FileOutputStream(diskFile, appendFile)) {
-            ByteBuffer bufferForSize = ByteBuffer.allocate(4);
-            for (String key : keySet) {
-                if (!appendFile | key.equals(addKey)) {
-                    try {
-                        byte[] keyByte = key.getBytes("UTF-8");
-                        byte[] valueByte = dataBase.get(key).getBytes("UTF-8");
-                        outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
-                        outputStream.write(keyByte);
-                        outputStream.write(bufferForSize.putInt(0, valueByte.length).array());
-                        outputStream.write(valueByte);
-                    } catch (UnsupportedEncodingException e) {
-                        System.out.println("unsupported encoding");
-                        return false;
-                    } catch (IOException e) {
-                        System.out.println("io exception");
-                        return false;
-                    }
+
+        ByteBuffer bufferForSize = ByteBuffer.allocate(4);
+        for (String key : keySet) {
+            Path directoryForLoad;
+            Path fileForLoad;
+            int hashCode = key.hashCode();
+            directoryForLoad = Paths.get(directoryOfTable, hashCode % 16 + ".dir");
+            if (!Files.exists(directoryForLoad)) {
+                try {
+                    Files.createDirectory(directoryForLoad);
+                } catch (IOException e) {
+                    System.out.println("error whilecreating directory for load");
+                    return false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("file not found");
-            return false;
-        } catch (IOException e) {
-            System.out.println("io exception");
-            return false;
+            fileForLoad = Paths.get(directoryForLoad.toString(), hashCode / 16 % 16 + ".dat");
+            if (!Files.exists(fileForLoad)) {
+                try {
+                    Files.createFile(fileForLoad);
+                } catch(IOException e) {
+                    System.out.println("error while creating file for load");
+                    return false;
+                }
+            }
+            try (FileOutputStream outputStream
+                         = new FileOutputStream(fileForLoad.toString(), appendFile)) {
+                try {
+                    byte[] keyByte = key.getBytes("UTF-8");
+                    byte[] valueByte = dataBase.get(key).getBytes("UTF-8");
+                    outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
+                    outputStream.write(keyByte);
+                    outputStream.write(bufferForSize.putInt(0, valueByte.length).array());
+                    outputStream.write(valueByte);
+                } catch (UnsupportedEncodingException e) {
+                    System.out.println("unsupported encoding");
+                    return false;
+                } catch (IOException e) {
+                    System.out.println("io exception");
+                    return false;
+                }
+            } catch (FileNotFoundException e) {
+                System.out.println("file not found");
+                return false;
+            } catch (IOException e) {
+                System.out.println("io exception");
+                return false;
+            }
         }
         return true;
     }
