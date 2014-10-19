@@ -159,16 +159,16 @@ public class FileMap {
                 try {
                     Files.createDirectory(directoryForLoad);
                 } catch (IOException e) {
-                    System.out.println("error whilecreating directory for load");
+                    System.out.println("error while creating directory for load");
                     return false;
                 }
             }
-            fileForLoad = Paths.get(directoryForLoad.toString(), numberOfFiles + ".dat");
 
+            fileForLoad = Paths.get(directoryForLoad.toString(), numberOfFiles + ".dat");
             if (!Files.exists(fileForLoad)) {
                 try {
                     Files.createFile(fileForLoad);
-                } catch(IOException e) {
+                } catch (IOException e) {
                     System.out.println("error while creating file for load");
                     return false;
                 }
