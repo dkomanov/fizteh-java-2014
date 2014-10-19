@@ -129,12 +129,16 @@ public/* abstract */class FileMap {
      * как нужнои выполняющую программки
      */
     private static void readFile(String fileName) throws IOException {
+
         DataInputStream input = null;
         try {
             input = new DataInputStream(new FileInputStream(fileName));
         } catch (FileNotFoundException e1) {
-            printError(fileName + " file not found");
-            System.exit(1);
+            File f = new File(fileName);
+            f.createNewFile();
+            System.out.println(fileName + "not found but created");
+            readFile(fileName);
+           return;
         }
         int lenght;
         StringBuilder key = new StringBuilder();
