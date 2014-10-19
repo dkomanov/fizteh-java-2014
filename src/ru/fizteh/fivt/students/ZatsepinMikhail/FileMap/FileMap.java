@@ -20,14 +20,6 @@ public class FileMap {
         dataBase = new HashMap<>();
     }
 
-    public void setDirectoryOfTable(String newDiskFile) {
-        directoryOfTable = newDiskFile;
-    }
-
-    public String getDirectoryOfTable() {
-        return directoryOfTable;
-    }
-
     public String get(String key) {
         return dataBase.get(key);
     }
@@ -72,11 +64,15 @@ public class FileMap {
         for (String oneDirectory: listOfDirectories) {
             String currentDirectory = directoryOfTable + System.getProperty("file.separator")
                     + oneDirectory;
+            if (!Files.isDirectory(Paths.get(currentDirectory))) {
+                continue;
+            }
             String[] listOfFiles = new File(currentDirectory).list();
             for (String oneFile : listOfFiles) {
                 String currentFile = currentDirectory + System.getProperty("file.separator")
                         + oneFile;
-
+                int numberOfDirectory = oneDirectory.charAt(0) - '0';
+                int numberOfFile = oneFile.charAt(0) - '0';
                 try (FileInputStream inStream = new FileInputStream(currentFile)) {
                     FileChannel inputChannel;
                     inputChannel = inStream.getChannel();
@@ -118,6 +114,13 @@ public class FileMap {
                             } else {
                                 throw new BadFileException();
                             }
+
+                            String keyString = new String(key, "UTF-8");
+                            if (getNumberOfDirectory(keyString.hashCode()) != numberOfDirectory
+                                    || getNumberOfFile(keyString.hashCode()) != numberOfFile) {
+                                throw new BadFileException();
+                            }
+
                             try {
                                 dataBase.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
                             } catch (UnsupportedEncodingException e) {
@@ -143,11 +146,13 @@ public class FileMap {
         return true;
     }
 
-    public boolean load(String key, boolean action) {
+    public boolean load(String key, boolean appendFile) {
         HashSet<String> keySet = new HashSet<>(dataBase.keySet());
-        boolean appendFile = false;
-
         ByteBuffer bufferForSize = ByteBuffer.allocate(4);
+        if (appendFile) {
+            keySet.clear();
+            keySet.add(key);
+        }
 
         Path directoryForLoad;
         Path fileForLoad;
@@ -173,11 +178,8 @@ public class FileMap {
             }
         }
 
-        System.out.println(directoryForLoad.toString());
-        System.out.println(fileForLoad.toString());
-
         try (FileOutputStream outputStream
-                         = new FileOutputStream(fileForLoad.toString(), appendFile)) {
+                     = new FileOutputStream(fileForLoad.toString(), appendFile)) {
             for (String oneKey : keySet) {
                 int keyNumberOfDirectory = getNumberOfDirectory(oneKey.hashCode());
                 int keyNnumberOfFiles = getNumberOfFile(oneKey.hashCode());
@@ -199,12 +201,39 @@ public class FileMap {
                     }
                 }
             }
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             System.out.println("file not found");
             return false;
         } catch (IOException e) {
             System.out.println("io exception");
             return false;
+        }
+
+        if (!appendFile) {
+            deleteEmptyFiles(directoryForLoad, fileForLoad);
+        }
+        return true;
+    }
+
+
+
+    public boolean deleteEmptyFiles(Path directory, Path file) {
+        try {
+            if (Files.size(file) == 0) {
+                Files.delete(file);
+            }
+        } catch (IOException e) {
+            System.err.println("error while deleting data base file");
+            return false;
+        }
+        String[] listOfFiles = new File(directory.toString()).list();
+        if (listOfFiles.length == 0) {
+            try {
+                Files.delete(directory);
+            } catch (IOException e) {
+                System.err.println("error while deleting directory");
+                return false;
+            }
         }
         return true;
     }

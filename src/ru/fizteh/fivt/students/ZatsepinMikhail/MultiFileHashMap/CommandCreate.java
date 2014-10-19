@@ -25,7 +25,7 @@ public class CommandCreate extends CommandMultiFileHashMap {
             System.out.println(args[1] + " exists");
             return true;
         }
-        try{
+        try {
             Files.createDirectory(pathOfNewTable);
             System.out.println("created");
             myMultiDataBase.addTable(args[1], new FileMap(pathOfNewTable.toString()));

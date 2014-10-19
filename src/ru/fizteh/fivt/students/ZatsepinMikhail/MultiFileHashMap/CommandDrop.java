@@ -19,15 +19,15 @@ public class CommandDrop extends CommandMultiFileHashMap {
             return false;
         }
         CommandRm myRemover = new CommandRm();
-        Path PathForRemoveTable = Paths.get(myDataBase.getDataBaseDirectory(), args[1]);
-        if (!Files.exists(PathForRemoveTable)) {
+        Path pathForRemoveTable = Paths.get(myDataBase.getDataBaseDirectory(), args[1]);
+        if (!Files.exists(pathForRemoveTable)) {
             System.out.println(args[1] + " not exists");
             return true;
         }
         String[] argsArray = {
                 "rm",
                 "-r",
-                PathForRemoveTable.toString()
+                pathForRemoveTable.toString()
         };
         if (myRemover.run(argsArray)) {
             System.out.println("dropped");
