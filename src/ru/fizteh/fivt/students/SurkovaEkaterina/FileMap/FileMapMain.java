@@ -21,7 +21,7 @@ public class FileMapMain {
         shell.setShellCommands(commands);
 
         FileMapShellOperations shellState = new FileMapShellOperations();
-        String databaseDirectory = System.getProperty("db.dat");
+        String databaseDirectory = System.getProperty("db.file");
         shellState.table = new FileTable(databaseDirectory, "master");
         shell.setShellOperations(shellState);
         shell.beginExecuting();
