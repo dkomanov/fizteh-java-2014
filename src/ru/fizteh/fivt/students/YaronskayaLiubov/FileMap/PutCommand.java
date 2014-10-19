@@ -18,7 +18,9 @@ public class PutCommand extends Command {
         if (old != null) {
             System.out.println("overwrite");
             System.out.println(old);
-        } else { System.out.println("new"); }
+        } else {
+            System.out.println("new");
+        }
         return true;
     }
 }
