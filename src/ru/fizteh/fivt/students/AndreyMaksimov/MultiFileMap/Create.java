@@ -17,7 +17,7 @@ public class Create extends Command {
         } else {
             File newTable = new File(base.parentDirectory, tableName);
             if (!newTable.mkdir()) {
-                throw new Exception("ERROR: Unable to create directory for new table");
+                throw new Exception("Unable to create directory for new table");
             }
             base.tables.put(tableName, new Table(newTable));
             System.out.println("created");

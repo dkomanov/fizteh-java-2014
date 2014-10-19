@@ -25,7 +25,7 @@ public class RemoveMulti extends Command {
 
             Remove remove = new Remove();
             if (base.getUsing().databases[dir][file] == null) {
-                System.out.println("ERROR: Not found");
+                System.out.println("Not found");
             } else {
                 DataBase database = base.getUsing().databases[dir][file];
 
@@ -39,7 +39,7 @@ public class RemoveMulti extends Command {
                     try {
                         Files.delete(dbFile.toPath());
                     } catch (IOException e) {
-                        throw new Exception("ERROR: Problems while deleting the file");
+                        throw new Exception("Problems while deleting the file");
                     }
                     base.getUsing().databases[dir][file] = null;
                     int check = 0;
@@ -52,7 +52,7 @@ public class RemoveMulti extends Command {
                         try {
                             Files.delete(dbFile.getParentFile().toPath());
                         } catch (IOException e) {
-                            throw new Exception("ERROR: Problems while deleting database subdirectory");
+                            throw new Exception("Problems while deleting database subdirectory");
                         }
                     }
                 }

@@ -5,13 +5,13 @@ public abstract class Command {
 
     private static void checkArgumentsNumber(int real, int now) throws Exception {
         if (real != now) {
-            throw new Exception("ERROR: Wrong number of arguments: " + String.valueOf(real) + " expected");
+            throw new IllegalArgumentException("Wrong number of arguments: " + String.valueOf(real) + " expected");
         }
     }
 
     public static Command fromString(String s) throws Exception {
         if (s.length() < 1) {
-            throw new Exception("ERROR: Unfortunately not some commands");
+            throw new IllegalArgumentException("Not enough command");
         }
         String[] needArguments = s.replaceFirst(" *", "").split("\\s+");
         switch (needArguments[0]) {
@@ -25,7 +25,7 @@ public abstract class Command {
             case "show":
                 checkArgumentsNumber(0, needArguments.length - 2);
                 if (!needArguments[1].equals("tables")) {
-                    throw new Exception(s + " ERROR: Unknown command");
+                    throw new Exception(s + " Unknown command");
                 }
                 return new ShowTables();
             case "create":
@@ -48,7 +48,7 @@ public abstract class Command {
                 checkArgumentsNumber(1, needArguments.length - 1);
                 return new RemoveMulti(needArguments[1]);
             default:
-                throw new Exception(needArguments[0] + " ERROR: Unknown command");
+                throw new Exception(needArguments[0] + " Unknown command");
         }
     }
 

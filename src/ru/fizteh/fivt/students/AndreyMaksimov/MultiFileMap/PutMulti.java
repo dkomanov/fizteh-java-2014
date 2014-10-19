@@ -17,7 +17,7 @@ public class PutMulti extends Command {
     @Override
     public void startNeedMultiInstruction(DataBaseDir base) throws Exception {
         if (base.getUsing() == null) {
-            System.out.println("ERROR: No such table");
+            System.out.println("No such table");
         } else {
             int hashCode = Math.abs(key.hashCode());
             int dir = hashCode % 16;
@@ -34,13 +34,13 @@ public class PutMulti extends Command {
                 File subdirectory = new File(base.getUsing().mainDirectory, String.valueOf(dir) + ".dir");
                 if (!subdirectory.exists()) {
                     if (!subdirectory.mkdir()) {
-                        throw new Exception("ERROR: Problems with the creation of a directory");
+                        throw new Exception("Problems with the creation of a directory");
                     }
                 }
                 File dbFile = new File(subdirectory, String.valueOf(file) + ".dat");
                 if (!dbFile.exists()) {
                     if (!dbFile.createNewFile()) {
-                        throw new Exception("ERROR: Problems with the creation of a directory");
+                        throw new Exception("Problems with the creation of a directory");
                     }
                 }
                 base.getUsing().databases[dir][file] = new DataBase(dbFile.toString());

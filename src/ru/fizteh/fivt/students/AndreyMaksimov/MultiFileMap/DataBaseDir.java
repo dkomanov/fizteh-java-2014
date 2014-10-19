@@ -10,15 +10,15 @@ public class DataBaseDir {
     String using;
     File parentDirectory;
 
-    public DataBaseDir(String needPath) throws Exception {
-        parentDirectory = new File(needPath);
+    public DataBaseDir(String needBasePath) throws Exception {
+        parentDirectory = new File(needBasePath);
         using = null;
         tables = new HashMap<>();
         if (!Files.exists(parentDirectory.toPath())) {
-            throw new Exception("ERROR: Databases directory does not exists");
+            throw new Exception("Databases directory does not exists");
         }
         if (!parentDirectory.isDirectory()) {
-            throw new Exception("ERROR: Unfortunately fizteh.db.dir is not a directory");
+            throw new Exception("Unfortunately fizteh.db.dir is not a directory");
         }
         for (String childName : parentDirectory.list()) {
             File childDirectory = new File(parentDirectory, childName);

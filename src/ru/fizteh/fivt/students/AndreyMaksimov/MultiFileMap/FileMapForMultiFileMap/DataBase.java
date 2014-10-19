@@ -7,8 +7,8 @@ public class DataBase {
     public String dataBaseName;
     HashMap<String, String> needdatabase;
 
-    public DataBase(String needpath) throws Exception {
-        dataBaseName = needpath;
+    public DataBase(String needPath) throws Exception {
+        dataBaseName = needPath;
         needdatabase = new HashMap<String, String>();
         DataBaseReader reader = new DataBaseReader(dataBaseName);
         reader.read(needdatabase);

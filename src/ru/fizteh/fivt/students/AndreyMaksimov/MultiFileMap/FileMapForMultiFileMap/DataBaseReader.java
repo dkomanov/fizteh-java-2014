@@ -14,8 +14,7 @@ public class DataBaseReader {
         try {
             stream = new DataInputStream(new FileInputStream(path));
         } catch (FileNotFoundException e) {
-            System.err.print(e.getMessage());
-            System.exit(1);
+            throw new Exception("Unfortunately database file not found");
         }
     }
 
@@ -23,10 +22,10 @@ public class DataBaseReader {
         boolean end = false;
         while (!end) {
             try {
-                String key = readtext();
-                String value = readtext();
+                String key = readText();
+                String value = readText();
                 if (needdatabase.containsKey(key)) {
-                    throw new Exception("ERROR: Two same keys");
+                    throw new Exception("Unfortunately two same keys in need database file");
                 }
                 needdatabase.put(key, value);
             } catch (IOException e) {
@@ -35,7 +34,7 @@ public class DataBaseReader {
         }
     }
 
-    private String readtext() throws IOException {
+    private String readText() throws IOException {
         int length = stream.readInt();
         byte[] wordArray = new byte[length];
         stream.readFully(wordArray);
@@ -46,7 +45,7 @@ public class DataBaseReader {
         try {
             stream.close();
         } catch (IOException e) {
-            throw new Exception("ERROR: Error in close");
+            throw new Exception("Error in close");
         }
     }
 }

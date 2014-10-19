@@ -8,7 +8,7 @@ public class Remove extends Instruction {
     @Override
     public boolean startNeedInstruction(String[] arguments, DataBase needBase) throws Exception {
         if (arguments.length != 2) {
-            System.out.println("ERROR: Missing operand");
+            System.out.println("Missing operand");
             System.exit(1);
         }
 

@@ -9,7 +9,7 @@ public class Put extends Instruction {
     @Override
     public boolean startNeedInstruction(String[] arguments, DataBase needBase) throws Exception {
         if (arguments.length != 3) {
-            System.out.println("ERROR: Missing operand");
+            System.out.println("Missing operand");
             System.exit(1);
         }
         String value = needBase.needdatabase.get(arguments[1]);

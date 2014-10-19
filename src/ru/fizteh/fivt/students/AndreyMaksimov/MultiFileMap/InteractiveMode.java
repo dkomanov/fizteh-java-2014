@@ -14,7 +14,7 @@ public class InteractiveMode implements CommandMode {
     }
 
     @Override
-    public String mainAimOfWork() {
+    public String runInterpreterCycle() {
         if (useCommands.isEmpty()) {
             System.out.print("$ ");
             System.out.flush();

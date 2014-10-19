@@ -1,15 +1,14 @@
 package ru.fizteh.fivt.students.MaksimovAndrey.MultiFileMap;
 
 import java.util.Arrays;
-import java.util.AbstractQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayDeque;
 
 
 public class BatchMode implements CommandMode {
-    AbstractQueue<String> commands;
+    ArrayDeque<String> commands;
 
     BatchMode(String[] arguments) {
-        commands = new ConcurrentLinkedQueue<>();
+        commands = new ArrayDeque<>();
         StringBuilder allCommands = new StringBuilder();
         for (String s : arguments) {
             allCommands.append(s);
@@ -19,7 +18,7 @@ public class BatchMode implements CommandMode {
     }
 
     @Override
-    public String mainAimOfWork() {
+    public String runInterpreterCycle() {
         if (commands.isEmpty()) {
             return "exit";
         } else {

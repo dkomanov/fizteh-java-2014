@@ -3,13 +3,13 @@ package ru.fizteh.fivt.students.MaksimovAndrey.MultiFileMap;
 
 public class MultiFileHashMapMain {
     public static void main(String[] arguments) {
-        String needPath = System.getProperty("fizteh.db.dir");
-        if (needPath == null) {
-            System.err.println("ERROR: Unfortunately no such path");
+        String needBasePath = System.getProperty("fizteh.db.dir");
+        if (needBasePath == null) {
+            System.err.println("Unfortunately no such path");
             System.exit(1);
         }
         try {
-            DataBaseDir needDirectory = new DataBaseDir(needPath);
+            DataBaseDir needDirectory = new DataBaseDir(needBasePath);
             boolean interactivemode = true;
             CommandMode mode;
             if (arguments.length == 0) {
@@ -21,7 +21,7 @@ public class MultiFileHashMapMain {
             boolean exitStatus = false;
             do {
                 try {
-                    String s = mode.mainAimOfWork();
+                    String s = mode.runInterpreterCycle();
                     Command command = Command.fromString(s);
                     command.startNeedMultiInstruction(needDirectory);
                 } catch (ExitException e) {

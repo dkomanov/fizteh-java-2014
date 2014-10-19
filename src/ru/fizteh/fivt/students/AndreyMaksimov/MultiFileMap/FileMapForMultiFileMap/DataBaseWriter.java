@@ -26,7 +26,7 @@ public class DataBaseWriter {
                 writetext(entry.getKey());
                 writetext(entry.getValue());
             } catch (Exception e) {
-                throw new Exception("ERROR: Error with writing");
+                throw new Exception("Error with writing");
             }
         }
     }
@@ -42,7 +42,7 @@ public class DataBaseWriter {
         try {
             stream.close();
         } catch (IOException e) {
-            throw new Exception("ERROR: Error with close database");
+            throw new Exception("Error with close database");
         }
     }
 }

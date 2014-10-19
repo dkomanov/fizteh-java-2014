@@ -37,7 +37,7 @@ public class Table {
                         try {
                             Files.delete(dbFile.toPath());
                         } catch (IOException e) {
-                            throw new Exception("ERROR: Problems while deleting the file");
+                            throw new Exception("Problems while deleting the file");
                         }
                     }
                 }
@@ -46,14 +46,14 @@ public class Table {
                 try {
                     Files.delete(subdirectory.toPath());
                 } catch (IOException e) {
-                    throw new Exception("ERROR: Problems while deleting the database subdirectory");
+                    throw new Exception("Problems while deleting the database subdirectory");
                 }
             }
         }
         try {
             Files.delete(mainDirectory.toPath());
         } catch (IOException e) {
-            throw new Exception("ERROR: Problems while deleting the mainDirectory");
+            throw new Exception("Problems while deleting the mainDirectory");
         }
     }
 

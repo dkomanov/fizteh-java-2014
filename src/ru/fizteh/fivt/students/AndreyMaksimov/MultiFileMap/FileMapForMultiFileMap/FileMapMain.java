@@ -28,7 +28,7 @@ public class FileMapMain {
 
         String needPath = System.getProperty("db.file");
         if (needPath == null) {
-            System.err.println("ERROR: No such path");
+            System.err.println("No such path");
             System.exit(1);
         }
         try {
@@ -71,7 +71,7 @@ public class FileMapMain {
                 try {
                     Instruction fileMapInstruction = instructions.get(needArguments[0]);
                     if (fileMapInstruction == null) {
-                        System.out.println(needArguments[0] + "ERROR: No such command");
+                        System.out.println(needArguments[0] + "No such command");
                         checkfilemap = false;
                     } else {
                         fileMapInstruction.startNeedInstruction(needArguments, needBase);
@@ -105,7 +105,7 @@ public class FileMapMain {
 
             Instruction shellInstruction = instructions.get(needArguments[0]);
             if (shellInstruction == null) {
-                System.out.println(needArguments[0] + "ERROR: No such command");
+                System.out.println(needArguments[0] + "No such command");
                 checkfilemap = false;
             } else {
                 shellInstruction.startNeedInstruction(needArguments, needbase);
