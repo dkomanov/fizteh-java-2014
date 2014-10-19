@@ -1,13 +1,11 @@
 package ru.fizteh.fivt.students.olga_chupakhina.filemap;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.io.*;
 
 public class FileMap {
     private static boolean mode;
-    private static Path path;
+    private static String path;
     private static TreeMap<String, String> map;
     private static RandomAccessFile file;
 
@@ -15,12 +13,12 @@ public class FileMap {
         try {
             map = new TreeMap<String, String>();
             try {
-                path = Paths.get(System.getProperty("db.file"));
+                path = System.getProperty("db.file");
                 try {
-                    file = new RandomAccessFile(path.toString(), "r");
+                    file = new RandomAccessFile(path, "r");
                     getFile();
                 } catch (FileNotFoundException e) {
-                    File f = new File(path.toString());
+                    File f = new File(path);
                     f.createNewFile();
                 }
             } catch (Exception e) {
@@ -65,24 +63,23 @@ public class FileMap {
     public static void putFile() throws Exception {
         String key;
         String value;
-        file.setLength(0);
+        DataOutputStream outStream = new DataOutputStream(
+                new FileOutputStream(path));
         for (Map.Entry<String, String> i : map.entrySet()) {
             key = i.getKey();
             value = i.getValue();
-            try {
-                byte[] byteWord = key.getBytes("UTF-8");
-                file.writeInt(byteWord.length);
-                file.write(byteWord);
-                byteWord = value.getBytes("UTF-8");
-                file.writeInt(byteWord.length);
-                file.write(byteWord);
-            } catch (Exception e) {
-                throw new Exception("Error with writing");
-            }
+            byte[] byteWord = key.getBytes("UTF-8");
+            outStream.writeInt(byteWord.length);
+            outStream.write(byteWord);
+            outStream.flush();
+            byteWord = value.getBytes("UTF-8");
+            outStream.writeInt(byteWord.length);
+            outStream.write(byteWord);
+            outStream.flush();
         }
     }
 
-    private static void packageMode(String[] args) {
+        private static void packageMode(String[] args) {
         StringBuilder commands = new StringBuilder();
         for (String arg: args) {
             commands.append(arg);
