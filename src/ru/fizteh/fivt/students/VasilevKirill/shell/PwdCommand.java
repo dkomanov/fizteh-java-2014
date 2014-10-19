@@ -7,7 +7,12 @@ import java.io.IOException;
  */
 public class PwdCommand implements Command {
     @Override
-    public int execute(String[] args) throws IOException {
+    public boolean checkArgs(String[] args) {
+        return false;
+    }
+
+    @Override
+    public int execute(String[] args, Status status) throws IOException {
         if (args.length != 1) {
             return 1;
         }

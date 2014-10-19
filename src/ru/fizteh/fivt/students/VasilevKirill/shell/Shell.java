@@ -9,31 +9,39 @@ import java.util.Map;
  */
 public class Shell {
     static String currentPath;
-    private static Map<String, Command> commandMap = new HashMap<>();
+    private Map<String, Command> commandMap = new HashMap<>();
+    private Status status;
 
     static {
         currentPath = new File("").getAbsolutePath();
-        commandMap.put(new CdCommand().toString(), new CdCommand());
-        commandMap.put(new MkdirCommand().toString(), new MkdirCommand());
-        commandMap.put(new PwdCommand().toString(), new PwdCommand());
-        commandMap.put(new RmCommand().toString(), new RmCommand());
-        commandMap.put(new CpCommand().toString(), new CpCommand());
-        commandMap.put(new MvCommand().toString(), new MvCommand());
-        commandMap.put(new LsCommand().toString(), new LsCommand());
-        commandMap.put(new CatCommand().toString(), new CatCommand());
     }
 
     public static void main(String[] args) {
-        int status = 0;
+        Status newStatus = null;
+        int returnValue = 0;
+        Map<String, Command> commands = new HashMap<>();
+        commands.put(new CdCommand().toString(), new CdCommand());
+        commands.put(new MkdirCommand().toString(), new MkdirCommand());
+        commands.put(new PwdCommand().toString(), new PwdCommand());
+        commands.put(new RmCommand().toString(), new RmCommand());
+        commands.put(new CpCommand().toString(), new CpCommand());
+        commands.put(new MvCommand().toString(), new MvCommand());
+        commands.put(new LsCommand().toString(), new LsCommand());
+        commands.put(new CatCommand().toString(), new CatCommand());
         if (args.length == 0) {
-            new Shell().handle(System.in);
+            new Shell(commands, newStatus).handle(System.in);
         } else {
-            status = new Shell().handle(args);
+            returnValue = new Shell(commands, newStatus).handle(args);
         }
-        System.exit(status);
+        System.exit(returnValue);
     }
 
-    private void handle(InputStream stream) {
+    public Shell(Map<String, Command> commandMap, Status status) {
+        this.commandMap = commandMap;
+        this.status = status;
+    }
+
+    public void handle(InputStream stream) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String command = "";
             while (!command.equals("exit")) {
@@ -42,17 +50,19 @@ public class Shell {
                 String[] cmds = command.split("\\s+");
                 Command currentCommand;
                 if ((currentCommand = commandMap.get(cmds[0])) != null) {
-                    currentCommand.execute(cmds);
+                    try {
+                        currentCommand.execute(cmds, status);
+                    } catch (IOException e) {
+                        System.err.println(e.getMessage());
+                    }
                 }
             }
-        } catch (IOException e) {
-            System.err.println("IOException caught");
         } catch (Exception e) {
-            System.err.println("Exception caught");
+            System.err.println(e.getMessage());
         }
     }
 
-    private int handle(String[] args) {
+    public int handle(String[] args) {
         if (args.length == 0) {
             return 0;
         }
@@ -85,7 +95,7 @@ public class Shell {
                     continue;
                 }
                 if ((currentCommand = commandMap.get(it[0])) != null) {
-                    if (currentCommand.execute(it) == 1) {
+                    if (currentCommand.execute(it, status) == 1) {
                         return 1;
                     }
                 } else {
@@ -93,9 +103,9 @@ public class Shell {
                 }
             }
         } catch (IOException e) {
-            System.err.println("IOException caught");
+            System.err.println(e.getMessage());
         } catch (Exception e) {
-            System.err.println("Exception caught");
+            System.err.println(e.getMessage());
         }
         return 0;
     }

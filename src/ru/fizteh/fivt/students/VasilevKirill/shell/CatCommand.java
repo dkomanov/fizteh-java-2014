@@ -7,7 +7,7 @@ import java.io.*;
  */
 public class CatCommand implements Command {
     @Override
-    public int execute(String[] args) throws IOException {
+    public int execute(String[] args, Status status) throws IOException {
         if (args.length != 2) {
             return 1;
         }
@@ -32,5 +32,10 @@ public class CatCommand implements Command {
     @Override
     public String toString() {
         return "cat";
+    }
+
+    @Override
+    public boolean checkArgs(String[] args) {
+        return false;
     }
 }

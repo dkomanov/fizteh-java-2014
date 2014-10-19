@@ -8,5 +8,7 @@ import java.io.IOException;
 public interface Command {
     String toString();
 
-    int execute(String[] args) throws IOException;
+    int execute(String[] args, Status status) throws IOException;
+
+    boolean checkArgs(String[] args);
 }

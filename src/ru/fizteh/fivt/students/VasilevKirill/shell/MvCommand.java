@@ -8,7 +8,12 @@ import java.io.IOException;
  */
 public class MvCommand implements Command {
     @Override
-    public int execute(String[] args) throws IOException {
+    public boolean checkArgs(String[] args) {
+        return false;
+    }
+
+    @Override
+    public int execute(String[] args, Status status) throws IOException {
         if (args.length < 2 || args.length > 3) {
             return 1;
         }
@@ -38,14 +43,14 @@ public class MvCommand implements Command {
         }
         if (source.isDirectory()) {
             String[] cpArgs = {"cp", "-r", args[1], args[2]};
-            new CpCommand().execute(cpArgs);
+            new CpCommand().execute(cpArgs, status);
             String[] rmArgs = {"rm", "-r", args[1]};
-            new RmCommand().execute(rmArgs);
+            new RmCommand().execute(rmArgs, status);
         } else {
             String[] cpArgs = {"cp", args[1], args[2]};
-            new CpCommand().execute(cpArgs);
+            new CpCommand().execute(cpArgs, status);
             String[] rmArgs = {"rm", args[1]};
-            new RmCommand().execute(rmArgs);
+            new RmCommand().execute(rmArgs, status);
         }
         return 0;
     }
