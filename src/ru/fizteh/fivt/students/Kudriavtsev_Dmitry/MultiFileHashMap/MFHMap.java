@@ -32,18 +32,35 @@ public class MFHMap extends HashMap<String, String> {
         }
     }
 
+    private Path nameOfPath(int i, int j) {
+        return dbPath.resolve(i + ".dir" + File.separator + j + ".dat");
+    }
+
+    private Path nameOfPath(int i) {
+        return dbPath.resolve(i + ".dir" + File.separator);
+    }
+
+    private Path nameOfPath(int i, String j) {
+        return dbPath.resolve(i + ".dir" + File.separator + j);
+    }
+
     public  SimpleEntry<String, SimpleEntry<Integer, Integer>> whereToSave(String value) {
         int hashCode = value.hashCode();
         int d = hashCode % 16;
         int f = hashCode / 16 % 16;
         return new SimpleEntry<>(
-                dbPath.resolve(d + ".dir" + File.separator + f + ".dat").toString(),
+                nameOfPath(d, f).toString(),
                 new SimpleEntry<>(d, f));
     }
 
-    void readFromFile(DataInputStream iStream) {
+    void readFromFile(DataInputStream iStream, int i, int j) {
         try {
             int keySize = iStream.readInt();
+            if (keySize > Integer.bitCount(Integer.MAX_VALUE)) {
+                System.err.println("Bad data in " + nameOfPath(i, j).toString());
+                iStream.close();
+                return;
+            }
             byte[] key = new byte[keySize];
             if (iStream.read(key, 0, keySize) == -1) {
                 System.err.println("there is no more data because the end of the stream has been reached.");
@@ -66,9 +83,9 @@ public class MFHMap extends HashMap<String, String> {
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
                 try (DataInputStream stream = new DataInputStream(Files.newInputStream(
-                        dbPath.resolve(i + ".dir" + File.separator + j + ".dat")))) {
+                        nameOfPath(i, j)))) {
                         while (stream.available() > 0) {
-                            readFromFile(stream);
+                            readFromFile(stream, i, j);
                         }
                     } catch (IOException ignore) {
                         continue;
@@ -88,23 +105,18 @@ public class MFHMap extends HashMap<String, String> {
         oStream.write(valueInBytes);
     }
 
-    private Path nameOfPath(int i, int j) {
-        return dbPath.resolve(i + ".dir" + File.separator + j + ".dat");
-    }
-
-    private Path nameOfPath(int i) {
-        return dbPath.resolve(i + ".dir" + File.separator);
-    }
-
-    public void deleteFiles() {
+    public void deleteFiles(boolean all) {
         try {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
-                    if (changedFiles.contains(nameOfPath(i, j).toString())) {
+                    if (changedFiles.contains(nameOfPath(i, j).toString()) || all) {
                         if (Files.exists(nameOfPath(i, j))) {
                             Files.delete(nameOfPath(i, j));
                         }
                         if (Files.exists(nameOfPath(i))) {
+                            for (String value : nameOfPath(i).toFile().list()) {
+                                Files.delete(nameOfPath(i, value));
+                            }
                             Files.delete(nameOfPath(i));
                         }
                     }
@@ -117,7 +129,7 @@ public class MFHMap extends HashMap<String, String> {
     }
 
     public void unload() {
-        deleteFiles();
+        deleteFiles(false);
         boolean[] dir = new boolean[16];
         boolean[][] file = new boolean[16][16];
         DataOutputStream[][] streams = new DataOutputStream[16][16];

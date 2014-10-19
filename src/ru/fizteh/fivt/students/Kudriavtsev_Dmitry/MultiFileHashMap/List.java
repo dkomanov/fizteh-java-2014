@@ -16,6 +16,7 @@ public class List extends Command {
             return false;
         }
         if (dbConnector.activeTable == null) {
+            System.err.println("No table are used now");
             return false;
         }
         Set<String> keySet = dbConnector.activeTable.keySet();

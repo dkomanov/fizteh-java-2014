@@ -43,10 +43,6 @@ public class Welcome {
                         System.exit(-1);
                         return;
                     }
-                    if (whatToDo.name.equals("show") && !arguments[j + 1].equals("tables")) {
-                        System.err.println("Bad show tables command.");
-                        System.exit(-1);
-                    }
                     String[] newArgs = new String[arguments.length - j - 1];
                     System.arraycopy(arguments, j + 1, newArgs, 0, newArgs.length);
                     dbConnector.run(whatToDo.name, newArgs);

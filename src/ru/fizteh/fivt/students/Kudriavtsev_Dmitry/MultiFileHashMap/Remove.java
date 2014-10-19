@@ -15,6 +15,10 @@ public class Remove extends Command {
             System.err.println("Incorrect number of arguments in " + name);
             return false;
         }
+        if (dbConnector.activeTable == null) {
+            System.err.println("No table are used now");
+            return false;
+        }
         if (dbConnector.activeTable.remove(args[0]) != null) {
             System.out.println("removed");
             dbConnector.activeTable.changedFiles.add(dbConnector.activeTable.whereToSave(args[0]).getKey());

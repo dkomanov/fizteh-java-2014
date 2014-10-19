@@ -31,7 +31,7 @@ public class Drop extends Command {
                 dbConnector.tables.remove(args[0]);
             }
             map.clear();
-            map.deleteFiles();
+            map.deleteFiles(true);
             Files.delete(map.dbPath);
         } catch (Exception e) {
             System.err.println("Exception in drop: " + e.getMessage());
