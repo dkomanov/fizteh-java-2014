@@ -1,15 +1,11 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.Command;
 import ru.fizteh.fivt.students.ZatsepinMikhail.shell.CommandRm;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- * Created by mikhail on 17.10.14.
- */
 public class CommandDrop extends CommandMultiFileHashMap {
     public CommandDrop() {
         name = "drop";

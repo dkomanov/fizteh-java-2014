@@ -7,9 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
-/**
- * Created by mikhail on 16.10.14.
- */
 public class CommandCreate extends CommandMultiFileHashMap {
     public CommandCreate() {
         name = "create";

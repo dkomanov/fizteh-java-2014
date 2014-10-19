@@ -66,6 +66,9 @@ public class FileMap {
 
     public boolean init() {
         String[] listOfDirectories = new File(directoryOfTable).list();
+        if (listOfDirectories == null) {
+            return true;
+        }
         for (String oneDirectory: listOfDirectories) {
             String currentDirectory = directoryOfTable + System.getProperty("file.separator")
                     + oneDirectory;
@@ -73,6 +76,7 @@ public class FileMap {
             for (String oneFile : listOfFiles) {
                 String currentFile = currentDirectory + System.getProperty("file.separator")
                         + oneFile;
+
                 try (FileInputStream inStream = new FileInputStream(currentFile)) {
                     FileChannel inputChannel;
                     inputChannel = inStream.getChannel();
@@ -139,67 +143,68 @@ public class FileMap {
         return true;
     }
 
-    public boolean load(String addKey) {
+    public boolean load(String key, boolean action) {
         HashSet<String> keySet = new HashSet<>(dataBase.keySet());
         boolean appendFile = false;
-        if (addKey != null) {
-            appendFile = true;
-            keySet.clear();
-            keySet.add(addKey);
-        }
 
         ByteBuffer bufferForSize = ByteBuffer.allocate(4);
-        for (String key : keySet) {
-            Path directoryForLoad;
-            Path fileForLoad;
-            int numberOfDirectory = getNumberOfDirectory(key.hashCode());
-            int numberOfFiles = getNumberOfFile(key.hashCode());
-            directoryForLoad = Paths.get(directoryOfTable, numberOfDirectory + ".dir");
-            if (!Files.exists(directoryForLoad)) {
-                try {
-                    Files.createDirectory(directoryForLoad);
-                } catch (IOException e) {
-                    System.out.println("error while creating directory for load");
-                    return false;
-                }
-            }
 
-            fileForLoad = Paths.get(directoryForLoad.toString(), numberOfFiles + ".dat");
-            if (!Files.exists(fileForLoad)) {
-                try {
-                    Files.createFile(fileForLoad);
-                } catch (IOException e) {
-                    System.out.println("error while creating file for load");
-                    return false;
-                }
-            }
-
-            System.out.println(directoryForLoad.toString());
-            System.out.println(fileForLoad.toString());
-
-            try (FileOutputStream outputStream
-                         = new FileOutputStream(fileForLoad.toString(), appendFile)) {
-                try {
-                    byte[] keyByte = key.getBytes("UTF-8");
-                    byte[] valueByte = dataBase.get(key).getBytes("UTF-8");
-                    outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
-                    outputStream.write(keyByte);
-                    outputStream.write(bufferForSize.putInt(0, valueByte.length).array());
-                    outputStream.write(valueByte);
-                } catch (UnsupportedEncodingException e) {
-                    System.out.println("unsupported encoding");
-                    return false;
-                } catch (IOException e) {
-                    System.out.println("io exception");
-                    return false;
-                }
-            } catch (FileNotFoundException e) {
-                System.out.println("file not found");
-                return false;
+        Path directoryForLoad;
+        Path fileForLoad;
+        int numberOfDirectory = getNumberOfDirectory(key.hashCode());
+        int numberOfFile = getNumberOfFile(key.hashCode());
+        directoryForLoad = Paths.get(directoryOfTable, numberOfDirectory + ".dir");
+        if (!Files.exists(directoryForLoad)) {
+            try {
+                Files.createDirectory(directoryForLoad);
             } catch (IOException e) {
-                System.out.println("io exception");
+                System.out.println("error while creating directory for load");
                 return false;
             }
+        }
+
+        fileForLoad = Paths.get(directoryForLoad.toString(), numberOfFile + ".dat");
+        if (!Files.exists(fileForLoad)) {
+            try {
+                Files.createFile(fileForLoad);
+            } catch (IOException e) {
+                System.out.println("error while creating file for load");
+                return false;
+            }
+        }
+
+        System.out.println(directoryForLoad.toString());
+        System.out.println(fileForLoad.toString());
+
+        try (FileOutputStream outputStream
+                         = new FileOutputStream(fileForLoad.toString(), appendFile)) {
+            for (String oneKey : keySet) {
+                int keyNumberOfDirectory = getNumberOfDirectory(oneKey.hashCode());
+                int keyNnumberOfFiles = getNumberOfFile(oneKey.hashCode());
+                if (!appendFile & (numberOfFile == keyNnumberOfFiles)
+                        & (numberOfDirectory == keyNumberOfDirectory) | appendFile) {
+                    try {
+                        byte[] keyByte = key.getBytes("UTF-8");
+                        byte[] valueByte = dataBase.get(key).getBytes("UTF-8");
+                        outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
+                        outputStream.write(keyByte);
+                        outputStream.write(bufferForSize.putInt(0, valueByte.length).array());
+                        outputStream.write(valueByte);
+                    } catch (UnsupportedEncodingException e) {
+                        System.out.println("unsupported encoding");
+                        return false;
+                    } catch (IOException e) {
+                        System.out.println("io exception");
+                        return false;
+                    }
+                }
+            }
+        } catch (FileNotFoundException e){
+            System.out.println("file not found");
+            return false;
+        } catch (IOException e) {
+            System.out.println("io exception");
+            return false;
         }
         return true;
     }

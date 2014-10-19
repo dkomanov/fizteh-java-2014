@@ -3,10 +3,6 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.Get;
 
-/**
- * Created by mikhail on 19.10.14.
- */
-
 public class CommandGetDistribute extends CommandMultiFileHashMap {
     public CommandGetDistribute() {
         name = "get";

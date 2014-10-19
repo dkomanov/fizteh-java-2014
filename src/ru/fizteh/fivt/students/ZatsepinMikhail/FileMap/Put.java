@@ -17,7 +17,7 @@ public class Put extends CommandFileMap {
         } else {
             System.out.println("new");
         }
-        myFileMap.load(args[1]);
+        myFileMap.load(args[1], true);
         return true;
     }
 }

@@ -2,9 +2,6 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 
-/**
- * Created by mikhail on 17.10.14.
- */
 public class CommandUse extends CommandMultiFileHashMap {
     public CommandUse() {
         name = "use";

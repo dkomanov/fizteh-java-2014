@@ -1,24 +1,15 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
-import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
-import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
-
-import java.util.Map;
-import java.util.Set;
-
-/**
- * Created by mikhail on 19.10.14.
- */
 public class CommandShowTables extends CommandMultiFileHashMap {
     public CommandShowTables() {
-        name = "show tables";
-        numberOfArguments = 1;
+        name = "show";
+        numberOfArguments = 2;
     }
 
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
-        if (args.length != numberOfArguments) {
-            System.out.println(name + ": wrong number of arguments");
+        if (args.length != numberOfArguments || !args[1].equals("tables")) {
+            System.out.println(name + ": wrong arguments");
             return false;
         }
 

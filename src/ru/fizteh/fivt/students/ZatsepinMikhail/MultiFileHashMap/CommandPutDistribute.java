@@ -3,9 +3,6 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.Put;
 
-/**
- * Created by mikhail on 19.10.14.
- */
 public class CommandPutDistribute extends CommandMultiFileHashMap {
     public CommandPutDistribute() {
         name = "put";

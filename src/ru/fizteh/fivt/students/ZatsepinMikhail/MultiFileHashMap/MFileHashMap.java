@@ -10,9 +10,6 @@ import java.util.Map.Entry;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 
-/**
- * Created by mikhail on 16.10.14.
- */
 public class MFileHashMap {
     private String dataBaseDirectory;
     private HashMap<String, FileMap> tables;
@@ -40,7 +37,7 @@ public class MFileHashMap {
     public void showTables() {
         Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneTable: pairSet) {
-            System.out.println(oneTable.getValue().getDirectoryOfTable() + " "
+            System.out.println(oneTable.getKey() + " "
                 + oneTable.getValue().getNumberOfPairs());
         }
     }
