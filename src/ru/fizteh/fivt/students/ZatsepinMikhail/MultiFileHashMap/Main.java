@@ -27,6 +27,7 @@ public class Main {
         Shell<MFileHashMap> myShell = new Shell<>(myMFileHashMap);
         myShell.addCommand(new CommandCreate());
         myShell.addCommand(new CommandDrop());
+        myShell.addCommand(new CommandUse());
 
         if (args.length > 0) {
             allRight = myShell.packetMode(args);

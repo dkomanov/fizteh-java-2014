@@ -4,7 +4,10 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
+
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 
 /**
@@ -12,11 +15,11 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
  */
 public class MFileHashMap {
     private String dataBaseDirectory;
-    private ArrayList<FileMap> tables;
+    private HashMap<String, FileMap> tables;
     private FileMap currentTable;
     public MFileHashMap(String newDirectory) {
         dataBaseDirectory = newDirectory;
-        tables = new ArrayList<>();
+        tables = new HashMap<>();
     }
 
     public String getDataBaseDirectory() {
@@ -28,8 +31,9 @@ public class MFileHashMap {
     }
 
     public void printTables() {
-        for (FileMap oneTable: tables) {
-            System.out.println(oneTable.getDiskFile());
+        Set<Entry<String, FileMap>> pairSet = tables.entrySet();
+        for (Entry<String, FileMap> oneTable: pairSet) {
+            System.out.println(oneTable.getValue().getDiskFile());
         }
     }
 
@@ -37,20 +41,27 @@ public class MFileHashMap {
         currentTable = newCurrentTable;
     }
 
+
+
     public boolean init() {
         String[] listOfFiles = new File(dataBaseDirectory).list();
         for (String oneFile: listOfFiles) {
             Path oneTablePath = Paths.get(dataBaseDirectory, oneFile);
             if (Files.isDirectory(oneTablePath)) {
-                tables.add(new FileMap(oneTablePath.toString()));
+                tables.put(oneFile, new FileMap(oneTablePath.toString()));
             }
         }
         boolean allRight = true;
-        for (FileMap oneFileMap: tables) {
-            if  (!oneFileMap.init()) {
+        Set<Entry<String, FileMap>> pairSet = tables.entrySet();
+        for (Entry<String, FileMap> oneFileMap: pairSet) {
+            if  (!oneFileMap.getValue().init()) {
                 allRight = false;
             }
         }
         return allRight;
+    }
+
+    public FileMap findTableByName(String requiredFileMapName) {
+        return tables.get(requiredFileMapName);
     }
 }
