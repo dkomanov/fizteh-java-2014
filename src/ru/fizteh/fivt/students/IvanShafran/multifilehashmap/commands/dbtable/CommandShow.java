@@ -21,11 +21,11 @@ public class CommandShow extends Command {
 
         try {
             if (showingData.equals("tables")) {
-                for (File file : multiFileHashMap.getWorkingDirectory().listFiles()) {
-                    if (multiFileHashMap.getWorkingDBTable() != null) {
-                        multiFileHashMap.getWorkingDBTable().writeToFile();
-                    }
+                if (multiFileHashMap.getWorkingDBTable() != null) {
+                    multiFileHashMap.getWorkingDBTable().writeToFile();
+                }
 
+                for (File file : multiFileHashMap.getWorkingDirectory().listFiles()) {
                     DBTable dbTable = new DBTable(file);
                     AbstractShell.printInformation(dbTable.getWorkingDirectory().getName()
                             + " " + dbTable.getNumberOfItems());
