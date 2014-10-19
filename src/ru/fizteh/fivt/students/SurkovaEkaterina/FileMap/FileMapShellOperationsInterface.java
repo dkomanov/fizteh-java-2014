@@ -23,4 +23,6 @@ public interface FileMapShellOperationsInterface<Table, Key, Value> {
     Key parseKey(String key);
 
     Value parseValue(String value);
+
+    int exit();
 }

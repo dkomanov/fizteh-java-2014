@@ -50,4 +50,9 @@ public class FileMapShellOperations implements
     public final String parseValue(final String value) {
         return value;
     }
+
+    @Override
+    public final int exit() {
+        return table.exit();
+    }
 }
