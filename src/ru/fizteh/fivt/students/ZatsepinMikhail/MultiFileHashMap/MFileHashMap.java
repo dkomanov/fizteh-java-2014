@@ -37,14 +37,11 @@ public class MFileHashMap {
         return dataBaseDirectory;
     }
 
-    public int getNumberOfTables() {
-        return tables.size();
-    }
-
-    public void printTables() {
+    public void showTables() {
         Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneTable: pairSet) {
-            System.out.println(oneTable.getValue().getDirectoryOfTable());
+            System.out.println(oneTable.getValue().getDirectoryOfTable() + " "
+                + oneTable.getValue().getNumberOfPairs());
         }
     }
 
