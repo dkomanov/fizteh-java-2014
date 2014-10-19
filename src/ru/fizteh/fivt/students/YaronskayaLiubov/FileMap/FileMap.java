@@ -24,6 +24,13 @@ public class FileMap {
             return false;
         }
         curDB = new File(curDBPath);
+        if (!curDB.exists()) {
+            try {
+                curDB.createNewFile();
+            } catch (IOException e) {
+                System.err.println("error creating database " + curDBPath);
+            }
+        }
         fileMapCommands = new HashMap<String, Command>();
         data = new HashMap<String, String>();
         fileMapCommands.put("exit", new ExitCommand());
