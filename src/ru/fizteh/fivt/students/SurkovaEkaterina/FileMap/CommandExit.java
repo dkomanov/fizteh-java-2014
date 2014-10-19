@@ -15,6 +15,6 @@ public class CommandExit<FileMapShellOperations
             throw new IllegalArgumentException("exit: Too many parameters!");
         }
 
-        System.exit(operations.exit());
+        System.exit(0);
     }
 }

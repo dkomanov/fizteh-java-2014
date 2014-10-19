@@ -19,9 +19,10 @@ public class FileMapMain {
         commands.add(new CommandExit());
 
         shell.setShellCommands(commands);
+        shell.setArguments(args);
 
         FileMapShellOperations shellState = new FileMapShellOperations();
-        String databaseDirectory = System.getProperty("fizteh.db.dir");
+        String databaseDirectory = System.getProperty("db.file");
         shellState.table = new FileTable(databaseDirectory, "master");
         shell.setShellOperations(shellState);
         shell.beginExecuting();
