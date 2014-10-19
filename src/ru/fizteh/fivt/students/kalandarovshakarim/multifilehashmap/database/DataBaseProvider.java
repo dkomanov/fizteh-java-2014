@@ -83,16 +83,17 @@ public class DataBaseProvider implements TableProvider {
     }
 
     private void load() throws IOException {
-        DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory);
-        for (Path pathToTable : directoryStream) {
-            String tableName = pathToTable.getFileName().toString();
-            if (Files.isDirectory(pathToTable)) {
-                Table table = new MultiFileTable(directory.toString(), tableName);
-                tables.put(tableName, table);
-            } else {
-                String format = "'%s' contains non-directory files";
-                String eMessage = String.format(format, directory);
-                throw new IOException(eMessage);
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory)) {
+            for (Path pathToTable : directoryStream) {
+                String tableName = pathToTable.getFileName().toString();
+                if (Files.isDirectory(pathToTable)) {
+                    Table table = new MultiFileTable(directory.toString(), tableName);
+                    tables.put(tableName, table);
+                } else {
+                    String format = "'%s' contains non-directory files";
+                    String eMessage = String.format(format, directory);
+                    throw new IOException(eMessage);
+                }
             }
         }
     }
@@ -100,6 +101,12 @@ public class DataBaseProvider implements TableProvider {
     void checkTableName(String tableName) {
         if (tableName == null) {
             throw new IllegalArgumentException("Null cannot be an argument");
+        }
+        String[] invalidCharacters = {"|", "\\", "?", "*", "<", "\"", ":", ">", "/"};
+        for (String character : invalidCharacters) {
+            if (tableName.contains(character)) {
+                throw new IllegalArgumentException("Table name contains invalid characters");
+            }
         }
     }
 }
