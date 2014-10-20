@@ -180,6 +180,10 @@ public/* abstract */class FileMap {
     }
 
     public static void exec(String[] args) {
+        if (System.getProperty("db.file") == null) {
+            printError("empty param");
+            System.exit(1);
+        }
         try {
             readFile(System.getProperty("db.file"));
         } catch (IOException e) {
