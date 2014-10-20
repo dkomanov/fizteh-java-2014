@@ -51,7 +51,7 @@ public final class DataBase {
 
     public void write(RandomAccessFile file) throws Exception {
         if (file.length() > 0) {
-            outStream = new DataOutputStream(new FileOutputStream(toString()));
+            outStream = new DataOutputStream(new FileOutputStream(file.toString()));
             for (Map.Entry<String, String> entry: dataBase.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
