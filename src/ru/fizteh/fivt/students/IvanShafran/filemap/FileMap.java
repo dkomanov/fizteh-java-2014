@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.IvanShafran.filemap.commands.*;
 import ru.fizteh.fivt.students.IvanShafran.filemap.abstractShell.AbstractShell;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
@@ -19,8 +20,17 @@ public class FileMap extends AbstractShell {
             throw new Exception("wrong path to db file");
         }
 
-        if (!workingFile.exists() || workingFile.isDirectory()) {
+        if (workingFile.isDirectory()) {
             throw new Exception("wrong path to db file");
+        }
+
+        if (!workingFile.exists()) {
+            try {
+                Files.createFile(Paths.get(workingFile.getAbsolutePath()));
+            } catch (Exception e) {
+                throw new Exception("error: file didn't create");
+            }
+
         }
     }
 

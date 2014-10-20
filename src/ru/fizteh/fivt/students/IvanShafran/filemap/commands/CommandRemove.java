@@ -23,7 +23,7 @@ public class CommandRemove extends Command {
         String key = args.get(0);
 
         if (dataBaseFile.getHashMap().containsKey(key)) {
-            AbstractShell.printInformation("remove");
+            AbstractShell.printInformation("removed");
         } else {
             AbstractShell.printInformation("not found");
         }

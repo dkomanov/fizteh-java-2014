@@ -32,7 +32,8 @@ public class CommandPut extends Command {
         String value = args.get(1);
 
         if (dataBaseFile.getHashMap().containsKey(key)) {
-            AbstractShell.printInformation("overwrite old value");
+            AbstractShell.printInformation("overwrite");
+            AbstractShell.printInformation(dataBaseFile.getHashMap().get(key));
         } else {
             AbstractShell.printInformation("new");
         }
