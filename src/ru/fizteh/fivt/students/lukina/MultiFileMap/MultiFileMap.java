@@ -245,8 +245,8 @@ public/* abstract */class MultiFileMap {
                 //тут могу проверять,правильно ли данные лежа
                 int fileNumber = Integer.parseInt(f.getName());
                 int dirNumber = Integer.parseInt(f.getParentFile().getName());
-                if (fileNumber != key.toString().hashCode() / 16 % 16
-                        || dirNumber != key.toString().hashCode() % 16) {
+                if (fileNumber != key.toString().hashCode() / 16 % 16 ||
+                        dirNumber != key.toString().hashCode() % 16) {
                     System.out.println(" incorrect format of file " + fileName);
                 }
                 fileMap.get(tableName).put(key.toString(), value.toString());
@@ -296,10 +296,10 @@ public/* abstract */class MultiFileMap {
                 for (Entry<String, String> entry : fileMap.get(key).entrySet()) {
                     if (entry.getKey().hashCode() % 16 == i % 16
                             && entry.getKey().hashCode() / 16 % 16 == i / 16 % 16) {
-                        File directory = new File(dbDir + File.separator
-                                + key + File.separator + i % 16);
-                        File file = new File(dbDir + File.separator + key
-                                + File.separator + i % 16 + File.separator + i / 16 % 16);
+                        File directory = new File(dbDir + File.separator +
+                            key + File.separator + i % 16);
+                        File file = new File(dbDir + File.separator + key +
+                            File.separator + i % 16 + File.separator + i / 16 % 16);
                         if (!directory.exists() || !directory.isDirectory()) {
                             ShellMain.mkdir(directory.getAbsolutePath());
                         }
@@ -332,8 +332,8 @@ public/* abstract */class MultiFileMap {
         if (dir.isAbsolute()) {
             dbDir = dir.getAbsolutePath();
         } else {
-            dbDir = System.getProperty("user.dir")
-                    + File.separator + System.getProperty("fizteh.db.dir");
+            dbDir = System.getProperty("user.dir") +
+                    File.separator + System.getProperty("fizteh.db.dir");
         }
         readTables(dbDir);
         if (args.length != 0) {
