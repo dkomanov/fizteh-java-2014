@@ -30,12 +30,10 @@ public class DataBase {
 
     private String readElement(DataInputStream in) throws FileMapException {
         try {
-            short length = in.readShort();
-            StringBuilder str = new StringBuilder();
-            for (int i = 0; i < length; ++i) {
-                str.append(in.readChar());
-            }
-            return str.toString();
+            int length = in.readInt();
+            byte[] element = new byte[length];
+            in.readFully(element);
+            return new String(element, "UTF-8");
         } catch (IOException ex) {
             throw new FileMapException(ex.getMessage());
         }
@@ -63,8 +61,10 @@ public class DataBase {
 
     private void writeElement(DataOutputStream out, String element) throws FileMapException {
         try {
-            out.writeInt(element.length());
-            out.writeChars(element);
+            byte[] byteElement = element.getBytes("UTF-8");
+            out.writeInt(byteElement.length);
+            out.write(byteElement);
+            out.flush();
         } catch (IOException ex) {
             throw new FileMapException(ex.getMessage());
         }
