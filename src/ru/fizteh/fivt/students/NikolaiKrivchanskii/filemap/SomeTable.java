@@ -29,6 +29,12 @@ public abstract class SomeTable implements MyTable {
          return autoCommit;
     }
     
+    public Set<String> list() {
+    	Set<String> toReturnSafe = new HashSet<String>();
+    	toReturnSafe = currentData.keySet();
+    	return toReturnSafe;
+    }
+    
     public int getChangesCounter() {
          return unsavedChangesCounter;
     }
@@ -58,7 +64,9 @@ public abstract class SomeTable implements MyTable {
         try {
             load();
         } catch (SomethingIsWrongException e) {
-            System.err.println("Error aqcuired while opening a table. Message: " + e.getMessage());
+        	if (e.getMessage() != "Unable to scan from disc." && e.getMessage() != "Empty file") {
+                System.err.println("Error aqcuired while opening a table. Message: " + e.getMessage());
+        	}
         }
         
     }

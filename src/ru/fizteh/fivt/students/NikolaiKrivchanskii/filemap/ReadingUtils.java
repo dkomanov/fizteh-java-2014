@@ -131,7 +131,11 @@ public class ReadingUtils {
             try {
                 return tempFile.readInt();
             } catch (IOException e) {
-                 throw new SomethingIsWrongException("Error aqcuired while reading a file " + e.getMessage());
+            	if (e.getMessage() != null) {
+                    throw new SomethingIsWrongException("Error aqcuired while reading a file " + e.getMessage());
+                 } else {
+                	 throw new SomethingIsWrongException("Empty file");
+                 }
             }
         }
 }

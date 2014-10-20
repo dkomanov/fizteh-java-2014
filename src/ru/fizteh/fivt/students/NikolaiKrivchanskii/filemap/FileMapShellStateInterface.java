@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.NikolaiKrivchanskii.filemap;
 
+
 public interface FileMapShellStateInterface<Table, Key, Value> {
 
       Value put(Key key, Value value);
