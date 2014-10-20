@@ -45,8 +45,7 @@ public/* abstract */class ShellMain {
     public static void mkdir(String arg) {
         File currFile = createFile(arg);
         if (currFile.exists()) {
-            printError("mkdir: cannot create a directory '" + arg
-                    + "': such directory exists");
+            printError("mkdir: cannot create a directory '" + arg + "': such directory exists");
         } else if (!currFile.mkdir()) {
             printError("mkdir cannot create a directory'" + arg + "'");
         }
