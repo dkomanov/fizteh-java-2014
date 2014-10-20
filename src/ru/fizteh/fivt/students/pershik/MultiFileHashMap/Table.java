@@ -17,7 +17,7 @@ public class Table extends FileMap {
         readDb();
     }
 
-    private final static int MOD = 16;
+    private final int mod = 16;
     protected String dbDirPath;
 
     @Override
@@ -27,8 +27,8 @@ public class Table extends FileMap {
         for (String subdirectory : subdirectories) {
             String dirPath = dbDirPath + File.separator + subdirectory;
             File dir = new File(dirPath);
-            if (!dir.isDirectory() || !isCorrectName(subdirectory, ".dir") ||
-                    !isCorrectSubdirectory(dir)) {
+            if (!dir.isDirectory() || !isCorrectName(subdirectory, ".dir")
+                    || !isCorrectSubdirectory(dir)) {
                 System.err.println("Incorrect database directory");
                 System.exit(-1);
             }
@@ -63,18 +63,21 @@ public class Table extends FileMap {
         String[] files = dir.list();
         for (String file : files) {
             File curFile = new File(file);
-            if (curFile.isDirectory() || !isCorrectName(file, ".dat"))
+            if (curFile.isDirectory() || !isCorrectName(file, ".dat")) {
                 return false;
+            }
         }
         return true;
     }
 
     private boolean isCorrectName(String name, String suf) {
         try {
-            if (name.length() < 4)
+            if (name.length() < 4) {
                 return false;
-            if (!name.endsWith(suf))
+            }
+            if (!name.endsWith(suf)) {
                 return false;
+            }
             name = name.replace(suf, "");
             int num = Integer.parseInt(name);
             return (0 <= num && num <= 15);
@@ -85,23 +88,25 @@ public class Table extends FileMap {
 
     @Override
     protected void writeDb() {
-        Map<String, String>[][] dbParts = new HashMap[MOD][MOD];
-        for (int i = 0; i < MOD; i++)
-            for (int j = 0; j < MOD; j++)
+        Map<String, String>[][] dbParts = new HashMap[mod][mod];
+        for (int i = 0; i < mod; i++) {
+            for (int j = 0; j < mod; j++) {
                 dbParts[i][j] = new HashMap<>();
+            }
+        }
         for (String key : db.keySet()) {
             int hashCode = key.hashCode();
-            int dirNumber = hashCode % MOD;
-            int fileNumber = hashCode / MOD % MOD;
+            int dirNumber = hashCode % mod;
+            int fileNumber = hashCode / mod % mod;
             dbParts[dirNumber][fileNumber].put(key, db.get(key));
         }
-        for (int i = 0; i < MOD; i++) {
-            String dirPath = dbDirPath + File.separator +
-                    Integer.toString(i) + ".dir";
+        for (int i = 0; i < mod; i++) {
+            String dirPath = dbDirPath + File.separator
+                    + Integer.toString(i) + ".dir";
             File dir = new File(dirPath);
-            for (int j = 0; j < MOD; j++) {
-                String path = dirPath + File.separator +
-                        Integer.toString(j) + ".dat";
+            for (int j = 0; j < mod; j++) {
+                String path = dirPath + File.separator
+                        + Integer.toString(j) + ".dat";
                 File file = new File(path);
                 writeFile(dbParts[i][j], dir, file);
             }
@@ -110,8 +115,9 @@ public class Table extends FileMap {
 
     protected void writeFile(
             Map<String, String> dbPart, File dir, File file) {
-        if (dbPart.isEmpty())
+        if (dbPart.isEmpty()) {
             return;
+        }
         if (!dir.mkdir()) {
             System.err.println("Can't create directory");
             System.exit(-1);

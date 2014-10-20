@@ -106,8 +106,9 @@ public class MultiFileHashMap extends Runner {
             tables.put(tableName, 0);
             String tableDirPath = dbDirPath + File.separator + tableName;
             File tableDir = new File(tableDirPath);
-            if (!tableDir.mkdir())
+            if (!tableDir.mkdir()) {
                 errorCannotMakeDir(tableDirPath);
+            }
             System.out.println("created");
         }
     }
@@ -137,11 +138,11 @@ public class MultiFileHashMap extends Runner {
             throws InvalidCommandException {
         String pathTable = dbDirPath + File.separator + tableName;
         for (int i = 0; i < MOD; i++) {
-            String pathDir = pathTable + File.separator +
-                    Integer.toString(i) + ".dir";
+            String pathDir = pathTable + File.separator
+                    + Integer.toString(i) + ".dir";
             for (int j = 0; j < MOD; j++) {
-                String pathFile = pathDir + File.separator +
-                        Integer.toString(j) + ".dat";
+                String pathFile = pathDir + File.separator
+                        + Integer.toString(j) + ".dat";
                 File curFile = new File(pathFile);
                 if (curFile.exists() && !curFile.delete()) {
                     errorCannotDeleteFile(pathFile);
