@@ -20,7 +20,10 @@ public class CommandString {
     }
 
     public String getArg(final int index) {
-        return argList[index];
+        if (index < argList.length) {
+            return argList[index];
+        }
+        return "";
     }
 
     public String getSpacedArg(final int index) {

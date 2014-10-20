@@ -4,7 +4,7 @@ import ru.fizteh.fivt.students.kotsurba.filemap.commands.ShellExit;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.CommandParser;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.InvalidCommandException;
 import ru.fizteh.fivt.students.kotsurba.filemap.shell.Shell;
-import ru.fizteh.fivt.students.kotsurba.shell.Context.Context;
+import ru.fizteh.fivt.students.kotsurba.shell.context.Context;
 import ru.fizteh.fivt.students.kotsurba.shell.shellcommands.*;
 
 import java.io.IOException;
@@ -14,13 +14,13 @@ public class ShellMain {
     static final int END_OF_INPUT = -1;
     static final int END_OF_TRANSMISSION = 4;
 
-    private static boolean isTerminativeSymbol(final int character) {
+    private static boolean isTerminalSymbol(final int character) {
         return ((character == END_OF_INPUT) || (character == END_OF_TRANSMISSION));
     }
 
-    public static boolean checkTerminate(final String str) {
+    public static boolean hasTerminalSymbol(final String str) {
         for (int i = 0; i < str.length(); ++i) {
-            if (isTerminativeSymbol(str.charAt(i))) {
+            if (isTerminalSymbol(str.charAt(i))) {
                 return true;
             }
         }
@@ -58,7 +58,7 @@ public class ShellMain {
 
                         String command = scanner.nextLine();
 
-                        if (checkTerminate(command)) {
+                        if (hasTerminalSymbol(command)) {
                             System.exit(0);
                         }
 
