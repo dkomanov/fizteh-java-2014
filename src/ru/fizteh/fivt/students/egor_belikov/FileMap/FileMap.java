@@ -105,20 +105,21 @@ public class FileMap {
             }
         }
         private static void createFileMapDatabase() throws Exception {
-            currentDatabase.setLength(0);
-            for (Map.Entry<String, String> pair : fileMap.entrySet()) {
-                String currentKey = pair.getKey();
-                String currentValue = pair.getValue();
-                try {
-                    byte[] byteKey = currentKey.getBytes("UTF-8");
-                    currentDatabase.writeInt(byteKey.length);
-                    currentDatabase.write(byteKey);
-                    byte[] byteValue = currentValue.getBytes("UTF-8");
-                    currentDatabase.writeInt(byteValue.length);
-                    currentDatabase.write(byteValue);
-                } catch (Exception exception) {
-                    throw new Exception("Error with writing");
-                }
+            String key;
+            String value;
+            DataOutputStream outStream = new DataOutputStream(
+                new FileOutputStream(currentPath));
+            for (Map.Entry<String, String> i : fileMap.entrySet()) {
+                key = i.getKey();
+                value = i.getValue();
+                byte[] byteWord = key.getBytes("UTF-8");
+                outStream.writeInt(byteWord.length);
+                outStream.write(byteWord);
+                outStream.flush();
+                byteWord = value.getBytes("UTF-8");
+                outStream.writeInt(byteWord.length);
+                outStream.write(byteWord);
+                outStream.flush();
             }
         }
 
