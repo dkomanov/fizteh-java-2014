@@ -73,6 +73,7 @@ public class FMMain {
         if (args == null) {
             Scanner lineScan = new Scanner(System.in);
             lineStr = lineScan.nextLine();
+            lineScan.close();
         } else {
 
             for (String string: args) {
@@ -99,10 +100,13 @@ public class FMMain {
                 }
             }
 
+            argScan.close();
+
             if (argumentVector.size() > 0) {
                 argumentsQueue.add(argumentVector);
             }
         }
+        blockScan.close();
 
     }
 
