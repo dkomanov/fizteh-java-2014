@@ -172,10 +172,10 @@ public/* abstract */class FileMap {
             System.exit(1);
         }
         for (Entry<String, String> entry : map.entrySet()) {
-            output.writeInt(entry.getKey().length());
-            output.writeChars(entry.getKey());
-            output.writeInt(entry.getValue().length());
-            output.writeChars(entry.getValue());
+            output.writeInt(entry.getKey().getBytes("UTF-8").length);
+            output.write(entry.getKey().getBytes("UTF-8"));
+            output.writeInt(entry.getValue().getBytes("UTF-8").length);
+            output.write(entry.getValue().getBytes("UTF-8"));
         }
     }
 
