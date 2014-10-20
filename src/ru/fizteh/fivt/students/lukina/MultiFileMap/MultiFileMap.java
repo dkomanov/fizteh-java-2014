@@ -79,7 +79,7 @@ public/* abstract */class MultiFileMap {
     private static void show() {
         Set<String> fileKeySet = fileMap.keySet();
         for (String key : fileKeySet) {
-            System.out.println(key + " " + fileMap.get(key).size());//change to real size;
+            System.out.println(key + " " + fileMap.get(key).size());
         }
     }
 
@@ -332,8 +332,8 @@ public/* abstract */class MultiFileMap {
         if (dir.isAbsolute()) {
             dbDir = dir.getAbsolutePath();
         } else {
-            dbDir = System.getProperty("user.dir") +
-                    File.separator + System.getProperty("fizteh.db.dir");
+            dbDir = System.getProperty("user.dir")
+                    + File.separator + System.getProperty("fizteh.db.dir");
         }
         readTables(dbDir);
         if (args.length != 0) {
