@@ -8,7 +8,7 @@ public final class InputParse {
     private InputParse() {
         //
     }
-    public static void parse(final String[] arg) throws DataBaseCorrupt, TableConnectionError, MapExcept {
+    public static void parse(final String[] arg) throws DataBaseCorrupt, TableConnectionException, MapException, IOException {
 
             DataBase dataBase = new DataBase();
 
@@ -27,12 +27,21 @@ public final class InputParse {
                 }
                 try {
                     Commander.commandExec(current, dataBase);
+                } catch (IllegalStateException e) {
+                	System.exit(0);
                 } catch (IndexOutOfBoundsException | IOException
-                        | DataBaseCorrupt | TableConnectionError | MapExcept e) {
+                        | DataBaseCorrupt | TableConnectionException | MapException e) {
                     // TODO Auto-generated catch block
                     System.out.println(e.toString());
                     System.exit(1);
                 }
+            }
+            current.clear();
+            try {
+            	current.add("exit");
+            	Commander.commandExec(current, dataBase);
+            } catch (Exception e) {
+            	System.exit(0);
             }
     }
 }

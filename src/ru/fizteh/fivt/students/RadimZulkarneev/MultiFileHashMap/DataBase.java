@@ -15,14 +15,14 @@ public class DataBase {
     private SuperTable sTable;
     private Map<String, Integer> tableRowCount;
     private Path dataBasePath;
-    public DataBase() throws MapExcept, DataBaseCorrupt, TableConnectionError {
+    public DataBase() throws MapException, DataBaseCorrupt, TableConnectionException, IOException {
        try {
            dataBasePath = Functions.openDir();
        } catch (NullPointerException ex) {
            System.out.println(System.getProperty("fizteh.db.dir") + ": No input");
            System.exit(1);
        } catch (FileNotFoundException ex) {
-           System.out.println(System.getProperty("fizteh.db.dir") + ": No such directory");
+           System.out.println(System.getProperty("fizteh.db.dir") + ": is not directory");
            System.exit(1);
        }
        tableRowCount = new HashMap<String, Integer>();
@@ -30,8 +30,11 @@ public class DataBase {
        isChoose = false;
     }
     
-    private void setRowCount() throws MapExcept, DataBaseCorrupt {
-        File ctFile = new File(dataBasePath.toString());
+    
+    private void setRowCount() throws MapException, DataBaseCorrupt {
+        File ctFile = dataBasePath.toFile();
+        
+        //get all directories name
         String[] dirList = ctFile.list();
         for (String curTable : dirList) {
             Path curDir = ctFile.toPath().resolve(curTable);
@@ -42,7 +45,7 @@ public class DataBase {
             tableRowCount.put(curTable, c);
          }
     }
-    private int setTableRowCount(String curTable) throws MapExcept, DataBaseCorrupt {
+    private int setTableRowCount(String curTable) throws MapException, DataBaseCorrupt {
         File ctFile = new File(curTable);
         String[] dirList = ctFile.list();
         int c = 0;
@@ -57,15 +60,15 @@ public class DataBase {
         return c;
     }
     
-    private int tableRowCount(Path tableDir) throws DataBaseCorrupt, MapExcept {
-        File curDir = new File(tableDir.toString());
+    private int tableRowCount(Path tableDir) throws DataBaseCorrupt, MapException {
+        File curDir = tableDir.toFile();
         String[] dirList = curDir.list();
         int rowCount = 0;
         for (String curName : dirList) {
             Path curFile = tableDir.resolve(curName);
             if (curName.matches("([0-9]|1[0-5])\\.dat")) {
                 Table it = new Table(curFile.toString());
-                int curCnt = it.getRowCoutn();
+                int curCnt = it.getRowCount();
                 if (curCnt == 0) {
                     throw new DataBaseCorrupt("DataBase corrupted: dataBase contains empty files"); 
                 } else {
@@ -80,25 +83,21 @@ public class DataBase {
     }
     
     public void showTables() {
-        Set<String> it = tableRowCount.keySet();
-        
+        Set<String> it = tableRowCount.keySet();   
         for (String cur : it) {
             System.out.println(cur + " " + tableRowCount.get(cur));
         }
     }
-    /*      
-     * */
-    public void create(String tbName) throws MapExcept, IOException {
+    public void create(String tbName) throws MapException, IOException {
         if (tableRowCount.containsKey(tbName)) {
-            throw new MapExcept(tbName + ":  tablename exists");
+            throw new MapException(tbName + ":  tablename exists");
         }
-        File ct = new File(tbName);
-        Files.createDirectory(dataBasePath.resolve(ct.toPath()));
+        Files.createDirectory(dataBasePath.resolve(tbName));
         tableRowCount.put(tbName, 0);
     }
-    public void drop(String tbName) throws MapExcept, IOException {
+    public void drop(String tbName) throws MapException, IOException {
         if (!tableRowCount.containsKey(tbName)) {
-            throw new MapExcept(tbName + ":  no table");
+            throw new MapException(tbName + ":  no table");
         }
         if (isChoose && sTable.getTableName().equals(tbName)) {
             isChoose = false;
@@ -112,59 +111,55 @@ public class DataBase {
         return dataBasePath;
     }
     
-    public void use(String tbName) throws TableConnectionError, DataBaseCorrupt, MapExcept {
+    public void use(String tbName) throws TableConnectionException, DataBaseCorrupt, MapException, IOException {
         if (!tableRowCount.containsKey(tbName)) {
-            throw new MapExcept("use: '" + tbName + "': tablename not exists");
+            throw new MapException("use: '" + tbName + "': tablename not exists");
         }
         if (isChoose) {
             // 
             this.commit();
         }
-        
         sTable = new SuperTable(dataBasePath.resolve(tbName));
-        try {
-            isChoose = true;
-            System.out.println("Using " + tbName);
-        } catch (Exception ex) {
-            throw ex;
-        }
+        isChoose = true;
+        System.out.println("Using " + tbName);
     }
-    public void list() throws MapExcept {
+    public void list() throws MapException {
         if (!isChoose) {
-            throw new MapExcept("no table");
+            throw new MapException("no table");
         } else {
             sTable.showTableList();
             System.out.println("");
         }
         
     }
-    public void commit() throws MapExcept {
+    public void commit() throws MapException, IOException {
         if (isChoose) {
             sTable.commit();
         }
     }
-    public void put(String key, String value) throws MapExcept, IOException, DataBaseCorrupt {
+    public void put(String key, String value) throws MapException, IOException, DataBaseCorrupt {
         if (!isChoose) {
-            throw new MapExcept("no table");
+            throw new MapException("no table");
         } else {
             if (!sTable.put(key, value)) {
                 tableRowCount.put(sTable.getTableName(), tableRowCount.get(sTable.getTableName()) + 1);
             }
         }
     }
-    public void get(String key) throws MapExcept {
+    public void get(String key) throws MapException {
         if (!isChoose) {
-            throw new MapExcept("no table");
+            throw new MapException("no table");
         } else {
             sTable.get(key);
         }
     }
-    public void remove(String key) throws MapExcept {
+    public void remove(String key) throws MapException {
         if (!isChoose) {
-            throw new MapExcept("no table");
+            throw new MapException("no table");
         } else {
             if (sTable.remove(key)) {
-                tableRowCount.put(sTable.getTableName(), tableRowCount.get(sTable.getTableName()) - 1);
+            	int k = tableRowCount.get(sTable.getTableName()) - 1;
+                tableRowCount.put(sTable.getTableName(), k);
             }
         }
     }

@@ -1,10 +1,11 @@
 package ru.fizteh.fivt.students.RadimZulkarneev.MultiFileHashMap;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 
 public class Intercative {
-    public static void conv() throws MapExcept, DataBaseCorrupt, TableConnectionError {
+    public static void conv() throws MapException, DataBaseCorrupt, TableConnectionException, IOException {
         try (Scanner in = new Scanner(System.in)) {
             DataBase dBase = new DataBase();
             System.out.print("$ ");

@@ -8,8 +8,8 @@ public class MultiFileHashMapMain {
             } else {
                 InputParse.parse(arg);
             }
-        } catch (Exception ex) {
-            System.out.println(ex.toString());
+        } catch (Exception |OutOfMemoryError ex) {
+            System.out.println("database error: " + ex.toString());
         }
     }
 }

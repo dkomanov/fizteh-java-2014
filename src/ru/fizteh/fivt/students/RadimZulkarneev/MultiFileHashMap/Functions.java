@@ -11,47 +11,50 @@ public final class Functions {
         //
     }
 
-    public static void makeDbFile(final String fileName) throws MapExcept {
+    public static void makeDbFile(final String fileName) throws MapException {
         File ctFile = new File(fileName);
         if (ctFile.isDirectory()) {
-            throw new MapExcept("It is a directory");
+            throw new MapException("It is a directory");
         }
         if (ctFile.exists()) {
-            throw new MapExcept("MakeDbFile: File already exist");
+            throw new MapException("MakeDbFile: File already exist");
         } else {
             try {
                 Files.createFile(ctFile.toPath());
             } catch (IOException e) {
-                throw new MapExcept("MakeDbFile: some errors");
+                throw new MapException("MakeDbFile: some errors");
             }
         }
     }
     public static void makeDbFileHard(final String
-            fileName) throws MapExcept {
+            fileName) throws MapException {
         File ctFile = new File(fileName);
         try {
             Files.deleteIfExists(ctFile.toPath());
             Files.createFile(ctFile.toPath());
         } catch (IOException e) {
-            throw new MapExcept(e.getMessage());
+            throw new MapException(e.getMessage());
         }
     }
     
-    public static Path openDir() throws FileNotFoundException {
+    public static Path openDir() throws IOException {
         File ctFile = new File(System.getProperty("fizteh.db.dir"));
-        if (System.getProperty("fizteh.db.dir").equals(null)) {
+        if (System.getProperty("fizteh.db.dir") == null) {
             throw new NullPointerException();
         }
-        if (!ctFile.exists() || !ctFile.isDirectory()) {
+        if (!ctFile.isDirectory() && ctFile.exists()) {
             throw new FileNotFoundException();
+        } 
+        if (!ctFile.exists()) {
+        	Files.createDirectory(ctFile.toPath());
         }
         return ctFile.toPath();
     }
     
-    public static void rmDir(Path tableName) throws MapExcept, IOException {
+    public static void rmDir(Path tableName) throws MapException, IOException {
         File ct = tableName.toFile();
         if (!ct.exists()) {
-            throw new MapExcept(tableName.getFileName() + ": tablename not exists");
+            throw new MapException(tableName.getFileName() + ": tablename not exists");
         }
         String[] dirs = ct.list();
         for (String currentDir : dirs) {

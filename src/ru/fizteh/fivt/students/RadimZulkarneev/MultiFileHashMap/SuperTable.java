@@ -15,7 +15,7 @@ import java.util.Set;
 public class SuperTable {
     private Path tablePath;
     private Map<String, Table> src;
-    public SuperTable(Path tableDir) throws TableConnectionError, DataBaseCorrupt, MapExcept {
+    public SuperTable(Path tableDir) throws TableConnectionException, DataBaseCorrupt, MapException {
         checkTableDir(tableDir);
         tablePath = tableDir;
         src = new HashMap<String, Table>();
@@ -23,15 +23,14 @@ public class SuperTable {
     }
     
     
-    private void checkTableDir(Path tableDir) throws TableConnectionError {
-        File ctFile = new File(tableDir.toString());
+    private void checkTableDir(Path tableDir) throws TableConnectionException {
+        File ctFile = tableDir.toFile();
         if (!ctFile.exists()) {
-            throw new TableConnectionError("can't use table '" + tableDir.getFileName().toString()
-                    + "': No such table");
+            throw new TableConnectionException("can't use table '" + tableDir.getFileName() + "': No such table");
         }
     }
     
-    private void initSuperTable() throws DataBaseCorrupt, MapExcept {
+    private void initSuperTable() throws DataBaseCorrupt, MapException {
         String[] files = tablePath.toFile().list();
         for (String it : files) {
             if (it.matches("([0-9]|1[0-5])\\.dir")) {
@@ -42,7 +41,7 @@ public class SuperTable {
         }
     }
     
-    private void initTable(Path filePath) throws MapExcept, DataBaseCorrupt {
+    private void initTable(Path filePath) throws MapException, DataBaseCorrupt {
         try {
             String[] files = filePath.toFile().list();
             for (String it : files) {
@@ -59,18 +58,16 @@ public class SuperTable {
         }
     }
     
-    public boolean put(String key, String value) throws IOException, DataBaseCorrupt, MapExcept {
+    public boolean put(String key, String value) throws IOException, DataBaseCorrupt, MapException {
         String dest = destinationOfKey(key);
 
         if (src.containsKey(dest)) {
             return src.get(dest).put(key, value);
         } else {
             //
-            try {
-                Files.createDirectory(tablePath.resolve(getDirName(dest)));
-            } catch (FileAlreadyExistsException ex) {
-                //
-            }
+        	if (!tablePath.resolve(getDirName(dest)).toFile().exists()) {
+        		Files.createDirectory(tablePath.resolve(getDirName(dest)));
+        	}
             Table newTable = new Table(tablePath.resolve(getDirName(dest)).resolve(getFileName(dest)).toString());
             src.put(dest, newTable);
             return newTable.put(key, value);
@@ -78,10 +75,7 @@ public class SuperTable {
     }
     
     public void showTableList() {
-        Set<Entry<String, Table>> tableSet = src.entrySet();
-        Iterator<Entry<String, Table>> it = tableSet.iterator();
-        while (it.hasNext()) {
-            Entry<String, Table> current = (Entry<String, Table>) it.next();
+        for (Entry<String, Table> current : src.entrySet()) {
             current.getValue().listCommand();
         }
     }  
@@ -136,12 +130,13 @@ public class SuperTable {
         return retVal;
     }
     
-    public void commit() throws MapExcept {
-        Set<Entry<String, Table>> tableSet = src.entrySet();
-        Iterator<Entry<String, Table>> it = tableSet.iterator();
-        while (it.hasNext()) {
-            Entry<String, Table> current = (Entry<String, Table>) it.next();
+    public void commit() throws MapException, IOException {
+        for (Entry<String, Table> current : src.entrySet()) {
             current.getValue().writeInFile();
+            Path it = current.getValue().tablePath().getParent();
+            if (it.toFile().list().length == 0) {
+            	Files.delete(it);
+            }
         }
 
     }

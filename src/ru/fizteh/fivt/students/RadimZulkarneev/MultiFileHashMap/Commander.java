@@ -5,9 +5,12 @@ import java.util.ArrayList;
 
 public class Commander {
     public static void command(final String[] com, DataBase dBase) 
-            throws MapExcept, IOException, TableConnectionError, DataBaseCorrupt {
+            throws MapException, IOException, TableConnectionException, DataBaseCorrupt {
         if (com.length == 0) {
             return;
+        }
+        if (argumentsOverflowAssertion(com[0], com.length)) {
+        	throw new MapException(com[0] + ": too much arguments");
         }
         switch (com[0]) {
         case "create":
@@ -16,9 +19,12 @@ public class Commander {
             break;
         case "show":
             if (com[1].equals("tables")) {
+            	if (com.length > 2) {
+            		throw new MapException("show tables: too much arguments");
+            	}
                 dBase.showTables();
             } else {
-                throw new MapExcept(com[0] + " " + com[1] + ": No such command");
+                throw new MapException(com[0] + " " + com[1] + ": No such command");
             }
             break;
         case "get":
@@ -43,14 +49,17 @@ public class Commander {
             dBase.commit();
             throw new IllegalStateException();
         default:
-            throw new MapExcept(com[0] + ": No such command");
+            throw new MapException(com[0] + ": No such command");
         }
     }
     
     public static void commandExec(final ArrayList<String> com, final DataBase dBase) 
-            throws MapExcept, IOException, DataBaseCorrupt, TableConnectionError  {
+            throws MapException, IOException, DataBaseCorrupt, TableConnectionException  {
         if (com.size() == 0) {
             return;
+        }
+        if (argumentsOverflowAssertion(com.get(0), com.size())) {
+        	throw new MapException(com.get(0) + "too much arguments");
         }
         switch (com.get(0)) {
         case "create":
@@ -58,10 +67,14 @@ public class Commander {
             System.out.println("created");
             break;
         case "show":
+        	
             if (com.get(1).equals("tables")) {
-                dBase.showTables();
+            	if (com.size() > 2) {
+            		throw new MapException("show tables: too much arguments");
+            	}
+            	dBase.showTables();
             } else {
-                throw new MapExcept(com.get(0) + " " + com.get(1) + ": No such command");
+                throw new MapException(com.get(0) + " " + com.get(1) + ": No such command");
             }
             break;
         case "get":
@@ -86,8 +99,25 @@ public class Commander {
             dBase.commit();
             throw new IllegalStateException();
         default:
-            throw new MapExcept(com.get(1) + ": No such command");
+            throw new MapException(com.get(1) + ": No such command");
         }
     }
-
+    
+    private static boolean argumentsOverflowAssertion(String command, int argCount) {
+    	switch (command) {
+    	case "create":
+    		return argCount > 2;
+		case "drop":
+    		return argCount > 2;
+		case "use":
+    		return argCount > 2;
+		case "put":
+    		return argCount > 3;
+		case "list":
+    		return argCount > 1;
+		case "remove":
+    		return argCount > 2;
+		default: return false;
+    	}
+    }
 }
