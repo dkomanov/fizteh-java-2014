@@ -101,7 +101,8 @@ public class FileMap {
                         usedDirs[ndirectory] = true;
                     }
                     usedFiles[ndirectory][nfile] = true;
-                    fos[ndirectory][nfile] = new FileOutputStream(dbPath + File.separator + ndirectory + ".dir" + File.separator + nfile + ".dat");
+                    fos[ndirectory][nfile] = new FileOutputStream(dbPath + File.separator + ndirectory + ".dir"
+                            + File.separator + nfile + ".dat");
                 }
                 byte[] keyInBytes = new byte[0];
                 byte[] valueInBytes = new byte[0];
