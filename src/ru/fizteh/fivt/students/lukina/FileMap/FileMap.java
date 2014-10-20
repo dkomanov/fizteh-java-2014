@@ -116,6 +116,7 @@ public/* abstract */class FileMap {
                     } else {
                         printError("unknown command format");
                     }
+//
                     break;
                 default:
                     printError("unknown_command");
@@ -197,6 +198,9 @@ public/* abstract */class FileMap {
             while (scanner.hasNext()) {
                 String string = "";
                 string = scanner.next();
+                if (string.equals("exit")) {
+                    break;
+                }
                 if (!string.isEmpty()) {
                     execProc(getArgsFromString(string));
                 }
