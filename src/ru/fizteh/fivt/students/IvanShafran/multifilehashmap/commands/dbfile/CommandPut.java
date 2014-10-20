@@ -51,7 +51,8 @@ public class CommandPut extends Command {
         DBFile dbFile = dbTable.getMapOfDBFiles().get(nDirectory).get(nFile);
 
         if (dbFile.getHashMap().containsKey(key)) {
-            AbstractShell.printInformation("overwrite old value");
+            AbstractShell.printInformation("overwrite");
+            AbstractShell.printInformation(dbTable.getMapOfDBFiles().get(nDirectory).get(nFile).getHashMap().get(key));
         } else {
             AbstractShell.printInformation("new");
         }

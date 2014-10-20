@@ -43,7 +43,7 @@ public class CommandRemove extends Command {
         DBFile dbFile = dbTable.getMapOfDBFiles().get(nDirectory).get(nFile);
 
         if (dbFile.getHashMap().containsKey(key)) {
-            AbstractShell.printInformation("remove");
+            AbstractShell.printInformation("removed");
         } else {
             AbstractShell.printInformation("not found");
         }
