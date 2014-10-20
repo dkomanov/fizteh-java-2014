@@ -19,8 +19,11 @@ public class MultiFileHashMap {
     public static boolean errorOccurred;
 
     public static boolean exec(String[] args) {
-        //dbDir = System.getProperty("fizteh.db.dir");
-        dbDir = new String("/Users/luba_yaronskaya/Documents/workspace/db.dir");
+        dbDir = System.getProperty("fizteh.db.dir");
+        if (dbDir == null) {
+            System.err.println("database unspecified in properties");
+            return false;
+        }
         if (!Files.exists(Paths.get(dbDir))) {
             try {
                 Files.createDirectory(Paths.get(dbDir));
