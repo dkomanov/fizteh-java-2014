@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.maxim_rep.multifilehashmap.commands;
 
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
-import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.IoLib;
+import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.TableDataMap;
 
 public class Drop implements DBCommand {
 
@@ -11,20 +11,44 @@ public class Drop implements DBCommand {
         this.tableName = tableName;
     }
 
+    @SuppressWarnings("resource")
+    private boolean dropTable(String tableName) {
+        if (!DbMain.databaseExists(DbMain.databasefilePath
+                + System.getProperty("file.separator") + tableName)) {
+            return false;
+        }
+
+        try {
+            TableDataMap fileStoredStringMap = new TableDataMap(
+                    DbMain.databasefilePath, tableName);
+            fileStoredStringMap.drop(tableName);
+        } catch (Exception e) {
+            System.out.println("Database critical error");
+            return false;
+        }
+
+        if (tableName.equals(DbMain.currentTable)) {
+            DbMain.fileStoredStringMap.clear();
+        }
+        return true;
+    }
+
     @Override
     public boolean execute() {
-        if (!IoLib.tableExists(tableName)) {
+        if (!DbMain.databaseExists(DbMain.databasefilePath
+                + System.getProperty("file.separator") + tableName)) {
             System.out.println(tableName + " not exists");
             return false;
         }
 
-        if (!IoLib.dropTable(tableName)) {
+        if (!dropTable(tableName)) {
             System.out.println("Database Error: Couldn't delete table files: "
                     + tableName);
             return false;
         } else {
             if (tableName.equals(DbMain.currentTable)) {
                 DbMain.currentTable = null;
+                DbMain.fileStoredStringMap = null;
             }
             System.out.println("dropped");
             return true;

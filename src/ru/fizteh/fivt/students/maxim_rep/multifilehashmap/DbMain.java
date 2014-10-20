@@ -3,19 +3,35 @@ package ru.fizteh.fivt.students.maxim_rep.multifilehashmap;
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.commands.*;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class DbMain {
-    public static String filePath;
-    public static String currentTable = null;
+    public static String databasefilePath;
+    public static String currentTable;
+    public static TableDataMap fileStoredStringMap;
+
+    public static boolean databaseExists(String filePath) {
+        File file;
+        file = new File(filePath);
+        if (!file.exists() || file.isFile()) {
+            return false;
+        }
+        return true;
+    }
 
     public static void main(String[] args) throws IOException {
-        DbMain.filePath = System.getProperty("fizteh.db.dir");
-
-        if (!IoLib.databaseExists(DbMain.filePath)) {
+        databasefilePath = System.getProperty("fizteh.db.dir");
+        if (databasefilePath == null) {
+            System.out.println("Use -Dfizteh.db.dir=\"dir\" in JVM parameter");
             System.exit(-1);
         }
+
+        if (!databaseExists(databasefilePath)) {
+            System.exit(-1);
+        }
+
         if (args.length == 0) {
             System.exit(interactiveMode());
         } else {
@@ -34,6 +50,12 @@ public class DbMain {
         String[] commandsString = Parser.divideByChar(commandline, ";");
         for (String commandsString1 : commandsString) {
             DBCommand command = Parser.getCommandFromString(commandsString1);
+
+            if (command.getClass() == Exit.class) {
+                command.execute();
+                return 0;
+            }
+
             if (!command.execute()) {
                 System.exit(-1);
                 return -1;
@@ -60,6 +82,7 @@ public class DbMain {
                 DBCommand command = Parser
                         .getCommandFromString(commandsString1);
                 if (command.getClass() == Exit.class) {
+                    command.execute();
                     return 0;
                 }
                 command.execute();

@@ -89,7 +89,7 @@ public class Parser {
                 if (!argsMatch(comName, argsNum, 3)) {
                     return new EmptyCommand();
                 }
-                return new Put(DbMain.filePath, comArgs[1], comArgs[2]);
+                return new Put(comArgs[1], comArgs[2]);
             case "get":
                 if (!argsMatch(comName, argsNum, 2)) {
                     return new EmptyCommand();
@@ -107,7 +107,7 @@ public class Parser {
                 if (!comArgs[1].equals("tables")) {
                     return new UnknownCommand(str);
                 }
-                return new Show(comArgs[1]);
+                return new Show();
             case "drop":
                 if (!argsMatch(comName, argsNum, 2)) {
                     return new EmptyCommand();
@@ -124,12 +124,12 @@ public class Parser {
                 if (!argsMatch(comName, argsNum, 2)) {
                     return new EmptyCommand();
                 }
-                return new Remove(DbMain.filePath, comArgs[1]);
+                return new Remove(comArgs[1]);
             case "list":
                 if (!argsMatch(comName, argsNum, 1)) {
                     return new EmptyCommand();
                 }
-                return new List(DbMain.filePath);
+                return new List();
             default:
                 return new UnknownCommand(str);
             }
