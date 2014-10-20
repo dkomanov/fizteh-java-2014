@@ -22,16 +22,16 @@ public class ListCommand implements Commands<FileMapShellState> {
         MyTable temp = (MyTable) state.table;
         Set<String> keySet = temp.list();
         if (keySet.size() == 0) {
-        	System.out.println("\n");
-        	return;
+            System.out.println("\n");
+            return;
         }
         StringBuilder sb = new StringBuilder("");
         for(String key : keySet) {
-        	sb.append(key);
-        	sb.append(", ");
+            sb.append(key);
+            sb.append(", ");
         }
-        sb.deleteCharAt(sb.length()-1);
-        sb.deleteCharAt(sb.length()-1);
+        sb.deleteCharAt(sb.length() - 1);
+        sb.deleteCharAt(sb.length() - 1);
         System.out.println(sb.toString());
     }
 

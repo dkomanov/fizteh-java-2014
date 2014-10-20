@@ -30,9 +30,9 @@ public abstract class SomeTable implements MyTable {
     }
     
     public Set<String> list() {
-    	Set<String> toReturnSafe = new HashSet<String>();
-    	toReturnSafe = currentData.keySet();
-    	return toReturnSafe;
+        Set<String> toReturnSafe = new HashSet<String>();
+        toReturnSafe = currentData.keySet();
+        return toReturnSafe;
     }
     
     public int getChangesCounter() {
@@ -64,9 +64,9 @@ public abstract class SomeTable implements MyTable {
         try {
             load();
         } catch (SomethingIsWrongException e) {
-        	if (e.getMessage() != "Unable to scan from disc." && e.getMessage() != "Empty file") {
+            if (!e.getMessage().equals("Unable to scan from disc.") && !e.getMessage().equals("Empty file")) {
                 System.err.println("Error aqcuired while opening a table. Message: " + e.getMessage());
-        	}
+            }
         }
         
     }

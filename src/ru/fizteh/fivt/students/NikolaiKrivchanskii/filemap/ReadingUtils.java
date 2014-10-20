@@ -131,10 +131,10 @@ public class ReadingUtils {
             try {
                 return tempFile.readInt();
             } catch (IOException e) {
-            	if (e.getMessage() != null) {
+                if (e.getMessage() != null) {
                     throw new SomethingIsWrongException("Error aqcuired while reading a file " + e.getMessage());
                  } else {
-                	 throw new SomethingIsWrongException("Empty file");
+                     throw new SomethingIsWrongException("Empty file");
                  }
             }
         }
