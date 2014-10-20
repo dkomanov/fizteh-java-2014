@@ -12,12 +12,11 @@ public class Get extends Command {
 
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
-        if (args.length != argLen) {
-            System.err.println("Incorrect number of arguments in " + name);
+        if (!checkArguments(args.length)) {
             return false;
         }
         if (dbConnector.activeTable == null) {
-            System.err.println("No table are used now");
+            noTable();
             return false;
         }
         String value = dbConnector.activeTable.get(args[0]);

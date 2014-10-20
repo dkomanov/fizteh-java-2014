@@ -16,7 +16,7 @@ public class Remove extends Command {
             return false;
         }
         if (dbConnector.activeTable == null) {
-            System.err.println("No table are used now");
+            noTable();
             return false;
         }
         if (dbConnector.activeTable.remove(args[0]) != null) {

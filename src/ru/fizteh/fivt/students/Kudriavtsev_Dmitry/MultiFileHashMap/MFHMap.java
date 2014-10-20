@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.MultiFileHashMap;
 
-import javafx.util.Pair;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -113,10 +111,7 @@ public class MFHMap extends HashMap<String, String> {
                         if (Files.exists(nameOfPath(i, j))) {
                             Files.delete(nameOfPath(i, j));
                         }
-                        if (Files.exists(nameOfPath(i))) {
-                            for (String value : nameOfPath(i).toFile().list()) {
-                                Files.delete(nameOfPath(i, value));
-                            }
+                        if (Files.exists(nameOfPath(i)) && nameOfPath(i).toFile().list().length == 0) {
                             Files.delete(nameOfPath(i));
                         }
                     }

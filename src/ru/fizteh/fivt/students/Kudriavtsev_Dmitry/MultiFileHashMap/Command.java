@@ -27,6 +27,10 @@ public abstract class Command {
         return true;
     }
 
+    protected void noTable() {
+        System.err.println("No table");
+    }
+
     public abstract boolean exec(Connector dbConnector, String[] args);
 
     @Override
