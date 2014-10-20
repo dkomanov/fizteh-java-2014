@@ -26,7 +26,7 @@ public class ListCommand implements Commands<FileMapShellState> {
             return;
         }
         StringBuilder sb = new StringBuilder("");
-        for(String key : keySet) {
+        for (String key : keySet) {
             sb.append(key);
             sb.append(", ");
         }
