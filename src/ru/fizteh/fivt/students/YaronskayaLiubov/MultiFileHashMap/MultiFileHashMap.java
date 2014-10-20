@@ -19,7 +19,8 @@ public class MultiFileHashMap {
     public static boolean errorOccurred;
 
     public static boolean exec(String[] args) {
-        dbDir = System.getProperty("fizteh.db.dir");
+        //dbDir = System.getProperty("fizteh.db.dir");
+        dbDir = new String("/Users/luba_yaronskaya/Documents/workspace/db.dir");
         if (!Files.exists(Paths.get(dbDir))) {
             try {
                 Files.createDirectory(Paths.get(dbDir));
@@ -58,7 +59,7 @@ public class MultiFileHashMap {
                     String[] argv = s.trim().split("\\s+");
                     String curCommand = argv[0];
                     if (curCommand.equals("")) {
-                        System.out.print(System.getProperty("user.dir") + "$ ");
+                        //System.out.print(System.getProperty("user.dir") + "$ ");
                         continue;
                     }
                     if (multiFileHashMapCommands.get(curCommand) == null) {
