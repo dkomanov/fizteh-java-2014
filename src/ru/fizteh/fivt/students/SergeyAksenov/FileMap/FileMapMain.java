@@ -16,16 +16,17 @@ public class FileMapMain {
     public static void main(String[] args) {
        try {
             HashMap<String, Command> commandMap = initHashMap();
+            FileDataBase dataBase = new FileDataBase();
             Environment env = new Environment(args);
             if (env.packageMode) {
-                Executor.packageAppender(args, commandMap, env);
+                Executor.packageAppender(args, commandMap, env, dataBase);
             } else {
-                Executor.interactiveMode(commandMap, env);
+                Executor.interactiveMode(commandMap, env, dataBase);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.exit(-1);
-        }//
+        }
     }
 }
 

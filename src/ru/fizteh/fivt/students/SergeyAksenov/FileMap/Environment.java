@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.SergeyAksenov.FileMap;
 public final class Environment {
 
     public String currentDirectory;
-//
+
     public boolean packageMode;
 
     public Environment(final String[] args) {

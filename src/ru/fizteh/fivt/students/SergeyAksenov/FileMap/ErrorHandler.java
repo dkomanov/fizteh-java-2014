@@ -7,7 +7,7 @@ public class ErrorHandler {
         throw new FileMapException(
                 command + ": invalid number of arguments");
     }
-//
+
     protected static final void canNotPerform(String command)
             throws FileMapException {
         throw new FileMapException(
