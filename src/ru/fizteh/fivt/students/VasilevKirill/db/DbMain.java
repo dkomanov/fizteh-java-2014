@@ -22,6 +22,11 @@ public class DbMain {
         commands.put(new ListCommand().toString(), new ListCommand());
         commands.put(new GetCommand().toString(), new GetCommand());
         int retValue = 0;
+        String dbFile = System.getProperty("db.file");
+        if (dbFile == null) {
+            System.err.println("Path is incorrect");
+            System.exit(-1);
+        }
         try (FileMap fileMap = new FileMap(System.getProperty("db.file"))) {
             Status newStatus = new Status(fileMap);
             if (args.length == 0) {
