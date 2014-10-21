@@ -10,20 +10,22 @@ import java.nio.file.Paths;
  * Created by sautin1 on 10/12/14.
  */
 public class Main {
-    private static final String FILENAME = "db.file";
+    private static final String PROPERTY_NAME = "db.file";
 
     public static void main(String[] args) {
-        //System.setProperty(FILENAME,
-        //        "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/filemap/db.file");
-
         int exitStatus = 0;
         try {
-            StringTable table = new StringTable(FILENAME, true);
-            String filePathString = System.getProperty(FILENAME);
+            /*System.setProperty(PROPERTY_NAME,
+                    "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test2");*/
+            Path filePath;
+            String filePathString = System.getProperty(PROPERTY_NAME);
             if (filePathString == null) {
-                System.setProperty(FILENAME, Paths.get("db.dat").toString());
+                throw new IllegalArgumentException("Property " + PROPERTY_NAME + " does not exist");
+            } else {
+                filePath = Paths.get(filePathString);
             }
-            Path filePath = Paths.get(System.getProperty(FILENAME));
+            StringTable table = new StringTable(filePath.getFileName().toString(), true);
+
             StringTableIOTools tableIOTools = new StringTableIOTools();
             tableIOTools.readTable(filePath, table);
 

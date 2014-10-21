@@ -102,26 +102,4 @@ public class Shell<T> {
         }
     }
 
-    public static void main(String[] args) {
-        Command[] shellCommands = {
-                new CatCommand(), new CdCommand(), new CpCommand(),
-                new LsCommand(), new MkDirCommand(), new MvCommand(),
-                new PwdCommand(), new RmCommand(), new ExitCommand<ShellState>()
-        };
-
-        ShellState state = new ShellState();
-        ShellCommandParser shellCommandParser = new ShellCommandParser();
-        @SuppressWarnings("unchecked")
-        Shell<ShellState> shell = new Shell<>(state, shellCommands, shellCommandParser);
-        int exitStatus = 0;
-        try {
-            shell.startWork(args);
-        } catch (UserInterruptException e) {
-            exitStatus = 0;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            exitStatus = 1;
-        }
-        System.exit(exitStatus);
-    }
 }
