@@ -18,7 +18,7 @@ public class Table extends HashMap<String, String> {
         tablePath = path;
     }
 
-    private void readKeyValue(Path filePath, int dir, int file) throws MyIOException{
+    private void readKeyValue(Path filePath, int dir, int file) throws MyIOException {
 
         if (Files.exists(filePath)) {
             try (DataInputStream is = new DataInputStream(Files.newInputStream(filePath))) {
