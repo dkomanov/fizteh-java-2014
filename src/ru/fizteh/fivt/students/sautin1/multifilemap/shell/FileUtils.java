@@ -46,4 +46,14 @@ public class FileUtils {
         }
         removeRecursively(dirPath);
     }
+
+    public static void clearDirectory(Path dirPath) throws IOException {
+        if (!Files.exists(dirPath) || !Files.isDirectory(dirPath)) {
+            throw new FileNotFoundException(dirPath.getFileName().toString());
+        }
+        List<Path> paths = listFiles(dirPath);
+        for (Path entry : paths) {
+            removeRecursively(entry);
+        }
+    }
 }

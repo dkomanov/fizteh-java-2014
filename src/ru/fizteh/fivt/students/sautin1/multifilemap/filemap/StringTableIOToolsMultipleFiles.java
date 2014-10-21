@@ -102,6 +102,46 @@ public class StringTableIOToolsMultipleFiles implements TableIOTools<String, Str
     }
 
     /**
+     * Generates number of the file by the key.
+     * @param key - key.
+     * @return number of the file.
+     */
+    protected int generateFileNumber(String key) {
+        return key.hashCode() / 16 % 16;
+    }
+
+    /**
+     * Generates number of the dir by the key.
+     * @param key - key.
+     * @return number of the dir.
+     */
+    protected int generateDirNumber(String key) {
+        return key.hashCode() % 16;
+    }
+
+    /**
+     * Returns an integer, stored in the name of the file by path filePath.
+     * @param filePath - path to the file.
+     * @return number, encoded in file name.
+     */
+    protected int fileNameToNumber(Path filePath) {
+        String[] tokens = filePath.getFileName().toString().split("\\.");
+        return Integer.parseInt(tokens[0]);
+    }
+
+    /**
+     * Checks whether key is in the right directory and file.
+     * @param key - checked test.
+     * @param filePath - path to the file, where the key was stored.
+     * @return true, if this path is correct for given key; false - otherwise.
+     */
+    protected boolean checkKeyPlace(String key, Path filePath) {
+        boolean rightPlace = (fileNameToNumber(filePath) == generateFileNumber(key));
+        rightPlace = rightPlace && (fileNameToNumber(filePath.getParent()) == generateDirNumber(key));
+        return rightPlace;
+    }
+
+    /**
      * Loads one file to table. Name of the file is correct.
      * @param filePath - path to the file to read from.
      * @param table - table to be written to.
@@ -115,15 +155,19 @@ public class StringTableIOToolsMultipleFiles implements TableIOTools<String, Str
                 if (key == null) {
                     break;
                 }
+                if (!checkKeyPlace(key, filePath)) {
+                    String wrongPathString = filePath.getParent().getFileName().toString();
+                    wrongPathString += "/" + filePath.getFileName().toString();
+                    throw new IOException("Wrong path " + wrongPathString + " for key " + key);
+                }
                 String value = readEncodedString(inStream);
                 if (value == null) {
-                    throw new IOException("File is corrupted");
+                    String exceptionMessage = "File " + filePath.getFileName().toString() + " is corrupted";
+                    throw new IOException(exceptionMessage);
                 }
                 table.put(key, value);
                 ++loadedEntriesNumber;
             }
-        } catch (IOException e) {
-            throw new IOException(e.getMessage());
         }
         return loadedEntriesNumber;
     }
@@ -147,7 +191,7 @@ public class StringTableIOToolsMultipleFiles implements TableIOTools<String, Str
             }
             int loadedFromFile = loadFileToTable(filePath, table);
             if (loadedFromFile == 0) {
-                FileUtils.removeRecursively(filePath);
+                throw new IOException("Database is corrupted: " + filePath.getFileName().toString() + " is empty");
             } else {
                 loadedEntriesNumber += loadedFromFile;
             }
@@ -176,6 +220,7 @@ public class StringTableIOToolsMultipleFiles implements TableIOTools<String, Str
         if (!Files.exists(tablePath)) {
             throw new FileNotFoundException("No table with such name");
         }
+        int totalEntriesLoaded = 0;
         for (int dirIndex = 0; dirIndex < dirQuantity; ++dirIndex) {
             String dirName = "" + dirIndex + "." + dirExtension;
             Path dirPath = tablePath.resolve(dirName);
@@ -186,9 +231,13 @@ public class StringTableIOToolsMultipleFiles implements TableIOTools<String, Str
                 throw new NotDirectoryException(dirName + " is not a directory");
             }
             int loadedEntriesNumber = loadDirectoryToTable(dirPath, table);
+            totalEntriesLoaded += loadedEntriesNumber;
             if (loadedEntriesNumber == 0) {
-                FileUtils.removeDirectory(dirPath);
+                throw new IOException("Database is corrupted: " + dirPath.getFileName().toString() + " is empty");
             }
+        }
+        if (totalEntriesLoaded == 0) {
+            throw new IOException("Database is corrupted: " + tablePath.getFileName().toString() + " is empty");
         }
         return table;
     }
@@ -204,18 +253,20 @@ public class StringTableIOToolsMultipleFiles implements TableIOTools<String, Str
             return;
         }
         Path tablePath = rootPath.resolve(table.getName());
-        if (Files.exists(tablePath) && !Files.isDirectory(tablePath)) {
-            throw new FileAlreadyExistsException("File " + table.getName() + "  exists");
-        }
         if (!Files.exists(tablePath)) {
             Files.createDirectory(tablePath);
+        }
+        try {
+            FileUtils.clearDirectory(tablePath);
+        } catch (FileNotFoundException e) {
+            throw new IOException("Cannot create directory " + e.getMessage());
         }
 
         for (Map.Entry<String, String> entry : table) {
             String key = entry.getKey();
             String value = entry.getValue();
-            int dirNumber  = key.hashCode() % 16;
-            int fileNumber = key.hashCode() / 16 % 16;
+            int dirNumber  = generateDirNumber(key);
+            int fileNumber = generateFileNumber(key);
             String fileName = "" + fileNumber + "." + fileExtension;
             String dirName  = "" + dirNumber  + "." + dirExtension;
             Path dirPath = tablePath.resolve(dirName);
@@ -230,9 +281,12 @@ public class StringTableIOToolsMultipleFiles implements TableIOTools<String, Str
                 Files.createFile(filePath);
             }
             try (OutputStream outStream = Files.newOutputStream(filePath)) {
-                writeEncodedString(outStream, entry.getKey());
-                writeEncodedString(outStream, entry.getValue());
+                writeEncodedString(outStream, key);
+                writeEncodedString(outStream, value);
             }
+        }
+        if (table.size() == 0) {
+            FileUtils.removeDirectory(tablePath);
         }
     }
 

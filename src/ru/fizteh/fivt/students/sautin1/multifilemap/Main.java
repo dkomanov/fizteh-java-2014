@@ -17,10 +17,11 @@ public class Main {
         int exitStatus = 0;
         try {
             Path filePath;
+            /**/System.setProperty(PROPERTY_NAME,
+                    "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test");
             String filePathString = System.getProperty(PROPERTY_NAME);
             if (filePathString == null) {
-                filePath = Paths.get("fizteh.db.dir");
-                System.setProperty(PROPERTY_NAME, filePath.toString());
+                throw new IllegalArgumentException("Property " + PROPERTY_NAME + " does not exist");
             } else {
                 filePath = Paths.get(filePathString);
             }

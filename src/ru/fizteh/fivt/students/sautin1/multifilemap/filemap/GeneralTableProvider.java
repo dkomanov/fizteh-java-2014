@@ -74,8 +74,11 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
      */
     public T createTable(String name) {
         Path tablePath = rootDir.resolve(name);
-        if (tableMap.get(name) != null || (Files.isDirectory(tablePath))) {
-            throw new IllegalArgumentException("Table already exists");
+        if (tableMap.get(name) != null) {
+            return null;
+        }
+        if (Files.isDirectory(tablePath)) {
+            throw new IllegalArgumentException("Directory with such name already exists");
         }
         try {
             Files.createDirectory(tablePath);

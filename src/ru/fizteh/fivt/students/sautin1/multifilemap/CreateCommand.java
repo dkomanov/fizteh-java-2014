@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.sautin1.multifilemap;
 
 import ru.fizteh.fivt.students.sautin1.multifilemap.filemap.AbstractStringDatabaseCommand;
 import ru.fizteh.fivt.students.sautin1.multifilemap.filemap.StringDatabaseState;
+import ru.fizteh.fivt.students.sautin1.multifilemap.filemap.StringTable;
 import ru.fizteh.fivt.students.sautin1.multifilemap.shell.CommandExecuteException;
 import ru.fizteh.fivt.students.sautin1.multifilemap.shell.UserInterruptException;
 
@@ -29,10 +30,12 @@ public class CreateCommand extends AbstractStringDatabaseCommand {
             throw new CommandExecuteException(toString() + ": wrong number of arguments");
         }
         try {
-            state.getTableProvider().createTable(args[1]);
-            System.out.println("created");
-        } catch (IllegalArgumentException e) {
-            System.err.println(args[1] + " exists");
+            StringTable newTable = state.getTableProvider().createTable(args[1]);
+            if (newTable == null) {
+                System.err.println(args[1] + " exists");
+            } else {
+                System.out.println("created");
+            }
         } catch (Exception e) {
             throw new CommandExecuteException(e.getMessage());
         }
