@@ -70,6 +70,8 @@ public class Shell<T> {
                 String newCommand = null;
                 if (scanner.hasNextLine()) {
                     newCommand = scanner.nextLine().trim();
+                } else {
+                    return;
                 }
                 try {
                     callCommands(newCommand);
