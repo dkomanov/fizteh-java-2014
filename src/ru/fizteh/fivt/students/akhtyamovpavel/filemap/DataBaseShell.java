@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.filemap;
 
 import ru.fizteh.fivt.students.akhtyamovpavel.filemap.commands.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,7 +18,11 @@ public class DataBaseShell extends AbstractShell implements AutoCloseable {
 
 
     DataBaseShell() {
-        initDataBaseFile();
+        try {
+            initDataBaseFile();
+        } catch (Exception e) {
+            printException("database path doesn't defined");
+        }
         try {
             open();
         } catch (Exception e) {
@@ -43,7 +48,13 @@ public class DataBaseShell extends AbstractShell implements AutoCloseable {
 
     private void open() throws Exception {
         if (!Files.exists(dataBasePath)) {
-            throw new Exception("connect: database file doesn't exists");
+            try {
+                Files.createFile(dataBasePath);
+            } catch (SecurityException se) {
+                throw new Exception("connect: permission to database file denied correctly");
+            } catch (IOException ioe) {
+                throw new Exception("connect: input/output error");
+            }
         }
         if (Files.isDirectory(dataBasePath) || Files.isSymbolicLink(dataBasePath)) {
             throw new Exception("connect: database destination is a directory or a symbolic link");
