@@ -39,9 +39,8 @@ public class CommandParser {
         return command.split("\\s+");
     }
 
-    public static boolean isRec(String command) {
-        int opt = command.indexOf("-r");
-        return opt != -1;
+    public static boolean isRecursive(String command) {
+        return command.indexOf("-r") != -1;
     }
 
     public static String getCmdName(String command) {

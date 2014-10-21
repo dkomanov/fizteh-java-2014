@@ -14,20 +14,23 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.*;
 public class ShellMain {
 
     public static void main(String[] args) {
+
+        ShellUtils mainContext = new ShellUtils();
+
         Command[] commands = new Command[]{
-            (Command<ShellState>) new ExitCommand(),
-            (Command<ShellState>) new LsCommand(),
-            (Command<ShellState>) new RmCommand(),
-            (Command<ShellState>) new CatCommand(),
-            (Command<ShellState>) new CdCommand(),
-            (Command<ShellState>) new CpCommand(),
-            (Command<ShellState>) new MkdirCommand(),
-            (Command<ShellState>) new MvCommand(),
-            (Command<ShellState>) new PwdCommand()
+            new LsCommand(mainContext),
+            new RmCommand(mainContext),
+            new CdCommand(mainContext),
+            new CpCommand(mainContext),
+            new MvCommand(mainContext),
+            new PwdCommand(mainContext),
+            new CatCommand(mainContext),
+            new ExitCommand(mainContext),
+            new MkdirCommand(mainContext)
         };
 
+        Shell shell = new Shell(commands, args);
 
-        Shell shell = new Shell(new ShellState(), args, commands);
         shell.exec();
     }
 }

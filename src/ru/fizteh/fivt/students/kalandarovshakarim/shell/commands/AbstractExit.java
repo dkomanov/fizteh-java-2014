@@ -5,20 +5,21 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
-
 /**
  *
  * @author Shakarim
  */
-public class ExitCommand extends AbstractExit<ShellUtils> {
+public abstract class AbstractExit<Type> extends AbstractCommand<Type> {
 
-    public ExitCommand(ShellUtils context) {
-        super(context);
+    public AbstractExit(Type context) {
+        super("exit", 0, context);
     }
 
     @Override
-    protected void onExit() {
-        // Nothing to do before exit.
+    public void exec(String[] args) {
+        onExit();
+        System.exit(args.length);
     }
+
+    protected abstract void onExit();
 }

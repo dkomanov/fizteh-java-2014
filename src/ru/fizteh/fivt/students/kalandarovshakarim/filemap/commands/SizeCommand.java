@@ -11,20 +11,15 @@ import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
  *
  * @author shakarim
  */
-public class RemoveCommand extends AbstractTableCommand {
+public class SizeCommand extends AbstractTableCommand {
 
-    public RemoveCommand(OneTableBase context) {
-        super("remove", 1, context);
+    public SizeCommand(OneTableBase context) {
+        super("size", 0, context);
     }
 
     @Override
     protected void onActiveTable(Table activeTable, String[] args) {
-        String deleted = activeTable.remove(args[0]);
-
-        if (deleted == null) {
-            System.out.println("not found");
-        } else {
-            System.out.println("removed");
-        }
+        int size = activeTable.size();
+        System.out.println(size);
     }
 }
