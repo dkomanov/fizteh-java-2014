@@ -17,8 +17,8 @@ public class Main {
         int exitStatus = 0;
         try {
             Path filePath;
-            /**/System.setProperty(PROPERTY_NAME,
-                    "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test");
+            /*System.setProperty(PROPERTY_NAME,
+                    "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test");*/
             String filePathString = System.getProperty(PROPERTY_NAME);
             if (filePathString == null) {
                 throw new IllegalArgumentException("Property " + PROPERTY_NAME + " does not exist");
