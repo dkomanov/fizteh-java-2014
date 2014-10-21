@@ -2,15 +2,11 @@ package ru.fizteh.fivt.students.RadimZulkarneev.MultiFileHashMap;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
-//import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 public class SuperTable {
     private Path tablePath;
@@ -65,9 +61,9 @@ public class SuperTable {
             return src.get(dest).put(key, value);
         } else {
             //
-        	if (!tablePath.resolve(getDirName(dest)).toFile().exists()) {
-        		Files.createDirectory(tablePath.resolve(getDirName(dest)));
-        	}
+            if (!tablePath.resolve(getDirName(dest)).toFile().exists()) {
+                Files.createDirectory(tablePath.resolve(getDirName(dest)));
+            }
             Table newTable = new Table(tablePath.resolve(getDirName(dest)).resolve(getFileName(dest)).toString());
             src.put(dest, newTable);
             return newTable.put(key, value);
@@ -135,7 +131,7 @@ public class SuperTable {
             current.getValue().writeInFile();
             Path it = current.getValue().tablePath().getParent();
             if (it.toFile().list().length == 0) {
-            	Files.delete(it);
+                Files.delete(it);
             }
         }
 

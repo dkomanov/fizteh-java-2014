@@ -1,16 +1,13 @@
 package ru.fizteh.fivt.students.RadimZulkarneev.MultiFileHashMap;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 public class Table {
     private Map<String, String> dBase;
@@ -87,10 +84,10 @@ public class Table {
         }
     }
     public final void writeInFile() throws MapException, IOException {
-    	if (dBase.size() == 0) {
-    		Files.delete(dBasePath);
-    		return;
-    	}
+        if (dBase.size() == 0) {
+            Files.delete(dBasePath);
+            return;
+        }
         try (RandomAccessFile dbFile = new
                 RandomAccessFile(dBasePath.toString(), "rw")) {
 
@@ -159,8 +156,7 @@ public class Table {
     public String retCode() {
         String a = "";
         try {
-        	Path tableParentName = dBasePath.getParent().getFileName();
-        	
+            Path tableParentName = dBasePath.getParent().getFileName();
             String current = tableParentName.toString().substring(0, tableParentName.toString().length() - 4);
             
             if (current.matches("[0-9]")) {
@@ -186,4 +182,3 @@ public class Table {
     }
 
 }
-

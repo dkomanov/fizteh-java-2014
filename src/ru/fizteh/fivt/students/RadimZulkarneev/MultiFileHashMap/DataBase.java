@@ -158,7 +158,7 @@ public class DataBase {
             throw new MapException("no table");
         } else {
             if (sTable.remove(key)) {
-            	int k = tableRowCount.get(sTable.getTableName()) - 1;
+                int k = tableRowCount.get(sTable.getTableName()) - 1;
                 tableRowCount.put(sTable.getTableName(), k);
             }
         }
