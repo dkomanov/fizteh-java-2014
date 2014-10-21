@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.sautin1.filemap;
 
-import ru.fizteh.fivt.students.sautin1.shell.CommandExecuteException;
-import ru.fizteh.fivt.students.sautin1.shell.UserInterruptException;
+import ru.fizteh.fivt.students.sautin1.filemap.shell.CommandExecuteException;
+import ru.fizteh.fivt.students.sautin1.filemap.shell.UserInterruptException;
 
 /**
  * Get command.

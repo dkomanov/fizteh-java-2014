@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.sautin1.filemap;
 
-import ru.fizteh.fivt.students.sautin1.shell.AbstractCommand;
+import ru.fizteh.fivt.students.sautin1.filemap.shell.AbstractCommand;
 
 /**
  *

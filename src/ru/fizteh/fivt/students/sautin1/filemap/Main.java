@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.sautin1.filemap;
 
-import ru.fizteh.fivt.students.sautin1.shell.*;
+import ru.fizteh.fivt.students.sautin1.filemap.shell.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
