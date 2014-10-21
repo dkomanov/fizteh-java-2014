@@ -73,7 +73,6 @@ public class FMMain {
         if (args == null) {
             Scanner lineScan = new Scanner(System.in);
             lineStr = lineScan.nextLine();
-            lineScan.close();
         } else {
 
             for (String string: args) {
@@ -82,33 +81,23 @@ public class FMMain {
 
         }
 
+        String[] commandBlockAr = lineStr.split(";");
 
-        Scanner blockScan = new Scanner(lineStr);
-
-        blockScan.useDelimiter(";");
-        while (blockScan.hasNext()) {
-            String commandBlock = blockScan.next();
-
-            Scanner argScan = new Scanner(commandBlock);
+        for (String commandBlock: commandBlockAr) {
+            String[] argsStr = commandBlock.trim().split("\\s+");
             Vector<String> argumentVector = new Vector<>();
-            argScan.useDelimiter("\\s+");
 
-            while (argScan.hasNext()) {
-                String nextArg = argScan.next();
-                if (!nextArg.equals("")) {
-                    argumentVector.add(nextArg);
-                }
+            for (String arg: argsStr) {
+                argumentVector.add(arg);
             }
-
-            argScan.close();
 
             if (argumentVector.size() > 0) {
                 argumentsQueue.add(argumentVector);
             }
         }
-        blockScan.close();
 
     }
+
 
     public void executeAll() {
         if (argumentsQueue.size() == 0) {
