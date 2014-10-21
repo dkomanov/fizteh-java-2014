@@ -8,12 +8,7 @@ import java.io.IOException;
  */
 public class RmCommand implements Command {
     @Override
-    public boolean checkArgs(String[] args) {
-        return false;
-    }
-
-    @Override
-    public int execute(String[] args, Status status) throws IOException {
+    public int execute(String[] args) throws IOException {
         if (args.length < 2) {
             return 1;
         }

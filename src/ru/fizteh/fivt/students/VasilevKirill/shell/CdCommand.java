@@ -8,7 +8,7 @@ import java.io.IOException;
  */
 public class CdCommand implements Command {
     @Override
-    public int execute(String[] args, Status status) throws IOException {
+    public int execute(String[] args) throws IOException {
         String path = Shell.currentPath;
         if (args.length != 2) {
             return 1;
@@ -46,10 +46,5 @@ public class CdCommand implements Command {
     @Override
     public String toString() {
         return "cd";
-    }
-
-    @Override
-    public boolean checkArgs(String[] args) {
-        return false;
     }
 }
