@@ -72,7 +72,7 @@ public class Shell {
         for (int i = 0; i < args.length; ++i) {
             //commandBuilder.append(args[i]);
             for (int j = 0; j < args[i].length(); ++j) {
-                if (args[i].charAt(j) != '\"' && args[i].charAt(j) != '\'') {
+                if (args[i].charAt(j) != '\"') {
                     commandBuilder.append(args[i].charAt(j));
                 }
             }

@@ -43,7 +43,7 @@ public class MultiTable {
 
     public void handle(String[] args) throws IOException {
         if (args[0].equals("put")) {
-            if (args[1] == null || args[2] == null) {
+            if (args.length != 3) {
                 throw new IOException("Filemap: Wrong arguments");
             }
             int numDirectory = args[1].hashCode() % 16;
@@ -69,7 +69,7 @@ public class MultiTable {
             files[numDirectory][numFile].close();
         }
         if (args[0].equals("get") || args[0].equals("remove")) {
-            if (args[1] == null) {
+            if (args.length != 2) {
                 throw new IOException("Filemap: Wrong arguments");
             }
             int numDirectory = args[1].hashCode() % 16;
@@ -95,6 +95,9 @@ public class MultiTable {
             removeEmptyFiles();
         }
         if (args[0].equals("list")) {
+            if (args.length != 1) {
+                throw new IOException("Filemap: Wrong arguments");
+            }
             Set<String> keys = new HashSet<String>();
             File[] directories = tableDirectory.listFiles();
             for (File it : directories) {

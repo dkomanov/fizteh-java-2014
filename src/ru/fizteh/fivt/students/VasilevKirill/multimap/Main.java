@@ -26,7 +26,11 @@ public class Main {
             commands.put("remove", new HandleTable());
             try {
                 int retValue = 0;
-                MultiMap multiMap = new MultiMap(System.getProperty("db.file"));
+                String rootDirectory = System.getProperty("db.file");
+                if (rootDirectory == null) {
+                    throw new IOException("Can't find the directory");
+                }
+                MultiMap multiMap = new MultiMap(rootDirectory);
                 Status status = new Status(multiMap);
                 if (args.length == 0) {
                     new Shell(commands, status).handle(System.in);
