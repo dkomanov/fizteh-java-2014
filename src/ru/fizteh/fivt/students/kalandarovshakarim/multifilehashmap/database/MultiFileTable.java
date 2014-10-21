@@ -21,8 +21,8 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.ShellUtils;
  */
 public class MultiFileTable extends AbstractTable {
 
-    private final int constDIRECTORIES = 16;
-    private final int constFILES = 16;
+    private static final int DIRECTORIES_NUMBER = 16;
+    private static final int FILES_NUMBER = 16;
     private final Path directoryPath;
 
     public MultiFileTable(String directory, String tableName) throws IOException {
@@ -53,15 +53,15 @@ public class MultiFileTable extends AbstractTable {
         utils.rm(directoryPath.toString(), true);
         Files.createDirectory(directoryPath);
 
-        TableWriter[][] writers = new TableWriter[constDIRECTORIES][constFILES];
+        TableWriter[][] writers = new TableWriter[DIRECTORIES_NUMBER][FILES_NUMBER];
 
         try {
             for (Entry<String, String> entry : table.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 int hashCode = Math.abs(key.hashCode());
-                int nDir = hashCode % constDIRECTORIES;
-                int nFile = hashCode / constDIRECTORIES % constFILES;
+                int nDir = hashCode % DIRECTORIES_NUMBER;
+                int nFile = hashCode / DIRECTORIES_NUMBER % FILES_NUMBER;
 
                 Path subDirectoryPath = getDirectoryPath(key);
                 Path filePath = getFilePath(key);
@@ -78,8 +78,8 @@ public class MultiFileTable extends AbstractTable {
                 writers[nDir][nFile].write(value);
             }
         } finally {
-            for (int dir = 0; dir < constDIRECTORIES; ++dir) {
-                for (int file = 0; file < constFILES; ++file) {
+            for (int dir = 0; dir < DIRECTORIES_NUMBER; ++dir) {
+                for (int file = 0; file < FILES_NUMBER; ++file) {
                     if (writers[dir][file] != null) {
                         writers[dir][file].close();
                     }
@@ -118,7 +118,7 @@ public class MultiFileTable extends AbstractTable {
 
     private Path getDirectoryPath(String key) {
         int hashCode = Math.abs(key.hashCode());
-        int nDir = hashCode % constDIRECTORIES;
+        int nDir = hashCode % DIRECTORIES_NUMBER;
 
         String directoryName = new StringBuilder().append(nDir).append(".dir").toString();
         return directoryPath.resolve(directoryName);
@@ -126,7 +126,7 @@ public class MultiFileTable extends AbstractTable {
 
     private Path getFilePath(String key) {
         int hashCode = Math.abs(key.hashCode());
-        int nFile = hashCode / constDIRECTORIES % constFILES;
+        int nFile = hashCode / DIRECTORIES_NUMBER % FILES_NUMBER;
 
         String fileName = new StringBuilder().append(nFile).append(".dat").toString();
         return directoryPath.resolve(fileName);
