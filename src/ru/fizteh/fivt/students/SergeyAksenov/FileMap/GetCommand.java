@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.SergeyAksenov.FileMap;
 
 
 public class GetCommand implements Command {
-    public void run(String[] args, FileDataBase dataBase, Environment env)
+    public void run(String[] args, DataBase dataBase, Environment env)
             throws FileMapException {
         if (!Executor.checkArgNumber(2, args.length, 2)) {
             ErrorHandler.countArguments("get");

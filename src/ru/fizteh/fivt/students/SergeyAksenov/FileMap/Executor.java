@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.SergeyAksenov.FileMap;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+
 //
 public class Executor {
     public static boolean checkArgNumber(int from, int value, int to) {
@@ -10,7 +11,7 @@ public class Executor {
     }
 
     public static void execute(final HashMap<String, Command> commandMap,
-                               String[] commands, Environment env, FileDataBase dataBase)
+                               String[] commands, Environment env, DataBase dataBase)
             throws FileMapExitException {
         try {
             if (commands[0].equals("")) {
@@ -31,7 +32,7 @@ public class Executor {
 
     public static void execLine(String line,
                                 final HashMap<String, Command> commandMap,
-                                final Environment env, FileDataBase dataBase)
+                                final Environment env, DataBase dataBase)
             throws FileMapExitException {
         String[] commands = line.trim().split(";");
         try {
@@ -47,7 +48,7 @@ public class Executor {
 
     public static void interactiveMode(
             final HashMap<String, Command> commandMap,
-            final Environment env, FileDataBase dataBase)
+            final Environment env, DataBase dataBase)
             throws FileMapException, FileMapExitException {
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
@@ -67,7 +68,7 @@ public class Executor {
     public static void packageAppender(final String[] args,
                                        final HashMap<String, Command>
                                                commandMap,
-                                       final Environment env, FileDataBase dataBase)
+                                       final Environment env, DataBase dataBase)
             throws FileMapExitException {
         StringBuilder commands = new StringBuilder();
         for (String arg : args) {

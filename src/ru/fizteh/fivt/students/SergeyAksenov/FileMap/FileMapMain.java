@@ -14,9 +14,9 @@ public class FileMapMain {
     }
 
     public static void main(String[] args) {
-       try {
+        try {
             HashMap<String, Command> commandMap = initHashMap();
-            FileDataBase dataBase = new FileDataBase();
+            DataBase dataBase = new DataBase();
             Environment env = new Environment(args);
             if (env.packageMode) {
                 Executor.packageAppender(args, commandMap, env, dataBase);
