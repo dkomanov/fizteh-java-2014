@@ -8,7 +8,11 @@ import ru.fizteh.fivt.students.irina_karatsapova.filemap.database.DataBase;
 import ru.fizteh.fivt.students.irina_karatsapova.filemap.utils.Utils;
 
 public class Main {
+    public static String mainDir = "db.file";
+
     public static void main(String[] args) {
+        System.setProperty("db.file", "D:/tmp/db2.txt");
+
         DataBase.init();
         Shell shell = new Shell();
         shell.addCommand(new PutCommand());

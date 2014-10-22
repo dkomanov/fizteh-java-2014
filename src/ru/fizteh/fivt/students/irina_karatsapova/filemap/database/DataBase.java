@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.irina_karatsapova.filemap.database;
 
+import ru.fizteh.fivt.students.irina_karatsapova.filemap.Main;
 import ru.fizteh.fivt.students.irina_karatsapova.filemap.utils.DataBaseException;
 
 import java.io.File;
@@ -24,8 +25,8 @@ public class DataBase {
     }
 
     private static void initFile() throws DataBaseException, IOException {
-        if (System.getProperty("db.file") == null) {
-            throw new DataBaseException("Path to the database is not set up. Use -Ddb.File=...");
+        if (System.getProperty(Main.mainDir) == null) {
+            throw new DataBaseException("Path to the database is not set up. Use -D" + Main.mainDir + "=...");
         } else {
             DataBase.file = new File(System.getProperty("db.file"));
         }
