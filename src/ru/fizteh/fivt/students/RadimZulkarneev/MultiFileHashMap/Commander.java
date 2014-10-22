@@ -5,8 +5,9 @@ import java.util.ArrayList;
 
 
 public class Commander {
-    public static void command(final ArrayList<String> com, DataBase dBase) throws MapException, IOException, TableConnectionException, DataBaseCorrupt {
-        String it[] = (String[])com.toArray(new String[0]);
+    public static void command(final ArrayList<String> com, DataBase dBase) 
+            throws MapException, IOException, TableConnectionException, DataBaseCorrupt {
+        String[] it = (String[]) com.toArray(new String[0]);
         command(it, dBase);
     }
     public static void command(final String[] com, DataBase dBase) 
@@ -22,9 +23,9 @@ public class Commander {
             break;
         case "show":
             if (com[1].equals("tables")) {
-            	if (com.length > 2) {
-            		throw new MapException("show tables: too much arguments");
-            	}
+                if (com.length > 2) {
+                    throw new MapException("show tables: too much arguments");
+                    }
                 dBase.showTables();
             } else {
                 throw new MapException(com[0] + " " + com[1] + ": No such command");

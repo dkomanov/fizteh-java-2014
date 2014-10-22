@@ -39,10 +39,10 @@ public final class InputParse {
             }
             current.clear();
             try {
-            	current.add("exit");
-            	Commander.command(current, dataBase);
+                current.add("exit");
+                Commander.command(current, dataBase);
             } catch (Exception e) {
-            	System.exit(0);
+                System.exit(0);
             }
     }
 }
