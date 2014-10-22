@@ -61,7 +61,7 @@ public class SuperTable {
             return src.get(dest).put(key, value);
         } else {
             //
-            if (!tablePath.resolve(getDirName(dest)).toFile().exists()) {
+            if (!Files.exists(tablePath.resolve(getDirName(dest)))) {
                 Files.createDirectory(tablePath.resolve(getDirName(dest)));
             }
             Table newTable = new Table(tablePath.resolve(getDirName(dest)).resolve(getFileName(dest)).toString());
