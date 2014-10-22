@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,12 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.junit.Ignore;
-
 public class Test {
     private static Random random = new Random();
-    private final static char[] alphabet = "abcdefghijklmnopqrstuvwxyz"
-	    .toCharArray();
+    private final static char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     static int randInt(int a, int b) {
 	return random.nextInt(b - a + 1) + a;
@@ -59,8 +56,9 @@ public class Test {
 	    map.put(key, value);
 	}
 
-	Path testPath = Paths.get(System.getProperty("user.home"), "test",
-		"java_test.dat");
+	Path testPath = Paths.get(System.getProperty("user.home"),
+				  "test",
+				  "java_test.dat");
 	TablePart testFileMap = new TablePart(testPath);
 
 	testFileMap.setTablePartMap((HashMap<String, String>) map.clone());
@@ -83,7 +81,6 @@ public class Test {
      * 
      * @throws Exception
      */
-    @Ignore
     @org.junit.Test
     public void testReadWriteFileMap() throws Exception {
 	int tests = random.nextInt(1000) + 1000;
@@ -106,8 +103,12 @@ public class Test {
 	// standard tests
 	for (int test = 0; test < tests; test++) {
 	    System.out.println("test " + test);
-	    performReadWriteFileMapTest(keysMin, keysMax, keyMinLength,
-		    keyMaxLength, valueMinLength, valueMaxLength);
+	    performReadWriteFileMapTest(keysMin,
+					keysMax,
+					keyMinLength,
+					keyMaxLength,
+					valueMinLength,
+					valueMaxLength);
 	}
     }
 }

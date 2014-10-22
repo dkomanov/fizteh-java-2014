@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
 
-import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.TerminalException;
 
 /**
  * This class represents an executable shell command
@@ -9,7 +9,7 @@ import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledE
  * 
  */
 public interface Command {
-    public void execute(Shell shell, String[] args) throws HandledException;
+    public void execute(Shell shell, String[] args) throws TerminalException;
 
     /**
      * Information text for the command

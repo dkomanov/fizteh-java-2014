@@ -6,11 +6,12 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Iterator;
 
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.Commands;
-import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.TerminalException;
 
 public class Utility {
 
@@ -41,8 +42,7 @@ public class Utility {
 	    if (path.equals(rootDirectory)) {
 		return FileVisitResult.CONTINUE;
 	    }
-	    try (DirectoryStream<Path> dirStream = Files
-		    .newDirectoryStream(path)) {
+	    try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(path)) {
 		Iterator<Path> pathIterator = dirStream.iterator();
 		if (!pathIterator.hasNext()) {
 		    return super.postVisitDirectory(path, exc);
@@ -149,8 +149,8 @@ public class Utility {
      *         {@code null} if everything is ok.
      * @throws IOException
      */
-    public static Path checkDirectoryContainsOnlyDirectories(final Path directory,
-	    final int depth) throws IOException {
+    public static Path checkDirectoryContainsOnlyDirectories(
+	    final Path directory, final int depth) throws IOException {
 	class DirChecker extends MyTreeWalker<Path> {
 	    Path invalidPath = null;
 
@@ -195,13 +195,35 @@ public class Utility {
     }
 
     /**
+     * Checks whether given table name is correct.
+     * 
+     * @param databaseRoot
+     *            path to database root. Used only as a path example. No checks
+     *            in file system are made.
+     * @param tableName
+     *            potential name of the table
+     * @throws IllegalArgumentException
+     *             if name is not correct or null
+     */
+    public static void checkTableNameIsCorrect(String tableName)
+	    throws IllegalArgumentException {
+	if (tableName == null) {
+	    throw new IllegalArgumentException("Table name must not be null");
+	}
+	Path tableNamePath = Paths.get(tableName).normalize();
+	if (!Paths.get(tableName).equals(tableNamePath) || tableNamePath.getParent() != null) {
+	    throw new IllegalArgumentException("Table name is not correct");
+	}
+    }
+
+    /**
      * Handles an occured exception.<br/>
      * Equivalent to handleError(null, message, true);
      * 
      * @param message
      *            message that can be reported to user and is written to log.
      */
-    public static void handleError(String message) {
+    public static void handleError(String message) throws TerminalException {
 	handleError(null, message, true);
     }
 
@@ -216,24 +238,24 @@ public class Utility {
      * @param reportToUser
      *            if true, message is printed to {@link System#err}.
      */
-    public static void handleError(Throwable exc, String message, boolean reportToUser)
-	    throws HandledException {
+    public static void handleError(Exception exc, String message,
+	    boolean reportToUser) throws TerminalException {
 	if (reportToUser) {
 	    System.err.println(message == null ? exc.getMessage() : message);
 	}
 	Log.log(Commands.class, exc, message);
 	if (exc == null) {
-	    throw new HandledException(message);
+	    throw new TerminalException(message);
 	} else {
-	    throw new HandledException(exc);
+	    throw new TerminalException(exc);
 	}
     }
 
-    public static byte[] insertArray(byte[] source, int sourceOffset, int sourceSize,
-	    byte[] target, int targetOffset) {
+    public static byte[] insertArray(byte[] source, int sourceOffset,
+	    int sourceSize, byte[] target, int targetOffset) {
 	if (sourceSize + targetOffset > target.length) {
-	    int newLength = Math.max(target.length * 2, sourceSize
-		    + targetOffset);
+	    int newLength = Math.max(target.length * 2,
+				     sourceSize + targetOffset);
 	    if (newLength < 0) {
 		newLength = Integer.MAX_VALUE;
 	    }
@@ -250,6 +272,27 @@ public class Utility {
 	return target;
     }
 
+    /**
+     * Safely performs some action. Exceptions thrown while its execution are
+     * given to handler.
+     * 
+     * @param action
+     *            action to be performed
+     * @param handler
+     *            exception handler
+     * @param additionalData
+     *            some additional data used by handler to form messages
+     */
+    public static <T> void performAccurately(AccurateAction action,
+	    AccurateExceptionHandler<T> handler, T additionalData)
+	    throws TerminalException {
+	try {
+	    action.perform();
+	} catch (Exception exc) {
+	    handler.handleException(exc, additionalData);
+	}
+    }
+
     public static void removeEmptyFilesAndFolders(Path rootDirectory)
 	    throws IOException {
 	Files.walkFileTree(rootDirectory, new EmptyFilesRemover(rootDirectory));
@@ -263,7 +306,7 @@ public class Utility {
      *            name of the invoker; used in error reports.
      */
     public static void rm(final Path removePath, final String invoker)
-	    throws HandledException {
+	    throws TerminalException {
 
 	try {
 	    if (Files.isDirectory(removePath)) {
@@ -271,12 +314,12 @@ public class Utility {
 	    } else {
 		Files.delete(removePath);
 	    }
-	} catch (HandledException exc) {
-	    throw exc;
 	} catch (Exception exc) {
-	    handleError(exc, String.format(
-		    "%s: cannot remove '%s': No such file or directory",
-		    invoker, removePath), true);
+	    handleError(exc,
+			String.format("%s: cannot remove '%s': No such file or directory",
+				      invoker,
+				      removePath),
+			true);
 	}
     }
 
@@ -285,49 +328,5 @@ public class Utility {
 	name = name.substring(name.lastIndexOf('$') + 1);
 	name = name.toLowerCase();
 	return name;
-    }
-    
-
-    /**
-     * Checks whether given table name is correct.
-     * 
-     * @param databaseRoot
-     *            path to database root. Used only as a path example. No checks
-     *            in file system are made.
-     * @param tableName
-     *            potential name of the table
-     * @throws IllegalArgumentException
-     *             if name is not correct or null
-     */
-    public static void checkTableNameIsCorrect(Path databaseRoot,
-	    String tableName) throws IllegalArgumentException {
-	if (tableName == null) {
-	    throw new IllegalArgumentException("Table name must not be null");
-	}
-
-	Path tableRoot = databaseRoot.resolve(tableName).normalize();
-	if (!databaseRoot.equals(tableRoot.getParent())) {
-	    throw new IllegalArgumentException("Table name is not correct");
-	}
-    }
-
-    /**
-     * Safely performs some action. Exceptions thrown while its execution are
-     * given to handler.
-     * 
-     * @param action
-     *            action to be performed
-     * @param handler
-     *            exception handler
-     * @param additionalData
-     *            some additional data used by handler to form messages
-     */
-    public static <T> void performAccurately(AccurateAction action,
-	    AccurateExceptionHandler<T> handler, T additionalData) {
-	try {
-	    action.perform();
-	} catch (Exception exc) {
-	    handler.handleException(exc, additionalData);
-	}
     }
 }

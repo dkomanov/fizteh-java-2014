@@ -14,13 +14,13 @@ public class DBFileCorruptException extends DatabaseException {
     public DBFileCorruptException(String reason) {
 	this(reason, null);
     }
-    
-    public DBFileCorruptException(Throwable cause) {
-	this(null, cause);
-    }
 
     public DBFileCorruptException(String reason, Throwable cause) {
 	super("DB file is corrupt" + (reason == null ? null : (": " + reason)),
-		cause);
+	      cause);
+    }
+
+    public DBFileCorruptException(Throwable cause) {
+	this(null, cause);
     }
 }

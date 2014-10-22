@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support;
 
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.TerminalException;
+
 /**
  * Interface for exception handlers that must intercept at least all checked
  * exceptions.
@@ -11,5 +13,6 @@ package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support;
  *            example to make a more detailed message.
  */
 public interface AccurateExceptionHandler<T> {
-    public void handleException(Exception exc, T additionalData);
+    public void handleException(Exception exc, T additionalData)
+	    throws TerminalException;
 }

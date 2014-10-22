@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
 
-import static ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility.handleError;
-import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+import static ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility.*;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.TerminalException;
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.WrongArgsNumberException;
 
 /**
@@ -16,6 +16,11 @@ public abstract class AbstractCommand implements Command {
 
     private int minimalArgsCount;
     private int maximalArgsCount;
+
+    public AbstractCommand(String invocationArgs, String info,
+	    int expectedArgsCount) {
+	this(invocationArgs, info, expectedArgsCount, expectedArgsCount);
+    }
 
     /**
      * @param invocationArgs
@@ -32,9 +37,16 @@ public abstract class AbstractCommand implements Command {
 	this.maximalArgsCount = maximalArgsCount;
     }
 
-    public AbstractCommand(String invocationArgs, String info,
-	    int expectedArgsCount) {
-	this(invocationArgs, info, expectedArgsCount, expectedArgsCount);
+    protected void checkArgsNumber(String[] args, int expected)
+	    throws TerminalException {
+	checkArgsNumber(args, expected, expected);
+    }
+
+    protected void checkArgsNumber(String[] args, int minimal, int maximal)
+	    throws TerminalException {
+	if (args.length < minimal || args.length > maximal) {
+	    handleError(new WrongArgsNumberException(this), null, true);
+	}
     }
 
     /**
@@ -42,35 +54,25 @@ public abstract class AbstractCommand implements Command {
      * first and then {@link #executeAfterChecking(Shell, String[])} is
      * invoked.<br/>
      * If you want to disable forced arguments number checking, override this
-     * method without invocation super method and put empty implementation inside
-     * {@link #executeAfterChecking(Shell, String[])}.
+     * method without invocation super method and put empty implementation
+     * inside {@link #executeAfterChecking(Shell, String[])}.
      */
     @Override
-    public void execute(Shell shell, String[] args) throws HandledException {
+    public void execute(Shell shell, String[] args) throws TerminalException {
 	checkArgsNumber(args, minimalArgsCount, maximalArgsCount);
 	executeAfterChecking(shell, args);
     }
 
     public abstract void executeAfterChecking(Shell shell, String[] args)
-	    throws HandledException;
+	    throws TerminalException;
 
-    protected void checkArgsNumber(String[] args, int minimal, int maximal) {
-	if (args.length < minimal || args.length > maximal) {
-	    handleError(new WrongArgsNumberException(this), null, true);
-	}
-    }
-
-    protected void checkArgsNumber(String[] args, int expected) {
-	checkArgsNumber(args, expected, expected);
+    @Override
+    public String getInfo() {
+	return info;
     }
 
     @Override
     public String getInvocation() {
 	return invocationArgs;
-    }
-
-    @Override
-    public String getInfo() {
-	return info;
     }
 }

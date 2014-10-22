@@ -10,13 +10,13 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.DBFileCorruptException;
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.DatabaseException;
-import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.TerminalException;
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
 
 /**
@@ -27,8 +27,11 @@ import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
  * 
  */
 public class TablePart {
+    private final static int INITIAL_BUFFER_SIZE = 2048;
+
     private Path tablePartFilePath;
 
+    // Used HashMap instead of Map, because method clone() is used in the code.
     private HashMap<String, String> tablePartMap;
 
     /**
@@ -44,13 +47,13 @@ public class TablePart {
      * @param dbFileName
      *            path to database file. If it does not exist, a new empty file
      *            is created.
-     * @throws HandledException
+     * @throws TerminalException
      *             if failed to create database file or {@code dbFileName} is
      *             null.
      */
     public TablePart(Path tablePartFilePath) throws DatabaseException {
 	if (tablePartFilePath == null) {
-	    Utility.handleError("Please specify database file path");
+	    throw new IllegalArgumentException("Please specify database file path");
 	}
 
 	this.tablePartFilePath = tablePartFilePath;
@@ -62,7 +65,8 @@ public class TablePart {
 		Files.createDirectories(tablePartFilePath.getParent());
 		Files.createFile(tablePartFilePath);
 	    } catch (IOException exc) {
-		throw new DatabaseException("Cannot establish proper db connection", exc);
+		throw new DatabaseException("Cannot establish proper db connection",
+					    exc);
 	    }
 	}
     }
@@ -105,13 +109,13 @@ public class TablePart {
      * If an error occurs the state before this operation is recovered.
      * 
      * @param filename
-     * @throws Exception
+     * @throws DBFileCorruptException
      */
     @SuppressWarnings("unchecked")
     public void readFromFile() throws DBFileCorruptException {
 	/*
-	 * if an exception occurs and database is cloned, recover if cloned
-	 * object is null - no recover is performed.
+	 * If an exception occurs and database is cloned, recover.
+	 * If cloned object is null - no recover is performed.
 	 */
 	HashMap<String, String> cloneDBMap = null;
 
@@ -122,18 +126,17 @@ public class TablePart {
 	    tablePartMap.clear();
 	}
 
-	try (DataInputStream stream = new DataInputStream(new FileInputStream(
-		tablePartFilePath.toString()))) {
+	try (DataInputStream stream = new DataInputStream(new FileInputStream(tablePartFilePath.toString()))) {
 	    /*
-	     * structure: (no spaces or newlines) <key 1 bytes>00<4
+	     * Structure: (no spaces or newlines) <key 1 bytes>00<4
 	     * bytes:offset> <key 2 bytes>00<4 bytes:offset> ... <value 1 bytes>
 	     * <value 2 bytes>...
 	     */
 
-	    byte[] buffer = new byte[1024];
+	    byte[] buffer = new byte[INITIAL_BUFFER_SIZE];
 	    int bufferSize = 0;
 
-	    byte[] temporaryBuffer = new byte[Shell.READ_BUFFER_SIZE];
+	    byte[] temporaryBuffer = new byte[Shell.IO_BUFFER_SIZE];
 
 	    while (true) {
 		int read = stream.read(temporaryBuffer);
@@ -141,8 +144,11 @@ public class TablePart {
 		    break;
 		}
 
-		buffer = Utility.insertArray(temporaryBuffer, 0, read, buffer,
-			bufferSize);
+		buffer = Utility.insertArray(temporaryBuffer,
+					     0,
+					     read,
+					     buffer,
+					     bufferSize);
 		bufferSize += read;
 	    }
 
@@ -152,23 +158,23 @@ public class TablePart {
 
 	    int nextValue = Integer.MAX_VALUE;
 
-	    // reading keys and value shift information
+	    // Reading keys and value shift information.
 	    for (int i = 0; i < bufferSize;) {
 		if (i == nextValue) {
-		    throw new DBFileCorruptException(
-			    String.format(
-				    "Attempt to read key part from %s to %s, but value should start here",
-				    bufferOffset, i));
+		    throw new DBFileCorruptException(String.format("Attempt to read key part from %s to %s, but value should start here",
+								   bufferOffset,
+								   i));
 		}
 		if (buffer[i] == 0) {
-		    String currentKey = new String(buffer, bufferOffset, i
-			    - bufferOffset, "UTF-8");
+		    String currentKey = new String(buffer,
+						   bufferOffset,
+						   i - bufferOffset,
+						   "UTF-8");
 		    bufferOffset = i + 1;
 		    if (i + 4 >= bufferSize) {
-			throw new DBFileCorruptException(
-				String.format(
-					"There is no value offset for key '%s' after byte %s",
-					currentKey, i));
+			throw new DBFileCorruptException(String.format("There is no value offset for key '%s' after byte %s",
+								       currentKey,
+								       i));
 		    }
 		    int valueShift = 0;
 		    for (int j = 0; j < 4; j++, i++) {
@@ -181,10 +187,10 @@ public class TablePart {
 		    nextValue = offsets.firstKey();
 
 		    if (i > nextValue) {
-			throw new DBFileCorruptException(
-				String.format(
-					"Value shift for key '%s' is to early: %s; current position: %s",
-					currentKey, valueShift, i));
+			throw new DBFileCorruptException(String.format("Value shift for key '%s' is to early: %s; current position: %s",
+								       currentKey,
+								       valueShift,
+								       i));
 		    } else if (i == nextValue) {
 			break;
 		    }
@@ -193,23 +199,23 @@ public class TablePart {
 		}
 	    }
 
-	    // empty map
+	    // Empty map.
 	    if (offsets.isEmpty()) {
 		return;
 	    }
 
-	    // reading values
-	    String currentKey = offsets.get(nextValue); // value matching this
-							// key is now being
-							// built
-	    offsets.remove(nextValue); // next value start boundary
+	    // Reading values.
+	    String currentKey = offsets.get(nextValue);
+	    // Value matching this key is now being built.
+	    offsets.remove(nextValue); // Next value start boundary.
 
-	    // reading up to the last value (exclusive)
+	    // Reading up to the last value (exclusive).
 	    while (!offsets.isEmpty()) {
 		nextValue = offsets.firstKey();
 
-		String value = new String(buffer, bufferOffset, nextValue
-			- bufferOffset);
+		String value = new String(buffer,
+					  bufferOffset,
+					  nextValue - bufferOffset);
 		tablePartMap.put(currentKey, value);
 
 		bufferOffset = nextValue;
@@ -218,12 +224,13 @@ public class TablePart {
 		offsets.remove(nextValue);
 	    }
 
-	    // putting the last value
-	    String value = new String(buffer, bufferOffset, bufferSize
-		    - bufferOffset);
+	    // Putting the last value.
+	    String value = new String(buffer,
+				      bufferOffset,
+				      bufferSize - bufferOffset);
 	    tablePartMap.put(currentKey, value);
 	} catch (IOException exc) {
-	    // recover
+	    // Recover.
 	    if (cloneDBMap != null) {
 		tablePartMap = cloneDBMap;
 	    }
@@ -252,8 +259,7 @@ public class TablePart {
     }
 
     public void writeToFile() throws IOException {
-	ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
-	Iterator<String> keyIterator = tablePartMap.keySet().iterator();
+	ByteArrayOutputStream stream = new ByteArrayOutputStream(Shell.IO_BUFFER_SIZE);
 
 	Charset UTF8 = Charset.forName("UTF-8");
 
@@ -263,8 +269,8 @@ public class TablePart {
 
 	int keyID = 0;
 
-	while (keyIterator.hasNext()) {
-	    stream.write(keyIterator.next().getBytes(UTF8));
+	for (Entry<String, String> entry : tablePartMap.entrySet()) {
+	    stream.write(entry.getKey().getBytes(UTF8));
 	    shiftPositions[keyID] = stream.size();
 	    keyID++;
 	    stream.write(int_zero);
@@ -273,11 +279,10 @@ public class TablePart {
 	int[] links = new int[tablePartMap.size()];
 
 	keyID = 0;
-	keyIterator = tablePartMap.keySet().iterator();
-	while (keyIterator.hasNext()) {
+	for (Entry<String, String> entry : tablePartMap.entrySet()) {
 	    links[keyID] = stream.size();
 	    keyID++;
-	    stream.write(tablePartMap.get(keyIterator.next()).getBytes(UTF8));
+	    stream.write(entry.getValue().getBytes(UTF8));
 	}
 
 	byte[] bytes = stream.toByteArray();
@@ -292,8 +297,7 @@ public class TablePart {
 	    bytes[pos + 3] = (byte) (value & 0xFF);
 	}
 
-	try (DataOutputStream output = new DataOutputStream(
-		new FileOutputStream(tablePartFilePath.toString()))) {
+	try (DataOutputStream output = new DataOutputStream(new FileOutputStream(tablePartFilePath.toString()))) {
 	    output.write(bytes);
 	}
     }

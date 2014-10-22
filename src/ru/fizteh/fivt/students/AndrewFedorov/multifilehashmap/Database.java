@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
 
-import static ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility.handleError;
+import static ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility.*;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -8,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.DatabaseException;
-import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.NoActiveTableException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.TerminalException;
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Log;
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
 
@@ -21,7 +21,8 @@ import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
  */
 public class Database {
 
-    public static Database establishDatabase(Path dbDirectory) {
+    public static Database establishDatabase(Path dbDirectory)
+	    throws DatabaseException {
 	return new Database(dbDirectory);
     }
 
@@ -44,11 +45,11 @@ public class Database {
      * folder.
      * 
      * @param dbDirectory
-     * @throws HandledException
+     * @throws TerminalException
      */
-    private Database(Path dbDirectory) throws HandledException {
+    private Database(Path dbDirectory) throws DatabaseException {
 	if (dbDirectory == null) {
-	    handleError("Please mention database root directory");
+	    throw new DatabaseException("Please mention database root directory");
 	}
 
 	this.dbDirectory = dbDirectory;
@@ -59,32 +60,29 @@ public class Database {
 		if (parent != null && Files.isDirectory(parent)) {
 		    Files.createDirectory(dbDirectory);
 		} else {
-		    handleError("Parent path of the database folder does not exist or is not a directory");
+		    throw new DatabaseException("Parent path of the database folder does not exist or is not a directory");
 		}
 	    } else {
 		if (!Files.isDirectory(dbDirectory)) {
-		    handleError("Database path is not a directory");
+		    throw new DatabaseException("Database path is not a directory");
 		}
 
 		/*
 		 * Checking that this directory contains only directories and
 		 * subdirectories contain only directories
 		 */
-		Path problemFile = Utility
-			.checkDirectoryContainsOnlyDirectories(dbDirectory, 2);
+		Path problemFile = Utility.checkDirectoryContainsOnlyDirectories(dbDirectory,
+										 2);
 
 		// some file found
 		if (problemFile != null) {
-		    handleError(
-			    new Exception(
-				    String.format(
-					    "DB directory scan: file '%s' should not exist",
-					    problemFile)),
-			    "DB directory scan: found inproper files", true);
+		    throw new DatabaseException("DB directory scan: found inproper files",
+						new Exception(String.format("DB directory scan: file '%s' should not exist",
+									    problemFile)));
 		}
 	    }
 	} catch (IOException exc) {
-	    handleError(exc, "Cannot scan database directory", true);
+	    throw new DatabaseException("Cannot scan database directory", exc);
 	}
     }
 
@@ -116,20 +114,22 @@ public class Database {
      * Creates a new empty table with specified name
      * 
      * @param tableName
-     * @throws HandledException
-     *             I/O errors and name duplication errors are here
+     * @throws DatabaseException
+     * @return True, if new table has been created, false if the table already
+     *         exists.
      */
-    public void createTable(String tableName) throws HandledException {
+    public void createTable(String tableName) throws DatabaseException {
 	checkTableNameIsCorrect(tableName);
 	Path tablePath = dbDirectory.resolve(tableName);
 
 	if (Files.exists(tablePath)) {
-	    handleError("tablename exists");
+	    System.out.println("table " + tableName + " already exists");
 	} else {
 	    try {
 		Files.createDirectory(tablePath);
 	    } catch (IOException exc) {
-		handleError(exc, "Failed to create table directory", true);
+		throw new DatabaseException("Failed to create table directory",
+					    exc);
 	    }
 
 	    System.out.println("created");
@@ -141,16 +141,16 @@ public class Database {
      * 
      * @param tableName
      *            name of table to drop
-     * @throws HandledException
+     * @throws TerminalException
      *             if tablename does not exist or failed to delete
      */
-    public void dropTable(String tableName) throws HandledException {
+    public void dropTable(String tableName) throws TerminalException {
 	checkTableNameIsCorrect(tableName);
 	Path tablePath = dbDirectory.resolve(tableName);
 
 	if (!Files.exists(tablePath)) {
-	    if (activeTable != null
-		    && !activeTable.getTableName().equals(tableName)) {
+	    if (activeTable != null && !activeTable.getTableName()
+						   .equals(tableName)) {
 		activeTable = null;
 	    } else {
 		handleError("tablename not exists");
@@ -175,60 +175,55 @@ public class Database {
     public Path getDbDirectory() {
 	return dbDirectory;
     }
-    
-    private void checkTableNameIsCorrect (String tableName) throws HandledException {
-	try {
-	    Utility.checkTableNameIsCorrect(dbDirectory, tableName);
-	} catch (IllegalArgumentException exc) {
-	    handleError(exc, exc.getMessage(), true);
-	}
-    }
 
     /**
      * Writes all changes in the database to file system.
      * 
      * @throws IOException
      */
-    public void persistDatabase() throws IOException {
+    public void persistDatabase() throws DatabaseException {
 	// actually we have to persist the active table.
 	if (activeTable != null) {
 	    activeTable.persistTable();
 	}
     }
 
-    public void showTables() {
-	try (DirectoryStream<Path> dirStream = Files
-		.newDirectoryStream(dbDirectory)) {
+    public void showTables() throws DatabaseException {
+	try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dbDirectory)) {
 	    System.out.println("table_name row_count");
 
 	    // Changes in the current table can be not persisted yet.
-	    String currentTableName = (activeTable == null ? null : activeTable
-		    .getTableName());
+	    String currentTableName = (activeTable == null ? null
+		    : activeTable.getTableName());
 
 	    boolean scanFailed = false;
 
 	    for (Path tableRoot : dirStream) {
 		try {
-		    Table table = tableRoot.getFileName().toString()
-			    .equals(currentTableName) ? activeTable
-			    : new Table(tableRoot);
+		    Table table = tableRoot.getFileName()
+					   .toString()
+					   .equals(currentTableName)
+			    ? activeTable : new Table(tableRoot);
 
 		    System.out.println(String.format("%s %d",
-			    tableRoot.getFileName(), table.rowsNumber()));
-		} catch (Throwable thr) {
+						     tableRoot.getFileName(),
+						     table.rowsNumber()));
+		} catch (Exception exc) {
 		    System.out.println(String.format("%s corrupt",
-			    tableRoot.getFileName()));
-		    Log.log(Database.class, thr, "Cannot open table: "
-			    + tableRoot.getFileName());
+						     tableRoot.getFileName()));
+		    Log.log(Database.class,
+			    exc,
+			    "Cannot open table: " + tableRoot.getFileName());
 		    scanFailed = true;
 		}
 	    }
 
 	    if (scanFailed) {
-		handleError(null, "show tables finished with errors", false);
+		throw new DatabaseException("show tables could not scan some tables");
 	    }
 	} catch (IOException exc) {
-	    handleError(exc, "Failed to scan database directory", true);
+	    throw new DatabaseException("Failed to scan database directory",
+					exc);
 	}
     }
 
@@ -238,25 +233,20 @@ public class Database {
      * 
      * @param tableName
      *            name of table to use.
-     * @throws HandledException
+     * @throws TerminalException
      *             if failed to save changes for current table or failed to load
      *             new table.
      */
-    public void useTable(String tableName) throws HandledException {
+    public void useTable(String tableName) throws DatabaseException {
 	checkTableNameIsCorrect(tableName);
 	Path tablePath = dbDirectory.resolve(tableName);
 
 	if (activeTable != null) {
-	    try {
-		activeTable.persistTable();
-	    } catch (IOException exc) {
-		handleError(exc, "Failed to persist table in use: "
-			+ activeTable.getTableName(), true);
-	    }
+	    activeTable.persistTable();
 	}
 
 	if (!Files.exists(tablePath)) {
-	    handleError("tablename not exists");
+	    throw new IllegalArgumentException("tablename not exists");
 	}
 
 	Table lastTable = activeTable;
@@ -266,7 +256,7 @@ public class Database {
 	} catch (DatabaseException exc) {
 	    // Will be using old table after this
 	    activeTable = lastTable;
-	    handleError(exc, "Failed to load new table: " + tableName, true);
+	    throw exc;
 	}
 
 	// if everything is ok

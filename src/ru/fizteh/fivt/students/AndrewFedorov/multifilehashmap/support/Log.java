@@ -29,12 +29,12 @@ public class Log {
 
     static {
 	logPath = Paths.get(System.getProperty("user.home"),
-		"java_multifilehashmap.log");
+			    "java_multifilehashmap.log");
 	try {
 	    writer = new PrintWriter(logPath.toAbsolutePath().toString());
 	} catch (IOException exc) {
 	    System.err.println(String.format("Cannot create log file: %s",
-		    logPath));
+					     logPath));
 	    System.err.println(exc.toString());
 	    System.exit(1);
 	}
@@ -87,8 +87,10 @@ public class Log {
 		for (int i = 0, len = trace.length; i < len; i++) {
 		    StackTraceElement e = trace[i];
 		    sb.append(String.format("\tat %s.%s in %s line %d\n",
-			    e.getClassName(), e.getMethodName(),
-			    e.getFileName(), e.getLineNumber()));
+					    e.getClassName(),
+					    e.getMethodName(),
+					    e.getFileName(),
+					    e.getLineNumber()));
 		}
 	    }
 

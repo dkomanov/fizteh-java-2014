@@ -14,8 +14,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.HandledException;
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.NoActiveTableException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.exception.TerminalException;
+import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.AccurateAction;
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Log;
 import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
 
@@ -32,7 +33,7 @@ import ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap.support.Utility;
 public class Shell {
     public final static String DB_DIRECTORY_PROPERTY_NAME = "fizteh.db.dir";
 
-    public final static int READ_BUFFER_SIZE = 16 * 1024;
+    public final static int IO_BUFFER_SIZE = 16 * 1024;
 
     public static void main(String[] args) {
 	if (args.length == 0) {
@@ -63,11 +64,11 @@ public class Shell {
      */
     public void cleanup() {
 	// Delete empty files and directories inside tables' directories
-	Path dbDirectory = (activeDatabase == null ? null : activeDatabase.getDbDirectory());
+	Path dbDirectory = (activeDatabase == null ? null
+		: activeDatabase.getDbDirectory());
 
 	if (dbDirectory != null) {
-	    try (DirectoryStream<Path> dirStream = Files
-		    .newDirectoryStream(dbDirectory)) {
+	    try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dbDirectory)) {
 		for (Path tableDirectory : dirStream) {
 		    Utility.removeEmptyFilesAndFolders(tableDirectory);
 		}
@@ -106,13 +107,15 @@ public class Shell {
 		commandInstance.execute(this, args);
 
 		return true;
-	    } catch (Throwable exc) {
-		if (!(exc instanceof HandledException)) {
+	    } catch (Exception exc) {
+		if (!(exc instanceof TerminalException)) {
 		    // unhandled exception
-		    Log.log(Shell.class, exc, String.format(
-			    "Error during execution of %s", args[0]));
-		    System.err.println(String.format(
-			    "%s: Method execution error", args[0]));
+		    Log.log(Shell.class,
+			    exc,
+			    String.format("Error during execution of %s",
+					  args[0]));
+		    System.err.println(String.format("%s: Method execution error",
+						     args[0]));
 		}
 		// throw new RuntimeException(exc);
 		return false;
@@ -136,7 +139,7 @@ public class Shell {
 	return activeDatabase;
     }
 
-    public Table getActiveTable() throws HandledException {
+    public Table getActiveTable() throws TerminalException {
 	try {
 	    return activeDatabase.getActiveTable();
 	} catch (NoActiveTableException exc) {
@@ -154,13 +157,21 @@ public class Shell {
 	Log.log(Shell.class, "Shell starting");
 
 	try {
-	    String dbDirPath = System.getProperty(DB_DIRECTORY_PROPERTY_NAME);
+	    final String dbDirPath = System.getProperty(DB_DIRECTORY_PROPERTY_NAME);
 	    if (dbDirPath == null) {
 		Utility.handleError("Please mention database directory");
 	    }
 
-	    activeDatabase = Database.establishDatabase(Paths.get(dbDirPath));
-	} catch (HandledException exc) {
+	    Utility.performAccurately(new AccurateAction() {
+
+		@Override
+		public void perform() throws Exception {
+		    activeDatabase = Database.establishDatabase(Paths.get(dbDirPath));
+		}
+	    },
+				      Commands.databaseErrorHandler,
+				      this);
+	} catch (TerminalException exc) {
 	    this.exit(1);
 	}
 
@@ -170,20 +181,20 @@ public class Shell {
 
 	for (int i = 0, len = classes.length; i < len; i++) {
 	    Class<? extends Command> commandClass = null;
-	    
+
 	    try {
 		commandClass = classes[i].asSubclass(Command.class);
 	    } catch (ClassCastException exc) {
 	    }
 
 	    if (commandClass != null) {
-		String simpleName = Utility.simplifyClassName(classes[i]
-			.getSimpleName());
+		String simpleName = Utility.simplifyClassName(classes[i].getSimpleName());
 
 		classesMap.put(simpleName, commandClass);
-		Log.log(Shell.class, String.format(
-			"Class registered: %s as '%s'", classes[i].getName(),
-			simpleName));
+		Log.log(Shell.class,
+			String.format("Class registered: %s as '%s'",
+				      classes[i].getName(),
+				      simpleName));
 	    }
 	}
     }
@@ -199,16 +210,23 @@ public class Shell {
     /**
      * Persists the current database.
      * 
-     * @throws HandledException
+     * @throws TerminalException
      *             all errors are wrapped into this.
      */
-    public void persistDatabase() throws HandledException {
+    public void persistDatabase() throws TerminalException {
 	try {
-	    activeDatabase.persistDatabase();
-	} catch (HandledException exc) {
-	    throw exc;
-	} catch (Throwable thr) {
-	    Utility.handleError(thr, "Failed to persist database", true);
+	    Utility.performAccurately(new AccurateAction() {
+		@Override
+		public void perform() throws Exception {
+		    activeDatabase.persistDatabase();
+		}
+	    }, Commands.databaseErrorHandler, this);
+	} catch (Exception exc) {
+	    if (!(exc instanceof TerminalException)) {
+		Utility.handleError(exc,
+				    "Failed to persist database because of unknown error",
+				    true);
+	    }
 	}
     }
 
@@ -221,8 +239,8 @@ public class Shell {
     public void run(InputStream stream) {
 	interactive = true;
 
-	BufferedReader reader = new BufferedReader(
-		new InputStreamReader(stream), READ_BUFFER_SIZE);
+	BufferedReader reader = new BufferedReader(new InputStreamReader(stream),
+						   IO_BUFFER_SIZE);
 	try {
 	    while (true) {
 		Table table = null;
@@ -230,9 +248,11 @@ public class Shell {
 		    table = activeDatabase.getActiveTable();
 		} catch (NoActiveTableException exc) {
 		}
-		System.out.println(String.format("%s%s $ ", (table == null ? ""
-			: (table.getTableName() + "@")), activeDatabase
-			.getDbDirectory()));
+		System.out.println(String.format("%s%s $ ",
+						 (table == null
+							 ? ""
+							 : (table.getTableName() + "@")),
+						 activeDatabase.getDbDirectory()));
 
 		String str = reader.readLine();
 
@@ -259,7 +279,7 @@ public class Shell {
 
 	try {
 	    persistDatabase();
-	} catch (HandledException exc) {
+	} catch (TerminalException exc) {
 	    this.exit(1);
 	}
     }
@@ -290,7 +310,7 @@ public class Shell {
 
 	try {
 	    persistDatabase();
-	} catch (HandledException exc) {
+	} catch (TerminalException exc) {
 	    this.exit(1);
 	}
 	this.exit(0);

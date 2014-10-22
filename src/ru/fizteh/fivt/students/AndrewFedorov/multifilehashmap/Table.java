@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
@@ -82,8 +83,8 @@ public class Table {
 
     private static int getHash(String key) {
 	byte byte0 = key.getBytes()[0];
-	return buildHash(byte0 % DIRECTORIES_COUNT, (byte0 / DIRECTORIES_COUNT)
-		% FILES_COUNT);
+	return buildHash(byte0 % DIRECTORIES_COUNT,
+			 (byte0 / DIRECTORIES_COUNT) % FILES_COUNT);
     }
 
     /**
@@ -92,7 +93,7 @@ public class Table {
      * 
      * @see #getHash(String)
      */
-    private HashMap<Integer, TablePart> tableParts;
+    private Map<Integer, TablePart> tableParts;
 
     private final Path tableRoot;
 
@@ -126,15 +127,16 @@ public class Table {
 		    int keyHash = getHash(key);
 		    if (keyHash != expectedHash) {
 			Log.log(Table.class,
-				String.format(
-					"key '%s' with hash %d is stored in file with hash %d",
-					key, keyHash, expectedHash));
-			throw new DBFileCorruptException(
-				"Inproper keys are stored in some table parts");
+				String.format("key '%s' with hash %d is stored in file with hash %d",
+					      key,
+					      keyHash,
+					      expectedHash));
+			throw new DBFileCorruptException("Inproper keys are stored in some table parts");
 		    }
 		}
 	    }
-	}, true);
+	},
+		       true);
     }
 
     /**
@@ -192,7 +194,7 @@ public class Table {
      */
     private Path makeTablePartFilePath(int hash) {
 	return tableRoot.resolve(Paths.get(getDirectoryFromHash(hash) + ".dir",
-		getFileFromHash(hash) + ".dat"));
+					   getFileFromHash(hash) + ".dat"));
     }
 
     /**
@@ -222,9 +224,14 @@ public class Table {
      *             if failed to write a table; table part persisting process
      *             stops on the first error case.
      */
-    public void persistTable() throws IOException {
-	for (TablePart fmap : tableParts.values()) {
-	    fmap.writeToFile();
+    public void persistTable() throws DatabaseException {
+	try {
+	    for (TablePart fmap : tableParts.values()) {
+		fmap.writeToFile();
+	    }
+	} catch (IOException exc) {
+	    throw new DatabaseException("Failed to persist table " + tableName,
+					exc);
 	}
     }
 
