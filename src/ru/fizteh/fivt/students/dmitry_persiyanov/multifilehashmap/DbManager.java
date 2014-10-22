@@ -1,12 +1,17 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap;
 
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.db_manager_commands.DbManagerCommand;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.parser.CommandsParser;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.DbCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.table_manager_commands.TableManagerCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.TableIsNotChosenException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.IllegalFormatCodePointException;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,20 +28,59 @@ public final class DbManager {
     public void dumpCurrentTable() throws IOException {
         if (currentTable != null) {
             currentTable.dump();
-            currentTable = null;
         }
     }
 
-    public File getRootDir() {
-        return rootDir;
+    public boolean containsTable(final String tableName) {
+        return tableNames.contains(tableName);
     }
 
-    public TableManager getCurrentTable() {
-        return currentTable;
+    public void createTable(final String tableName) throws IOException {
+        if (!containsTable(tableName)) {
+            Files.createDirectory(getTablePath(tableName));
+            tableNames.add(tableName);
+        } else {
+            throw new IllegalArgumentException(tableName + " doesn't exist");
+        }
     }
 
-    public void setCurrentTable(final String tableName) throws IOException {
-        currentTable = new TableManager(getTablePath(tableName));
+    public void dropTable(final String tableName) throws IOException {
+        if (containsTable(tableName)) {
+            if (currentTable != null && currentTable.getTableName().equals(tableName)) {
+                forgetCurrentTable();
+            }
+            tableNames.remove(tableName);
+            purgeTable(getTablePath(tableName));
+        } else {
+            throw new IllegalArgumentException(tableName + " doesn't exist");
+        }
+    }
+
+    private void purgeTable(final Path tablePath) throws IOException {
+        File[] dirs = new File(tablePath.toString()).listFiles();
+        for (File dir : dirs) {
+            purgeDir(dir);
+        }
+        Files.delete(tablePath);
+    }
+
+    private void purgeDir(final File dir) {
+        File[] files = dir.listFiles();
+        for (File file : files) {
+            file.delete();
+        }
+        dir.delete();
+    }
+
+    public void useTable(final String tableName) throws IOException{
+        if (!tableNames.contains(tableName)) {
+            throw new IllegalArgumentException(tableName + " doesn't exist");
+        } else {
+            if (currentTable != null && !currentTable.getTableName().equals(tableName)) {
+                dumpCurrentTable();
+            }
+            currentTable = new TableManager(getTablePath(tableName));
+        }
     }
 
     public void forgetCurrentTable() { currentTable = null; }
@@ -45,8 +89,16 @@ public final class DbManager {
         return tableNames;
     }
 
-    public Path getTablePath(final String path) throws IOException {
-        return Paths.get(rootDir.getCanonicalPath(), path).normalize();
+    public Path getTablePath(final String tableName) throws IOException {
+        return Paths.get(rootDir.getCanonicalPath(), tableName).normalize();
+    }
+
+    public void executeCommand(final DbCommand cmd) throws IOException, TableIsNotChosenException {
+        if (cmd instanceof TableManagerCommand) {
+            ((TableManagerCommand) cmd).execute(currentTable);
+        } else if (cmd instanceof DbManagerCommand) {
+            ((DbManagerCommand) cmd).execute(this);
+        }
     }
 
     private void loadTableNames() {

@@ -25,20 +25,48 @@ public final class TableManager {
         TableLoaderDumper.dumpTable(tablePath, tableHashMap);
     }
 
-    public List<List<Map<String, String>>> getTableHashMap() {
-        return tableHashMap;
+    public String get(final String key) {
+        int dir = keyValueDirNum(key);
+        int file = keyValueFileNum(key);
+        return tableHashMap.get(dir).get(file).get(key);
+    }
+
+    public String put(final String key, final String value) {
+        int dir = keyValueDirNum(key);
+        int file = keyValueFileNum(key);
+        return tableHashMap.get(dir).get(file).put(key, value);
+    }
+
+    public List<String> list() {
+        List<String> keysList = new LinkedList<>();
+        for (List<Map<String, String>> list : tableHashMap) {
+            for (Map<String, String> map : list) {
+                Set<String> keySet = map.keySet();
+                Iterator<String> keySetIter = keySet.iterator();
+                while (keySetIter.hasNext()) {
+                    keysList.add(keySetIter.next());
+                }
+            }
+        }
+        return keysList;
+    }
+
+    public String remove(final String key) {
+        int dir = keyValueDirNum(key);
+        int file = keyValueFileNum(key);
+        return tableHashMap.get(dir).get(file).get(key);
     }
 
     public String getTableName() {
         return tablePath.getFileName().toString();
     }
 
-    public static int keyValueDirNum(final String key) {
+    private static int keyValueDirNum(final String key) {
         byte b = key.getBytes()[0];
         return b % MAX_DIRS_FOR_TABLE;
     }
 
-    public static int keyValueFileNum(final String key) {
+    private static int keyValueFileNum(final String key) {
         byte b = key.getBytes()[0];
         return b / MAX_DIRS_FOR_TABLE % MAX_FILES_FOR_DIR;
     }

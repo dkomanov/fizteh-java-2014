@@ -1,11 +1,12 @@
-package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands;
+package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.db_manager_commands;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.DbManager;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.DbCommand;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.IllegalNumberOfArgumentsException;
 
 import java.io.IOException;
 
-public class ExitCommand extends DbCommand {
+public class ExitCommand extends DbManagerCommand {
     public ExitCommand(final String[] args) {
         super("exit", args);
         NUM_OF_ARGS = 0;
@@ -13,8 +14,8 @@ public class ExitCommand extends DbCommand {
     }
 
     @Override
-    public void execute(final DbManager db) throws IOException {
-        db.getCurrentTable().dump();
+    public void execute(final DbManager dbManager) throws IOException {
+        dbManager.dumpCurrentTable();
         System.exit(0);
     }
 }

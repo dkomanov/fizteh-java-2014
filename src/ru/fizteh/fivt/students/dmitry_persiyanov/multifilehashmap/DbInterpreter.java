@@ -39,7 +39,7 @@ public final class DbInterpreter {
             while (in.hasNextLine()) {
                 try {
                     DbCommand cmd = CommandsParser.parse(in.nextLine());
-                    cmd.execute(dbManager);
+                    dbManager.executeCommand(cmd);
                     if (!cmd.getMsg().equals("")) {
                         System.out.println(cmd.getMsg());
                     }
@@ -54,7 +54,7 @@ public final class DbInterpreter {
     public static void batchMode(final DbCommand[] commands) throws IOException {
         for (DbCommand cmd : commands) {
             try {
-                cmd.execute(dbManager);
+                dbManager.executeCommand(cmd);
                 System.out.println(cmd.getMsg());
             } catch (IllegalArgumentException | TableIsNotChosenException e) {
                 System.err.println("error: " + e.getMessage());

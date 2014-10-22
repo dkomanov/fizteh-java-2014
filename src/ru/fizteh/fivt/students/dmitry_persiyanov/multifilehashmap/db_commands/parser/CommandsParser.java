@@ -1,6 +1,11 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.parser;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.*;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.db_manager_commands.*;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.table_manager_commands.GetCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.table_manager_commands.ListCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.table_manager_commands.PutCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.table_manager_commands.RemoveCommand;
 
 import java.util.Arrays;
 

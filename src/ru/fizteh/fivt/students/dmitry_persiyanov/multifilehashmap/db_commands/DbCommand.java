@@ -12,8 +12,6 @@ public abstract class DbCommand {
     protected String msg = null;
     protected String name = null;
 
-    public abstract void execute(final DbManager db) throws IOException, TableIsNotChosenException;
-
     public DbCommand(final String name, final String[] args) {
         this.args = args;
         this.name = name;

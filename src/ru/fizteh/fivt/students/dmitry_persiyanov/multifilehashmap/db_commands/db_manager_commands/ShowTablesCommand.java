@@ -1,13 +1,14 @@
-package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands;
+package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.db_manager_commands;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.DbManager;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.DbCommand;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class ShowTablesCommand extends DbCommand {
+public class ShowTablesCommand extends DbManagerCommand {
     public ShowTablesCommand(final String[] args) {
         super("show tables", args);
     }
