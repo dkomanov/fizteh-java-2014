@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.irina_karatsapova.filemap;
 import ru.fizteh.fivt.students.irina_karatsapova.filemap.commands.Command;
 import ru.fizteh.fivt.students.irina_karatsapova.filemap.database.LoadDataBase;
 import ru.fizteh.fivt.students.irina_karatsapova.filemap.database.SaveDataBase;
+import ru.fizteh.fivt.students.irina_karatsapova.filemap.utils.DataBaseException;
 
 import java.util.Scanner;
 
@@ -25,6 +26,9 @@ public class Shell {
             }
             try {
                 batchMode(input);
+            } catch (DataBaseException e) {
+                System.out.println(e.getMessage());
+                System.exit(1);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

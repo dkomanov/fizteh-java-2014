@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.irina_karatsapova.filemap;
+package ru.fizteh.fivt.students.irina_karatsapova.filemap.utils;
 
 public class Utils {
     

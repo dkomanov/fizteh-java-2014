@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.irina_karatsapova.filemap.database;
 
+import ru.fizteh.fivt.students.irina_karatsapova.filemap.utils.DataBaseException;
+
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,7 +9,7 @@ import java.io.IOException;
 public class SaveDataBase {
     public static void start() throws Exception {
         if (!DataBase.file.exists()) {
-            throw new Exception("File is missed");
+            throw new DataBaseException("Database: save: Main file is missed");
         } else {
             DataOutputStream outStream = new DataOutputStream(new FileOutputStream(DataBase.file));
             try {
@@ -17,12 +19,12 @@ public class SaveDataBase {
                     }
                 }
             } catch (Exception e) {
-                throw new Exception("DataBase: save: Error while writing the file");
+                throw new DataBaseException("DataBase: save: Error while writing the file");
             } finally {
                 try {
                     outStream.close();
                 } catch (IOException e) {
-                    throw new Exception("DataBase: save: Error while closing the file");
+                    throw new DataBaseException("DataBase: save: Error while closing the file");
                 }
             }
         }
@@ -32,8 +34,8 @@ public class SaveDataBase {
         byte[] keyInBytes = key.getBytes("UTF-8");
         byte[] valueInBytes = value.getBytes("UTF-8");
         outStream.writeInt(keyInBytes.length);
-        outStream.writeInt(valueInBytes.length);
         outStream.write(keyInBytes);
+        outStream.writeInt(valueInBytes.length);
         outStream.write(valueInBytes);
         outStream.flush();
     }
