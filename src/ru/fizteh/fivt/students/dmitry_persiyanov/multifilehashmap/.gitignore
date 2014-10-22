@@ -3,4 +3,4 @@
 out/
 .idea
 multifilehashmap.iml
-!src/ru/fizteh/fivt/students/dmitry_persiyanov/multifilehashmap
+db/
