@@ -20,6 +20,7 @@ public class TableManager {
     public TableManager(String path) throws IllegalArgumentException {
         currentTable = null;
         databasePath = Paths.get(path);
+        tableManagerMap = new TreeMap<>();
         if (!databasePath.toFile().exists()) {
             databasePath.toFile().mkdir();
             System.out.print("Can't find data base folder.\nDirectory "
@@ -27,8 +28,6 @@ public class TableManager {
         } else if (!databasePath.toFile().isDirectory()) {
             throw new IllegalArgumentException(path + ": is not a directory");
         }
-
-        tableManagerMap = new TreeMap<>();
         String[] tablesNames = databasePath.toFile().list();
         for (String currentTableName : tablesNames) {
             Path currentTablePath = databasePath.resolve(currentTableName);
@@ -106,26 +105,6 @@ public class TableManager {
         }
     }
 
-    protected static int getHash(int fileIndex, int folderIndex) throws IllegalArgumentException {
-        // Returns key that will be used in Table.tableMap.
-        return fileIndex + folderIndex * MAGIC_NUMBER;
-    }
-    protected static int getHash(String key) throws IllegalArgumentException {
-        // Returns key that will be used in Table.tableMap.
-        if (key == null) {
-            throw new IllegalArgumentException("Error: key == null");
-        }
-        int folderIndex;
-        int fileIndex;
-        try {
-            folderIndex = Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER);
-            fileIndex = Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Encoding exception if function getHash");
-        }
-        return getHash(fileIndex, folderIndex);
-    }
-
     protected static int excludeFolderNumber(String folderName) {
         return Integer.parseInt(folderName.substring(0, folderName.length() - 4));
     }
@@ -134,6 +113,40 @@ public class TableManager {
     }
 
     protected Set<String> getNames() {
+        tableManagerMap.keySet();
         return tableManagerMap.keySet();
+    }
+}
+
+class Coordinates implements Comparable<Coordinates> {
+    protected final int folderIndex;
+    protected final int fileIndex;
+    public Coordinates(int folderIndex, int fileIndex){
+        this.folderIndex = folderIndex;
+        this.fileIndex = fileIndex;
+    }
+    public Coordinates(String key){
+        if (key == null) {
+            throw new IllegalArgumentException("Error: key == null");
+        }
+        try {
+            folderIndex = Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER);
+            fileIndex = Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER) % TableManager.MAGIC_NUMBER);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Encoding exception if function getHash");
+        }
+    }
+    @Override
+    public int compareTo(Coordinates pair) {
+        if (folderIndex > pair.folderIndex){
+            return 1;
+        } else if (folderIndex < pair.folderIndex){
+            return  -1;
+        } else if (fileIndex > pair.fileIndex){
+            return  1;
+        } else if (fileIndex < pair.fileIndex){
+            return  -1;
+        }
+        return 0;
     }
 }

@@ -13,15 +13,13 @@ public class DataFile { // Interacts with .dat file.
     private Map<String, String> fileMap;
     private int size;
     private Path filePath;
-    private int fileIndex;
-    private int directoryIndex;
+    private Coordinates folderFileIndexes;
     private boolean actuality; // True, if fileMap stores right information.
 
-    public DataFile(Path tablePath, int directoryIndex, int fileIndex) throws IOException, IllegalArgumentException {
+    public DataFile(Path tablePath, Coordinates folderFileIndexes) throws IOException, IllegalArgumentException {
         fileMap = new TreeMap<>();
-        filePath = makeAbsolutePath(tablePath, directoryIndex, fileIndex);
-        this.fileIndex = fileIndex;
-        this.directoryIndex = directoryIndex;
+        filePath = makeAbsolutePath(tablePath, folderFileIndexes);
+        this.folderFileIndexes = folderFileIndexes;
         actuality = false;
         // Now get size.
         size = 0;
@@ -40,8 +38,8 @@ public class DataFile { // Interacts with .dat file.
                 // First byte check.
                 b = dataBaseFile.readByte();
                 ++counter;
-                if (this.fileIndex != Math.abs((Byte.valueOf(b) / TableManager.MAGIC_NUMBER) % TableManager.MAGIC_NUMBER)
-                        || this.directoryIndex != Math.abs(Byte.valueOf(b) % TableManager.MAGIC_NUMBER)) {
+                if (folderFileIndexes.fileIndex != Math.abs((Byte.valueOf(b) / TableManager.MAGIC_NUMBER) % TableManager.MAGIC_NUMBER)
+                        || folderFileIndexes.folderIndex != Math.abs(Byte.valueOf(b) % TableManager.MAGIC_NUMBER)) {
                     throw new IllegalArgumentException("Unexpected key in file " + filePath.toString());
                 }
                 // Get others bytes of key.
@@ -192,18 +190,18 @@ public class DataFile { // Interacts with .dat file.
         return size;
     }
 
-    private Path makeAbsolutePath(Path tablePath, int folderIndex, int fileIndex) {
+    private Path makeAbsolutePath(Path tablePath, Coordinates folderFileIndexes) {
         return tablePath.resolve(
-                Paths.get(Integer.toString(folderIndex) + ".dir",
-                        Integer.toString(fileIndex) + ".dat"));
+                Paths.get(Integer.toString(folderFileIndexes.folderIndex) + ".dir",
+                        Integer.toString(folderFileIndexes.fileIndex) + ".dat"));
     }
 
     private void checkKey(String key) throws UnsupportedEncodingException, IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException("Error: key == null");
         }
-        if (!(directoryIndex == Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER)
-                && fileIndex == Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER)
+        if (!(folderFileIndexes.folderIndex == Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER)
+                && folderFileIndexes.fileIndex == Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER)
                 % TableManager.MAGIC_NUMBER))) {
             throw new IllegalArgumentException("Wrong key in file " + filePath.toString());
         }

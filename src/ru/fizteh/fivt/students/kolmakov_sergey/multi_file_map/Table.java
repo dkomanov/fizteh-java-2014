@@ -10,15 +10,15 @@ import java.io.File;
 public class Table {
     private String name;
     private Path tablePath;
-    private Map<Integer, DataFile> tableMap;
+    private Map<Coordinates, DataFile> tableMap;
 
-    public Table(Path argPath, String argName) throws IllegalArgumentException {
+    public Table(Path tablePath, String name) throws IllegalArgumentException {
         tableMap = new TreeMap<>();
-        tablePath = argPath;
-        name = argName;
-        String[] folders = tablePath.toFile().list();
+        this.tablePath = tablePath;
+        this.name = name;
+        String[] folders = this.tablePath.toFile().list();
         for (String currentFolderName : folders) {
-            Path currentFolderPath = tablePath.resolve(currentFolderName);
+            Path currentFolderPath = this.tablePath.resolve(currentFolderName);
             if (!currentFolderName.matches(TableManager.FOLDER_NAME_PATTERN)
                     || !currentFolderPath.toFile().isDirectory()) {
                 throw new IllegalArgumentException("Unexpected files in directory");
@@ -29,17 +29,16 @@ public class Table {
             }
             for (String file : fileList) {
                 Path filePath = currentFolderPath.resolve(file);
-                if (!file.matches(TableManager.FILE_NAME_PATTERN)
-                        || !filePath.toFile().isFile()) {
+                if (!file.matches(TableManager.FILE_NAME_PATTERN) || !filePath.toFile().isFile()) {
                     throw new IllegalArgumentException("Unexpected files in folder");
                 }
                 int folderIndex = TableManager.excludeFolderNumber(currentFolderName);
                 int fileIndex = TableManager.excludeDataFileNumber(file);
                 try {
-                    DataFile part = new DataFile(tablePath, folderIndex, fileIndex);
-                    tableMap.put(TableManager.getHash(fileIndex, folderIndex), part);
+                    DataFile part = new DataFile(this.tablePath, new Coordinates(folderIndex, fileIndex));
+                    tableMap.put(new Coordinates(folderIndex, fileIndex), part);
                 } catch (IOException e) {
-                    throw new IllegalArgumentException(tablePath.resolve(
+                    throw new IllegalArgumentException(this.tablePath.resolve(
                             Paths.get(Integer.toString(folderIndex) + ".dir",
                                     Integer.toString(fileIndex) + ".dat")).toString() + " corrupted");
                 }
@@ -49,11 +48,11 @@ public class Table {
 
     protected void saveData() throws IOException {
         try {
-            List<Integer> mustBeRemoved = new LinkedList<>();
-            for (Entry<Integer, DataFile> part : tableMap.entrySet()) {
-                part.getValue().putData();
-                if (part.getValue().getSize() == 0) {
-                    mustBeRemoved.add(part.getKey());
+            List<Coordinates> mustBeRemoved = new LinkedList<>();
+            for (Entry<Coordinates, DataFile> currentFile : tableMap.entrySet()) {
+                currentFile.getValue().putData();
+                if (currentFile.getValue().getSize() == 0) {
+                    mustBeRemoved.add(currentFile.getKey());
                 }
             }
             mustBeRemoved.forEach(tableMap::remove);
@@ -67,7 +66,7 @@ public class Table {
     }
 
     protected String get(String key) throws IOException {
-        DataFile expectedDataFile = tableMap.get(TableManager.getHash(key));
+        DataFile expectedDataFile = tableMap.get(new Coordinates(key));
         if (expectedDataFile == null) {
             return null;
         }
@@ -75,12 +74,10 @@ public class Table {
     }
 
     protected String put(String key, String value) throws IOException {
-        DataFile expectedDataFile = tableMap.get(TableManager.getHash(key));
+        DataFile expectedDataFile = tableMap.get(new Coordinates(key));
         if (expectedDataFile == null) {
-            int folderIndex = Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER);
-            int fileIndex = Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER) % TableManager.MAGIC_NUMBER);
-            expectedDataFile = new DataFile(tablePath, folderIndex, fileIndex);
-            tableMap.put(TableManager.getHash(key), expectedDataFile);
+            expectedDataFile = new DataFile(tablePath, new Coordinates(key));
+            tableMap.put(new Coordinates(key), expectedDataFile);
         }
         return expectedDataFile.putValue(key, value);
     }
@@ -94,7 +91,7 @@ public class Table {
     }
 
     protected String removeKey(String key) throws IOException {
-        DataFile expectedDataFile = tableMap.get(TableManager.getHash(key));
+        DataFile expectedDataFile = tableMap.get(new Coordinates(key));
         if (expectedDataFile == null) {
             return null;
         }
@@ -109,7 +106,7 @@ public class Table {
 
     protected int size() {
         int size = 0;
-        for (Entry<Integer, DataFile> part : tableMap.entrySet()) {
+        for (Entry<Coordinates, DataFile> part : tableMap.entrySet()) {
             size += part.getValue().getSize();
         }
         return size;
@@ -122,7 +119,7 @@ public class Table {
                     deleteRecursively(currentFile);
                 }
             } catch (NullPointerException e) {
-                System.out.println("Error while recursive deleting directory.");
+                System.err.println("Error while recursive deleting directory.");
             }
             directory.delete();
         } else {

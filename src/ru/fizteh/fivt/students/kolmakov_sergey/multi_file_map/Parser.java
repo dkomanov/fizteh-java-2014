@@ -50,8 +50,7 @@ public class Parser {
                         if (command.length > 1 && command[1].equals("tables")) {
                             CommandInterpreter.showTables(command);
                         } else {
-                            throw new
-                                    IllegalArgumentException("No such command declared");
+                            throw new IllegalArgumentException("No such command declared");
                         }
                         break;
                     case "put":
@@ -70,11 +69,11 @@ public class Parser {
                         CommandInterpreter.exit(command);
                         break;
                     default:
-                        System.out.println("No such command declared");
+                        System.err.println("No such command declared");
                 }
             }
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         } catch (DatabaseExitException e) {
             System.exit(e.status);
         } catch (Exception e) {

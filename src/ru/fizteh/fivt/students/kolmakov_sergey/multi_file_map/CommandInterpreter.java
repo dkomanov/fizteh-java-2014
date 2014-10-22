@@ -3,11 +3,14 @@ package ru.fizteh.fivt.students.kolmakov_sergey.multi_file_map;
 import java.util.Set;
 import java.io.IOException;
 
+// Interpreter and Commands aren't separated, because I can't find any reason to use Interpreter anywhere else.
+// Without reusing of the code separating seems unnecessary.
+
 public class CommandInterpreter {
     private static TableManager manager;
 
-    protected static void setManager(TableManager newManager) {
-        manager = newManager;
+    protected static void setManager(TableManager manager) {
+        CommandInterpreter.manager = manager;
     }
 
     private static void checkArguments(int from, int value, int to, String commandName)
@@ -32,7 +35,7 @@ public class CommandInterpreter {
         if (currentTable != null) {
             System.out.println(String.join(", ", currentTable.list()));
         } else {
-            System.out.println("no table");
+            System.err.println("no table");
         }
     }
 
@@ -41,7 +44,7 @@ public class CommandInterpreter {
         if (manager.createTable(command[1]) != null) {
             System.out.println("created");
         } else {
-            System.out.println(command[1] + " exists");
+            System.err.println(command[1] + " exists");
         }
     }
 
@@ -50,7 +53,7 @@ public class CommandInterpreter {
         if (manager.useTable(command[1])) {
             System.out.println("using " + command[1]);
         } else {
-            System.out.println(command[1] + " not exists");
+            System.err.println(command[1] + " not exists");
         }
     }
 
@@ -66,7 +69,7 @@ public class CommandInterpreter {
                 System.out.println("new");
             }
         } else {
-            System.out.println("no table");
+            System.err.println("no table");
         }
     }
 
@@ -79,10 +82,10 @@ public class CommandInterpreter {
                 System.out.println("found");
                 System.out.println(value);
             } else {
-                System.out.println("not found");
+                System.err.println("not found");
             }
         } else {
-            System.out.println("no table");
+            System.err.println("no table");
         }
     }
 
@@ -94,10 +97,10 @@ public class CommandInterpreter {
             if (removedValue != null) {
                 System.out.println("removed");
             } else {
-                System.out.println("not found");
+                System.err.println("not found");
             }
         } else {
-            System.out.println("no table");
+            System.err.println("no table");
         }
     }
 
@@ -107,11 +110,11 @@ public class CommandInterpreter {
             manager.dropTable(command[1]);
             System.out.println("dropped");
         } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 
-    protected static void exit(String[] command) throws DatabaseExitException, IllegalArgumentException {
+    protected static void exit(String[] command) throws DatabaseExitException {
         checkArguments(1, command.length, 1, "exit");
         if (manager.getCurrentTable() != null) {
             try {

@@ -18,10 +18,16 @@ public class DatabaseMain {
                 Parser.batchMode(args);
             }
         } catch (InvalidPathException e) {
-            System.out.println("Can't connect to database: invalid path");
+            System.err.println("Can't connect to database: invalid path");
             System.exit(-1);
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            if (e.getMessage().isEmpty()) {
+                System.err.println(e.getMessage());
+            } else {
+                System.err.println("Unexpected exception:");
+                e.printStackTrace();
+                System.exit(-1);
+            }
         } catch (DatabaseExitException e) {
             System.exit(e.status);
         }
@@ -40,3 +46,4 @@ class WrongNumberOfArgumentsException extends IllegalArgumentException {
         super(message);
     }
 }
+
