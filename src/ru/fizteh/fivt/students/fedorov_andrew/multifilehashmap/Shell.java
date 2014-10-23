@@ -31,16 +31,16 @@ import ru.fizteh.fivt.students.fedorov_andrew.multifilehashmap.support.Utility;
  * @see Commands
  */
 public class Shell {
-    public final static String DB_DIRECTORY_PROPERTY_NAME = "fizteh.db.dir";
+    public static final String DB_DIRECTORY_PROPERTY_NAME = "fizteh.db.dir";
 
-    public final static int IO_BUFFER_SIZE = 16 * 1024;
+    public static final int IO_BUFFER_SIZE = 16 * 1024;
 
     public static void main(String[] args) {
-	if (args.length == 0) {
-	    new Shell().run(System.in);
-	} else {
-	    new Shell().run(args);
-	}
+        if (args.length == 0) {
+            new Shell().run(System.in);
+        } else {
+            new Shell().run(args);
+        }
     }
 
     /**
@@ -56,28 +56,29 @@ public class Shell {
     private boolean interactive;
 
     public Shell() {
-	init();
+        init();
     }
 
     /**
      * Do some minor optimizations - delete empty files and directories.
      */
     public void cleanup() {
-	// Delete empty files and directories inside tables' directories
-	Path dbDirectory = (activeDatabase == null ? null
-		: activeDatabase.getDbDirectory());
+        // Delete empty files and directories inside tables' directories
+        Path dbDirectory = (activeDatabase == null ? null : activeDatabase
+                .getDbDirectory());
 
-	if (dbDirectory != null) {
-	    try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dbDirectory)) {
-		for (Path tableDirectory : dirStream) {
-		    Utility.removeEmptyFilesAndFolders(tableDirectory);
-		}
+        if (dbDirectory != null) {
+            try (DirectoryStream<Path> dirStream = Files
+                    .newDirectoryStream(dbDirectory)) {
+                for (Path tableDirectory : dirStream) {
+                    Utility.removeEmptyFilesAndFolders(tableDirectory);
+                }
 
-		Log.log(Shell.class, "Cleaned up successfully");
-	    } catch (IOException exc) {
-		Log.log(Shell.class, exc, "Failed to clean up");
-	    }
-	}
+                Log.log(Shell.class, "Cleaned up successfully");
+            } catch (IOException exc) {
+                Log.log(Shell.class, exc, "Failed to clean up");
+            }
+        }
     }
 
     /**
@@ -88,39 +89,37 @@ public class Shell {
      * @return returns true if execution finished correctly; false otherwise;
      */
     public boolean execute(String command) {
-	String[] args = command.trim().split("[ \t]{1,}");
-	if (args[0].isEmpty()) {
-	    return true;
-	}
+        String[] args = command.trim().split("[ \t]{1,}");
+        if (args[0].isEmpty()) {
+            return true;
+        }
 
-	Log.log(Shell.class, "Invocation request: " + Arrays.toString(args));
+        Log.log(Shell.class, "Invocation request: " + Arrays.toString(args));
 
-	Class<?> commandClass = classesMap.get(args[0]);
-	if (commandClass == null) {
-	    Log.log(Shell.class,
-		    String.format("Command not found by name %s", args[0]));
-	    System.err.println("Sorry, this command is missing");
-	    return false;
-	} else {
-	    try {
-		Command commandInstance = (Command) commandClass.newInstance();
-		commandInstance.execute(this, args);
+        Class<?> commandClass = classesMap.get(args[0]);
+        if (commandClass == null) {
+            Log.log(Shell.class,
+                    String.format("Command not found by name %s", args[0]));
+            System.err.println("Sorry, this command is missing");
+            return false;
+        } else {
+            try {
+                Command commandInstance = (Command) commandClass.newInstance();
+                commandInstance.execute(this, args);
 
-		return true;
-	    } catch (Exception exc) {
-		if (!(exc instanceof TerminalException)) {
-		    // unhandled exception
-		    Log.log(Shell.class,
-			    exc,
-			    String.format("Error during execution of %s",
-					  args[0]));
-		    System.err.println(String.format("%s: Method execution error",
-						     args[0]));
-		}
-		// throw new RuntimeException(exc);
-		return false;
-	    }
-	}
+                return true;
+            } catch (Exception exc) {
+                if (!(exc instanceof TerminalException)) {
+                    // unhandled exception
+                    Log.log(Shell.class, exc, String.format(
+                            "Error during execution of %s", args[0]));
+                    System.err.println(String.format(
+                            "%s: Method execution error", args[0]));
+                }
+                // throw new RuntimeException(exc);
+                return false;
+            }
+        }
     }
 
     /**
@@ -129,82 +128,83 @@ public class Shell {
      * @param code
      */
     public void exit(int code) {
-	cleanup();
+        cleanup();
 
-	Log.close();
-	System.exit(code);
+        Log.close();
+        System.exit(code);
     }
 
     public Database getActiveDatabase() {
-	return activeDatabase;
+        return activeDatabase;
     }
 
     public Table getActiveTable() throws TerminalException {
-	try {
-	    return activeDatabase.getActiveTable();
-	} catch (NoActiveTableException exc) {
-	    Utility.handleError(exc, "no table", true);
-	}
+        try {
+            return activeDatabase.getActiveTable();
+        } catch (NoActiveTableException exc) {
+            Utility.handleError(exc, "no table", true);
+        }
 
-	// this statement is never reached
-	return null;
+        // this statement is never reached
+        return null;
     }
 
     /**
      * Prepares shell for further command interpretation
      */
     private void init() {
-	Log.log(Shell.class, "Shell starting");
+        Log.log(Shell.class, "Shell starting");
 
-	try {
-	    final String dbDirPath = System.getProperty(DB_DIRECTORY_PROPERTY_NAME);
-	    if (dbDirPath == null) {
-		Utility.handleError("Please mention database directory");
-	    }
+        try {
+            final String dbDirPath = System
+                    .getProperty(DB_DIRECTORY_PROPERTY_NAME);
+            if (dbDirPath == null) {
+                Utility.handleError("Please mention database directory");
+            }
 
-	    Utility.performAccurately(new AccurateAction() {
+            Utility.performAccurately(new AccurateAction() {
 
-		@Override
-		public void perform() throws Exception {
-		    activeDatabase = Database.establishDatabase(Paths.get(dbDirPath));
-		}
-	    },
-				      Commands.databaseErrorHandler,
-				      this);
-	} catch (TerminalException exc) {
-	    this.exit(1);
-	}
+                @Override
+                public void perform() throws Exception {
+                    activeDatabase = Database.establishDatabase(Paths
+                            .get(dbDirPath));
+                }
+            }, Commands.DATABASE_ERROR_HANDLER, this);
+        } catch (TerminalException exc) {
+            this.exit(1);
+        }
 
-	// collecting commands
-	Class<?>[] classes = Commands.class.getDeclaredClasses();
-	classesMap = new HashMap<>(classes.length);
+        // collecting commands
+        Class<?>[] classes = Commands.class.getDeclaredClasses();
+        classesMap = new HashMap<>(classes.length);
 
-	for (int i = 0, len = classes.length; i < len; i++) {
-	    Class<? extends Command> commandClass = null;
+        for (int i = 0, len = classes.length; i < len; i++) {
+            Class<? extends Command> commandClass;
 
-	    try {
-		commandClass = classes[i].asSubclass(Command.class);
-	    } catch (ClassCastException exc) {
-	    }
+            try {
+                commandClass = classes[i].asSubclass(Command.class);
+            } catch (ClassCastException exc) {
+                commandClass = null;
+            }
 
-	    if (commandClass != null) {
-		String simpleName = Utility.simplifyClassName(classes[i].getSimpleName());
+            if (commandClass != null) {
+                String simpleName = Utility.simplifyClassName(classes[i]
+                        .getSimpleName());
 
-		classesMap.put(simpleName, commandClass);
-		Log.log(Shell.class,
-			String.format("Class registered: %s as '%s'",
-				      classes[i].getName(),
-				      simpleName));
-	    }
-	}
+                classesMap.put(simpleName, commandClass);
+                Log.log(Shell.class, String.format(
+                        "Class registered: %s as '%s'", classes[i].getName(),
+                        simpleName));
+            }
+        }
     }
 
     public boolean isInteractive() {
-	return interactive;
+        return interactive;
     }
 
     public Set<Entry<String, Class<? extends Command>>> listCommands() {
-	return classesMap.entrySet();
+        return classesMap.entrySet();
     }
 
     /**
@@ -214,20 +214,20 @@ public class Shell {
      *             all errors are wrapped into this.
      */
     public void persistDatabase() throws TerminalException {
-	try {
-	    Utility.performAccurately(new AccurateAction() {
-		@Override
-		public void perform() throws Exception {
-		    activeDatabase.persistDatabase();
-		}
-	    }, Commands.databaseErrorHandler, this);
-	} catch (Exception exc) {
-	    if (!(exc instanceof TerminalException)) {
-		Utility.handleError(exc,
-				    "Failed to persist database because of unknown error",
-				    true);
-	    }
-	}
+        try {
+            Utility.performAccurately(new AccurateAction() {
+                @Override
+                public void perform() throws Exception {
+                    activeDatabase.persistDatabase();
+                }
+            }, Commands.DATABASE_ERROR_HANDLER, this);
+        } catch (Exception exc) {
+            if (!(exc instanceof TerminalException)) {
+                Utility.handleError(exc,
+                        "Failed to persist database because of unknown error",
+                        true);
+            }
+        }
     }
 
     /**
@@ -237,51 +237,50 @@ public class Shell {
      * @param stream
      */
     public void run(InputStream stream) {
-	interactive = true;
+        interactive = true;
 
-	BufferedReader reader = new BufferedReader(new InputStreamReader(stream),
-						   IO_BUFFER_SIZE);
-	try {
-	    while (true) {
-		Table table = null;
-		try {
-		    table = activeDatabase.getActiveTable();
-		} catch (NoActiveTableException exc) {
-		}
-		System.out.println(String.format("%s%s $ ",
-						 (table == null
-							 ? ""
-							 : (table.getTableName() + "@")),
-						 activeDatabase.getDbDirectory()));
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(stream), IO_BUFFER_SIZE);
+        try {
+            while (true) {
+                Table table;
+                try {
+                    table = activeDatabase.getActiveTable();
+                } catch (NoActiveTableException exc) {
+                    table = null;
+                }
+                System.out.println(String.format("%s%s $ ", (table == null ? ""
+                        : (table.getTableName() + "@")), activeDatabase
+                        .getDbDirectory()));
 
-		String str = reader.readLine();
+                String str = reader.readLine();
 
-		// end of stream
-		if (str == null) {
-		    break;
-		}
+                // end of stream
+                if (str == null) {
+                    break;
+                }
 
-		// clone of the map before modifications
-		Database cloneDB = activeDatabase.clone();
+                // clone of the map before modifications
+                Database cloneDB = activeDatabase.clone();
 
-		String[] commands = str.split(";");
-		for (int i = 0, len = commands.length; i < len; i++) {
-		    boolean correct = execute(commands[i]);
-		    if (!correct) {
-			activeDatabase = cloneDB;
-			break;
-		    }
-		}
-	    }
-	} catch (IOException exc) {
-	    Log.log(Shell.class, exc, "Cannot parse inputstream for shell");
-	}
+                String[] commands = str.split(";");
+                for (int i = 0, len = commands.length; i < len; i++) {
+                    boolean correct = execute(commands[i]);
+                    if (!correct) {
+                        activeDatabase = cloneDB;
+                        break;
+                    }
+                }
+            }
+        } catch (IOException exc) {
+            Log.log(Shell.class, exc, "Cannot parse inputstream for shell");
+        }
 
-	try {
-	    persistDatabase();
-	} catch (TerminalException exc) {
-	    this.exit(1);
-	}
+        try {
+            persistDatabase();
+        } catch (TerminalException exc) {
+            this.exit(1);
+        }
     }
 
     /**
@@ -292,27 +291,27 @@ public class Shell {
      * @param args
      */
     public void run(String[] args) {
-	interactive = false;
+        interactive = false;
 
-	StringBuilder sb = new StringBuilder();
-	for (int i = 0, len = args.length; i < len; i++) {
-	    sb.append((i == 0 ? "" : " ")).append(args[i]);
-	}
-	String cmds = sb.toString();
-	String[] commands = cmds.split(";");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0, len = args.length; i < len; i++) {
+            sb.append((i == 0 ? "" : " ")).append(args[i]);
+        }
+        String cmds = sb.toString();
+        String[] commands = cmds.split(";");
 
-	for (int i = 0, len = commands.length; i < len; i++) {
-	    boolean correct = execute(commands[i]);
-	    if (!correct) {
-		this.exit(1);
-	    }
-	}
+        for (int i = 0, len = commands.length; i < len; i++) {
+            boolean correct = execute(commands[i]);
+            if (!correct) {
+                this.exit(1);
+            }
+        }
 
-	try {
-	    persistDatabase();
-	} catch (TerminalException exc) {
-	    this.exit(1);
-	}
-	this.exit(0);
+        try {
+            persistDatabase();
+        } catch (TerminalException exc) {
+            this.exit(1);
+        }
+        this.exit(0);
     }
 }

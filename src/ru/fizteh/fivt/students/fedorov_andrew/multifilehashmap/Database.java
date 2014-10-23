@@ -22,8 +22,8 @@ import ru.fizteh.fivt.students.fedorov_andrew.multifilehashmap.support.Utility;
 public class Database {
 
     public static Database establishDatabase(Path dbDirectory)
-	    throws DatabaseException {
-	return new Database(dbDirectory);
+            throws DatabaseException {
+        return new Database(dbDirectory);
     }
 
     /**
@@ -48,56 +48,62 @@ public class Database {
      * @throws TerminalException
      */
     private Database(Path dbDirectory) throws DatabaseException {
-	if (dbDirectory == null) {
-	    throw new DatabaseException("Please mention database root directory");
-	}
+        if (dbDirectory == null) {
+            throw new DatabaseException(
+                    "Please mention database root directory");
+        }
 
-	this.dbDirectory = dbDirectory;
+        this.dbDirectory = dbDirectory;
 
-	try {
-	    if (!Files.exists(dbDirectory)) {
-		Path parent = dbDirectory.getParent();
-		if (parent != null && Files.isDirectory(parent)) {
-		    Files.createDirectory(dbDirectory);
-		} else {
-		    throw new DatabaseException("Parent path of the database folder does not exist or is not a directory");
-		}
-	    } else {
-		if (!Files.isDirectory(dbDirectory)) {
-		    throw new DatabaseException("Database path is not a directory");
-		}
+        try {
+            if (!Files.exists(dbDirectory)) {
+                Path parent = dbDirectory.getParent();
+                if (parent != null && Files.isDirectory(parent)) {
+                    Files.createDirectory(dbDirectory);
+                } else {
+                    throw new DatabaseException(
+                            "Parent path of the database folder does not exist or is not a directory");
+                }
+            } else {
+                if (!Files.isDirectory(dbDirectory)) {
+                    throw new DatabaseException(
+                            "Database path is not a directory");
+                }
 
-		/*
-		 * Checking that this directory contains only directories and
-		 * subdirectories contain only directories
-		 */
-		Path problemFile = Utility.checkDirectoryContainsOnlyDirectories(dbDirectory,
-										 2);
+                /*
+                 * Checking that this directory contains only directories and
+                 * subdirectories contain only directories
+                 */
+                Path problemFile = Utility
+                        .checkDirectoryContainsOnlyDirectories(dbDirectory, 2);
 
-		// some file found
-		if (problemFile != null) {
-		    throw new DatabaseException("DB directory scan: found inproper files",
-						new Exception(String.format("DB directory scan: file '%s' should not exist",
-									    problemFile)));
-		}
-	    }
-	} catch (IOException exc) {
-	    throw new DatabaseException("Cannot scan database directory", exc);
-	}
+                // some file found
+                if (problemFile != null) {
+                    throw new DatabaseException(
+                            "DB directory scan: found inproper files",
+                            new Exception(
+                                    String.format(
+                                            "DB directory scan: file '%s' should not exist",
+                                            problemFile)));
+                }
+            }
+        } catch (IOException exc) {
+            throw new DatabaseException("Cannot scan database directory", exc);
+        }
     }
 
     /**
      * Constructor for copying. Only applies given parameters.
      */
     private Database(Path dbDirectory, Table activeTable) {
-	this.dbDirectory = dbDirectory;
-	this.activeTable = activeTable;
+        this.dbDirectory = dbDirectory;
+        this.activeTable = activeTable;
     }
 
     private void checkCurrentTableIsOpen() throws NoActiveTableException {
-	if (activeTable == null) {
-	    throw new NoActiveTableException();
-	}
+        if (activeTable == null) {
+            throw new NoActiveTableException();
+        }
     }
 
     /**
@@ -105,9 +111,9 @@ public class Database {
      */
     @Override
     public Database clone() {
-	Database cloneDB = new Database(dbDirectory, activeTable == null ? null
-		: activeTable.clone());
-	return cloneDB;
+        Database cloneDB = new Database(dbDirectory, activeTable == null ? null
+                : activeTable.clone());
+        return cloneDB;
     }
 
     /**
@@ -119,21 +125,21 @@ public class Database {
      *         exists.
      */
     public void createTable(String tableName) throws DatabaseException {
-	checkTableNameIsCorrect(tableName);
-	Path tablePath = dbDirectory.resolve(tableName);
+        checkTableNameIsCorrect(tableName);
+        Path tablePath = dbDirectory.resolve(tableName);
 
-	if (Files.exists(tablePath)) {
-	    System.out.println("table " + tableName + " already exists");
-	} else {
-	    try {
-		Files.createDirectory(tablePath);
-	    } catch (IOException exc) {
-		throw new DatabaseException("Failed to create table directory",
-					    exc);
-	    }
+        if (Files.exists(tablePath)) {
+            System.out.println("table " + tableName + " already exists");
+        } else {
+            try {
+                Files.createDirectory(tablePath);
+            } catch (IOException exc) {
+                throw new DatabaseException("Failed to create table directory",
+                        exc);
+            }
 
-	    System.out.println("created");
-	}
+            System.out.println("created");
+        }
     }
 
     /**
@@ -145,35 +151,35 @@ public class Database {
      *             if tablename does not exist or failed to delete
      */
     public void dropTable(String tableName) throws TerminalException {
-	checkTableNameIsCorrect(tableName);
-	Path tablePath = dbDirectory.resolve(tableName);
+        checkTableNameIsCorrect(tableName);
+        Path tablePath = dbDirectory.resolve(tableName);
 
-	if (!Files.exists(tablePath)) {
-	    if (activeTable != null && !activeTable.getTableName()
-						   .equals(tableName)) {
-		activeTable = null;
-	    } else {
-		handleError("tablename not exists");
-	    }
-	}
+        if (!Files.exists(tablePath)) {
+            if (activeTable != null
+                    && !activeTable.getTableName().equals(tableName)) {
+                activeTable = null;
+            } else {
+                handleError("tablename not exists");
+            }
+        }
 
-	if (activeTable != null && activeTable.getTableName().equals(tableName)) {
-	    activeTable = null;
-	}
+        if (activeTable != null && activeTable.getTableName().equals(tableName)) {
+            activeTable = null;
+        }
 
-	Utility.rm(tablePath, "drop");
+        Utility.rm(tablePath, "drop");
 
-	// if removed, then print:
-	System.out.println("dropped");
+        // if removed, then print:
+        System.out.println("dropped");
     }
 
     public Table getActiveTable() throws NoActiveTableException {
-	checkCurrentTableIsOpen();
-	return activeTable;
+        checkCurrentTableIsOpen();
+        return activeTable;
     }
 
     public Path getDbDirectory() {
-	return dbDirectory;
+        return dbDirectory;
     }
 
     /**
@@ -182,49 +188,48 @@ public class Database {
      * @throws IOException
      */
     public void persistDatabase() throws DatabaseException {
-	// actually we have to persist the active table.
-	if (activeTable != null) {
-	    activeTable.persistTable();
-	}
+        // actually we have to persist the active table.
+        if (activeTable != null) {
+            activeTable.persistTable();
+        }
     }
 
     public void showTables() throws DatabaseException {
-	try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dbDirectory)) {
-	    System.out.println("table_name row_count");
+        try (DirectoryStream<Path> dirStream = Files
+                .newDirectoryStream(dbDirectory)) {
+            System.out.println("table_name row_count");
 
-	    // Changes in the current table can be not persisted yet.
-	    String currentTableName = (activeTable == null ? null
-		    : activeTable.getTableName());
+            // Changes in the current table can be not persisted yet.
+            String currentTableName = (activeTable == null ? null : activeTable
+                    .getTableName());
 
-	    boolean scanFailed = false;
+            boolean scanFailed = false;
 
-	    for (Path tableRoot : dirStream) {
-		try {
-		    Table table = tableRoot.getFileName()
-					   .toString()
-					   .equals(currentTableName)
-			    ? activeTable : new Table(tableRoot);
+            for (Path tableRoot : dirStream) {
+                try {
+                    Table table = tableRoot.getFileName().toString()
+                            .equals(currentTableName) ? activeTable
+                            : new Table(tableRoot);
 
-		    System.out.println(String.format("%s %d",
-						     tableRoot.getFileName(),
-						     table.rowsNumber()));
-		} catch (Exception exc) {
-		    System.out.println(String.format("%s corrupt",
-						     tableRoot.getFileName()));
-		    Log.log(Database.class,
-			    exc,
-			    "Cannot open table: " + tableRoot.getFileName());
-		    scanFailed = true;
-		}
-	    }
+                    System.out.println(String.format("%s %d",
+                            tableRoot.getFileName(), table.rowsNumber()));
+                } catch (Exception exc) {
+                    System.out.println(String.format("%s corrupt",
+                            tableRoot.getFileName()));
+                    Log.log(Database.class, exc, "Cannot open table: "
+                            + tableRoot.getFileName());
+                    scanFailed = true;
+                }
+            }
 
-	    if (scanFailed) {
-		throw new DatabaseException("show tables could not scan some tables");
-	    }
-	} catch (IOException exc) {
-	    throw new DatabaseException("Failed to scan database directory",
-					exc);
-	}
+            if (scanFailed) {
+                throw new DatabaseException(
+                        "show tables could not scan some tables");
+            }
+        } catch (IOException exc) {
+            throw new DatabaseException("Failed to scan database directory",
+                    exc);
+        }
     }
 
     /**
@@ -238,28 +243,28 @@ public class Database {
      *             new table.
      */
     public void useTable(String tableName) throws DatabaseException {
-	checkTableNameIsCorrect(tableName);
-	Path tablePath = dbDirectory.resolve(tableName);
+        checkTableNameIsCorrect(tableName);
+        Path tablePath = dbDirectory.resolve(tableName);
 
-	if (activeTable != null) {
-	    activeTable.persistTable();
-	}
+        if (activeTable != null) {
+            activeTable.persistTable();
+        }
 
-	if (!Files.exists(tablePath)) {
-	    throw new IllegalArgumentException("tablename not exists");
-	}
+        if (!Files.exists(tablePath)) {
+            throw new IllegalArgumentException("tablename not exists");
+        }
 
-	Table lastTable = activeTable;
+        Table lastTable = activeTable;
 
-	try {
-	    activeTable = new Table(tablePath);
-	} catch (DatabaseException exc) {
-	    // Will be using old table after this
-	    activeTable = lastTable;
-	    throw exc;
-	}
+        try {
+            activeTable = new Table(tablePath);
+        } catch (DatabaseException exc) {
+            // Will be using old table after this
+            activeTable = lastTable;
+            throw exc;
+        }
 
-	// if everything is ok
-	System.out.println("using " + tableName);
+        // if everything is ok
+        System.out.println("using " + tableName);
     }
 }

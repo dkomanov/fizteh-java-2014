@@ -6,5 +6,5 @@ package ru.fizteh.fivt.students.fedorov_andrew.multifilehashmap.support;
  * @author phoenix
  */
 public interface AccurateAction {
-    public void perform() throws Exception;
+    void perform() throws Exception;
 }

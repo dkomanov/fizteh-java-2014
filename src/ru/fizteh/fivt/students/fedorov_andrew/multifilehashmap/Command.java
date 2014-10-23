@@ -9,19 +9,19 @@ import ru.fizteh.fivt.students.fedorov_andrew.multifilehashmap.exception.Termina
  * 
  */
 public interface Command {
-    public void execute(Shell shell, String[] args) throws TerminalException;
+    void execute(Shell shell, String[] args) throws TerminalException;
 
     /**
      * Information text for the command
      * 
      * @return
      */
-    public String getInfo();
+    String getInfo();
 
     /**
      * Complete formula for command invocation excluding command name.
      * 
      * @return
      */
-    public String getInvocation();
+    String getInvocation();
 }

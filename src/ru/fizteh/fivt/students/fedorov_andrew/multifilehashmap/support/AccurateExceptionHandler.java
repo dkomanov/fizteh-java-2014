@@ -13,6 +13,6 @@ import ru.fizteh.fivt.students.fedorov_andrew.multifilehashmap.exception.Termina
  *            example to make a more detailed message.
  */
 public interface AccurateExceptionHandler<T> {
-    public void handleException(Exception exc, T additionalData)
-	    throws TerminalException;
+    void handleException(Exception exc, T additionalData)
+            throws TerminalException;
 }

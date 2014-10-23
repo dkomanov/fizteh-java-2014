@@ -29,24 +29,24 @@ public class Table {
      * 
      * @see Table#walkTableParts(TablePartWalker, boolean)
      */
-    static interface TablePartWalker {
-	/**
-	 * This method is called by
-	 * {@link Table#walkTableParts(TablePartWalker, boolean)} when a table
-	 * part is loaded
-	 * 
-	 * @param fmap
-	 *            table part
-	 * @param hash
-	 *            hash of relative filename; all keys that stored in this
-	 *            table part should have the same hash as this number.
-	 */
-	public void visitTablePart(TablePart fmap, int hash)
-		throws DatabaseException;
+    interface TablePartWalker {
+        /**
+         * This method is called by
+         * {@link Table#walkTableParts(TablePartWalker, boolean)} when a table
+         * part is loaded
+         * 
+         * @param fmap
+         *            table part
+         * @param hash
+         *            hash of relative filename; all keys that stored in this
+         *            table part should have the same hash as this number.
+         */
+        void visitTablePart(TablePart fmap, int hash)
+                throws DatabaseException;
     }
 
-    private final static int DIRECTORIES_COUNT = 16;
-    private final static int FILES_COUNT = 16;
+    private static final int DIRECTORIES_COUNT = 16;
+    private static final int FILES_COUNT = 16;
 
     /**
      * Builds table part relative filename hashcode;
@@ -58,7 +58,7 @@ public class Table {
      * @return
      */
     private static int buildHash(int directory, int file) {
-	return directory * FILES_COUNT + file;
+        return directory * FILES_COUNT + file;
     }
 
     /**
@@ -68,7 +68,7 @@ public class Table {
      * @return
      */
     private static int getDirectoryFromHash(int hash) {
-	return hash / FILES_COUNT;
+        return hash / FILES_COUNT;
     }
 
     /**
@@ -78,13 +78,13 @@ public class Table {
      * @return
      */
     private static int getFileFromHash(int hash) {
-	return hash % FILES_COUNT;
+        return hash % FILES_COUNT;
     }
 
     private static int getHash(String key) {
-	byte byte0 = key.getBytes()[0];
-	return buildHash(byte0 % DIRECTORIES_COUNT,
-			 (byte0 / DIRECTORIES_COUNT) % FILES_COUNT);
+        byte byte0 = key.getBytes()[0];
+        return buildHash(byte0 % DIRECTORIES_COUNT, (byte0 / DIRECTORIES_COUNT)
+                % FILES_COUNT);
     }
 
     /**
@@ -100,43 +100,42 @@ public class Table {
     private final String tableName;
 
     public Table(Path tableRoot) throws DatabaseException {
-	this.tableName = tableRoot.getFileName().toString();
-	this.tableRoot = tableRoot;
-	tableParts = new HashMap<>();
+        this.tableName = tableRoot.getFileName().toString();
+        this.tableRoot = tableRoot;
+        tableParts = new HashMap<>();
 
-	checkFSConsistency();
+        checkFSConsistency();
     }
 
     /**
      * Constructor for cloning. Does nothing.
      */
     private Table(Path tableRoot, String tableName) {
-	this.tableRoot = tableRoot;
-	this.tableName = tableName;
+        this.tableRoot = tableRoot;
+        this.tableName = tableName;
     }
 
     private void checkFSConsistency() throws DatabaseException {
-	walkTableParts(new TablePartWalker() {
+        walkTableParts(new TablePartWalker() {
 
-	    @Override
-	    public void visitTablePart(TablePart fmap, int expectedHash)
-		    throws DatabaseException {
-		// check that proper keys are stored here
-		Set<String> keySet = fmap.keySet();
-		for (String key : keySet) {
-		    int keyHash = getHash(key);
-		    if (keyHash != expectedHash) {
-			Log.log(Table.class,
-				String.format("key '%s' with hash %d is stored in file with hash %d",
-					      key,
-					      keyHash,
-					      expectedHash));
-			throw new DBFileCorruptException("Inproper keys are stored in some table parts");
-		    }
-		}
-	    }
-	},
-		       true);
+            @Override
+            public void visitTablePart(TablePart fmap, int expectedHash)
+                    throws DatabaseException {
+                // check that proper keys are stored here
+                Set<String> keySet = fmap.keySet();
+                for (String key : keySet) {
+                    int keyHash = getHash(key);
+                    if (keyHash != expectedHash) {
+                        Log.log(Table.class,
+                                String.format(
+                                        "key '%s' with hash %d is stored in file with hash %d",
+                                        key, keyHash, expectedHash));
+                        throw new DBFileCorruptException(
+                                "Inproper keys are stored in some table parts");
+                    }
+                }
+            }
+        }, true);
     }
 
     /**
@@ -144,22 +143,22 @@ public class Table {
      */
     @Override
     public Table clone() {
-	Table cloneTable = new Table(tableRoot, tableName);
-	cloneTable.tableParts = new HashMap<>(tableParts.size());
+        Table cloneTable = new Table(tableRoot, tableName);
+        cloneTable.tableParts = new HashMap<>(tableParts.size());
 
-	for (Entry<Integer, TablePart> entry : tableParts.entrySet()) {
-	    cloneTable.tableParts.put(entry.getKey(), entry.getValue().clone());
-	}
+        for (Entry<Integer, TablePart> entry : tableParts.entrySet()) {
+            cloneTable.tableParts.put(entry.getKey(), entry.getValue().clone());
+        }
 
-	return cloneTable;
+        return cloneTable;
     }
 
     public String get(String key) throws DatabaseException {
-	return obtainTablePart(getHash(key)).get(key);
+        return obtainTablePart(getHash(key)).get(key);
     }
 
     public String getTableName() {
-	return tableName;
+        return tableName;
     }
 
     /**
@@ -171,18 +170,18 @@ public class Table {
      * @throws DBFileCorruptException
      */
     public Set<String> keySet() throws DatabaseException {
-	class KeySetCollector implements TablePartWalker {
-	    TreeSet<String> set = new TreeSet<>();
+        class KeySetCollector implements TablePartWalker {
+            TreeSet<String> set = new TreeSet<>();
 
-	    @Override
-	    public void visitTablePart(TablePart fmap, int hash) {
-		set.addAll(fmap.keySet());
-	    }
-	}
+            @Override
+            public void visitTablePart(TablePart fmap, int hash) {
+                set.addAll(fmap.keySet());
+            }
+        }
 
-	KeySetCollector collector = new KeySetCollector();
-	walkTableParts(collector, true);
-	return collector.set;
+        KeySetCollector collector = new KeySetCollector();
+        walkTableParts(collector, true);
+        return collector.set;
     }
 
     /**
@@ -193,8 +192,8 @@ public class Table {
      * @return
      */
     private Path makeTablePartFilePath(int hash) {
-	return tableRoot.resolve(Paths.get(getDirectoryFromHash(hash) + ".dir",
-					   getFileFromHash(hash) + ".dat"));
+        return tableRoot.resolve(Paths.get(getDirectoryFromHash(hash) + ".dir",
+                getFileFromHash(hash) + ".dat"));
     }
 
     /**
@@ -208,13 +207,13 @@ public class Table {
      * @throws DBFileCorruptException
      */
     private TablePart obtainTablePart(int hash) throws DatabaseException {
-	TablePart fmap = tableParts.get(hash);
-	if (fmap == null) {
-	    fmap = new TablePart(makeTablePartFilePath(hash));
-	    tableParts.put(hash, fmap);
-	    fmap.readFromFile();
-	}
-	return fmap;
+        TablePart fmap = tableParts.get(hash);
+        if (fmap == null) {
+            fmap = new TablePart(makeTablePartFilePath(hash));
+            tableParts.put(hash, fmap);
+            fmap.readFromFile();
+        }
+        return fmap;
     }
 
     /**
@@ -225,22 +224,22 @@ public class Table {
      *             stops on the first error case.
      */
     public void persistTable() throws DatabaseException {
-	try {
-	    for (TablePart fmap : tableParts.values()) {
-		fmap.writeToFile();
-	    }
-	} catch (IOException exc) {
-	    throw new DatabaseException("Failed to persist table " + tableName,
-					exc);
-	}
+        try {
+            for (TablePart fmap : tableParts.values()) {
+                fmap.writeToFile();
+            }
+        } catch (IOException exc) {
+            throw new DatabaseException("Failed to persist table " + tableName,
+                    exc);
+        }
     }
 
     public String put(String key, String value) throws DatabaseException {
-	return obtainTablePart(getHash(key)).put(key, value);
+        return obtainTablePart(getHash(key)).put(key, value);
     }
 
     public String remove(String key) throws DatabaseException {
-	return obtainTablePart(getHash(key)).remove(key);
+        return obtainTablePart(getHash(key)).remove(key);
     }
 
     /**
@@ -252,18 +251,18 @@ public class Table {
      * @throws DBFileCorruptException
      */
     public long rowsNumber() throws DatabaseException {
-	class KeySetCollector implements TablePartWalker {
-	    long rowsNumber = 0L;
+        class KeySetCollector implements TablePartWalker {
+            long rowsNumber = 0L;
 
-	    @Override
-	    public void visitTablePart(TablePart fmap, int hash) {
-		rowsNumber += fmap.size();
-	    }
-	}
+            @Override
+            public void visitTablePart(TablePart fmap, int hash) {
+                rowsNumber += fmap.size();
+            }
+        }
 
-	KeySetCollector collector = new KeySetCollector();
-	walkTableParts(collector, true);
-	return collector.rowsNumber;
+        KeySetCollector collector = new KeySetCollector();
+        walkTableParts(collector, true);
+        return collector.rowsNumber;
     }
 
     /**
@@ -281,25 +280,25 @@ public class Table {
      * @throws DBFileCorruptException
      */
     protected void walkTableParts(TablePartWalker walker, boolean simulateLoad)
-	    throws DatabaseException {
-	for (int dir = 0; dir < DIRECTORIES_COUNT; dir++) {
-	    for (int file = 0; file < FILES_COUNT; file++) {
-		int hash = buildHash(dir, file);
+            throws DatabaseException {
+        for (int dir = 0; dir < DIRECTORIES_COUNT; dir++) {
+            for (int file = 0; file < FILES_COUNT; file++) {
+                int hash = buildHash(dir, file);
 
-		TablePart fmap;
+                TablePart fmap;
 
-		if (simulateLoad) {
-		    fmap = tableParts.get(hash);
-		    if (fmap == null) {
-			fmap = new TablePart(makeTablePartFilePath(hash));
-			fmap.readFromFile();
-		    }
-		} else {
-		    fmap = obtainTablePart(hash);
-		}
+                if (simulateLoad) {
+                    fmap = tableParts.get(hash);
+                    if (fmap == null) {
+                        fmap = new TablePart(makeTablePartFilePath(hash));
+                        fmap.readFromFile();
+                    }
+                } else {
+                    fmap = obtainTablePart(hash);
+                }
 
-		walker.visitTablePart(fmap, hash);
-	    }
-	}
+                walker.visitTablePart(fmap, hash);
+            }
+        }
     }
 }
