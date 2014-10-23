@@ -16,10 +16,10 @@ public class DataFile { // Interacts with .dat file.
     private Coordinates folderFileIndexes;
     private boolean actuality; // True, if fileMap stores right information.
 
-    public DataFile(Path tablePath, Coordinates folderFileIndexes) throws IOException, IllegalArgumentException {
+    public DataFile(Path tablePath, Coordinates coordinates) throws IOException, IllegalArgumentException {
         fileMap = new TreeMap<>();
-        filePath = makeAbsolutePath(tablePath, folderFileIndexes);
-        this.folderFileIndexes = folderFileIndexes;
+        filePath = makeAbsolutePath(tablePath, coordinates);
+        this.folderFileIndexes = coordinates;
         actuality = false;
         // Now get size.
         size = 0;
@@ -38,8 +38,9 @@ public class DataFile { // Interacts with .dat file.
                 // First byte check.
                 b = dataBaseFile.readByte();
                 ++counter;
-                if (folderFileIndexes.fileIndex != Math.abs((Byte.valueOf(b) / TableManager.MAGIC_NUMBER) % TableManager.MAGIC_NUMBER)
-                        || folderFileIndexes.folderIndex != Math.abs(Byte.valueOf(b) % TableManager.MAGIC_NUMBER)) {
+                if (coordinates.fileIndex != Math.abs((Byte.valueOf(b) / TableManager.MAGIC_NUMBER)
+                        % TableManager.MAGIC_NUMBER) || coordinates.folderIndex != Math.abs(Byte.valueOf(b)
+                        % TableManager.MAGIC_NUMBER)) {
                     throw new IllegalArgumentException("Unexpected key in file " + filePath.toString());
                 }
                 // Get others bytes of key.

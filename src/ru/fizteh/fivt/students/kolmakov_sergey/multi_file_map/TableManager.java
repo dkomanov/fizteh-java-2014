@@ -121,11 +121,11 @@ public class TableManager {
 class Coordinates implements Comparable<Coordinates> {
     protected final int folderIndex;
     protected final int fileIndex;
-    public Coordinates(int folderIndex, int fileIndex){
+    public Coordinates(int folderIndex, int fileIndex) {
         this.folderIndex = folderIndex;
         this.fileIndex = fileIndex;
     }
-    public Coordinates(String key){
+    public Coordinates(String key) {
         if (key == null) {
             throw new IllegalArgumentException("Error: key == null");
         }
@@ -140,11 +140,11 @@ class Coordinates implements Comparable<Coordinates> {
     public int compareTo(Coordinates pair) {
         if (folderIndex > pair.folderIndex){
             return 1;
-        } else if (folderIndex < pair.folderIndex){
+        } else if (folderIndex < pair.folderIndex) {
             return  -1;
-        } else if (fileIndex > pair.fileIndex){
+        } else if (fileIndex > pair.fileIndex) {
             return  1;
-        } else if (fileIndex < pair.fileIndex){
+        } else if (fileIndex < pair.fileIndex) {
             return  -1;
         }
         return 0;
