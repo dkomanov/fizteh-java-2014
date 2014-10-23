@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap;
 
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.commands.Command;
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.TableException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,6 +31,8 @@ public class Commander {
             command.execute(args);
         } catch (IOException e) {
             throw new Exception(command.name() + ": Error");
+        } catch (TableException e) {
+            throw e;
         } catch (Exception e) {
             throw new Exception(command.name() + ": " + e.getMessage());
         }

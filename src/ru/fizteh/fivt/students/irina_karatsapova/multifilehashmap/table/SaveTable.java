@@ -1,21 +1,24 @@
 package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table;
 
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.DataBase;
-import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.Utils;
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.Utils;
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.TableException;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class SaveTable {
-    public static void start() throws Exception {
+    public static void start() throws TableException, IOException, Exception {
         if (!Table.loaded) {
             return;
         }
 
         if (!Table.dir.exists()) {
-            throw new Exception("Database: save: Dir is missed");
+            throw new TableException("Database: save: Dir is missed");
         }
+
 
         for (int dir = 0; dir < 16; dir++) {
             for (int file = 0; file < 16; file++) {
@@ -30,7 +33,7 @@ public class SaveTable {
         Table.loaded = false;
     }
 
-    private static void saveFile(int dir, int file) throws Exception {
+    private static void saveFile(int dir, int file) throws TableException, IOException, Exception {
         File dirPath = Utils.makePathAbsolute(Table.dir + "/" + dir + ".dir");
         File filePath = Utils.makePathAbsolute(dirPath.toString() + "/" + file + ".dat");
 
@@ -53,12 +56,12 @@ public class SaveTable {
                     }
                 }
             } catch (Exception e) {
-                throw new Exception("DataBase: save: Error while writing the file");
+                throw new TableException("save: Error while writing the file");
             } finally {
                 try {
                     outStream.close();
                 } catch (Exception e) {
-                    throw new Exception("DataBase: save: Error while closing the file");
+                    throw new TableException("save: Error while closing the file");
                 }
             }
         }
@@ -68,8 +71,8 @@ public class SaveTable {
         byte[] keyInBytes = key.getBytes("UTF-8");
         byte[] valueInBytes = value.getBytes("UTF-8");
         outStream.writeInt(keyInBytes.length);
-        outStream.writeInt(valueInBytes.length);
         outStream.write(keyInBytes);
+        outStream.writeInt(valueInBytes.length);
         outStream.write(valueInBytes);
         outStream.flush();
     }

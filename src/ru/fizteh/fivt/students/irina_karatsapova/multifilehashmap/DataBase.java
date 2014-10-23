@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap;
 
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.LoadTable;
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.Table;
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.DataBaseException;
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.Utils;
 
 import java.io.*;
 import java.util.HashMap;
@@ -11,29 +13,33 @@ public class DataBase {
     public static File root;
     public static Map<String, Integer> tables = new HashMap<String, Integer>();
 
-    public static void init(File rootFile) {
-        root = rootFile;
+    public static void init() {
         try {
+            if (System.getProperty(Main.mainDir) == null) {
+                throw new DataBaseException("Path to the database is not set up. Use -D" + Main.mainDir + "=...");
+            }
+            root = new File(Utils.mainDir());
             check();
             load();
-        } catch (Exception e) {
+        } catch (DataBaseException e) {
             System.err.println("Incorrect database: " + e.getMessage());
             System.exit(1);
         }
     }
 
-    private static void check() throws Exception {
+    private static void check() throws DataBaseException {
         if (!root.exists()) {
-            throw new Exception("Main directory does not exist");
+            throw new DataBaseException("Main directory does not exist");
         }
+
         for (File file: root.listFiles()) {
             if (!file.isDirectory()) {
-                throw new Exception("Contains files instead of directories");
+                throw new DataBaseException("Contains files instead of directories");
             }
         }
     }
 
-    private static void load() throws Exception {
+    private static void load() throws DataBaseException {
         try {
             for (File file : root.listFiles()) {
                 String tableName = file.getName().toString();
@@ -49,7 +55,7 @@ public class DataBase {
                 tables.put(tableName, valuesNumber);
             }
         } catch (Exception e) {
-            throw new Exception("Error while loading the number of values");
+            throw new DataBaseException("Error while loading the number of values");
         }
     }
 
@@ -62,7 +68,7 @@ public class DataBase {
         outStream.close();
     }
 
-    public static void saveInf(File file) throws Exception {
+    public static void saveInf(File file) throws IOException {
         File inf = file.toPath().resolve("inf.txt").toFile();
         DataOutputStream outStream = new DataOutputStream(new FileOutputStream(inf));
         Integer valuesNumber = tables.get(file.getName());

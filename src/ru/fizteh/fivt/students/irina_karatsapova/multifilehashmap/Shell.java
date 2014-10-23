@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap;
 
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.commands.Command;
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.TableException;
 
 import java.util.Scanner;
 
@@ -23,6 +24,9 @@ public class Shell {
             }
             try {
                 batchMode(input);
+            } catch (TableException e) {
+                System.out.println("Table: " + e.getMessage());
+                System.exit(1);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.commands;
 
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.DataBase;
-import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.Utils;
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.Utils;
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.Table;
 
 public class PutCommand implements Command {

@@ -3,12 +3,15 @@ package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap;
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.commands.*;
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.SaveTable;
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.Table;
-
-import java.io.File;
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.Utils;
 
 public class Main {
+    public static String mainDir = "fizteh.db.dir";
+
     public static void main(String[] args) {
-        DataBase.init(new File(Utils.mainDir()));
+        System.setProperty(mainDir, "D:/tmp/db3/");
+
+        DataBase.init();
 
         Table.initKeysArray();
 

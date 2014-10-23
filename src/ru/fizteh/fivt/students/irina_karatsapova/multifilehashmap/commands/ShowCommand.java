@@ -1,15 +1,12 @@
 package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.commands;
 
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.DataBase;
-import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.Utils;
-import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.LoadTable;
-import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.SaveTable;
-import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.Table;
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.TableException;
 
 import java.io.File;
 
 public class ShowCommand implements Command {
-    public void execute(String[] args) throws Exception {
+    public void execute(String[] args) throws TableException, Exception {
         if (!args[1].equals("tables")) {
             throw new Exception("The name of this command is \"show tables\"");
         }
@@ -19,11 +16,7 @@ public class ShowCommand implements Command {
             if (DataBase.tables.containsKey(tableName)) {
                 valuesNumber = DataBase.tables.get(tableName).intValue();
             } else {
-                System.out.println("We don't know this table o_O: " + tableName);
-                SaveTable.start();
-                LoadTable.start(Utils.makePathAbsolute(tableName));
-                valuesNumber = Table.countValues();
-                DataBase.initInf(tableName, valuesNumber);
+                throw new TableException("There is table which we don't know");
             }
             System.out.println(tableName + " " + valuesNumber);
         }

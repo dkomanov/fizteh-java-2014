@@ -1,18 +1,20 @@
 package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table;
 
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils.TableException;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
 public class LoadTable {
-    public static void start(File tableDir) throws Exception {
+    public static void start(File tableDir) throws TableException {
         Table.dir = tableDir;
         Table.map.clear();
         Table.keysClear();
 
         if (!Table.dir.exists()) {
-            throw new Exception("Database: load: The table does not exist");
+            throw new TableException("load: The table does not exist");
         } else {
             for (File dir : Table.dir.listFiles()) {
                 if (dir.isDirectory()) {
@@ -26,8 +28,14 @@ public class LoadTable {
         Table.loaded = true;
     }
 
-    private static void loadFile(File file) throws Exception {
-        DataInputStream inStream = new DataInputStream(new FileInputStream(file));
+    private static void loadFile(File file) throws TableException {
+        DataInputStream inStream;
+        try {
+            inStream = new DataInputStream(new FileInputStream(file));
+        } catch (IOException e) {
+            throw new TableException("load: Can't read from the file");
+        }
+
         try {
             int filePos = 0;
             while (filePos < file.length()) {
@@ -38,15 +46,15 @@ public class LoadTable {
 
                 try {
                     keyLength = inStream.readInt();
-                    valueLength = inStream.readInt();
                     key = readBytes(inStream, keyLength);
+                    valueLength = inStream.readInt();
                     value = readBytes(inStream, valueLength);
                 } catch (IOException e) {
-                    throw new Exception("Database: load: Wrong format of dir");
+                    throw new TableException("load: Wrong format of dir");
                 }
 
                 if (Table.map.containsKey(key)) {
-                    throw new Exception("DataBase: load: Two same keys in the dir");
+                    throw new TableException("load: Two same keys in the dir");
                 }
                 Table.addKey(key);
                 Table.map.put(key, value);
@@ -57,7 +65,7 @@ public class LoadTable {
             try {
                 inStream.close();
             } catch (IOException e) {
-                throw new Exception("DataBase: load: Error while closing the dir");
+                throw new TableException("load: Error while closing the dir");
             }
         }
     }

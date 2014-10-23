@@ -1,5 +1,6 @@
-package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap;
+package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.utils;
 
+import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.Main;
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.Table;
 
 import java.io.File;
@@ -22,7 +23,7 @@ public class Utils {
     }
 
     public static String mainDir() {
-        return System.getProperty("fizteh.db.dir");
+        return System.getProperty(Main.mainDir);
     }
 
     public static File makePathAbsolute(String str) {
