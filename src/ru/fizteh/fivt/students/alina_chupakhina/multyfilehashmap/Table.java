@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.alina_chupakhina.multyfilehashmap;
 
 import java.io.*;
 import java.util.Map;
-import java.lang.String;
 import java.util.Set;
 import java.util.TreeMap;
 
