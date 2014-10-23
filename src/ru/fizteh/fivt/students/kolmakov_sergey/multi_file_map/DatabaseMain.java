@@ -21,7 +21,7 @@ public class DatabaseMain {
             System.err.println("Can't connect to database: invalid path");
             System.exit(-1);
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().isEmpty()) {
+            if (!e.getMessage().isEmpty()) {
                 System.err.println(e.getMessage());
             } else {
                 System.err.println("Unexpected exception:");
