@@ -18,11 +18,11 @@ public class MultiFileHashMap {
             if (path == null) {
                 throw new Exception("Enter directory"); 
             }
+            tableList = new TreeMap<String, Integer>();
+            File dir = new File(path);
             if (!dir.exists() || !dir.isDirectory()) {
                 throw new Exception("directory not exist");
             }
-            tableList = new TreeMap<String, Integer>();
-            File dir = new File(path);
             File[] children = dir.listFiles();
             int j = 0;
             while (j < children.length) {
