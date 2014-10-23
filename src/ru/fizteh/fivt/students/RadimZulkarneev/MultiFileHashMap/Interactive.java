@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 
 public class Interactive {
-    private final static String PROMPT = "$ ";
+    private static final String PROMPT = "$ ";
     public static void conv() throws MapException, DataBaseCorrupt, TableConnectionException, IOException {
         try (Scanner in = new Scanner(System.in)) {
             DataBase dBase = new DataBase();
