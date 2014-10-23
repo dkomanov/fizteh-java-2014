@@ -1,8 +1,10 @@
 package ru.fizteh.fivt.students.ElinaDenisova.FileMap;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -15,10 +17,22 @@ public class DataBase {
         try {
             dBasePath = Paths.get(dbName);
             dBase = new HashMap<String, String>();
-            Functions.makeDbFile(dbName);
+            File ctFile = new File(dbName);
+            if (ctFile.isDirectory()) {
+                throw new DataBaseException("It is a directory");
+            }
+            if (ctFile.exists()) {
+                throw new DataBaseException("File already exist");
+            } else {
+                try {
+                    Files.createFile(ctFile.toPath());
+                } catch (IOException e) {
+                    throw new DataBaseException("Error IOstream", e);
+                }
+            }
         } catch (DataBaseException ex) {
             if (ex.toString().equals(
-                    "MakeDbFile: File already exist")) {
+                    "File already exist")) {
                 try {
                     RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "r");
                     if (dbFile.length() > 0) {
@@ -31,10 +45,10 @@ public class DataBase {
                     dbFile.close();
                 } catch (FileNotFoundException e) {
                     throw new DataBaseException(
-                            "DataBase: Not found file", e);
+                            "Not found file", e);
                 } catch (IOException e) {
                     throw new DataBaseException(
-                            "DataBase: File error", e);
+                            "Error IOstream", e);
                 }
             } 
             if (ex.toString().equals("It is a directory")) {
@@ -63,22 +77,13 @@ public class DataBase {
         try {
             dbFile.writeInt(word.getBytes("UTF-8").length);
             dbFile.write(word.getBytes("UTF-8"));
-        } catch (Exception ex) {
-            throw new DataBaseException("Can't write in file", ex);
+        } catch (IOException ex) {
+            throw new DataBaseException("Error IOstream", ex);
         }
 
     }
 
-    public void addValue(String key,
-            String value) throws DataBaseException {
-        try {
-            dBase.put(key, value);
-        } catch (Exception ex) {
-            throw new DataBaseException("Database addValue: Unknown exception", ex);
-        }
-    }
     public void listCommand() {
-        Set<Entry<String, String>> baseSet = dBase.entrySet();
         System.out.print(String.join(", ", dBase.keySet()));
         System.out.println("");
 
@@ -86,15 +91,21 @@ public class DataBase {
     public void writeInFile() throws DataBaseException {
         try {
             Set<Entry<String, String>> baseSet = dBase.entrySet();
-            Functions.makeDbFileHard(dBasePath.toString());
+            File ctFile = new File(dBasePath.toString());
+            try {
+                Files.deleteIfExists(ctFile.toPath());
+                Files.createFile(ctFile.toPath());
+            } catch (IOException e) {
+                throw new DataBaseException(e.getMessage(), e);
+            }
             RandomAccessFile dbFile = new
                     RandomAccessFile(dBasePath.toString(), "rw");
             for (Entry<String, String> current : baseSet) {
                 writeToDataBase(dbFile, current.getKey());
                 writeToDataBase(dbFile, current.getValue());
             }
-        } catch (Exception ex) {
-            throw new DataBaseException("DataBase: cant write", ex);
+        } catch (FileNotFoundException ex) {
+            throw new DataBaseException("Not found file", ex);
         }
     }
     public void put(String key,  String value) {

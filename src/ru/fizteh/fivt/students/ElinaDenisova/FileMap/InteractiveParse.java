@@ -1,10 +1,9 @@
 package ru.fizteh.fivt.students.ElinaDenisova.FileMap;
 
-
 import java.util.Scanner;
 
 public class InteractiveParse {
-     public static void conv() {
+     public static void parse() {
          Scanner in = new Scanner(System.in);
          DataBase dataBase;
         try {
