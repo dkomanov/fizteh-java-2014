@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.commands;
 
 import ru.fizteh.fivt.students.ekaterina_pogodina.filemap.DataBase;
 import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.TableManager;
-import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.Table;
 
 import java.nio.file.Path;
 
@@ -58,7 +57,7 @@ public class Put extends Command {
         }
         if (table.usingTable.tableDateBase[nDirectory][nFile] == null) {
 
-            table.usingTable.tableDateBase[nDirectory][nFile] = new DataBase(pathFile.toString());;
+            table.usingTable.tableDateBase[nDirectory][nFile] = new DataBase(pathFile.toString());
         }
         table.usingTable.tableDateBase[nDirectory][nFile].put(args[1], args[2]);
     }

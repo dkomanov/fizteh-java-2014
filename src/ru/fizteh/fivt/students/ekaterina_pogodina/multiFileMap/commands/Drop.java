@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.commands;
 
 import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.TableManager;
-import ru.fizteh.fivt.students.ekaterina_pogodina.shell.Rm;
 
 public class Drop extends Command {
     @Override
