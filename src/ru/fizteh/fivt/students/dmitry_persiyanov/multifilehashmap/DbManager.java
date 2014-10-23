@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.db_manager_commands.DbManagerCommand;
-import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.parser.CommandsParser;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.DbCommand;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.table_manager_commands.TableManagerCommand;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.TableIsNotChosenException;
@@ -11,8 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.IllegalFormatCodePointException;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -72,7 +69,7 @@ public final class DbManager {
         dir.delete();
     }
 
-    public void useTable(final String tableName) throws IOException{
+    public void useTable(final String tableName) throws IOException {
         if (!tableNames.contains(tableName)) {
             throw new IllegalArgumentException(tableName + " doesn't exist");
         } else {

@@ -1,15 +1,13 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.db_manager_commands;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.DbManager;
-import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.DbCommand;
-import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.IllegalNumberOfArgumentsException;
 
 import java.io.IOException;
 
 public class ExitCommand extends DbManagerCommand {
     public ExitCommand(final String[] args) {
         super("exit", args);
-        NUM_OF_ARGS = 0;
+        numOfArgs = 0;
         checkArgs();
     }
 

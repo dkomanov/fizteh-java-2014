@@ -1,17 +1,13 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.db_manager_commands;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.DbManager;
-import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.DbCommand;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Set;
 
 public class CreateCommand extends DbManagerCommand {
     public CreateCommand(final String[] args) {
         super("list", args);
-        NUM_OF_ARGS = 1;
+        numOfArgs = 1;
         checkArgs();
     }
 

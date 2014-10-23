@@ -1,13 +1,9 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands;
 
-import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.DbManager;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.IllegalNumberOfArgumentsException;
-import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.TableIsNotChosenException;
-
-import java.io.IOException;
 
 public abstract class DbCommand {
-    protected static int NUM_OF_ARGS;
+    protected static int numOfArgs;
     protected String[] args = null;
     protected String msg = null;
     protected String name = null;
@@ -26,7 +22,7 @@ public abstract class DbCommand {
     }
 
     public void checkArgs() throws IllegalNumberOfArgumentsException {
-        if (args.length != NUM_OF_ARGS) {
+        if (args.length != numOfArgs) {
             throw new IllegalNumberOfArgumentsException(getName());
         }
     }

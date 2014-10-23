@@ -1,24 +1,23 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.table_loader_dumper.TableLoaderDumper;
-import sun.awt.image.ImageWatched;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
 public final class TableManager {
-    public final static String DIRS_EXTENSION = ".dir";
-    public final static String FILES_EXTENSION = ".dat";
+    public static final String DIRS_EXTENSION = ".dir";
+    public static final String FILES_EXTENSION = ".dat";
     public final Path tablePath;
     public static final int MAX_DIRS_FOR_TABLE = 16;
     public static final int MAX_FILES_FOR_DIR = 16;
     private List<List<Map<String, String>>> tableHashMap = null;
 
-    public TableManager(final Path TablePath) throws IOException {
-        this.tablePath = TablePath.toAbsolutePath().normalize();
+    public TableManager(final Path tablePath) throws IOException {
+        this.tablePath = tablePath.toAbsolutePath().normalize();
         initTableHashMap();
-        TableLoaderDumper.loadTable(tablePath, tableHashMap);
+        TableLoaderDumper.loadTable(this.tablePath, tableHashMap);
     }
 
     public void dump() throws IOException {

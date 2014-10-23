@@ -9,19 +9,19 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public final class DbInterpreter {
-    public final static String PROMPT = "$ ";
-    private final static File rootDir = new File(System.getProperty("fizteh.db.dir"));
+    public static final String PROMPT = "$ ";
+    private static final File ROOT_DIR = new File(System.getProperty("fizteh.db.dir"));
     private static DbManager dbManager;
 
     public static void main(final String[] args) {
-        if (rootDir == null) {
+        if (ROOT_DIR == null) {
             System.err.println("You must specify a variable \"fizteh.db.dir\".");
             System.exit(1);
-        } else if (!rootDir.exists() || !rootDir.isDirectory()) {
+        } else if (!ROOT_DIR.exists() || !ROOT_DIR.isDirectory()) {
             System.err.println("fizteh.db.dir isn't a directory");
             System.exit(1);
         }
-        dbManager = new DbManager(rootDir);
+        dbManager = new DbManager(ROOT_DIR);
         try {
             if (args.length == 0) {
                 interactiveMode();
