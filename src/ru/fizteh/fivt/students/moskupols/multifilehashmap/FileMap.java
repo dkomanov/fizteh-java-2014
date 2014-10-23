@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by moskupols on 26.09.14.
+ * The FileMap class stores a String-String map in file.
  */
 class FileMap {
     private Map<String, String> map;
@@ -23,10 +23,6 @@ class FileMap {
         } else {
             map = new HashMap<>();
         }
-    }
-
-    public Path getTargetPath() {
-        return targetPath;
     }
 
     public void reload() throws Exception {
