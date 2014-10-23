@@ -77,7 +77,7 @@ class FileMap {
         dataStream.write(bytes);
     }
 
-    public void dump() throws IOException {
+    public void flush() throws IOException {
         dump(targetPath);
     }
 
