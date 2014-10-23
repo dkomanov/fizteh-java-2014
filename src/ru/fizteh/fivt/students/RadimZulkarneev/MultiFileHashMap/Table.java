@@ -12,44 +12,38 @@ import java.util.Map.Entry;
 public class Table {
     private Map<String, String> dBase;
     private Path dBasePath;
+    
     public Table(final String dbName)
             throws MapException, DataBaseCorrupt {
         try {
             dBasePath = Paths.get(dbName);
             dBase = new HashMap<String, String>();
             Functions.makeDbFile(dbName);
-        } catch (MapException ex) {
-            if (ex.toString().equals(
-                    "MakeDbFile: File already exist")) {
-                try {
-                    RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "r");
-                    if (dbFile.length() > 0) {
-                        while (dbFile.getFilePointer() < dbFile.length()) {
-                            String key = readFromTable(dbFile);
-                            isValid(key);
-                            String value = readFromTable(dbFile);
-                            dBase.put(key, value);
-                        }
+        } catch (CreateFileException ex) { // wHAT & 
+            try {
+                RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "r");
+                if (dbFile.length() > 0) {
+                    while (dbFile.getFilePointer() < dbFile.length()) {
+                        String key = readFromTable(dbFile);
+                        isValid(key);
+                        String value = readFromTable(dbFile);
+                        dBase.put(key, value);
                     }
-                    dbFile.close();
-                } catch (DataBaseCorrupt ex2) {
-                    throw new DataBaseCorrupt(ex2.toString());
-                } catch (Exception ex1) {
-                    throw new MapException("Table: " + ex1.toString());
                 }
-            } 
-            if (ex.toString().equals("It is a directory")) {
-                System.out.println("It is a directory");
-                System.exit(1);
+                dbFile.close();
+            } catch (DataBaseCorrupt ex2) {
+                throw new DataBaseCorrupt(ex2.toString());
+            } catch (Exception ex1) {
+                throw new MapException("Table: " + ex1.toString());
             }
         }
     }
 
     private  String readFromTable(final RandomAccessFile dbFile) throws MapException {
         try {
-            int wordlen = dbFile.readInt();
-            byte[] word = new byte[wordlen];
-            dbFile.read(word, 0, wordlen);
+            int wordLength = dbFile.readInt();
+            byte[] word = new byte[wordLength];
+            dbFile.read(word, 0, wordLength);
             return new String(word, "UTF-8");
         } catch (IOException e) {
             throw new MapException("Can't read from Table");
@@ -79,10 +73,11 @@ public class Table {
     }
     
     public final void listCommand() {
-        for (Entry<String, String> current : dBase.entrySet()) {
-            System.out.print(current.getKey() + " ");
+        for (Entry<String, String> entry : dBase.entrySet()) {
+            System.out.print(entry.getKey() + " ");
         }
     }
+    
     public final void writeInFile() throws MapException, IOException {
         if (dBase.size() == 0) {
             Files.delete(dBasePath);
@@ -92,16 +87,16 @@ public class Table {
                 RandomAccessFile(dBasePath.toString(), "rw")) {
 
             dbFile.setLength(0);
-            for (Entry<String, String> current : dBase.entrySet()) {
-                writeToTable(dbFile, current.getKey());
-                writeToTable(dbFile, current.getValue());
+            for (Entry<String, String> entry : dBase.entrySet()) {
+                writeToTable(dbFile, entry.getKey());
+                writeToTable(dbFile, entry.getValue());
             }
         } catch (Exception ex) {
             System.out.println(ex.toString());
             throw new MapException("Table: cant write");
         }
     }
-    //returns TRUE if overwrite, FALSE else
+
     public final boolean put(final String key, final String value) {
         if (dBase.containsKey(key)) {
             System.out.println("overwrite");
@@ -124,7 +119,7 @@ public class Table {
             System.out.println("not found");
         }
     }
-    // returns TRUE if el removed, FALSE else
+    
     public final boolean remove(final String key) {
         if (dBase.containsKey(key)) {
             System.out.println("removed");
@@ -149,6 +144,7 @@ public class Table {
             throw new DataBaseCorrupt("Key hash does not matches with table");
         }
     }
+    
     public int getRowCount() {
         return dBase.size();
     }

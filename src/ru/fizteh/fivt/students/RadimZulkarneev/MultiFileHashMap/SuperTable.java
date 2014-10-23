@@ -10,11 +10,11 @@ import java.util.Map.Entry;
 
 public class SuperTable {
     private Path tablePath;
-    private Map<String, Table> src;
+    private Map<String, Table> tablesList;
     public SuperTable(Path tableDir) throws TableConnectionException, DataBaseCorrupt, MapException {
         checkTableDir(tableDir);
         tablePath = tableDir;
-        src = new HashMap<String, Table>();
+        tablesList = new HashMap<String, Table>();
         initSuperTable();
     }
     
@@ -28,9 +28,9 @@ public class SuperTable {
     
     private void initSuperTable() throws DataBaseCorrupt, MapException {
         String[] files = tablePath.toFile().list();
-        for (String it : files) {
-            if (it.matches("([0-9]|1[0-5])\\.dir")) {
-                initTable(tablePath.resolve(it));
+        for (String file : files) {
+            if (file.matches("([0-9]|1[0-5])\\.dir")) {
+                initTable(tablePath.resolve(file));
             } else {
                 throw new DataBaseCorrupt("Can't connect table: illegal name");
             }
@@ -44,7 +44,7 @@ public class SuperTable {
                 if (it.matches("([0-9]|1[0-5])\\.dat")) {
                     Table newTable = new Table(filePath.resolve(it).toString());
                     String ct = newTable.retCode();
-                    src.put(ct, newTable);
+                    tablesList.put(ct, newTable);
                 } else {
                     throw new DataBaseCorrupt("Can't connect table: illegal file-name: " + it);
                 }
@@ -57,34 +57,35 @@ public class SuperTable {
     public boolean put(String key, String value) throws IOException, DataBaseCorrupt, MapException {
         String dest = destinationOfKey(key);
 
-        if (src.containsKey(dest)) {
-            return src.get(dest).put(key, value);
+        if (tablesList.containsKey(dest)) {
+            return tablesList.get(dest).put(key, value);
         } else {
             //
             if (!Files.exists(tablePath.resolve(getDirName(dest)))) {
                 Files.createDirectory(tablePath.resolve(getDirName(dest)));
             }
             Table newTable = new Table(tablePath.resolve(getDirName(dest)).resolve(getFileName(dest)).toString());
-            src.put(dest, newTable);
+            tablesList.put(dest, newTable);
             return newTable.put(key, value);
         }
     }
     
     public void showTableList() {
-        for (Entry<String, Table> current : src.entrySet()) {
+        for (Entry<String, Table> current : tablesList.entrySet()) {
             current.getValue().listCommand();
         }
     }  
     
     public void get(String key) {
         String dest = destinationOfKey(key);
-        if (src.containsKey(dest)) {
-            src.get(dest).get(key);
+        if (tablesList.containsKey(dest)) {
+            tablesList.get(dest).get(key);
         } else {
             System.out.println("not found");
         }
         
     }
+    
     private String getDirName(String dest) {
         if (dest.matches("0[0-9]..")) {
             return new String(dest.substring(1, 2) + ".dir");
@@ -92,6 +93,7 @@ public class SuperTable {
             return new String(dest.substring(0, 2) + ".dir");
         }
     }
+    
     private String getFileName(String dest) {
         if (dest.matches("..0[0-9]")) {
             return new String(dest.substring(3, 4) + ".dat");
@@ -99,15 +101,17 @@ public class SuperTable {
             return new String(dest.substring(2, 4) + ".dat");
         }
     }
+    
     public boolean remove(String key) {
         String dest = destinationOfKey(key);
-        if (src.containsKey(dest)) {
-            return src.get(dest).remove(key);
+        if (tablesList.containsKey(dest)) {
+            return tablesList.get(dest).remove(key);
         } else {
             System.out.println("not found");
             return false;
         }
     }
+    
     private String destinationOfKey(String key) {
         int hashcode = Math.abs(key.hashCode());
         int nDir = hashcode % 16;
@@ -127,7 +131,7 @@ public class SuperTable {
     }
     
     public void commit() throws MapException, IOException {
-        for (Entry<String, Table> current : src.entrySet()) {
+        for (Entry<String, Table> current : tablesList.entrySet()) {
             current.getValue().writeInFile();
             Path it = current.getValue().tablePath().getParent();
             if (it.toFile().list().length == 0) {

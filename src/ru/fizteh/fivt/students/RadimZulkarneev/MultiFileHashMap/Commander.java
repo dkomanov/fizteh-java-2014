@@ -10,6 +10,7 @@ public class Commander {
         String[] it = (String[]) com.toArray(new String[0]);
         command(it, dBase);
     }
+    
     public static void command(final String[] com, DataBase dBase) 
             throws MapException, IOException, TableConnectionException, DataBaseCorrupt {
         if (com.length == 0) {

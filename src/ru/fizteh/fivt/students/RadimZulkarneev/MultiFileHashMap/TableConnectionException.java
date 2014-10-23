@@ -7,6 +7,7 @@ public class TableConnectionException extends Exception {
     TableConnectionException(final String problem) {
         messageOfExcept = problem;
     }
+    
     public final String toString() {
         return messageOfExcept;
     }

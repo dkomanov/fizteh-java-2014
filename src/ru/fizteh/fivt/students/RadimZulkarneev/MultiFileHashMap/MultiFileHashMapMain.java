@@ -4,7 +4,7 @@ public class MultiFileHashMapMain {
     public static void main(String[] arg) {
         try {            
             if (arg.length == 0) {
-                Intercative.conv();
+                Interactive.conv();
             } else {
                 InputParse.parse(arg);
             }

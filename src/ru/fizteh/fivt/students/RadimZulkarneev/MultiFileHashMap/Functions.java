@@ -17,7 +17,7 @@ public final class Functions {
             throw new MapException("It is a directory");
         }
         if (ctFile.exists()) {
-            throw new MapException("MakeDbFile: File already exist");
+            throw new CreateFileException("");
         } else {
             try {
                 Files.createFile(ctFile.toPath());
@@ -26,6 +26,7 @@ public final class Functions {
             }
         }
     }
+    
     public static void makeDbFileHard(final String
             fileName) throws MapException {
         File ctFile = new File(fileName);

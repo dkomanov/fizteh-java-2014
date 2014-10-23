@@ -7,6 +7,7 @@ public class DataBaseCorrupt extends Exception {
     DataBaseCorrupt(final String problem) {
         messageOfExcept = problem;
     }
+    
     public final String toString() {
         return messageOfExcept;
     }

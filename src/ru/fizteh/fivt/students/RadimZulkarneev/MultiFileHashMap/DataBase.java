@@ -45,6 +45,7 @@ public class DataBase {
             tableRowCount.put(curTable, c);
          }
     }
+    
     private int setTableRowCount(String curTable) throws MapException, DataBaseCorrupt {
         File ctFile = new File(curTable);
         String[] dirList = ctFile.list();
@@ -88,6 +89,7 @@ public class DataBase {
             System.out.println(cur + " " + tableRowCount.get(cur));
         }
     }
+    
     public void create(String tbName) throws MapException, IOException {
         if (tableRowCount.containsKey(tbName)) {
             throw new MapException(tbName + ":  tablename exists");
@@ -95,6 +97,7 @@ public class DataBase {
         Files.createDirectory(dataBasePath.resolve(tbName));
         tableRowCount.put(tbName, 0);
     }
+    
     public void drop(String tbName) throws MapException, IOException {
         if (!tableRowCount.containsKey(tbName)) {
             throw new MapException(tbName + ":  no table");
@@ -107,6 +110,7 @@ public class DataBase {
         tableRowCount.remove(tbName);
         System.out.println("dropped");
     }
+    
     public Path getPath() {
         return dataBasePath;
     }
@@ -123,6 +127,7 @@ public class DataBase {
         isChoose = true;
         System.out.println("Using " + tbName);
     }
+    
     public void list() throws MapException {
         if (!isChoose) {
             throw new MapException("no table");
@@ -132,11 +137,13 @@ public class DataBase {
         }
         
     }
+    
     public void commit() throws MapException, IOException {
         if (isChoose) {
             sTable.commit();
         }
     }
+    
     public void put(String key, String value) throws MapException, IOException, DataBaseCorrupt {
         if (!isChoose) {
             throw new MapException("no table");
@@ -146,6 +153,7 @@ public class DataBase {
             }
         }
     }
+    
     public void get(String key) throws MapException {
         if (!isChoose) {
             throw new MapException("no table");
@@ -153,6 +161,7 @@ public class DataBase {
             sTable.get(key);
         }
     }
+    
     public void remove(String key) throws MapException {
         if (!isChoose) {
             throw new MapException("no table");

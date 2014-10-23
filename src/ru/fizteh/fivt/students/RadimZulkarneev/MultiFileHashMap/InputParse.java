@@ -13,21 +13,21 @@ public final class InputParse {
 
             DataBase dataBase = new DataBase();
 
-            ArrayList<String> current = new ArrayList<String>();
+            ArrayList<String> singleCommand = new ArrayList<String>();
             for (int i = 0; i < arg.length; ++i) {
-                current.clear();
+                singleCommand.clear();
                 while (i < arg.length) {
                     if (!(arg[i].indexOf(";") >= 0)) {
-                        current.add(arg[i]);
+                        singleCommand.add(arg[i]);
                         i++;
                     } else {
-                        current.add(arg[i].substring(
+                        singleCommand.add(arg[i].substring(
                                 0, arg[i].indexOf(";")));
                         break;
                     }
                 }
                 try {
-                    Commander.command(current, dataBase);
+                    Commander.command(singleCommand, dataBase);
                 } catch (IllegalStateException e) {
                     System.exit(0);
                 } catch (IndexOutOfBoundsException | IOException
@@ -37,12 +37,13 @@ public final class InputParse {
                     System.exit(1);
                 }
             }
-            current.clear();
+            singleCommand.clear();
             try {
-                current.add("exit");
-                Commander.command(current, dataBase);
-            } catch (Exception e) {
-                System.exit(0);
+                singleCommand.add("exit");
+                Commander.command(singleCommand, dataBase);
+            } catch (IndexOutOfBoundsException | IOException
+                    | DataBaseCorrupt | TableConnectionException | MapException e) {
+                System.exit(1);
             }
     }
 }
