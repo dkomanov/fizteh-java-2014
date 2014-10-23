@@ -8,23 +8,24 @@ import java.util.Set;
  * Created by nastya on 21.10.14.
  */
 public class List extends Action {
-	@Override
-	public boolean run(String[] args, Database db) {
-		if (args.length > 0) {
-			tooManyArguments();
-			return false;
-		}
-		if(db.currentTable == null) {
-			System.out.println("no table");
-		}
-		Set<String> keys = db.currentTable.list();
-		String result = String.join(", ", keys);
-		System.out.println(result);
-		return true;
-	}
+    @Override
+    public boolean run(String[] args, Database db) {
+        if (args.length > 0) {
+            tooManyArguments();
+            return false;
+        }
+        if (db.currentTable == null) {
+            System.out.println("no table");
+            return false;
+        }
+        Set<String> keys = db.currentTable.list();
+        String result = String.join(", ", keys);
+        System.out.println(result);
+        return true;
+    }
 
-	@Override
-	public String getName() {
-		return "list";
-	}
+    @Override
+    public String getName() {
+        return "list";
+    }
 }

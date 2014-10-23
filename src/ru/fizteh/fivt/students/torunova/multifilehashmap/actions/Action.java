@@ -10,15 +10,18 @@ import java.io.IOException;
  * Created by nastya on 21.10.14.
  */
 public abstract class Action {
-	void tooManyArguments() {
-		System.err.println(getName() + ": too many arguments.");
-	}
-	void tooFewArguments() {
-		System.err.println(getName() + ": too few arguments.");
-	}
+    void tooManyArguments() {
+        System.err.println(getName() + ": too many arguments.");
+    }
+    void tooFewArguments() {
+        System.err.println(getName() + ": too few arguments.");
+    }
 
-	abstract public boolean run(String[] args, Database db) throws IOException, IncorrectFileException, TableNotCreatedException;
+    public abstract boolean run(String[] args, Database db)
+                                  throws IOException,
+                                  IncorrectFileException,
+                                  TableNotCreatedException;
 
-	abstract public String getName();
+    public abstract String getName();
 }
 
