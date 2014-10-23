@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.AndrewFedorov.filemap;
+package ru.fizteh.fivt.students.fedorov_andrew.filemap;
 
 /**
  * This exception describes situation when database file is corrupt and cannot
@@ -12,6 +12,6 @@ public class DBFileCorruptException extends Exception {
     private static final long serialVersionUID = 2107102137382933269L;
 
     public DBFileCorruptException(String reason) {
-    super("DB file is corrupt: " + reason);
+        super("DB file is corrupt: " + reason);
     }
 }
