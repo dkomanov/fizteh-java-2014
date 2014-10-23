@@ -197,8 +197,8 @@ public class MultiFileHashMap {
 
     public static void exit(final String[] args) throws Exception {
         if (args.length != 1) {
-            throw new IllegalArgumentException("exit: " +
-                    INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
+            throw new IllegalArgumentException("exit: " 
+                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
         }
         currentTable.exit();
         System.exit(0);
