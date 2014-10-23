@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.d
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.DbManager;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.DbCommand;
-import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.TableIsNotChosenException;
 
 import java.io.IOException;
 

@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.db_manager_commands.DbManagerCommand;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.DbCommand;
-import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.table_manager_commands.TableManagerCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.table_manager_commands.*;
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.TableIsNotChosenException;
 
 import java.io.File;
@@ -80,7 +80,9 @@ public final class DbManager {
         }
     }
 
-    public void forgetCurrentTable() { currentTable = null; }
+    public void forgetCurrentTable() {
+        currentTable = null;
+    }
 
     public Set<String> getTableNames() {
         return tableNames;
