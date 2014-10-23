@@ -14,8 +14,7 @@ public class MultiFileHashMap {
 
     public static void main(final String[] args) {
         try {
-            //path = System.getProperty("fizteh.db.dir");
-            path = "C:\\Ololo";
+            path = System.getProperty("fizteh.db.dir");
             tableList = new TreeMap<String, Integer>();
             File dir = new File(path);
             File[] children = dir.listFiles();
