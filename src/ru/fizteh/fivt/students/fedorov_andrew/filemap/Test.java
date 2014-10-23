@@ -1,16 +1,17 @@
-package ru.fizteh.fivt.students.AndrewFedorov.multifilehashmap;
+package ru.fizteh.fivt.students.fedorov_andrew.filemap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import ru.fizteh.fivt.students.fedorov_andrew.filemap.FileMap;
+
 public class Test {
     private static Random random = new Random();
-    private final static char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+    private final static char[] alphabet = "abcdefghijklmnopqrstuvwxyz"
+	    .toCharArray();
 
     static int randInt(int a, int b) {
 	return random.nextInt(b - a + 1) + a;
@@ -56,18 +57,16 @@ public class Test {
 	    map.put(key, value);
 	}
 
-	Path testPath = Paths.get(System.getProperty("user.home"),
-				  "test",
-				  "java_test.dat");
-	TablePart testFileMap = new TablePart(testPath);
+	String testFile = "/home/phoenix/test/java_test.dat";
+	FileMap testFileMap = new FileMap(testFile);
 
-	testFileMap.setTablePartMap((HashMap<String, String>) map.clone());
+	testFileMap.setDatabaseMap((HashMap<String, String>) map.clone());
 
-	testFileMap.writeToFile();
-	testFileMap.setTablePartMap(new HashMap<String, String>());
-	testFileMap.readFromFile();
+	testFileMap.writeDatabaseMap();
+	testFileMap.setDatabaseMap(new HashMap<String, String>());
+	testFileMap.readDatabaseMap();
 
-	Map<String, String> checkMap = testFileMap.getTablePartMap();
+	Map<String, String> checkMap = testFileMap.getDatabaseMap();
 
 	assertEquals("Map sizes do not match", map.size(), checkMap.size());
 
@@ -77,7 +76,7 @@ public class Test {
     }
 
     /**
-     * Integrity test for reading/writing map.
+     * Integrity for reading/writing map.
      * 
      * @throws Exception
      */
@@ -103,12 +102,8 @@ public class Test {
 	// standard tests
 	for (int test = 0; test < tests; test++) {
 	    System.out.println("test " + test);
-	    performReadWriteFileMapTest(keysMin,
-					keysMax,
-					keyMinLength,
-					keyMaxLength,
-					valueMinLength,
-					valueMaxLength);
+	    performReadWriteFileMapTest(keysMin, keysMax, keyMinLength,
+		    keyMaxLength, valueMinLength, valueMaxLength);
 	}
     }
 }
