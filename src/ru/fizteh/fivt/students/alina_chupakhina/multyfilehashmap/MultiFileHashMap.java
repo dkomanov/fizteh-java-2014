@@ -15,6 +15,9 @@ public class MultiFileHashMap {
     public static void main(final String[] args) {
         try {
             path = System.getProperty("fizteh.db.dir");
+            if (path == null) {
+                throw new Exception("Enter directory"); 
+            }
             tableList = new TreeMap<String, Integer>();
             File dir = new File(path);
             File[] children = dir.listFiles();
@@ -87,23 +90,27 @@ public class MultiFileHashMap {
             } else if (args[0].equals("put")) {
                 if (currentTable == null) {
                     System.out.println("no table");
+                } else {
+                    put(args);
                 }
-                put(args);
             } else if (args[0].equals("get")) {
                 if (currentTable == null) {
                     System.out.println("no table");
+                } else {
+                    currentTable.get(args);
                 }
-                currentTable.get(args);
             } else if (args[0].equals("remove")) {
                 if (currentTable == null) {
                     System.out.println("no table");
+                } else {
+                    remove(args);
                 }
-                remove(args);
             } else if (args[0].equals("list")) {
                 if (currentTable == null) {
                     System.out.println("no table");
+                } else {
+                    currentTable.list(args);
                 }
-                currentTable.list(args);
             } else if (args[0].equals("exit")) {
                 exit(args);
             } else if (args[0].equals("")) {
@@ -196,11 +203,14 @@ public class MultiFileHashMap {
 
     public static void exit(final String[] args) throws Exception {
         if (args.length != 1) {
-            throw new IllegalArgumentException("exit: " 
-                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
+            throw new IllegalArgumentException("exit: " +
+                    INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
         }
-        currentTable.exit();
+        if (currentTable != null) {
+            currentTable.exit();
+        }
         System.exit(0);
     }
 }
+
 
