@@ -138,7 +138,7 @@ class Coordinates implements Comparable<Coordinates> {
     }
     @Override
     public int compareTo(Coordinates pair) {
-        if (folderIndex > pair.folderIndex){
+        if (folderIndex > pair.folderIndex) {
             return 1;
         } else if (folderIndex < pair.folderIndex) {
             return  -1;
