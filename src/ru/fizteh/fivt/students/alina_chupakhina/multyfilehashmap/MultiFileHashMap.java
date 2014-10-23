@@ -18,6 +18,9 @@ public class MultiFileHashMap {
             if (path == null) {
                 throw new Exception("Enter directory"); 
             }
+            if (!dir.exists() || !dir.isDirectory()) {
+                throw new Exception("directory not exist");
+            }
             tableList = new TreeMap<String, Integer>();
             File dir = new File(path);
             File[] children = dir.listFiles();
@@ -27,9 +30,6 @@ public class MultiFileHashMap {
                 tableList.put(children[j].getName(), t.getNumberOfElements());
                 j++;
                 t.exit();
-            }
-            if (!dir.exists() || !dir.isDirectory()) {
-                throw new Exception("directory not exist");
             }
             if (args.length > 0) {
                 batch(args);
