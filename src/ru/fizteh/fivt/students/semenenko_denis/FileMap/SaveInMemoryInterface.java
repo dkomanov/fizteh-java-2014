@@ -6,7 +6,7 @@ import java.io.RandomAccessFile;
  * Created by denny_000 on 08.10.2014.
  */
 public interface SaveInMemoryInterface {
-    void write(RandomAccessFile whereTo);
+    void write(final RandomAccessFile whereTo);
 
-    void read(RandomAccessFile whereFrom);
+    void read(final RandomAccessFile whereFrom);
 }

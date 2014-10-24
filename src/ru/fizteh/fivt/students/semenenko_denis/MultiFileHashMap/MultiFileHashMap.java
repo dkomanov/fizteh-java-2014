@@ -154,8 +154,6 @@ public class MultiFileHashMap {
                     break;
                 case "exit":
                     isExit = true;
-
-
                     cache.commit();
                     break;
                 default:
