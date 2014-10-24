@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.moskupols.multifilehashmap;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,25 +21,37 @@ public class MultiFileMap {
     private LastAccessedChunksCache chunksCache;
     private Set<ChunkID> chunksPresent;
 
-    public MultiFileMap(Path tableRoot) {
+    public MultiFileMap(Path tableRoot) throws IOException {
         this(tableRoot, 4);
     }
 
-    public MultiFileMap(Path tableRoot, int cacheSize) {
+    /**
+     * @param tableRoot root directory for the file structure.
+     * @param cacheSize defaults to 4.
+     * @throws IOException it tableRoot is not directory or some chunk is corrupted.
+     * @throws java.io.FileNotFoundException if there is no tableRoot directory.
+     */
+    public MultiFileMap(Path tableRoot, int cacheSize) throws IOException {
         this.tableRoot = tableRoot;
         totalSize = 0;
         chunksCache = new LastAccessedChunksCache(cacheSize);
         chunksPresent = new HashSet<>();
 
-        if (!Files.exists(this.tableRoot))
-            throw new IllegalStateException(String.format("Directory %s does not exist", this.tableRoot));
-        if (!Files.isDirectory(this.tableRoot))
-            throw new IllegalStateException(String.format("%s is not directory", this.tableRoot));
+        if (!Files.exists(this.tableRoot)) {
+            throw new FileNotFoundException(String.format("Directory %s does not exist", this.tableRoot));
+        }
+        if (!Files.isDirectory(this.tableRoot)) {
+            throw new IOException(String.format("%s is not directory", this.tableRoot));
+        }
 
         reinitialize();
     }
 
-    public void reinitialize() {
+    /**
+     *
+     * @throws IOException if there is something with tableRoot directory structure.
+     */
+    public void reinitialize() throws IOException {
         totalSize = 0;
         chunksCache.clear();
         chunksPresent.clear();
@@ -46,13 +59,15 @@ public class MultiFileMap {
         File root = tableRoot.toFile();
 
         final File[] dirs = root.listFiles();
-        if (dirs == null)
-            throw new IllegalStateException(String.format("%s is not directory", tableRoot));
+        if (dirs == null) {
+            throw new IOException(String.format("%s is not directory", tableRoot));
+        }
 
         for (File dir : dirs) {
             final File[] files = dir.listFiles();
-            if (files == null)
-                throw new IllegalStateException(String.format("%s is not directory", dir.toPath()));
+            if (files == null) {
+                throw new IOException(String.format("%s is not directory", dir.toPath()));
+            }
 
             for (File file : files) {
                 final ChunkID id = ChunkID.fromPath(file.toPath());
@@ -60,8 +75,9 @@ public class MultiFileMap {
 
                 try {
                     totalSize += chunksCache.getChunkWithID(id).size();
-                } catch (Exception e) {
-                    throw new IllegalStateException(String.format("Chunk at %s is corrupted", file.toPath()), e);
+                } catch (IOException e) {
+                    throw new IOException(
+                            String.format("Chunk at %s is corrupted: %s", file.toPath(), e.getMessage()), e);
                 }
             }
         }
@@ -71,21 +87,23 @@ public class MultiFileMap {
         return tableRoot.getFileName().toString();
     }
 
-    public String get(String key) throws Exception {
+    public String get(String key) throws IOException {
         return chunksCache.getChunkWithKey(key).get(key);
     }
 
-    public String put(String key, String value) throws Exception {
+    public String put(String key, String value) throws IOException {
         final String ret = chunksCache.getChunkWithKey(key).put(key, value);
-        if (null == ret)
+        if (null == ret) {
             totalSize += 1;
+        }
         return ret;
     }
 
-    public String remove(String key) throws Exception {
+    public String remove(String key) throws IOException {
         final String ret = chunksCache.getChunkWithKey(key).remove(key);
-        if (ret != null)
+        if (ret != null) {
             totalSize -= 1;
+        }
         return ret;
     }
 
@@ -93,7 +111,7 @@ public class MultiFileMap {
         return totalSize;
     }
 
-    public List<String> list() {
+    public List<String> list() throws IOException {
         List<String> ret = new ArrayList<>();
         for (FileMap chunk : chunksCache.values()) {
             ret.addAll(chunk.list());
@@ -104,13 +122,13 @@ public class MultiFileMap {
             try {
                 ret.addAll(new FileMap(id.getFilePath(tableRoot)).list());
             } catch (Exception e) {
-                throw new IllegalStateException(String.format("Chunk %s is corrupted", id), e);
+                throw new IOException(String.format("Chunk %s is corrupted", id), e);
             }
         }
         return ret;
     }
 
-    public void clear() {
+    public void clear() throws IOException {
         try {
             for (File dir : tableRoot.toFile().listFiles()) {
                 for (File file : dir.listFiles()) {
@@ -119,19 +137,13 @@ public class MultiFileMap {
                 assert dir.delete();
             }
         } catch (NullPointerException | AssertionError e) {
-            throw new IllegalStateException(String.format("Couldn't clear %s", tableRoot));
+            throw new IOException(String.format("Couldn't clear %s", tableRoot));
         }
         reinitialize();
     }
 
     public void flush() throws IOException {
         chunksCache.flush();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        flush();
-        super.finalize();
     }
 
     class LastAccessedChunksCache extends LinkedHashMap<ChunkID, FileMap> {
@@ -148,21 +160,27 @@ public class MultiFileMap {
             if (size() > maxSize) {
                 try {
                     flushChunk(eldest.getKey(), eldest.getValue());
-                } catch (IOException ignored) {
+                } catch (IOException e) {
+                    throw new IllegalStateException(
+                            String.format("Couldn't save %s: %s", getName(), e.getMessage()), e);
                 }
                 return true;
             }
             return false;
         }
 
-        private FileMap getChunkWithKey(String key) throws Exception {
+        private FileMap getChunkWithKey(String key) throws IOException {
             return getChunkWithID(ChunkID.forKey(key));
         }
 
-        private FileMap getChunkWithID(ChunkID id) throws Exception {
+        private FileMap getChunkWithID(ChunkID id) throws IOException {
             FileMap ret = get(id);
             if (null == ret) {
-                ret = new FileMap(id.getFilePath(tableRoot));
+                try {
+                    ret = new FileMap(id.getFilePath(tableRoot));
+                } catch (Exception e) {
+                    throw new IOException(e.getMessage(), e);
+                }
                 chunksPresent.add(id);
                 put(id, ret);
             }
@@ -191,10 +209,11 @@ public class MultiFileMap {
     }
 
     private static class ChunkID {
-        static int DIR_COUNT = 16;
-        static int DIR_FILE_COUNT = 16;
+        static final int DIR_COUNT = 16;
+        static final int DIR_FILE_COUNT = 16;
 
-        final int dirNum, fileNum;
+        final int dirNum;
+        final int fileNum;
 
         public ChunkID(int dirNum, int fileNum) {
             this.dirNum = dirNum;
@@ -206,7 +225,7 @@ public class MultiFileMap {
             return new ChunkID(hashCode % DIR_COUNT, hashCode / DIR_COUNT % DIR_FILE_COUNT);
         }
 
-        public static ChunkID fromPath(Path chunkPath) {
+        public static ChunkID fromPath(Path chunkPath) throws IllegalArgumentException {
             if (!Files.isRegularFile(chunkPath)) {
                 throw new IllegalArgumentException(String.format("%s is not file", chunkPath));
             }
@@ -226,8 +245,8 @@ public class MultiFileMap {
             }
 
             return new ChunkID(
-                    Integer.valueOf(dirName.substring(0, 2)),
-                    Integer.valueOf(fileName.substring(0, 2)));
+                    Integer.valueOf(dirName.substring(0, dirName.indexOf('.'))),
+                    Integer.valueOf(fileName.substring(0, fileName.indexOf('.'))));
         }
 
         public Path getFilePath(Path rootPath) {
@@ -241,8 +260,18 @@ public class MultiFileMap {
             return String.format("(%d, %d)", dirNum, fileNum);
         }
 
-        public boolean equals(ChunkID that) {
-            return dirNum == that.dirNum && fileNum == that.fileNum;
+        @Override
+        public boolean equals(Object that) {
+            if (that instanceof ChunkID) {
+                final ChunkID thatChunk = (ChunkID) that;
+                return dirNum == thatChunk.dirNum && fileNum == thatChunk.fileNum;
+            }
+            return super.equals(that);
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(new int[]{dirNum, fileNum});
         }
     }
 }
