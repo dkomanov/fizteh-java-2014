@@ -79,6 +79,7 @@ public final class Main {
                             }
                             try {
                                 Parser.parse(arg, dataBase);
+                                dataBase.close();
                             } catch (Exception e) {
                                 System.err.println(e.getMessage());
                             }

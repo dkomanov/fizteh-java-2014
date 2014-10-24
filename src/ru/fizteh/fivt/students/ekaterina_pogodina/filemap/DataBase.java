@@ -15,6 +15,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
 public class DataBase {
+    public DataBase() {
+
+    }
     private Path dBasePath;
     private Map<String, String> dBase;
     public DataBase(String name) throws Exception {
@@ -172,6 +175,10 @@ public class DataBase {
         } catch (Exception e) {
             throw new Exception("Error writing database to file");
         }
+    }
+
+    public int rowCount() throws Exception {
+        return dBase.size();
     }
 
     public void missingOperand(String operation) throws Exception {
