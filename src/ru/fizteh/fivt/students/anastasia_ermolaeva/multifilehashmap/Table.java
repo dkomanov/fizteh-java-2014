@@ -78,8 +78,8 @@ public class Table implements Map<String, String>, AutoCloseable {
                         Integer nFile = Integer.parseInt(
                                 file.getName().substring(0, index));
                                 //избавление от .dat
-                        DataInputStream inStream = new DataInputStream
-                                (new FileInputStream(file.getAbsolutePath()));
+                        DataInputStream inStream = new 
+                                DataInputStream(new FileInputStream(file.getAbsolutePath()));
                         boolean end = false;
                         while (!end) {
                             try {
@@ -92,15 +92,15 @@ public class Table implements Map<String, String>, AutoCloseable {
                         }
                         inStream.close();
                     } catch (NumberFormatException t) {
-                        System.err.println("Subdirectories' files " +
-                                "have wrong names, " +
-                                "expected(0.dat-15.dat)");
+                        System.err.println("Subdirectories' files " 
+                        + "have wrong names, " 
+                        + "expected(0.dat-15.dat)");
                         throw new ExitException(-1);
                     }
                 }
             } catch (NumberFormatException t) {
-                System.err.println("Subdirectories' names are wrong, " +
-                        "expected(0.dir - 15.dir)");
+                System.err.println("Subdirectories' names are wrong, " 
+                + "expected(0.dir - 15.dir)");
                 throw new ExitException(-1);
             }
         }
@@ -118,12 +118,12 @@ public class Table implements Map<String, String>, AutoCloseable {
             String key = entry.getKey();
             String value = entry.getValue();
             byte[] ar = key.getBytes();
-            Integer nDirectory = ((int)ar[0])%16;
-            Integer nFile = (((int)ar[0])/16)%16;
+            Integer nDirectory = ((int) ar[0]) % 16;
+            Integer nFile = (((int) ar[0]) / 16) % 16;
             db[nDirectory][nFile].put(key, value);
         }
         for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16;j++) {
+            for (int j = 0; j < 16; j++) {
                 try {
                     if (!db[i][j].isEmpty()) {
                         Integer nDirectory = i;
@@ -158,9 +158,9 @@ public class Table implements Map<String, String>, AutoCloseable {
                                 writeUtil(key, outStream);
                                 writeUtil(value, outStream);
                             } catch (SecurityException e) {
-                                throw new Exception("Cannot create " +
-                                        "directory: "
-                                        + "access denied");
+                                throw new Exception("Cannot create " 
+                                + "directory: "
+                                + "access denied");
                             }
                         }
                         outStream.close();
@@ -182,7 +182,7 @@ public class Table implements Map<String, String>, AutoCloseable {
                             Files.deleteIfExists(file.toPath());
                         }
                     }
-                } catch(IOException e){
+                } catch(IOException e) {
                         System.err.println("Error with files");
                 }
             }
