@@ -4,16 +4,17 @@ import java.nio.file.Path;
 
 public class CommandExecutor {
         private Path dbdir;
+        private Path olddir;
         CommandExecutor(Path dbdirectory) {
             dbdir = dbdirectory;
+            olddir = dbdirectory;
         }
         void executeCommands(String[] command) {
         Table table = new Table(dbdir);
         FileManager db = new FileManager();
         MapCommands mapcommands = new MapCommands(db);
         String key = new String();
-        String value = new String();
-        Path olddir = dbdir;
+        String value = new String();        
         switch(command[0]) {
         case "put":
             key = command[1];
