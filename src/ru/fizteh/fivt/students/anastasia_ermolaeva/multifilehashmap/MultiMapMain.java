@@ -37,7 +37,7 @@ public class MultiMapMain {
                                 Map< String, Map<String, String> > map = tableS.getMap();
                                 String tableName = arguments[1];
                                 if (map.containsKey(tableName)) {
-                                    System.out.println("tablename exists");
+                                    System.out.println(tableName + " exists");
                                 } else {
                                     String pathTableDirectory = rootDirectoryPath.toAbsolutePath().toString() + File.separator + tableName;
                                     File tableDirectory = new File(pathTableDirectory);
@@ -58,7 +58,7 @@ public class MultiMapMain {
                                 Map<String,  Map<String, String>> map = tableS.getMap();
                                 String tableName = arguments[1];
                                 if (!map.containsKey(tableName)) {
-                                    System.out.println("tablename not exists");
+                                    System.out.println(tableName + " not exists");
                                 } else {
                                     Path tableDirectory = tableHolder.getTableMap().get(tableName).getTablePath();
                                     try {
@@ -95,7 +95,7 @@ public class MultiMapMain {
                                 String tableName = arguments[1];
                                 if (!tableName.isEmpty()) {
                                     if (!map.containsKey(tableName)) {
-                                        System.out.println("tablename not exists");
+                                        System.out.println(tableName + " not exists");
                                     } else {
                                         System.out.println("using " + tableName);
                                         tableS.setCurrentTableName(tableName);
