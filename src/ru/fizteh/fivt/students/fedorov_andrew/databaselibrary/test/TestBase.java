@@ -1,31 +1,30 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test;
 
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
-
 public abstract class TestBase {
-    protected final static Path dbRoot = Paths.get(
-	    System.getProperty("user.home"), "test", "JUnitDB");
+    protected static final Path DB_ROOT =
+            Paths.get(System.getProperty("user.home"), "test", "JUnitDB");
 
     @Ignore
     @BeforeClass
     public static void globalPrepareTestBase() throws IOException {
-	if (Files.exists(dbRoot)) {
-	    Utility.rm(dbRoot, "JUnit Test: global prepare");
-	}
+        if (Files.exists(DB_ROOT)) {
+            Utility.rm(DB_ROOT, "JUnit Test: global prepare");
+        }
     }
 
     protected void cleanDBRoot() throws IOException {
-	if (Files.exists(dbRoot)) {
-	    TestUtils.removeFileSubtree(dbRoot);
-	}
+        if (Files.exists(DB_ROOT)) {
+            TestUtils.removeFileSubtree(DB_ROOT);
+        }
     }
 }
