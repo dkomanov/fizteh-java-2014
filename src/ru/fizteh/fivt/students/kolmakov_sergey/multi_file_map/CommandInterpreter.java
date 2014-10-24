@@ -41,10 +41,18 @@ public class CommandInterpreter {
 
     protected static void create(String[] command) throws WrongNumberOfArgumentsException {
         checkArguments(2, command.length, 2, "create");
-        if (manager.createTable(command[1]) != null) {
-            System.out.println("created");
-        } else {
-            System.out.println(command[1] + " exists");
+        try {
+            if (manager.createTable(command[1]) != null) {
+                System.out.println("created");
+            } else {
+                System.out.println(command[1] + " exists");
+            }
+        } catch (DatabaseExitException e){
+            if (e.getMessage().isEmpty()) {
+                System.out.println("Can't create table");
+            } else {
+                System.out.println(e.getMessage());
+            }
         }
     }
 

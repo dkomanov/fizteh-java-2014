@@ -17,7 +17,7 @@ public class TableManager {
     protected static final String FILE_NAME_PATTERN = "([0-9]|1[0-5])\\.dat";
     private static final String ILLEGAL_TABLE_NAME_PATTERN = ".*\\.|\\..*|.*(/|\\\\).*";
 
-    public TableManager(String path) throws IllegalArgumentException {
+    public TableManager(String path) throws IllegalArgumentException, DatabaseExitException {
         currentTable = null;
         databasePath = Paths.get(path);
         tableManagerMap = new TreeMap<>();
@@ -70,7 +70,7 @@ public class TableManager {
         return tableManagerMap.get(name).size();
     }
 
-    protected Table createTable(String name) {
+    protected Table createTable(String name) throws DatabaseExitException {
         if (name == null) {
             throw new IllegalArgumentException("createTable: null argument");
         }

@@ -12,7 +12,7 @@ public class Table {
     private Path tablePath;
     private Map<Coordinates, DataFile> tableMap;
 
-    public Table(Path tablePath, String name) throws IllegalArgumentException {
+    public Table(Path tablePath, String name) throws IllegalArgumentException, DatabaseExitException {
         tableMap = new TreeMap<>();
         this.tablePath = tablePath;
         this.name = name;
@@ -35,8 +35,11 @@ public class Table {
                 int folderIndex = TableManager.excludeFolderNumber(currentFolderName);
                 int fileIndex = TableManager.excludeDataFileNumber(file);
                 try {
-                    DataFile part = new DataFile(this.tablePath, new Coordinates(folderIndex, fileIndex));
-                    tableMap.put(new Coordinates(folderIndex, fileIndex), part);
+                    DataFile currentDataFile = new DataFile(this.tablePath, new Coordinates(folderIndex, fileIndex));
+                    tableMap.put(new Coordinates(folderIndex, fileIndex), currentDataFile);
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    throw new DatabaseExitException(-1);
                 } catch (IOException e) {
                     throw new IllegalArgumentException(this.tablePath.resolve(
                             Paths.get(Integer.toString(folderIndex) + ".dir",
@@ -106,8 +109,8 @@ public class Table {
 
     protected int size() {
         int size = 0;
-        for (Entry<Coordinates, DataFile> part : tableMap.entrySet()) {
-            size += part.getValue().getSize();
+        for (Entry<Coordinates, DataFile> currentEntry : tableMap.entrySet()) {
+            size += currentEntry.getValue().getSize();
         }
         return size;
     }
