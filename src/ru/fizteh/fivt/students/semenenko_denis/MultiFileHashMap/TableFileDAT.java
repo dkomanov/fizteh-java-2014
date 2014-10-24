@@ -144,22 +144,23 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
 
     @Override
     public void write(RandomAccessFile whereTo) {
-        if (data.size() == 0) {
-            if (isLoaded) {
-                File datFile = getDATFilePath().toFile();
-                if (datFile.exists()) {
-                    if (!datFile.delete()) {
-                        System.out.println("can't delete");
-                    }
+        if (isLoaded) {
+            File datFile = getDATFilePath().toFile();
+            if (datFile.exists()) {
+                if (!datFile.delete()) {
+                    System.out.println("can't delete");
                 }
             }
+        }
+        if (data.size() == 0) {
             return;
         }
+
         File dir = getDirectoryPath().toFile();
         if (!dir.exists()) {
             dir.mkdir();
-            init();
         }
+        init();
         whereTo = binFile;
         try {
             whereTo.setLength(0);
