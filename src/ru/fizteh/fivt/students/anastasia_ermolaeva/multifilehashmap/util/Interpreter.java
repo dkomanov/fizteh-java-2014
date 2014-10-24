@@ -79,7 +79,7 @@ public class Interpreter {
                         command.execute(tableState, arguments);
                     }
                 }
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 System.err.println(e.getMessage());
             }
         }
