@@ -13,7 +13,7 @@ public class Main {
         Database database = null;
         dbPath = System.getProperty("fizteh.db.dir");
         if (dbPath == null) {
-            System.err.println(dbPath + ": no such database directory");
+            System.err.println("You must specify fizteh.db.dir");
             System.exit(1);
         }
         try {

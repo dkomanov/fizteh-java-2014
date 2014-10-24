@@ -17,7 +17,11 @@ public class Database {
 
     public Database(String directory) throws IOException {
         database = new HashMap<>();
+
         this.directory = Paths.get(directory);
+        if (!Files.exists(this.directory)) {
+            Files.createDirectory(this.directory);
+        }
         load();
     }
     

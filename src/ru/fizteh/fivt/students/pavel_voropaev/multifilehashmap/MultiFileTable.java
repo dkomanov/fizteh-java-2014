@@ -34,7 +34,6 @@ public class MultiFileTable implements Closeable {
         } else {
             load();
         }
-
     }
 
     public String put(String key, String value) throws IllegalArgumentException {
@@ -49,7 +48,6 @@ public class MultiFileTable implements Closeable {
     public String remove(String key) throws IllegalArgumentException {
         return content[getPlace(key)].map.remove(key);
     }
-
 
     public String name() {
         return name;
