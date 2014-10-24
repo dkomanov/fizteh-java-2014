@@ -1,7 +1,10 @@
 package ru.fizteh.fivt.students.moskupols.multifilehashmap;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by moskupols on 23.10.14.
@@ -30,12 +33,30 @@ public class MultiFileMapProvider {
         final Path tablePath = rootPath.resolve(name);
         if (Files.exists(tablePath))
             return null;
+        try {
+            Files.createDirectory(tablePath);
+        } catch (IOException e) {
+            throw new IllegalStateException(String.format("Couldn't create %s", tablePath));
+        }
         return new MultiFileMap(tablePath);
     }
 
-    public void removeTable(String name) {
+    public boolean removeTable(String name) {
         final MultiFileMap table = getTable(name);
-        if (table != null)
+        if (table != null) {
             table.clear();
+            final Path tablePath = rootPath.resolve(name);
+            try {
+                Files.delete(tablePath);
+            } catch (IOException e) {
+                throw new IllegalStateException(String.format("Couldn't delete %s", tablePath));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public List<String> listNames() {
+        return Arrays.asList(rootPath.toFile().list());
     }
 }
