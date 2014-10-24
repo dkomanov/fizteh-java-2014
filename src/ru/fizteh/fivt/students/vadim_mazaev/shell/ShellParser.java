@@ -21,6 +21,7 @@ public final class ShellParser {
 				switch (cmdWithArgs[0]) {
 				case "exit":
 					System.exit(0);
+                    break;
 				case "pwd":
 					PwdCmd.run(cmdWithArgs);
 					break;
