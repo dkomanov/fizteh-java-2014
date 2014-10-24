@@ -15,6 +15,24 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
     protected Map<String, String> map;
     private final String separator = System.getProperty("file.separator");
 
+    class DataFilePath {
+        protected String filePath;
+        protected String directoryName;
+        protected String fileName;
+
+        DataFilePath(String keyName) {
+            byte bytes = keyName.getBytes()[0];
+            int directory = Math.abs(bytes % 16);
+            int file = Math.abs(bytes / 16 % 16);
+
+            this.fileName = fullTablePath() + directory + ".dir" + separator
+                    + file + ".dat";
+            this.directoryName = directory + ".dir";
+            this.filePath = file + ".dat";
+
+        }
+    }
+
     private String fullTablePath() {
         return dbPath + separator + currentTableName + separator;
     }
@@ -23,16 +41,20 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
             throws IOException {
         this.dbPath = dbPath;
         this.currentTableName = currentTableName;
-        loadFromTable();
-        saveToTable();
+        try {
+            loadFromTable();
+            saveToTable();
+        } catch (Exception e) {
+            throw new IOException();
+        }
     }
 
-    private void removeFolder(File f) {
+    public static void removeFolder(File f) {
         if (f.exists()) {
             String[] files = f.list();
             for (int i = 0; i < files.length; ++i) {
-                File currentFile = new File(f.getAbsolutePath() + separator
-                        + files[i]);
+                File currentFile = new File(f.getAbsolutePath()
+                        + System.getProperty("file.separator") + files[i]);
                 if (currentFile.isDirectory()) {
                     removeFolder(currentFile);
                 }
@@ -43,27 +65,15 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
     }
 
     private void makeFolders(String keyName) throws IOException {
-        String[] filePath = generateFilePath(keyName);
+        DataFilePath dataFilePath = new DataFilePath(keyName);
 
         File f = null;
-        f = new File(fullTablePath() + filePath[1] + separator);
+        f = new File(fullTablePath() + dataFilePath.directoryName + separator);
         if (!f.exists()) {
             f.mkdir();
-            f = new File(fullTablePath() + filePath[1] + separator
-                    + filePath[2]);
+            f = new File(fullTablePath() + dataFilePath.directoryName
+                    + separator + dataFilePath.fileName);
         }
-    }
-
-    private String[] generateFilePath(String keyName) {
-        byte bytes = keyName.getBytes()[0];
-        int ndirectory = Math.abs(bytes % 16);
-        int nfile = Math.abs(bytes / 16 % 16);
-        String[] result = new String[3];
-        result[0] = fullTablePath() + ndirectory + ".dir" + separator + nfile
-                + ".dat";
-        result[1] = ndirectory + ".dir";
-        result[2] = nfile + ".dat";
-        return result;
     }
 
     private void saveToTable() throws IOException {
@@ -72,10 +82,9 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
         }
 
         for (Entry<String, String> entry : map.entrySet()) {
-            String savePath = generateFilePath(entry.getKey())[0];
             makeFolders(entry.getKey());
             DataOutputStream out = new DataOutputStream(new FileOutputStream(
-                    savePath));
+                    new DataFilePath(entry.getKey()).filePath));
 
             writeString(out, entry.getKey());
             writeString(out, entry.getValue());
@@ -89,34 +98,46 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
         out.write(bytes);
     }
 
-    public void loadFromTable() throws IOException {
+    public void loadFromTable() throws Exception {
         map = new HashMap<>();
+        DataInputStream in = null;
         try {
+
             for (int i = 0; i < 16; i++) {
                 for (int j = 0; j < 16; j++) {
                     String filePath = fullTablePath() + i + ".dir" + separator
                             + j + ".dat";
                     File file = new File(filePath);
                     if (file.exists() && file.isFile()) {
-                        DataInputStream in = new DataInputStream(
-                                new FileInputStream(filePath));
+                        in = new DataInputStream(new FileInputStream(filePath));
                         while (in.available() > 0) {
                             String key = readString(in);
                             String value = readString(in);
                             map.put(key, value);
+
                         }
+                        in.close();
+
                     }
                 }
             }
         } catch (FileNotFoundException e) {
             // That's normal: will be created in saveToFile().
+        } finally {
+            in.close();
         }
     }
 
     private String readString(DataInputStream in) throws IOException {
-        int length = in.readInt();
-        byte[] bytes = new byte[length];
-        in.read(bytes);
+        int length;
+        byte[] bytes;
+        try {
+            length = in.readInt();
+            bytes = new byte[length];
+            in.read(bytes);
+        } catch (Error e) {
+            throw new IOException();
+        }
         return new String(bytes, "UTF-8");
     }
 

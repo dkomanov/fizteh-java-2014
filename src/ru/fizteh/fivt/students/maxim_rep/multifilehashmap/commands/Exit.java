@@ -16,7 +16,7 @@ public class Exit implements DBCommand {
                     DbMain.fileStoredStringMap.close();
                 }
             } catch (Exception e) {
-                System.out.println("Database critical error");
+                System.err.println("Database Error");
                 return false;
             }
         }

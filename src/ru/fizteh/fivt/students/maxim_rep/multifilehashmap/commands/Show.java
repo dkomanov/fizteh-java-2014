@@ -11,8 +11,7 @@ public class Show implements DBCommand {
     public Show() {
     }
 
-    @SuppressWarnings("resource")
-    public static String[] getTables() {
+    private static String[] getTables() {
         ArrayList<String> tablesArray = new ArrayList<String>();
 
         if (!DbMain.databaseExists(DbMain.databasefilePath)) {
@@ -23,11 +22,16 @@ public class Show implements DBCommand {
         for (File current : f.listFiles()) {
             if (current.isDirectory()) {
                 try {
-                    TableDataMap tempMap = new TableDataMap(
-                            DbMain.databasefilePath, current.getName());
+                    TableDataMap tempMap;
+                    if (current.getName().equals(DbMain.currentTable)) {
+                        tempMap = DbMain.fileStoredStringMap;
+                    } else {
+                        tempMap = new TableDataMap(DbMain.databasefilePath,
+                                current.getName());
+                    }
                     tablesArray.add(current.getName() + "\n" + tempMap.size());
                 } catch (Exception e) {
-                    System.out.println("Database critical error");
+                    System.err.println("Database Error");
                     return null;
                 }
 

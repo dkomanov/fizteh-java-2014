@@ -16,11 +16,18 @@ public class List implements DBCommand {
             return false;
         }
 
+        StringBuilder list = new StringBuilder("");
         for (Entry<String, String> entry : DbMain.fileStoredStringMap
                 .entrySet()) {
-            System.out.print(entry.getKey() + ";");
+            list.append(entry.getKey() + ",");
         }
-        System.out.println();
+
+        if (!list.toString().equals("")
+                && list.charAt(list.length() - 1) == ',') {
+            list.deleteCharAt(list.length() - 1);
+        }
+
+        System.out.println(list.toString());
         return true;
     }
 

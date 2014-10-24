@@ -19,10 +19,10 @@ public class Get implements DBCommand {
 
         String result = DbMain.fileStoredStringMap.get(keyName);
         if (result == null) {
-            System.out.println("NOT FOUND");
+            System.out.println("not found");
             return false;
         } else {
-            System.out.println("FOUND");
+            System.out.println("found");
             System.out.println(result);
         }
         return true;

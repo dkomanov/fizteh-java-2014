@@ -20,10 +20,10 @@ public class Remove implements DBCommand {
         String result = DbMain.fileStoredStringMap.remove(keyName);
 
         if (result != null) {
-            System.out.println("REMOVED");
+            System.out.println("removed");
             return true;
         } else {
-            System.out.println("NOT FOUND");
+            System.out.println("not found");
             return false;
         }
     }

@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.maxim_rep.multifilehashmap.commands;
 
+import java.io.File;
+
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.TableDataMap;
 
@@ -11,7 +13,6 @@ public class Drop implements DBCommand {
         this.tableName = tableName;
     }
 
-    @SuppressWarnings("resource")
     private boolean dropTable(String tableName) {
         if (!DbMain.databaseExists(DbMain.databasefilePath
                 + System.getProperty("file.separator") + tableName)) {
@@ -19,11 +20,10 @@ public class Drop implements DBCommand {
         }
 
         try {
-            TableDataMap fileStoredStringMap = new TableDataMap(
-                    DbMain.databasefilePath, tableName);
-            fileStoredStringMap.drop(tableName);
+            TableDataMap.removeFolder(new File(DbMain.databasefilePath
+                    + System.getProperty("file.separator") + tableName));
         } catch (Exception e) {
-            System.out.println("Database critical error");
+            System.err.println("Database error: filesystem damaged");
             return false;
         }
 
@@ -42,7 +42,7 @@ public class Drop implements DBCommand {
         }
 
         if (!dropTable(tableName)) {
-            System.out.println("Database Error: Couldn't delete table files: "
+            System.err.println("Database Error: Couldn't delete table files: "
                     + tableName);
             return false;
         } else {

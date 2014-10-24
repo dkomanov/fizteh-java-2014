@@ -7,12 +7,12 @@ import java.util.ArrayList;
 public class Parser {
 
     public static String makeStringCommand(String[] args) {
-        String commandLine = "";
+        StringBuilder commandLine = new StringBuilder("");
         for (int i = 0; i < args.length; i++) {
-            commandLine = commandLine + args[i] + " ";
+            commandLine.append(args[i] + " ");
         }
 
-        return commandLine;
+        return commandLine.toString();
     }
 
     public static String[] commandToArguments(String command) {

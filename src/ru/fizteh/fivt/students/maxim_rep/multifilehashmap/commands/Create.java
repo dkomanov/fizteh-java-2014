@@ -12,7 +12,7 @@ public class Create implements DBCommand {
         this.tableName = tableName;
     }
 
-    public static boolean createTable(String tableName) throws Exception {
+    private static boolean createTable(String tableName) throws Exception {
         File f = null;
         f = new File(DbMain.databasefilePath
                 + System.getProperty("file.separator") + tableName);
@@ -39,7 +39,7 @@ public class Create implements DBCommand {
 
             }
         } catch (Exception e) {
-            System.out.println("Database Error: Couldn't create new table!");
+            System.err.println("Database Error: Couldn't create new table!");
             return false;
         }
 

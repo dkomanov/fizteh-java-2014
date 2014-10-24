@@ -18,12 +18,12 @@ public class Put implements DBCommand {
             return false;
         }
         if (DbMain.fileStoredStringMap.containsKey(keyName)) {
-            System.out.println("OVERWRITE");
+            System.out.println("overwrite");
             System.out.println(DbMain.fileStoredStringMap.replace(keyName,
                     dataText));
         } else {
             DbMain.fileStoredStringMap.put(keyName, dataText);
-            System.out.println("NEW");
+            System.out.println("new");
         }
         return true;
 

@@ -29,9 +29,10 @@ public class DbMain {
         }
 
         if (!databaseExists(databasefilePath)) {
+            System.out
+                    .println("Database error: Database folder doesn't exists!");
             System.exit(-1);
         }
-
         if (args.length == 0) {
             System.exit(interactiveMode());
         } else {
@@ -39,7 +40,7 @@ public class DbMain {
         }
     }
 
-    public static int commandMode(String[] args) throws IOException {
+    private static int commandMode(String[] args) throws IOException {
         String commandline = Parser.makeStringCommand(args);
 
         if (commandline.equals(null)) {
@@ -64,17 +65,17 @@ public class DbMain {
         return 0;
     }
 
-    public static int interactiveMode() throws IOException {
+    private static int interactiveMode() throws IOException {
 
         while (true) {
-            System.out.print(">>");
+            System.out.print("$ ");
 
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     System.in));
             String line = in.readLine();
-
-            if (line.equals(null)) {
-                System.out.println();
+            if (line == null || line.equals(null)) {
+                System.err.println("Database Error: Wrong input");
+                return 0;
             }
 
             String[] commandsString = Parser.divideByChar(line, ";");

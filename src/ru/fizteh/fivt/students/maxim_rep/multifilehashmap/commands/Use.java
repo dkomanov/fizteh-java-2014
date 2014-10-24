@@ -26,7 +26,7 @@ public class Use implements DBCommand {
                     DbMain.fileStoredStringMap.close();
                     DbMain.currentTable = null;
                 } catch (Exception e) {
-                    System.out.println("Database critical error");
+                    System.err.println("Database Error");
                     return false;
                 }
             }
@@ -35,7 +35,7 @@ public class Use implements DBCommand {
                         DbMain.databasefilePath, tableName);
                 DbMain.currentTable = tableName;
             } catch (IOException e) {
-                System.out.println("Database critical error");
+                System.err.println("Database Error");
                 return false;
             }
         }
