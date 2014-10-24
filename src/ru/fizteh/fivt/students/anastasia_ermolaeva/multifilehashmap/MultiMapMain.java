@@ -84,8 +84,9 @@ public class MultiMapMain {
                                         System.out.println("dropped");
                                         tableHolder.getTableMap().remove(tableName);
                                         map.remove(tableName);
-                                        if (tableS.getCurrentTableName().equals(tableName))
+                                        if (tableS.getCurrentTableName().equals(tableName)) {
                                             tableS.setCurrentTableName("");
+                                        }
                                     } catch (IOException | SecurityException e) {
                                         System.err.println(e);
                                     }
@@ -137,7 +138,7 @@ public class MultiMapMain {
                             }),
                             new Command("get", 2, (TableState tableS, String[] arguments) ->
                             {
-                                Map<String, Map<String, String> > map = tableS.getMap();
+                                Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
                                 if (currentTableName.equals("")) {
                                     System.out.println("no table");
