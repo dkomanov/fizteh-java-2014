@@ -16,7 +16,7 @@ public class MultiFileHashMap {
         try {
             path = System.getProperty("fizteh.db.dir");
             if (path == null) {
-                throw new Exception("Enter directory"); 
+                throw new Exception("Enter directory");
             }
             tableList = new TreeMap<String, Integer>();
             File dir = new File(path);
@@ -165,6 +165,9 @@ public class MultiFileHashMap {
         if (!table.exists() || !table.isDirectory()) {
             System.out.println(args[1] + " not exists");
         } else {
+            if (currentTable.getName().equals(args[1])) {
+                currentTable = null;
+            }
             tableList.remove(args[1]);
             table.delete();
             System.out.println("dropped");
@@ -194,6 +197,7 @@ public class MultiFileHashMap {
         if (!args[1].equals("tables")) {
             throw new IllegalArgumentException("Invalid command");
         }
+        System.out.println("table_name row_count");
         for (Map.Entry<String, Integer> i : tableList.entrySet()) {
             String key = i.getKey();
             Integer num = i.getValue();
@@ -203,7 +207,7 @@ public class MultiFileHashMap {
 
     public static void exit(final String[] args) throws Exception {
         if (args.length != 1) {
-            throw new IllegalArgumentException("exit: " 
+            throw new IllegalArgumentException("exit: "
                     + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
         }
         if (currentTable != null) {
@@ -212,5 +216,7 @@ public class MultiFileHashMap {
         System.exit(0);
     }
 }
+
+
 
 
