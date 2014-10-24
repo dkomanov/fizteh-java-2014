@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.torunova.multifilehashmap;
 
+import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectDbNameException;
 import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.TableNotCreatedException;
 
@@ -15,7 +16,10 @@ public class  Database {
     public String dbName;
     public Map<String, Table> tables = new HashMap<>();
     public Table currentTable = null;
-    public Database(String name) {
+    public Database(String name) throws IncorrectDbNameException {
+		if (name == null) {
+			throw new IncorrectDbNameException("Name of database not specified.Please,specify it via -Dfizteh.db.dir");
+		}
         File db = new File(name).getAbsoluteFile();
         if (!db.exists()) {
             db.mkdirs();

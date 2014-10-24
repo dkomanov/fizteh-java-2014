@@ -5,6 +5,7 @@ package ru.fizteh.fivt.students.torunova.multifilehashmap;
  */
 
 import ru.fizteh.fivt.students.torunova.multifilehashmap.actions.Action;
+import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectDbNameException;
 import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.TableNotCreatedException;
 
@@ -24,7 +25,12 @@ public class Shell {
             commands.put(a.getName(), a);
         }
         scanner = new Scanner(is);
-        db = new Database(dbfile);
+		try {
+			db = new Database(dbfile);
+		} catch (IncorrectDbNameException e) {
+			System.out.println("Caught IncorrectDbNameException: " + e.getMessage());
+			System.exit(1);
+		}
         interactive = isInteractive;
     }
 
