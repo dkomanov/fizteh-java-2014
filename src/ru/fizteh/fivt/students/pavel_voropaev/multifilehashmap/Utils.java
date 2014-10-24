@@ -8,8 +8,7 @@ import java.nio.file.Path;
 public class Utils {
     static void rm(Path directory) throws IllegalStateException, IOException {
         if (Files.isDirectory(directory)) {
-            try (DirectoryStream<Path> stream = Files
-                    .newDirectoryStream(directory)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
                 for (Path entry : stream) {
                     rm(entry);
                 }
