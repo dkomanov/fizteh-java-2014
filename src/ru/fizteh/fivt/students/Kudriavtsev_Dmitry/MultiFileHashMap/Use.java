@@ -23,7 +23,9 @@ public class Use extends Command {
         if (dbConnector.activeTable != null) {
             dbConnector.activeTable.unload();
         }
-        dbConnector.activeTable = map;
+        if (map.size() != 0) {
+            dbConnector.activeTable = map;
+        }
         System.out.println("using " + args[0]);
         return true;
     }

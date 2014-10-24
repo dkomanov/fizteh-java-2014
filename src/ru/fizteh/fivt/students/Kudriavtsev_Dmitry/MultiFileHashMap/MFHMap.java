@@ -140,7 +140,8 @@ public class MFHMap extends HashMap<String, String> {
                     int f = pathOfFile.getValue().getValue();
                     if (!file[d][f]) {
                         if (!dir[d]) {
-                            Files.createDirectory(dbPath.resolve(d + ".dir/"));
+                            if (!Files.exists(dbPath.resolve(d + ".dir/")))
+                                Files.createDirectory(dbPath.resolve(d + ".dir/"));
                             dir[d] = true;
                         }
                         streams[d][f] = new DataOutputStream(Files.newOutputStream(
