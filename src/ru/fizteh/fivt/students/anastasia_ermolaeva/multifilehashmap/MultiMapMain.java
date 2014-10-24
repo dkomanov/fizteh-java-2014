@@ -48,7 +48,10 @@ public class MultiMapMain {
                                     }
                                     System.out.println("created");
                                     try {
-                                        tableHolder.getTableMap().put(tableName, new Table(rootDirectoryPath, tableName));
+                                        tableHolder.getTableMap().
+                                        put(tableName, 
+                                        new Table(rootDirectoryPath, 
+                                        tableName));
                                         map.put(tableName, new HashMap<>());
                                     } catch (ExitException e) {
                                         System.err.println("Error while creating");
