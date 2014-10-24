@@ -25,12 +25,12 @@ public class Use extends Command {
         }
         if (dbConnector.activeTable != null) {
             dbConnector.activeTable.unload();
-        } else {
-            dbConnector.activeTable = map;
+            if (dbConnector.activeTable.dbPath.getFileName().toString().equals(args[0])) {
+                System.out.println("using " + args[0]);
+                return true;
+            }
         }
-        if (map.size() != 0) {
-            dbConnector.activeTable = map;
-        }
+        dbConnector.activeTable = map;
         System.out.println("using " + args[0]);
         return true;
     }
