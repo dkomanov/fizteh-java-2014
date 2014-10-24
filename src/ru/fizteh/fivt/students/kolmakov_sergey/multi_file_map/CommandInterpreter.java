@@ -6,7 +6,7 @@ import java.io.IOException;
 // Interpreter and Commands aren't separated, because I can't find any reason to use Interpreter anywhere else.
 // Without reusing of the code separating seems unnecessary.
 
-public class CommandInterpreter {
+public final class CommandInterpreter {
     private static TableManager manager;
 
     protected static void setManager(TableManager manager) {
