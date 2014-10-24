@@ -182,7 +182,7 @@ public class Table implements Map<String, String>, AutoCloseable {
                             Files.deleteIfExists(file.toPath());
                         }
                     }
-                } catch(IOException e) {
+                } catch (IOException e) {
                         System.err.println("Error with files");
                 }
             }
