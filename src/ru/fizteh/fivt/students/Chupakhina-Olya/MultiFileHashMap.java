@@ -198,7 +198,7 @@ public class MultiFileHashMap {
             if (dir.isDirectory()) {
                 getFile(dir.toString());
             } else {
-                throw new Exception (dir.getName() + " is not directory");
+                throw new Exception(dir.getName() + " is not directory");
             }
         }
 
@@ -212,7 +212,7 @@ public class MultiFileHashMap {
             if (dir.isDirectory()) {
                 getTable(dir.toString());
             } else {
-                throw new Exception (dir.getName() + " is not directory");
+                throw new Exception(dir.getName() + " is not directory");
             }
         }
 
