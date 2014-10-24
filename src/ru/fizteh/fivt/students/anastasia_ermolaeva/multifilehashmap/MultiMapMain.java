@@ -34,12 +34,14 @@ public class MultiMapMain {
                     new Interpreter(tableState, new Command[]{
                             new Command("create", 2, (TableState tableS, String[] arguments) ->
                             {
-                                Map< String, Map<String, String> > map = tableS.getMap();
+                                Map<String, Map<String, String>> map = tableS.getMap();
                                 String tableName = arguments[1];
                                 if (map.containsKey(tableName)) {
                                     System.out.println(tableName + " exists");
                                 } else {
-                                    String pathTableDirectory = rootDirectoryPath.toAbsolutePath().toString() + File.separator + tableName;
+                                    String pathTableDirectory = rootDirectoryPath.toAbsolutePath().toString()
+                                    + File.separator
+                                    + tableName;
                                     File tableDirectory = new File(pathTableDirectory);
                                     if (!tableDirectory.mkdir()) {
                                         System.err.println("Can't create table directory");
@@ -84,7 +86,7 @@ public class MultiMapMain {
                                         map.remove(tableName);
                                         if (tableS.getCurrentTableName().equals(tableName))
                                             tableS.setCurrentTableName("");
-                                    } catch (IOException | SecurityException e){
+                                    } catch (IOException | SecurityException e) {
                                         System.err.println(e);
                                     }
                                 }
@@ -159,7 +161,7 @@ public class MultiMapMain {
                                 if (currentTableName.equals("")) {
                                     System.out.println("no table");
                                 } else {
-                                    Map <String, String> currentStorage = map.get(currentTableName);
+                                    Map<String, String> currentStorage = map.get(currentTableName);
                                     if (!arguments[1].isEmpty()) {
                                         String key = arguments[1];
                                         if (currentStorage.containsKey(key)) {
@@ -173,12 +175,12 @@ public class MultiMapMain {
                             }),
                             new Command("list", 1, (TableState tableS, String[] arguments) ->
                             {
-                                Map<String, Map <String, String> > map = tableS.getMap();
+                                Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
                                 if (currentTableName.equals("")) {
                                     System.out.println("no table");
                                 } else {
-                                    Map <String, String> currentStorage = map.get(currentTableName);
+                                    Map<String, String> currentStorage = map.get(currentTableName);
                                     Set keySet = currentStorage.keySet();
                                     int size = keySet.size();
                                     int counter = 0;
@@ -186,8 +188,7 @@ public class MultiMapMain {
                                     while (it.hasNext()) {
                                         if (counter == size - 1) {
                                             System.out.print(it.next());
-                                        }
-                                        else {
+                                        } else {
                                             System.out.print(it.next() + ", ");
                                         }
                                         counter++;
@@ -201,7 +202,7 @@ public class MultiMapMain {
                                     tableHolder.close();
                                     System.out.println("exit");
                                     System.exit(0);
-                                } catch (Exception t){
+                                } catch (Exception t) {
                                     System.exit(-1);
                                 }
                             })
