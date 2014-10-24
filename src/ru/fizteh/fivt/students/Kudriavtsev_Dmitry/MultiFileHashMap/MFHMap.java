@@ -137,8 +137,8 @@ public class MFHMap extends HashMap<String, String> {
                     int f = pathOfFile.getValue().getValue();
                     if (!file[d][f]) {
                         if (!dir[d]) {
-                            if (!Files.exists(dbPath.resolve(d + ".dir/"))) {
-                                Files.createDirectory(dbPath.resolve(d + ".dir/"));
+                            if (!Files.exists(nameOfPath(d))) {
+                                Files.createDirectory(nameOfPath(d));
                             }
                             dir[d] = true;
                         }
@@ -150,7 +150,6 @@ public class MFHMap extends HashMap<String, String> {
                     Integer temp = changedFiles.get(pathOfFile.getKey());
                     if (temp != 0) {
                         --temp;
-                        changedFiles.remove(pathOfFile.getKey());
                         changedFiles.put(pathOfFile.getKey(), temp);
                     } else {
                         changedFiles.remove(pathOfFile.getKey());
