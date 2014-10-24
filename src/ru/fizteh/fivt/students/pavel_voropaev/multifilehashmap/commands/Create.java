@@ -21,7 +21,8 @@ public final class Create {
         if (table) {
             System.out.println("created");
         } else {
-            System.out.println(param[1] + " exists");
+            throw new IllegalArgumentException(param[1] + " exists");
         }
     }
+    
 }

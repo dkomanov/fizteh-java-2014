@@ -4,7 +4,7 @@ import ru.fizteh.fivt.students.pavel_voropaev.multifilehashmap.*;
 public final class Get {
     private static int argNum = 2;
     private static String name = "get";
-    private static String usage = "Usage: put <key>";
+    private static String usage = "Usage: get <key>";
 
     public static void exec(MultiFileTable db, String[] param) throws IllegalArgumentException, IllegalStateException {
         if (param.length > argNum) {

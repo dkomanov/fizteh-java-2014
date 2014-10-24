@@ -15,7 +15,7 @@ public class Utils {
             }
         }
         if (!directory.toFile().delete()) {
-            throw new IllegalStateException("");
+            throw new IllegalStateException("Cannot delete " + directory.toString());
         }
     }
 }

@@ -113,7 +113,7 @@ public class MultiFileTable implements Closeable {
                     }
                 }
                 if (!correctFile) {
-                    throw new IOException(directory.toString() + "contains wrong files");
+                    ThrowExc.containsWrongFiles(directory.toString());
                 }
             }
         }
@@ -193,17 +193,14 @@ public class MultiFileTable implements Closeable {
         return hashcode % FOLDERS * 16 + hashcode / FOLDERS % FILES;
     }
     
-    private Path getDirectoryPath(int fileNum) {
-        Path retVal = directory;
-        String directoryName = new StringBuilder().append(fileNum / FOLDERS).append(".dir").toString();
-        return retVal.resolve(directoryName);
+    private Path getDirectoryPath(int fileNumber) {
+        String directoryName = new StringBuilder().append(fileNumber / FOLDERS).append(".dir").toString();
+        return directory.resolve(directoryName);
     }
     
-    private Path getFilePath(int fileNum) {
-        Path retVal = directory;
-        String directoryName = new StringBuilder().append(fileNum / FOLDERS).append(".dir").toString();
-        String fileName = new StringBuilder().append(fileNum % FOLDERS).append(".dat").toString();
-        return retVal.resolve(directoryName).resolve(fileName);
+    private Path getFilePath(int fileNumber) {
+        String fileName = new StringBuilder().append(fileNumber % FOLDERS).append(".dat").toString();
+        return getDirectoryPath(fileNumber).resolve(fileName);
     }
 
     @Override

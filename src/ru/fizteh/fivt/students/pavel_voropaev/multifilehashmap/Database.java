@@ -35,7 +35,6 @@ public class Database {
                 String tableName = pathToTable.getFileName().toString();
                 if (Files.isDirectory(pathToTable)) {
                     workingTable = new MultiFileTable(directory, tableName);
-                    database.put(tableName, workingTable.size());
                     this.close();
                 } else {
                     throw new IOException(directory + "contains improper files");
@@ -74,7 +73,7 @@ public class Database {
         if (!database.containsKey(tableName)) {
             return false;
         }
-        if (workingTable.name().equals(tableName)) {
+        if (workingTable != null && workingTable.name().equals(tableName)) {
             workingTable = null;
         }
 
@@ -91,6 +90,7 @@ public class Database {
         if (retVal != null) {
             this.close();
             workingTable = retVal;
+            
 
         }
         return retVal;
@@ -100,8 +100,11 @@ public class Database {
         String[] retVal = new String[database.size()];
         Set<String> tables = database.keySet();
         
+        if (workingTable != null) {
+            database.put(workingTable.name(), workingTable.size());
+        }
+       
         Iterator<String> it = tables.iterator();
-
         for (int i = 0; it.hasNext(); ++i) {
             String key = it.next();
             
@@ -115,9 +118,10 @@ public class Database {
 
     public void close() throws IOException {
         if (workingTable != null) {
+            database.put(workingTable.name(), workingTable.size());
             workingTable.close();
         }
         workingTable = null;
-
     }
+    
 }

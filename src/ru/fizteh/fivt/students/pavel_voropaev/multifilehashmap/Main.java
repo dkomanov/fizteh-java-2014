@@ -40,7 +40,7 @@ public class Main {
         }
     }
 
-    private static void batchMode(String[] args, Database db) throws Exception {
+    private static void batchMode(String[] args, Database database) throws Exception {
         StringBuilder commandsLine = new StringBuilder();
         for (String arg : args) {
             if (!arg.equals(" ")) {
@@ -51,12 +51,12 @@ public class Main {
 
         String[] command = commandsLine.toString().split(";");
         for (String comm : command) {
-            execCommand(comm.trim(), db);
+            execCommand(comm.trim(), database);
         }
-        execCommand("exit", db);
+        execCommand("exit", database);
     }
 
-    private static void interactiveMode(Database db) 
+    private static void interactiveMode(Database database) 
             throws IllegalStateException {
         Scanner in = new Scanner(System.in);
         boolean exit = false;
@@ -64,7 +64,7 @@ public class Main {
             System.out.print("$ ");
             try {
                 String line = in.nextLine();
-                exit = executeLine(line, db);
+                exit = executeLine(line, database);
             } catch (NoSuchElementException e) {
                 break;
             }
@@ -72,10 +72,10 @@ public class Main {
         in.close();
     }
     
-    private static boolean executeLine(String line, Database db) {
+    private static boolean executeLine(String line, Database database) {
         boolean exit = false;
         try {
-            exit = execCommand(line, db);
+            exit = execCommand(line, database);
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
         } catch (IOException e) {
@@ -85,46 +85,46 @@ public class Main {
     }
     
 
-    private static boolean execCommand(String p, Database db) 
+    private static boolean execCommand(String p, Database database) 
             throws IllegalArgumentException, IllegalStateException, IOException {
         String[] command = p.split("\\s+");
         if (command[0].equals("")) {
             return false;
         }
         if (command[0].equals("put")) {
-            Put.exec(db.getWorkingTable(), command);
+            Put.exec(database.getWorkingTable(), command);
             return false;
         }
         if (command[0].equals("get")) {
-            Get.exec(db.getWorkingTable(), command);
+            Get.exec(database.getWorkingTable(), command);
             return false;
         }
         if (command[0].equals("remove")) {
-            Remove.exec(db.getWorkingTable(), command);
+            Remove.exec(database.getWorkingTable(), command);
             return false;
         }
         if (command[0].equals("list")) {
-            List.exec(db.getWorkingTable(), command);
+            List.exec(database.getWorkingTable(), command);
             return false;
         }
         if (command[0].equals("create")) {
-            Create.exec(db, command);
+            Create.exec(database, command);
             return false;
         }
         if (command[0].equals("drop")) {
-            Drop.exec(db, command);
+            Drop.exec(database, command);
             return false;
         }
         if (command[0].equals("show") && command.length > 1 && command[1].equals("tables")) {
-            ShowTables.exec(db, command);
+            ShowTables.exec(database, command);
             return false;
         }
         if (command[0].equals("use")) {
-            Use.exec(db, command);
+            Use.exec(database, command);
             return false;
         }
         if (command[0].equals("exit")) {
-            Exit.exec(db, command);
+            Exit.exec(database, command);
             return true;
         }
 

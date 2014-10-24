@@ -8,7 +8,7 @@ public final class ThrowExc {
 
     public static void tooManyArg(String command, String usage)
             throws IllegalArgumentException {
-        throw new IllegalArgumentException(command + ": Too many arguments." + usage);
+        throw new IllegalArgumentException(command + ": Too many arguments. " + usage);
     }
 
     public static void cannotRead(String dbFilePath, String message)
