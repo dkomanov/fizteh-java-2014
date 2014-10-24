@@ -163,7 +163,8 @@ public class MultiFileHashMap {
         }
     }
 
-    private void exitCommand(ArrayList<String> cmds) throws IOException, WrongNumberOfArgumentsException, LoadOrSaveException {
+    private void exitCommand(ArrayList<String> cmds) throws IOException, WrongNumberOfArgumentsException,
+            LoadOrSaveException {
         if (cmds.size() > 1) {
             throw new WrongNumberOfArgumentsException(cmds.get(0));
         }

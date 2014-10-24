@@ -90,7 +90,8 @@ public class SingleTable {
 
     public void load() throws LoadOrSaveException {
         if (singleTablePath.toFile().isDirectory()) {
-            throw new LoadOrSaveException("cannot load table: '" + singleTablePath.toFile().toString() + "' is directory");
+            throw new LoadOrSaveException("cannot load table: '" + singleTablePath.toFile().toString()
+                    + "' is directory");
         } else if (singleTablePath.toFile().exists()) {
 
             try (DataInputStream inputStream = new DataInputStream(Files.newInputStream(singleTablePath))) {
