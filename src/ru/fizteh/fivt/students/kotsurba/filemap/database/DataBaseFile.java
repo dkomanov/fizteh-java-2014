@@ -153,6 +153,10 @@ public class DataBaseFile {
         return (data.remove(keyStr) != null);
     }
 
+    public int getKeyCount() {
+        return data.size();
+    }
+
     public String getKeyList() {
         StringBuilder s = new StringBuilder();
 
