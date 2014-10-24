@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.moskupols.multifilehashmap;
 
 import ru.fizteh.fivt.students.moskupols.cliutils.*;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 
 /**
@@ -22,7 +23,7 @@ public class MultiFileMapMain {
             commandFactory = new MultiFileHashMapCommandFactory(
                     new DataBaseCursor(),
                     new MultiFileMapProvider(Paths.get(dbPath)));
-        } catch (IllegalStateException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
             return;
         }
