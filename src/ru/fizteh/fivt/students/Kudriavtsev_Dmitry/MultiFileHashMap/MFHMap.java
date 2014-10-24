@@ -6,17 +6,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by Дмитрий on 07.10.14.
  */
 public class MFHMap extends HashMap<String, String> {
     Path dbPath;
-    Set<String> changedFiles = new TreeSet<>();
+    Map<String, Integer> changedFiles = new TreeMap<>();
 
     public MFHMap(Path path) {
         dbPath = path.normalize();
@@ -107,7 +104,7 @@ public class MFHMap extends HashMap<String, String> {
         try {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
-                    if (changedFiles.contains(nameOfPath(i, j).toString()) || all) {
+                    if (changedFiles.containsKey(nameOfPath(i, j).toString()) || all) {
                         if (Files.exists(nameOfPath(i, j))) {
                             Files.delete(nameOfPath(i, j));
                         }
@@ -135,7 +132,7 @@ public class MFHMap extends HashMap<String, String> {
             }
             for (Map.Entry<String, String> entry : entrySet()) {
                 SimpleEntry<String, SimpleEntry<Integer, Integer>> pathOfFile = whereToSave(entry.getKey());
-                if (changedFiles.contains(pathOfFile.getKey())) {
+                if (changedFiles.containsKey(pathOfFile.getKey())) {
                     int d = pathOfFile.getValue().getKey();
                     int f = pathOfFile.getValue().getValue();
                     if (!file[d][f]) {
@@ -150,7 +147,14 @@ public class MFHMap extends HashMap<String, String> {
                         file[d][f] = true;
                     }
                     writeToFile(streams[d][f], entry.getKey(), entry.getValue());
-                    changedFiles.remove(pathOfFile.getKey());
+                    Integer temp = changedFiles.get(pathOfFile.getKey());
+                    if (temp != 0) {
+                        --temp;
+                        changedFiles.remove(pathOfFile.getKey());
+                        changedFiles.put(pathOfFile.getKey(), temp);
+                    } else {
+                        changedFiles.remove(pathOfFile.getKey());
+                    }
                 }
             }
 
