@@ -2,13 +2,13 @@ package ru.fizteh.fivt.students.PotapovaSofia.MultyFileHashMap;
 
 import java.util.Vector;
 
-public class cmdPut implements Command {
+public class CmdPut implements Command {
     @Override
     public void execute(Vector<String> args, DataBase db) {
         if (args.size() < 3) {
-            commandParser.fewArgs("put");
+            CommandParser.fewArgs("put");
         } else if (args.size() > 3) {
-            commandParser.tooMuchArgs("put");
+            CommandParser.tooMuchArgs("put");
         } else {
             if (db.currentTable == null) {
                 System.out.println("no table");

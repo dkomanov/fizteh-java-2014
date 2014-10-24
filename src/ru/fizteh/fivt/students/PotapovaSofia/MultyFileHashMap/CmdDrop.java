@@ -2,13 +2,13 @@ package ru.fizteh.fivt.students.PotapovaSofia.MultyFileHashMap;
 
 import java.util.Vector;
 
-public class cmdDrop implements Command {
+public class CmdDrop implements Command {
     @Override
     public void execute(Vector<String> args, DataBase db) {
         if (args.size() < 2) {
-            commandParser.fewArgs("drop");
+            CommandParser.fewArgs("drop");
         } else if (args.size() > 2) {
-            commandParser.tooMuchArgs("drop");
+            CommandParser.tooMuchArgs("drop");
         } else {
             if (db.tables.remove(args.get(1)) == null) {
                 System.out.println(args.get(1) + " does not exists");

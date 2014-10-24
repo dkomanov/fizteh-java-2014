@@ -3,11 +3,11 @@ package ru.fizteh.fivt.students.PotapovaSofia.MultyFileHashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class cmdList implements Command {
+public class CmdList implements Command {
     @Override
     public void execute(Vector<String> args, DataBase db) {
         if (args.size() > 1) {
-            commandParser.tooMuchArgs("list");
+            CommandParser.tooMuchArgs("list");
         } else {
             if (db.currentTable == null) {
                 System.out.println("no table");

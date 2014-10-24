@@ -3,13 +3,13 @@ package ru.fizteh.fivt.students.PotapovaSofia.MultyFileHashMap;
 import java.nio.file.Path;
 import java.util.Vector;
 
-public class cmdCreate implements Command {
+public class CmdCreate implements Command {
     @Override
     public void execute(Vector<String> args, DataBase db) {
         if (args.size() < 2) {
-            commandParser.fewArgs("create");
+            CommandParser.fewArgs("create");
         } else if (args.size() > 2) {
-            commandParser.tooMuchArgs("create");
+            CommandParser.tooMuchArgs("create");
         } else {
             String tableName = args.get(1);
             Path tablePath = db.getDbPath().resolve(tableName);

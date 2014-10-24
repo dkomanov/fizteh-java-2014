@@ -6,12 +6,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class commandParser {
+public class CommandParser {
     protected static Map<String, Command> commandMap;
     public static Queue<Vector<String>> argumentsQueue;
     public static DataBase db;
 
-    public commandParser() throws IOException {
+    public CommandParser() throws IOException {
         commandMap = new HashMap();
         argumentsQueue = new LinkedList<>();
         Path path = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("fizteh.db.dir"));
@@ -26,15 +26,15 @@ public class commandParser {
             System.exit(1);
         }
         db = new DataBase(path);
-        commandMap.put("exit", new cmdExit());
-        commandMap.put("get", new cmdGet());
-        commandMap.put("list", new cmdList());
-        commandMap.put("put", new cmdPut());
-        commandMap.put("remove", new cmdRemove());
-        commandMap.put("create", new cmdCreate());
-        commandMap.put("drop", new cmdDrop());
-        commandMap.put("use", new cmdUse());
-        commandMap.put("show", new cmdShow());
+        commandMap.put("create", new CmdCreate());
+        commandMap.put("drop", new CmdDrop());
+        commandMap.put("exit", new CmdExit());
+        commandMap.put("get", new CmdGet());
+        commandMap.put("list", new CmdList());
+        commandMap.put("put", new CmdPut());
+        commandMap.put("remove", new CmdRemove());
+        commandMap.put("show", new CmdShow());
+        commandMap.put("use", new CmdUse());
     }
 
     public static void main(String[] args) throws IOException {
@@ -46,7 +46,7 @@ public class commandParser {
     }
 
     private static void interactiveMode() throws IOException {
-        commandParser currentCmd = new commandParser();
+        CommandParser currentCmd = new CommandParser();
         System.out.print("$ ");
         while (true) {
             Scanner in = new Scanner(System.in);
@@ -62,7 +62,7 @@ public class commandParser {
     }
 
     private static void batchMode(String[] args) throws IOException {
-        commandParser currentCmd = new commandParser();
+        CommandParser currentCmd = new CommandParser();
         String str = "";
         for (String s : args) {
             str += s + " ";
