@@ -16,6 +16,7 @@ public class Shell {
 
     public Shell() {
     }
+   
 
     final ShellState getState() {
         return state;
