@@ -18,6 +18,7 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
 
 
     public TableFileDAT(Path pathToParentTable, int numOfDirectory, int numOfFile) {
+        data.clear();
         directoryNumber = numOfDirectory;
         fileNumber = numOfFile;
         parentTablePath = pathToParentTable;
