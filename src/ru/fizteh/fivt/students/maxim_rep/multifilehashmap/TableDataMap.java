@@ -17,6 +17,7 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
 
     class DataFilePath {
         protected String filePath;
+        protected String directoryPath;
         protected String directoryName;
         protected String fileName;
 
@@ -25,11 +26,11 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
             int directory = Math.abs(bytes % 16);
             int file = Math.abs(bytes / 16 % 16);
 
-            this.fileName = fullTablePath() + directory + ".dir" + separator
+            this.filePath = fullTablePath() + directory + ".dir" + separator
                     + file + ".dat";
             this.directoryName = directory + ".dir";
-            this.filePath = file + ".dat";
-
+            this.directoryPath = fullTablePath() + directory + ".dir";
+            this.fileName = file + ".dat";
         }
     }
 
@@ -45,6 +46,7 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
             loadFromTable();
             saveToTable();
         } catch (Exception e) {
+            System.out.println(e);
             throw new IOException();
         }
     }
@@ -66,13 +68,11 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
 
     private void makeFolders(String keyName) throws IOException {
         DataFilePath dataFilePath = new DataFilePath(keyName);
-
         File f = null;
-        f = new File(fullTablePath() + dataFilePath.directoryName + separator);
+        f = new File(dataFilePath.directoryPath);
         if (!f.exists()) {
             f.mkdir();
-            f = new File(fullTablePath() + dataFilePath.directoryName
-                    + separator + dataFilePath.fileName);
+            f = new File(dataFilePath.filePath);
         }
     }
 
@@ -80,14 +80,22 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
         for (int i = 0; i <= 15; i++) {
             removeFolder(new File(fullTablePath() + i + ".dir"));
         }
-
+        DataOutputStream out = null;
+        FileOutputStream tmp = null;
         for (Entry<String, String> entry : map.entrySet()) {
+            DataFilePath dataFilePath = new DataFilePath(entry.getKey());
             makeFolders(entry.getKey());
-            DataOutputStream out = new DataOutputStream(new FileOutputStream(
-                    new DataFilePath(entry.getKey()).filePath));
 
+            out = new DataOutputStream(tmp = new FileOutputStream(
+                    dataFilePath.filePath));
             writeString(out, entry.getKey());
             writeString(out, entry.getValue());
+            if (out != null) {
+                out.close();
+            }
+            if (tmp != null) {
+                tmp.close();
+            }
 
         }
     }
@@ -101,30 +109,34 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
     public void loadFromTable() throws Exception {
         map = new HashMap<>();
         DataInputStream in = null;
+        FileInputStream tmp = null;
         try {
-
             for (int i = 0; i < 16; i++) {
                 for (int j = 0; j < 16; j++) {
                     String filePath = fullTablePath() + i + ".dir" + separator
                             + j + ".dat";
                     File file = new File(filePath);
                     if (file.exists() && file.isFile()) {
-                        in = new DataInputStream(new FileInputStream(filePath));
+                        in = new DataInputStream(tmp = new FileInputStream(
+                                filePath));
                         while (in.available() > 0) {
                             String key = readString(in);
                             String value = readString(in);
                             map.put(key, value);
 
                         }
-                        in.close();
-
                     }
                 }
             }
         } catch (FileNotFoundException e) {
             // That's normal: will be created in saveToFile().
         } finally {
-            in.close();
+            if (in != null) {
+                in.close();
+            }
+            if (tmp != null) {
+                tmp.close();
+            }
         }
     }
 
