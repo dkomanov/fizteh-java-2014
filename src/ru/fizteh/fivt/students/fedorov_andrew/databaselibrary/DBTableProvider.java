@@ -35,12 +35,14 @@ public class DBTableProvider implements TableProvider {
     }
 
     @Override
-    public TableImpl getTable(String name) throws IllegalArgumentException, DatabaseException {
+    public TableImpl getTable(String name) throws IllegalArgumentException {
         Utility.checkTableNameIsCorrect(name);
         if (tables.containsKey(name)) {
             TableImpl table = tables.get(name);
             if (table == null) {
-                throw new TableCorruptException(name);
+                throw new IllegalArgumentException(
+                        "Failed to get table",
+                        new TableCorruptException(name));
             }
             return table;
         } else {
@@ -49,7 +51,7 @@ public class DBTableProvider implements TableProvider {
     }
 
     @Override
-    public TableImpl createTable(String name) throws IllegalArgumentException, DatabaseException {
+    public TableImpl createTable(String name) throws IllegalArgumentException {
         Utility.checkTableNameIsCorrect(name);
         Path tablePath = databaseRoot.resolve(name);
 
@@ -59,7 +61,11 @@ public class DBTableProvider implements TableProvider {
             try {
                 Files.createDirectory(tablePath);
             } catch (IOException exc) {
-                throw new DatabaseException("Failed to create table directory", exc);
+                throw new IllegalArgumentException(
+                        "Bad name given",
+                        new DatabaseException(
+                                "Failed to create table directory",
+                                exc));
             }
         }
 
@@ -69,7 +75,7 @@ public class DBTableProvider implements TableProvider {
     }
 
     @Override
-    public void removeTable(String name) throws IllegalArgumentException, DatabaseException {
+    public void removeTable(String name) throws IllegalArgumentException {
         Utility.checkTableNameIsCorrect(name);
         Path tablePath = databaseRoot.resolve(name);
 
@@ -88,7 +94,10 @@ public class DBTableProvider implements TableProvider {
         } catch (IOException exc) {
             //mark as corrupt
             tables.put(name, null);
-            throw new DatabaseException("Cannot remove table " + name + " from file system", exc);
+            throw new IllegalArgumentException(
+                    "Bad name given",
+                    new DatabaseException(
+                            "Cannot remove table " + name + " from file system", exc));
         }
     }
 

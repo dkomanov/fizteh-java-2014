@@ -187,12 +187,16 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
     }
 
     @Override
-    public int commit() throws DatabaseException {
-        int diffsCount = 0;
-        for (TablePart part : tableParts.values()) {
-            diffsCount += part.commit();
+    public int commit() {
+        try {
+            int diffsCount = 0;
+            for (TablePart part : tableParts.values()) {
+                diffsCount += part.commit();
+            }
+            return diffsCount;
+        } catch (DatabaseException exc) {
+            return -1;
         }
-        return diffsCount;
     }
 
     @Override

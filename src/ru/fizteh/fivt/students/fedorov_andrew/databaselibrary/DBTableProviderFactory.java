@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 public class DBTableProviderFactory implements TableProviderFactory {
 
     @Override
-    public DBTableProvider create(String dir) throws DatabaseException, IllegalArgumentException {
+    public DBTableProvider create(String dir) throws IllegalArgumentException {
         if (dir == null) {
             throw new IllegalArgumentException("Directory must not be null");
         }
