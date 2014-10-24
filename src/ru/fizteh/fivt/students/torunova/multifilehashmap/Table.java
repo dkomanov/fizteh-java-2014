@@ -17,7 +17,8 @@ public class Table {
     String tableName;
     Map<File, FileMap> files = new HashMap<>();
     int numberOfEntries;
-    public Table(String newTableName)throws TableNotCreatedException, IncorrectFileException, IOException {
+
+    public Table(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
         File table = new File(newTableName).getAbsoluteFile();
         if (!table.exists()) {
             if (!table.mkdirs()) {
@@ -27,10 +28,10 @@ public class Table {
         File nextDir;
         File nextFile;
         for (int i = 0; i < 16; i++) {
-            nextDir = new File(table, String.format("%d.dir", i)).getAbsoluteFile();
+            nextDir = new File(table, String.valueOf(i) + ".dir").getAbsoluteFile();
             if (nextDir.isDirectory()) {
                 for (int j = 0; j < 16; j++) {
-                    nextFile = new File(nextDir, j + ".dat");
+                    nextFile = new File(nextDir, String.valueOf(j) + ".dat");
                     if (nextFile.isFile()) {
                         FileMap fm = new FileMap(nextFile.getAbsolutePath());
                         files.put(nextFile, fm);
@@ -41,7 +42,8 @@ public class Table {
         }
         tableName = table.getAbsolutePath();
     }
-    public boolean put(String key, String value)throws IOException, IncorrectFileException {
+
+    public boolean put(String key, String value) throws IOException, IncorrectFileException {
         boolean result;
         String fileName = getFileName(key);
         String dirName = getDirName(key);
@@ -61,6 +63,7 @@ public class Table {
         }
         return result;
     }
+
     public String get(String key) throws IncorrectFileException, IOException {
         String fileName = getFileName(key);
         String dirName = getDirName(key);
@@ -76,6 +79,7 @@ public class Table {
         }
         return fm.get(key);
     }
+
     public boolean remove(String key) {
         boolean result;
         String fileName = getFileName(key);
@@ -100,6 +104,7 @@ public class Table {
         }
         return false;
     }
+
     public Set<String> list() {
         Set<String> listOfAllKeys = new HashSet<>();
         for (FileMap fm : files.values()) {
@@ -116,6 +121,7 @@ public class Table {
     public String getTableName() {
         return tableName;
     }
+
     private String getDirName(String key) {
         int hashcode = key.hashCode();
         int ndirectory = hashcode % 16;
@@ -124,6 +130,7 @@ public class Table {
         String dirName = builder.toString();
         return dirName;
     }
+
     private String getFileName(String key) {
         int hashcode = key.hashCode();
         int nfile = hashcode / 16 % 16;

@@ -13,8 +13,10 @@ public class DropTable extends Action {
     public boolean run(String[] args, Database db) throws IOException, IncorrectFileException {
         if (args.length > 1) {
             tooManyArguments();
+            return false;
         } else if (args.length < 1) {
             tooFewArguments();
+            return false;
         }
         if (db.dropTable(args[0])) {
             System.out.println("dropped");

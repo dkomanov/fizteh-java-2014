@@ -14,23 +14,32 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
 public class Shell {
-    HashMap<String, Action> commands;
-    Scanner scanner;
-    Database db;
-    boolean interactive;
+    private Map<String, Action> commands;
+    private Scanner scanner;
+    private Database db;
+    private boolean interactive;
 
     public Shell(Set<Action> cmds, InputStream is, String dbfile, boolean isInteractive) {
         commands = new HashMap<>();
-        for (Action a : cmds) {
-            commands.put(a.getName(), a);
+        for (Action action : cmds) {
+            commands.put(action.getName(), action);
         }
         scanner = new Scanner(is);
-		try {
-			db = new Database(dbfile);
-		} catch (IncorrectDbNameException e) {
-			System.out.println("Caught IncorrectDbNameException: " + e.getMessage());
-			System.exit(1);
-		}
+        try {
+            db = new Database(dbfile);
+        } catch (IncorrectDbNameException e) {
+            System.err.println("Caught IncorrectDbNameException: " + e.getMessage());
+            System.exit(1);
+        } catch (IOException e1) {
+            System.err.println("Caught IOException: " + e1.getMessage());
+            System.exit(1);
+        } catch (TableNotCreatedException e2) {
+            System.err.println("Caught TableNotCreatedException");
+            System.exit(1);
+        } catch (IncorrectFileException e3) {
+            System.err.println("Caught IncorrectFileException: " + e3.getMessage());
+            System.exit(1);
+        }
         interactive = isInteractive;
     }
 
@@ -50,12 +59,12 @@ public class Shell {
                     System.err.println("Caught IOException: " + e1.getMessage());
                     System.exit(1);
                 }
-                System.exit(0);
+                return;
             }
             functions = nextcommand.split(";");
-            for (String f : functions) {
-                f = f.trim();
-                String[] args = parseArguments(f);
+            for (String function : functions) {
+                function = function.trim();
+                String[] args = parseArguments(function);
                 String name = args[0];
                 args = Arrays.copyOfRange(args, 1, args.length);
                 if (commands.containsKey(name)) {

@@ -22,7 +22,7 @@ public class UseTable extends Action{
             System.out.println("using " + args[0]);
             return true;
         } else {
-            System.out.println(args[0] + "does not exist");
+            System.out.println(args[0] + " does not exist");
             return false;
         }
     }

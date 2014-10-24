@@ -11,10 +11,11 @@ import java.io.IOException;
  */
 public abstract class Action {
     void tooManyArguments() {
-        System.err.println(getName() + ": too many arguments.");
+        System.err.println(getDisplayName() + ": too many arguments.");
     }
+
     void tooFewArguments() {
-        System.err.println(getName() + ": too few arguments.");
+        System.err.println(getDisplayName() + ": too few arguments.");
     }
 
     public abstract boolean run(String[] args, Database db)
@@ -23,5 +24,9 @@ public abstract class Action {
                                   TableNotCreatedException;
 
     public abstract String getName();
+
+    public String getDisplayName() {
+        return getName();
+    }
 }
 

@@ -63,9 +63,11 @@ public class FileMap {
     public Set<String> list() {
         return map.keySet();
     }
+
     public boolean isEmpty() {
         return map.isEmpty();
     }
+
     public int size() {
         return map.size();
     }

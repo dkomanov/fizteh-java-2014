@@ -38,4 +38,9 @@ public class ShowTables extends Action {
     public String getName() {
         return "show";
     }
+
+    @Override
+    public String getDisplayName() {
+        return "show tables";
+    }
 }
