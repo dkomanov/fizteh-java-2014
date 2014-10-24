@@ -65,8 +65,9 @@ public class Connector {
         }
     }
 
-    public void run(String name, String[] args) {
+    public void run(String name, String[] args, boolean packageMode) {
         Command command = commands.get(name);
+        command.packageMode = packageMode;
         if (command != null) {
             command.exec(this, args);
         } else if (!args[0].equals("")) {

@@ -20,6 +20,9 @@ public class Drop extends Command {
         MFHMap map = dbConnector.tables.get(args[0]);
         if (map == null) {
             System.out.println(args[0] + " not exists");
+            if (packageMode) {
+                System.exit(-1);
+            }
             return false;
         }
         if (dbConnector.activeTable == map) {

@@ -8,6 +8,7 @@ public abstract class Command {
 
     protected String name;
     protected int argLen;
+    protected boolean packageMode;
 
     public Command(String name, int argLen) {
         this.name = name;
@@ -22,6 +23,9 @@ public abstract class Command {
     protected boolean checkArguments(int argLen) {
         if (argLen != this.argLen) {
             System.err.println("Incorrect number of arguments in " + name);
+            if (packageMode) {
+                System.exit(-1);
+            }
             return false;
         }
         return true;
@@ -29,6 +33,9 @@ public abstract class Command {
 
     protected void noTable() {
         System.err.println("No table");
+        if (packageMode) {
+            System.exit(-1);
+        }
     }
 
     public abstract boolean exec(Connector dbConnector, String[] args);

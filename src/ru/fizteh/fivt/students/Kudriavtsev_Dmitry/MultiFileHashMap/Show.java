@@ -18,6 +18,9 @@ public class Show extends Command {
         }
         if (!args[0].equals("tables")) {
             System.err.println("Bad show tables command.");
+            if (packageMode) {
+                System.exit(-1);
+            }
             return false;
         }
         if (dbConnector.tables.isEmpty()) {
