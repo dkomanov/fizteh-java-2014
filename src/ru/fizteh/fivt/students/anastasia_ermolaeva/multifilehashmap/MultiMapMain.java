@@ -30,7 +30,7 @@ public class MultiMapMain {
                 System.exit(1);
             } else {
                 try {
-                    TableHolder tableHolder = new TableHolder(rootDirectoryPath)
+                    TableHolder tableHolder = new TableHolder(rootDirectoryPath);
                     TableState tableState = new TableState(tableHolder);
                     new Interpreter(tableState, new Command[]{
                             new Command("create", 2, (TableState tableS, String[] arguments) ->
