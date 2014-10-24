@@ -25,7 +25,7 @@ public class TableState {
     public String getCurrentTableName() {
         return currentTableName;
     }
-    public void setCurrentTableName(String currentTableName){
+    public void setCurrentTableName(String currentTableName) {
         this.currentTableName = currentTableName;
     }
 }
