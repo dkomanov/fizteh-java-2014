@@ -35,7 +35,7 @@ public class CommandInterpreter {
         if (currentTable != null) {
             System.out.println(String.join(", ", currentTable.list()));
         } else {
-            System.err.println("no table");
+            System.out.println("no table");
         }
     }
 
@@ -44,7 +44,7 @@ public class CommandInterpreter {
         if (manager.createTable(command[1]) != null) {
             System.out.println("created");
         } else {
-            System.err.println(command[1] + " exists");
+            System.out.println(command[1] + " exists");
         }
     }
 
@@ -53,7 +53,7 @@ public class CommandInterpreter {
         if (manager.useTable(command[1])) {
             System.out.println("using " + command[1]);
         } else {
-            System.err.println(command[1] + " not exists");
+            System.out.println(command[1] + " not exists");
         }
     }
 
@@ -69,7 +69,7 @@ public class CommandInterpreter {
                 System.out.println("new");
             }
         } else {
-            System.err.println("no table");
+            System.out.println("no table");
         }
     }
 
@@ -82,10 +82,10 @@ public class CommandInterpreter {
                 System.out.println("found");
                 System.out.println(value);
             } else {
-                System.err.println("not found");
+                System.out.println("not found");
             }
         } else {
-            System.err.println("no table");
+            System.out.println("no table");
         }
     }
 
@@ -97,10 +97,10 @@ public class CommandInterpreter {
             if (removedValue != null) {
                 System.out.println("removed");
             } else {
-                System.err.println("not found");
+                System.out.println("not found");
             }
         } else {
-            System.err.println("no table");
+            System.out.println("no table");
         }
     }
 
@@ -110,7 +110,7 @@ public class CommandInterpreter {
             manager.dropTable(command[1]);
             System.out.println("dropped");
         } catch (IllegalStateException e) {
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -120,7 +120,7 @@ public class CommandInterpreter {
             try {
                 manager.getCurrentTable().saveData();
             } catch (IOException e) {
-                System.err.println("Error writing table to file");
+                System.out.println("Error writing table to file");
                 throw new DatabaseExitException(-1);
             }
         }

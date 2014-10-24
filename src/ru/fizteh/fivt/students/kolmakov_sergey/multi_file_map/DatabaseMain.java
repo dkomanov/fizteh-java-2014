@@ -6,7 +6,7 @@ public class DatabaseMain {
     public static void main(String[] args) {
         String rootDirectory = System.getProperty("fizteh.db.dir");
         if (rootDirectory == null) {
-            System.err.println("You must specify db.file via -Ddb.file JVM parameter");
+            System.out.println("You must specify db.file via -Ddb.file JVM parameter");
             System.exit(-1);
         }
         try {
@@ -18,13 +18,13 @@ public class DatabaseMain {
                 Parser.batchMode(args);
             }
         } catch (InvalidPathException e) {
-            System.err.println("Can't connect to database: invalid path");
+            System.out.println("Can't connect to database: invalid path");
             System.exit(-1);
         } catch (IllegalArgumentException e) {
             if (!e.getMessage().isEmpty()) {
-                System.err.println(e.getMessage());
+                System.out.println(e.getMessage());
             } else {
-                System.err.println("Unexpected exception:");
+                System.out.println("Unexpected exception:");
                 e.printStackTrace();
                 System.exit(-1);
             }

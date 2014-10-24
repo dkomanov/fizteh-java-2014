@@ -69,15 +69,15 @@ public class Parser {
                         CommandInterpreter.exit(command);
                         break;
                     default:
-                        System.err.println("No such command declared");
+                        System.out.println("No such command declared");
                 }
             }
         } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
         } catch (DatabaseExitException e) {
             System.exit(e.status);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
             System.exit(-1);
         }
     }

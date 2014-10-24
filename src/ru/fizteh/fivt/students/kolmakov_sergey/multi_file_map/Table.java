@@ -119,7 +119,7 @@ public class Table {
                     deleteRecursively(currentFile);
                 }
             } catch (NullPointerException e) {
-                System.err.println("Error while recursive deleting directory.");
+                System.out.println("Error while recursive deleting directory.");
             }
             directory.delete();
         } else {
