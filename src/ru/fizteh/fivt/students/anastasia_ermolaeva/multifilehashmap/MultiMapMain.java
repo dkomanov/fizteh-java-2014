@@ -12,7 +12,7 @@ import java.util.Set;
 
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.*;
 
-public class MultiMapMain {
+public class MultiMapMain{
     private MultiMapMain() {
         //
     }
@@ -33,16 +33,15 @@ public class MultiMapMain {
                     TableHolder tableHolder = new TableHolder(rootDirectoryPath);
                     TableState tableState = new TableState(tableHolder);
                     new Interpreter(tableState, new Command[]{
-                            new Command("create", 2, (TableState tableS, String[] arguments) ->
-                            {
+                            new Command("create", 2, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String tableName = arguments[1];
                                 if (map.containsKey(tableName)) {
                                     System.out.println(tableName + " exists");
                                 } else {
                                     String pathTableDirectory = rootDirectoryPath.toAbsolutePath().toString()
-                                    + File.separator
-                                    + tableName;
+                                            + File.separator
+                                            + tableName;
                                     File tableDirectory = new File(pathTableDirectory);
                                     if (!tableDirectory.mkdir()) {
                                         System.err.println("Can't create table directory");
@@ -50,9 +49,9 @@ public class MultiMapMain {
                                     System.out.println("created");
                                     try {
                                         tableHolder.getTableMap().
-                                        put(tableName, 
-                                        new Table(rootDirectoryPath, 
-                                        tableName));
+                                                put(tableName,
+                                                        new Table(rootDirectoryPath,
+                                                                tableName));
                                         map.put(tableName, new HashMap<>());
                                     } catch (ExitException e) {
                                         System.err.println("Error while creating");
@@ -213,7 +212,7 @@ public class MultiMapMain {
                             })
                     }).run(args);
                 } catch (ExitException e) {
-                   System.exit(e.getStatus());
+                    System.exit(e.getStatus());
                 }
             }
         }
