@@ -77,7 +77,8 @@ public class Table {
                         int hashcode = key.hashCode();
                         if (!(nDirectory == hashcode % 16)
                                 || !(nFile == hashcode / 16 % 16)) {
-                            throw new Exception("Error with read table");
+                            System.err.println("Error with read table " + tablename);
+                            System.exit(-1);
                         }
                     } catch (IOException e) {
                         end = true;
@@ -204,4 +205,5 @@ public class Table {
         return numberOfElements;
     }
 }
+
 
