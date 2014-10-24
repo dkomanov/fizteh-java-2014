@@ -131,14 +131,13 @@ public class MultiFileHashMap {
         }
         File file = new File(path + File.separator + args[1]);
         if (file.exists()) {
-            System.out.println (args[1] + " exists");
+            System.out.println(args[1] + " exists");
         } else {
             file.createNewFile();
             if (file.isDirectory()) {
-                System.out.println ("created");
+                System.out.println("created");
             } else {
-                throw new Exception(file.toString() +
-                        ": is not a directory");
+                throw new Exception(file.toString() + ": is not a directory");
             }
         }
     }
@@ -149,14 +148,13 @@ public class MultiFileHashMap {
         }
         File file = new File(path + File.separator + args[1]);
         if (!file.exists()) {
-            System.out.println (args[1] + " not exists");
+            System.out.println(args[1] + " not exists");
         } else {
             if (file.isDirectory()) {
                 delete(file);
-                System.out.println ("dropped");
+                System.out.println("dropped");
             } else {
-                throw new Exception(file.toString() +
-                        ": is not a directory");
+                throw new Exception(file.toString() + ": is not a directory");
             }
         }
     }
@@ -189,12 +187,11 @@ public class MultiFileHashMap {
             getMap(file);
             System.out.println("using " + args[1]);
         } else {
-            throw new Exception(file.toString() +
-                    ": is not a directory");
+            throw new Exception(file.toString() + ": is not a directory");
         }
     }
 
-    public static void getMap (File file)
+    public static void getMap(File file)
             throws Exception {
         File[] fList = file.listFiles();
         for (File dir: fList) {
@@ -203,12 +200,11 @@ public class MultiFileHashMap {
             } else {
                 throw new Exception (dir.getName() + " is not directory");
             }
-
         }
 
     }
 
-    public static void getMaps ()
+    public static void getMaps()
             throws Exception {
         File file = new File(path);
         File[] fList = file.listFiles();
@@ -218,23 +214,22 @@ public class MultiFileHashMap {
             } else {
                 throw new Exception (dir.getName() + " is not directory");
             }
-
         }
 
     }
     //на ввод путь к таблице
     private static void getTable(String tableDir) throws Exception {
-        File tabDir = new File (tableDir);
+        File tabDir = new File(tableDir);
         String tableName = tabDir.getName();
-
-        if(!tableList.containsKey(tableName)) {
+        if (!tableList.containsKey(tableName)) {
             tableList.put(tableName, 0);
         }
         File[] dirs = tabDir.listFiles();
         int i = 0;
         while (i < dirs.length) {
-            if (!dirs[i].isDirectory())
-                throw new Exception (dirs[i].getName() + " is not directory");
+            if (!dirs[i].isDirectory()) {
+                throw new Exception(dirs[i].getName() + " is not directory");
+            }
             File[] dats = dirs[i].listFiles();
             int j = 0;
             while (j < dats.length) {
@@ -245,7 +240,7 @@ public class MultiFileHashMap {
                 int nFile = Integer.parseInt(dats[j].getName().substring(0, dats[j].getName().length() - 4));
                 String key;
                 String value;
-                RandomAccessFile file = new RandomAccessFile (dats[j].getAbsolutePath(), "r");
+                RandomAccessFile file = new RandomAccessFile(dats[j].getAbsolutePath(), "r");
                 boolean end = false;
                 while (!end) {
                     try {
@@ -258,7 +253,7 @@ public class MultiFileHashMap {
                         file.readFully(bytes);
                         value = new String(bytes, "UTF-8");
                         int hashcode = key.hashCode();
-                        if (!(nDirectory == hashcode % 16) || !(nFile == hashcode / 16 % 16)){
+                        if (!(nDirectory == hashcode % 16) || !(nFile == hashcode / 16 % 16)) {
                             throw new Exception("Error with read table");
                         }
                         tableList.put(tableName, tableList.get(tableName) + 1);
@@ -300,7 +295,7 @@ public class MultiFileHashMap {
         File table = new File(path + File.separator + curTable);
         File[] dirs = table.listFiles();
         for (File dir: dirs) {
-            delete (dir);
+            delete(dir);
             }
         for (Map.Entry<String, String> i : map.entrySet()) {
             key = i.getKey();
@@ -308,7 +303,8 @@ public class MultiFileHashMap {
             int hashcode = key.hashCode();
             int ndirectory = hashcode % 16;
             int nfile = hashcode / 16 % 16;
-            File file = new File(path + File.separator + curTable + File.separator + ndirectory + ".dir" + File.separator + nfile + ".dat");
+            File file = new File(path + File.separator + curTable
+                    + File.separator + ndirectory + ".dir" + File.separator + nfile + ".dat");
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -328,7 +324,7 @@ public class MultiFileHashMap {
     public  static void show(String[] args) throws Exception {
         System.out.println("table_name row_count");
         for (Map.Entry table : tableList.entrySet()) {
-            System.out.println (table.getKey() + " " + table.getValue());
+            System.out.println(table.getKey() + " " + table.getValue());
         }
 
     }
@@ -396,3 +392,4 @@ public class MultiFileHashMap {
         System.exit(0);
     }
 }
+
