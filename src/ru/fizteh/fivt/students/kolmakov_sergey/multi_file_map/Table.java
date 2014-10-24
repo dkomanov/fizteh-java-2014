@@ -38,8 +38,7 @@ public class Table {
                     DataFile currentDataFile = new DataFile(this.tablePath, new Coordinates(folderIndex, fileIndex));
                     tableMap.put(new Coordinates(folderIndex, fileIndex), currentDataFile);
                 } catch (IllegalArgumentException e) {
-                    System.out.println(e.getMessage());
-                    throw new DatabaseExitException(-1);
+                    throw new DatabaseExitException(-1, e);
                 } catch (IOException e) {
                     throw new IllegalArgumentException(this.tablePath.resolve(
                             Paths.get(Integer.toString(folderIndex) + ".dir",

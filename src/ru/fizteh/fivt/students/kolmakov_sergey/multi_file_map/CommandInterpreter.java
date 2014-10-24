@@ -47,7 +47,7 @@ public final class CommandInterpreter {
             } else {
                 System.out.println(command[1] + " exists");
             }
-        } catch (DatabaseExitException e){
+        } catch (DatabaseExitException e) {
             if (e.getMessage().isEmpty()) {
                 System.out.println("Can't create table");
             } else {
@@ -129,9 +129,9 @@ public final class CommandInterpreter {
                 manager.getCurrentTable().saveData();
             } catch (IOException e) {
                 System.out.println("Error writing table to file");
-                throw new DatabaseExitException(-1);
+                throw new DatabaseExitException(-1, e);
             }
         }
-        throw new DatabaseExitException(0);
+        throw new DatabaseExitException(0, null);
     }
 }

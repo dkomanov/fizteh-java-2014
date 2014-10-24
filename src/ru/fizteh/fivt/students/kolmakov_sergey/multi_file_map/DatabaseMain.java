@@ -29,6 +29,9 @@ public class DatabaseMain {
                 System.exit(-1);
             }
         } catch (DatabaseExitException e) {
+            if (!e.getMessage().isEmpty()){
+                System.out.println(e.getMessage());
+            }
             System.exit(e.status);
         }
     }
@@ -36,7 +39,8 @@ public class DatabaseMain {
 
 class DatabaseExitException extends Exception {
     public final int status;
-    public DatabaseExitException(int s) {
+    public DatabaseExitException(int s, Exception e) {
+        super(e);
         status = s;
     }
 }

@@ -16,7 +16,7 @@ public class Parser {
         for (String currentCommand : commandLine) {
             parse(currentCommand.trim().split("\\s+"));
         }
-        throw new DatabaseExitException(0);
+        throw new DatabaseExitException(0, null);
     }
 
     protected static void interactiveMode() throws DatabaseExitException {
