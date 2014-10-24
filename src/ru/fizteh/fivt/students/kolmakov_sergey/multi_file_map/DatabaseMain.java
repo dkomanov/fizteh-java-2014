@@ -29,7 +29,7 @@ public class DatabaseMain {
                 System.exit(-1);
             }
         } catch (DatabaseExitException e) {
-            if (!e.getMessage().isEmpty()){
+            if (!e.getMessage().isEmpty()) {
                 System.out.println(e.getMessage());
             }
             System.exit(e.status);
