@@ -103,8 +103,7 @@ public class TableManager {
             boolean flag = tables.containsKey(name);
             if (flag) {
                 currentTable = name;
-                Table t = new Table(name);
-                usingTable = t;
+                usingTable = tables.get(name);
                 System.out.println("Using " + name);
             } else {
                 System.out.println(name + " not exists");

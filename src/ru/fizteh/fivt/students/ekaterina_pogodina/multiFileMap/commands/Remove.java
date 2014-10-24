@@ -29,7 +29,5 @@ public class Remove extends Command {
             Path pathFile = pathDir.resolve(s);
             Files.deleteIfExists(pathFile);
         }
-
-
     }
 }
