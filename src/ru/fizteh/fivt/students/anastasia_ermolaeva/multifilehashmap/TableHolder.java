@@ -20,7 +20,7 @@ public class TableHolder implements Map<String, Table>, AutoCloseable {
         this.tableMap = new HashMap<>();
         File rootDirectory = rootPath.toFile();
         String[] childDirectories = rootDirectory.list();
-        for(String s: childDirectories) {
+        for (String s: childDirectories) {
             File currentDir = new File(rootPath.toAbsolutePath().toString()
                     + File.separator + s);
             if (!currentDir.isDirectory()) {
@@ -36,7 +36,7 @@ public class TableHolder implements Map<String, Table>, AutoCloseable {
     }
     @Override
     public void close() throws Exception {
-        for (Map.Entry<String, Table> entry : tableMap.entrySet()){
+        for (Map.Entry<String, Table> entry : tableMap.entrySet()) {
             entry.getValue().close();
         }
         tableMap.clear();
