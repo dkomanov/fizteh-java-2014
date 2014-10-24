@@ -63,13 +63,12 @@ public class Interpreter {
     protected void commandHandler(String cmd,
                                   boolean mode) throws ExitException {
         String[] arguments = cmd.trim().split("\\s+");
-        if (arguments[0].equals("show")){
+        if (arguments[0].equals("show")) {
             String[] newArguments = new String[]{"show tables"};
             String commandName = newArguments[0];
             Command command = commands.get(commandName);
             command.execute(tableState, newArguments);
-        }
-        else {
+        } else {
             try {
                 if ((arguments.length > 0) && !arguments[0].isEmpty()) {
                     String commandName = arguments[0];
@@ -80,7 +79,7 @@ public class Interpreter {
                         command.execute(tableState, arguments);
                     }
                 }
-            } catch(IllegalArgumentException e){
+            } catch(IllegalArgumentException e) {
                 System.err.println(e.getMessage());
             }
         }
