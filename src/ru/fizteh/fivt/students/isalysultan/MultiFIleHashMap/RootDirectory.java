@@ -52,7 +52,7 @@ public class RootDirectory {
         }
     }
 
-    public void TableInizial(Table newTable, String tableName)
+    public void tableInizial(Table newTable, String tableName)
             throws IOException {
         tableList.put(tableName, newTable);
         newTable.setName(tableName);
@@ -97,14 +97,14 @@ public class RootDirectory {
             if (currentTablesName.equals(currentKey)) {
                 System.out.print(currentKey + " ");
                 System.out.println(currentTables.get());
-                tableList.get(currentKey).NullNumberRecords();
+                tableList.get(currentKey).nullNumberRecords();
                 continue;
             }
             Table currTables = tableList.get(currentKey);
             Command.use(this, currentKey, false);
             System.out.print(currentKey + " ");
             System.out.println(currTables.get());
-            tableList.get(currentKey).NullNumberRecords();
+            tableList.get(currentKey).nullNumberRecords();
         }
         if (currentTables != null) {
             Command.use(this, currentTables.getName(), false);
