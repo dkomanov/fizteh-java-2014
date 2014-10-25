@@ -10,8 +10,10 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class FileMap implements Table {
-    Map<String, String> data = new HashMap<>();
-    Map<String, String> oldData = new HashMap<>();
+    Map<String, String> stableData = new HashMap<>();
+    Map<String, String> added = new HashMap<>();
+    Map<String, String> changed = new HashMap<>();
+    Set<String> removed = new HashSet<>();
     Path dbPath;
     String name;
     int pending = 0;
@@ -38,7 +40,7 @@ public class FileMap implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        return data.get(key);
+        return stableData.get(key);
     }
 
     @Override
@@ -46,16 +48,34 @@ public class FileMap implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
-        String old = oldData.get(key);
-        String current = data.get(key);
-        if (current == null && old == null
-         || current != null && current.equals(old) && !old.equals(value)) {
-            ++pending;
-        } else if (current == null && old.equals(value)
-                || current != null && !current.equals(old) && old != null && old.equals(value)) {
-            --pending;
+
+        if (removed.remove(key)) {
+            if (stableData.get(key).equals(value)) {
+                --pending;
+            } else {
+                changed.put(key, value);
+            }
+            return null;
+        } else {
+            if (stableData.containsKey(key)) {
+                if (changed.containsKey(key)) {
+                    if (stableData.get(key).equals(value)) {
+                        --pending;
+                        return changed.remove(key);
+                    } else {
+                        return changed.put(key, value);
+                    }
+                } else {
+                    ++pending;
+                    changed.put(key, value);
+                    return stableData.get(key);
+                }
+            } else {
+                ++pending;
+                added.put(key, value);
+                return null;
+            }
         }
-        return data.put(key, value);
     }
 
     @Override
@@ -63,19 +83,31 @@ public class FileMap implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        String old = oldData.get(key);
-        String current = data.get(key);
-        if (old != null && old.equals(current)) {
-            ++pending;
-        } else if (old == null && current != null) {
-            --pending;
+
+        if (removed.add(key)) {
+            if (stableData.containsKey(key)) {
+                if (changed.containsKey(key)) {
+                    return changed.remove(key);
+                } else {
+                    ++pending;
+                    return stableData.get(key);
+                }
+            } else {
+                if (added.containsKey(key)) {
+                    return added.remove(key);
+                } else {
+                    ++pending;
+                    return stableData.get(key);
+                }
+            }
+        } else {
+            return null;
         }
-        return data.remove(key);
     }
 
     @Override
     public int size() {
-        return data.size();
+        return stableData.size() + added.size() - removed.size();
     }
 
     public int pending() {
@@ -84,20 +116,29 @@ public class FileMap implements Table {
 
     @Override
     public int commit() {
+        stableData.keySet().removeAll(removed);
+        stableData.putAll(changed);
+        stableData.putAll(added);
+
+        removed.clear();
+        changed.clear();
+        added.clear();
+        int p = pending;
+        pending = 0;
+
         try {
             unload();
-            oldData = new HashMap<>(data);
         } catch (ConnectionInterruptException e) {
             return -1;
         }
-        int p = pending;
-        pending = 0;
         return p;
     }
 
     @Override
     public int rollback() {
-        data = new HashMap<>(oldData);
+        removed.clear();
+        changed.clear();
+        added.clear();
         int p = pending;
         pending = 0;
         return p;
@@ -105,7 +146,15 @@ public class FileMap implements Table {
 
     @Override
     public List<String> list() {
-        return new ArrayList<>(data.keySet());
+        return new ArrayList<>(stableData.keySet());
+    }
+
+    public void clear() {
+        stableData.clear();
+        added.clear();
+        changed.clear();
+        removed.clear();
+        pending = 0;
     }
 
     void readKeyValue(DataInputStream is) throws IOException, ConnectionInterruptException {
@@ -122,10 +171,11 @@ public class FileMap implements Table {
             throw new ConnectionInterruptException("database: db file is invalid");
         }
 
-        data.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+        stableData.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
     }
 
     public void load() throws ConnectionInterruptException {
+        clear();
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
                 try (DataInputStream stream = new DataInputStream(
@@ -138,7 +188,6 @@ public class FileMap implements Table {
                 }
             }
         }
-        oldData = new HashMap<>(data);
     }
 
     void writeKeyValue(DataOutputStream os, String keyString, String valueString) throws IOException {
@@ -168,7 +217,7 @@ public class FileMap implements Table {
             if (!Files.exists(dbPath)) {
                 Files.createDirectory(dbPath);
             }
-            for (HashMap.Entry<String, String> entry : data.entrySet()) {
+            for (HashMap.Entry<String, String> entry : stableData.entrySet()) {
                 int hash = entry.getKey().hashCode();
                 int d = (hash % 16 < 0) ? hash % 16 + 16 : hash % 16;
                 hash /= 16;
