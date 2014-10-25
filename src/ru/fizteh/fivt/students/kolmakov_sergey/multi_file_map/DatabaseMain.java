@@ -47,15 +47,13 @@ class WrongNumberOfArgumentsException extends Exception {
 }
 
 class DatabaseCorruptedException extends Exception {
-    DatabaseCorruptedException (String message) {
+    DatabaseCorruptedException(String message) {
         super(message);
     }
 }
 
 class WrongNameException extends Exception {
-    WrongNameException (String message) {
+    WrongNameException(String message) {
         super(message);
     }
 }
-
-

@@ -75,7 +75,7 @@ public final class Parser {
         } catch (WrongNumberOfArgumentsException e) {
             System.out.println(e.getMessage());
         } catch (DatabaseExitException e) {
-            if (e.getMessage() != null ) {
+            if (e.getMessage() != null) {
                 System.out.println(e.getMessage());
             }
             System.exit(e.status);
