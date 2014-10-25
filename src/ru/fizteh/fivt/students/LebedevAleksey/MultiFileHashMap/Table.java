@@ -31,13 +31,13 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table 
     protected ru.fizteh.fivt.students.LebedevAleksey.FileMap.TablePart selectPartForKey(String key)
             throws LoadOrSaveError {
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % 16;
-        int nfile = hashcode / 16 % 16;
+        int ndirectory = hashcode % SUBDIRECTORIES_COUNT;
+        int nfile = hashcode / SUBDIRECTORIES_COUNT % FILES_COUNT;
         if (ndirectory < 0) {
-            ndirectory += 16;
+            ndirectory += SUBDIRECTORIES_COUNT;
         }
         if (nfile < 0) {
-            nfile += 16;
+            nfile += FILES_COUNT;
         }
         return structuredParts[ndirectory][nfile];
     }

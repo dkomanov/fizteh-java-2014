@@ -10,13 +10,17 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class Database {
+    private static final String CANT_CREATE_TABLE = "Can't create table";
+    private static final String CANT_CREATE_TABLE_MESSAGE = CANT_CREATE_TABLE + ": ";
+    private static final String INCORRECT_NAME_OF_TABLES = "This name is not correct, folder can't be created";
     private File rootDirectory;
-    private Table currentTable = null;
-    private ArrayList<Table> tables = new ArrayList<>();
+    private Table currentTable;
+    private List<Table> tables = new ArrayList<Table>();
     private Map<String, Table> tableNames = new TreeMap<>();
 
     public Database() throws DatabaseFileStructureException, LoadOrSaveError {
@@ -106,6 +110,11 @@ public class Database {
         }
     }
 
+    public boolean containsTable(String name) {
+        return tables.contains(name);
+    }
+
+
     public void useTable(String name) throws TableNotFoundException, LoadOrSaveError {
         if (currentTable != null) {
             currentTable.save();
@@ -115,28 +124,30 @@ public class Database {
 
     Table createTable(String name) throws DatabaseException {
         try {
-            try {
-                getTable(name);
+            if (containsTable(name)) {
+                Table table = new Table(name, this);
+                Path rootDirectoryPath = getRootDirectoryPath();
+                Path path = rootDirectoryPath.resolve(name);
+                if (path.startsWith(rootDirectoryPath) && path.getParent().equals(rootDirectoryPath)) {
+                    Files.createDirectory(path);
+                    tables.add(table);
+                    tableNames.put(name, table);
+                    return table;
+                } else {
+                    throw new DatabaseFileStructureException(INCORRECT_NAME_OF_TABLES);
+                }
+            } else {
                 throw new TableAlreadyExistsException();
-            } catch (TableNotFoundException ex) {
-                //Nothing to do here.
             }
-            Table table = new Table(name, this);
-            Files.createDirectory(getRootDirectoryPath().resolve(name));
-            tables.add(table);
-            tableNames.put(name, table);
-            return table;
         } catch (UnsupportedOperationException ex) {
-            throw new LoadOrSaveError("Can't create table", ex);
+            throw new LoadOrSaveError(CANT_CREATE_TABLE_MESSAGE, ex);
         } catch (FileAlreadyExistsException ex) {
-            throw new DatabaseFileStructureException("Can't create table, directory already exists", ex);
+            throw new DatabaseFileStructureException(CANT_CREATE_TABLE + ", directory already exists", ex);
         } catch (InvalidPathException ex) {
             throw new DatabaseFileStructureException(
-                    "Can't create table, directory name makes it impossible to create a directory", ex);
-        } catch (IOException ex) {
-            throw new LoadOrSaveError("Can't create table, I/O error", ex);
-        } catch (SecurityException ex) {
-            throw new LoadOrSaveError("Can't create table: access denied" + ex);
+                    CANT_CREATE_TABLE + ", directory name makes it impossible to create a directory", ex);
+        } catch (IOException | SecurityException ex) {
+            throw new LoadOrSaveError(CANT_CREATE_TABLE_MESSAGE, ex);
         }
     }
 
