@@ -81,8 +81,8 @@ public class DataBase implements Map<String, String>, AutoCloseable {
                                 input.readFully(word);
                                 value = new String(word, "UTF-8");
                                 
-                                if ((Math.abs(key.hashCode()) % FOLDERS != i) ||
-                                    (Math.abs(key.hashCode()) / FOLDERS % FILES != j)) {
+                                if ((Math.abs(key.hashCode()) % FOLDERS != i)
+                                 || (Math.abs(key.hashCode()) / FOLDERS % FILES != j)) {
                                     throw new Exception("wrong input");
                                 }
                                 database.put(key, value);
