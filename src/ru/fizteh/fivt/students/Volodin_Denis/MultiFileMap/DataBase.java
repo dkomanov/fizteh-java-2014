@@ -1,10 +1,11 @@
 package ru.fizteh.fivt.students.Volodin_Denis.MultiFileMap;
 
+import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,13 +15,16 @@ import java.util.Map;
 import java.util.Set;
 
 class HelpMap {
-    HashMap<String, String> map;
-    HelpMap() {
+    public HashMap<String, String> map;
+    public HelpMap() {
         map = new HashMap<String, String>();
     }
 }
 
 public class DataBase implements Map<String, String>, AutoCloseable {
+
+    private static final int FOLDERS = 16;
+    private static final int FILES = 16;
 
     private String databasePath;
     private Map<String, String> database;
@@ -61,26 +65,28 @@ public class DataBase implements Map<String, String>, AutoCloseable {
     public void readFromDisk() throws Exception {
         String key;
         String value;
-        for (int i = 0; i < 16; ++i) {
-            for (int j = 0; j < 16; ++j) {
-                Path helpPath =  Paths.get(databasePath, i + ".dir", j + ".dat").normalize();
+        for (int i = 0; i < FOLDERS; ++i) {
+            for (int j = 0; j < FILES; ++j) {
+                Path helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j) + ".dat").normalize();
                 if (helpPath.toFile().exists()) {
-                    try (FileInputStream input = new FileInputStream(helpPath.toString())) {
-                        FileChannel channel = input.getChannel();
-                        ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()); 
-                        while (buffer.hasRemaining()) {
-                            byte[] word = new byte[buffer.getInt()];
-                            buffer.get(word, 0, word.length);
-                            key = new String(word, "UTF-8");
-                            
-                            word = new byte[buffer.getInt()];
-                            buffer.get(word, 0, word.length);
-                            value = new String(word, "UTF-8");
-                            
-                            if ((key.hashCode() % 16 != i) || (key.hashCode() % 16 / 16 != j)) {
-                                throw new Exception("wrong input");
+                    try (DataInputStream input = new DataInputStream(new FileInputStream(helpPath.toString()))) {
+                        while (true) {
+                            try {
+                                byte[] word = new byte[input.readInt()];
+                                input.readFully(word);
+                                key = new String(word, "UTF-8");
+                                
+                                word = new byte[input.readInt()];
+                                input.readFully(word);
+                                value = new String(word, "UTF-8");
+                                
+                                if ((Math.abs(key.hashCode()) % FOLDERS != i) || (Math.abs(key.hashCode()) / FOLDERS % FILES != j)) {
+                                    throw new Exception("wrong input");
+                                }
+                                database.put(key, value);
+                            } catch (EOFException e) {
+                                break;
                             }
-                            database.put(key, value);
                         }
                     } catch (Exception e) {
                         filemapErrorRead("read");
@@ -91,17 +97,44 @@ public class DataBase implements Map<String, String>, AutoCloseable {
     }
 
     public void writeOnDisk() throws Exception {
-        HelpMap[][] helpMap = new HelpMap[16][16];
+        HelpMap[][] helpMap = new HelpMap[FOLDERS][FILES];
+        for (int i = 0; i < FOLDERS; ++i) {
+            for (int j = 0; j < FILES; ++j) {
+                helpMap[i][j] = new HelpMap();
+            }
+        }
         Set<String> keys = database.keySet();
         for (String key : keys) {
-            helpMap[key.hashCode() % 16][(key.hashCode() % 16) / 16].map.put(key, database.get(key));
+            helpMap[Math.abs(key.hashCode()) % FOLDERS][Math.abs(key.hashCode()) / FOLDERS % FILES].map.put(key, database.get(key));
         }
-        for (int i = 0; i < 16; ++i) {
-            for (int j = 0; j < 16; ++j) {
-                Set<String> keyList = helpMap[i][j].map.keySet();
-                Path helpPath =  Paths.get(databasePath, i + ".dir", j + ".dat").normalize();
+        for (int i = 0; i < FOLDERS; ++i) {
+            for (int j = 0; j < FILES; ++j) {
+                Path helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j) + ".dat").normalize();
                 if (helpPath.toFile().exists()) {
-                    try (FileOutputStream output = new FileOutputStream(databasePath)) {
+                    if (!helpPath.toFile().delete()) {
+                        filemapSmthWrong("write", "file is not deleted");
+                    }
+                }
+            }
+            Path helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir").normalize();
+            if (helpPath.toFile().exists()) {
+                if (!helpPath.toFile().delete()) {
+                    filemapSmthWrong("write", "folder is not deleted");
+                };
+            }
+        }
+        for (int i = 0; i < FOLDERS; ++i) {
+            for (int j = 0; j < FILES; ++j) {
+                Set<String> keyList = helpMap[i][j].map.keySet();
+                if (!keyList.isEmpty()) {
+                    Path helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir").normalize();
+                    if (!helpPath.toFile().exists()) {
+                        Files.createDirectory(helpPath);
+                    }
+                    helpPath =  Paths.get(helpPath.toString(), j + ".dat").normalize();
+                    Files.createFile(helpPath);
+                    
+                    try (FileOutputStream output = new FileOutputStream(helpPath.toString())) {
                         for (String key : keyList) {
                             ByteBuffer buffer1 = ByteBuffer.allocate(4);
                             byte[] keyByte = buffer1.putInt(key.getBytes("UTF-8").length).array();
@@ -124,16 +157,16 @@ public class DataBase implements Map<String, String>, AutoCloseable {
     public void deleteEmptyFiles() throws Exception {
         File helpPath;
         try {
-            for (int i = 0; i < 16; ++i) {
-                for (int j = 0; j < 16; ++j) {       
-                    helpPath =  Paths.get(databasePath, i + ".dir", j + ".dat").normalize().toFile();
+            for (int i = 0; i < FOLDERS; ++i) {
+                for (int j = 0; j < FILES; ++j) {       
+                    helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j) + ".dat").normalize().toFile();
                     if (helpPath.exists()) {
                         if (helpPath.length() == 0) {
                             helpPath.delete();
                         }
                     }
                 }
-                helpPath =  Paths.get(databasePath, i + ".dir").normalize().toFile();
+                helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir").normalize().toFile();
                 if (helpPath.exists()) {
                     if (helpPath.list().length == 0) {
                         helpPath.delete();
