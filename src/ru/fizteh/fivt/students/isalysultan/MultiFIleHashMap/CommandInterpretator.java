@@ -11,7 +11,7 @@ public class CommandInterpretator {
             Command.create(direct, command[1]);
             break;
         case "use":
-            Command.use(direct, command[1]);
+            Command.use(direct, command[1], true);
             break;
         case "drop":
             Command.drop(direct, command[1]);
@@ -19,8 +19,10 @@ public class CommandInterpretator {
         case "show":
             if (command[1].equals("tables")) {
                 Command.show(direct);
+                break;
             } else {
                 System.out.println("Command is not recognized");
+                break;
             }
         case "put":
             direct.executePut(command[1], command[2]);
@@ -30,8 +32,10 @@ public class CommandInterpretator {
             break;
         case "remove":
             direct.executeRemove(command[1]);
+            break;
         case "list":
             direct.executeList();
+            break;
         case "exit":
             direct.executeExit();
             return;
