@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.titov.multifilehashmap;
 import ru.fizteh.fivt.students.titov.multifilehashmap.ArrayOfHashMaps;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Arrays;
