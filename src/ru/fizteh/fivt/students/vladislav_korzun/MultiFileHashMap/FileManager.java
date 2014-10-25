@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class FileManager {
     public Map<String, String> filemap;
     
     public FileManager() {
-        // TODO Auto-generated constructor stub
+        filemap = new TreeMap<String, String>();
     }
 
     void readTable(Path tabledir) {
@@ -90,47 +89,67 @@ public class FileManager {
     }
     
     void writeTable(Path tabledir) {
-        ArrayList<ArrayList<Map<String, String>>> maps = new ArrayList<ArrayList<Map<String, String>>>();
-        maps.ensureCapacity(16);
-        for (int i = 0; i < maps.size(); i++) {
-            maps.get(i).ensureCapacity(16);
-        }
-        ArrayList<Map<String, String>> maplist = new ArrayList<Map<String, String>>();
-        Map<String, String> mapbuffer = new TreeMap<String, String>();
-        Set<String> keys = filemap.keySet(); 
+        
+        Map<String, String> buffer = new TreeMap<String, String>();
+        removedat(tabledir);
+        Set<String> keys = filemap.keySet();
         try {
-            for (String key : keys) {
-                byte bt = key.getBytes("UTF-8")[0];
-                int ndirectory = bt % 16;
-                int nfile = bt / 16 % 16;
-                maplist = maps.get(nfile);
-                mapbuffer = maplist.get(ndirectory);
-                mapbuffer.put(key, filemap.get(key));
-            }
-        } catch (UnsupportedEncodingException e) {
-            System.err.println("Unsuported symbols exists");
-        }
-        for (int i = 0; i < maps.size(); i++) {
-            for (int j = 0; j < maps.get(i).size(); j++) {
-                String path = new String((char) i + File.separator + (char) j + ".dat");
-                File dbfile = new File(tabledir.resolve(path).toString());
-                try {
-                    if (!dbfile.exists()) {
-                        dbfile.createNewFile();
+            for (int i = 0; i < 16; i++) {
+                for (int j = 0; j < 16; j++) {
+                    for (String key : keys) {
+                        byte bt = key.getBytes("UTF-8")[0];
+                        int ndirectory = bt % 16;
+                        int nfile = bt / 16 % 16;
+                        if (ndirectory == i && nfile == j) {
+                            buffer.put(key, filemap.get(key));
+                        }
                     }
-                    writeFile(dbfile, maps.get(i).get(j));
-                } catch (FileNotFoundException e) {
-                    System.err.println("File not found");
-                } catch (IOException e) {
-                    System.err.println("Can't close or create file");
+                    if (!buffer.isEmpty()) {
+                        Integer nd = i;
+                        Integer nf = j;
+                        String path = new String(nd.toString() + ".dir");
+                        
+                        File dbdir = new File(tabledir.resolve(path).toString());
+                        if (!dbdir.exists()) {
+                            if (!dbdir.mkdir()) {
+                                throw new IOException("Can't create directory");
+                            }
+                        }
+                        path = new String(nf.toString() + ".dat");
+                        File dbfile = new File(dbdir.toPath().resolve(path).toString());
+                        if (!dbfile.exists()) {
+                            if (!dbfile.createNewFile()) {
+                                throw new IOException("Can't create file");
+                            }
+                        }
+                        writeFile(dbfile, buffer);
+                        buffer.clear();
+                    }
                 }
             }
+        } catch (IOException e) { 
+            System.err.println(e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Writing failed");
+        }
+                
+    }
+    
+    void removedat(Path tabledir) {
+        File table = new File(tabledir.toString());
+        File[] dirs = table.listFiles();
+        for (File dir : dirs) {
+            File[] fls = dir.listFiles();
+            for (File fl : fls) {
+                fl.delete();
+            }
+            dir.delete();
         }
     }
     
     void writeFile(File file, Map<String, String> map) throws IOException {
-        RandomAccessFile db = new RandomAccessFile(file, "w");
-        try {
+        
+        try (RandomAccessFile db = new RandomAccessFile(file, "rw")) {
             db.setLength(0);
             LinkedList<Integer> offset = new LinkedList<Integer>();
             Set<String> keys = map.keySet();
@@ -155,8 +174,6 @@ public class FileManager {
             System.err.println("Named charset is not supported ");
         } catch (IOException e) {
             System.err.println("Pos is less than 0 or if an I/O error occurs");
-        } finally {
-            db.close();
-        }
+        } 
     }
 }

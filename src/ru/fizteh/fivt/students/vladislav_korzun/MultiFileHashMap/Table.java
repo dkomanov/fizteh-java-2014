@@ -20,15 +20,13 @@ public class Table {
             if (!tabledir.toFile().mkdir()) {
                 System.out.println("tablename exists");
             } else {
-                throw new IOException();
+                System.out.println("created");
             }
         } catch (UnsupportedOperationException e) {
             System.err.println("Path is not associated"
                     + "with the default provider");
         } catch (InvalidPathException e) {
             System.err.println("Invalid path");
-        } catch (IOException e) {
-            System.err.println("Can't delete data or table");
         }
     }
     
@@ -39,16 +37,11 @@ public class Table {
                 System.out.println("tablename not exists");
             } else {
                 if (tabledir.toFile().isDirectory()) {
-                    File[] dbfiles = tabledir.toFile().listFiles();
-                    for (int i = 0; i < dbfiles.length; i++) {
-                        if (!dbfiles[i].delete()) {
-                            throw new IOException();
-                        }
-                    }
+                    removedat(tabledir);
+                    tabledir.toFile().delete();
+                    System.out.println("dropped");
                 }
             }
-        } catch (IOException e) {
-            System.err.println("Can't delete data or table");
         } catch (InvalidPathException e) {
             System.err.println("Invalid path");
         } catch (UnsupportedOperationException e) {
@@ -57,7 +50,19 @@ public class Table {
         }
     }
     
-    Map<String, String> use(String path, Path olddir) {
+    void removedat(Path tabledir) {
+        File table = new File(tabledir.toString());
+        File[] dirs = table.listFiles();
+        for (File dir : dirs) {
+            File[] fls = dir.listFiles();
+            for (File fl : fls) {
+                fl.delete();
+            }
+            dir.delete();
+        }
+    }
+    
+    FileManager use(String path, Path olddir, Map<String, String> filemap) {
         try {
             Path tabledir = dir.resolve(path);
             
@@ -67,10 +72,12 @@ public class Table {
                 if (tabledir.toFile().isDirectory()) {
                     FileManager filemanager = new FileManager();
                     if (olddir != dir) {
+                        filemanager.filemap = filemap;
                         filemanager.writeTable(olddir);
                     }
                     filemanager.readTable(tabledir);
-                    return filemanager.filemap;
+                    System.out.println("using tablename");
+                    return filemanager;
                 } else {
                     throw new IOException();
                 }
@@ -86,19 +93,23 @@ public class Table {
         return null;
     }
     
-    void showTables() {
+    void showTables(Path olddir, Map<String, String> filemap) {
         try {            
             if (!dir.toFile().exists()) {
                 System.out.println("Directory not exists");
             } else {
                 if (dir.toFile().isDirectory()) {
                     File[] tabledirs = dir.toFile().listFiles();
+                    FileManager filemanager = new FileManager();
                     for (int i = 0; i < tabledirs.length; i++) {
                         if (tabledirs[i].isDirectory()) {
                             System.out.print(tabledirs[i].getName() + " ");
-                            FileManager filemanager = new FileManager();
-                            filemanager.readTable(tabledirs[i].toPath());
-                            System.out.println(filemanager.filemap.size());
+                            if (!tabledirs[i].getName().equals(olddir.toFile().getName())) {
+                                filemanager.readTable(tabledirs[i].toPath());
+                                System.out.println(filemanager.filemap.size()); 
+                            } else {
+                                System.out.println(filemap.size()); 
+                            }
                         }
                     }
                 }

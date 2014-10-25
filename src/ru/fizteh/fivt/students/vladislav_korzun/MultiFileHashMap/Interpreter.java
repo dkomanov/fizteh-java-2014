@@ -19,9 +19,12 @@ public class Interpreter {
         CommandExecutor cmd =  new CommandExecutor(dbdir);
         List<String[]> commands = new LinkedList<String[]>();
         Parser parser = new Parser();
-        String[] request = null;
+        String buffer = new String();
         String[] command = null;
-        commands = parser.mainparser(request);
+        for (int i = 0; i < args.length; i++) {
+            buffer += (args[i] + " ");
+        }
+        commands = parser.mainparser(buffer);
         for (int i = 0; i < commands.size(); i++) {
             command = commands.get(i);
             cmd.executeCommands(command);
@@ -30,18 +33,17 @@ public class Interpreter {
     
     
    
-    @SuppressWarnings("null")
     void interactiveMode(Path dbdir) {
         CommandExecutor cmd =  new CommandExecutor(dbdir);
         List<String[]> commands = new LinkedList<String[]>();
         Parser parser = new Parser();
-        String[] request = null;
         @SuppressWarnings("resource")
         Scanner in = new Scanner(System.in);
         String[] command = null;
+        String request = new String();
         do {
-            System.out.println("$ ");
-            request[0] = in.nextLine();
+            System.out.print("$ ");
+            request = in.nextLine(); 
             commands = parser.mainparser(request);
             for (int i = 0; i < commands.size(); i++) {
                 command = commands.get(i);
@@ -52,13 +54,9 @@ public class Interpreter {
 }
 
 class Parser {
-    List<String[]> mainparser(String[] args) {
+    List<String[]> mainparser(String args) {
         List<String[]> answer = new LinkedList<String[]>();
-        String buffer = new String();
-        for (int i = 0; i < args.length; i++) {
-            buffer += (args[i] + " ");
-        }
-        String[] arg = semicolonparser(buffer);
+        String[] arg = semicolonparser(args);
         for (int i = 0; i < arg.length; i++) {
             answer.add(spaceparser(arg[i]));
         }
