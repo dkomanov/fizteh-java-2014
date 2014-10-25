@@ -21,13 +21,6 @@ public class FileMap {
         file = new RandomAccessFile(path, "rw");
         if (file.length() > 0) {
             getFile();
-<<<<<<< HEAD
-        } catch (FileNotFoundException e) {
-            System.out.println("Can't findthe following file:" + path);
-        } catch (SecurityException e) {
-            System.out.println("Can't use the following file:" + path);
-=======
->>>>>>> 4ae82a8012874db357a99e99bf7eab7e401251ca
         }
     }
     
@@ -79,18 +72,6 @@ public class FileMap {
         do {
             while ((b = file.readByte()) != 0) {
                 bytesCounter++;
-<<<<<<< HEAD
-                if (off == -1) {
-                    off = file.readInt();
-                } else {
-                    offsets.add(file.readInt());
-                }
-                bytesCounter += 4;
-                keys.add((buf.toString("UTF-8")));
-            } catch (IOException e) {
-                System.out.println("Can't read db file");
-                System.exit(-1);
-=======
                 buf.write(b);
             }
             bytesCounter++;
@@ -98,7 +79,6 @@ public class FileMap {
                 off = file.readInt();
             } else {
                 offsets.add(file.readInt());
->>>>>>> 4ae82a8012874db357a99e99bf7eab7e401251ca
             }
             bytesCounter += 4;
             keys.add((buf.toString("UTF-8")));
@@ -121,17 +101,10 @@ public class FileMap {
                 }
             }
         } catch (IOException e) {
-<<<<<<< HEAD
-            System.out.println("Can't read db file");
-=======
             System.err.println("Can't read db file");
             System.exit(-1);
         } catch (Exception e) {
             System.err.println("Wrong input file");
->>>>>>> 4ae82a8012874db357a99e99bf7eab7e401251ca
-            System.exit(-1);
-        } catch (Exception e) {
-            System.out.println("Wrong input file");
             System.exit(-1);
         }
         try {
@@ -164,11 +137,7 @@ public class FileMap {
                 file.writeInt(offIter.next());
             }
         } catch (IOException e) {
-<<<<<<< HEAD
-            System.out.println("Can't write into a db file");
-=======
             System.err.println("Can't write into a db file");
->>>>>>> 4ae82a8012874db357a99e99bf7eab7e401251ca
             System.exit(-1);
         }
     }
