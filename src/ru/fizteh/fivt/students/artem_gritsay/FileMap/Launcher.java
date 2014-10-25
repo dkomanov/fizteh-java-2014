@@ -11,7 +11,7 @@ public class Launcher {
     private boolean exitFlag;
     private PrintStream printStream = System.out;
 
-    public Launcher (HashMap<String, String> file, Writer userWriter) {
+    public Launcher(HashMap<String, String> file, Writer userWriter) {
         fileMap = file;
         writer = userWriter;
     }
