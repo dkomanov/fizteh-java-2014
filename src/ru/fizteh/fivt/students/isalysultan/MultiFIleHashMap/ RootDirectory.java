@@ -15,7 +15,7 @@ public class RootDirectory {
     // This HashMap save tables.
     private HashMap<String, Table> tableList = new HashMap<String, Table>();
 
-    public Table currentTable;
+    private Table currentTable;
 
     public Path get() {
         return directPath;
