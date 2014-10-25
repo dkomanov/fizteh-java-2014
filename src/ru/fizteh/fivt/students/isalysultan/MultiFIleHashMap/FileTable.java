@@ -15,9 +15,33 @@ public class FileTable {
 
     private boolean openRead = false;
 
-    TreeMap<String, String> storage;
+    private TreeMap<String, String> storage = new TreeMap<String, String>();
 
-    public void changePath(Path newPath) {
+    public String getForMap(String key) {
+        return storage.get(key);
+    }
+
+    public boolean ContainsKey(String key) {
+        return storage.containsKey(key);
+    }
+
+    public boolean ContainsValue(String value) {
+        return storage.containsValue(value);
+    }
+
+    public String putMap(String key, String value) {
+        return storage.put(key, value);
+    }
+
+    public String removeMap(String key) {
+        return storage.remove(key);
+    }
+
+    public Set<String> keySetMap() {
+        return storage.keySet();
+    }
+
+    public void setPath(Path newPath) {
         filePath = newPath;
     }
 
@@ -40,18 +64,18 @@ public class FileTable {
         filePath = null;
     }
 
-    public FileTable(Path FilePath) throws IOException {
+    public FileTable(Path FilePath, Table table) throws IOException {
         filePath = FilePath;
         RandomAccessFile file = new RandomAccessFile(filePath.toString(), "r");
         if (file.length() > 0) {
-            readFile(file);
+            readFile(file, table);
             file.close();
             openRead = true;
             return;
         }
     }
 
-    public void readFile(RandomAccessFile file) throws IOException {
+    public void readFile(RandomAccessFile file, Table table) throws IOException {
         ByteArrayOutputStream buff = new ByteArrayOutputStream();
         ArrayList<String> key = new ArrayList<String>();
         ArrayList<Integer> offset = new ArrayList<Integer>();
@@ -84,6 +108,7 @@ public class FileTable {
         int afterCount = count;
         boolean forEnd = true;
         while (forEnd) {
+            table.incrementNumberRecords();
             if (size < count) {
                 System.err.println("error with offset");
                 System.exit(2);
@@ -154,4 +179,20 @@ public class FileTable {
         }
         return false;
     }
+
+    public void deleteFile() {
+        filePath.toFile().delete();
+    }
+
+    public boolean FileOpenAndNotExist() {
+        if (openRead && filePath != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean Open() {
+        return openRead;
+    }
 }
+
