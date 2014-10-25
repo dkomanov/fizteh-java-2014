@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * The MultiFileMap class is to implement Table interface somewhen.
@@ -185,7 +186,7 @@ public class MultiFileMap {
             FileMap ret = get(id);
             if (null == ret) {
                 try {
-                    ret = new FileMap(id.getFilePath(tableRoot));
+                    ret = new FileMap(id.getFilePath(tableRoot), new ChunkKeyChecker(id));
                 } catch (Exception e) {
                     throw new IOException(e.getMessage(), e);
                 }
@@ -282,6 +283,19 @@ public class MultiFileMap {
         @Override
         public int hashCode() {
             return Arrays.hashCode(new int[]{dirNum, fileNum});
+        }
+    }
+
+    class ChunkKeyChecker implements Predicate<String> {
+        private final ChunkID desired;
+
+        public ChunkKeyChecker(ChunkID desired) {
+            this.desired = desired;
+        }
+
+        @Override
+        public boolean test(String key) {
+            return ChunkID.forKey(key).equals(desired);
         }
     }
 }

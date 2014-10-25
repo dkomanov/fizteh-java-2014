@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * The FileMap class stores a String-String map in file.
@@ -15,9 +16,15 @@ import java.util.Map;
 class FileMap {
     private Map<String, String> map;
     final Path targetPath;
+    private final Predicate<String> keyChecker;
 
     public FileMap(Path targetPath) throws Exception {
+        this(targetPath, null);
+    }
+
+    public FileMap(Path targetPath, Predicate<String> keyChecker) throws Exception {
         this.targetPath = targetPath;
+        this.keyChecker = keyChecker;
         if (Files.exists(targetPath)) {
             reload();
         } else {
@@ -60,6 +67,10 @@ class FileMap {
             while (!eof) {
                 try {
                     String key = nextWord(dataStream);
+                    if (keyChecker != null && !keyChecker.test(key)) {
+                        throw new Exception(
+                                "The db is invalid: some keys are stored not in appropriate place");
+                    }
                     String value = nextWord(dataStream);
                     if (map.put(key, value) != null) {
                         throw new Exception("The db is invalid: the keys are not unique");
@@ -93,20 +104,23 @@ class FileMap {
     // Some methods of Table interface
 
     public String get(String key) {
-        if (null == key)
+        if (null == key) {
             throw new IllegalArgumentException();
+        }
         return map.get(key);
     }
 
     public String put(String key, String value) {
-        if (null == key || null == value)
+        if (null == key || null == value) {
             throw new IllegalArgumentException();
+        }
         return map.put(key, value);
     }
 
     public String remove(String key) {
-        if (null == key)
+        if (null == key) {
             throw new IllegalArgumentException();
+        }
         return map.remove(key);
     }
 
