@@ -25,11 +25,12 @@ public final class CommandInterpreter {
         System.out.println("table_name row_count");
         Set<String> names = manager.getNames();
         for (String currentName : names) {
-            System.out.println(currentName + " " + manager.getTableSize(currentName));
+            System.out.println(currentName + " " + manager.getTable(currentName).size());
         }
     }
 
-    protected static void list(String[] command) throws IOException {
+    protected static void list(String[] command)
+            throws IOException, WrongNumberOfArgumentsException, DatabaseCorruptedException {
         checkArguments(1, command.length, 1, "list");
         Table currentTable = manager.getCurrentTable();
         if (currentTable != null) {
@@ -47,65 +48,81 @@ public final class CommandInterpreter {
             } else {
                 System.out.println(command[1] + " exists");
             }
-        } catch (DatabaseExitException e) {
-            if (e.getMessage().isEmpty()) {
-                System.out.println("Can't create table");
-            } else {
-                System.out.println(e.getMessage());
-            }
+        } catch (WrongNameException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    protected static void useTable(String[] command) throws IOException {
+    protected static void useTable(String[] command) throws WrongNumberOfArgumentsException {
         checkArguments(2, command.length, 2, "use");
-        if (manager.useTable(command[1])) {
-            System.out.println("using " + command[1]);
-        } else {
-            System.out.println(command[1] + " not exists");
+        try {
+            if (manager.useTable(command[1])) {
+                System.out.println("using " + command[1]);
+            } else {
+                System.out.println(command[1] + " not exists");
+            }
+        } catch (IOException e) {
+            // It's impossible due to checking that command[1] exists.
+            System.out.println("Unexpected exception in function useTable of Interpreter!");
         }
     }
 
-    protected static void put(String[] command) throws IOException {
+    protected static void put(String[] command) throws WrongNumberOfArgumentsException, DatabaseCorruptedException {
         checkArguments(3, command.length, 3, "put");
         Table currentTable = manager.getCurrentTable();
         if (currentTable != null) {
-            String oldValue = currentTable.put(command[1], command[2]);
-            if (oldValue != null) {
-                System.out.println("overwrite");
-                System.out.println(oldValue);
-            } else {
-                System.out.println("new");
+            try {
+                String oldValue = currentTable.put(command[1], command[2]);
+                if (oldValue != null) {
+                    System.out.println("overwrite");
+                    System.out.println(oldValue);
+                } else {
+                    System.out.println("new");
+                }
+            } catch (IOException e) {
+                // It's impossible due to checking that command[1], command[2] exist.
+                System.out.println("Unexpected exception in function put of Interpreter!");
             }
         } else {
             System.out.println("no table");
         }
     }
 
-    protected static void get(String[] command) throws IOException {
+    protected static void get(String[] command) throws WrongNumberOfArgumentsException, DatabaseCorruptedException {
         checkArguments(2, command.length, 2, "get");
         Table currentTable = manager.getCurrentTable();
         if (currentTable != null) {
-            String value = currentTable.get(command[1]);
-            if (value != null) {
-                System.out.println("found");
-                System.out.println(value);
-            } else {
-                System.out.println("not found");
+            try {
+                String value = currentTable.get(command[1]);
+                if (value != null) {
+                    System.out.println("found");
+                    System.out.println(value);
+                } else {
+                    System.out.println("not found");
+                }
+            } catch (IOException e) {
+                // It's impossible due to checking that command[1] exists.
+                System.out.println("Unexpected exception in function get of Interpreter!");
             }
         } else {
             System.out.println("no table");
         }
     }
 
-    protected static void remove(String[] command) throws IOException {
+    protected static void remove(String[] command) throws WrongNumberOfArgumentsException, DatabaseCorruptedException {
         checkArguments(2, command.length, 2, "remove");
         Table currentTable = manager.getCurrentTable();
         if (currentTable != null) {
-            String removedValue = currentTable.removeKey(command[1]);
-            if (removedValue != null) {
-                System.out.println("removed");
-            } else {
-                System.out.println("not found");
+            try {
+                String removedValue = currentTable.removeKey(command[1]);
+                if (removedValue != null) {
+                    System.out.println("removed");
+                } else {
+                    System.out.println("not found");
+                }
+            } catch (IOException e) {
+                // It's impossible due to checking that command[1] exists.
+                System.out.println("Unexpected exception in function remove of Interpreter!");
             }
         } else {
             System.out.println("no table");
@@ -114,15 +131,11 @@ public final class CommandInterpreter {
 
     protected static void drop(String[] command) throws WrongNumberOfArgumentsException {
         checkArguments(2, command.length, 2, "drop");
-        try {
-            manager.dropTable(command[1]);
-            System.out.println("dropped");
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        manager.dropTable(command[1]);
+        System.out.println("dropped");
     }
 
-    protected static void exit(String[] command) throws DatabaseExitException {
+    protected static void exit(String[] command) throws DatabaseExitException, WrongNumberOfArgumentsException {
         checkArguments(1, command.length, 1, "exit");
         if (manager.getCurrentTable() != null) {
             try {

@@ -17,7 +17,7 @@ public class TableManager {
     protected static final String FILE_NAME_PATTERN = "([0-9]|1[0-5])\\.dat";
     private static final String ILLEGAL_TABLE_NAME_PATTERN = ".*\\.|\\..*|.*(/|\\\\).*";
 
-    public TableManager(String path) throws IllegalArgumentException, DatabaseExitException {
+    public TableManager(String path) throws DatabaseExitException, DatabaseCorruptedException {
         currentTable = null;
         databasePath = Paths.get(path);
         tableManagerMap = new TreeMap<>();
@@ -26,7 +26,7 @@ public class TableManager {
             System.out.print("Can't find data base folder.\nDirectory "
                     + databasePath.toString() + " was created\n");
         } else if (!databasePath.toFile().isDirectory()) {
-            throw new IllegalArgumentException(path + ": is not a directory");
+            throw new DatabaseCorruptedException(path + ": is not a directory");
         }
         String[] tablesNames = databasePath.toFile().list();
         for (String currentTableName : tablesNames) {
@@ -35,7 +35,7 @@ public class TableManager {
                 Table curTable = new Table(currentTablePath, currentTableName);
                 tableManagerMap.put(currentTableName, curTable);
             } else {
-                throw new IllegalArgumentException("Database corrupted: unexpected files in root directory");
+                throw new DatabaseCorruptedException("Database corrupted: unexpected files in root directory");
             }
         }
     }
@@ -60,34 +60,34 @@ public class TableManager {
         }
     }
 
-    protected int getTableSize(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("getTableSize: null argument");
-        }
-        if (tableManagerMap.get((name)) == null) {
-            throw new IllegalArgumentException("No such Table found");
-        }
-        return tableManagerMap.get(name).size();
+    protected Table getTable(String name) {
+        return tableManagerMap.get(name);
     }
 
-    protected Table createTable(String name) throws DatabaseExitException {
+    protected Table createTable(String name) throws WrongNameException {
         if (name == null) {
             throw new IllegalArgumentException("createTable: null argument");
         }
         Path newTablePath = databasePath.resolve(name);
         if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
-            throw new IllegalArgumentException("Illegal table name");
+            throw new WrongNameException("This name is illegal.");
         }
         if (tableManagerMap.get(name) != null) {
             return null;
         }
         newTablePath.toFile().mkdir();
-        Table newTable = new Table(newTablePath, name);
-        tableManagerMap.put(name, newTable);
-        return newTable;
+        try {
+            Table newTable = new Table(newTablePath, name);
+            tableManagerMap.put(name, newTable);
+            return newTable;
+        } catch (DatabaseCorruptedException e) {
+            // Never, because we create new table.
+            System.out.println("Unexpected Exception in createTable!");
+        }
+        return null;
     }
 
-    protected void dropTable(String name) throws IllegalStateException, IllegalArgumentException {
+    protected void dropTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Table name is null");
         }
@@ -96,7 +96,7 @@ public class TableManager {
         }
         Table removedTable = tableManagerMap.remove(name);
         if (removedTable == null) {
-            throw new IllegalStateException(name + " not exists");
+            System.out.println(name + " not exists");
         } else {
             if (currentTable == removedTable) {
                 currentTable = null;
@@ -133,18 +133,18 @@ class Coordinates implements Comparable<Coordinates> {
             folderIndex = Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER);
             fileIndex = Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER) % TableManager.MAGIC_NUMBER);
         } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Encoding exception if function getHash");
+            throw new IllegalArgumentException("Bad key is given to constructor of Coordinates");
         }
     }
     @Override
-    public int compareTo(Coordinates pair) {
-        if (folderIndex > pair.folderIndex) {
+    public int compareTo(Coordinates coordinates) {
+        if (folderIndex > coordinates.folderIndex) {
             return 1;
-        } else if (folderIndex < pair.folderIndex) {
+        } else if (folderIndex < coordinates.folderIndex) {
             return  -1;
-        } else if (fileIndex > pair.fileIndex) {
+        } else if (fileIndex > coordinates.fileIndex) {
             return  1;
-        } else if (fileIndex < pair.fileIndex) {
+        } else if (fileIndex < coordinates.fileIndex) {
             return  -1;
         }
         return 0;

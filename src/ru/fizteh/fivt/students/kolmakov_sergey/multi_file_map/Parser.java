@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.kolmakov_sergey.multi_file_map;
 
 import java.util.Scanner;
 
-public class Parser {
+public final class Parser {
     public static boolean batchMode;
 
     protected static void batchMode(String[] args) throws DatabaseExitException {
@@ -50,7 +50,7 @@ public class Parser {
                         if (command.length > 1 && command[1].equals("tables")) {
                             CommandInterpreter.showTables(command);
                         } else {
-                            throw new IllegalArgumentException("No such command declared");
+                            System.out.println("No such command declared");
                         }
                         break;
                     case "put":
@@ -72,9 +72,12 @@ public class Parser {
                         System.out.println("No such command declared");
                 }
             }
-        } catch (IllegalArgumentException e) {
+        } catch (WrongNumberOfArgumentsException e) {
             System.out.println(e.getMessage());
         } catch (DatabaseExitException e) {
+            if (e.getMessage() != null ) {
+                System.out.println(e.getMessage());
+            }
             System.exit(e.status);
         } catch (Exception e) {
             System.out.println(e.getMessage());

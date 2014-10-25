@@ -17,19 +17,14 @@ public class DatabaseMain {
             } else {
                 Parser.batchMode(args);
             }
+        } catch (DatabaseCorruptedException e) {
+            System.out.println(e.getMessage());
+            System.exit(-1);
         } catch (InvalidPathException e) {
             System.out.println("Can't connect to database: invalid path");
             System.exit(-1);
-        } catch (IllegalArgumentException e) {
-            if (!e.getMessage().isEmpty()) {
-                System.out.println(e.getMessage());
-            } else {
-                System.out.println("Unexpected exception:");
-                e.printStackTrace();
-                System.exit(-1);
-            }
         } catch (DatabaseExitException e) {
-            if (!e.getMessage().isEmpty()) {
+            if (!(e.getMessage() == null) && !e.getMessage().isEmpty()) {
                 System.out.println(e.getMessage());
             }
             System.exit(e.status);
@@ -39,15 +34,28 @@ public class DatabaseMain {
 
 class DatabaseExitException extends Exception {
     public final int status;
-    public DatabaseExitException(int s, Exception e) {
+    public DatabaseExitException(int status, Exception e) {
         super(e);
-        status = s;
+        this.status = status;
     }
 }
 
-class WrongNumberOfArgumentsException extends IllegalArgumentException {
+class WrongNumberOfArgumentsException extends Exception {
     WrongNumberOfArgumentsException(String message) {
         super(message);
     }
 }
+
+class DatabaseCorruptedException extends Exception {
+    DatabaseCorruptedException (String message) {
+        super(message);
+    }
+}
+
+class WrongNameException extends Exception {
+    WrongNameException (String message) {
+        super(message);
+    }
+}
+
 

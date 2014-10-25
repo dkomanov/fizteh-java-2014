@@ -16,7 +16,7 @@ public class DataFile { // Interacts with .dat file.
     private Coordinates folderFileIndexes;
     private boolean actuality; // True, if fileMap stores right information.
 
-    public DataFile(Path tablePath, Coordinates coordinates) throws IOException, IllegalArgumentException {
+    public DataFile(Path tablePath, Coordinates coordinates) throws IOException, DatabaseCorruptedException {
         fileMap = new TreeMap<>();
         filePath = makeAbsolutePath(tablePath, coordinates);
         this.folderFileIndexes = coordinates;
@@ -41,7 +41,7 @@ public class DataFile { // Interacts with .dat file.
                 if (coordinates.fileIndex != Math.abs((Byte.valueOf(b) / TableManager.MAGIC_NUMBER)
                         % TableManager.MAGIC_NUMBER) || coordinates.folderIndex != Math.abs(Byte.valueOf(b)
                         % TableManager.MAGIC_NUMBER)) {
-                    throw new IllegalArgumentException("Unexpected key in file " + filePath.toString());
+                    throw new DatabaseCorruptedException("Unexpected key in file " + filePath.toString());
                 }
                 // Get others bytes of key.
                 do {
@@ -55,7 +55,7 @@ public class DataFile { // Interacts with .dat file.
                 size++;
             } while (counter < firstOffset);
             if (lastOffset >= dataBaseFile.length()) {
-                throw new IllegalArgumentException("Unexpected end of file in " + filePath.toString());
+                throw new DatabaseCorruptedException("Unexpected end of file in " + filePath.toString());
             }
         }
     }
@@ -96,7 +96,7 @@ public class DataFile { // Interacts with .dat file.
         }
     }
 
-    private void getData() throws IOException {
+    private void getData() throws IOException, DatabaseCorruptedException {
         try (RandomAccessFile file = new RandomAccessFile(filePath.toString(), "r")) {
             if (file.length() == 0) {
                 actuality = true;
@@ -145,7 +145,7 @@ public class DataFile { // Interacts with .dat file.
         actuality = true;
     }
 
-    protected String putValue(String key, String value) throws IOException {
+    protected String putValue(String key, String value) throws IOException, DatabaseCorruptedException {
         checkKey(key);
         if (value == null) {
             throw new IllegalArgumentException("Error: value == null");
@@ -160,7 +160,7 @@ public class DataFile { // Interacts with .dat file.
         return oldValue;
     }
 
-    protected String getValue(String key) throws IOException {
+    protected String getValue(String key) throws IOException, DatabaseCorruptedException {
         checkKey(key);
         if (!actuality) {
             getData();
@@ -168,7 +168,7 @@ public class DataFile { // Interacts with .dat file.
         return fileMap.get(key);
     }
 
-    protected String remove(String key) throws IOException {
+    protected String remove(String key) throws IOException, DatabaseCorruptedException {
         checkKey(key);
         if (!actuality) {
             getData();
@@ -180,7 +180,7 @@ public class DataFile { // Interacts with .dat file.
         return oldValue;
     }
 
-    protected Set<String> list() throws IOException {
+    protected Set<String> list() throws IOException, DatabaseCorruptedException {
         if (!actuality) {
             getData();
         }
@@ -197,14 +197,18 @@ public class DataFile { // Interacts with .dat file.
                         Integer.toString(folderFileIndexes.fileIndex) + ".dat"));
     }
 
-    private void checkKey(String key) throws UnsupportedEncodingException, IllegalArgumentException {
+    private void checkKey(String key) throws DatabaseCorruptedException {
         if (key == null) {
             throw new IllegalArgumentException("Error: key == null");
         }
-        if (!(folderFileIndexes.folderIndex == Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER)
-                && folderFileIndexes.fileIndex == Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER)
-                % TableManager.MAGIC_NUMBER))) {
-            throw new IllegalArgumentException("Wrong key in file " + filePath.toString());
+        try {
+            if (!(folderFileIndexes.folderIndex == Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER)
+                    && folderFileIndexes.fileIndex == Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER)
+                    % TableManager.MAGIC_NUMBER))) {
+                throw new DatabaseCorruptedException("Wrong key in file " + filePath.toString());
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new DatabaseCorruptedException("Can't encode file " + filePath.toString());
         }
     }
 }

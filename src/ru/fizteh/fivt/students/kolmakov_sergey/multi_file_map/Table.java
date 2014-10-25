@@ -12,7 +12,7 @@ public class Table {
     private Path tablePath;
     private Map<Coordinates, DataFile> tableMap;
 
-    public Table(Path tablePath, String name) throws IllegalArgumentException, DatabaseExitException {
+    public Table(Path tablePath, String name) throws DatabaseCorruptedException {
         tableMap = new TreeMap<>();
         this.tablePath = tablePath;
         this.name = name;
@@ -21,26 +21,24 @@ public class Table {
             Path currentFolderPath = this.tablePath.resolve(currentFolderName);
             if (!currentFolderName.matches(TableManager.FOLDER_NAME_PATTERN)
                     || !currentFolderPath.toFile().isDirectory()) {
-                throw new IllegalArgumentException("Unexpected files in directory");
+                throw new DatabaseCorruptedException("Unexpected files in directory");
             }
             String[] fileList = currentFolderPath.toFile().list();
             if (fileList.length == 0) {
-                throw new IllegalArgumentException("Empty folders found");
+                throw new DatabaseCorruptedException("Empty folders found");
             }
             for (String file : fileList) {
                 Path filePath = currentFolderPath.resolve(file);
                 if (!file.matches(TableManager.FILE_NAME_PATTERN) || !filePath.toFile().isFile()) {
-                    throw new IllegalArgumentException("Unexpected files in folder");
+                    throw new DatabaseCorruptedException("Unexpected files in folder");
                 }
                 int folderIndex = TableManager.excludeFolderNumber(currentFolderName);
                 int fileIndex = TableManager.excludeDataFileNumber(file);
                 try {
                     DataFile currentDataFile = new DataFile(this.tablePath, new Coordinates(folderIndex, fileIndex));
                     tableMap.put(new Coordinates(folderIndex, fileIndex), currentDataFile);
-                } catch (IllegalArgumentException e) {
-                    throw new DatabaseExitException(-1, e);
                 } catch (IOException e) {
-                    throw new IllegalArgumentException(this.tablePath.resolve(
+                    throw new DatabaseCorruptedException(this.tablePath.resolve(
                             Paths.get(Integer.toString(folderIndex) + ".dir",
                                     Integer.toString(fileIndex) + ".dat")).toString() + " corrupted");
                 }
@@ -59,7 +57,7 @@ public class Table {
             }
             mustBeRemoved.forEach(tableMap::remove);
         } catch (IOException e) {
-            if (e.getMessage().isEmpty()) {
+            if (e.getMessage() == null || e.getMessage().isEmpty()) {
                 throw new IOException("Can't save table '" + name);
             } else {
                 throw e;
@@ -67,7 +65,7 @@ public class Table {
         }
     }
 
-    protected String get(String key) throws IOException {
+    protected String get(String key) throws IOException, DatabaseCorruptedException {
         DataFile expectedDataFile = tableMap.get(new Coordinates(key));
         if (expectedDataFile == null) {
             return null;
@@ -75,24 +73,29 @@ public class Table {
         return expectedDataFile.getValue(key);
     }
 
-    protected String put(String key, String value) throws IOException {
+    protected String put(String key, String value) throws IOException, DatabaseCorruptedException {
         DataFile expectedDataFile = tableMap.get(new Coordinates(key));
         if (expectedDataFile == null) {
-            expectedDataFile = new DataFile(tablePath, new Coordinates(key));
+            try {
+                expectedDataFile = new DataFile(tablePath, new Coordinates(key));
+            } catch (DatabaseCorruptedException e) {
+                // Never, because we create new table.
+                System.out.println("Unexpected Exception in put!");
+            }
             tableMap.put(new Coordinates(key), expectedDataFile);
         }
         return expectedDataFile.putValue(key, value);
     }
 
-    protected List<String> list() throws IOException {
+    protected List<String> list() throws IOException, DatabaseCorruptedException {
         List<String> list = new LinkedList<>();
-        for (DataFile pair : tableMap.values()) {
-            list.addAll(pair.list());
+        for (DataFile currentDataFile : tableMap.values()) {
+            list.addAll(currentDataFile.list());
         }
         return list;
     }
 
-    protected String removeKey(String key) throws IOException {
+    protected String removeKey(String key) throws IOException, DatabaseCorruptedException {
         DataFile expectedDataFile = tableMap.get(new Coordinates(key));
         if (expectedDataFile == null) {
             return null;
