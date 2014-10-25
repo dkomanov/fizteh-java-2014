@@ -11,9 +11,9 @@ import java.io.IOException;
 public class DropTable extends Action {
     @Override
     public boolean run(String[] args, Database db) throws IOException, IncorrectFileException {
-		if (!checkNumberOfArguments(1, args.length)) {
-			return false;
-		}
+        if (!checkNumberOfArguments(1, args.length)) {
+            return false;
+        }
         if (db.dropTable(args[0])) {
             System.out.println("dropped");
             return true;

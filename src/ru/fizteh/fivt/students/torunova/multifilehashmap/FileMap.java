@@ -15,7 +15,7 @@ public class FileMap {
     String file;
 
     public FileMap(final String f) throws IncorrectFileException, IOException {
-		file = f;
+        file = f;
         DataInputStream fis = new DataInputStream(new FileInputStream(file));
         int  length;
         while (fis.available() > 0) {

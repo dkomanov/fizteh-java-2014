@@ -14,6 +14,7 @@ import java.util.Set;
  * Created by nastya on 19.10.14.
  */
 public class Table {
+    public static final int MAGIC_NUMBER = 16;
     String tableName;
     Map<File, FileMap> files = new HashMap<>();
     int numberOfEntries;
@@ -119,15 +120,15 @@ public class Table {
 
     private String getDirName(String key) {
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % 16;
+        int ndirectory = hashcode % MAGIC_NUMBER;
         StringBuilder builder = new StringBuilder();
         builder.append(ndirectory).append(".dir");
-		return builder.toString();
+        return builder.toString();
     }
 
     private String getFileName(String key) {
         int hashcode = key.hashCode();
-        int nfile = hashcode / 16 % 16;
+        int nfile = hashcode / MAGIC_NUMBER % MAGIC_NUMBER;
         StringBuilder builder = new StringBuilder();
         builder.append(nfile).append(".dat");
         return  builder.toString();

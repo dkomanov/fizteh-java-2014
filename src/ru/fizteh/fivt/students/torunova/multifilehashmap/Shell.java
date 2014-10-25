@@ -101,14 +101,14 @@ public class Shell {
                     /*if (args.length > 0) {
                         System.err.println("exit:too many arguments.");
                     } else {*/
-						try {
-							db.close();
-						} catch (IOException e) {
-							System.err.println("Caught IOException" + e.getMessage());
-							System.exit(1);
-						}
-						System.exit(0);
-					//}
+                        try {
+                            db.close();
+                        } catch (IOException e) {
+                            System.err.println("Caught IOException" + e.getMessage());
+                            System.exit(1);
+                        }
+                        System.exit(0);
+                    //}
                 } else if (!Pattern.matches("\\s+", name)) {
                     System.err.println("Command not found.");
                     if (!interactive) {

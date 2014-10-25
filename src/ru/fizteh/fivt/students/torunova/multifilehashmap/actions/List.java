@@ -10,9 +10,9 @@ import java.util.Set;
 public class List extends Action {
     @Override
     public boolean run(String[] args, Database db) {
-		if (!checkNumberOfArguments(0, args.length)) {
-			return false;
-		}
+        if (!checkNumberOfArguments(0, args.length)) {
+            return false;
+        }
         if (db.currentTable == null) {
             System.out.println("no table");
             return false;

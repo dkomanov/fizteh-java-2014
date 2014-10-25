@@ -18,16 +18,16 @@ public abstract class Action {
         System.err.println(getDisplayName() + ": too few arguments.");
     }
 
-	boolean checkNumberOfArguments(int expected, int real) {
-		if (real > expected) {
-			tooManyArguments();
-			return false;
-		} else if (real < expected) {
-			tooFewArguments();
-			return false;
-		}
-		return true;
-	}
+    boolean checkNumberOfArguments(int expected, int real) {
+        if (real > expected) {
+            tooManyArguments();
+            return false;
+        } else if (real < expected) {
+            tooFewArguments();
+            return false;
+        }
+        return true;
+    }
 
     public abstract boolean run(String[] args, Database db)
                                   throws IOException,

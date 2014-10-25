@@ -11,9 +11,9 @@ import java.io.IOException;
 public class Put extends Action {
     @Override
     public boolean run(String[] args, Database db) throws IOException, IncorrectFileException {
-		if (!checkNumberOfArguments(2, args.length)) {
-			return false;
-		}
+        if (!checkNumberOfArguments(2, args.length)) {
+            return false;
+        }
         if (db.currentTable == null) {
             System.out.println("no table");
             return false;

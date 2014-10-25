@@ -115,7 +115,7 @@ public class  Database {
                 System.setProperty("user.dir", dIr.getParent());
             }
             File[] content = dIr.listFiles();
-			for(File item:content) {
+            for (File item:content) {
                 if (item.isDirectory()) {
                     if (!removeRecursive(item.getAbsolutePath())) {
                         return false;
