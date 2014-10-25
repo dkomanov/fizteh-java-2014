@@ -15,6 +15,9 @@ public class MFHMap extends HashMap<String, String> {
     Path dbPath;
     Map<String, Integer> changedFiles = new TreeMap<>();
 
+    protected static final int FILES_COUNT = 16;
+    protected static final int DIRECTORIES_COUNT = 16;
+
     public MFHMap(Path path) {
         dbPath = path.normalize();
         if (!Files.exists(path)) {
@@ -41,11 +44,15 @@ public class MFHMap extends HashMap<String, String> {
 
     public  SimpleEntry<String, SimpleEntry<Integer, Integer>> whereToSave(String value) {
         int hashCode = value.hashCode();
-        int d = hashCode % 16;
-        int f = hashCode / 16 % 16;
+        int d = hashCode % DIRECTORIES_COUNT;
+        int f = hashCode / DIRECTORIES_COUNT % FILES_COUNT;
         return new SimpleEntry<>(
                 nameOfPath(d, f).toString(),
                 new SimpleEntry<>(d, f));
+    }
+
+    private void endOfStream() {
+        System.err.println("there is no more data because the end of the stream has been reached.");
     }
 
     void readFromFile(DataInputStream iStream, int i, int j) {
@@ -58,13 +65,13 @@ public class MFHMap extends HashMap<String, String> {
             }
             byte[] key = new byte[keySize];
             if (iStream.read(key, 0, keySize) == -1) {
-                System.err.println("there is no more data because the end of the stream has been reached.");
+                endOfStream();
             }
 
             int valueSize = iStream.readInt();
             byte[] value = new byte[valueSize];
             if (iStream.read(value, 0, valueSize) == -1) {
-                System.err.println("there is no more data because the end of the stream has been reached.");
+                endOfStream();
             }
 
             put(new String(key, "UTF-8"), new String(value, "UTF-8"));
@@ -75,8 +82,8 @@ public class MFHMap extends HashMap<String, String> {
     }
 
     public void load() {
-        for (int i = 0; i < 16; ++i) {
-            for (int j = 0; j < 16; ++j) {
+        for (int i = 0; i < DIRECTORIES_COUNT; ++i) {
+            for (int j = 0; j < FILES_COUNT; ++j) {
                 try (DataInputStream stream = new DataInputStream(Files.newInputStream(
                         nameOfPath(i, j)))) {
                         while (stream.available() > 0) {
@@ -102,8 +109,8 @@ public class MFHMap extends HashMap<String, String> {
 
     public void deleteFiles(boolean all) {
         try {
-            for (int i = 0; i < 16; ++i) {
-                for (int j = 0; j < 16; ++j) {
+            for (int i = 0; i < DIRECTORIES_COUNT; ++i) {
+                for (int j = 0; j < FILES_COUNT; ++j) {
                     if (changedFiles.containsKey(nameOfPath(i, j).toString()) || all) {
                         if (Files.exists(nameOfPath(i, j))) {
                             Files.delete(nameOfPath(i, j));
@@ -122,9 +129,9 @@ public class MFHMap extends HashMap<String, String> {
 
     public void unload() {
         deleteFiles(false);
-        boolean[] dir = new boolean[16];
-        boolean[][] file = new boolean[16][16];
-        DataOutputStream[][] streams = new DataOutputStream[16][16];
+        boolean[] dir = new boolean[DIRECTORIES_COUNT];
+        boolean[][] file = new boolean[DIRECTORIES_COUNT][FILES_COUNT];
+        DataOutputStream[][] streams = new DataOutputStream[DIRECTORIES_COUNT][FILES_COUNT];
         try {
 
             if (!Files.exists(dbPath)) {
@@ -147,10 +154,10 @@ public class MFHMap extends HashMap<String, String> {
                         file[d][f] = true;
                     }
                     writeToFile(streams[d][f], entry.getKey(), entry.getValue());
-                    Integer temp = changedFiles.get(pathOfFile.getKey());
-                    if (temp != 0) {
-                        --temp;
-                        changedFiles.put(pathOfFile.getKey(), temp);
+                    Integer collisionCount = changedFiles.get(pathOfFile.getKey());
+                    if (collisionCount != 0) {
+                        --collisionCount;
+                        changedFiles.put(pathOfFile.getKey(), collisionCount);
                     } else {
                         changedFiles.remove(pathOfFile.getKey());
                     }
@@ -162,8 +169,8 @@ public class MFHMap extends HashMap<String, String> {
             changedFiles.clear();
             System.exit(-1);
         } finally {
-            for (int i = 0; i < 16; ++i) {
-                for (int j = 0; j < 16; ++j) {
+            for (int i = 0; i < DIRECTORIES_COUNT; ++i) {
+                for (int j = 0; j < FILES_COUNT; ++j) {
                     if (streams[i][j] != null) {
                         try {
                             streams[i][j].close();

@@ -11,10 +11,10 @@ import java.util.Map;
  * Created by Дмитрий on 08.10.14.
  */
 public class Connector {
-    Map<String, Command> commands = new HashMap<>();
-    Path dbRoot;
-    Map<String, MFHMap> tables;
-    MFHMap activeTable;
+    protected Map<String, Command> commands = new HashMap<>();
+    protected Path dbRoot;
+    protected Map<String, MFHMap> tables;
+    protected MFHMap activeTable;
 
     public Connector(Path dbPath) {
         if (!Files.exists(dbPath)) {
@@ -62,6 +62,9 @@ public class Connector {
             for (MFHMap table : tables.values()) {
                 table.unload();
             }
+        }
+        if (activeTable != null) {
+            activeTable.unload();
         }
     }
 

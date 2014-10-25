@@ -28,9 +28,9 @@ public class Put extends Command {
         }
         String newPath = dbConnector.activeTable.whereToSave(args[0]).getKey();
         if (dbConnector.activeTable.changedFiles.containsKey(newPath)) {
-            Integer temp = dbConnector.activeTable.changedFiles.get(newPath);
-            ++temp;
-            dbConnector.activeTable.changedFiles.put(newPath, temp);
+            Integer collisionCount = dbConnector.activeTable.changedFiles.get(newPath);
+            ++collisionCount;
+            dbConnector.activeTable.changedFiles.put(newPath, collisionCount);
         } else {
             dbConnector.activeTable.changedFiles.put(newPath, 0);
         }
