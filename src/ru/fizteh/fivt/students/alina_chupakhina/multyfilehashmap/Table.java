@@ -6,16 +6,17 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class Table {
-    private static String tablename;
-    private static String path;
-    private static File table;
-    private static Map<String, String> fm;
-    private static int numberOfElements;
-    private static final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
-            = "Invalid number of arguments";
+    private String tablename;
+    private String path;
+    private File table;
+    private Map<String, String> fm;
+    private int numberOfElements;
+    private final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
+            = ": Invalid number of arguments";
+    private final int MAGIC_NUMBER = 16;
 
     Table(String name, String pathname) throws Exception {
-        fm = new TreeMap<String, String>();
+        fm = new TreeMap<>();
         numberOfElements = 0;
         path = pathname + File.separator + name;
         table = new File(path);
@@ -24,12 +25,13 @@ public class Table {
         remove(table);
         table.mkdir();
     }
-    public static void remove(final File file) throws Exception {
+
+    public void remove(final File file) throws Exception {
         if (file.isDirectory()) {
             File [] children = file.listFiles();
             if (children == null) {
                 throw new Exception(
-                        "rm: cannot remove");
+                        "cannot remove");
             }
             for (int i = 0; i != children.length; i++) {
                 remove(children[i]);
@@ -37,31 +39,33 @@ public class Table {
         }
         if (!file.delete()) {
             throw new Exception(
-                    "rm:" + file.getName() + ". Can not delete the file");
+                    file.getName() + ". Can not delete the file");
         }
         return;
     }
 
-    private static void getTable() throws Exception {
-        File[] dirs = table.listFiles();
-        int i = 0;
-        while (i < dirs.length) {
-            if (!dirs[i].isDirectory()) {
-                throw new Exception("create: " + dirs[i].getName()
+    private void getTable() throws Exception {
+        File[] dirs = this.table.listFiles();
+        for (File dir : dirs) {
+            if (!dir.isDirectory()) {
+                throw new Exception(dir.getName()
                         + " is not directory");
             }
-            File[] dats = dirs[i].listFiles();
-            int j = 0;
-            while (j < dats.length) {
+            File[] dats = dir.listFiles();
+            if (dats.length == 0) {
+                System.err.println("Empty folders found");
+                System.exit(-1);
+            }
+            for (File dat : dats) {
                 numberOfElements++;
-                int nDirectory = Integer.parseInt(dirs[i].getName().substring(0,
-                        dirs[i].getName().length() - 4));
-                int nFile = Integer.parseInt(dats[j].getName().substring(0,
-                        dats[j].getName().length() - 4));
+                int nDirectory = Integer.parseInt(dir.getName().substring(0,
+                        dir.getName().length() - 4));
+                int nFile = Integer.parseInt(dat.getName().substring(0,
+                        dat.getName().length() - 4));
                 String key;
                 String value;
                 RandomAccessFile file
-                        = new RandomAccessFile(dats[j].getAbsolutePath(), "r");
+                        = new RandomAccessFile(dat.getAbsolutePath(), "r");
                 boolean end = false;
                 while (!end) {
                     try {
@@ -74,9 +78,8 @@ public class Table {
                         file.readFully(bytes);
                         value = new String(bytes, "UTF-8");
                         fm.put(key, value);
-                        int hashcode = key.hashCode();
-                        if (!(nDirectory == hashcode % 16)
-                                || !(nFile == hashcode / 16 % 16)) {
+                        if (!(nDirectory ==  Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER))
+                                || !(nFile == Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER))) {
                             System.err.println("Error with read table " + tablename);
                             System.exit(-1);
                         }
@@ -85,22 +88,19 @@ public class Table {
                     }
                 }
                 file.close();
-                j++;
             }
-            i++;
         }
     }
 
 
-    private static void putTable() throws Exception {
+    private void putTable() throws Exception {
         String key;
         String value;
         for (Map.Entry<String, String> i : fm.entrySet()) {
             key = i.getKey();
             value = i.getValue();
-            int hashcode = key.hashCode();
-            Integer ndirectory = hashcode % 16;
-            Integer nfile = hashcode / 16 % 16;
+            Integer ndirectory = Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER);
+            Integer nfile = Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER);
             String pathToDir = path + File.separator + ndirectory.toString()
                     + ".dir";
             //System.out.println(pathToDir);
@@ -129,7 +129,7 @@ public class Table {
         }
     }
 
-    public static void put(String[] args) throws Exception {
+    public void put(String[] args) throws Exception {
         checkNumOfArgs("put", 3, args.length);
         String key = args[1];
         String value = args[2];
@@ -143,7 +143,7 @@ public class Table {
         }
     }
 
-    public static void get(String[] args) throws Exception {
+    public void get(String[] args) throws Exception {
         checkNumOfArgs("get", 2, args.length);
         String key = args[1];
         String s = fm.get(key);
@@ -155,7 +155,7 @@ public class Table {
         }
     }
 
-    public static void remove(String[] args) throws Exception {
+    public void remove(String[] args) throws Exception {
         checkNumOfArgs("remove", 2, args.length);
         String key = args[1];
         String s = fm.remove(key);
@@ -167,7 +167,7 @@ public class Table {
         }
     }
 
-    public static void list(String[] args) throws Exception {
+    public void list(String[] args) throws Exception {
         checkNumOfArgs("list", 1, args.length);
         Set<String> keySet = fm.keySet();
         int counter = 0;
@@ -181,26 +181,26 @@ public class Table {
         System.out.println();
     }
 
-    public static void checkNumOfArgs(String operation,
-                                      int correctValue,
-                                      int testValue) throws IllegalArgumentException {
+    public void checkNumOfArgs(String operation,
+              int correctValue, int testValue) throws IllegalArgumentException {
         if (testValue != correctValue) {
             throw new IllegalArgumentException(operation
                     + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
         }
     }
 
-    public static void exit() throws Exception {
+    public void exit() throws Exception {
         putTable();
     }
 
-    public static String getName() {
+    public String getName() {
         return tablename;
     }
 
-    public static Integer getNumberOfElements() {
+    public Integer getNumberOfElements() {
         return numberOfElements;
     }
 }
+
 
 
