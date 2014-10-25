@@ -12,12 +12,12 @@ import java.util.Set;
 
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.*;
 
-public class MultiMapMain{
+public class MultiMapMain {
     private MultiMapMain() {
         //
     }
 
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws Exception {
         String rootDirectory = System.getProperty("fizteh.db.dir");
         Path rootDirectoryPath = Paths.get(rootDirectory);
         File root = new File(rootDirectory);
@@ -29,8 +29,7 @@ public class MultiMapMain{
                 System.err.println(rootDirectory + " is not a directory");
                 System.exit(1);
             } else {
-                try {
-                    TableHolder tableHolder = new TableHolder(rootDirectoryPath);
+                try (TableHolder tableHolder = new TableHolder(rootDirectoryPath)) {
                     TableState tableState = new TableState(tableHolder);
                     new Interpreter(tableState, new Command[]{
                             new Command("create", 2, (TableState tableS, String[] arguments) -> {
@@ -211,8 +210,6 @@ public class MultiMapMain{
                                 }
                             })
                     }).run(args);
-                } catch (ExitException e) {
-                    System.exit(e.getStatus());
                 }
             }
         }
