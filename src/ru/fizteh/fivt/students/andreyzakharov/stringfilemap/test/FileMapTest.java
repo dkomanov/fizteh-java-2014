@@ -98,12 +98,12 @@ public class FileMapTest {
 
     @Test
     public void testIOAppend() throws Exception {
-        for (int i = 0; i < n/2; ++i) {
+        for (int i = 0; i < n / 2; ++i) {
             f.put(keys[i], vals[i]);
         }
         f.commit();
 
-        for (int i = n/2; i < n; ++i) {
+        for (int i = n / 2; i < n; ++i) {
             f.put(keys[i], vals[i]);
         }
         f.commit();

@@ -8,8 +8,9 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -21,6 +22,9 @@ public class FileMap implements Table {
     private Path dbPath;
     private String name;
     private int pending = 0;
+
+    private static Pattern fileNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dat$");
+    private static Pattern directoryNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dir$");
 
     public FileMap(Path path) {
         dbPath = path;
@@ -189,7 +193,7 @@ public class FileMap implements Table {
         return p;
     }
 
-    private void readKeyValue(DataInputStream is) throws IOException, ConnectionInterruptException {
+    private String readKeyValue(DataInputStream is) throws IOException, ConnectionInterruptException {
         int keyLen = is.readInt();
         byte[] key = new byte[keyLen];
         int keyRead = is.read(key, 0, keyLen);
@@ -204,22 +208,84 @@ public class FileMap implements Table {
         }
 
         stableData.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+        return new String(key, "UTF-8");
     }
 
     public void load() throws ConnectionInterruptException {
         clear();
-        for (int i = 0; i < 16; ++i) {
+        try (DirectoryStream<Path> tableStream = Files.newDirectoryStream(dbPath)) {
+            for (Path dir: tableStream) {
+                Matcher dirMatcher = directoryNamePattern.matcher(dir.getFileName().toString());
+                if (!dirMatcher.find()) {
+                    throw new ConnectionInterruptException("database: extra directories in table folder");
+                }
+                if (!Files.isDirectory(dir)) {
+                    throw new ConnectionInterruptException("database: extra files in table folder");
+                }
+                int d = Integer.decode(dirMatcher.group(1));
+                try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)) {
+                    for (Path file: dirStream) {
+                        Matcher fileMatcher = fileNamePattern.matcher(file.getFileName().toString());
+                        if (!fileMatcher.find()) {
+                            throw new ConnectionInterruptException("database: extra files in table folder");
+                        }
+                        int f = Integer.decode(fileMatcher.group(1));
+                        try (DataInputStream fileStream = new DataInputStream(
+                                Files.newInputStream(dir.resolve(file)))) {
+                            while (fileStream.available() > 0) {
+                                String key = readKeyValue(fileStream);
+                                DfPair p = getHash(key);
+                                if (d != p.d || f != p.f) {
+                                    throw new ConnectionInterruptException(
+                                            "database: key/file correspondence is invalid");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new ConnectionInterruptException("database: read failed: " + e.getMessage());
+        }
+        /*for (int i = 0; i < 16; i++) {
+            try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dbPath.resolve(i + ".dir/"))) {
+                for (Path entry: dirStream) {
+                    Matcher matcher = fileNamePattern.matcher(entry.getFileName().toString());
+                    if (!matcher.find()) {
+                        throw new ConnectionInterruptException("database: extra files in table folder");
+                    }
+                    int j =  Integer.decode(matcher.group(1));
+                    try (DataInputStream fileStream = new DataInputStream(
+                            Files.newInputStream(dbPath.resolve(i + ".dir/" + j + ".dat")))) {
+                        while (fileStream.available() > 0) {
+                            String key = readKeyValue(fileStream);
+                            DfPair p = getHash(key);
+                            if (i != p.d || j != p.f) {
+                                throw new ConnectionInterruptException("database: key/file correspondence is invalid");
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                throw new ConnectionInterruptException("database: read failed: " + e.getMessage());
+            }
+        }*/
+        /*for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
                 try (DataInputStream stream = new DataInputStream(
                         Files.newInputStream(dbPath.resolve(i + ".dir/" + j + ".dat")))) {
                     while (stream.available() > 0) {
-                        readKeyValue(stream);
+                        String key = readKeyValue(stream);
+                        DfPair p = getHash(key);
+                        if (i != p.d || j != p.f) {
+                            throw new ConnectionInterruptException("database: key/file matching is invalid");
+                        }
                     }
                 } catch (IOException e) {
                     // empty folder is a valid table
                 }
             }
-        }
+        }*/
     }
 
     private void writeKeyValue(DataOutputStream os, String keyString, String valueString) throws IOException {

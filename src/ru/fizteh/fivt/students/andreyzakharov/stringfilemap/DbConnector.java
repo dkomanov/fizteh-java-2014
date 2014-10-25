@@ -79,11 +79,7 @@ public class DbConnector implements AutoCloseable, TableProvider {
                 for (Path file : stream) {
                     if (Files.isDirectory(file)) {
                         FileMap table = new FileMap(file);
-                        try {
-                            table.load();
-                        } catch (ConnectionInterruptException e) {
-                            continue;
-                        }
+                        table.load();
                         tables.put(file.getFileName().toString(), table);
                     }
                 }

@@ -21,7 +21,8 @@ public class CreateCommand implements Command {
         FileMap table = new FileMap(connector.dbRoot.resolve(args[1]));
         for (int i = 0; i < 16; i++) {
             if (Files.exists(connector.dbRoot.resolve(args[1]).resolve(i + ".dir/"))) {
-                try (DirectoryStream<Path> stream = Files.newDirectoryStream(connector.dbRoot.resolve(args[1] + "/" + i + ".dir/"))) {
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(
+                        connector.dbRoot.resolve(args[1] + "/" + i + ".dir/"))) {
                     for (Path entry: stream) {
                         Files.delete(entry);
                     }
