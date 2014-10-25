@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.titov.multifilehashmap;
 
-import ru.fizteh.fivt.students.titov.multifilehashmap.ArrayOfHashMaps.java;
-
 import java.io.*;
 import java.io.HashMap;
 import java.util.Set;
