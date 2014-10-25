@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 public class Interpreter {
+    public static Table currentTable;
     public static void doCommand(final String command, final boolean isBatch)
             throws Exception {
         String[] args = command.trim().split("\\s+");
@@ -17,35 +18,35 @@ public class Interpreter {
             } else if (args[0].equals("show")) {
                 showtables(args);
             } else if (args[0].equals("put")) {
-                if (MultiFileHashMap.currentTable == null) {
-                    System.out.println("no table");
+                if (currentTable == null) {
+                    System.err.println("no table");
                 } else {
                     put(args);
                 }
             } else if (args[0].equals("get")) {
-                if (MultiFileHashMap.currentTable == null) {
-                    System.out.println("no table");
+                if (currentTable == null) {
+                    System.err.println("no table");
                 } else {
-                    MultiFileHashMap.currentTable.get(args);
+                    currentTable.get(args);
                 }
             } else if (args[0].equals("remove")) {
-                if (MultiFileHashMap.currentTable == null) {
-                    System.out.println("no table");
+                if (currentTable == null) {
+                    System.err.println("no table");
                 } else {
                     remove(args);
                 }
             } else if (args[0].equals("list")) {
-                if (MultiFileHashMap.currentTable == null) {
-                    System.out.println("no table");
+                if (currentTable == null) {
+                    System.err.println("no table");
                 } else {
-                    MultiFileHashMap.currentTable.list(args);
+                    currentTable.list(args);
                 }
             } else if (args[0].equals("exit")) {
                 exit(args);
             } else if (args[0].equals("")) {
-                //
+                //Nothing
             } else {
-                throw new Exception(args[0] + "Invalid command");
+                throw new Exception(args[0] + " - invalid command");
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -56,15 +57,15 @@ public class Interpreter {
     }
 
     public static void put(final String[] args) throws Exception {
-        MultiFileHashMap.currentTable.put(args);
-        MultiFileHashMap.tableList.put(MultiFileHashMap.currentTable.getName(),
-                MultiFileHashMap.currentTable.getNumberOfElements());
+        currentTable.put(args);
+        MultiFileHashMap.tableList.put(currentTable.getName(),
+                currentTable.getNumberOfElements());
     }
 
     public static void remove(final String[] args) throws Exception {
-        MultiFileHashMap.currentTable.remove(args);
-        MultiFileHashMap.tableList.put(MultiFileHashMap.currentTable.getName(),
-                MultiFileHashMap.currentTable.getNumberOfElements());
+        currentTable.remove(args);
+        MultiFileHashMap.tableList.put(currentTable.getName(),
+                currentTable.getNumberOfElements());
     }
 
     public static void create(String[] args) throws Exception {
@@ -75,7 +76,6 @@ public class Interpreter {
             System.out.println(args[1] + " exists");
         } else {
             table.mkdir();
-            Table t = new Table(args[1], MultiFileHashMap.path);
             MultiFileHashMap.tableList.put(args[1], 0);
             System.out.println("created");
         }
@@ -88,8 +88,8 @@ public class Interpreter {
         if (!table.exists() || !table.isDirectory()) {
             System.out.println(args[1] + " not exists");
         } else {
-            if (MultiFileHashMap.currentTable.getName().equals(args[1])) {
-                MultiFileHashMap.currentTable = null;
+            if (currentTable.getName().equals(args[1])) {
+                currentTable = null;
             }
             MultiFileHashMap.tableList.remove(args[1]);
             table.delete();
@@ -102,10 +102,10 @@ public class Interpreter {
         if (MultiFileHashMap.tableList.get(args[1]) == null) {
             System.out.println(args[1] + " not exists");
         } else {
-            if (MultiFileHashMap.currentTable != null) {
-                MultiFileHashMap.currentTable.exit();
+            if (currentTable != null) {
+                currentTable.exit();
             }
-            MultiFileHashMap.currentTable = new Table(args[1], MultiFileHashMap.path);
+            currentTable = new Table(args[1], MultiFileHashMap.path);
             System.out.println("using " + args[1]);
         }
     }
@@ -127,8 +127,8 @@ public class Interpreter {
 
     public static void exit(final String[] args) throws Exception {
         checkNumOfArgs("exit", 1, args.length);
-        if (MultiFileHashMap.currentTable != null) {
-            MultiFileHashMap.currentTable.exit();
+        if (currentTable != null) {
+            currentTable.exit();
         }
         System.exit(0);
     }
