@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.deserg.filemap;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -19,8 +21,15 @@ public class FMMain {
         commandMap = new HashMap();
         argumentsQueue = new LinkedList<>();
 
-        Path path = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("db.file"));
-        fileMap = new FileMap(path);
+        String property = System.getProperty("db.file");
+        if (property != null) {
+            Path path = Paths.get(System.getProperty("user.dir")).resolve(property);
+            fileMap = new FileMap(path);
+        } else {
+            System.out.println("The property has not been set!");
+            System.exit(1);
+        }
+
 
         commandMap.put("exit", new CommandExit());
         commandMap.put("get", new CommandGet());
@@ -72,7 +81,12 @@ public class FMMain {
 
         if (args == null) {
             Scanner lineScan = new Scanner(System.in);
-            lineStr = lineScan.nextLine();
+            if (lineScan.hasNext()) {
+                lineStr = lineScan.nextLine();
+            } else {
+                System.out.println("Input is closed");
+                System.exit(1);
+            }
         } else {
 
             for (String string: args) {
@@ -101,7 +115,7 @@ public class FMMain {
 
     public void executeAll() {
         if (argumentsQueue.size() == 0) {
-            throw new MyException("No command");
+            return;
         }
 
         while (argumentsQueue.size() > 0) {
@@ -109,7 +123,7 @@ public class FMMain {
 
             Command command = commandMap.get(arguments.get(0));
             if (command == null) {
-                throw new MyException("No command");
+                throw new MyException("No such command");
             } else {
                 command.execute(arguments, fileMap);
             }

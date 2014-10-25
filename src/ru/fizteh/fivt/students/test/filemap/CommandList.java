@@ -12,17 +12,16 @@ public class CommandList implements Command {
 
         if (args.size() == 1) {
 
-            if (fileMap.size() > 0) {
-
-                Iterator<String> it = fileMap.keySet().iterator();
-                System.out.print(it.next());
-                while (it.hasNext()) {
-                    System.out.print(", " + it.next());
-                }
-
+            String out = "";
+            for (String key: fileMap.keySet()) {
+                out = out + key + ", ";
             }
 
-            System.out.println("");
+            if (out.isEmpty()) {
+                System.out.println("");
+            } else {
+                System.out.println(out.substring(0, out.length() - 2));
+            }
 
 
         } else {
