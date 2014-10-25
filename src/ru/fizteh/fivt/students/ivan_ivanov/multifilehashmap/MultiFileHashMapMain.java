@@ -9,16 +9,16 @@ public class MultiFileHashMapMain {
 
 
         String currentProperty = System.getProperty("fizteh.db.dir");
-        if (currentProperty == null){
-        	throw new IOException("Working directory is not specified");
+        if (currentProperty == null) {
+            throw new IOException("Working directory is not specified");
         }
         
-        if (!new File(currentProperty).exists()){
-        	throw new IOException("Working directory does not exist");
+        if (!new File(currentProperty).exists()) {
+            throw new IOException("Working directory does not exist");
         }
         
-        if (!new File(currentProperty).isDirectory()){
-        	throw new IOException("Working directory is not a directory");
+        if (!new File(currentProperty).isDirectory()) {
+            throw new IOException("Working directory is not a directory");
         }
         
         File base = new File(currentProperty);
