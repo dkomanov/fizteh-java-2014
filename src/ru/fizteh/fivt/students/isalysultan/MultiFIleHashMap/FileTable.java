@@ -21,11 +21,11 @@ public class FileTable {
         return storage.get(key);
     }
 
-    public boolean ContainsKey(String key) {
+    public boolean containsKey(String key) {
         return storage.containsKey(key);
     }
 
-    public boolean ContainsValue(String value) {
+    public boolean containsValue(String value) {
         return storage.containsValue(value);
     }
 
