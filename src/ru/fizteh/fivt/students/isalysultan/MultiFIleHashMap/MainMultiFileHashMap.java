@@ -9,7 +9,7 @@ public class MainMultiFileHashMap {
         if (argv.length == 0) {
             InteractiveMode.Interactive(newDirect);
         } else {
-            BatchMode.BatchParser(newDirect, argv);
+            BatchMode.batchParser(newDirect, argv);
         }
     }
 }
