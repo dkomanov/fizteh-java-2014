@@ -64,8 +64,8 @@ public class FileTable {
         filePath = null;
     }
 
-    public FileTable(Path FilePath, Table table) throws IOException {
-        filePath = FilePath;
+    public FileTable(Path filesPath, Table table) throws IOException {
+        filePath = filesPath;
         RandomAccessFile file = new RandomAccessFile(filePath.toString(), "r");
         if (file.length() > 0) {
             readFile(file, table);
@@ -184,14 +184,14 @@ public class FileTable {
         filePath.toFile().delete();
     }
 
-    public boolean FileOpenAndNotExist() {
+    public boolean fileOpenAndNotExist() {
         if (openRead && filePath != null) {
             return true;
         }
         return false;
     }
 
-    public boolean Open() {
+    public boolean open() {
         return openRead;
     }
 }
