@@ -5,12 +5,13 @@ import java.util.*;
 
 public class MultiFileHashMap {
 
-    private static String path; //way to directory
-    private static boolean out;
+    private static String path; //way to main directory
     private static Table currentTable;
-    private static Map<String, Integer> tableList;
+    private static Map<String, Integer> tableList; //map with names and numbers of elementls of tables
+
+    private static boolean out;
     private static final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
-            = "Invalid number of arguments";
+            = ": Invalid number of arguments";
 
     public static void main(final String[] args) {
         try {
@@ -37,7 +38,7 @@ public class MultiFileHashMap {
                 interactive();
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             System.exit(-1);
         }
     }
@@ -53,7 +54,7 @@ public class MultiFileHashMap {
             }
             System.exit(0);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 
@@ -139,10 +140,7 @@ public class MultiFileHashMap {
     }
 
     public static void create(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("create: "
-                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
-        }
+        checkNumOfArgs("create", 2, args.length);
         String pathToTable = path + File.separator + args[1];
         File table = new File(pathToTable);
         if (table.exists() && table.isDirectory()) {
@@ -156,10 +154,7 @@ public class MultiFileHashMap {
     }
 
     public static void drop(final String[] args) {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("drop: "
-                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
-        }
+        checkNumOfArgs("drop", 2, args.length);
         String pathToTable = path + File.separator + args[1];
         File table = new File(pathToTable);
         if (!table.exists() || !table.isDirectory()) {
@@ -175,10 +170,7 @@ public class MultiFileHashMap {
     }
 
     public static void use(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("use: "
-                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
-        }
+        checkNumOfArgs("use", 2, args.length);
         if (tableList.get(args[1]) == null) {
             System.out.println(args[1] + " not exists");
         } else {
@@ -206,16 +198,24 @@ public class MultiFileHashMap {
     }
 
     public static void exit(final String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("exit: "
-                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
-        }
+        checkNumOfArgs("exit", 1, args.length);
         if (currentTable != null) {
             currentTable.exit();
         }
         System.exit(0);
     }
+
+    public static void checkNumOfArgs(String operation,
+                                      int correctValue,
+                                      int testValue) throws IllegalArgumentException {
+        if (testValue != correctValue) {
+            throw new IllegalArgumentException(operation
+                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
+        }
+    }
 }
+
+
 
 
 
