@@ -33,7 +33,7 @@ public class Dir {
         }
     }
 
-    public void put(final int nfile, final String key,final String value)
+    public void put(final int nfile, final String key, final String value)
             throws IOException {
         if (maps.containsKey(nfile)) {
             maps.get(key).put(key, value);
