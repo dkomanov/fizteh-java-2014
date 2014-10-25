@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class InteractiveMode {
 
-    public static void Interactive(RootDirectory direct) throws IOException {
+    public static void interactive(RootDirectory direct) throws IOException {
         Scanner in = new Scanner(System.in);
         String[] parserCommand;
         CommandInterpretator newParser = new CommandInterpretator();
