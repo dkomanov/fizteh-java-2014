@@ -16,14 +16,10 @@ public class DataBaseCache {
     public static Path dataBasePath;
 
 
-    public void init(String dbPath)
-            throws DatabaseFileStructureException, WorkWithMemoryException   {
-        dataBasePath = Paths.get(System.getProperty(dbPath));
-        File dataBaseDirectory = dataBasePath.toFile();
-        if (!dataBaseDirectory.isDirectory() || !dataBaseDirectory.exists()) {
-            System.err.println("Root is not directory or not exists");
-            System.exit(-1);
-        }
+    public void init(Path dbPath)
+            throws DatabaseFileStructureException, WorkWithMemoryException {
+        dataBasePath = dbPath;
+        File dataBaseDirectory = dbPath.toFile();
         try {
             if (dataBaseDirectory.exists() && dataBaseDirectory.isDirectory()) {
                 File[] subdirs = getTables(dataBaseDirectory);
@@ -53,14 +49,15 @@ public class DataBaseCache {
     }
 
     public void commit() {
-       for (TableHash table: listOfTables) {
-           table.commit();
-       }
+        for (TableHash table : listOfTables) {
+            table.commit();
+        }
     }
 
     public void put(String key, String value, TableHash table) {
         table.put(key, value);
     }
+
     public void get(String key, TableHash table) {
         table.get(key);
     }
@@ -81,7 +78,7 @@ public class DataBaseCache {
         }
         delete(table);
         System.out.println("dropped");
-        for (TableHash tableHash: listOfTables) {
+        for (TableHash tableHash : listOfTables) {
             if (tableHash.getTableName().equals(tableName)) {
                 listOfTables.remove(tableHash);
             }
@@ -89,18 +86,32 @@ public class DataBaseCache {
     }
 
     public void createTable(String tableName)
-        throws InvalidCommandException {
+            throws InvalidCommandException {
         File table = dataBasePath.resolve(tableName).toFile();
         if (table.exists()) {
             System.out.println(tableName + " exists");
         }
         mkdir(tableName);
+        if (table.exists()) {
+            boolean isRightDirectory = false;
+            File dir = dataBasePath.toFile();
+            File[] listOfFiles = dir.listFiles();
+            for (int i = 0; i < listOfFiles.length; ++i) {
+                if (listOfFiles[i].getName().equals(tableName)) {
+                    isRightDirectory = true;
+                }
+            }
+            if (!isRightDirectory) {
+                System.err.println("Can't create " + tableName + " in the root.");
+                return;
+            }
+        }
         listOfTables.add(new TableHash(tableName, dataBasePath));
         System.out.println("created");
     }
 
     public TableHash useTable(String tableName) {
-        for (TableHash table: listOfTables) {
+        for (TableHash table : listOfTables) {
             if (table.getTableName().equals(tableName)) {
                 System.out.println("using " + tableName);
                 return table;
@@ -112,7 +123,7 @@ public class DataBaseCache {
 
     public void showTables() {
         System.out.println("table_name row_count");
-        for (TableHash table: listOfTables) {
+        for (TableHash table : listOfTables) {
             System.out.println(table.getTableName() + " " + table.getCount());
         }
     }

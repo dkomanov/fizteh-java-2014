@@ -1,6 +1,9 @@
 package ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap;
 
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -16,7 +19,13 @@ public class MultiFileHashMap {
 
     public static void main(String[] args) {
         try {
-            cache.init("fizteh.db.dir");
+            Path dbPath = Paths.get(System.getProperty("fizteh.db.dir"));
+            File dataBaseDirectory = dbPath.toFile();
+            if (!dataBaseDirectory.isDirectory() || !dataBaseDirectory.exists()) {
+                System.err.println("Root is not directory or not exists");
+                System.exit(-1);
+            }
+            cache.init(dbPath);
             if (args.length == 0) {
                 batchMode = false;
                 execInteractiveMode();
