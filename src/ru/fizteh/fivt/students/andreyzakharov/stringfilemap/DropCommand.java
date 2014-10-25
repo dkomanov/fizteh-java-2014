@@ -1,8 +1,5 @@
 package ru.fizteh.fivt.students.andreyzakharov.stringfilemap;
 
-import java.io.IOException;
-import java.nio.file.Files;
-
 public class DropCommand implements Command {
     @Override
     public String execute(DbConnector connector, String... args) throws CommandInterruptException {

@@ -40,7 +40,16 @@ public class FileMap implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        return stableData.get(key);
+
+        if (removed.contains(key)) {
+            return null;
+        } else if (added.containsKey(key)) {
+            return added.get(key);
+        } else if (changed.containsKey(key)) {
+            return changed.get(key);
+        } else {
+            return stableData.get(key);
+        }
     }
 
     @Override
@@ -71,9 +80,10 @@ public class FileMap implements Table {
                     return stableData.get(key);
                 }
             } else {
-                ++pending;
-                added.put(key, value);
-                return null;
+                if (!added.containsKey(key)) {
+                    ++pending;
+                }
+                return added.put(key, value);
             }
         }
     }
@@ -84,8 +94,8 @@ public class FileMap implements Table {
             throw new IllegalArgumentException("null argument");
         }
 
-        if (removed.add(key)) {
-            if (stableData.containsKey(key)) {
+        if (stableData.containsKey(key)) {
+            if (removed.add(key)) {
                 if (changed.containsKey(key)) {
                     return changed.remove(key);
                 } else {
@@ -93,15 +103,15 @@ public class FileMap implements Table {
                     return stableData.get(key);
                 }
             } else {
-                if (added.containsKey(key)) {
-                    return added.remove(key);
-                } else {
-                    ++pending;
-                    return stableData.get(key);
-                }
+                return null;
             }
         } else {
-            return null;
+            if (added.containsKey(key)) {
+                --pending;
+                return added.remove(key);
+            } else {
+                return null;
+            }
         }
     }
 
@@ -146,7 +156,10 @@ public class FileMap implements Table {
 
     @Override
     public List<String> list() {
-        return new ArrayList<>(stableData.keySet());
+        List<String> keySet = new ArrayList<>(stableData.keySet());
+        keySet.removeAll(removed);
+        keySet.addAll(added.keySet());
+        return keySet;
     }
 
     public void clear() {
@@ -200,10 +213,6 @@ public class FileMap implements Table {
     }
 
     public void unload() throws ConnectionInterruptException {
-        if (pending == 0) {
-            return;
-        }
-
         try {
             clearFiles();
         } catch (ConnectionInterruptException e) {
@@ -240,7 +249,7 @@ public class FileMap implements Table {
                         try {
                             streams[i][j].close();
                         } catch (IOException e1) {
-                            continue;
+                            //
                         }
                     }
                 }
@@ -253,7 +262,7 @@ public class FileMap implements Table {
                         try {
                             streams[i][j].close();
                         } catch (IOException e) {
-                            continue;
+                            //
                         }
                     }
                 }

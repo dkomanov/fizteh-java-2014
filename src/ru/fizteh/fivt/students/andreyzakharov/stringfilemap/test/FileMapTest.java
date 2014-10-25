@@ -77,14 +77,14 @@ public class FileMapTest {
 
     @Test
     public void testIO() throws Exception {
-        FileMap f = new FileMap(root.resolve(dbNames[3]));
-        FileMap g = new FileMap(root.resolve(dbNames[3]));
+        FileMap f = new FileMap(root.resolve(dbNames[2]));
+        FileMap g = new FileMap(root.resolve(dbNames[2]));
 
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], vals[i]);
         }
 
-        f.unload();
+        f.commit();
         g.load();
 
         assertEquals(new HashSet<>(f.list()), new HashSet<>(g.list()));
