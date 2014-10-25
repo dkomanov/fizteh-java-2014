@@ -228,7 +228,7 @@ public class MultiFileMap {
         }
     }
 
-    private static void mfmShowTables(final String args[]) throws Exception {
+    private static void mfmShowTables(final String[] args) throws Exception {
         if (args.length != 2) {
             mfmWrongInput("show tables");
         }
@@ -401,7 +401,7 @@ public class MultiFileMap {
         throw new Exception(commandName + ": failed to create a directory [" + arg + "].");
     }
     
-    private static void mfmNotExists( final String commandName, final String arg) throws Exception {
+    private static void mfmNotExists(final String commandName, final String arg) throws Exception {
         throw new Exception(commandName + ": [" + arg + "] does not exists.");
     }
     
