@@ -33,13 +33,13 @@ public class CommandForMap {
         }
     }
 
-    public static void remove(String key, FileTable tables, Table Data) {
+    public static void remove(String key, FileTable tables, Table data) {
         String result = tables.removeMap(key);
         if (result == null) {
             System.out.println("not found");
         } else {
             System.out.println("removed");
-            Data.dicrementNumberRecords();
+            data.dicrementNumberRecords();
         }
     }
 
