@@ -6,7 +6,7 @@ public class Command {
 
     public static void create(RootDirectory direct, String tableName)
             throws IOException {
-        if (!direct.tableList.containsKey(tableName)) {
+        if (direct.checkTableExist(tableName)) {
             System.out.println("tablename exists");
             return;
         }
@@ -14,20 +14,22 @@ public class Command {
         direct.TableInizial(newTable, tableName);
     }
 
-    public static void use(RootDirectory direct, String tableName)
+    public static void use(RootDirectory direct, String tableName, boolean ind)
             throws IOException {
-        if (!direct.tableList.containsKey(tableName)) {
-            System.out.println("tablename not exists");
+        if (!direct.checkTableExist(tableName)) {
+            if (ind) {
+                System.out.println("tablename not exists");
+            }
             return;
         }
-        direct.use(tableName);
+        direct.use(tableName, ind);
     }
 
     public static void drop(RootDirectory direct, String tableName) {
         direct.drop(tableName);
     }
 
-    public static void show(RootDirectory direct) {
+    public static void show(RootDirectory direct) throws IOException {
         direct.showTables();
     }
 }
