@@ -35,6 +35,7 @@ public class MultiFileMap {
             
             String[] names = Paths.get(dbPath).toFile().list();
             try {
+                dbInformation = new HashMap<String, Integer>();
                 for (String name : names) {
                     if (Paths.get(dbPath, name).toFile().isFile()) {
                         Files.delete(Paths.get(dbPath, name));
@@ -147,18 +148,42 @@ public class MultiFileMap {
                 System.out.println("tablename not exists");
                 return;
             }
-            if (pathToFile.equals(dbTable.getPath())) {
-                dbTable = null;
+            if (dbTable != null) {
+                if (pathToFile.getFileName().toString().equals(dbTable.getPath())) {
+                    dbTable.close();
+                    dbTable = null;
+                }
+            }
+            
+            if (!pathToFile.toFile().isDirectory()) {
+                mfmNotDirectory("drop", args[1]);
+            }
+            mfmRecursiveDrop(pathToFile);
+        } catch (Exception exception) {
+            throw new Exception(exception.getMessage());
+        }
+         
+        dbInformation.remove(Paths.get(dbPath, args[1]).normalize().getFileName().toString());
+        System.out.println("dropped");
+    }
+
+    private static void mfmRecursiveDrop(final Path pathToFile) throws Exception {
+        try {
+            if (!pathToFile.toFile().exists()) {
+                mfmNotExists("drop", pathToFile.toString());
+                return;
+            }
+            if (pathToFile.toFile().isFile()) {
+                if (!pathToFile.toFile().delete()) {
+                    mfmSmthWrong("drop");
+                }
             }
             if (pathToFile.toFile().isDirectory()) {
                 String[] names = pathToFile.toFile().list();
                 if (names.length != 0) {
                     for (String name : names) {
                         if (Paths.get(pathToFile.toString(), name).normalize().toFile().isDirectory()) {
-                            System.setProperty("user.dir", pathToFile.toString());
-                            String[] helpArray = new String[] {"drop", name};
-                            mfmDrop(helpArray);
-                            System.setProperty("user.dir", pathToFile.getParent().toString());
+                            mfmRecursiveDrop(Paths.get(pathToFile.toString(), name).normalize());
                         }
                         if (Paths.get(pathToFile.toString(), name).normalize().toFile().isFile()) {
                             if (!Paths.get(pathToFile.toString(), name).normalize().toFile().delete()) {
@@ -170,18 +195,14 @@ public class MultiFileMap {
                 if (!pathToFile.toFile().delete()) {
                     mfmSmthWrong("drop");
                 }
-            } else {
-                mfmNotDirectory("drop", args[1]);
             }
         } catch (InvalidPathException invException) {
-            mfmInvalidName("drop", args[2]);
+            mfmInvalidName("drop", invException.getMessage());
         } catch (SecurityException secException) {
-            mfmSecurity("drop", args[2]);
+            mfmSecurity("drop", secException.getMessage());
         }
-        dbInformation.remove(Paths.get(dbPath, args[1]).normalize().getFileName().toString());
-        System.out.println("dropped");
     }
-
+    
     private static void mfmUse(final String[] args) throws Exception {
         if (args.length != 2) {
             mfmWrongQuantity("use");
@@ -194,6 +215,12 @@ public class MultiFileMap {
             System.out.println(args[1] + " not exists");
         } else {
             if (dbTable != null) {
+                if (dbTable.getPath().equals(Paths.get(dbPath, args[1]).normalize().getFileName().toString())) {
+                    System.out.println("is already in use");
+                    return;
+                }
+                dbInformation.remove(dbTable.getPath());
+                dbInformation.put(dbTable.getPath(), dbTable.list().length);
                 dbTable.close();
             }
             dbTable = new DataBase(Paths.get(dbPath, args[1]).normalize().toString());
@@ -208,18 +235,22 @@ public class MultiFileMap {
         if (!args[1].equals("tables")) {
             mfmWrongInput("show tables");
         }
-        
-       Set<String> tables = dbInformation.keySet();
-       System.out.println("table_name row_count");
-       for (String table : tables) {
-           if (dbTable != null) {
-               if (table.equals(dbTable.getPath())) {
-                   System.out.println(table + " " + dbTable.list().length);
-               } else {
-                   System.out.println(table + " " + dbInformation.get(table));
-               }
-           }
-       }
+
+        Set<String> tables = dbInformation.keySet();
+        if (!tables.isEmpty()) {
+            System.out.println("table_name row_count");
+        }
+        for (String table : tables) {
+            if (dbTable != null) {
+                if (table.equals(dbTable.getPath())) {
+                    System.out.println(table + " " + dbTable.list().length);
+                } else {
+                    System.out.println(table + " " + dbInformation.get(table));
+                }
+            } else {
+                System.out.println(table + " " + dbInformation.get(table));
+            }
+        }
     }
     
     private static void mfmExit(final String[] args) throws Exception {
@@ -252,7 +283,6 @@ public class MultiFileMap {
             System.out.println(value);
         }
         dbTable.put(args[1], args[2]);
-        dbTable.writeOnDisk();
     }
     
     private static void mfmGet(final String[] args) throws Exception {
@@ -295,14 +325,18 @@ public class MultiFileMap {
             dbTable.remove(args[1]);
             System.out.println("removed");
         }
-        dbTable.writeOnDisk();
     }
     
     private static void mfmList(final String[] args) throws Exception {
         if (args.length != 1) {
             mfmWrongQuantity("list");
         }
-
+        
+        if (dbTable == null) {
+            System.out.println("no table");
+            return;
+        }
+        
         String[] keys = dbTable.list();
         if (keys.length == 0) {
             System.out.println("");
@@ -366,6 +400,11 @@ public class MultiFileMap {
     private static void mfmNotMkdir(final String commandName, final String arg) throws Exception {
         throw new Exception(commandName + ": failed to create a directory [" + arg + "].");
     }
+    
+    private static void mfmNotExists( final String commandName, final String arg) throws Exception {
+        throw new Exception(commandName + ": [" + arg + "] does not exists.");
+    }
+    
     private static void mfmSecurity(final String commandName, final String arg) throws Exception {
         throw new Exception(commandName + ": access to the [" + arg + "] is prohibeted.");
     }
