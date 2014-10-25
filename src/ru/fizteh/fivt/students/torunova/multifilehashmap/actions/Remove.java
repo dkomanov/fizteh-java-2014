@@ -8,13 +8,9 @@ import ru.fizteh.fivt.students.torunova.multifilehashmap.Database;
 public class Remove extends Action {
     @Override
     public boolean run(String[] args, Database db) {
-        if (args.length < 1) {
-            tooFewArguments();
-            return false;
-        } else if (args.length > 1) {
-            tooManyArguments();
-            return false;
-        }
+		if (!checkNumberOfArguments(1, args.length)) {
+			return false;
+		}
         if (db.currentTable == null) {
             System.out.println("no table");
             return false;

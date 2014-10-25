@@ -11,13 +11,9 @@ import java.io.IOException;
 public class UseTable extends Action{
     @Override
     public boolean run(String[] args, Database db) throws IOException, IncorrectFileException {
-        if (args.length > 1) {
-            tooManyArguments();
-            return false;
-        } else if (args.length < 1) {
-            tooFewArguments();
-            return false;
-        }
+		if (!checkNumberOfArguments(1, args.length)) {
+			return false;
+		}
         if (db.useTable(args[0])) {
             System.out.println("using " + args[0]);
             return true;

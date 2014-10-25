@@ -45,8 +45,7 @@ public class  Database {
         File table = new File(dbName, tableName);
         String newTableName = table.getAbsolutePath();
         if (!tables.containsKey(tableName)) {
-            Table newTable = new Table(newTableName);
-            tables.put(tableName, newTable);
+            tables.put(tableName, new Table(newTableName));
             return true;
         }
         return false;
@@ -116,13 +115,13 @@ public class  Database {
                 System.setProperty("user.dir", dIr.getParent());
             }
             File[] content = dIr.listFiles();
-            for (int i = 0; i < content.length; i++) {
-                if (content[i].isDirectory()) {
-                    if (!removeRecursive(content[i].getAbsolutePath())) {
+			for(File item:content) {
+                if (item.isDirectory()) {
+                    if (!removeRecursive(item.getAbsolutePath())) {
                         return false;
                     }
                 } else {
-                    if (!remove(content[i].getAbsolutePath())) {
+                    if (!remove(item.getAbsolutePath())) {
                         return false;
                     }
                 }

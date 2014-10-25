@@ -15,10 +15,9 @@ public class FileMap {
     String file;
 
     public FileMap(final String f) throws IncorrectFileException, IOException {
-        DataInputStream fis = null;
-        file = f;
-        fis = new DataInputStream(new FileInputStream(file));
-        int  length = 0;
+		file = f;
+        DataInputStream fis = new DataInputStream(new FileInputStream(file));
+        int  length;
         while (fis.available() > 0) {
             length = fis.readInt();
             byte[] key = new byte[length];
@@ -32,20 +31,12 @@ public class FileMap {
                 throw new IncorrectFileException(
                         "Real value length does not match specified in file length.");
             }
-            String k = new String(key, "UTF-8");
-            String v = new String(value, "UTF-8");
-            map.put(k, v);
+            map.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
         }
     }
 
-    public boolean put(String key, String value) {
-        if (map.containsKey(key)) {
-            map.remove(key);
-            map.put(key, value);
-            return false;
-        }
-        map.put(key, value);
-        return true;
+    public String put(String key, String value) {
+       return map.put(key, value);
     }
 
     public String get(String key) {
@@ -73,13 +64,12 @@ public class FileMap {
     }
 
     public void close() throws  IOException {
-        DataOutputStream fos = null;
-        fos = new DataOutputStream(new FileOutputStream(file));
+        DataOutputStream fos = new DataOutputStream(new FileOutputStream(file));
         Set<String> keys = map.keySet();
         for (String key : keys) {
-            fos.writeInt(key.length());
+            fos.writeInt(key.getBytes("UTF-8").length);
             fos.write(key.getBytes("UTF-8"));
-            fos.writeInt(map.get(key).length());
+            fos.writeInt(map.get(key).getBytes("UTF-8").length);
             fos.write(map.get(key).getBytes("UTF-8"));
         }
 

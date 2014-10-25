@@ -11,13 +11,9 @@ import java.io.IOException;
 public class Get extends Action {
     @Override
     public boolean run(String[] args, Database db) throws IOException, IncorrectFileException {
-        if (args.length < 1) {
-            tooFewArguments();
-            return false;
-        } else if (args.length > 1) {
-            tooManyArguments();
-            return false;
-        }
+		if (!checkNumberOfArguments(1, args.length)) {
+			return false;
+		}
         if (db.currentTable == null) {
             System.out.println("no table");
             return false;

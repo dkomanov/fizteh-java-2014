@@ -44,14 +44,14 @@ public class Shell {
     }
 
     public void run() {
-        String nextcommand = new String();
+        String nextCommand = new String();
         String[] functions;
         while (true) {
             if (interactive) {
                 System.out.print("$ ");
             }
             try {
-                nextcommand = scanner.nextLine();
+                nextCommand = scanner.nextLine();
             } catch (NoSuchElementException e) {
                 try {
                     db.close();
@@ -61,7 +61,7 @@ public class Shell {
                 }
                 return;
             }
-            functions = nextcommand.split(";");
+            functions = nextCommand.split(";");
             for (String function : functions) {
                 function = function.trim();
                 String[] args = parseArguments(function);
@@ -98,17 +98,17 @@ public class Shell {
                         System.exit(1);
                     }
                 } else if (name.equals("exit")) {
-                    if (args.length > 0) {
+                    /*if (args.length > 0) {
                         System.err.println("exit:too many arguments.");
-                    } else {
-                        try {
-                            db.close();
-                        } catch (IOException e) {
-                            System.err.println("Caught IOException" + e.getMessage());
-                            System.exit(1);
-                        }
-                        System.exit(0);
-                    }
+                    } else {*/
+						try {
+							db.close();
+						} catch (IOException e) {
+							System.err.println("Caught IOException" + e.getMessage());
+							System.exit(1);
+						}
+						System.exit(0);
+					//}
                 } else if (!Pattern.matches("\\s+", name)) {
                     System.err.println("Command not found.");
                     if (!interactive) {

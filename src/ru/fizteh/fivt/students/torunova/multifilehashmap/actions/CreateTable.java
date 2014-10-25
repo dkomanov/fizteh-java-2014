@@ -15,13 +15,9 @@ public class CreateTable extends Action{
                                 throws IOException,
                                 IncorrectFileException,
                                 TableNotCreatedException {
-        if (args.length > 1) {
-            tooManyArguments();
-            return false;
-        } else if (args.length < 1) {
-            tooFewArguments();
-            return false;
-        }
+       		if (!checkNumberOfArguments(1, args.length)) {
+				return false;
+			}
         if (db.createTable(args[0])) {
             System.out.println("created");
             return true;

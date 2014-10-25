@@ -11,24 +11,19 @@ import java.io.IOException;
 public class Put extends Action {
     @Override
     public boolean run(String[] args, Database db) throws IOException, IncorrectFileException {
-        if (args.length < 2) {
-            tooFewArguments();
-            return false;
-        } else if (args.length > 2) {
-            tooManyArguments();
-            return false;
-        }
+		if (!checkNumberOfArguments(2, args.length)) {
+			return false;
+		}
         if (db.currentTable == null) {
             System.out.println("no table");
             return false;
         }
-        String value = db.currentTable.get(args[0]);
-        boolean result = db.currentTable.put(args[0], args[1]);
-        if (result) {
+        String oldValue = db.currentTable.put(args[0], args[1]);
+        if (oldValue == null) {
             System.out.println("new");
         } else {
             System.out.println("overwrite");
-            System.out.println(value);
+            System.out.println(oldValue);
         }
         return true;
     }

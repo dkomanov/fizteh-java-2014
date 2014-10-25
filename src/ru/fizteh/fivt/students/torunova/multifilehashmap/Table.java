@@ -43,8 +43,8 @@ public class Table {
         tableName = table.getAbsolutePath();
     }
 
-    public boolean put(String key, String value) throws IOException, IncorrectFileException {
-        boolean result;
+    public String put(String key, String value) throws IOException, IncorrectFileException {
+        String result;
         String fileName = getFileName(key);
         String dirName = getDirName(key);
         File dir  = new File(tableName, dirName).getAbsoluteFile();
@@ -58,7 +58,7 @@ public class Table {
                 result = fm.put(key, value);
                 files.put(file, fm);
         }
-        if (result) {
+        if (result == null) {
             numberOfEntries++;
         }
         return result;
@@ -92,9 +92,7 @@ public class Table {
             if (fm.isEmpty()) {
                 File directory = file.getParentFile().getAbsoluteFile();
                 file.delete();
-                if (directory.listFiles().length == 0) {
-                    directory.delete();
-                }
+                directory.delete();
                 files.remove(file);
             }
             if (result) {
@@ -118,17 +116,13 @@ public class Table {
             fm.close();
         }
     }
-    public String getTableName() {
-        return tableName;
-    }
 
     private String getDirName(String key) {
         int hashcode = key.hashCode();
         int ndirectory = hashcode % 16;
         StringBuilder builder = new StringBuilder();
         builder.append(ndirectory).append(".dir");
-        String dirName = builder.toString();
-        return dirName;
+		return builder.toString();
     }
 
     private String getFileName(String key) {
@@ -136,8 +130,8 @@ public class Table {
         int nfile = hashcode / 16 % 16;
         StringBuilder builder = new StringBuilder();
         builder.append(nfile).append(".dat");
-        String fileName = builder.toString();
-        return fileName;
+        return  builder.toString();
+
     }
 
 }

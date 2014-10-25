@@ -36,7 +36,6 @@ public class Main {
         for (int i = 0; i < length; i++) {
             b.append(commands[i]).append(" ");
         }
-        String functions = b.toString();
-        return functions;
+        return b.toString();
     }
 }
