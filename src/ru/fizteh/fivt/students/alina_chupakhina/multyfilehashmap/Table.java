@@ -130,10 +130,7 @@ public class Table {
     }
 
     public static void put(String[] args) throws Exception {
-        if (args.length != 3) {
-            throw new IllegalArgumentException("put: "
-                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
-        }
+        checkNumOfArgs("put", 3, args.length);
         String key = args[1];
         String value = args[2];
         String s = fm.put(key, value);
@@ -147,10 +144,7 @@ public class Table {
     }
 
     public static void get(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("get: "
-                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
-        }
+        checkNumOfArgs("get", 2, args.length);
         String key = args[1];
         String s = fm.get(key);
         if (s != null) {
@@ -162,10 +156,7 @@ public class Table {
     }
 
     public static void remove(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("remove: "
-                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
-        }
+        checkNumOfArgs("remove", 2, args.length);
         String key = args[1];
         String s = fm.remove(key);
         if (s != null) {
@@ -177,10 +168,7 @@ public class Table {
     }
 
     public static void list(String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("list: "
-                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
-        }
+        checkNumOfArgs("list", 1, args.length);
         Set<String> keySet = fm.keySet();
         int counter = 0;
         for (String current : keySet) {
@@ -191,6 +179,15 @@ public class Table {
             }
         }
         System.out.println();
+    }
+
+    public static void checkNumOfArgs(String operation,
+                                      int correctValue,
+                                      int testValue) throws IllegalArgumentException {
+        if (testValue != correctValue) {
+            throw new IllegalArgumentException(operation
+                    + INVALID_NUMBER_OF_ARGUMENTS_MESSAGE);
+        }
     }
 
     public static void exit() throws Exception {
