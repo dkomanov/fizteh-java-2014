@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class BatchMode {
 
-    public static void BatchParser(RootDirectory direct, String[] argv)
+    public static void batchParser(RootDirectory direct, String[] argv)
             throws IOException {
         Scanner in = new Scanner(System.in);
         int commandCount = 0;
