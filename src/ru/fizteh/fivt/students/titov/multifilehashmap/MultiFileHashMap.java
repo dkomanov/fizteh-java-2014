@@ -306,7 +306,7 @@ public class MultiFileHashMap {
                 try {
                     createArrayOfHashMaps();
                 } catch (Exception e) {
-
+                    return true;
                 }
                 return true;
             }
