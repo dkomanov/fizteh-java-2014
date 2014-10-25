@@ -144,7 +144,7 @@ public class Interpreter {
                         System.err.println("Unknown command:" + arg2[0]);
                         System.exit(-1);
                     } else {
-                        if (arg2[1] == "tables") {
+                        if (arg2[1].equals("tables")) {
                             tL.showTables();
                         } else {
                             System.err.println("Unknown command:" + arg2[0] + " " + arg2[1]);
