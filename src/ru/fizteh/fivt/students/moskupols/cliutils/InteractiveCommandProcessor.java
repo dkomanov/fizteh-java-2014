@@ -28,6 +28,7 @@ public class InteractiveCommandProcessor implements CommandProcessor {
                     commandFactory.fromString(s).execute();
                 } catch (UnknownCommandException | CommandExecutionException e) {
                     System.err.println(e.getMessage());
+                    // e.printStackTrace();
                 } catch (StopProcessingException e) {
                     exited = true;
                 }
