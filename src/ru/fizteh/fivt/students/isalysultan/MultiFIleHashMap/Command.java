@@ -11,7 +11,7 @@ public class Command {
             return;
         }
         Table newTable = new Table(direct, tableName);
-        direct.TableInizial(newTable, tableName);
+        direct.tableInizial(newTable, tableName);
     }
 
     public static void use(RootDirectory direct, String tableName, boolean ind)
