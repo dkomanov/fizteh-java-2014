@@ -10,7 +10,7 @@ public class Table {
 
     private String nameTable;
 
-    private Path TableDirectory;
+    private Path tableDirectory;
 
     private int numberRecords;
 
@@ -35,9 +35,9 @@ public class Table {
     }
 
     void read() throws IOException {
-        String[] subDirects = TableDirectory.toFile().list();
+        String[] subDirects = tableDirectory.toFile().list();
         for (String nameSubDirect : subDirects) {
-            Path subDirect = TableDirectory.resolve(nameSubDirect);
+            Path subDirect = tableDirectory.resolve(nameSubDirect);
             int numberDirectory;
             int numberFile;
             if (!subDirect.toFile().isDirectory()
@@ -72,20 +72,20 @@ public class Table {
     }
 
     public Table(RootDirectory direct, String tableName, boolean dummyArg) {
-        TableDirectory = direct.get().resolve(tableName);
+        tableDirectory = direct.get().resolve(tableName);
         numberRecords = 0;
         nameTable = tableName;
     }
 
     public Table(RootDirectory direct, String tableName) throws IOException {
-        TableDirectory = direct.get().resolve(tableName);
-        TableDirectory.toFile().mkdir();
+        tableDirectory = direct.get().resolve(tableName);
+        tableDirectory.toFile().mkdir();
         numberRecords = 0;
         Set<Integer> numberSubDirect = subDirectsMap.keySet();
         for (Integer key : numberSubDirect) {
             subDirectsMap.put(key, null);
         }
-        if (!TableDirectory.toFile().isDirectory()) {
+        if (!tableDirectory.toFile().isDirectory()) {
             System.err.println("Directory doesn't exist.");
             return;
         }
@@ -97,20 +97,20 @@ public class Table {
     }
 
     public boolean equalityTable(Table argv) {
-        if (TableDirectory.equals(argv.TableDirectory)) {
+        if (tableDirectory.equals(argv.tableDirectory)) {
             return true;
         }
         return false;
     }
 
     public void dropTable() {
-        String[] subDirects = TableDirectory.toFile().list();
+        String[] subDirects = tableDirectory.toFile().list();
         if (subDirects.length == 0) {
-            TableDirectory.toFile().delete();
+            tableDirectory.toFile().delete();
             return;
         }
         for (String subDirect : subDirects) {
-            Path subDirectPath = TableDirectory.resolve(subDirect);
+            Path subDirectPath = tableDirectory.resolve(subDirect);
             String[] fileList = subDirectPath.toFile().list();
             if (fileList.length == 0) {
                 subDirectPath.toFile().delete();
@@ -122,7 +122,7 @@ public class Table {
                 subDirectPath.toFile().delete();
             }
         }
-        TableDirectory.toFile().delete();
+        tableDirectory.toFile().delete();
     }
 
     public void incrementNumberRecords() {
@@ -141,7 +141,7 @@ public class Table {
             files[ndirectory][nfile] = new FileTable();
         }
         FileTable currTable = files[ndirectory][nfile];
-        Path file = TableDirectory.resolve(Integer.toString(ndirectory) + "."
+        Path file = tableDirectory.resolve(Integer.toString(ndirectory) + "."
                 + "dir");
         file = file.resolve(Integer.toString(ndirectory) + "." + "dat");
         currTable.setPath(file);
@@ -181,7 +181,7 @@ public class Table {
 
     public void write() throws IOException {
         for (int i = 0; i < 16; ++i) {
-            Path subDirect = TableDirectory;
+            Path subDirect = tableDirectory;
             subDirect = subDirect.resolve((Integer.toString(i) + "." + "dir"));
             boolean directExist = false;
             for (int j = 0; j < 16; ++j) {
