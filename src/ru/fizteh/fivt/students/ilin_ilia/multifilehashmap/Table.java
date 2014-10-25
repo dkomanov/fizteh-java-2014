@@ -9,18 +9,18 @@ import java.util.TreeMap;
 
 public class Table {
     private File tableName;
-    private Map <Integer, Dir> data;
+    private Map<Integer, Dir> data;
     
     Table(final String name) throws IOException {
         tableName  = new File(name);
         data = new TreeMap<>();
         if (tableName.exists()) {
-        	if (tableName.list() != null) {
-        		for (String file: tableName.list()) {
-        			System.out.println(file);
-                	data.put(Integer.parseInt(file), new Dir(Paths.get(name).resolve(file).toString()));
-            	}
-        	}
+            if (tableName.list() != null) {
+                for (String file: tableName.list()) {
+                    System.out.println(file);
+                    data.put(Integer.parseInt(file), new Dir(Paths.get(name).resolve(file).toString()));
+                }
+            }
         } else {
             tableName.mkdir();
         }
