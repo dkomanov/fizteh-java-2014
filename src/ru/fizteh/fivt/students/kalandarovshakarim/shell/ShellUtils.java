@@ -5,6 +5,7 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.shell;
 
+import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
@@ -27,15 +28,14 @@ public class ShellUtils {
     private Path workingDirectory;
 
     public ShellUtils() {
-        this.workingDirectory
-                = new File(System.getProperty("user.home")).toPath();
+        this.workingDirectory = new File(System.getProperty("user.home")).toPath();
     }
 
     public ShellUtils(Path workingDirectory) {
         this.workingDirectory = workingDirectory;
     }
 
-    private Path getPath(String fileName) {
+    public Path getPath(String fileName) {
         Path path = Paths.get(fileName);
         if (workingDirectory != null && !path.isAbsolute()) {
             path = workingDirectory.resolve(path);
@@ -90,37 +90,36 @@ public class ShellUtils {
         Files.copy(file.toPath(), System.out);
     }
 
-    private void rmDir(File dir) {
-        File[] dirList = dir.listFiles();
-        for (File file : dirList) {
-            if (file.isDirectory()) {
-                rmDir(file);
+    private void rmDir(Path path) throws IOException {
+        try (DirectoryStream<Path> newDirectoryStream = Files.newDirectoryStream(path)) {
+            for (Path file : newDirectoryStream) {
+                if (Files.isDirectory(file)) {
+                    rmDir(file);
+                }
+                Files.delete(file);
             }
-            file.delete();
+            Files.delete(path);
         }
-        dir.delete();
     }
 
     public void rm(String fileName, boolean recursive)
             throws FileNotFoundException, IOException {
+        Path file = getPath(fileName);
 
-        File file = getPath(fileName).toFile();
-
-        if (!file.exists()) {
+        if (Files.notExists(file)) {
             throw new FileNotFoundException(fileName);
         }
 
-        if (file.isDirectory() && !recursive) {
+        if (Files.isDirectory(file) && !recursive) {
             String exMsg = "'%s' is Directory";
             throw new IOException(String.format(exMsg, fileName));
         }
 
-        if (file.isFile()) {
-            file.delete();
-        } else {
+        if (Files.isDirectory(file)) {
             rmDir(file);
+        } else {
+            Files.delete(file);
         }
-
     }
 
     public void cp(String source, String destination, boolean recursive)
@@ -141,19 +140,7 @@ public class ShellUtils {
             String exMsg = "'%s' and '%s' are the same";
             throw new IOException(String.format(exMsg, source, destination));
         }
-        /*
-         if (destFile.isDirectory() && destFile.exists()) {
-         destFile = new File(destFile, srcFile.getName());
-         }
-         /*
-         if (!destFile.exists()) {
-         if (srcFile.isDirectory() && !destFile.mkdir()) {
-         throw new FileNotFoundException(destination);
-         }
-         if (srcFile.isFile() && !destFile.createNewFile()) {
-         throw new FileNotFoundException(destination);
-         }
-         }*/
+
         if (srcFile.isFile()) {
             if (destFile.isDirectory()) {
                 destFile = new File(destFile, source);

@@ -4,26 +4,26 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.filemap.FileMapShellState;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
+import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractExit;
 
 /**
  *
  * @author shakarim
  */
-public class ExitCommand extends AbstractCommand<FileMapShellState> {
+public class ExitCommand extends AbstractExit<OneTableBase> {
 
-    public ExitCommand() {
-        super("exit", 0);
+    public ExitCommand(OneTableBase context) {
+        super(context);
     }
 
     @Override
-    public void exec(FileMapShellState state, String args)
-            throws FileNotFoundException, IOException {
-        state.getState().save();
-        System.exit(0);
-    }
+    protected void onExit() {
+        Table activeTable = context.getActiveTable();
 
+        if (activeTable != null) {
+            activeTable.commit();
+        }
+    }
 }

@@ -4,31 +4,22 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
-import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.filemap.FileMapShellState;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 
 /**
  *
  * @author shakarim
  */
-public class PutCommand extends AbstractCommand<FileMapShellState> {
+public class PutCommand extends AbstractTableCommand {
 
-    public PutCommand() {
-        super("put", 2);
+    public PutCommand(OneTableBase context) {
+        super("put", 2, context);
     }
 
     @Override
-    public void exec(FileMapShellState state, String args)
-            throws IOException {
-        String[] params = CommandParser.getParams(args);
-
-        if (this.getArgsNum() != params.length) {
-            throw new IOException("invalid number of arguments");
-        }
-
-        String oldValue = state.getState().put(params[0], params[1]);
+    protected void onActiveTable(Table activeTable, String[] args) {
+        String oldValue = activeTable.put(args[0], args[1]);
 
         if (oldValue == null) {
             System.out.println("new");
@@ -37,5 +28,4 @@ public class PutCommand extends AbstractCommand<FileMapShellState> {
             System.out.println(oldValue);
         }
     }
-
 }

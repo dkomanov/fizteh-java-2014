@@ -7,8 +7,10 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.Command;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
@@ -16,53 +18,44 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
 /**
  *
  * @author Shakarim
- * @param <State>
  */
-public class Shell<State> {
+public class Shell {
 
-    private HashMap<String, Command> supportedCmds;
-    private State shellState;
+    private final Map<String, Command> supportedCmds;
     private final String[] args;
 
-    public Shell() {
-        this.args = new String[0];
+    public Shell(Command[] commands, String[] args) {
         this.supportedCmds = new HashMap<>();
-    }
-
-    public Shell(State shellState, String[] args, Command<?>[] commands) {
-        this.shellState = shellState;
-        this.args = args;
-        this.supportedCmds = new HashMap<>();
-        for (Command<?> cmd : commands) {
+        for (Command cmd : commands) {
             this.supportedCmds.put(cmd.getName(), cmd);
         }
+        this.args = args;
     }
 
-    public void interactiveMode() {
-        Scanner input = new Scanner(System.in);
-        System.out.print("$ ");
-        while (input.hasNextLine()) {
-            String command = input.nextLine();
-            processCommand(command);
+    private int interactiveMode() {
+        try (Scanner input = new Scanner(System.in)) {
             System.out.print("$ ");
+            while (input.hasNextLine()) {
+                String command = input.nextLine();
+                processCommand(command);
+                System.out.print("$ ");
+            }
+            System.out.println();
         }
-        System.out.println();
-        processCommand("exit");
+        return 0;
     }
 
-    public void packageMode() {
+    private int batchMode() {
         String[] commands = CommandParser.parseArgs(args);
-        int exitVal = 0;
-
         for (String cmd : commands) {
             if (!processCommand(cmd)) {
-                exitVal = 1;
+                return 1;
             }
         }
-        System.exit(exitVal);
+        return 0;
     }
 
-    public boolean processCommand(String command) {
+    private boolean processCommand(String command) {
         command = command.trim();
         if (command.length() > 0) {
             String cmdName = CommandParser.getCmdName(command);
@@ -71,12 +64,25 @@ public class Shell<State> {
                 return false;
             }
             try {
-                supportedCmds.get(cmdName).exec(shellState, command);
+                String[] params = CommandParser.getParams(command);
+                boolean rec = CommandParser.isRecursive(command);
+                int opt = (rec ? 1 : 0);
+                int argsNum = supportedCmds.get(cmdName).getArgsNum();
+
+                if (params.length != argsNum + opt) {
+                    throw new IllegalArgumentException("Invalid number of arguments");
+                }
+
+                supportedCmds.get(cmdName).exec(params);
             } catch (FileNotFoundException | NoSuchFileException e) {
-                String msg = "%s: '%s' no such File or Directory\n";
+                String msg = "%s: %s: No such File or Directory\n";
                 System.err.printf(msg, cmdName, e.getMessage());
                 return false;
-            } catch (IOException e) {
+            } catch (AccessDeniedException e) {
+                String msg = "Cannot perform: %s: %s: Access denied\n";
+                System.err.printf(msg, cmdName, e.getMessage());
+                return false;
+            } catch (IllegalArgumentException | IllegalStateException | IOException e) {
                 System.err.printf("%s: %s\n", cmdName, e.getMessage());
                 return false;
             }
@@ -84,11 +90,23 @@ public class Shell<State> {
         return true;
     }
 
-    public void exec() {
-        if (args.length == 0) {
-            this.interactiveMode();
-        } else {
-            this.packageMode();
+    private void terminate(int status) {
+        try {
+            String[] strStatus = (status == 0 ? new String[0] : new String[1]);
+            supportedCmds.get("exit").exec(strStatus);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
+    }
+
+    public void exec() {
+        int status;
+        if (args.length == 0) {
+            status = interactiveMode();
+        } else {
+            status = batchMode();
+        }
+        terminate(status);
     }
 }

@@ -5,10 +5,10 @@
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.table;
 
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.HashMap;
 
 /**
  *
@@ -17,61 +17,31 @@ import java.util.HashMap;
 public class TableReader implements Closeable {
 
     private RandomAccessFile dbFile;
+    private String fileName;
 
-    public TableReader(String fileName) throws IOException {
-        try {
-            dbFile = new RandomAccessFile(fileName, "r");
-        } catch (FileNotFoundException e) {
-            dbFile = null;
-        }
+    public TableReader(String fileName) throws FileNotFoundException {
+        dbFile = new RandomAccessFile(fileName, "rw");
+        this.fileName = fileName;
     }
 
     @Override
-    public void close() {
-        try {
-            dbFile.close();
-        } catch (Exception e) {
-            //nothing
-        }
+    public void close() throws IOException {
+        dbFile.close();
     }
 
-    private String read() throws IOException {
+    public String read() throws IOException {
+        byte[] word = null;
         try {
             int length = dbFile.readInt();
-            byte[] word = new byte[length];
+            word = new byte[length];
             dbFile.read(word, 0, length);
-            return new String(word);
-        } catch (IOException ex) {
-            throw new IOException("cannot read from file");
+        } catch (EOFException | OutOfMemoryError e) {
+            throw new IOException(fileName + ": Invalid file format");
         }
+        return new String(word, "UTF-8");
     }
 
-    public static void loadTable(String fileName, HashMap<String, String> table)
-            throws FileNotFoundException, IOException {
-
-        try (TableReader reader = new TableReader(fileName)) {
-            String key;
-            String value;
-
-            while (!reader.eof()) {
-                key = reader.read();
-                value = reader.read();
-                table.put(key, value);
-                //System.out.println(key + " " + value);
-            }
-        }
-    }
-
-    private boolean eof() {
-        if (dbFile == null) {
-            return true;
-        }
-        boolean retVal = false;
-        try {
-            retVal = dbFile.getFilePointer() >= dbFile.length();
-        } catch (IOException e) {
-            return true;
-        }
-        return retVal;
+    public boolean eof() throws IOException {
+        return dbFile.getFilePointer() >= dbFile.length();
     }
 }

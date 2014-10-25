@@ -4,29 +4,22 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands;
 
-import java.io.IOException;
-import ru.fizteh.fivt.students.kalandarovshakarim.filemap.FileMapShellState;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.AbstractCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
 
 /**
  *
  * @author shakarim
  */
-public class RemoveCommand extends AbstractCommand<FileMapShellState> {
+public class RemoveCommand extends AbstractTableCommand {
 
-    public RemoveCommand() {
-        super("remove", 1);
+    public RemoveCommand(OneTableBase context) {
+        super("remove", 1, context);
     }
 
     @Override
-    public void exec(FileMapShellState state, String args) throws IOException {
-        String[] params = CommandParser.getParams(args);
-
-        if (this.getArgsNum() != params.length) {
-            throw new IOException("invalid number of arguments");
-        }
-        String deleted = state.getState().remove(params[0]);
+    protected void onActiveTable(Table activeTable, String[] args) {
+        String deleted = activeTable.remove(args[0]);
 
         if (deleted == null) {
             System.out.println("not found");
@@ -34,6 +27,4 @@ public class RemoveCommand extends AbstractCommand<FileMapShellState> {
             System.out.println("removed");
         }
     }
-
-
 }
