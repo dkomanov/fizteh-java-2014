@@ -23,9 +23,8 @@ public class DropCommand implements Command {
         connector.tables.remove(args[1]);
 
         try {
-            table.clearFiles();
-            Files.delete(table.dbPath);
-        } catch (ConnectionInterruptException | IOException e) {
+            table.delete();
+        } catch (ConnectionInterruptException e) {
             throw new CommandInterruptException("drop: " + e.getMessage());
         }
         return "deleted";

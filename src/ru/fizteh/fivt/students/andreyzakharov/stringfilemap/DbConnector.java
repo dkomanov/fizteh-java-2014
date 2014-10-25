@@ -63,9 +63,8 @@ public class DbConnector implements AutoCloseable, TableProvider {
             }
             tables.remove(name);
             try {
-                table.clearFiles();
-                Files.delete(table.dbPath);
-            } catch (ConnectionInterruptException | IOException e) {
+                table.delete();
+            } catch (ConnectionInterruptException e) {
                 //
             }
         } else {

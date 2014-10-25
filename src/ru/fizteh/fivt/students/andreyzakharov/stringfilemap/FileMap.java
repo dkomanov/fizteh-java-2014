@@ -10,13 +10,13 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class FileMap implements Table {
-    Map<String, String> stableData = new HashMap<>();
-    Map<String, String> added = new HashMap<>();
-    Map<String, String> changed = new HashMap<>();
-    Set<String> removed = new HashSet<>();
-    Path dbPath;
-    String name;
-    int pending = 0;
+    private Map<String, String> stableData = new HashMap<>();
+    private Map<String, String> added = new HashMap<>();
+    private Map<String, String> changed = new HashMap<>();
+    private Set<String> removed = new HashSet<>();
+    private Path dbPath;
+    private String name;
+    private int pending = 0;
 
     public FileMap(Path path) {
         dbPath = path;
@@ -157,7 +157,7 @@ public class FileMap implements Table {
         pending = 0;
     }
 
-    void readKeyValue(DataInputStream is) throws IOException, ConnectionInterruptException {
+    private void readKeyValue(DataInputStream is) throws IOException, ConnectionInterruptException {
         int keyLen = is.readInt();
         byte[] key = new byte[keyLen];
         int keyRead = is.read(key, 0, keyLen);
@@ -190,7 +190,7 @@ public class FileMap implements Table {
         }
     }
 
-    void writeKeyValue(DataOutputStream os, String keyString, String valueString) throws IOException {
+    private void writeKeyValue(DataOutputStream os, String keyString, String valueString) throws IOException {
         byte[] key = keyString.getBytes("UTF-8");
         byte[] value = valueString.getBytes("UTF-8");
         os.writeInt(key.length);
@@ -261,7 +261,7 @@ public class FileMap implements Table {
         }
     }
 
-    public void clearFiles() throws ConnectionInterruptException {
+    private void clearFiles() throws ConnectionInterruptException {
         try {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
@@ -273,6 +273,24 @@ public class FileMap implements Table {
                     Files.delete(dbPath.resolve(i + ".dir/"));
                 }
             }
+        } catch (IOException e) {
+            throw new ConnectionInterruptException("database: deleting table failed");
+        }
+    }
+
+    public void delete() throws ConnectionInterruptException {
+        try {
+            for (int i = 0; i < 16; ++i) {
+                for (int j = 0; j < 16; ++j) {
+                    if (Files.exists(dbPath.resolve(i + ".dir/" + j + ".dat"))) {
+                        Files.delete(dbPath.resolve(i + ".dir/" + j + ".dat"));
+                    }
+                }
+                if (Files.exists(dbPath.resolve(i + ".dir/"))) {
+                    Files.delete(dbPath.resolve(i + ".dir/"));
+                }
+            }
+            Files.delete(dbPath);
         } catch (IOException e) {
             throw new ConnectionInterruptException("database: deleting table failed");
         }
