@@ -58,8 +58,8 @@ public class Table implements Map<String, String>, AutoCloseable {
         for (File t: tableDirectories) {
             // Checking subdirectories.
             if (!t.isDirectory()) {
-                System.err.println("Table subdirectories " +
-                        "are not actually directories");
+                System.err.println("Table subdirectories " 
+                + "are not actually directories");
                 throw new ExitException(-1);
             }
         }
@@ -124,7 +124,7 @@ public class Table implements Map<String, String>, AutoCloseable {
         for (Map.Entry<String, String> entry: allRecords.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            int nDirectory = Math.abs(key.getBytes("UTF-8")[0] % DIR_AMOUNT);;
+            int nDirectory = Math.abs(key.getBytes("UTF-8")[0] % DIR_AMOUNT);
             int nFile = Math.abs((key.getBytes("UTF-8")[0] / DIR_AMOUNT) % FILES_AMOUNT);
             db[nDirectory][nFile].put(key, value);
         }
