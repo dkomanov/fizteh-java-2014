@@ -6,10 +6,8 @@ import java.util.*;
 public class MultiFileHashMap {
 
     public static String path; //way to main directory
-    public static Table currentTable;
     public static Map<String, Integer> tableList; //map with names and numbers of elementls of tables
 
-    private static boolean out;
 
     public static void main(final String[] args) {
         try {
@@ -18,17 +16,15 @@ public class MultiFileHashMap {
             if (path == null) {
                 throw new Exception("Enter directory");
             }
-            tableList = new TreeMap<String, Integer>();
+            tableList = new TreeMap<>();
             File dir = new File(path);
             if (!dir.exists() || !dir.isDirectory()) {
                 throw new Exception("directory not exist");
             }
             File[] children = dir.listFiles();
-            int j = 0;
-            while (j < children.length) {
-                Table t = new Table(children[j].getName(), path);
-                tableList.put(children[j].getName(), t.getNumberOfElements());
-                j++;
+            for(File child : children) {
+                Table t = new Table(child.getName(), path);
+                tableList.put(child.getName(), t.getNumberOfElements());
                 t.exit();
             }
             if (args.length > 0) {
@@ -43,15 +39,13 @@ public class MultiFileHashMap {
     }
 
     public static void interactive() {
-        out = false;
         Scanner sc = new Scanner(System.in);
         try {
-            while (!out) {
+            while (true) {
                 System.out.print("$ ");
                 String s = sc.nextLine();
                 Interpreter.doCommand(s, false);
             }
-            System.exit(0);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -74,6 +68,7 @@ public class MultiFileHashMap {
         }
     }
 }
+
 
 
 
