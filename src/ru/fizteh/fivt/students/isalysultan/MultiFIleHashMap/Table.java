@@ -4,25 +4,37 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class Table {
+
+    private String nameTable;
 
     private Path TableDirectory;
 
     private int numberRecords;
 
-    private Map<Integer, FileTable> files;
+    private FileTable[][] files = new FileTable[16][16];
 
-    private HashMap<Integer, Path> subDirectsMap;
+    private HashMap<Integer, Path> subDirectsMap = new HashMap<Integer, Path>();
 
     public Table() {
         // Disable instantiation to this class.
     }
 
+    String getName() {
+        return nameTable;
+    }
+
+    void NullNumberRecords() {
+        numberRecords = 0;
+    }
+
+    void setName(String name) {
+        nameTable = name;
+    }
+
     void read() throws IOException {
-        files = new HashMap<Integer, FileTable>();
         String[] subDirects = TableDirectory.toFile().list();
         for (String nameSubDirect : subDirects) {
             Path subDirect = TableDirectory.resolve(nameSubDirect);
@@ -52,16 +64,23 @@ public class Table {
                 numberFile = Integer.parseInt(fileName.substring(0,
                         fileName.length() - 4));
                 Integer numberFileMap = numberDirectory * 16 + numberFile;
-                FileTable currentFileTable = new FileTable(filePath);
-                files.put(numberFileMap, currentFileTable);
+                FileTable currentFileTable = new FileTable(filePath, this);
+                files[numberDirectory][numberFile] = currentFileTable;
             }
         }
 
     }
 
+    public Table(RootDirectory direct, String tableName, boolean dummyArg) {
+        TableDirectory = direct.get().resolve(tableName);
+        numberRecords = 0;
+        nameTable = tableName;
+    }
+
     public Table(RootDirectory direct, String tableName) throws IOException {
         TableDirectory = direct.get().resolve(tableName);
         TableDirectory.toFile().mkdir();
+        numberRecords = 0;
         Set<Integer> numberSubDirect = subDirectsMap.keySet();
         for (Integer key : numberSubDirect) {
             subDirectsMap.put(key, null);
@@ -110,13 +129,22 @@ public class Table {
         ++numberRecords;
     }
 
-    public void tableOperationPut(String key, String value)
-            throws UnsupportedEncodingException {
+    public void dicrementNumberRecords() {
+        --numberRecords;
+    }
+
+    public void tableOperationPut(String key, String value) throws IOException {
         byte externalKey = key.getBytes("UTF-8")[0];
         int ndirectory = externalKey % 16;
         int nfile = (externalKey / 16) % 16;
-        int numberFile = ndirectory * 16 + nfile;
-        FileTable currTable = files.get(numberFile);
+        if (files[ndirectory][nfile] == null) {
+            files[ndirectory][nfile] = new FileTable();
+        }
+        FileTable currTable = files[ndirectory][nfile];
+        Path file = TableDirectory.resolve(Integer.toString(ndirectory) + "."
+                + "dir");
+        file = file.resolve(Integer.toString(ndirectory) + "." + "dat");
+        currTable.setPath(file);
         CommandForMap.put(key, value, currTable, this);
     }
 
@@ -126,7 +154,7 @@ public class Table {
         int ndirectory = externalKey % 16;
         int nfile = (externalKey / 16) % 16;
         int numberFile = ndirectory * 16 + nfile;
-        FileTable currTable = files.get(numberFile);
+        FileTable currTable = files[ndirectory][nfile];
         CommandForMap.get(key, currTable);
     }
 
@@ -136,75 +164,55 @@ public class Table {
         int ndirectory = externalKey % 16;
         int nfile = (externalKey / 16) % 16;
         int numberFile = ndirectory * 16 + nfile;
-        FileTable currTable = files.get(numberFile);
-        CommandForMap.remove(key, currTable);
+        FileTable currTable = files[ndirectory][nfile];
+        CommandForMap.remove(key, currTable, this);
     }
 
     public void tableOperationList() {
         // Derive all the keys of the table.
-        Set<Integer> keys = files.keySet();
-        for (Integer key : keys) {
-            FileTable table = files.get(key);
-            if (!table.empty()) {
-                CommandForMap.list(table);
+        for (int i = 0; i < 16; ++i) {
+            for (int j = 0; j < 16; ++j) {
+                if (files[i][j] != null) {
+                    CommandForMap.list(files[i][j]);
+                }
             }
         }
     }
 
     public void write() throws IOException {
-        Set<Integer> keys = files.keySet();
-        int countDir = 0;
-        boolean createDir = false;
-        boolean endDir = false;
-        Path endDirectory = null;
-        Path subDirectPath = null;
-        for (Integer key : keys) {
-            if (countDir != key % 16) {
-                if (!createDir && endDir) {
-                    endDirectory.toFile().delete();
-                }
-                countDir = key % 16;
-                createDir = false;
-            }
-            FileTable currentFileTable = files.get(key);
-            if (currentFileTable.getOpenRead()) {
-                endDir = true;
-                endDirectory = subDirectsMap.get((key % 16));
-                if (currentFileTable.emptyMap()) {
-                    Path deletePath = currentFileTable.getPath();
-                    deletePath.toFile().delete();
-                } else {
-                    // This is main,that subDir exist.
-                    createDir = true;
-                    subDirectPath = subDirectsMap.get(countDir);
-                    currentFileTable.writeFile();
-                }
-            } else {
-                if (!currentFileTable.emptyMap()) {
-                    if (createDir) {
-                        String fileId = Integer.toString((key / 16) % 16);
-                        fileId += ".";
-                        fileId += "dat";
-                        Path arg = subDirectPath.resolve(fileId);
-                        currentFileTable.changePath(arg);
-                        arg.toFile().createNewFile();
-                        currentFileTable.writeFile();
+        for (int i = 0; i < 16; ++i) {
+            Path SubDirect = TableDirectory;
+            SubDirect = SubDirect.resolve((Integer.toString(i) + "." + "dir"));
+            boolean DirectExist = false;
+            for (int j = 0; j < 16; ++j) {
+                if (files[i][j] == null) {
+                    continue;
+                } else if (files[i][j].needToDeleteFile()) {
+                    files[i][j].deleteFile();
+                } else if (files[i][j].FileOpenAndNotExist()) {
+                    DirectExist = true;
+                    files[i][j].writeFile();
+                } else if (!files[i][j].Open() && !files[i][j].empty()) {
+                    if (!DirectExist) {
+                        SubDirect.toFile().mkdir();
+                        subDirectsMap.put(i, SubDirect);
+                        DirectExist = true;
+                        Path FilePath = SubDirect.resolve((Integer.toString(j)
+                                + "." + "dat"));
+                        files[i][j].setPath(FilePath);
+                        FilePath.toFile().createNewFile();
+                        files[i][j].writeFile();
                     } else {
-                        createDir = true;
-                        String dirId = Integer.toString(countDir);
-                        dirId += ".";
-                        dirId += "dir";
-                        subDirectPath = TableDirectory.resolve(dirId);
-                        subDirectPath.toFile().mkdir();
-                        String fileId = Integer.toString((key / 16) % 16);
-                        fileId += ".";
-                        fileId += "dat";
-                        Path arg = subDirectPath.resolve(fileId);
-                        currentFileTable.changePath(arg);
-                        arg.toFile().createNewFile();
-                        currentFileTable.writeFile();
+                        Path FilePath = subDirectsMap.get(i).resolve(
+                                (Integer.toString(j) + "." + "dat"));
+                        files[i][j].setPath(FilePath);
+                        FilePath.toFile().createNewFile();
+                        files[i][j].writeFile();
                     }
                 }
+            }
+            if (!DirectExist && SubDirect.toFile().exists()) {
+                subDirectsMap.get(i).toFile().delete();
             }
         }
     }
