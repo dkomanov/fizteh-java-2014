@@ -14,6 +14,7 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
     private final String currentTableName;
     protected Map<String, String> map;
     private final String separator = System.getProperty("file.separator");
+    final int DIVIDEBYTEBY = 16;
 
     class DataFilePath {
         protected String filePath;
@@ -23,8 +24,8 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
 
         DataFilePath(String keyName) {
             byte bytes = keyName.getBytes()[0];
-            int directory = Math.abs(bytes % 16);
-            int file = Math.abs(bytes / 16 % 16);
+            int directory = Math.abs(bytes % DIVIDEBYTEBY);
+            int file = Math.abs(bytes / DIVIDEBYTEBY % DIVIDEBYTEBY);
 
             this.filePath = fullTablePath() + directory + ".dir" + separator
                     + file + ".dat";
@@ -46,7 +47,6 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
             loadFromTable();
             saveToTable();
         } catch (Exception e) {
-            System.out.println(e);
             throw new IOException();
         }
     }
@@ -87,7 +87,7 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
             makeFolders(entry.getKey());
 
             out = new DataOutputStream(tmp = new FileOutputStream(
-                    dataFilePath.filePath));
+                    dataFilePath.filePath, true));
             writeString(out, entry.getKey());
             writeString(out, entry.getValue());
             if (out != null) {
@@ -101,6 +101,7 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
     }
 
     private void writeString(DataOutputStream out, String s) throws IOException {
+        System.out.println(s);
         byte[] bytes = s.getBytes("UTF-8");
         out.writeInt(bytes.length);
         out.write(bytes);
@@ -111,8 +112,8 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
         DataInputStream in = null;
         FileInputStream tmp = null;
         try {
-            for (int i = 0; i < 16; i++) {
-                for (int j = 0; j < 16; j++) {
+            for (int i = 0; i < DIVIDEBYTEBY; i++) {
+                for (int j = 0; j < DIVIDEBYTEBY; j++) {
                     String filePath = fullTablePath() + i + ".dir" + separator
                             + j + ".dat";
                     File file = new File(filePath);

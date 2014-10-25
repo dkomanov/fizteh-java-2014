@@ -19,11 +19,12 @@ public class List implements DBCommand {
         StringBuilder list = new StringBuilder("");
         for (Entry<String, String> entry : DbMain.fileStoredStringMap
                 .entrySet()) {
-            list.append(entry.getKey() + ",");
+            list.append(entry.getKey() + ", ");
         }
 
         if (!list.toString().equals("")
-                && list.charAt(list.length() - 1) == ',') {
+                && list.charAt(list.length() - 1) == ' ' && list.charAt(list.length() - 2) == ',') {
+            list.deleteCharAt(list.length() - 1);
             list.deleteCharAt(list.length() - 1);
         }
 
