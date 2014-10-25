@@ -5,9 +5,13 @@ import ru.fizteh.fivt.storage.strings.Table;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+
+import static java.nio.file.StandardOpenOption.*;
 
 public class FileMap implements Table {
     private Map<String, String> stableData = new HashMap<>();
@@ -21,12 +25,12 @@ public class FileMap implements Table {
     public FileMap(Path path) {
         dbPath = path;
         name = path.getFileName().toString();
-        if (!Files.exists(path)) {
-            try {
+        try {
+            if (!Files.exists(path)) {
                 Files.createDirectory(path);
-            } catch (IOException e) {
-                //
             }
+        } catch (IOException e) {
+            //
         }
     }
 
@@ -130,17 +134,18 @@ public class FileMap implements Table {
         stableData.putAll(changed);
         stableData.putAll(added);
 
+        try {
+            unload();
+        } catch (ConnectionInterruptException e) {
+            return -1;
+        }
+
         removed.clear();
         changed.clear();
         added.clear();
         int p = pending;
         pending = 0;
 
-        try {
-            unload();
-        } catch (ConnectionInterruptException e) {
-            return -1;
-        }
         return p;
     }
 
@@ -168,6 +173,20 @@ public class FileMap implements Table {
         changed.clear();
         removed.clear();
         pending = 0;
+    }
+
+    private static class DfPair {
+        public int d;
+        public int f;
+    }
+
+    private static DfPair getHash(String key) {
+        DfPair p = new DfPair();
+        int hash = key.hashCode();
+        p.d = (hash % 16 < 0) ? hash % 16 + 16 : hash % 16;
+        hash /= 16;
+        p.f = (hash % 16 < 0) ? hash % 16 + 16 : hash % 16;
+        return p;
     }
 
     private void readKeyValue(DataInputStream is) throws IOException, ConnectionInterruptException {
@@ -213,36 +232,69 @@ public class FileMap implements Table {
     }
 
     public void unload() throws ConnectionInterruptException {
-        try {
-            clearFiles();
-        } catch (ConnectionInterruptException e) {
-            //
+        int[][] status = new int[16][16];
+
+        DfPair p;
+        for (String key : added.keySet()) {
+            p = getHash(key);
+            status[p.d][p.f] = 1;
+        }
+        for (String key : removed) {
+            p = getHash(key);
+            status[p.d][p.f] = -2;
+        }
+        for (String key : changed.keySet()) {
+            p = getHash(key);
+            status[p.d][p.f] = -1;
+        }
+        for (String key : stableData.keySet()) {
+            p = getHash(key);
+            if (status[p.d][p.f] < 0) {
+                status[p.d][p.f] = -1;
+            }
         }
 
-        boolean[] dirUsed = new boolean[16];
-        boolean[][] fileUsed = new boolean[16][16];
+        String error = null;
         DataOutputStream[][] streams = new DataOutputStream[16][16];
         try {
             if (!Files.exists(dbPath)) {
                 Files.createDirectory(dbPath);
             }
-            for (HashMap.Entry<String, String> entry : stableData.entrySet()) {
-                int hash = entry.getKey().hashCode();
-                int d = (hash % 16 < 0) ? hash % 16 + 16 : hash % 16;
-                hash /= 16;
-                int f = (hash % 16 < 0) ? hash % 16 + 16 : hash % 16;
-                if (!fileUsed[d][f]) {
-                    if (!dirUsed[d]) {
-                        Files.createDirectory(dbPath.resolve(d + ".dir/"));
-                        dirUsed[d] = true;
-                    }
-                    streams[d][f] = new DataOutputStream(
-                            Files.newOutputStream(dbPath.resolve(d + ".dir/" + f + ".dat")));
-                    fileUsed[d][f] = true;
+
+            streams = new DataOutputStream[16][16];
+            for (int i = 0; i < 16; i++) {
+                if (!Files.exists(dbPath.resolve(i + ".dir/"))) {
+                    Files.createDirectory(dbPath.resolve(i + ".dir/"));
                 }
-                writeKeyValue(streams[d][f], entry.getKey(), entry.getValue());
+                for (int j = 0; j < 16; j++) {
+                    if (status[i][j] < 0) {
+                        Files.delete(dbPath.resolve(i + ".dir/" + j + ".dat"));
+                    }
+                    if (Math.abs(status[i][j]) == 1) {
+                        streams[i][j] = new DataOutputStream(
+                                Files.newOutputStream(dbPath.resolve(i + ".dir/" + j + ".dat"),
+                                        APPEND, CREATE));
+                    }
+                }
+            }
+
+            for (HashMap.Entry<String, String> entry : stableData.entrySet()) {
+                p = getHash(entry.getKey());
+                if (status[p.d][p.f] != 0) {
+                    writeKeyValue(streams[p.d][p.f], entry.getKey(), entry.getValue());
+                }
+            }
+
+            for (int i = 0; i < 16; i++) {
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(dbPath.resolve(i + ".dir/"))) {
+                    if (!stream.iterator().hasNext()) {
+                        Files.delete(dbPath.resolve(i + ".dir/"));
+                    }
+                }
             }
         } catch (IOException e) {
+            error = e.getMessage();
+        } finally {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
                     if (streams[i][j] != null) {
@@ -254,36 +306,9 @@ public class FileMap implements Table {
                     }
                 }
             }
-            throw new ConnectionInterruptException("database: writing to disk failed");
-        } finally {
-            for (int i = 0; i < 16; ++i) {
-                for (int j = 0; j < 16; ++j) {
-                    if (streams[i][j] != null) {
-                        try {
-                            streams[i][j].close();
-                        } catch (IOException e) {
-                            //
-                        }
-                    }
-                }
-            }
         }
-    }
-
-    private void clearFiles() throws ConnectionInterruptException {
-        try {
-            for (int i = 0; i < 16; ++i) {
-                for (int j = 0; j < 16; ++j) {
-                    if (Files.exists(dbPath.resolve(i + ".dir/" + j + ".dat"))) {
-                        Files.delete(dbPath.resolve(i + ".dir/" + j + ".dat"));
-                    }
-                }
-                if (Files.exists(dbPath.resolve(i + ".dir/"))) {
-                    Files.delete(dbPath.resolve(i + ".dir/"));
-                }
-            }
-        } catch (IOException e) {
-            throw new ConnectionInterruptException("database: deleting table failed");
+        if (error != null) {
+            throw new ConnectionInterruptException("database: write failed: " + error);
         }
     }
 
@@ -299,9 +324,11 @@ public class FileMap implements Table {
                     Files.delete(dbPath.resolve(i + ".dir/"));
                 }
             }
-            Files.delete(dbPath);
+            if (Files.exists(dbPath)) {
+                Files.delete(dbPath);
+            }
         } catch (IOException e) {
-            throw new ConnectionInterruptException("database: deleting table failed");
+            throw new ConnectionInterruptException("database: delete failed: " + e.getMessage());
         }
     }
 }
