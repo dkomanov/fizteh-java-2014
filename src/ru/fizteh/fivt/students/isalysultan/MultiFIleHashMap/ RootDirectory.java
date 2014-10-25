@@ -13,12 +13,19 @@ public class RootDirectory {
     private Path directPath;
 
     // This HashMap save tables.
-    public HashMap<String, Table> tableList;
+    private HashMap<String, Table> tableList = new HashMap<String, Table>();
 
     public Table currentTable;
 
     public Path get() {
         return directPath;
+    }
+
+    public boolean checkTableExist(String nameTable) {
+        if (tableList.containsKey(nameTable)) {
+            return true;
+        }
+        return false;
     }
 
     public void executeExit() throws IOException {
@@ -35,18 +42,31 @@ public class RootDirectory {
         if (!directPath.toFile().isDirectory()) {
             System.err.println("Path is uncorrect.");
         }
+        String[] list = directPath.toFile().list();
+        if (list.length == 0) {
+            return;
+        }
+        for (String tablename : list) {
+            Table currentDirTable = new Table(this, tablename, true);
+            tableList.put(tablename, currentDirTable);
+        }
     }
 
     public void TableInizial(Table newTable, String tableName)
             throws IOException {
         tableList.put(tableName, newTable);
+        newTable.setName(tableName);
     }
 
-    public void use(String tableName) throws IOException {
-        currentTable.write();
+    public void use(String tableName, boolean ind) throws IOException {
+        if (currentTable != null) {
+            currentTable.write();
+        }
         currentTable = tableList.get(tableName);
         currentTable.read();
-        System.out.println("use tablename");
+        if (ind) {
+            System.out.println("use tablename");
+        }
     }
 
     public void drop(String tableName) {
@@ -67,31 +87,61 @@ public class RootDirectory {
         System.out.println("dropped");
     }
 
-    public void showTables() {
+    public void showTables() throws IOException {
         Set<String> keys = tableList.keySet();
         Iterator<String> it = keys.iterator();
+        Table currentTables = currentTable;
+        String currentTablesName = currentTables.getName();
         while (it.hasNext()) {
             String currentKey = it.next();
-            Table currentTable = tableList.get(currentKey);
-            System.out.print(currentKey);
-            System.out.println(currentTable.get());
+            if (currentTablesName.equals(currentKey)) {
+                System.out.print(currentKey + " ");
+                System.out.println(currentTables.get());
+                tableList.get(currentKey).NullNumberRecords();
+                continue;
+            }
+            Table currTables = tableList.get(currentKey);
+            Command.use(this, currentKey, false);
+            System.out.print(currentKey + " ");
+            System.out.println(currTables.get());
+            tableList.get(currentKey).NullNumberRecords();
+        }
+        if (currentTables != null) {
+            Command.use(this, currentTables.getName(), false);
+        } else {
+            currentTable = null;
         }
     }
 
-    public void executePut(String key, String value)
-            throws UnsupportedEncodingException {
-        currentTable.tableOperationPut(key, value);
+    public void executePut(String key, String value) throws IOException {
+        if (currentTable != null) {
+            currentTable.tableOperationPut(key, value);
+            return;
+        }
+        System.out.println("no table");
     }
 
     public void executeGet(String key) throws UnsupportedEncodingException {
-        currentTable.tableOperationGet(key);
+        if (currentTable != null) {
+            currentTable.tableOperationGet(key);
+            return;
+        }
+        System.out.println("no table");
     }
 
     public void executeRemove(String key) throws UnsupportedEncodingException {
-        currentTable.tableOperationRemove(key);
+        if (currentTable != null) {
+            currentTable.tableOperationRemove(key);
+            return;
+        }
+        System.out.println("no table");
     }
 
     public void executeList() {
-        currentTable.tableOperationList();
+        if (currentTable != null) {
+            currentTable.tableOperationList();
+            return;
+        }
+        System.out.println("no table");
     }
 }
