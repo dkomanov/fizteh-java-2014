@@ -1,11 +1,6 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap;
 
-import java.io.IOException;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,9 +12,11 @@ import java.util.Set;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.
         multifilehashmap.util.ExitException;
 public class Table implements Map<String, String>, AutoCloseable {
+    static final int DIR_AMOUNT = 16;
+    static final int FILES_AMOUNT = 16;
     private Map<String, String> allRecords = null;
-    private Path dbPath = null; //директория таблицы
-    private Path rootPath; //корневая директория
+    private Path dbPath = null; // The table's directory.
+    private Path rootPath; //Root's directory.
     private String name;
 
     public Table(final Path rootPath, final String name) throws ExitException {
@@ -59,9 +56,10 @@ public class Table implements Map<String, String>, AutoCloseable {
         File pathDirectory =  dbPath.toFile();
         File[] tableDirectories = pathDirectory.listFiles();
         for (File t: tableDirectories) {
-        // Проверка поддиректорий
+            // Checking subdirectories.
             if (!t.isDirectory()) {
-                System.err.println("Table subdirs are not dirs");
+                System.err.println("Table subdirectories " +
+                        "are not actually directories");
                 throw new ExitException(-1);
             }
         }
@@ -69,16 +67,25 @@ public class Table implements Map<String, String>, AutoCloseable {
             File[] directoryFiles = directory.listFiles();
             int k = directory.getName().indexOf('.');
             try {
-                Integer nDirectory = Integer.parseInt(
+                /*
+                Delete .dir and check(automatically )
+                if the subdirectory has the suitable name.
+                If not, then parseInt throws NumberFormatException,
+                error message is shown.
+                Then program would finish with exit code != 0.
+                 */
+                int nDirectory = Integer.parseInt(
                         directory.getName().substring(0, k));
-                        //избавление от .dir
                 for (File file : directoryFiles) {
                     try {
-                        int index = file.getName().indexOf('.');
-                        Integer nFile = Integer.parseInt(
-                                file.getName().substring(0, index));
-                                //избавление от .dat
-                        DataInputStream inStream = new 
+                        k = file.getName().indexOf('.');
+                        /*
+                        Checking files' names the same way
+                        we did with directories earlier.
+                        */
+                        int nFile = Integer.parseInt(
+                                file.getName().substring(0, k));
+                        DataInputStream inStream = new
                                 DataInputStream(new FileInputStream(file.getAbsolutePath()));
                         boolean end = false;
                         while (!end) {
@@ -92,15 +99,15 @@ public class Table implements Map<String, String>, AutoCloseable {
                         }
                         inStream.close();
                     } catch (NumberFormatException t) {
-                        System.err.println("Subdirectories' files " 
-                        + "have wrong names, " 
-                        + "expected(0.dat-15.dat)");
+                        System.err.println("Subdirectories' files "
+                                + "have wrong names, "
+                                + "expected(0.dat-15.dat)");
                         throw new ExitException(-1);
                     }
                 }
             } catch (NumberFormatException t) {
-                System.err.println("Subdirectories' names are wrong, " 
-                + "expected(0.dir - 15.dir)");
+                System.err.println("Subdirectories' names are wrong, "
+                        + "expected(0.dir - 15.dir)");
                 throw new ExitException(-1);
             }
         }
@@ -108,22 +115,21 @@ public class Table implements Map<String, String>, AutoCloseable {
     }
 
     private void write() throws Exception {
-        Map<String, String>[][] db = new Map[16][16];
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        Map<String, String>[][] db = new Map[DIR_AMOUNT][FILES_AMOUNT];
+        for (int i = 0; i < DIR_AMOUNT; i++) {
+            for (int j = 0; j < FILES_AMOUNT; j++) {
                 db[i][j] = new HashMap<>();
             }
         }
         for (Map.Entry<String, String> entry: allRecords.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            byte[] ar = key.getBytes();
-            Integer nDirectory = ((int) ar[0]) % 16;
-            Integer nFile = (((int) ar[0]) / 16) % 16;
+            int nDirectory = Math.abs(key.getBytes("UTF-8")[0] % DIR_AMOUNT);;
+            int nFile = Math.abs((key.getBytes("UTF-8")[0] / DIR_AMOUNT) % FILES_AMOUNT);
             db[nDirectory][nFile].put(key, value);
         }
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        for (int i = 0; i < DIR_AMOUNT; i++) {
+            for (int j = 0; j < FILES_AMOUNT; j++) {
                 try {
                     if (!db[i][j].isEmpty()) {
                         Integer nDirectory = i;
@@ -158,14 +164,14 @@ public class Table implements Map<String, String>, AutoCloseable {
                                 writeUtil(key, outStream);
                                 writeUtil(value, outStream);
                             } catch (SecurityException e) {
-                                throw new Exception("Cannot create " 
-                                + "directory: "
-                                + "access denied");
+                                throw new Exception("Cannot create "
+                                        + "directory: "
+                                        + "access denied");
                             }
                         }
                         outStream.close();
                     } else {
-                    //удаление пустых файлов
+                        //Deleting empty files.
                         Integer nDirectory = i;
                         Integer nFile = j;
                         String newPath = dbPath.toAbsolutePath().toString()
@@ -183,7 +189,7 @@ public class Table implements Map<String, String>, AutoCloseable {
                         }
                     }
                 } catch (IOException e) {
-                        System.err.println("Error with files");
+                    System.err.println("Error with files");
                 }
             }
         }
@@ -191,7 +197,7 @@ public class Table implements Map<String, String>, AutoCloseable {
     }
     public final void close() throws Exception {
         write();
-        //Удаление опустевших директорий
+        //Deleting empty directories.
         File pathDirectory =  dbPath.toFile();
         File[] tableDirectories = pathDirectory.listFiles();
         for (File directory: tableDirectories) {
@@ -205,7 +211,6 @@ public class Table implements Map<String, String>, AutoCloseable {
             }
         }
     }
-
     private void writeUtil(final String word,
                            DataOutputStream outStream) throws IOException {
         byte[] byteWord = word.getBytes("UTF-8");
