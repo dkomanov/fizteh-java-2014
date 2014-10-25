@@ -7,11 +7,11 @@ public class CommandForMap {
     public static void put(String key, String value, FileTable tables,
             Table mainTable) {
         boolean newElement = false;
-        if (!tables.ContainsKey(key)) {
+        if (!tables.containsKey(key)) {
             System.out.println("new");
             mainTable.incrementNumberRecords();
         }
-        if (!tables.ContainsValue(value)) {
+        if (!tables.containsValue(value)) {
             newElement = true;
         }
         String result = tables.putMap(key, value);
