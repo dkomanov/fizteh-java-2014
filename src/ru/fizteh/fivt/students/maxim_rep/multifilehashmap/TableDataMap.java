@@ -14,7 +14,7 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
     private final String currentTableName;
     protected Map<String, String> map;
     private final String separator = System.getProperty("file.separator");
-    final int DIVIDEBYTEBY = 16;
+    final int divideByteBy = 16;
 
     class DataFilePath {
         protected String filePath;
@@ -24,8 +24,8 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
 
         DataFilePath(String keyName) {
             byte bytes = keyName.getBytes()[0];
-            int directory = Math.abs(bytes % DIVIDEBYTEBY);
-            int file = Math.abs(bytes / DIVIDEBYTEBY % DIVIDEBYTEBY);
+            int directory = Math.abs(bytes % divideByteBy);
+            int file = Math.abs(bytes / divideByteBy % divideByteBy);
 
             this.filePath = fullTablePath() + directory + ".dir" + separator
                     + file + ".dat";
@@ -112,8 +112,8 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
         DataInputStream in = null;
         FileInputStream tmp = null;
         try {
-            for (int i = 0; i < DIVIDEBYTEBY; i++) {
-                for (int j = 0; j < DIVIDEBYTEBY; j++) {
+            for (int i = 0; i < divideByteBy; i++) {
+                for (int j = 0; j < divideByteBy; j++) {
                     String filePath = fullTablePath() + i + ".dir" + separator
                             + j + ".dat";
                     File file = new File(filePath);
