@@ -247,45 +247,6 @@ public class FileMap implements Table {
         } catch (IOException e) {
             throw new ConnectionInterruptException("database: read failed: " + e.getMessage());
         }
-        /*for (int i = 0; i < 16; i++) {
-            try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dbPath.resolve(i + ".dir/"))) {
-                for (Path entry: dirStream) {
-                    Matcher matcher = fileNamePattern.matcher(entry.getFileName().toString());
-                    if (!matcher.find()) {
-                        throw new ConnectionInterruptException("database: extra files in table folder");
-                    }
-                    int j =  Integer.decode(matcher.group(1));
-                    try (DataInputStream fileStream = new DataInputStream(
-                            Files.newInputStream(dbPath.resolve(i + ".dir/" + j + ".dat")))) {
-                        while (fileStream.available() > 0) {
-                            String key = readKeyValue(fileStream);
-                            DfPair p = getHash(key);
-                            if (i != p.d || j != p.f) {
-                                throw new ConnectionInterruptException("database: key/file correspondence is invalid");
-                            }
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                throw new ConnectionInterruptException("database: read failed: " + e.getMessage());
-            }
-        }*/
-        /*for (int i = 0; i < 16; ++i) {
-            for (int j = 0; j < 16; ++j) {
-                try (DataInputStream stream = new DataInputStream(
-                        Files.newInputStream(dbPath.resolve(i + ".dir/" + j + ".dat")))) {
-                    while (stream.available() > 0) {
-                        String key = readKeyValue(stream);
-                        DfPair p = getHash(key);
-                        if (i != p.d || j != p.f) {
-                            throw new ConnectionInterruptException("database: key/file matching is invalid");
-                        }
-                    }
-                } catch (IOException e) {
-                    // empty folder is a valid table
-                }
-            }
-        }*/
     }
 
     private void writeKeyValue(DataOutputStream os, String keyString, String valueString) throws IOException {

@@ -18,7 +18,7 @@ public class DbConnector implements AutoCloseable, TableProvider {
     DbConnector(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
             try {
-                Files.createFile(dbPath);
+                Files.createDirectory(dbPath);
             } catch (IOException e) {
                 throw new ConnectionInterruptException("connection: destination does not exist, can't be created");
             }
