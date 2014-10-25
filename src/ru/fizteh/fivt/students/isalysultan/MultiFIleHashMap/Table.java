@@ -26,7 +26,7 @@ public class Table {
         return nameTable;
     }
 
-    void NullNumberRecords() {
+    void nullNumberRecords() {
         numberRecords = 0;
     }
 
@@ -181,39 +181,40 @@ public class Table {
 
     public void write() throws IOException {
         for (int i = 0; i < 16; ++i) {
-            Path SubDirect = TableDirectory;
-            SubDirect = SubDirect.resolve((Integer.toString(i) + "." + "dir"));
-            boolean DirectExist = false;
+            Path subDirect = TableDirectory;
+            subDirect = subDirect.resolve((Integer.toString(i) + "." + "dir"));
+            boolean directExist = false;
             for (int j = 0; j < 16; ++j) {
                 if (files[i][j] == null) {
                     continue;
                 } else if (files[i][j].needToDeleteFile()) {
                     files[i][j].deleteFile();
-                } else if (files[i][j].FileOpenAndNotExist()) {
-                    DirectExist = true;
+                } else if (files[i][j].fileOpenAndNotExist()) {
+                    directExist = true;
                     files[i][j].writeFile();
-                } else if (!files[i][j].Open() && !files[i][j].empty()) {
-                    if (!DirectExist) {
-                        SubDirect.toFile().mkdir();
-                        subDirectsMap.put(i, SubDirect);
-                        DirectExist = true;
-                        Path FilePath = SubDirect.resolve((Integer.toString(j)
+                } else if (!files[i][j].open() && !files[i][j].empty()) {
+                    if (!directExist) {
+                        subDirect.toFile().mkdir();
+                        subDirectsMap.put(i, subDirect);
+                        directExist = true;
+                        Path filePath = subDirect.resolve((Integer.toString(j)
                                 + "." + "dat"));
-                        files[i][j].setPath(FilePath);
-                        FilePath.toFile().createNewFile();
+                        files[i][j].setPath(filePath);
+                        filePath.toFile().createNewFile();
                         files[i][j].writeFile();
                     } else {
-                        Path FilePath = subDirectsMap.get(i).resolve(
+                        Path filePath = subDirectsMap.get(i).resolve(
                                 (Integer.toString(j) + "." + "dat"));
-                        files[i][j].setPath(FilePath);
-                        FilePath.toFile().createNewFile();
+                        files[i][j].setPath(filePath);
+                        filePath.toFile().createNewFile();
                         files[i][j].writeFile();
                     }
                 }
             }
-            if (!DirectExist && SubDirect.toFile().exists()) {
+            if (!directExist && subDirect.toFile().exists()) {
                 subDirectsMap.get(i).toFile().delete();
             }
         }
     }
 }
+
