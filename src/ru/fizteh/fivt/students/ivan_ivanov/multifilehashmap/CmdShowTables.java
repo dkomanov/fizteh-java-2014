@@ -21,7 +21,7 @@ public class CmdShowTables implements Command {
         }
 
         if (!args[0].equals("tables")) {
-            throw new IOException(args[0]);
+            throw new IOException("Can't find key");
         }
 
         System.out.println("table_name row_count");

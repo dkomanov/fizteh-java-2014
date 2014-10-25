@@ -8,7 +8,19 @@ public class MultiFileHashMapMain {
     public static void main(final String[] args) throws IOException {
 
 
-       String currentProperty = System.getProperty("fizteh.db.dir");
+        String currentProperty = System.getProperty("fizteh.db.dir");
+        if (currentProperty == null){
+        	throw new IOException("Working directory is not specified");
+        }
+        
+        if (!new File(currentProperty).exists()){
+        	throw new IOException("Working directory does not exist");
+        }
+        
+        if (!new File(currentProperty).isDirectory()){
+        	throw new IOException("Working directory is not a directory");
+        }
+        
         File base = new File(currentProperty);
         if (!base.exists()) {
             base.createNewFile();
