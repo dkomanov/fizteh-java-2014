@@ -67,7 +67,8 @@ public class DataBase implements Map<String, String>, AutoCloseable {
         String value;
         for (int i = 0; i < FOLDERS; ++i) {
             for (int j = 0; j < FILES; ++j) {
-                Path helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j) + ".dat").normalize();
+                Path helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j)
+                                                                             + ".dat").normalize();
                 if (helpPath.toFile().exists()) {
                     try (DataInputStream input = new DataInputStream(new FileInputStream(helpPath.toString()))) {
                         while (true) {
@@ -80,7 +81,8 @@ public class DataBase implements Map<String, String>, AutoCloseable {
                                 input.readFully(word);
                                 value = new String(word, "UTF-8");
                                 
-                                if ((Math.abs(key.hashCode()) % FOLDERS != i) || (Math.abs(key.hashCode()) / FOLDERS % FILES != j)) {
+                                if ((Math.abs(key.hashCode()) % FOLDERS != i) ||
+                                    (Math.abs(key.hashCode()) / FOLDERS % FILES != j)) {
                                     throw new Exception("wrong input");
                                 }
                                 database.put(key, value);
@@ -105,11 +107,13 @@ public class DataBase implements Map<String, String>, AutoCloseable {
         }
         Set<String> keys = database.keySet();
         for (String key : keys) {
-            helpMap[Math.abs(key.hashCode()) % FOLDERS][Math.abs(key.hashCode()) / FOLDERS % FILES].map.put(key, database.get(key));
+            helpMap[Math.abs(key.hashCode()) % FOLDERS][Math.abs(key.hashCode()) / FOLDERS % FILES].map
+                    .put(key, database.get(key));
         }
         for (int i = 0; i < FOLDERS; ++i) {
             for (int j = 0; j < FILES; ++j) {
-                Path helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j) + ".dat").normalize();
+                Path helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j)
+                                                                             + ".dat").normalize();
                 if (helpPath.toFile().exists()) {
                     if (!helpPath.toFile().delete()) {
                         filemapSmthWrong("write", "file is not deleted");
@@ -120,7 +124,7 @@ public class DataBase implements Map<String, String>, AutoCloseable {
             if (helpPath.toFile().exists()) {
                 if (!helpPath.toFile().delete()) {
                     filemapSmthWrong("write", "folder is not deleted");
-                };
+                }
             }
         }
         for (int i = 0; i < FOLDERS; ++i) {
@@ -159,7 +163,8 @@ public class DataBase implements Map<String, String>, AutoCloseable {
         try {
             for (int i = 0; i < FOLDERS; ++i) {
                 for (int j = 0; j < FILES; ++j) {       
-                    helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j) + ".dat").normalize().toFile();
+                    helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j)
+                                                                            + ".dat").normalize().toFile();
                     if (helpPath.exists()) {
                         if (helpPath.length() == 0) {
                             helpPath.delete();
