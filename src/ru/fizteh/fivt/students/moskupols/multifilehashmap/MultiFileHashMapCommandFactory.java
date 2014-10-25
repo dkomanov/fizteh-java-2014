@@ -22,7 +22,6 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
     public Command fromString(String s) throws UnknownCommandException {
         final String[] argv = s.trim().split("\\s+");
 
-        final MultiFileMap table = db.getCurrentTable();
         switch (argv[0]) {
             case "put":
                 return new Put(argv);
@@ -61,13 +60,13 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
 
     private abstract class MultiFileHashMapCommand implements Command {
         protected final String[] argv;
-        protected final MultiFileMap table;
+        protected final MultiFileMap currentTable;
         protected final String name;
 
         protected MultiFileHashMapCommand(String name, String[] argv) {
             this.argv = argv;
             this.name = name;
-            table = db.getCurrentTable();
+            currentTable = db.getCurrentTable();
         }
 
         @Override
@@ -104,12 +103,10 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
                     System.out.println(String.format("%s exists", argv[1]));
                 } else {
                     System.out.println("created");
-                    db.setCurrentTable(newTable);
+                    provider.releaseTable(newTable);
                 }
             } catch (IOException e) {
-                throw new CommandExecutionException(
-                        this,
-                        "Error while creating: " + e.getMessage());
+                throw new CommandExecutionException(this, "Error while creating: " + e.getMessage(), e);
             }
         }
     }
@@ -123,15 +120,20 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 2, argv.length);
             try {
+                final boolean removingCur = currentTable != null && currentTable.getName().equals(argv[1]);
+                if (removingCur) {
+                    provider.releaseTable(currentTable);
+                }
                 if (provider.removeTable(argv[1])) {
                     System.out.println("dropped");
                 } else {
                     System.out.println(String.format("%s not exists", argv[1]));
                 }
+                if (removingCur) {
+                    db.setCurrentTable(null);
+                }
             } catch (IOException e) {
-                throw new CommandExecutionException(
-                        this,
-                        "Error while dropping: " + e.getMessage());
+                throw new CommandExecutionException(this, "Error while dropping: " + e.getMessage(), e);
             }
         }
     }
@@ -150,13 +152,20 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
                 if (newTable == null) {
                     System.out.println(String.format("%s not exists", argv[1]));
                 } else {
+                    if (currentTable != null) {
+                        try {
+                            provider.releaseTable(currentTable);
+                        } catch (IOException e) {
+                            throw new CommandExecutionException(
+                                    this, "Error while saving database: " + e.getMessage(), e);
+                        }
+                    }
                     System.out.println(String.format("using %s", argv[1]));
                     db.setCurrentTable(newTable);
                 }
             } catch (IOException e) {
                 throw new CommandExecutionException(
-                        this,
-                        "Error while loading database: " + e.getMessage());
+                        this, "Error while loading database: " + e.getMessage(), e);
             }
         }
     }
@@ -172,9 +181,11 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
             for (String name : provider.listNames()) {
                 final int size;
                 try {
-                    size = provider.getTable(name).size();
+                    final MultiFileMap table = provider.getTable(name);
+                    size = table.size();
+                    provider.releaseTable(table);
                 } catch (IOException e) {
-                    throw new CommandExecutionException(this, e.getMessage());
+                    throw new CommandExecutionException(this, e.getMessage(), e);
                 }
                 System.out.println(String.format("%s %d", name, size));
             }
@@ -190,11 +201,12 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
         @Override
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 1, argv.length);
-            try {
-                db.getCurrentTable().flush();
-            } catch (IOException e) {
-                throw new IllegalStateException(
-                        String.format("Couldn't save %s", db.getCurrentTable().getName()));
+            if (currentTable != null) {
+                try {
+                    provider.releaseTable(currentTable);
+                } catch (IOException e) {
+                    throw new CommandExecutionException(this, e.getMessage(), e);
+                }
             }
             throw new StopProcessingException();
         }
@@ -208,12 +220,12 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
         @Override
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 1, argv.length);
-            if (checkTableNotNull(table)) {
+            if (checkTableNotNull(currentTable)) {
                 StringJoiner joiner = new StringJoiner(", ");
                 try {
-                    table.list().forEach(joiner::add);
+                    currentTable.list().forEach(joiner::add);
                 } catch (IOException e) {
-                    throw new CommandExecutionException(this, e.getMessage());
+                    throw new CommandExecutionException(this, e.getMessage(), e);
                 }
                 System.out.println(joiner.toString());
             }
@@ -228,9 +240,9 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
         @Override
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 2, argv.length);
-            if (checkTableNotNull(table)) {
+            if (checkTableNotNull(currentTable)) {
                 try {
-                    System.out.println(table.remove(argv[1]) == null ? "not found" : "removed");
+                    System.out.println(currentTable.remove(argv[1]) == null ? "not found" : "removed");
                 } catch (IOException e) {
                     throw new CommandExecutionException(this, e.getMessage());
                 }
@@ -246,10 +258,10 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
         @Override
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 2, argv.length);
-            if (checkTableNotNull(table)) {
+            if (checkTableNotNull(currentTable)) {
                 String value;
                 try {
-                    value = table.get(argv[1]);
+                    value = currentTable.get(argv[1]);
                 } catch (Exception e) {
                     throw new CommandExecutionException(this, e.getMessage());
                 }
@@ -266,10 +278,10 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
         @Override
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 3, argv.length);
-            if (checkTableNotNull(table)) {
+            if (checkTableNotNull(currentTable)) {
                 String old;
                 try {
-                    old = table.put(argv[1], argv[2]);
+                    old = currentTable.put(argv[1], argv[2]);
                 } catch (Exception e) {
                     throw new CommandExecutionException(this, e.getMessage());
                 }

@@ -129,15 +129,23 @@ public class MultiFileMap {
     }
 
     public void clear() throws IOException {
-        try {
-            for (File dir : tableRoot.toFile().listFiles()) {
-                for (File file : dir.listFiles()) {
-                    assert file.delete();
-                }
-                assert dir.delete();
-            }
-        } catch (NullPointerException | AssertionError e) {
+        final File[] dirs = tableRoot.toFile().listFiles();
+        if (dirs == null) {
             throw new IOException(String.format("Couldn't clear %s", tableRoot));
+        }
+        for (File dir : dirs) {
+            final File[] files = dir.listFiles();
+            if (files == null) {
+                throw new IOException(String.format("Couldn't clear %s", dir.getAbsolutePath()));
+            }
+            for (File file : files) {
+                if (!file.delete()) {
+                    throw new IOException(String.format("Couldn't delete %s", file.getAbsolutePath()));
+                }
+            }
+            if (!dir.delete()) {
+                throw new IOException(String.format("Couldn't delete %s", dir.getAbsolutePath()));
+            }
         }
         reinitialize();
     }
@@ -196,7 +204,9 @@ public class MultiFileMap {
                     dirPath.toFile().delete();
                 }
             } else {
-                Files.createDirectory(dirPath);
+                if (!Files.exists(dirPath)) {
+                    Files.createDirectory(dirPath);
+                }
                 chunk.flush();
             }
         }
