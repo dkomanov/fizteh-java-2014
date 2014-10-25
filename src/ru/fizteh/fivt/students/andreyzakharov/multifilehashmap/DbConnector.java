@@ -15,7 +15,11 @@ public class DbConnector implements AutoCloseable {
 
     DbConnector(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
-            throw new ConnectionInterruptException("connection: destination does not exist");
+            try {
+                Files.createDirectory(dbPath);
+            } catch (IOException e) {
+                throw new ConnectionInterruptException("connection: destination does not exist, can't be created");
+            }
         }
         if (!Files.isDirectory(dbPath)) {
             throw new ConnectionInterruptException("connection: destination is not a directory");
@@ -43,11 +47,7 @@ public class DbConnector implements AutoCloseable {
                 for (Path file : stream) {
                     if (Files.isDirectory(file)) {
                         FileMap table = new FileMap(file);
-                        try {
-                            table.load();
-                        } catch (ConnectionInterruptException e) {
-                            continue;
-                        }
+                        table.load();
                         tables.put(file.getFileName().toString(), table);
                     }
                 }

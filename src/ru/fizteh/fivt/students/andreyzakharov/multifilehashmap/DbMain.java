@@ -10,7 +10,7 @@ public class DbMain {
 
     public DbMain(String[] args) {
         String property = System.getProperty("fizteh.db.dir");
-        if (property == null) {
+        if (property == null || property.equals("")) {
             System.err.println("Database root directory not set");
             System.exit(1);
         }
@@ -51,7 +51,6 @@ public class DbMain {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-
     }
 
     void execute(DbConnector connector, String s) {

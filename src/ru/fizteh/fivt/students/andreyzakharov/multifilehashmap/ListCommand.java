@@ -12,12 +12,7 @@ public class ListCommand implements Command {
         if (connector.activeTable.isEmpty()) {
             return "";
         } else {
-            StringBuilder sb = new StringBuilder();
-            for (String key : connector.activeTable.keySet()) {
-                sb.append(key);
-                sb.append(", ");
-            }
-            return sb.substring(0, sb.length() - 2);
+            return String.join(", ", connector.activeTable.keySet());
         }
     }
 }
