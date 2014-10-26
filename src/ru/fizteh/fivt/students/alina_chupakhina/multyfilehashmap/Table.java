@@ -22,10 +22,10 @@ public class Table {
         table = new File(path);
         tablename = name;
         getTable();
-        remove();
+        rm();
     }
 
-    private void rm() throws Exception {
+    public void rm() throws Exception {
         File[] dirs = this.table.listFiles();
         for (File dir : dirs) {
             if (!dir.isDirectory()) {
