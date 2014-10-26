@@ -69,8 +69,9 @@ public class Interpreter {
                     cmdName = "show " + arguments[1];
                     String[] newArguments = new String[arguments.length - 1];
                     newArguments[0] = cmdName;
-                    for (int i = 1; i < arguments.length - 1; i++)
+                    for (int i = 1; i < arguments.length - 1; i++) {
                         newArguments[i] = arguments[i + 1];
+                    }
                     Command command = commands.get(cmdName);
                     if (command == null) {
                         System.out.println("Command not found: " + cmdName);
