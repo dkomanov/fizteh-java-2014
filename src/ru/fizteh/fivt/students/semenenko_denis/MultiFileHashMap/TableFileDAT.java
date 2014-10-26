@@ -60,7 +60,7 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
 
     private Path getDATFilePath() {
         return parentTablePath.resolve(directoryNumber + ".dir" + File.separator
-        + fileNumber + ".dat");
+                + fileNumber + ".dat");
     }
 
     @Override
@@ -160,8 +160,16 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
         if (!dir.exists()) {
             dir.mkdir();
         }
-        init();
-        whereTo = binFile;
+        try {
+            RandomAccessFile datFile
+                    = new RandomAccessFile(getDATFilePath().toString(), "rw");
+            binFile = datFile;
+            whereTo = binFile;
+        } catch (IOException e) {
+            System.err.println("Can't create file.");
+            System.err.println("Reason: " + e.getMessage());
+            System.exit(-1);
+        }
         try {
             whereTo.setLength(0);
             Set<String> keys = data.keySet();
@@ -184,6 +192,11 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        }
+        try {
+            whereTo.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
     }
 
@@ -219,7 +232,7 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
             // Reading values until reaching the end of file.
             offsets.add((int) whereFrom.length());
             Iterator<String> keyIter = keys.iterator();
-            for (int nextOffset: offsets) {
+            for (int nextOffset : offsets) {
                 while (bytesCounter < nextOffset) {
                     bytesBuffer.write(whereFrom.readByte());
                     bytesCounter++;

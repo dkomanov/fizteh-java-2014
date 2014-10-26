@@ -87,10 +87,11 @@ public class DataBaseCache {
     }
 
     public void createTable(String tableName)
-            throws InvalidCommandException , DatabaseFileStructureException {
+            throws InvalidCommandException, DatabaseFileStructureException {
         File table = dataBasePath.resolve(tableName).toFile();
         if (table.exists()) {
             System.out.println(tableName + " exists");
+            return;
         }
         mkdir(tableName);
         if (table.exists()) {
