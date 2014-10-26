@@ -45,21 +45,24 @@ public class Table implements Map<String, String>, AutoCloseable {
             throw new ExitException(-1);
         }
     }
-    private String readUtil(DataInputStream inStream) throws IOException {
-        int length = inStream.readInt();
-        byte[] wordArray = new byte[length];
-        inStream.readFully(wordArray);
-        return new String(wordArray, "UTF-8");
+    private  String readUtil(final RandomAccessFile dbFile) throws IOException {
+        try {
+            int wordLength = dbFile.readInt();
+            byte[] word = new byte[wordLength];
+            dbFile.read(word, 0, wordLength);
+            return new String(word, "UTF-8");
+        } catch (IOException e) {
+            throw new IOException("Cannot read from table");
+        }
     }
-
     private void read() throws IOException, ExitException {
         File pathDirectory =  dbPath.toFile();
         File[] tableDirectories = pathDirectory.listFiles();
         for (File t: tableDirectories) {
             // Checking subdirectories.
             if (!t.isDirectory()) {
-                System.err.println("Table subdirectories " 
-                + "are not actually directories");
+                System.err.println("Table subdirectories "
+                        + "are not actually directories");
                 throw new ExitException(-1);
             }
         }
@@ -85,19 +88,17 @@ public class Table implements Map<String, String>, AutoCloseable {
                         */
                         int nFile = Integer.parseInt(
                                 file.getName().substring(0, k));
-                        DataInputStream inStream = new
-                                DataInputStream(new FileInputStream(file.getAbsolutePath()));
-                        boolean end = false;
-                        while (!end) {
-                            try {
-                                String key = readUtil(inStream);
-                                String value = readUtil(inStream);
-                                allRecords.put(key, value);
-                            } catch (IOException e) {
-                                end = true;
+
+                        try (RandomAccessFile dbFile = new RandomAccessFile(file.getAbsolutePath(), "r")) {
+                            if (dbFile.length() > 0) {
+                                while (dbFile.getFilePointer() < dbFile.length()) {
+                                    String key = readUtil(dbFile);
+                                    String value = readUtil(dbFile);
+                                    allRecords.put(key, value);
+                                }
                             }
+                            dbFile.close();
                         }
-                        inStream.close();
                     } catch (NumberFormatException t) {
                         System.err.println("Subdirectories' files "
                                 + "have wrong names, "
@@ -154,22 +155,27 @@ public class Table implements Map<String, String>, AutoCloseable {
                                 throw new Exception("Cannot create file");
                             }
                         }
-                        DataOutputStream outStream = new DataOutputStream(
-                                new FileOutputStream(newFilePath));
-                        for (Map.Entry<String, String> entry
-                                : db[i][j].entrySet()) {
-                            String key = entry.getKey();
-                            String value = entry.getValue();
-                            try {
-                                writeUtil(key, outStream);
-                                writeUtil(value, outStream);
-                            } catch (SecurityException e) {
-                                throw new Exception("Cannot create "
-                                        + "directory: "
-                                        + "access denied");
+                        try (RandomAccessFile dbFile = new
+                                RandomAccessFile(newFilePath, "rw")) {
+                            dbFile.setLength(0);
+                            for (Map.Entry<String, String> entry
+                                    : db[i][j].entrySet()) {
+                                String key = entry.getKey();
+                                String value = entry.getValue();
+                                try {
+                                    writeUtil(key, dbFile);
+                                    writeUtil(value, dbFile);
+                                } catch (SecurityException e) {
+                                    throw new Exception("Cannot create "
+                                            + "directory: "
+                                            + "access denied");
+                                }
                             }
+                            dbFile.close();
+                        } catch (Exception ex) {
+                            System.err.println("Cannot write to table");
+                            throw new ExitException(-1);
                         }
-                        outStream.close();
                     } else {
                         //Deleting empty files.
                         Integer nDirectory = i;
@@ -212,13 +218,15 @@ public class Table implements Map<String, String>, AutoCloseable {
         }
     }
     private void writeUtil(final String word,
-                           DataOutputStream outStream) throws IOException {
-        byte[] byteWord = word.getBytes("UTF-8");
-        outStream.writeInt(byteWord.length);
-        outStream.write(byteWord);
-        outStream.flush();
-    }
+                           final RandomAccessFile dbFile) throws IOException {
+        try {
+            dbFile.writeInt(word.getBytes("UTF-8").length);
+            dbFile.write(word.getBytes("UTF-8"));
+        } catch (Exception ex) {
+            throw new IOException("Cannot write in file");
+        }
 
+    }
     @Override
     public int size() {
         return allRecords.size();
