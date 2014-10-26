@@ -16,16 +16,16 @@ public class MultiFileHashMap {
 
     }
 
-    private static Integer DEFAULT16 = 16;
+    private static Integer defaultValue = 16;
     private static File table;
     private static String nameOfDir = "";
     private static ArrayOfHashMaps[][] arrayOfHashMaps;
 
     static void newArrayOfHashMaps() {
 
-        arrayOfHashMaps = new ArrayOfHashMaps[DEFAULT16][DEFAULT16];
-        for (int i = 0; i < DEFAULT16; i++) {
-            for (int j = 0; j < DEFAULT16; j++) {
+        arrayOfHashMaps = new ArrayOfHashMaps[defaultValue][defaultValue];
+        for (int i = 0; i < defaultValue; i++) {
+            for (int j = 0; j < defaultValue; j++) {
                 arrayOfHashMaps[i][j] = new ArrayOfHashMaps();
                 try {
                     arrayOfHashMaps[i][j].arrayOfHashMaps = new HashMap<>();
@@ -57,8 +57,8 @@ public class MultiFileHashMap {
                         String key = readWordFromFile(readFileStream);
                         String value = readWordFromFile(readFileStream);
                         int hashcode = key.hashCode();
-                        int ndirectory = hashcode % DEFAULT16;
-                        int nfile = hashcode / DEFAULT16 % DEFAULT16;
+                        int ndirectory = hashcode % defaultValue;
+                        int nfile = hashcode / defaultValue % defaultValue;
                         arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.put(
                                 key, value);
                     }
@@ -87,8 +87,8 @@ public class MultiFileHashMap {
                 }
             }
         }
-        for (int i = 0; i < DEFAULT16; i++) {
-            for (int j = 0; j < DEFAULT16; j++) {
+        for (int i = 0; i < defaultValue; i++) {
+            for (int j = 0; j < defaultValue; j++) {
                 if (!arrayOfHashMaps[i][j].arrayOfHashMaps.isEmpty()) {
                     File newDirs = new File(table.getPath() + File.separator
                             + nameOfDir + File.separator + String.valueOf(i)
@@ -128,8 +128,8 @@ public class MultiFileHashMap {
     public static Integer countOfTable(final String path) {
 
         Integer count = 0;
-        for (int i = 0; i < DEFAULT16; i++) {
-            for (int j = 0; j < DEFAULT16; j++) {
+        for (int i = 0; i < defaultValue; i++) {
+            for (int j = 0; j < defaultValue; j++) {
                 File newDirs = new File(table.getPath() + File.separator + path
                         + File.separator + String.valueOf(i) + ".dir");
                 if (newDirs.exists()) {
@@ -193,8 +193,8 @@ public class MultiFileHashMap {
             return true;
         }
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % DEFAULT16;
-        int nfile = hashcode / DEFAULT16 % DEFAULT16;
+        int ndirectory = hashcode % defaultValue;
+        int nfile = hashcode / defaultValue % defaultValue;
         if (!arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps
                 .containsKey(key)) {
             System.out.println("new");
@@ -217,8 +217,8 @@ public class MultiFileHashMap {
             return true;
         }
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % DEFAULT16;
-        int nfile = hashcode / DEFAULT16 % DEFAULT16;
+        int ndirectory = hashcode % defaultValue;
+        int nfile = hashcode / defaultValue % defaultValue;
         if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
             System.out.println("found");
             System.out
@@ -329,8 +329,8 @@ public class MultiFileHashMap {
             return true;
         }
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % DEFAULT16;
-        int nfile = hashcode / DEFAULT16 % DEFAULT16;
+        int ndirectory = hashcode % defaultValue;
+        int nfile = hashcode / defaultValue % defaultValue;
         if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
             arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.remove(key);
             System.out.println("removed");
