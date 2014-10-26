@@ -63,10 +63,13 @@ public class MultiFileHashMap {
                                 key, value);
                     }
                 } catch (EOFException e) {
+                    readFileStream.close();
                     break;
                 } catch (Exception e) {
+                    readFileStream.close();
                     System.err.println("Fatal error. Can't read file");
                 }
+                readFileStream.close();
             }
         }
     }
@@ -257,22 +260,17 @@ public class MultiFileHashMap {
                     newArrayOfHashMaps();
                 }
                 try {
-                    String[] file = newFileBuf.list();
-                    for (String fileIter : file) {
-                        File hashTableDir = new File(newFileBuf.getPath()
-                                + File.separator + fileIter);
-                        String[] file2 = hashTableDir.list();
-                        for (String fileIter2 : file2) {
-                            File hashTableFile = new File(
-                                    hashTableDir.getPath() + File.separator
-                                            + fileIter2);
-                            if (hashTableFile.exists()) {
-                                hashTableFile.delete();
-                            }
+                    String[] fil = newFileBuf.list();
+                    for (String filIter : fil) {
+                        File hashTableDir = new File(newFileBuf.getPath() + File.separator
+                                + filIter);
+                        String[] fil2 = hashTableDir.list();
+                        for (String filIter2 : fil2) {
+                            File hashTableFile = new File(hashTableDir.getPath()
+                                    + File.separator + filIter2);
+                            hashTableFile.delete();
                         }
-                        if (hashTableDir.exists()) {
-                            hashTableDir.delete();
-                        }
+                        hashTableDir.delete();
                     }
                     newFileBuf.delete();
                 } catch (Exception e) {
