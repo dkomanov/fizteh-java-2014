@@ -23,10 +23,16 @@ public class MultiFileMap {
                 System.err.println("Path was not found.");
                 System.exit(ERROR);
             }
-            dbPath = Paths.get(dbPath).normalize().toString();
+            if (!Paths.get(dbPath).isAbsolute()) {
+                dbPath = Paths.get(dbPath).toAbsolutePath().normalize().toString();
+            }
             if (!Paths.get(dbPath).normalize().toFile().exists()) {
-                System.err.println("Directory [" + dbPath + "] does not exist.");
-                System.exit(ERROR);
+                if (Paths.get(dbPath).normalize().getParent().toFile().exists()) {
+                    Files.createDirectory(Paths.get(dbPath).normalize().getFileName());
+                } else {
+                    System.err.println("Directory [" + Paths.get(dbPath).normalize().getParent().getFileName() + "] does not exist.");
+                    System.exit(ERROR);
+                }
             }
             if (!Paths.get(dbPath).normalize().toFile().isDirectory()) {
                 System.err.println("Path [" + dbPath + "] is not directory.");
@@ -63,7 +69,7 @@ public class MultiFileMap {
                             if (input[i].length() > 0) {
                                 String[] buffer = input[i].trim().split("\\s+");
                                 try {
-                                    mfmParser(buffer);
+                                    parser(buffer);
                                 } catch (Exception exception) {
                                     System.err.println(exception.getMessage());
                                 }
@@ -88,7 +94,7 @@ public class MultiFileMap {
                         if (input[i].length() > 0) {
                             String[] buffer = input[i].trim().split("\\s+");
                             try {
-                                mfmParser(buffer);
+                                parser(buffer);
                             } catch (Exception exception) {
                                 System.err.println(exception.getMessage());
                             }
@@ -112,35 +118,35 @@ public class MultiFileMap {
     // Begin.
     //
     
-    private static void mfmCreate(final String[] args) throws Exception {
+    private static void create(final String[] args) throws Exception {
         if (args.length != 2) {
-            mfmWrongQuantity("create");
+            wrongQuantity("create");
         }
         if (args[1].isEmpty()) {
-            mfmWrongInput("create");
+            wrongInput("create");
         }
         if (Paths.get(dbPath, args[1]).normalize().toFile().exists()) {
             if (Paths.get(dbPath, args[1]).normalize().toFile().isDirectory()) {
                 System.out.println(args[1] + " exists");
             } else {
-                mfmTableNameIsFile("create", args[1]);
+                tableNameIsFile("create", args[1]);
             }
         } else {
             if (Paths.get(dbPath, args[1]).normalize().toFile().mkdir()) {
                 System.out.println("created");
             } else {
-                mfmNotMkdir("create", args[1]);
+                notMkdir("create", args[1]);
             }
         }
         dbInformation.put(Paths.get(dbPath, args[1]).normalize().getFileName().toString(), 0);
     }
 
-    private static void mfmDrop(final String[] args) throws Exception {
+    private static void drop(final String[] args) throws Exception {
         if (args.length != 2) {
-            mfmWrongQuantity("drop");
+            wrongQuantity("drop");
         }
         if (args[1].isEmpty()) {
-            mfmWrongInput("drop");
+            wrongInput("drop");
         }
         try {
             Path pathToFile = Paths.get(dbPath, args[1]).normalize();
@@ -156,9 +162,9 @@ public class MultiFileMap {
             }
             
             if (!pathToFile.toFile().isDirectory()) {
-                mfmNotDirectory("drop", args[1]);
+                notDirectory("drop", args[1]);
             }
-            mfmRecursiveDrop(pathToFile);
+            recursiveDrop(pathToFile);
         } catch (Exception exception) {
             throw new Exception(exception.getMessage());
         }
@@ -167,15 +173,15 @@ public class MultiFileMap {
         System.out.println("dropped");
     }
 
-    private static void mfmRecursiveDrop(final Path pathToFile) throws Exception {
+    private static void recursiveDrop(final Path pathToFile) throws Exception {
         try {
             if (!pathToFile.toFile().exists()) {
-                mfmNotExists("drop", pathToFile.toString());
+                notExists("drop", pathToFile.toString());
                 return;
             }
             if (pathToFile.toFile().isFile()) {
                 if (!pathToFile.toFile().delete()) {
-                    mfmSmthWrong("drop");
+                    smthWrong("drop");
                 }
             }
             if (pathToFile.toFile().isDirectory()) {
@@ -183,32 +189,32 @@ public class MultiFileMap {
                 if (names.length != 0) {
                     for (String name : names) {
                         if (Paths.get(pathToFile.toString(), name).normalize().toFile().isDirectory()) {
-                            mfmRecursiveDrop(Paths.get(pathToFile.toString(), name).normalize());
+                            recursiveDrop(Paths.get(pathToFile.toString(), name).normalize());
                         }
                         if (Paths.get(pathToFile.toString(), name).normalize().toFile().isFile()) {
                             if (!Paths.get(pathToFile.toString(), name).normalize().toFile().delete()) {
-                                mfmSmthWrong("drop");
+                                smthWrong("drop");
                             }
                         }
                     }
                 }
                 if (!pathToFile.toFile().delete()) {
-                    mfmSmthWrong("drop");
+                    smthWrong("drop");
                 }
             }
         } catch (InvalidPathException invException) {
-            mfmInvalidName("drop", invException.getMessage());
+            invalidName("drop", invException.getMessage());
         } catch (SecurityException secException) {
-            mfmSecurity("drop", secException.getMessage());
+            security("drop", secException.getMessage());
         }
     }
     
-    private static void mfmUse(final String[] args) throws Exception {
+    private static void use(final String[] args) throws Exception {
         if (args.length != 2) {
-            mfmWrongQuantity("use");
+            wrongQuantity("use");
         }
         if (args[1].isEmpty()) {
-            mfmWrongInput("use");
+            wrongInput("use");
         }
         
         if (!Paths.get(dbPath, args[1]).normalize().toFile().exists()) {
@@ -228,12 +234,12 @@ public class MultiFileMap {
         }
     }
 
-    private static void mfmShowTables(final String[] args) throws Exception {
+    private static void showTables(final String[] args) throws Exception {
         if (args.length != 2) {
-            mfmWrongInput("show tables");
+            wrongInput("show tables");
         }
         if (!args[1].equals("tables")) {
-            mfmWrongInput("show tables");
+            wrongInput("show tables");
         }
 
         Set<String> tables = dbInformation.keySet();
@@ -253,9 +259,9 @@ public class MultiFileMap {
         }
     }
     
-    private static void mfmExit(final String[] args) throws Exception {
+    private static void exit(final String[] args) throws Exception {
         if (args.length != 1) {
-            mfmWrongQuantity("exit");
+            wrongQuantity("exit");
         }
         if (dbTable != null) {
             dbTable.close();
@@ -263,12 +269,12 @@ public class MultiFileMap {
         System.exit(SUCCESS);
     }
 
-    private static void mfmPut(final String[] args) throws Exception {
+    private static void put(final String[] args) throws Exception {
         if (args.length != 3) {
-            mfmWrongQuantity("put");
+            wrongQuantity("put");
         }
         if ((args[1].isEmpty()) || (args[2].isEmpty())) {
-            mfmWrongInput("put");
+            wrongInput("put");
         }
         if (dbTable == null) {
             System.out.println("no table");
@@ -285,12 +291,12 @@ public class MultiFileMap {
         dbTable.put(args[1], args[2]);
     }
     
-    private static void mfmGet(final String[] args) throws Exception {
+    private static void get(final String[] args) throws Exception {
         if (args.length != 2) {
-            mfmWrongQuantity("get");
+            wrongQuantity("get");
         }
         if (args[1].isEmpty()) {
-            mfmWrongInput("get");
+            wrongInput("get");
         }
         if (dbTable == null) {
             System.out.println("no table");
@@ -306,12 +312,12 @@ public class MultiFileMap {
         }
     }
 
-    private static void mfmRemove(final String[] args) throws Exception {
+    private static void remove(final String[] args) throws Exception {
         if (args.length != 2) {
-            mfmWrongQuantity("remove");
+            wrongQuantity("remove");
         }
         if (args[1].isEmpty()) {
-            mfmWrongInput("remove");
+            wrongInput("remove");
         }
         if (dbTable == null) {
             System.out.println("no table");
@@ -327,9 +333,9 @@ public class MultiFileMap {
         }
     }
     
-    private static void mfmList(final String[] args) throws Exception {
+    private static void list(final String[] args) throws Exception {
         if (args.length != 1) {
-            mfmWrongQuantity("list");
+            wrongQuantity("list");
         }
         
         if (dbTable == null) {
@@ -354,74 +360,74 @@ public class MultiFileMap {
     // End.
     //
 
-    private static void mfmParser(final String[] args) throws Exception {
+    private static void parser(final String[] args) throws Exception {
         switch (args[0]) {
             case "create":
-                mfmCreate(args);
+                create(args);
                 break;
             case "drop":
-                mfmDrop(args);
+                drop(args);
                 break;
             case "use":
-                mfmUse(args);
+                use(args);
                 break;
             case "show":
-                mfmShowTables(args);
+                showTables(args);
                 break;
             case "exit":
-                mfmExit(args);
+                exit(args);
                 break;
                 
             case "put":
-                mfmPut(args);
+                put(args);
                 break;
             case "get":
-                mfmGet(args);
+                get(args);
                 break;
             case "remove":
-                mfmRemove(args);
+                remove(args);
                 break;
             case "list":
-                mfmList(args);
+                list(args);
                 break;
             default:
                 System.err.println("Command does not exist: [" + args[0] + "]");
         }
     }
     
-    private static void mfmInvalidName(final String commandName, final String arg) throws Exception {
+    private static void invalidName(final String commandName, final String arg) throws Exception {
         throw new Exception(commandName + ": [" + arg + "] is invalid name.");
     }
     
-    private static void mfmNotDirectory(final String commandName,  final String arg) throws Exception {
+    private static void notDirectory(final String commandName,  final String arg) throws Exception {
         throw new Exception(commandName + ": [" + arg + "] is not a directory.");
     }
     
-    private static void mfmNotMkdir(final String commandName, final String arg) throws Exception {
+    private static void notMkdir(final String commandName, final String arg) throws Exception {
         throw new Exception(commandName + ": failed to create a directory [" + arg + "].");
     }
     
-    private static void mfmNotExists(final String commandName, final String arg) throws Exception {
+    private static void notExists(final String commandName, final String arg) throws Exception {
         throw new Exception(commandName + ": [" + arg + "] does not exists.");
     }
     
-    private static void mfmSecurity(final String commandName, final String arg) throws Exception {
+    private static void security(final String commandName, final String arg) throws Exception {
         throw new Exception(commandName + ": access to the [" + arg + "] is prohibeted.");
     }
     
-    private static void mfmSmthWrong(final String commandName) throws Exception {
+    private static void smthWrong(final String commandName) throws Exception {
         throw new Exception(commandName + "something went wrong.");
     }
     
-    private static void mfmTableNameIsFile(final String commandName, final String arg) throws Exception {
+    private static void tableNameIsFile(final String commandName, final String arg) throws Exception {
         throw new Exception(commandName + ": [" + arg + "] is file");
     }
     
-    private static void mfmWrongQuantity(final String commandName) throws Exception {
+    private static void wrongQuantity(final String commandName) throws Exception {
         throw new Exception(commandName + ": wrong quantity of arguments.");
     }
 
-    private static void mfmWrongInput(final String commandName) throws Exception {
+    private static void wrongInput(final String commandName) throws Exception {
         throw new Exception(commandName + ": wrong input.");
     }
 }
