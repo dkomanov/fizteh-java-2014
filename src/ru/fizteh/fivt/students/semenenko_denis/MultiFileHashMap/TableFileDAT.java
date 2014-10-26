@@ -240,6 +240,11 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
         }
     }
 
+    void clear() {
+        data.clear();
+        binFile = null;
+    }
+
     public RandomAccessFile getBinFile() {
         return binFile;
     }

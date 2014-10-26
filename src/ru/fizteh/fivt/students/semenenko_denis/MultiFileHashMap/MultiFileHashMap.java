@@ -33,6 +33,9 @@ public class MultiFileHashMap {
                 batchMode = true;
                 execBatchMode(args);
             }
+        } catch (NullPointerException e) {
+            System.err.println("No parameter: root of database.");
+            System.exit(-1);
         } catch (WorkWithMemoryException e) {
             System.err.println(e.getMessage());
             System.exit(-1);
@@ -78,6 +81,7 @@ public class MultiFileHashMap {
                 break;
             }
         }
+        cache.commit();
     }
 
     private static void execCommand(String command) {
@@ -94,7 +98,10 @@ public class MultiFileHashMap {
                     break;
                 case "drop" :
                     if (parts.length == 2) {
+                        if (workWithTableMode && usingTable.getTableName().equals(parts[1]))
                         cache.dropTable(parts[1]);
+                        workWithTableMode = false;
+                        usingTable = null;
                     } else {
                         errorCntArguments("drop");
                     }
@@ -173,6 +180,8 @@ public class MultiFileHashMap {
             if (batchMode) {
                 System.exit(-1);
             }
+        } catch (DatabaseFileStructureException e) {
+            System.err.println(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }

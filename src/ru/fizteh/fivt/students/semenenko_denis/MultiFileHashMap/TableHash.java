@@ -111,6 +111,14 @@ public class TableHash implements TableInterface {
         return datFiles[directoryNumber][fileNumber];
     }
 
+    void clear() {
+        for (int i = 0; i < COUNT_OF_DIRECTORIES; ++i) {
+            for (int j = 0; j < COUNT_OF_DAT_FILES; ++j) {
+                datFiles[i][j].clear();
+            }
+        }
+    }
+
     public Path getTableDirectoryPath() {
         return tableDirectoryPath;
     }

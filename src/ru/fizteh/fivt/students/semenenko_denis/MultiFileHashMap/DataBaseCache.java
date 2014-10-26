@@ -31,9 +31,9 @@ public class DataBaseCache {
             } else {
                 throw new DatabaseFileStructureException("Root directory not found");
             }
-        } catch (SecurityException ex) {
+        } catch (SecurityException e) {
             throw new WorkWithMemoryException("Error in loading, access denied: "
-                    + ex.getMessage(), ex);
+                    + e.getMessage(), e);
         }
     }
 
@@ -80,13 +80,14 @@ public class DataBaseCache {
         System.out.println("dropped");
         for (TableHash tableHash : listOfTables) {
             if (tableHash.getTableName().equals(tableName)) {
+                tableHash.clear();
                 listOfTables.remove(tableHash);
             }
         }
     }
 
     public void createTable(String tableName)
-            throws InvalidCommandException {
+            throws InvalidCommandException , DatabaseFileStructureException{
         File table = dataBasePath.resolve(tableName).toFile();
         if (table.exists()) {
             System.out.println(tableName + " exists");
@@ -102,8 +103,7 @@ public class DataBaseCache {
                 }
             }
             if (!isRightDirectory) {
-                System.err.println("Can't create " + tableName + " in the root.");
-                return;
+                throw new DatabaseFileStructureException("Can't create " + tableName + " in the root");
             }
         }
         listOfTables.add(new TableHash(tableName, dataBasePath));

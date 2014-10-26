@@ -8,7 +8,7 @@ public class DatabaseFileStructureException extends WorkWithMemoryException {
         super(message);
     }
 
-    public DatabaseFileStructureException(String message, Exception ex) {
-        super(message, ex);
+    public DatabaseFileStructureException(String message, Exception e) {
+        super(message, e);
     }
 }
