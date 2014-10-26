@@ -95,7 +95,7 @@ public class Interpreter {
             }
             MultiFileHashMap.tableList.remove(args[1]);
             Table t = new Table(args[1], MultiFileHashMap.path);
-            t.remove();
+            t.rm();
             table.delete();
             System.out.println("dropped");
         }
