@@ -72,7 +72,13 @@ public class FileMap {
                 String currentFile = currentDirectory + System.getProperty("file.separator")
                         + oneFile;
                 int numberOfDirectory = oneDirectory.charAt(0) - '0';
+                if (oneDirectory.charAt(1) != '.') {
+                    numberOfDirectory = 10 * numberOfDirectory + oneDirectory.charAt(1) - '0';
+                }
                 int numberOfFile = oneFile.charAt(0) - '0';
+                if (oneFile.charAt(1) != '.') {
+                    numberOfFile = 10 * numberOfFile + oneFile.charAt(1) - '0';
+                }
                 try (FileInputStream inStream = new FileInputStream(currentFile)) {
                     FileChannel inputChannel;
                     inputChannel = inStream.getChannel();
@@ -147,16 +153,25 @@ public class FileMap {
     }
 
     public boolean load(String key, boolean appendFile) {
-        HashSet<String> keySet = new HashSet<>(dataBase.keySet());
+        HashSet<String> keySet = new HashSet<>();
         ByteBuffer bufferForSize = ByteBuffer.allocate(4);
-        if (appendFile) {
-            keySet.clear();
-            keySet.add(key);
-        }
-        Path directoryForLoad;
-        Path fileForLoad;
+
         int numberOfDirectory = getNumberOfDirectory(key.hashCode());
         int numberOfFile = getNumberOfFile(key.hashCode());
+        if (appendFile) {
+            keySet.add(key);
+        } else {
+            Set<String> keySetFromDB = dataBase.keySet();
+            for (String oneKey : keySetFromDB) {
+                if (numberOfDirectory == getNumberOfDirectory(oneKey.hashCode())
+                        & numberOfFile == getNumberOfFile(oneKey.hashCode())) {
+                    keySet.add(oneKey);
+                }
+            }
+        }
+
+        Path directoryForLoad;
+        Path fileForLoad;
         directoryForLoad = Paths.get(directoryOfTable, numberOfDirectory + ".dir");
         if (!Files.exists(directoryForLoad)) {
             try {
@@ -185,8 +200,8 @@ public class FileMap {
                 if (!appendFile & (numberOfFile == keyNnumberOfFiles)
                         & (numberOfDirectory == keyNumberOfDirectory) | appendFile) {
                     try {
-                        byte[] keyByte = key.getBytes("UTF-8");
-                        byte[] valueByte = dataBase.get(key).getBytes("UTF-8");
+                        byte[] keyByte = oneKey.getBytes("UTF-8");
+                        byte[] valueByte = dataBase.get(oneKey).getBytes("UTF-8");
                         outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
                         outputStream.write(keyByte);
                         outputStream.write(bufferForSize.putInt(0, valueByte.length).array());

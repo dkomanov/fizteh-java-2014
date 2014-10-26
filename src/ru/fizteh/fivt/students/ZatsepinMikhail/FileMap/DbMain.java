@@ -18,11 +18,9 @@ public class DbMain {
         }
         FileMap myFileMap = new FileMap(dataBasePath);
         boolean errorOccuried = false;
-
         if (!myFileMap.init()) {
             System.exit(3);
         }
-
 
         Shell<FileMap> myShell = new Shell<>(myFileMap);
         myShell.addCommand(new Get());
