@@ -1,6 +1,7 @@
-package ru.fizteh.fivt.studenrts.theronsg.multifilehashmap;
+package ru.fizteh.fivt.students.theronsg.multifilehashmap;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -34,9 +35,16 @@ public class TableList {
         }
     }
     
+    /**
+    * Function drop has two different realization.
+    * I don't want to remove one of them.
+    * So one will be commented.
+    **/
+    
     public void drop(final String name) {
         if (dB.containsKey(name)) {
             dB.get(name).drop();
+        	//rm(name);  	
             dB.remove(name);
             System.out.println("dropped");
         } else {
@@ -81,7 +89,7 @@ public class TableList {
     
     public void remove(final String key) {
         if (curTable != null) {
-            dB.remove(curTable).get(key);
+            dB.get(curTable).remove(key);
         } else {
             System.err.println("no table");
         }
@@ -95,15 +103,34 @@ public class TableList {
         }
     }
 
-    public void exit() {
+    public void exit() throws FileNotFoundException {
         saveDB();
         System.exit(0);
-        
     }
 
-    private void saveDB() {
+    private void saveDB() throws FileNotFoundException {
         for (Table t: dB.values()) {
             t.saveTable();
+        }
+    }
+    
+    public static void rm(final String name) {
+        File fileName = new File(name);
+        if (fileName.isFile()) {
+            fileName.delete();
+            return;
+        }
+        if (fileName.isDirectory()) {
+            if (fileName.list().length == 0) {
+            	fileName.delete();
+                return;
+            } else {
+                for (String s: fileName.list()) {
+                    rm(Paths.get(fileName.getAbsolutePath()).resolve(s).toString());
+                }
+                fileName.delete();
+                return;
+            }
         }
     }
 }
