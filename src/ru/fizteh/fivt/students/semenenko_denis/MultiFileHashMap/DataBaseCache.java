@@ -74,6 +74,7 @@ public class DataBaseCache {
         File table = dataBasePath.resolve(tableName).toFile();
         if (!table.exists()) {
             System.out.println(tableName + " not exists");
+            return;
         }
         delete(table);
         System.out.println("dropped");
@@ -137,16 +138,9 @@ public class DataBaseCache {
             throws InvalidCommandException {
         if (file.isDirectory()) {
             File[] content = file.listFiles();
-            if (content == null) {
-                errorCannotPerform("rm");
-                return;
-            }
             for (File children : content) {
                 delete(children);
             }
-        }
-        if (!file.delete()) {
-            errorCannotPerform("rm");
         }
     }
 
