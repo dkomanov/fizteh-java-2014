@@ -11,9 +11,9 @@ public class Table {
     private File table;
     private Map<String, String> fm;
     private int numberOfElements;
-    private static final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
+    private final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
             = ": Invalid number of arguments";
-    private static final int MAGIC_NUMBER = 16;
+    private final int MAGIC_NUMBER = 16;
 
     Table(String name, String pathname) throws Exception {
         fm = new TreeMap<>();
@@ -22,26 +22,31 @@ public class Table {
         table = new File(path);
         tablename = name;
         getTable();
-        remove(table);
-        table.mkdir();
+        remove();
     }
 
-    public void remove(final File file) throws Exception {
-        if (file.isDirectory()) {
-            File [] children = file.listFiles();
-            if (children == null) {
-                throw new Exception(
-                        "cannot remove");
+    private void remove() throws Exception {
+        File[] dirs = this.table.listFiles();
+        for (File dir : dirs) {
+            if (!dir.isDirectory()) {
+                throw new Exception(dir.getName()
+                        + " is not directory");
             }
-            for (int i = 0; i != children.length; i++) {
-                remove(children[i]);
+            File[] dats = dir.listFiles();
+            if (dats.length == 0) {
+                System.err.println("Empty folders found");
+                System.exit(-1);
             }
+            for (File dat : dats) {
+                if (!dat.delete()) {
+                    System.out.println("Error while reading table " + tablename);
+                };
+
+            }
+            if (!dir.delete()) {
+                System.out.println("Error while reading table " + tablename);
+            };
         }
-        if (!file.delete()) {
-            throw new Exception(
-                    file.getName() + ". Can not delete the file");
-        }
-        return;
     }
 
     private void getTable() throws Exception {
@@ -57,7 +62,6 @@ public class Table {
                 System.exit(-1);
             }
             for (File dat : dats) {
-                numberOfElements++;
                 int nDirectory = Integer.parseInt(dir.getName().substring(0,
                         dir.getName().length() - 4));
                 int nFile = Integer.parseInt(dat.getName().substring(0,
@@ -77,6 +81,7 @@ public class Table {
                         bytes = new byte[length];
                         file.readFully(bytes);
                         value = new String(bytes, "UTF-8");
+                        numberOfElements++;
                         fm.put(key, value);
                         if (!(nDirectory ==  Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER))
                                 || !(nFile == Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER))) {
@@ -201,6 +206,5 @@ public class Table {
         return numberOfElements;
     }
 }
-
 
 
