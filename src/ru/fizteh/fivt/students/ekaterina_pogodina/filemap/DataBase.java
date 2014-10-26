@@ -48,7 +48,10 @@ public class DataBase {
         if (args.length > 1) {
             manyArgs("list");
         }
-        System.out.println(String.join("; ", dBase.keySet()));
+        if (!dBase.isEmpty()) {
+            System.out.println(String.join("; ", dBase.keySet()));
+        }
+
     }
 
     public void put(String[] args) throws Exception {
