@@ -25,7 +25,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     TableEntryReader reader = new TableEntryJsonReader();
     TableEntryWriter writer = new TableEntryJsonWriter();
 
-    MultiFileTableProvider(Path dbPath) throws ConnectionInterruptException {
+    public MultiFileTableProvider(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
             try {
                 Files.createDirectory(dbPath);
