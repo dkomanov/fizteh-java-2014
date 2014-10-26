@@ -69,7 +69,7 @@ public class Table {
         if (data.containsKey(ndirectory)) {
             data.get(key).get(nfile, key);
         } else {
-            System.err.println("Can't find a directory for this key: " + key + ".");
+            System.err.println("No key: " + key + ".");
         }
     }
 
@@ -94,7 +94,7 @@ public class Table {
         if (data.containsKey(ndirectory)) {
             data.get(key).remove(nfile, key);
         } else {
-            System.err.println("Can't find a directory for this key: " + key + ".");
+            System.err.println("No key: " + key + ".");
         }
     }
 
