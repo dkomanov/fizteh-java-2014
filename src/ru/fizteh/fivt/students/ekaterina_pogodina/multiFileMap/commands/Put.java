@@ -15,6 +15,9 @@ public class Put extends Command {
         if (args.length < 3) {
             table.missingOperand(args[0]);
         }
+        if (table.currentTable == null) {
+            throw new Exception("no table");
+        }
         Path path = table.path;
         String key = args[1];
         String value = args[2];

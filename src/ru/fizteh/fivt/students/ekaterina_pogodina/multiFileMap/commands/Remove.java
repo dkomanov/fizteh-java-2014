@@ -8,6 +8,9 @@ import java.nio.file.Path;
 public class Remove extends Command {
     @Override
     public void execute(String[] args, TableManager table) throws Exception {
+        if (table.currentTable == null) {
+            throw new Exception("no table");
+        }
         if (args.length > 2) {
             table.manyArgs(args[0]);
         }
