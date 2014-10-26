@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.LebedevAleksey.FileMap.DatabaseException;
-
-public class TableNotFoundException extends DatabaseException {
+public class TableNotFoundException extends Exception {
 
     public TableNotFoundException(String message) {
         super(message);

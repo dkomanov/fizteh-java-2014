@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.LebedevAleksey.FileMap.DatabaseException;
-
-public class TableAlreadyExistsException extends DatabaseException {
+public class TableAlreadyExistsException extends Exception {
 
     public TableAlreadyExistsException() {
         super("Can't create table: it exists.");

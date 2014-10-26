@@ -1,11 +1,10 @@
 package ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.LebedevAleksey.FileMap.LoadOrSaveError;
-
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
-public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table {
+public class Table {
     protected static final int FILES_COUNT = 16;
     protected static final int SUBDIRECTORIES_COUNT = 16;
     private TablePart[][] structuredParts;
@@ -13,23 +12,19 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table 
     private Database database;
 
     public Table(String name, Database databaseParent) {
-        super();
-        parts.clear();
         structuredParts = new TablePart[SUBDIRECTORIES_COUNT][];
         for (int i = 0; i < SUBDIRECTORIES_COUNT; ++i) {
             structuredParts[i] = new TablePart[FILES_COUNT];
             for (int j = 0; j < FILES_COUNT; j++) {
                 structuredParts[i][j] = new TablePart(this, i, j);
-                parts.add(structuredParts[i][j]);
             }
         }
         tableName = name;
         database = databaseParent;
     }
 
-    @Override
-    protected ru.fizteh.fivt.students.LebedevAleksey.FileMap.TablePart selectPartForKey(String key)
-            throws LoadOrSaveError {
+    protected TablePart selectPartForKey(String key)
+            throws LoadOrSaveException {
         int hashcode = key.hashCode();
         int ndirectory = hashcode % SUBDIRECTORIES_COUNT;
         int nfile = hashcode / SUBDIRECTORIES_COUNT % FILES_COUNT;
@@ -50,7 +45,7 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table 
         return database.getRootDirectoryPath().resolve(tableName);
     }
 
-    public int count() throws LoadOrSaveError {
+    public int count() throws LoadOrSaveException, DatabaseFileStructureException {
         int result = 0;
         for (TablePart[] dir : structuredParts) {
             for (TablePart part : dir) {
@@ -61,7 +56,7 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table 
         return result;
     }
 
-    public void drop() throws LoadOrSaveError {
+    public void drop() throws LoadOrSaveException, DatabaseFileStructureException {
         try {
             File directory = getDirectory().toFile();
             for (TablePart[] dir : structuredParts) {
@@ -69,11 +64,52 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.FileMap.Table 
                     part.drop();
                 }
             }
-            directory.delete();
+            if(!directory.delete())
+                throw new LoadOrSaveException("Directory can't deleted. Warning: data lost.");
         } catch (SecurityException ex) {
-            throw new LoadOrSaveError("Access denied in deleting table.", ex);
+            throw new LoadOrSaveException("Access denied in deleting table.", ex);
         } catch (UnsupportedOperationException ex) {
-            throw new LoadOrSaveError("Error in deleting table.", ex);
+            throw new LoadOrSaveException("Error in deleting table.", ex);
+        }
+    }
+
+
+    public boolean remove(String key) throws LoadOrSaveException, DatabaseFileStructureException {
+        return getPartForKey(key).remove(key);
+    }
+
+    public String get(String key) throws LoadOrSaveException, DatabaseFileStructureException {
+        return getPartForKey(key).get(key);
+    }
+
+    public String put(String key, String value) throws LoadOrSaveException, DatabaseFileStructureException {
+        return getPartForKey(key).put(key, value);
+    }
+
+    public ArrayList<String> list() throws LoadOrSaveException, DatabaseFileStructureException {
+        ArrayList<String> result = new ArrayList<>();
+        for (TablePart[] dir : structuredParts) {
+            for (TablePart part : dir) {
+                part.load();
+                result.addAll(part.list());
+            }
+        }
+        return result;
+    }
+
+    public TablePart getPartForKey(String key) throws LoadOrSaveException, DatabaseFileStructureException {
+        TablePart tablePart = selectPartForKey(key);
+        tablePart.load();
+        return tablePart;
+    }
+
+    public void save() throws LoadOrSaveException, DatabaseFileStructureException {
+        for (TablePart[] dir : structuredParts) {
+            for (TablePart part : dir) {
+                if (part.isLoaded()) {
+                    part.save();
+                }
+            }
         }
     }
 }

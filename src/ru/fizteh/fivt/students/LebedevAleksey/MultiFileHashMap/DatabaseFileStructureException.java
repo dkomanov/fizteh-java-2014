@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.LebedevAleksey.FileMap.LoadOrSaveError;
-
-public class DatabaseFileStructureException extends LoadOrSaveError {
+public class DatabaseFileStructureException extends Exception {
     public DatabaseFileStructureException(String message) {
         super(message);
     }

@@ -1,8 +1,5 @@
 package ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.LebedevAleksey.FileMap.*;
-import ru.fizteh.fivt.students.LebedevAleksey.Shell01.ParsedCommand;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -20,45 +17,35 @@ public class Database {
     private static final String INCORRECT_NAME_OF_TABLES = "This name is not correct, folder can't be created";
     private File rootDirectory;
     private Table currentTable;
-    private List<Table> tables = new ArrayList<Table>();
+    private List<Table> tables = new ArrayList<>();
     private Map<String, Table> tableNames = new TreeMap<>();
 
-    public Database() throws DatabaseFileStructureException, LoadOrSaveError {
-        String directoryPath = System.getProperty("fizteh.db.dir");
-        setRootDirectoryPath(directoryPath);
-        load();
-    }
-
-    public Database(String path) throws DatabaseFileStructureException, LoadOrSaveError {
+    public Database(String path) throws DatabaseFileStructureException, LoadOrSaveException {
         setRootDirectoryPath(path);
         load();
     }
 
-    protected Table getCurrentTable() {
+    Table getCurrentTable() {
         return currentTable;
     }
 
-    private void setCurrentTable(String name) throws TableNotFoundException {
+    void setCurrentTable(String name) throws TableNotFoundException {
         currentTable = getTable(name);
     }
 
-    public File getRootDirectory() throws DatabaseFileStructureException {
+    protected File getRootDirectory() throws DatabaseFileStructureException {
         return rootDirectory;
     }
 
-    public Path getRootDirectoryPath() throws DatabaseFileStructureException {
+    protected Path getRootDirectoryPath() throws DatabaseFileStructureException {
         return getRootDirectory().toPath();
     }
 
     private void setRootDirectoryPath(String directoryPath) throws DatabaseFileStructureException {
-        if (directoryPath == null) {
-            throw new DatabaseFileStructureException("Database directory doesn't set");
-        } else {
-            rootDirectory = new File(directoryPath);
-        }
+        rootDirectory = new File(directoryPath);
     }
 
-    public void load() throws LoadOrSaveError {
+    protected void load() throws LoadOrSaveException, DatabaseFileStructureException {
         File root = getRootDirectory();
         try {
             if (root.exists() && root.isDirectory()) {
@@ -73,7 +60,7 @@ public class Database {
                 throw new DatabaseFileStructureException("Root directory not found");
             }
         } catch (SecurityException ex) {
-            throw new LoadOrSaveError("Error in loading, access denied: " + ex.getMessage(), ex);
+            throw new LoadOrSaveException("Error in loading, access denied: " + ex.getMessage(), ex);
         }
     }
 
@@ -88,17 +75,13 @@ public class Database {
         return subfolders;
     }
 
-    public void list() throws LoadOrSaveError {
-        String[] tableNames = new String[tables.size()];
-        int[] sizes = new int[tables.size()];
-        for (int i = 0; i < tableNames.length; i++) {
-            Table table = tables.get(i);
-            tableNames[i] = table.getTableName();
-            sizes[i] = table.count();
+    public List<Pair<String, Integer>> listTables() throws LoadOrSaveException, DatabaseFileStructureException {
+        int size = tables.size();
+        List<Pair<String, Integer>> result = new ArrayList<>(size);
+        for (Table table : tables) {
+            result.add(new Pair<>(table.getTableName(), table.count()));
         }
-        for (int i = 0; i < tableNames.length; i++) {
-            System.out.println(tableNames[i] + " " + sizes[i]);
-        }
+        return result;
     }
 
     public Table getTable(String name) throws TableNotFoundException {
@@ -111,18 +94,20 @@ public class Database {
     }
 
     public boolean containsTable(String name) {
-        return tables.contains(name);
+        return tableNames.containsKey(name);
     }
 
 
-    public void useTable(String name) throws TableNotFoundException, LoadOrSaveError {
+    public void useTable(String name) throws TableNotFoundException, LoadOrSaveException,
+            DatabaseFileStructureException {
         if (currentTable != null) {
             currentTable.save();
         }
         setCurrentTable(name);
     }
 
-    Table createTable(String name) throws DatabaseException {
+    public Table createTable(String name)
+            throws TableAlreadyExistsException, LoadOrSaveException, DatabaseFileStructureException {
         try {
             if (containsTable(name)) {
                 Table table = new Table(name, this);
@@ -140,18 +125,19 @@ public class Database {
                 throw new TableAlreadyExistsException();
             }
         } catch (UnsupportedOperationException ex) {
-            throw new LoadOrSaveError(CANT_CREATE_TABLE_MESSAGE, ex);
+            throw new LoadOrSaveException(CANT_CREATE_TABLE_MESSAGE, ex);
         } catch (FileAlreadyExistsException ex) {
             throw new DatabaseFileStructureException(CANT_CREATE_TABLE + ", directory already exists", ex);
         } catch (InvalidPathException ex) {
             throw new DatabaseFileStructureException(
                     CANT_CREATE_TABLE + ", directory name makes it impossible to create a directory", ex);
         } catch (IOException | SecurityException ex) {
-            throw new LoadOrSaveError(CANT_CREATE_TABLE_MESSAGE, ex);
+            throw new LoadOrSaveException(CANT_CREATE_TABLE_MESSAGE, ex);
         }
     }
 
-    void removeTable(String name) throws TableNotFoundException, LoadOrSaveError {
+    public void removeTable(String name) throws TableNotFoundException, LoadOrSaveException,
+            DatabaseFileStructureException {
         Table table = getTable(name);
         if (table == currentTable) {
             currentTable = null;
@@ -159,80 +145,5 @@ public class Database {
         table.drop();
         tables.remove(table);
         tableNames.remove(name);
-    }
-
-    protected boolean isTableCommand(String command) {
-        switch (command) {
-            case "put":
-            case "get":
-            case "remove":
-            case "list":
-                return true;
-            default:
-                return false;
-        }
-    }
-
-
-    public void invokeCommand(ParsedCommand command) throws DatabaseException {
-        if (isTableCommand(command.getCommandName())) {
-            if (currentTable != null) {
-                currentTable.invokeCommand(command);
-            } else {
-                System.out.println("no table");
-            }
-        } else {
-            switch (command.getCommandName()) {
-                case "create":
-                    tryCreateTable(ArgumentsUtils.get1Args(command));
-                    break;
-                case "drop":
-                    tryRemoveTable(ArgumentsUtils.get1Args(command));
-                    break;
-                case "use":
-                    tryUseTable(ArgumentsUtils.get1Args(command));
-                    break;
-                case "show":
-                    if (ArgumentsUtils.get1Args(command).equals("tables")) {
-                        showTables();
-                    } else {
-                        throw new ArgumentException("Unknown argument in show command");
-                    }
-                    break;
-                default:
-                    throw new UnknownCommand();
-            }
-        }
-    }
-
-    private void tryCreateTable(String name) throws DatabaseException {
-        try {
-            createTable(name);
-            System.out.println("created");
-        } catch (TableAlreadyExistsException ex) {
-            System.out.println(name + " exists");
-        }
-    }
-
-    private void tryRemoveTable(String name) throws DatabaseException {
-        try {
-            removeTable(name);
-            System.out.println("dropped");
-        } catch (TableNotFoundException ex) {
-            System.out.println(name + " not exists");
-        }
-    }
-
-    private void tryUseTable(String name) throws DatabaseException {
-        try {
-            useTable(name);
-            System.out.println("using " + name);
-        } catch (TableNotFoundException ex) {
-            System.out.println(name + " not exists");
-        }
-    }
-
-    private void showTables() throws LoadOrSaveError {
-        list();
     }
 }
