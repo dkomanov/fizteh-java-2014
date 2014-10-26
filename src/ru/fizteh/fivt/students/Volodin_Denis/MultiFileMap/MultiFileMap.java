@@ -30,7 +30,8 @@ public class MultiFileMap {
                 if (Paths.get(dbPath).normalize().getParent().toFile().exists()) {
                     Files.createDirectory(Paths.get(dbPath).normalize().getFileName());
                 } else {
-                    System.err.println("Directory [" + Paths.get(dbPath).normalize().getParent().getFileName() + "] does not exist.");
+                    System.err.println("Directory [" + Paths.get(dbPath).normalize().getParent().getFileName()
+                                                     + "] does not exist.");
                     System.exit(ERROR);
                 }
             }
