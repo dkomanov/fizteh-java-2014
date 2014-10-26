@@ -88,8 +88,10 @@ public class Interpreter {
         if (!table.exists() || !table.isDirectory()) {
             System.out.println(args[1] + " not exists");
         } else {
-            if (currentTable.getName().equals(args[1])) {
-                currentTable = null;
+            if (currentTable != null) {
+                if (currentTable.getName().equals(args[1])) {
+                    currentTable = null;
+                }
             }
             MultiFileHashMap.tableList.remove(args[1]);
             table.delete();
@@ -111,12 +113,15 @@ public class Interpreter {
     }
 
     public static void showtables(final String[] args) {
-        if (args.length != 2) {
+        if (args.length >= 2) {
+            if (!args[1].equals("tables")) {
+                throw new IllegalArgumentException("Invalid command");
+            }
+        } 
+        if (args.length == 1) {
             throw new IllegalArgumentException("Invalid command");
         }
-        if (!args[1].equals("tables")) {
-            throw new IllegalArgumentException("Invalid command");
-        }
+        checkNumOfArgs("show tables", 2, args.length);
         System.out.println("table_name row_count");
         for (Map.Entry<String, Integer> i : MultiFileHashMap.tableList.entrySet()) {
             String key = i.getKey();
@@ -142,4 +147,6 @@ public class Interpreter {
         }
     }
 }
+
+
 
