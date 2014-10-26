@@ -1,6 +1,7 @@
-package ru.fizteh.fivt.studenrts.theronsg.multifilehashmap;
+package ru.fizteh.fivt.students.theronsg.multifilehashmap;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -15,7 +16,8 @@ public class Dir {
         maps = new TreeMap<>();
         if (name.exists()) {
             for (String file: name.list()) {
-                maps.put(new Integer(file), new FileMap(Paths.get(nam).resolve(file).toString()));
+                String f = file.substring(0, file.length() - 4);
+                maps.put(Integer.parseInt(f), new FileMap(Paths.get(name.getAbsolutePath()).resolve(f).toString()));
             }
         } else {
             name.mkdir();
@@ -36,9 +38,9 @@ public class Dir {
     public void put(final int nfile, final String key, final String value)
             throws IOException {
         if (maps.containsKey(nfile)) {
-            maps.get(key).put(key, value);
+            maps.get(nfile).put(key, value);
         } else {
-            maps.put(nfile, new FileMap(Paths.get(name.getName()).resolve(new Integer(nfile).toString()).toString()));
+            maps.put(nfile, new FileMap(Paths.get(name.getAbsolutePath()).resolve(new Integer(nfile).toString()).toString()));
             maps.get(nfile).put(key, value);
         }
     }
@@ -47,7 +49,7 @@ public class Dir {
         if (maps.containsKey(nfile)) {
             maps.get(nfile).get(key);
         } else {
-            System.err.println("No key: " + key + ".");
+            System.err.println("not found");
         }
     }
     
@@ -55,7 +57,7 @@ public class Dir {
         if (maps.containsKey(nfile)) {
             maps.get(nfile).remove(key);
         } else {
-            System.err.println("No key: " + key + ".");
+            System.err.println("not found");
         }
     }
 
@@ -73,7 +75,7 @@ public class Dir {
         return String.join(", ", l);
     }
 
-    public void save() {
+    public void save() throws FileNotFoundException {
         for (int key: maps.keySet()) {
             maps.get(key).putFile();
             if (!maps.get(key).exists()) {
