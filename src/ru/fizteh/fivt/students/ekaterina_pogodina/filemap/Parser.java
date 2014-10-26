@@ -37,11 +37,13 @@ public class Parser {
                     TableManager obj = (TableManager) object;
                     switch (args[0]) {
                         case "exit":
-                            Table curTable = obj.tables.get(obj.currentTable);
-                            for (int i = 0; i < 16; i++) {
-                                for (int j = 0; j < 16; j++) {
-                                    if (curTable.tableDateBase[i][j] != null) {
-                                        curTable.tableDateBase[i][j].close();
+                            if (obj.currentTable != null) {
+                                Table curTable = obj.tables.get(obj.currentTable);
+                                for (int i = 0; i < 16; i++) {
+                                    for (int j = 0; j < 16; j++) {
+                                        if (curTable.tableDateBase[i][j] != null) {
+                                            curTable.tableDateBase[i][j].close();
+                                        }
                                     }
                                 }
                             }
