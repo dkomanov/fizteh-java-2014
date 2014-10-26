@@ -14,7 +14,6 @@ public class Main {
             System.out.println("we need working directory");
             System.exit(6);
         }
-        System.out.println(System.getProperty("fizteh.db.dir"));
         Path dataBaseDirectory
                 = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("fizteh.db.dir"));
 
