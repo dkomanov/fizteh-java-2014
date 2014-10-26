@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.studenrts.theronsg.multifilehashmap;
+package ru.fizteh.fivt.students.theronsg.multifilehashmap;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
