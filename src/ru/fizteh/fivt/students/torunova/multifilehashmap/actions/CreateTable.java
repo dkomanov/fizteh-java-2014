@@ -6,7 +6,6 @@ import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.TableNotCrea
 
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 /**
  * Created by nastya on 21.10.14.
@@ -20,10 +19,10 @@ public class CreateTable extends Action{
             if (!checkNumberOfArguments(1, args.length)) {
                 return false;
             }
-		String tableName = args[0];
-		if (tableName.contains(File.separator) || tableName.equals("..") || tableName.equals(".")) {
-			throw new TableNotCreatedException("create: illegal name for table.");
-		}
+        String tableName = args[0];
+        if (tableName.contains(File.separator) || tableName.equals("..") || tableName.equals(".")) {
+            throw new TableNotCreatedException("create: illegal name for table.");
+        }
         if (db.createTable(tableName)) {
             System.out.println("created");
             return true;

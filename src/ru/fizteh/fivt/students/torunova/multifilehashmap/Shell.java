@@ -34,11 +34,11 @@ public class Shell {
             System.err.println("Caught IOException: " + e1.getMessage());
             abort();
         } catch (TableNotCreatedException e2) {
-			System.err.println("Caught TableNotCreatedException");
+            System.err.println("Caught TableNotCreatedException");
             abort();
         } catch (IncorrectFileException e3) {
             System.err.println(e3.getMessage());
-			abort();
+            abort();
         }
         interactive = isInteractive;
     }
@@ -57,7 +57,7 @@ public class Shell {
                     db.close();
                 } catch (IOException e1) {
                     System.err.println("Caught IOException: " + e1.getMessage());
-					abort();
+                    abort();
                 }
                 return;
             }
@@ -77,12 +77,12 @@ public class Shell {
                             abort();
                         }
                     } catch (TableNotCreatedException e1) {
-						String message = e1.getMessage();
-						if (message == null || message.isEmpty()) {
-							System.err.println("Caught TableNotCreatedException");
-						} else {
-							System.err.println(message);
-						}
+                        String message = e1.getMessage();
+                        if (message == null || message.isEmpty()) {
+                            System.err.println("Caught TableNotCreatedException");
+                        } else {
+                            System.err.println(message);
+                        }
                         if (!interactive) {
                             abort();
                         }
@@ -100,7 +100,7 @@ public class Shell {
                             System.err.println("Caught IOException" + e.getMessage());
                             abort();
                         }
-                       	abort();
+                        abort();
                     }
                 } else if (name.equals("exit")) {
                     /*if (args.length > 0) {
@@ -123,7 +123,7 @@ public class Shell {
                             System.err.println("Caught IOException" + e.getMessage());
                             abort();
                         }
-                       	abort();
+                        abort();
                     }
                 }
             }
@@ -133,9 +133,9 @@ public class Shell {
     private String[] parseArguments(String arg) {
         return arg.split("\\s+");
     }
-	private void abort() {
-		System.err.println("Aborting...");
-		System.exit(1);
-	}
+    private void abort() {
+        System.err.println("Aborting...");
+        System.exit(1);
+    }
 }
 

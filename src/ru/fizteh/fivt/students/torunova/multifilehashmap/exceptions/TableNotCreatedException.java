@@ -7,7 +7,7 @@ public class TableNotCreatedException extends Exception{
     public TableNotCreatedException() {
         super();
     }
-	public TableNotCreatedException(String message) {
-		super(message);
-	}
+    public TableNotCreatedException(String message) {
+        super(message);
+    }
 }
