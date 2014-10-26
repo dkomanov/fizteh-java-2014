@@ -100,13 +100,13 @@ public class TableHash implements TableInterface {
 
     private TableFileDAT selectDATFile(String key) {
         int hashcode = key.hashCode();
-        int directoryNumber = hashcode % 16;
-        int fileNumber = hashcode / 16 % 16;
+        int directoryNumber = hashcode % COUNT_OF_DIRECTORIES;
+        int fileNumber = hashcode / 16 % COUNT_OF_DAT_FILES;
         if (directoryNumber < 0) {
-            directoryNumber += 16;
+            directoryNumber += COUNT_OF_DIRECTORIES;
         }
         if (fileNumber < 0) {
-            fileNumber += 16;
+            fileNumber += COUNT_OF_DAT_FILES;
         }
         return datFiles[directoryNumber][fileNumber];
     }
