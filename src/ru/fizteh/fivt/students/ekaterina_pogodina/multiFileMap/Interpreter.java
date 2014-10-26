@@ -60,14 +60,14 @@ public class Interpreter {
         List<String> cmdWithArgs = new ArrayList<String>();
         try {
             table = new TableManager(System.getProperty("fizteh.db.dir"));
-            try (Scanner sc = new Scanner(System.in)) {
-                while (true) {
-                    System.out.print("$ ");
+            if (args.length > 0) {
+                try {
                     String line = "";
-                    if (sc.hasNext()) {
-                        line = sc.nextLine();
-                    } else {
-                        System.exit(0);
+                    for (int i = 0; i < args.length; i++) {
+                        line = line.concat(args[i]);
+                        if (i != args.length - 1) {
+                            line = line.concat(" ");
+                        }
                     }
                     String[] commands = line.split(" ; ");
                     for (String command: commands) {
@@ -80,7 +80,7 @@ public class Interpreter {
                             }
                         }
                         cmdWithArgs.add(command.substring(index, command.length()));
-                        String[] arg = new String[cmdWithArgs.size()];
+                        String[] arg = new String [cmdWithArgs.size()];
                         for (int i = 0; i < arg.length; i++) {
                             arg[i] = cmdWithArgs.get(i);
                         }
@@ -94,16 +94,16 @@ public class Interpreter {
                                     }
                                 }
                             }
-                            //table.close();
                         } catch (Exception e) {
                             System.err.println(e.getMessage());
+                            System.exit(1);
                         }
                         cmdWithArgs.clear();
                     }
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                    System.exit(1);
                 }
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                System.exit(1);
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
