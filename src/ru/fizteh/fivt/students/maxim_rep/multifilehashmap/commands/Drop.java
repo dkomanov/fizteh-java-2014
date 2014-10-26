@@ -14,14 +14,12 @@ public class Drop implements DBCommand {
     }
 
     private boolean dropTable(String tableName) {
-        if (!DbMain.databaseExists(DbMain.databasefilePath
-                + System.getProperty("file.separator") + tableName)) {
+        if (!DbMain.databaseExists(DbMain.getTablePath(tableName))) {
             return false;
         }
 
         try {
-            TableDataMap.removeFolder(new File(DbMain.databasefilePath
-                    + System.getProperty("file.separator") + tableName));
+            TableDataMap.removeFolder(new File(DbMain.getTablePath(tableName)));
         } catch (Exception e) {
             System.err.println("Database error: filesystem damaged");
             return false;
@@ -35,8 +33,7 @@ public class Drop implements DBCommand {
 
     @Override
     public boolean execute() {
-        if (!DbMain.databaseExists(DbMain.databasefilePath
-                + System.getProperty("file.separator") + tableName)) {
+        if (!DbMain.databaseExists(DbMain.getTablePath(tableName))) {
             System.out.println(tableName + " not exists");
             return false;
         }

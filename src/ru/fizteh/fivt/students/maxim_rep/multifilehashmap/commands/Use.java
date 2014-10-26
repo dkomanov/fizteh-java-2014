@@ -15,8 +15,7 @@ public class Use implements DBCommand {
 
     @Override
     public boolean execute() {
-        if (!DbMain.databaseExists(DbMain.databasefilePath
-                + System.getProperty("file.separator") + tableName)) {
+        if (!DbMain.databaseExists(DbMain.getTablePath(tableName))) {
             System.out.println(tableName + " not exists");
             return false;
         } else {

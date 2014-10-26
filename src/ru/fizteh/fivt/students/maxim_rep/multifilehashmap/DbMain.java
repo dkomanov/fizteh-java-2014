@@ -21,6 +21,11 @@ public class DbMain {
         return true;
     }
 
+    public static String getTablePath(String tableName) {
+        return databasefilePath + System.getProperty("file.separator")
+                + tableName;
+    }
+
     public static void main(String[] args) throws IOException {
         databasefilePath = System.getProperty("fizteh.db.dir");
         if (databasefilePath == null) {

@@ -14,8 +14,7 @@ public class Create implements DBCommand {
 
     private static boolean createTable(String tableName) throws Exception {
         File f = null;
-        f = new File(DbMain.databasefilePath
-                + System.getProperty("file.separator") + tableName);
+        f = new File(DbMain.getTablePath(tableName));
         if (!f.exists()) {
             f.mkdir();
             return true;
