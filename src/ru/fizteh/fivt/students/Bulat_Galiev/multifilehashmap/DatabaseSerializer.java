@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.Bulat_Galiev.multifilehashmap;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 public class DatabaseSerializer {
     private static final int BYTESNUMBER = 8;
+    private static final int KEYNUMBER = 16;
     private Path filePathdb;
     private Map<String, String> fileMap;
     private RandomAccessFile inputStream;
@@ -59,6 +61,15 @@ public class DatabaseSerializer {
 
             String key = readUTF8String(keyLength);
             String value = readUTF8String(valueLength);
+            int nbytes = key.getBytes("UTF-8")[0];
+            int ndirectory = Math.abs(nbytes % KEYNUMBER);
+            int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
+            String dirString = Integer.toString(ndirectory) + ".dir";
+            String fileString = Integer.toString(nfile) + ".dat";
+            String dirfile = dirString + File.separator + fileString;
+            if (!filePathdb.toString().endsWith(dirfile)) {
+                throw new IOException(filePathdb + ": bad file format");
+            }
             fileMap.put(key, value);
 
             bytesLeft -= keyLength + valueLength;
