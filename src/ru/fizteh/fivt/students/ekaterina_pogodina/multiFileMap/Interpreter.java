@@ -76,6 +76,13 @@ public class Interpreter {
                         for (int i = 0; i < command.length(); i++) {
                             if (command.charAt(i) == ' ') {
                                 cmdWithArgs.add(command.substring(index, i));
+                                String[] buff = cmdWithArgs.get(cmdWithArgs.size() - 1).trim().split("\\s+");
+                                cmdWithArgs.remove(cmdWithArgs.size() - 1);
+                                for (int k = 0; k < buff.length; k++) {
+                                    if (!buff[k].equals(" ")) {
+                                        cmdWithArgs.add(buff[k]);
+                                    }
+                                }
                                 index = i + 1;
                             }
                         }
