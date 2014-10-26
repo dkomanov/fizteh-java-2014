@@ -19,7 +19,7 @@ public class Table {
             if (tableName.list() != null) {
                 for (String file: tableName.list()) {
                     data.put(Integer.parseInt(file),
-                    		new Dir(Paths.get(tableName.getAbsolutePath()).resolve(file).toString()));
+                            new Dir(Paths.get(tableName.getAbsolutePath()).resolve(file).toString()));
                 }
             }
         } else {
@@ -53,7 +53,7 @@ public class Table {
             data.get(ndir).put(nfile, key, value);
         } else {
             data.put(ndir, new Dir(Paths.get(tableName.getAbsolutePath())
-            		.resolve(new Integer(ndir).toString()).toString()));
+                    .resolve(new Integer(ndir).toString()).toString()));
             data.get(ndir).put(nfile, key, value);
         }
     }
