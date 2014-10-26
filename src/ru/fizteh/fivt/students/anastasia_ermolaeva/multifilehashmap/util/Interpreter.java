@@ -64,10 +64,27 @@ public class Interpreter {
                                   boolean mode) throws ExitException {
         String[] arguments = cmd.trim().split("\\s+");
         if (arguments[0].equals("show")) {
-            String[] newArguments = new String[]{"show tables"};
-            String commandName = newArguments[0];
-            Command command = commands.get(commandName);
-            command.execute(tableState, newArguments);
+                String cmdName = "show";
+                if (arguments.length > 1) {
+                    cmdName = "show " + arguments[1];
+                    String[] newArguments = new String[arguments.length - 1];
+                    newArguments[0] = cmdName;
+                    for (int i = 1; i < arguments.length - 1; i++)
+                        newArguments[i] = arguments[i + 1];
+                    Command command = commands.get(cmdName);
+                    if (command == null) {
+                        System.out.println("Command not found: " + cmdName);
+                    } else {
+                        command.execute(tableState, newArguments);
+                    }
+                } else {
+                    Command command = commands.get(cmdName);
+                    if (command == null) {
+                        System.out.println("Command not found: " + cmdName);
+                    } else {
+                        command.execute(tableState, arguments);
+                    }
+                }
         } else {
             try {
                 if ((arguments.length > 0) && !arguments[0].isEmpty()) {
