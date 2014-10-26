@@ -23,10 +23,24 @@ public class Main {
      * @param length The count of arguments.
      * @param requiredLength The correct count.
      */
-    public static void checkArguments(final String command, final int length, final int requiredLength) {
+    public static void checkArguments(final String command, int length, int requiredLength) {
         if (length != requiredLength) {
             System.err.println(command + ": " + (length < requiredLength ? "not enough" : "too many") + " arguments");
             System.exit(1);
         }
+    }
+
+    /**
+     * Removes name of function in arguments.
+     * @param args Arguments that were entered.
+     * @param wordsInName Quantity of words that are command.
+     * @return Array of strings without commands.
+     */
+    public static String[] removeNameInArguments(final String[] args, int wordsInName) {
+        String[] result = new String[args.length - wordsInName];
+        for (int i = wordsInName; i < args.length; ++i) {
+            System.arraycopy(args, wordsInName, result, 0, args.length - wordsInName);
+        }
+        return result;
     }
 }

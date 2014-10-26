@@ -8,23 +8,27 @@ package ru.fizteh.fivt.students.Soshilov.MultiFileHashMap;
  */
 public class TableList implements Command {
     /**
+     * Correct quantity of arguments of this command.
+     */
+    final int argumentsCount = 0;
+    /**
      * List whole table.
      * @param args Commands that were entered.
      * @param db Our main table.
      */
     @Override
     public void execute(final String[] args, DataBase db) {
-        Main.checkArguments("list", args.length, 1);
+        Main.checkArguments("list", args.length, argumentsCount);
 
-        if (db.currentTable == null) {
+        if (db.currentTableExists()) {
             System.out.println("no table");
             return;
         }
 
         int counter = 0;
-        for (String s : db.currentTable.keySet()) {
+        for (String s : db.getSetFromCurrentTable()) {
             ++counter;
-            if (counter == db.currentTable.keySet().size() - 1) {
+            if (counter == db.getSetFromCurrentTable().size() - 1) {
                 System.out.print(s + ", ");
             } else {
                 System.out.print(s);

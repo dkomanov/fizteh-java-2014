@@ -8,21 +8,25 @@ package ru.fizteh.fivt.students.Soshilov.MultiFileHashMap;
  */
 public class TableRemove implements Command {
     /**
+     * Correct quantity of arguments of this command.
+     */
+    final int argumentsCount = 1;
+    /**
      * Remove key + value by getting the key as argument.
      * @param args Commands that were entered.
      * @param db Our main table.
      */
     @Override
     public void execute(final String[] args, DataBase db) {
-        Main.checkArguments("remove", args.length, 2);
+        Main.checkArguments("remove", args.length, argumentsCount);
 
-        if (db.currentTable == null) {
+        if (db.currentTableExists()) {
             System.out.println("no table");
             return;
         }
 
         String key = args[1];
-        String value = db.currentTable.remove(key);
+        String value = db.removeKeyAndValueFromCurrentTable(key);
         if (value == null) {
             System.out.println("not found");
         } else {

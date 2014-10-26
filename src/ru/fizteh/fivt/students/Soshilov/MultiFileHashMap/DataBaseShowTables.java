@@ -10,21 +10,19 @@ import java.util.HashMap;
  */
 public class DataBaseShowTables implements Command {
     /**
+     * Correct quantity of arguments of this command.
+     */
+    final int argumentsCount = 0;
+    /**
      * Show every table and its' elements' quantity.
      * @param args Commands that were entered.
      * @param db Our main table.
      */
     @Override
     public void execute(final String[] args, DataBase db) {
-        if (!args[1].equals("tables")) {
-            System.err.println(args[0] + " " + args[1] + ": command not found");
-        }
+        Main.checkArguments("show tables", args.length, argumentsCount);
 
-        Main.checkArguments("show tables", args.length, 2);
-
-        //System.out.println("table_name row_count");
-
-        for (HashMap.Entry<String, Table> entry: db.tables.entrySet()) {
+        for (HashMap.Entry<String, Table> entry: db.getSet()) {
             System.out.println(entry.getKey() + " " + entry.getValue().size());
         }
 

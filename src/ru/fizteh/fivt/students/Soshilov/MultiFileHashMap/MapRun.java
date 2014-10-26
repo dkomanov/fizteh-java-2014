@@ -67,7 +67,11 @@ public class MapRun {
             System.err.println(args[0] + ": command not found");
             System.exit(1);
         } else {
-            command.execute(args, db);
+            if (args[0].equals("show") && !args[1].equals("tables")) {
+                System.err.println(args[0] + " " + args[1] + ": command not found");
+            } else {
+                command.execute(Main.removeNameInArguments(args, args[0].equals("show") ? 2 : 1), db);
+            }
         }
     }
 

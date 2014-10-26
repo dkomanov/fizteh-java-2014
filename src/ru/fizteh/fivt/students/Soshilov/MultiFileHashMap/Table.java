@@ -17,7 +17,7 @@ public class Table extends HashMap<String, String> {
     /**
      * Quantity of directories and files in each directory.
      */
-    public static final int F_AND_DIR_COUNT = 16;
+    private static final int F_AND_DIR_COUNT = 16;
     /**
      * A path to a table - our map.
      */

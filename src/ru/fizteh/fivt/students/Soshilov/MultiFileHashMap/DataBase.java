@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,11 +18,11 @@ public class DataBase {
     /**
      * Tables: name + variable of Table class.
      */
-    public Map<String, Table> tables;
+    private Map<String, Table> tables;
     /**
      * The table we are working on now.
      */
-    public Table currentTable;
+    private Table currentTable;
     /**
      * Variable of Path type - a path to the main directory.
      */
@@ -33,6 +34,94 @@ public class DataBase {
      */
     public Path getDbPath() {
         return dbPath;
+    }
+
+    /**
+     * Function, that just return a set from map like entrySet().
+     * @return A Set view of the mappings contained in this map.
+     */
+    public Set<Map.Entry<String, Table>> getSet() {
+        return tables.entrySet();
+    }
+
+    /**
+     * Function than just return a Table (value of map) by key like get().
+     * @param key A string - name of table.
+     * @return The value to which the specified key is mapped, or null if this map contains no mapping for the key
+     */
+    public Table getTable(final String key) {
+        return tables.get(key);
+    }
+
+    /**
+     * Function, thant puts a new pair of key and value in map.
+     * @param key A string - name of table.
+     * @param table A table - variable of Table type.
+     * @return The previous value associated with key, or null if there was no mapping for key.
+     */
+    public Table putKeyAndValue(final String key, final Table table) {
+        return tables.put(key, table);
+    }
+
+    /**
+     * Return a table from a map by getting key like remove().
+     * @param key A string - name of table.
+     * @return The previous value associated with key, or null if there was no mapping for key.
+     */
+    public Table removeTable(final String key) {
+        return tables.remove(key);
+    }
+
+    /**
+     * Setting a table for a class.
+     * @param table The table, we take for a current.
+     */
+    public void setTable(final Table table) {
+        currentTable = table;
+    }
+
+    /**
+     * Check, weather a table exists.
+     * @return True is not null, false otherwise.
+     */
+    public boolean currentTableExists() {
+        return (currentTable == null);
+    }
+
+    /**
+     * Removes the mapping for the specified key from this map if present (HashMap's part of Table class).
+     * @param key Whose mapping is to be removed from the map.
+     * @return The previous value associated with key, or null if there was no mapping for key.
+     */
+    public String removeKeyAndValueFromCurrentTable(final String key) {
+        return currentTable.remove(key);
+    }
+
+    /**
+     * Returns a Set view of the keys contained in this map (HashMap's part of Table class).
+     * @return A set view of the keys contained in this map.
+     */
+    public Set<String> getSetFromCurrentTable() {
+        return currentTable.keySet();
+    }
+
+    /**
+     * Associates the specified value with the specified key in this map. The old value is replaced.
+     * @param key A key which is in a map.
+     * @param value A value which is in a map.
+     * @return The previous value associated with key, or null if there was no mapping for key.
+     */
+    public String putKeyAndValueIntoCurrentTable(final String key, final String value) {
+        return currentTable.put(key, value);
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+     * @param key A key which is in a map.
+     * @return The value to which the specified key is mapped, or null if this map contains no mapping for the key.
+     */
+    public String getValueFromCurrentTable(final String key) {
+        return currentTable.get(key);
     }
 
     /**

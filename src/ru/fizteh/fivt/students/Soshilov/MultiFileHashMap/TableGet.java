@@ -8,21 +8,25 @@ package ru.fizteh.fivt.students.Soshilov.MultiFileHashMap;
  */
 public class TableGet implements Command {
     /**
+     * Correct quantity of arguments of this command.
+     */
+    final int argumentsCount = 1;
+    /**
      * Get the value by having a key.
      * @param args Commands that were entered.
      * @param db Our main table.
      */
     @Override
     public void execute(final String[] args, DataBase db) {
-        Main.checkArguments("get", args.length, 2);
+        Main.checkArguments("get", args.length, argumentsCount);
 
-        if (db.currentTable == null) {
+        if (db.currentTableExists()) {
             System.out.println("no table");
             return;
         }
 
         String key = args[1];
-        String value = db.currentTable.get(key);
+        String value = db.getValueFromCurrentTable(key);
         if (value != null) {
             System.out.println("found\n" + value);
         } else {

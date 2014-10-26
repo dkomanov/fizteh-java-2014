@@ -8,22 +8,26 @@ package ru.fizteh.fivt.students.Soshilov.MultiFileHashMap;
  */
 public class TablePut implements Command {
     /**
+     * Correct quantity of arguments of this command.
+     */
+    final int argumentsCount = 2;
+    /**
      * Put a key + value into a table.
      * @param args Commands that were entered.
      * @param db Our main table.
      */
     @Override
     public void execute(final String[] args, DataBase db) {
-        Main.checkArguments("put", args.length, 3);
+        Main.checkArguments("put", args.length, argumentsCount);
 
-        if (db.currentTable == null) {
+        if (db.currentTableExists()) {
             System.out.println("no table");
             return;
         }
 
         String key = args[1];
         String value = args[2];
-        if (db.currentTable.put(key, value) != null) {
+        if (db.putKeyAndValueIntoCurrentTable(key, value) != null) {
             System.out.println("overwrite");
         } else {
             System.out.println("new");

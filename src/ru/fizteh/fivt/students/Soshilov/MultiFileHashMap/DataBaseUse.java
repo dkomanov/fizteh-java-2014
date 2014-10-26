@@ -8,19 +8,23 @@ package ru.fizteh.fivt.students.Soshilov.MultiFileHashMap;
  */
 public class DataBaseUse implements Command {
     /**
+     * Correct quantity of arguments of this command.
+     */
+    final int argumentsCount = 1;
+    /**
      * Change current table and use a new one.
      * @param args Commands that were entered.
      * @param db Our main table.
      */
     @Override
     public void execute(final String[] args, DataBase db) {
-        Main.checkArguments("use", args.length, 2);
+        Main.checkArguments("use", args.length, argumentsCount);
 
-        Table table = db.tables.get(args[1]);
+        Table table = db.getTable(args[1]);
         if (table == null) {
             System.out.println("tablename does not exists");
         } else {
-            db.currentTable = table;
+            db.setTable(table);
         }
 
     }
