@@ -96,7 +96,7 @@ public class DataFile { // Interacts with .dat file.
         }
     }
 
-    private void getData() throws IOException, DatabaseCorruptedException {
+    private void getData() throws DatabaseCorruptedException, IOException {
         try (RandomAccessFile file = new RandomAccessFile(filePath.toString(), "r")) {
             if (file.length() == 0) {
                 actuality = true;
@@ -133,14 +133,10 @@ public class DataFile { // Interacts with .dat file.
                     fileMap.put(keyIterator.next(), bytes.toString("UTF-8"));
                     bytes.reset();
                 } else {
-                    throw new IOException("Data corrupted in file " + filePath.toString());
+                    throw new DatabaseCorruptedException("Data corrupted in file " + filePath.toString());
                 }
             }
             bytes.close();
-        } catch (FileNotFoundException e) {
-            throw new IOException("File not found: " + filePath.toString());
-        } catch (UnsupportedEncodingException e) {
-            throw new IOException("Can't encode file: " + filePath.toString());
         }
         actuality = true;
     }

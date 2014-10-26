@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.kolmakov_sergey.multi_file_map;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.io.IOException;
 
@@ -99,6 +101,12 @@ public final class CommandInterpreter {
                     System.out.println(value);
                 } else {
                     System.out.println("not found");
+                }
+            } catch (UnsupportedEncodingException | FileNotFoundException e) {
+                if (e.getMessage() != null && !e.getMessage().isEmpty()) {
+                    System.out.println(e.getMessage());
+                } else {
+                    System.out.println("Unexpected exception in function get of Interpreter!");
                 }
             } catch (IOException e) {
                 // It's impossible due to checking that command[1] exists.
