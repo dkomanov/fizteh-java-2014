@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Table {
+    private final int FILES_CNT = 16;
+    private final int FOLDERS_CNT = 16;
     private String tableName;
-    private ArrayList<SingleTable> tableParts;
+    private List<SingleTable> tableParts;
     private SingleTable[][] parts;
     private DataBaseConnector databaseConnector;
 
@@ -17,12 +20,12 @@ public class Table {
         tableName = new String(name);
         tableParts = new ArrayList<>();
         databaseConnector = dbConnector;
-        parts = new SingleTable[16][];
-        for (int i = 0; i < 16; ++i) {
-            parts[i] = new SingleTable[16];
+        parts = new SingleTable[FOLDERS_CNT][];
+        for (int i = 0; i < FOLDERS_CNT; ++i) {
+            parts[i] = new SingleTable[FILES_CNT];
         }
-        for (int i = 0; i < 16; ++i) {
-            for (int j = 0; j < 16; ++j) {
+        for (int i = 0; i < FOLDERS_CNT; ++i) {
+            for (int j = 0; j < FILES_CNT; ++j) {
                 parts[i][j] = new SingleTable(i, j, this);
                 tableParts.add(parts[i][j]);
             }
@@ -31,13 +34,13 @@ public class Table {
 
     public SingleTable selectSingleTable(String key) {
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % 16;
-        int nfile = hashcode / 16 % 16;
+        int ndirectory = hashcode % FOLDERS_CNT;
+        int nfile = hashcode / FOLDERS_CNT % FILES_CNT;
         if (ndirectory < 0) {
-            ndirectory += 16;
+            ndirectory += FOLDERS_CNT;
         }
         if (nfile < 0) {
-            nfile += 16;
+            nfile += FILES_CNT;
         }
         return parts[ndirectory][nfile];
     }

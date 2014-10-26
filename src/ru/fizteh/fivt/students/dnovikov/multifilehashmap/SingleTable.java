@@ -3,12 +3,13 @@ package ru.fizteh.fivt.students.dnovikov.multifilehashmap;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
 public class SingleTable {
-    private TreeMap<String, String> dataBase;
+    private Map<String, String> dataBase;
     private Path singleTablePath;
     private Table parentTable;
     private int folderNumber;
