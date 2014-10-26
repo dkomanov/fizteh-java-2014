@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.*;
 
@@ -184,19 +181,9 @@ public class MultiMapMain {
                                     System.out.println("no table");
                                 } else {
                                     Map<String, String> currentStorage = map.get(currentTableName);
-                                    Set keySet = currentStorage.keySet();
-                                    int size = keySet.size();
-                                    int counter = 0;
-                                    Iterator it = keySet.iterator();
-                                    while (it.hasNext()) {
-                                        if (counter == size - 1) {
-                                            System.out.print(it.next());
-                                        } else {
-                                            System.out.print(it.next() + ", ");
-                                        }
-                                        counter++;
-                                    }
-                                    System.out.println();
+                                    List<String> list = new ArrayList<>(currentStorage.keySet());
+                                    String joined = String.join(", ", list);
+                                    System.out.println(joined);
                                 }
                             }),
                             new Command("exit", 1, (TableState tableS, String[] arguments) ->
