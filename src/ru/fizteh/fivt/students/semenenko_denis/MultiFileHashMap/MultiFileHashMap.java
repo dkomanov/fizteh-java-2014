@@ -81,6 +81,7 @@ public class MultiFileHashMap {
                 break;
             }
         }
+        cache.commit();
     }
 
     private static void execCommand(String command) {
