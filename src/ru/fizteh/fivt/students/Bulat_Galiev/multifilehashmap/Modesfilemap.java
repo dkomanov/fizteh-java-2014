@@ -7,43 +7,55 @@ import java.util.StringTokenizer;
 
 public final class Modesfilemap {
     private static final int SLEEPNUMBER = 5;
+
     private Modesfilemap() {
         // Disable instantiation to this class.
     }
 
     public static void interactiveMode(final TableProvider provider)
             throws IOException {
-        String input = "";
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        do {
-            try {
-                Thread.sleep(SLEEPNUMBER);
-            } catch (InterruptedException e1) {
-                System.err.print(e1.getMessage());
-            }
-            System.out.print("$ ");
-            try {
-                input = in.readLine();
-            } catch (IOException e) {
-                System.err.print(e.getMessage());
-                System.exit(-1);
-            }
-            parser(provider, input, false);
-        } while (!input.equals("exit"));
+        try {
+            String input = "";
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    System.in));
+            do {
+                try {
+                    Thread.sleep(SLEEPNUMBER);
+                } catch (InterruptedException e1) {
+                    System.err.print(e1.getMessage());
+                }
+                System.out.print("$ ");
+                try {
+                    input = in.readLine();
+                } catch (IOException e) {
+                    System.err.print(e.getMessage());
+                    System.exit(-1);
+                }
+                parser(provider, input, false);
+            } while (!input.equals("exit"));
+        } catch (NullPointerException e) {
+            Filemapfunctions.exit(provider);
+            System.exit(-1);
+        }
     }
 
     public static void batchMode(final TableProvider provider,
             final String[] input) throws IOException {
-        StringBuilder cmd = new StringBuilder();
-        for (String argument : input) {
-            if (cmd.length() != 0) {
-                cmd.append(' ');
+        try {
+            StringBuilder cmd = new StringBuilder();
+            for (String argument : input) {
+                if (cmd.length() != 0) {
+                    cmd.append(' ');
+                }
+                cmd.append(argument);
             }
-            cmd.append(argument);
+            String arg = cmd.toString();
+            parser(provider, arg, true);
+            Filemapfunctions.exit(provider);
+        } catch (NullPointerException e) {
+            Filemapfunctions.exit(provider);
+            System.exit(-1);
         }
-        String arg = cmd.toString();
-        parser(provider, arg, true);
-        Filemapfunctions.exit(provider);
     }
 
     public static void commandHandler(final TableProvider provider,
@@ -138,7 +150,8 @@ public final class Modesfilemap {
             StringTokenizer argtok = new StringTokenizer(tok.nextToken(), " ",
                     false);
             if (argtok.countTokens() == 0) {
-                throw new IllegalArgumentException("Null command.");
+                System.err.println("null command");
+                continue;
             }
             String[] arg = new String[argtok.countTokens()];
             while (argtok.hasMoreTokens()) {
