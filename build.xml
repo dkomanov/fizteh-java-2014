@@ -1,4 +1,4 @@
-<project name="fizteh-java-2013" default="compile">
+<project name="fizteh-java-2014" default="compile">
 
     <property name="out" location="${basedir}/out"/>
     <property name="jars" location="${basedir}/jars"/>
@@ -18,7 +18,7 @@
     </path>
 
     <target name="compile" depends="init">
-        <javac destdir="${out}" encoding="UTF-8" debug="true" source="1.7" target="1.7" includeAntRuntime="false" nowarn="on" deprecation="off">
+        <javac destdir="${out}" encoding="UTF-8" debug="true" source="1.8" target="1.8" includeAntRuntime="false" nowarn="on" deprecation="off">
             <classpath refid="fizteh.classpath"/>
             <src refid="fizteh.sourcepath"/>
             <include name="**/*.java"/>
@@ -34,13 +34,14 @@
     </target>
 
     <target name="run.checkstyle" description="Checkstyle utility (code conventions)">
-        <taskdef resource="checkstyletask.properties" classpath="bin/checkstyle-5.6-all.jar"/>
+        <taskdef resource="checkstyletask.properties" classpath="lib/checkstyle-5.9-SNAPSHOT-all.jar"/>
 
         <checkstyle
-                config="bin/checkstyle-rules.xml"
+                config="lib/checkstyle-rules.xml"
                 failureProperty="run.checkstyle.failure"
                 failOnViolation="false"
                 >
+            <formatter type="plain"/>
             <formatter type="xml" tofile="${out}/checkstyle-report.xml"/>
             <classpath>
                 <path refid="fizteh.classpath"/>
