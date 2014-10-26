@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.titov.multifilehashmap;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Iterator;
@@ -8,19 +10,22 @@ import java.util.Arrays;
 
 public class MultiFileHashMap {
 
-    // static String path = "dp.dat";
-    // static File currentDir = new File(System.getProperty("db.file"));
-    // static File table = new File(currentDir.getPath() + File.separator +
-    // path);
+    private static class ArrayOfHashMaps {
+
+        private HashMap<String, String> arrayOfHashMaps;
+
+    }
+
+    private static Integer DEFAULT16 = 16;
     private static File table;
     private static String nameOfDir = "";
     private static ArrayOfHashMaps[][] arrayOfHashMaps;
 
     static void newArrayOfHashMaps() {
 
-        arrayOfHashMaps = new ArrayOfHashMaps[16][16];
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        arrayOfHashMaps = new ArrayOfHashMaps[DEFAULT16][DEFAULT16];
+        for (int i = 0; i < DEFAULT16; i++) {
+            for (int j = 0; j < DEFAULT16; j++) {
                 arrayOfHashMaps[i][j] = new ArrayOfHashMaps();
                 try {
                     arrayOfHashMaps[i][j].arrayOfHashMaps = new HashMap<>();
@@ -47,19 +52,20 @@ public class MultiFileHashMap {
                         + File.separator + filesIter2);
                 DataInputStream readFileStream = new DataInputStream(
                         new FileInputStream(hashTableFile));
-                while (true) {
-                    String key = readWordFromFile(readFileStream);
-                    String value = readWordFromFile(readFileStream);
-                    int hashcode = key.hashCode();
-                    int ndirectory = hashcode % 16;
-                    int nfile = hashcode / 16 % 16;
-                    try {
+                try {
+                    while (true) {
+                        String key = readWordFromFile(readFileStream);
+                        String value = readWordFromFile(readFileStream);
+                        int hashcode = key.hashCode();
+                        int ndirectory = hashcode % DEFAULT16;
+                        int nfile = hashcode / DEFAULT16 % DEFAULT16;
                         arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.put(
                                 key, value);
-                        System.out.println(key + " " + value);
-                    } catch (Exception e) {
-                        break;
                     }
+                } catch (EOFException e) {
+                    break;
+                } catch (Exception e) {
+                    System.err.println("Fatal error. Can't read file");
                 }
             }
         }
@@ -80,12 +86,9 @@ public class MultiFileHashMap {
                     hashTableFile.delete();
                 }
             }
-            if (hashTableDir.exists()) {
-                hashTableDir.delete();
-            }
         }
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        for (int i = 0; i < DEFAULT16; i++) {
+            for (int j = 0; j < DEFAULT16; j++) {
                 if (!arrayOfHashMaps[i][j].arrayOfHashMaps.isEmpty()) {
                     File newDirs = new File(table.getPath() + File.separator
                             + nameOfDir + File.separator + String.valueOf(i)
@@ -125,8 +128,8 @@ public class MultiFileHashMap {
     public static Integer countOfTable(final String path) {
 
         Integer count = 0;
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        for (int i = 0; i < DEFAULT16; i++) {
+            for (int j = 0; j < DEFAULT16; j++) {
                 File newDirs = new File(table.getPath() + File.separator + path
                         + File.separator + String.valueOf(i) + ".dir");
                 if (newDirs.exists()) {
@@ -169,7 +172,7 @@ public class MultiFileHashMap {
     }
 
     public static void writeToFile(final HashMap<String, String> hashTable,
-            String path) throws Exception {
+            final String path) throws Exception {
         DataOutputStream writeToFileStream = new DataOutputStream(
                 new FileOutputStream(path));
 
@@ -190,8 +193,8 @@ public class MultiFileHashMap {
             return true;
         }
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % 16;
-        int nfile = hashcode / 16 % 16;
+        int ndirectory = hashcode % DEFAULT16;
+        int nfile = hashcode / DEFAULT16 % DEFAULT16;
         if (!arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps
                 .containsKey(key)) {
             System.out.println("new");
@@ -214,8 +217,8 @@ public class MultiFileHashMap {
             return true;
         }
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % 16;
-        int nfile = hashcode / 16 % 16;
+        int ndirectory = hashcode % DEFAULT16;
+        int nfile = hashcode / DEFAULT16 % DEFAULT16;
         if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
             System.out.println("found");
             System.out
@@ -229,16 +232,12 @@ public class MultiFileHashMap {
 
     static boolean create(final String key) {
 
-        String[] files = table.list();
-        for (String filesIter : files) {
-            if (filesIter.equals(key)) {
-                System.out.println(key + " exists");
-                return true;
-            }
+        if (Paths.get(table.toString(), key).toFile().exists()) {
+            System.out.println(key + " exists");
+            return true;
         }
-        File newFileBuf = new File(table.getPath() + File.separator + key);
         try {
-            newFileBuf.mkdir();
+            Files.createDirectory(Paths.get(table.toString(), key));
         } catch (Exception e) {
             System.err.println("Fatal error. Cannot create new dir");
             System.exit(1);
@@ -330,8 +329,8 @@ public class MultiFileHashMap {
             return true;
         }
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % 16;
-        int nfile = hashcode / 16 % 16;
+        int ndirectory = hashcode % DEFAULT16;
+        int nfile = hashcode / DEFAULT16 % DEFAULT16;
         if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
             arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.remove(key);
             System.out.println("removed");
