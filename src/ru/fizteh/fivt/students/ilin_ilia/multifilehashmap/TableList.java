@@ -44,7 +44,7 @@ public class TableList {
     public void drop(final String name) {
         if (dB.containsKey(name)) {
             dB.get(name).drop();
-        	//rm(name);  	
+            //rm(name);
             dB.remove(name);
             System.out.println("dropped");
         } else {
@@ -122,7 +122,7 @@ public class TableList {
         }
         if (fileName.isDirectory()) {
             if (fileName.list().length == 0) {
-            	fileName.delete();
+                fileName.delete();
                 return;
             } else {
                 for (String s: fileName.list()) {
