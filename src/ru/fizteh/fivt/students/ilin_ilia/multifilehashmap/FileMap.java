@@ -1,7 +1,8 @@
-package ru.fizteh.fivt.studenrts.theronsg.multifilehashmap;
+package ru.fizteh.fivt.students.theronsg.multifilehashmap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Iterator;
@@ -14,19 +15,15 @@ import java.util.TreeMap;
 public class FileMap {
     
     private Map<String, String> map;
-    private RandomAccessFile file;
     private String name;
     
     FileMap(final String path) throws IOException {
         map = new TreeMap<>();
-        
         File fil = new File(path + ".dat");
+        name = path + ".dat";
         if (!fil.exists()) {
             fil.createNewFile();
-        }
-        file = new RandomAccessFile(path, "rw");
-        name = path;
-        if (file.length() > 0) {
+        } else {
             getFile();
         }
     }
@@ -62,7 +59,7 @@ public class FileMap {
         return String.join(", ", map.keySet());
     }
     
-    public void exit() {
+    public void exit() throws FileNotFoundException {
         putFile();
     }
     
@@ -71,6 +68,11 @@ public class FileMap {
     }
     
     public void getFile() throws IOException {
+        RandomAccessFile file = new RandomAccessFile(name, "rw");
+        if (file.length() == 0) {
+            file.close();
+            return;
+        }
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         List<Integer> offsets = new LinkedList<Integer>();
         List<String> keys = new LinkedList<String>();
@@ -104,11 +106,13 @@ public class FileMap {
                     map.put(keyIter.next(), buf.toString("UTF-8"));
                     buf.reset();
                 } else {
+                    file.close();
                     throw new Exception();
                 }
             }
         } catch (IOException e) {
             System.err.println("Can't read db file");
+            file.close();
             System.exit(-1);
         } catch (Exception e) {
             System.err.println("Wrong input file");
@@ -116,15 +120,17 @@ public class FileMap {
         }
         try {
             buf.close();
+            file.close();
         } catch (IOException e) {
             System.err.println("Can't close db file");
             System.exit(-1);
         }
     }
     
-    public void putFile() {
+    public void putFile() throws FileNotFoundException {
+        RandomAccessFile file = new RandomAccessFile(name, "rw");
         try {
-            if (file.readByte() == 0) {
+            if (map.size() == 0) {
                 new File(name).delete();
                 return;
             }
