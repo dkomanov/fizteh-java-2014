@@ -5,14 +5,13 @@ import java.util.*;
 
 public class MultiFileHashMap {
 
-    public static String path; //way to main directory
-    public static Map<String, Integer> tableList; //map with names and numbers of elementls of tables
+    public static String path; // Way to main directory
+    public static Map<String, Integer> tableList; // Map with names and numbers of elementls of tables
 
 
     public static void main(final String[] args) {
         try {
-            //path = System.getProperty("fizteh.db.dir");
-            path = "C:\\Ololo";
+            path = System.getProperty("fizteh.db.dir");
             if (path == null) {
                 throw new Exception("Enter directory");
             }
@@ -22,7 +21,7 @@ public class MultiFileHashMap {
                 throw new Exception("directory not exist");
             }
             File[] children = dir.listFiles();
-            for (File child : children) {
+            for(File child : children) {
                 Table t = new Table(child.getName(), path);
                 tableList.put(child.getName(), t.getNumberOfElements());
                 t.exit();
@@ -43,8 +42,10 @@ public class MultiFileHashMap {
         try {
             while (true) {
                 System.out.print("$ ");
-                String s = sc.nextLine();
-                Interpreter.doCommand(s, false);
+                String [] s = sc.nextLine().trim().split(";");
+                for (String command : s) {
+                    Interpreter.doCommand(command, false);
+                }
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
