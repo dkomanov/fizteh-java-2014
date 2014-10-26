@@ -14,7 +14,12 @@ public class Exit implements Command {
      */
     @Override
     public void execute(final String[] args, DataBase db) {
-        db.write();
+        try {
+            db.write();
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            System.exit(1);
+        }
         System.exit(0);
     }
 }

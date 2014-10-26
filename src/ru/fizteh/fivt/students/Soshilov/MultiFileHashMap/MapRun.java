@@ -22,6 +22,8 @@ public class MapRun {
      */
     protected static DataBase db;
 
+    private static String signOfInvitation = "$ ";
+
     /**
      * Fill db and commandMap before the object of the class would be made.
      */
@@ -75,7 +77,7 @@ public class MapRun {
     public static void interactiveMode() {
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {
-                System.out.print("$ ");
+                System.out.print(signOfInvitation);
                 String currentString = sc.nextLine();
                 currentString = currentString.trim();
                 run(currentString.split("\\s+"));

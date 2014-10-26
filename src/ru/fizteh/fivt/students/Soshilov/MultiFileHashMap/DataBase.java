@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +17,7 @@ public class DataBase {
     /**
      * Tables: name + variable of Table class.
      */
-    public HashMap<String, Table> tables;
+    public Map<String, Table> tables;
     /**
      * The table we are working on now.
      */
@@ -41,15 +42,23 @@ public class DataBase {
     public DataBase(final Path inputPath) {
         tables = new HashMap<>();
         dbPath = inputPath;
-        read();
+        try {
+            read();
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            System.exit(1);
+        }
     }
 
     /**
      * Reading from database (it contains 16 directories, each contains 16 files), by using read from class Table
+     * @throws Exception In case if we can not read from a table.
      */
-    public void read() {
-        if (dbPath == null || !Files.exists(dbPath)) {
-            throw new RuntimeException("wrong database path");
+    public void read() throws Exception {
+        if (dbPath == null) {
+            throw new IllegalArgumentException("no database path");
+        } else if (!Files.exists(dbPath)) {
+            throw new IllegalArgumentException("wrong database path: '" + dbPath.toString() + "'");
         }
         File currentDirectory = new File(dbPath.toString());
         File[] content = currentDirectory.listFiles();
@@ -57,12 +66,7 @@ public class DataBase {
             for (File item: content) {
                 if (Files.isDirectory(item.toPath())) {
                     Table table = new Table(item.toPath());
-                    try {
-                        table.read();
-                    } catch (Exception ex) {
-                        System.err.println(ex.getMessage());
-                        System.exit(1);
-                    }
+                    table.read();
                     tables.put(item.getName(), table);
                 }
             }
@@ -73,25 +77,21 @@ public class DataBase {
 
     /**
      * Writes to database from tables, by using write from class Table.
+     * @throws Exception In case if we can not write to a table.
      */
-    public void write() {
+    public void write() throws Exception {
         deleteDirectoryContent();
         for (HashMap.Entry<String, Table> entry: tables.entrySet()) {
-
-            try {
-                entry.getValue().write();
-            } catch (Exception ex) {
-                System.err.println(ex.getMessage());
-                System.exit(1);
-            }
+            entry.getValue().write();
         }
     }
 
     /**
      * First we delete the database content.
      * If dbPath points at not a directory, we delete it. Else use next function.
+     * @throws IOException In case if we can not delete a file by its' path.
      */
-    public void deleteDirectoryContent() {
+    public void deleteDirectoryContent() throws RuntimeException {
         if (!Files.isDirectory(dbPath)) {
             try {
                 Files.delete(dbPath);
@@ -107,7 +107,7 @@ public class DataBase {
      * Recursive deletion of directories (we consider them empty because we have read them).
      * @param path A Path to a directory, which should be deleted.
      */
-    private void deleteDirectory(final Path path) {
+    private void deleteDirectory(final Path path) throws RuntimeException {
         File currentDirectory = new File(path.toString());
         File[] content = currentDirectory.listFiles();
 

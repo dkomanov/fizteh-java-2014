@@ -22,7 +22,7 @@ public class DataBaseShowTables implements Command {
 
         Main.checkArguments("show tables", args.length, 2);
 
-        System.out.println("table_name row_count");
+        //System.out.println("table_name row_count");
 
         for (HashMap.Entry<String, Table> entry: db.tables.entrySet()) {
             System.out.println(entry.getKey() + " " + entry.getValue().size());
