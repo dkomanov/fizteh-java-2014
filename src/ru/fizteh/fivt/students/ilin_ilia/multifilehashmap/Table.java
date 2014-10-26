@@ -18,7 +18,8 @@ public class Table {
         if (tableName.exists()) {
             if (tableName.list() != null) {
                 for (String file: tableName.list()) {
-                    data.put(Integer.parseInt(file), new Dir(Paths.get(tableName.getAbsolutePath()).resolve(file).toString()));
+                    data.put(Integer.parseInt(file),
+                    		new Dir(Paths.get(tableName.getAbsolutePath()).resolve(file).toString()));
                 }
             }
         } else {
@@ -51,7 +52,8 @@ public class Table {
         if (data.containsKey(ndir)) {
             data.get(ndir).put(nfile, key, value);
         } else {
-            data.put(ndir, new Dir(Paths.get(tableName.getAbsolutePath()).resolve(new Integer(ndir).toString()).toString()));
+            data.put(ndir, new Dir(Paths.get(tableName.getAbsolutePath())
+            		.resolve(new Integer(ndir).toString()).toString()));
             data.get(ndir).put(nfile, key, value);
         }
     }
