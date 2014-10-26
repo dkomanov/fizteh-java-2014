@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -87,7 +86,7 @@ public class DataBaseCache {
     }
 
     public void createTable(String tableName)
-            throws InvalidCommandException , DatabaseFileStructureException{
+            throws InvalidCommandException , DatabaseFileStructureException {
         File table = dataBasePath.resolve(tableName).toFile();
         if (table.exists()) {
             System.out.println(tableName + " exists");

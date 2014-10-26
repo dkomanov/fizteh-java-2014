@@ -98,10 +98,11 @@ public class MultiFileHashMap {
                     break;
                 case "drop" :
                     if (parts.length == 2) {
-                        if (workWithTableMode && usingTable.getTableName().equals(parts[1]))
-                        cache.dropTable(parts[1]);
-                        workWithTableMode = false;
-                        usingTable = null;
+                        if (workWithTableMode && usingTable.getTableName().equals(parts[1])) {
+                            cache.dropTable(parts[1]);
+                            workWithTableMode = false;
+                            usingTable = null;
+                        }
                     } else {
                         errorCntArguments("drop");
                     }
