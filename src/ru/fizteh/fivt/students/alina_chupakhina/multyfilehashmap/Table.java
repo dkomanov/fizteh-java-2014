@@ -25,7 +25,7 @@ public class Table {
         remove();
     }
 
-    private void remove() throws Exception {
+    private void rm() throws Exception {
         File[] dirs = this.table.listFiles();
         for (File dir : dirs) {
             if (!dir.isDirectory()) {
