@@ -121,7 +121,7 @@ public class Launcher {
         }
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
-                writer = new Writer(parentDir + File.separator + currentTable + File.separator
+                writer = new MultiWrite(parentDir + File.separator + currentTable + File.separator
                         + Integer.toString(i) + ".dir" + File.separator + Integer.toString(j) + ".dat");
                 writer.writeDataToFile(keysPath[i][j]);
             }
@@ -133,7 +133,7 @@ public class Launcher {
         keysPath = new HashMap[16][16];
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
-                reader = new Reader(parentDir + File.separator + currentTable + File.separator
+                reader = new MultiReader(parentDir + File.separator + currentTable + File.separator
                         + Integer.toString(i) + ".dir" + File.separator + Integer.toString(j) + ".dat");
                 keysPath[i][j] = reader.readDataFromFile();
             }
