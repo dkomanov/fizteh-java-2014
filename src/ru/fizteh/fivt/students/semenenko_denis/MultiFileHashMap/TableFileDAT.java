@@ -75,7 +75,6 @@ public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
             System.out.println("overwrite");
             System.out.println(result);
         }
-        isLoaded = false;
         return result;
     }
 

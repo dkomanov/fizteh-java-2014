@@ -130,11 +130,7 @@ public class DataBaseCache {
     private static void mkdir(String name)
             throws InvalidCommandException {
         File curDir = new File(dataBasePath + File.separator + name);
-        if (curDir.exists()) {
-            errorFileAlreadyExists("mkdir", name);
-        } else if (!curDir.mkdir()) {
-            errorCreatingFile("mkdir");
-        }
+        curDir.mkdir();
     }
 
     private static void delete(File file)

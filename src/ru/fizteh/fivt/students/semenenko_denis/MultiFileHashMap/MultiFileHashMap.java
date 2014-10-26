@@ -81,7 +81,6 @@ public class MultiFileHashMap {
                 break;
             }
         }
-        cache.commit();
     }
 
     private static void execCommand(String command) {
@@ -98,7 +97,8 @@ public class MultiFileHashMap {
                     break;
                 case "drop" :
                     if (parts.length == 2) {
-                        if (workWithTableMode && usingTable.getTableName().equals(parts[1])) {
+                        if (workWithTableMode
+                                && usingTable.getTableName().equals(parts[1])) {
                             cache.dropTable(parts[1]);
                             workWithTableMode = false;
                             usingTable = null;
@@ -119,10 +119,14 @@ public class MultiFileHashMap {
                     }
                     break;
                 case "show" :
-                    if (parts.length == 2) {
-                        cache.showTables();
+                    if (parts[1].equals("tables")) {
+                        if (parts.length == 2) {
+                            cache.showTables();
+                        } else {
+                            errorCntArguments("show");
+                        }
                     } else {
-                        errorCntArguments("show");
+                        errorUnknownCommand("show " + parts[1]);
                     }
                     break;
                 case "put":
@@ -179,12 +183,21 @@ public class MultiFileHashMap {
         } catch (InvalidCommandException e) {
             System.err.println(e.getMessage());
             if (batchMode) {
-                System.exit(-1);
+                isExit  = true;
+                cache.commit();
             }
         } catch (DatabaseFileStructureException e) {
             System.err.println(e.getMessage());
+            if (batchMode) {
+                isExit  = true;
+                cache.commit();
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            if (batchMode) {
+                isExit  = true;
+                cache.commit();
+            }
         }
 
     }
