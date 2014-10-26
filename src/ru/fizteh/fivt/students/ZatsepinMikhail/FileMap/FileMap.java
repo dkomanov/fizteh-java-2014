@@ -153,7 +153,6 @@ public class FileMap {
             keySet.clear();
             keySet.add(key);
         }
-
         Path directoryForLoad;
         Path fileForLoad;
         int numberOfDirectory = getNumberOfDirectory(key.hashCode());
@@ -214,7 +213,6 @@ public class FileMap {
         }
         return true;
     }
-
 
 
     public boolean deleteEmptyFiles(Path directory, Path file) {
