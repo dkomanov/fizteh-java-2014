@@ -1,6 +1,7 @@
-package ru.fizteh.fivt.studenrts.theronsg.multifilehashmap;
+package ru.fizteh.fivt.students.theronsg.multifilehashmap;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
@@ -17,8 +18,7 @@ public class Table {
         if (tableName.exists()) {
             if (tableName.list() != null) {
                 for (String file: tableName.list()) {
-                    System.out.println(file);
-                    data.put(Integer.parseInt(file), new Dir(Paths.get(name).resolve(file).toString()));
+                    data.put(Integer.parseInt(file), new Dir(Paths.get(tableName.getAbsolutePath()).resolve(file).toString()));
                 }
             }
         } else {
@@ -49,9 +49,9 @@ public class Table {
         int ndir = byt % 16;
         int nfile = (byt / 16) % 16;
         if (data.containsKey(ndir)) {
-            data.get(key).put(nfile, key, value);
+            data.get(ndir).put(nfile, key, value);
         } else {
-            data.put(ndir, new Dir(Paths.get(tableName.getName()).resolve(new Integer(ndir).toString()).toString()));
+            data.put(ndir, new Dir(Paths.get(tableName.getAbsolutePath()).resolve(new Integer(ndir).toString()).toString()));
             data.get(ndir).put(nfile, key, value);
         }
     }
@@ -67,9 +67,9 @@ public class Table {
         int ndirectory = byt % 16;
         int nfile = (byt / 16) % 16;
         if (data.containsKey(ndirectory)) {
-            data.get(key).get(nfile, key);
+            data.get(ndirectory).get(nfile, key);
         } else {
-            System.err.println("No key: " + key + ".");
+            System.err.println("not found");
         }
     }
 
@@ -92,9 +92,9 @@ public class Table {
         int ndirectory = byt % 16;
         int nfile = (byt / 16) % 16;
         if (data.containsKey(ndirectory)) {
-            data.get(key).remove(nfile, key);
+            data.get(ndirectory).remove(nfile, key);
         } else {
-            System.err.println("No key: " + key + ".");
+            System.err.println("not found");
         }
     }
 
@@ -108,7 +108,7 @@ public class Table {
         System.out.println(String.join(", ", l));
     }
 
-    public void saveTable() {
+    public void saveTable() throws FileNotFoundException {
         for (Dir d: data.values()) {
             d.save();
         }
