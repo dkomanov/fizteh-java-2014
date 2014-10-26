@@ -54,29 +54,41 @@ public class Welcome {
         } else {
             String[] arguments;
             Scanner sc = new Scanner(System.in);
+            String s1;
+            boolean exit = false;
             while (true) {
                 try {
                     System.out.print("$ ");
-                    String s1 = sc.nextLine();
-                    arguments = s1.split("\\s+");
+                    s1 = sc.nextLine();
                 } catch (Exception e) {
                     System.err.println("Exception: " + e.getMessage());
                     System.exit(-1);
                     return;
                 }
-                if (arguments[0].equals("exit")) {
+                String[] s = s1.split(";");
+                for (String newCommand : s) {
+                    if (newCommand.startsWith(" ")) {
+                        newCommand = newCommand.substring(1, newCommand.length());
+                    }
+                    arguments = newCommand.split("\\s+");
+                    if (arguments[0].equals("exit")) {
+                        exit = true;
+                        break;
+                    }
+                    Command whatToDo = dbConnector.commands.get(arguments[0]);
+                    if (whatToDo == null) {
+                        System.out.println("Not found command: " + arguments[0]);
+                        continue;
+                    }
+                    String[] newArgs = new String[arguments.length - 1];
+                    if (arguments.length != 0) {
+                        System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);
+                    }
+                    dbConnector.run(whatToDo.name, newArgs, false);
+                }
+                if (exit) {
                     break;
                 }
-                Command whatToDo = dbConnector.commands.get(arguments[0]);
-                if (whatToDo == null) {
-                    System.out.println("Not found command: " + arguments[0]);
-                    continue;
-                }
-                String[] newArgs = new String[arguments.length - 1];
-                if (arguments.length != 0) {
-                    System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);
-                }
-                dbConnector.run(whatToDo.name, newArgs, false);
             }
         }
         dbConnector.close();

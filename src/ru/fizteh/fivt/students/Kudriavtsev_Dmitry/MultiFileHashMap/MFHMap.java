@@ -12,8 +12,8 @@ import java.util.*;
  * Created by Дмитрий on 07.10.14.
  */
 public class MFHMap extends HashMap<String, String> {
-    Path dbPath;
-    Map<String, Integer> changedFiles = new TreeMap<>();
+    protected Path dbPath;
+    protected Map<String, Integer> changedFiles = new TreeMap<>();
 
     protected static final int FILES_COUNT = 16;
     protected static final int DIRECTORIES_COUNT = 16;

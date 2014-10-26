@@ -37,7 +37,7 @@ public class Drop extends Command {
             map.deleteFiles(true);
             Files.delete(map.dbPath);
         } catch (Exception e) {
-            System.err.println("Exception in drop: " + e.getMessage());
+            System.err.println("Exception in drop: can't delete " + map.dbPath.toString());
             System.exit(-1);
         }
         System.out.println("dropped");
