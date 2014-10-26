@@ -4,7 +4,9 @@ import ru.fizteh.fivt.students.torunova.multifilehashmap.Database;
 import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.TableNotCreatedException;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 /**
  * Created by nastya on 21.10.14.
@@ -18,11 +20,15 @@ public class CreateTable extends Action{
             if (!checkNumberOfArguments(1, args.length)) {
                 return false;
             }
-        if (db.createTable(args[0])) {
+		String tableName = args[0];
+		if (tableName.contains(File.separator) || tableName.equals("..") || tableName.equals(".")) {
+			throw new TableNotCreatedException("create: illegal name for table.");
+		}
+        if (db.createTable(tableName)) {
             System.out.println("created");
             return true;
         } else {
-            System.out.println(args[0] + " exists");
+            System.out.println(tableName + " exists");
             return false;
         }
     }

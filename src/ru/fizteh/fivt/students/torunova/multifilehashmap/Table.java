@@ -35,8 +35,13 @@ public class Table {
                     nextFile = new File(nextDir, String.valueOf(j) + ".dat");
                     if (nextFile.isFile()) {
                         FileMap fm = new FileMap(nextFile.getAbsolutePath());
-                        files.put(nextFile, fm);
-                        numberOfEntries += fm.size();
+						if (fm.isEmpty()) {
+							nextFile.delete();
+							nextDir.delete();
+						} else {
+							files.put(nextFile, fm);
+							numberOfEntries += fm.size();
+						}
                     }
                 }
             }

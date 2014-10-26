@@ -23,13 +23,13 @@ public class FileMap {
             byte[] key = new byte[length];
             if (fis.read(key) != length) {
                 throw new IncorrectFileException(
-                        "Real key length does not match specified in file length.");
+                        "Error in file " + file + " : real key length does not match specified in file length.");
             }
             length = fis.readInt();
             byte[] value = new byte[length];
             if (fis.read(value) != length) {
                 throw new IncorrectFileException(
-                        "Real value length does not match specified in file length.");
+                        "Error in file " + file + " : real value length does not match specified in file length.");
             }
             map.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
         }
