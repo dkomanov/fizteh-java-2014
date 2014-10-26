@@ -34,14 +34,18 @@ public class Dir {
             name.delete();
         }
     }
+    /**
+     *  @param n means nfile.
+     *  I've changed it for checkstyle.
+     */
 
-    public void put(final int nfile, final String key, final String value)
+    public void put(final int n, final String key, final String value)
             throws IOException {
-        if (maps.containsKey(nfile)) {
-            maps.get(nfile).put(key, value);
+        if (maps.containsKey(n)) {
+            maps.get(n).put(key, value);
         } else {
-            maps.put(nfile, new FileMap(Paths.get(name.getAbsolutePath()).resolve(new Integer(nfile).toString()).toString()));
-            maps.get(nfile).put(key, value);
+            maps.put(n, new FileMap(Paths.get(name.getAbsolutePath()).resolve(new Integer(n).toString()).toString()));
+            maps.get(n).put(key, value);
         }
     }
 
