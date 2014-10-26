@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 public class Table {
-    private final int FILES_CNT = 16;
-    private final int FOLDERS_CNT = 16;
+    private static final int FILES_CNT = 16;
+    private static final int FOLDERS_CNT = 16;
     private String tableName;
     private List<SingleTable> tableParts;
     private SingleTable[][] parts;
