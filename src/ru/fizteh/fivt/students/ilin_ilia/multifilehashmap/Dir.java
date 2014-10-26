@@ -47,7 +47,7 @@ public class Dir {
         if (maps.containsKey(nfile)) {
             maps.get(nfile).get(key);
         } else {
-            System.err.println("Can't find a file for this key: " + key + ".");
+            System.err.println("No key: " + key + ".");
         }
     }
     
