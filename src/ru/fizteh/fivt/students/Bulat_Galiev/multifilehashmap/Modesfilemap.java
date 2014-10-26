@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public final class Modesfilemap {
+    private static final int SLEEPNUMBER = 5;
     private Modesfilemap() {
         // Disable instantiation to this class.
     }
@@ -15,13 +16,17 @@ public final class Modesfilemap {
         String input = "";
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         do {
+            try {
+                Thread.sleep(SLEEPNUMBER);
+            } catch (InterruptedException e1) {
+                System.err.print(e1.getMessage());
+            }
             System.out.print("$ ");
-
             try {
                 input = in.readLine();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                System.err.print(e.getMessage());
+                System.exit(-1);
             }
             parser(provider, input, false);
         } while (!input.equals("exit"));
@@ -71,7 +76,8 @@ public final class Modesfilemap {
                 if (arg[1].equals("tables")) {
                     Filemapfunctions.showTables();
                 } else {
-                    System.out.println("Please enter proper command");
+                    System.err.println(arg[0] + " " + arg[1]
+                            + " is incorrect command");
                 }
             } else {
                 argproblem = true;
@@ -114,13 +120,13 @@ public final class Modesfilemap {
             }
             break;
         default:
-            System.out.println("Please enter proper command");
+            System.err.println(arg[0] + " is incorrect command");
             if (mode) {
                 System.exit(-1);
             }
         }
         if (argproblem) {
-            System.out.println("Wrong number of arguments");
+            System.err.println(arg[0] + ": wrong number of arguments");
         }
     }
 
@@ -131,10 +137,14 @@ public final class Modesfilemap {
             int i = 0;
             StringTokenizer argtok = new StringTokenizer(tok.nextToken(), " ",
                     false);
+            if (argtok.countTokens() == 0) {
+                throw new IllegalArgumentException("Null command.");
+            }
             String[] arg = new String[argtok.countTokens()];
             while (argtok.hasMoreTokens()) {
                 arg[i++] = argtok.nextToken();
             }
+
             commandHandler(provider, arg, mod);
         }
         if (mod) {
@@ -151,8 +161,7 @@ public final class Modesfilemap {
             if (!arg1.equals("")) {
                 TableProvider.changeCurTable(arg1);
             } else {
-                System.out.println("incorrect arguments");
-                return;
+                throw new IllegalArgumentException("Null name.");
             }
         }
 
@@ -160,8 +169,7 @@ public final class Modesfilemap {
             if (!arg1.equals("")) {
                 TableProvider.createTable(arg1);
             } else {
-                System.out.println("incorrect arguments");
-                return;
+                throw new IllegalArgumentException("Null name.");
             }
         }
 
@@ -169,8 +177,7 @@ public final class Modesfilemap {
             if (!arg1.equals("")) {
                 TableProvider.removeTable(arg1);
             } else {
-                System.out.println("incorrect arguments");
-                return;
+                throw new IllegalArgumentException("Null name.");
             }
         }
 
@@ -184,11 +191,10 @@ public final class Modesfilemap {
                 if (provider.getDataBase() != null) {
                     provider.getDataBase().put(arg1, arg2);
                 } else {
-                    System.out.println("no table selected");
+                    System.err.println("no table selected");
                 }
             } else {
-                System.out.println("incorrect arguments");
-                return;
+                throw new IllegalArgumentException("Null key or name.");
             }
         }
 
@@ -198,11 +204,10 @@ public final class Modesfilemap {
                 if (provider.getDataBase() != null) {
                     provider.getDataBase().get(arg1);
                 } else {
-                    System.out.println("no table selected");
+                    System.err.println("no table selected");
                 }
             } else {
-                System.out.println("incorrect arguments");
-                return;
+                throw new IllegalArgumentException("Null key.");
             }
         }
 
@@ -212,11 +217,10 @@ public final class Modesfilemap {
                 if (provider.getDataBase() != null) {
                     provider.getDataBase().remove(arg1);
                 } else {
-                    System.out.println("no table selected");
+                    System.err.println("no table selected");
                 }
             } else {
-                System.out.println("incorrect arguments");
-                return;
+                throw new IllegalArgumentException("Null key.");
             }
         }
 
@@ -225,7 +229,7 @@ public final class Modesfilemap {
             if (provider.getDataBase() != null) {
                 provider.getDataBase().list();
             } else {
-                System.out.println("no table selected");
+                System.err.println("no table selected");
             }
         }
 

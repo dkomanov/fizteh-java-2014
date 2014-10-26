@@ -8,6 +8,10 @@ public final class MainMultiFileHashMap {
     public static void main(final String[] args) {
         try {
             String databaseDir = System.getProperty("fizteh.db.dir");
+            if (databaseDir == null) {
+                System.err.println("specify the path to fizteh.db.dir");
+                System.exit(-1);
+            }
             TableProvider provider = new TableProviderFactory()
                     .create(databaseDir);
             if (args.length == 0) {
@@ -16,8 +20,7 @@ public final class MainMultiFileHashMap {
                 Modesfilemap.batchMode(provider, args);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.err.print(e.getMessage());
             System.exit(-1);
         }
     }

@@ -5,7 +5,7 @@ public class TableProviderFactory {
         if (dir != null) {
             return new TableProvider(dir);
         } else {
-            throw new IllegalArgumentException("null name directory");
+            throw new IllegalArgumentException("Null name directory.");
         }
     }
 }

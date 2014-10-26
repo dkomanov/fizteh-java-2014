@@ -4,13 +4,15 @@ import java.io.UnsupportedEncodingException;
 
 public class Key {
 
+    private final int KEYNUMBER = 16;
+    private final int HASHNUMBER = 16;
     private final int x;
     private final int y;
 
     public Key(final String key) throws UnsupportedEncodingException {
         int nbytes = key.getBytes("UTF-8")[0];
-        int ndirectory = Math.abs(nbytes % 16);
-        int nfile = Math.abs((nbytes / 16) % 16);
+        int ndirectory = Math.abs(nbytes % KEYNUMBER);
+        int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
         this.x = ndirectory;
         this.y = nfile;
     }
@@ -34,7 +36,7 @@ public class Key {
 
     @Override
     public final int hashCode() {
-        return 31 * x + y;
+        return HASHNUMBER * x + y;
     }
 
 }

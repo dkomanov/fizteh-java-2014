@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public final class Table {
+    private final int KEYNUMBER = 16;
+    private final int INTNUMBER = 4;
     private String tableName;
     private Path tablePath;
     private Map<Key, DatabaseSerializer> databaseFiles;
@@ -22,8 +24,9 @@ public final class Table {
         try {
             readTableDir();
         } catch (IOException e) {
-            throw new IllegalArgumentException("Error reading table "
-                    + tableName, e);
+            System.err.print("Error reading table " + tableName + ": "
+                    + e.getMessage());
+            System.exit(-1);
         }
     }
 
@@ -41,30 +44,20 @@ public final class Table {
     }
 
     public void put(final String key, final String value) throws IOException {
-        if (!key.equals("") && !value.equals("")) {
-            DatabaseSerializer databaseFile = databaseFiles.get(new Key(key));
-            if (databaseFile == null) {
-                int nbytes = key.getBytes("UTF-8")[0];
-                int ndirectory = Math.abs(nbytes % 16);
-                int nfile = Math.abs((nbytes / 16) % 16);
-                databaseFile = new DatabaseSerializer(tablePath, ndirectory,
-                        nfile);
-                databaseFiles.put(new Key(ndirectory, nfile), databaseFile);
-            }
-            databaseFile.put(key, value);
-        } else {
-            throw new IllegalArgumentException("Key or value is a null-string");
+        DatabaseSerializer databaseFile = databaseFiles.get(new Key(key));
+        if (databaseFile == null) {
+            int nbytes = key.getBytes("UTF-8")[0];
+            int ndirectory = Math.abs(nbytes % KEYNUMBER);
+            int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
+            databaseFile = new DatabaseSerializer(tablePath, ndirectory, nfile);
+            databaseFiles.put(new Key(ndirectory, nfile), databaseFile);
         }
+        databaseFile.put(key, value);
     }
 
     public void remove(final String key) throws IOException {
-        if (!key.equals("")) {
-            DatabaseSerializer databaseFile = databaseFiles.get(new Key(key));
-            databaseFile.remove(key);
-        } else {
-            throw new IllegalArgumentException("incorrect key");
-        }
-
+        DatabaseSerializer databaseFile = databaseFiles.get(new Key(key));
+        databaseFile.remove(key);
     }
 
     public int size() {
@@ -109,30 +102,37 @@ public final class Table {
         String[] dirList = tablePath.toFile().list();
         for (String dir : dirList) {
             Path curDir = tablePath.resolve(dir);
-            if (!curDir.toFile().isDirectory()) {
-                throw new IOException();
+            if (!curDir.toFile().isDirectory()
+                    || !dir.matches("([0-9]|1[0-5])\\.dir")) {
+                throw new IOException(
+                        "it contains file or inappropriate directory "
+                                + dir.toString());
             }
             String[] fileList = curDir.toFile().list();
             if (fileList.length == 0) {
-                throw new IOException();
+                throw new IOException("it contains empty directory "
+                        + dir.toString());
             }
             for (String file : fileList) {
                 Path filePath = curDir.resolve(file);
-                if (!filePath.toFile().isFile()) {
-                    throw new IOException();
+                if (!filePath.toFile().isFile()
+                        || !file.matches("([0-9]|1[0-5])\\.dat")) {
+                    throw new IOException(dir.toString()
+                            + "contains directory or inappropriate file"
+                            + file.toString());
                 }
-                int ndirectory = Integer.parseInt(dir.substring(0,
-                        dir.length() - 4));
-                int nfile = Integer.parseInt(file.substring(0,
-                        file.length() - 4));
+                int ndirectory = Integer.parseInt(dir.substring(0, dir.length()
+                        - INTNUMBER));
+                int nfile = Integer.parseInt(file.substring(0, file.length()
+                        - INTNUMBER));
                 DatabaseSerializer databaseFile;
                 try {
                     databaseFile = new DatabaseSerializer(tablePath,
                             ndirectory, nfile);
                     databaseFiles.put(new Key(ndirectory, nfile), databaseFile);
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    System.err.print(e.getMessage());
+                    System.exit(-1);
                 }
             }
         }

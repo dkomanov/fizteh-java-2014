@@ -19,7 +19,7 @@ public final class TableProvider {
             tablesDirPath.toFile().mkdir();
         }
         if (!tablesDirPath.toFile().isDirectory()) {
-            throw new IllegalArgumentException("Incorrect path");
+            throw new IllegalArgumentException("Incorrect path.");
         }
         currentTable = null;
         tableLinks = new HashMap<>();
@@ -31,7 +31,7 @@ public final class TableProvider {
                 tableLinks.put(curTableDir, curTable);
             } else {
                 throw new IllegalArgumentException(
-                        "directory contains non-directory files");
+                        "Directory contains non-directory files.");
             }
         }
     }
@@ -57,7 +57,7 @@ public final class TableProvider {
                 System.out.println(name + " does not exist");
             }
         } else {
-            throw new IllegalArgumentException("Incorrect name");
+            throw new IllegalArgumentException("Incorrect name.");
         }
     }
 
@@ -73,7 +73,7 @@ public final class TableProvider {
             tableLinks.put(name, newTable);
             System.out.println("created");
         } else {
-            throw new IllegalArgumentException("Incorrect name");
+            throw new IllegalArgumentException("Incorrect name.");
         }
     }
 
@@ -91,7 +91,7 @@ public final class TableProvider {
                 System.out.println("dropped");
             }
         } else {
-            throw new IllegalArgumentException("Incorrect name");
+            throw new IllegalArgumentException("Incorrect name.");
         }
     }
 

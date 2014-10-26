@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class DatabaseSerializer {
+    private final int BYTESNUMBER = 8;
     private Path filePathdb;
     private Map<String, String> fileMap;
     private RandomAccessFile inputStream;
@@ -54,7 +55,7 @@ public class DatabaseSerializer {
             int keyLength = inputStream.readInt();
             int valueLength = inputStream.readInt();
 
-            bytesLeft -= 8;
+            bytesLeft -= BYTESNUMBER;
 
             String key = readUTF8String(keyLength);
             String value = readUTF8String(valueLength);
@@ -88,8 +89,8 @@ public class DatabaseSerializer {
                 this.putData(filedb);
                 outputStream.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                System.err.print(e.getMessage());
+                System.exit(-1);
             }
         }
     }
@@ -109,7 +110,7 @@ public class DatabaseSerializer {
                 System.out.println(putValue);
             }
         } else {
-            throw new IllegalArgumentException("incorrect key");
+            throw new IllegalArgumentException("Incorrect key.");
         }
 
     }
@@ -124,7 +125,7 @@ public class DatabaseSerializer {
                 System.out.println(getValue);
             }
         } else {
-            throw new IllegalArgumentException("incorrect key");
+            throw new IllegalArgumentException("Incorrect key.");
         }
     }
 
@@ -138,7 +139,7 @@ public class DatabaseSerializer {
                 System.out.println("not found");
             }
         } else {
-            throw new IllegalArgumentException("incorrect arguments");
+            throw new IllegalArgumentException("Incorrect arguments.");
         }
     }
 
