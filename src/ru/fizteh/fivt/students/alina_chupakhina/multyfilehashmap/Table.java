@@ -11,9 +11,9 @@ public class Table {
     private File table;
     private Map<String, String> fm;
     private int numberOfElements;
-    private static final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
+    private final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
             = ": Invalid number of arguments";
-    private static final int MAGIC_NUMBER = 16;
+    private final int MAGIC_NUMBER = 16;
 
     Table(String name, String pathname) throws Exception {
         fm = new TreeMap<>();
@@ -80,7 +80,7 @@ public class Table {
                         fm.put(key, value);
                         if (!(nDirectory ==  Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER))
                                 || !(nFile == Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER))) {
-                            System.err.println("Error with read table " + tablename);
+                            System.err.println("Error while reading table " + tablename);
                             System.exit(-1);
                         }
                     } catch (IOException e) {
