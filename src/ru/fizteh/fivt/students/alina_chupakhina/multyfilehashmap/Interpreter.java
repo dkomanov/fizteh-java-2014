@@ -81,7 +81,7 @@ public class Interpreter {
         }
     }
 
-    public static void drop(final String[] args) {
+    public static void drop(final String[] args) throws Exception {
         checkNumOfArgs("drop", 2, args.length);
         String pathToTable = MultiFileHashMap.path + File.separator + args[1];
         File table = new File(pathToTable);
@@ -94,6 +94,8 @@ public class Interpreter {
                 }
             }
             MultiFileHashMap.tableList.remove(args[1]);
+            Table t = new Table(args[1], MultiFileHashMap.path);
+            t.remove();
             table.delete();
             System.out.println("dropped");
         }
@@ -117,7 +119,7 @@ public class Interpreter {
             if (!args[1].equals("tables")) {
                 throw new IllegalArgumentException("Invalid command");
             }
-        } 
+        }
         if (args.length == 1) {
             throw new IllegalArgumentException("Invalid command");
         }
@@ -147,6 +149,7 @@ public class Interpreter {
         }
     }
 }
+
 
 
 
