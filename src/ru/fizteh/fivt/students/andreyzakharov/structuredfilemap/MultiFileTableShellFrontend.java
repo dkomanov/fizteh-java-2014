@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.commands.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,13 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class DbMain {
+public class MultiFileTableShellFrontend {
     Map<String, Command> commands = new HashMap<>();
     boolean batch;
     Path dbPath;
     TableProvider activeConnector;
 
-    public DbMain(boolean batch) {
+    public MultiFileTableShellFrontend(boolean batch) {
         String property = System.getProperty("fizteh.db.dir");
         if (property == null || property.equals("")) {
             System.err.println("Database root directory not set");
@@ -23,7 +24,7 @@ public class DbMain {
         dbPath = Paths.get(System.getProperty("user.dir")).resolve(property);
         this.batch = batch;
 
-        DbConnectorFactory factory = new DbConnectorFactory();
+        MultiFileTableProviderFactory factory = new MultiFileTableProviderFactory();
         activeConnector = factory.create(property);
 
         commands.put("create", new CreateCommand());
@@ -44,12 +45,12 @@ public class DbMain {
     }
 
     public static void main(String[] args) {
-        DbMain m = new DbMain(args.length > 0);
+        MultiFileTableShellFrontend m = new MultiFileTableShellFrontend(args.length > 0);
         m.run(args);
     }
 
     void run(String[] args) {
-        try (DbConnector connector = new DbConnector(dbPath)) {
+        try (MultiFileTableProvider connector = new MultiFileTableProvider(dbPath)) {
             if (batch) {
                 StringBuilder sb = new StringBuilder();
                 for (String s : args) {
@@ -78,7 +79,7 @@ public class DbMain {
         }
     }
 
-    void execute(DbConnector connector, String argString) {
+    void execute(MultiFileTableProvider connector, String argString) {
         try {
             String[] args = argString.trim().split("\\s+");
             Command command = commands.get(args[0]);

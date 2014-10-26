@@ -1,6 +1,9 @@
 package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryReader;
+import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryWriter;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,19 +17,21 @@ import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.*;
 
-public class FileMap implements Table {
-    private Map<String, String> stableData = new HashMap<>();
-    private Map<String, String> added = new HashMap<>();
-    private Map<String, String> changed = new HashMap<>();
+public class MultiFileTable implements Table {
+    private Map<String, Storeable> stableData = new HashMap<>();
+    private Map<String, Storeable> added = new HashMap<>();
+    private Map<String, Storeable> changed = new HashMap<>();
     private Set<String> removed = new HashSet<>();
     private Path dbPath;
     private String name;
     private int pending = 0;
+    private TableEntryReader reader;
+    private TableEntryWriter writer;
 
     private static Pattern fileNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dat$");
     private static Pattern directoryNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dir$");
 
-    public FileMap(Path path) {
+    public MultiFileTable(Path path, TableEntryReader reader, TableEntryWriter writer) {
         dbPath = path;
         name = path.getFileName().toString();
         try {
@@ -36,6 +41,8 @@ public class FileMap implements Table {
         } catch (IOException e) {
             //
         }
+        this.reader = reader;
+        this.writer = writer;
     }
 
     @Override
@@ -44,7 +51,7 @@ public class FileMap implements Table {
     }
 
     @Override
-    public String get(String key) {
+    public Storeable get(String key) {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -61,7 +68,7 @@ public class FileMap implements Table {
     }
 
     @Override
-    public String put(String key, String value) {
+    public Storeable put(String key, Storeable value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -97,7 +104,7 @@ public class FileMap implements Table {
     }
 
     @Override
-    public String remove(String key) {
+    public Storeable remove(String key) {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -128,7 +135,7 @@ public class FileMap implements Table {
         return stableData.size() + added.size() - removed.size();
     }
 
-    public int pending() {
+    public int getPending() {
         return pending;
     }
 
@@ -164,6 +171,15 @@ public class FileMap implements Table {
     }
 
     @Override
+    public int getColumnsCount() {
+        return 0;
+    }
+
+    @Override
+    public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        return null;
+    }
+
     public List<String> list() {
         List<String> keySet = new ArrayList<>(stableData.keySet());
         keySet.removeAll(removed);
@@ -195,20 +211,22 @@ public class FileMap implements Table {
 
     private String readKeyValue(DataInputStream is) throws IOException, ConnectionInterruptException {
         int keyLen = is.readInt();
-        byte[] key = new byte[keyLen];
-        int keyRead = is.read(key, 0, keyLen);
+        byte[] keyBytes = new byte[keyLen];
+        int keyRead = is.read(keyBytes, 0, keyLen);
         if (keyRead != keyLen) {
             throw new ConnectionInterruptException("database: db file is invalid");
         }
         int valLen = is.readInt();
-        byte[] value = new byte[valLen];
-        int valRead = is.read(value, 0, valLen);
+        byte[] valueBytes = new byte[valLen];
+        int valRead = is.read(valueBytes, 0, valLen);
         if (valRead != valLen) {
             throw new ConnectionInterruptException("database: db file is invalid");
         }
 
-        stableData.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
-        return new String(key, "UTF-8");
+        String key = new String(keyBytes, "UTF-8");
+        Storeable value = reader.deserialize(new String(valueBytes, "UTF-8"));
+        stableData.put(key, value);
+        return key;
     }
 
     public void load() throws ConnectionInterruptException {
@@ -249,13 +267,13 @@ public class FileMap implements Table {
         }
     }
 
-    private void writeKeyValue(DataOutputStream os, String keyString, String valueString) throws IOException {
-        byte[] key = keyString.getBytes("UTF-8");
-        byte[] value = valueString.getBytes("UTF-8");
-        os.writeInt(key.length);
-        os.write(key);
-        os.writeInt(value.length);
-        os.write(value);
+    private void writeKeyValue(DataOutputStream os, String key, Storeable value) throws IOException {
+        byte[] keyBytes = key.getBytes("UTF-8");
+        byte[] valueBytes = writer.serialize(value).getBytes("UTF-8");
+        os.writeInt(keyBytes.length);
+        os.write(keyBytes);
+        os.writeInt(valueBytes.length);
+        os.write(valueBytes);
     }
 
     public void unload() throws ConnectionInterruptException {
@@ -305,7 +323,7 @@ public class FileMap implements Table {
                 }
             }
 
-            for (HashMap.Entry<String, String> entry : stableData.entrySet()) {
+            for (HashMap.Entry<String, Storeable> entry : stableData.entrySet()) {
                 p = getHash(entry.getKey());
                 if (status[p.d][p.f] != 0) {
                     writeKeyValue(streams[p.d][p.f], entry.getKey(), entry.getValue());
