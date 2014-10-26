@@ -21,7 +21,7 @@ public class MultiFileHashMap {
                 throw new Exception("directory not exist");
             }
             File[] children = dir.listFiles();
-            for(File child : children) {
+            for (File child : children) {
                 Table t = new Table(child.getName(), path);
                 tableList.put(child.getName(), t.getNumberOfElements());
                 t.exit();
