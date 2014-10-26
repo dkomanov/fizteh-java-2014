@@ -87,7 +87,7 @@ public class TableManager {
         return null;
     }
 
-    protected void dropTable(String name) {
+    protected boolean dropTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Table name is null");
         }
@@ -96,12 +96,13 @@ public class TableManager {
         }
         Table removedTable = tableManagerMap.remove(name);
         if (removedTable == null) {
-            System.out.println(name + " not exists");
+            return false;
         } else {
             if (currentTable == removedTable) {
                 currentTable = null;
             }
             removedTable.drop();
+            return true;
         }
     }
 

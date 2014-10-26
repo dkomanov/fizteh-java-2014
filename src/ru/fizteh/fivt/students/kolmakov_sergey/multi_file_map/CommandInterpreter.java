@@ -131,8 +131,11 @@ public final class CommandInterpreter {
 
     protected static void drop(String[] command) throws WrongNumberOfArgumentsException {
         checkArguments(2, command.length, 2, "drop");
-        manager.dropTable(command[1]);
-        System.out.println("dropped");
+        if (manager.dropTable(command[1])) {
+            System.out.println("dropped");
+        } else {
+            System.out.println(command[1] + " not exists");
+        }
     }
 
     protected static void exit(String[] command) throws DatabaseExitException, WrongNumberOfArgumentsException {

@@ -104,8 +104,7 @@ public class Table {
     }
 
     protected void drop() {
-        File directory = tablePath.toFile();
-        deleteRecursively(directory);
+        deleteRecursively(tablePath.toFile());
         tableMap.clear();
     }
 
