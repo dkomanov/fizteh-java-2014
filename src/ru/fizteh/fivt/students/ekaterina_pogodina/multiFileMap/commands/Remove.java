@@ -24,7 +24,7 @@ public class Remove extends Command {
         table.usingTable.tableDateBase[nDirectory][nFile].remove(args);
         if (table.usingTable.tableDateBase[nDirectory][nFile].rowCount() == 0) {
             String s = null;
-            s = s.concat(String.valueOf(nDirectory));
+            s = String.valueOf(nDirectory);
             s = s.concat(".dir");
             Path pathDir = table.usingTable.path.resolve(s);
             s = String.valueOf(nFile);
