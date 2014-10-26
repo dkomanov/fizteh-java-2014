@@ -127,7 +127,7 @@ public class MultiFileTable implements Closeable {
                 String value = readWord(stream);
                 int hashcode = Math.abs(key.hashCode());
                 if (hashcode % FOLDERS != dirNum || hashcode / FOLDERS % FILES != fileNum) {
-                    throw new IOException("Wrong file format");
+                    throw new IOException("Wrong file format.");
                 }
  
                 content[dirNum * 16 + fileNum].map.put(key, value);

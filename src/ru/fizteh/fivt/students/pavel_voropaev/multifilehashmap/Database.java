@@ -37,7 +37,7 @@ public class Database {
                     workingTable = new MultiFileTable(directory, tableName);
                     this.close();
                 } else {
-                    throw new IOException(directory + "contains improper files");
+                    throw new IOException(directory + "contains improper files.");
                 }
             }
         }
@@ -51,7 +51,7 @@ public class Database {
         String[] reservedCharacters = {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", "%"};
         for (String character : reservedCharacters) {
             if (tableName.contains(character)) {
-                throw new IllegalArgumentException("Table name contains invalid characters");
+                throw new IllegalArgumentException("Table name contains invalid characters.");
             }
         }
 
@@ -60,7 +60,7 @@ public class Database {
         }
         
         if (Files.exists(directory.resolve(tableName))) {
-            throw new IllegalArgumentException("Directory " + tableName + " is already exists.");
+            throw new IllegalArgumentException("Directory " + tableName + " already exists.");
         }
         Files.createDirectory(directory.resolve(tableName));
         database.put(tableName, 0);    

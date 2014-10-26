@@ -66,6 +66,11 @@ public class Main {
                 String line = in.nextLine();
                 exit = executeLine(line, database);
             } catch (NoSuchElementException e) {
+                try {
+                    execCommand("exit", database);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
                 break;
             }
         }
@@ -86,7 +91,7 @@ public class Main {
     
 
     private static boolean execCommand(String p, Database database) 
-            throws IllegalArgumentException, IllegalStateException, IOException {
+            throws IllegalArgumentException, IOException {
         String[] command = p.split("\\s+");
         if (command[0].equals("")) {
             return false;
