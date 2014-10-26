@@ -4,8 +4,8 @@ import java.io.UnsupportedEncodingException;
 
 public class Key {
 
-    private final int KEYNUMBER = 16;
-    private final int HASHNUMBER = 16;
+    private static final int KEYNUMBER = 16;
+    private static final int HASHNUMBER = 16;
     private final int x;
     private final int y;
 

@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public final class Table {
-    private final int KEYNUMBER = 16;
-    private final int INTNUMBER = 4;
+    private static final int KEYNUMBER = 16;
+    private static final int INTNUMBER = 4;
     private String tableName;
     private Path tablePath;
     private Map<Key, DatabaseSerializer> databaseFiles;

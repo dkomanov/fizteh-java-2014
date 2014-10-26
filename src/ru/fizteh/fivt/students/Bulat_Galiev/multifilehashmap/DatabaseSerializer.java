@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class DatabaseSerializer {
-    private final int BYTESNUMBER = 8;
+    private static final int BYTESNUMBER = 8;
     private Path filePathdb;
     private Map<String, String> fileMap;
     private RandomAccessFile inputStream;
