@@ -16,7 +16,7 @@ public class MultiFileHashMap {
 
     }
 
-    private static final Integer defaultValue = 16;
+    private static Integer defaultValue = 16;
     private static File table;
     private static String nameOfDir = "";
     private static ArrayOfHashMaps[][] arrayOfHashMaps;
