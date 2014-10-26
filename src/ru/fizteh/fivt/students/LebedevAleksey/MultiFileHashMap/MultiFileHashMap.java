@@ -10,9 +10,13 @@ public class MultiFileHashMap {
 
 
     public static void main(String[] args) {
+        runInterpreter(args, getCommands());
+    }
+
+    public static void runInterpreter(String[] args, List<Command> commands) {
         try {
             DatabaseState state = new DatabaseState();
-            Interpreter interpreter = new Interpreter(getCommands(), state);
+            Interpreter interpreter = new Interpreter(commands, state);
             interpreter.run(args);
             if (args.length != 0) {
                 if (!state.tryToSave()) {
@@ -57,7 +61,7 @@ public class MultiFileHashMap {
                     }
                 },
 
-                new Command("create", 0) {
+                new Command("create", 1) {
                     @Override
                     protected boolean action(InterpreterState state, String[] arguments) throws ArgumentException {
                         String name = arguments[0];

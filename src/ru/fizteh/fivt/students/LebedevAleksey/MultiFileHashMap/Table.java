@@ -64,8 +64,9 @@ public class Table {
                     part.drop();
                 }
             }
-            if(!directory.delete())
+            if (!directory.delete()) {
                 throw new LoadOrSaveException("Directory can't deleted. Warning: data lost.");
+            }
         } catch (SecurityException ex) {
             throw new LoadOrSaveException("Access denied in deleting table.", ex);
         } catch (UnsupportedOperationException ex) {

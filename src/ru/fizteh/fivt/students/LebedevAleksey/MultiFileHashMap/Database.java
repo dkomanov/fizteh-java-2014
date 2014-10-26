@@ -68,11 +68,14 @@ public class Database {
         File[] subfolders = root.listFiles();
         for (File folder : subfolders) {
             if (!folder.isDirectory()) {
-                throw new DatabaseFileStructureException("There is files in root folder. File'" + folder.getName()
-                        + "'");
+                return whatToDoWithFiles(folder);
             }
         }
         return subfolders;
+    }
+
+    private File[] whatToDoWithFiles(File folder) throws DatabaseFileStructureException {
+        throw new DatabaseFileStructureException("There is files in root folder. File'" + folder.getName() + "'");
     }
 
     public List<Pair<String, Integer>> listTables() throws LoadOrSaveException, DatabaseFileStructureException {
@@ -106,10 +109,10 @@ public class Database {
         setCurrentTable(name);
     }
 
-    public Table createTable(String name)
-            throws TableAlreadyExistsException, LoadOrSaveException, DatabaseFileStructureException {
+    public Table createTable(String name) throws TableAlreadyExistsException, LoadOrSaveException,
+            DatabaseFileStructureException {
         try {
-            if (containsTable(name)) {
+            if (!containsTable(name)) {
                 Table table = new Table(name, this);
                 Path rootDirectoryPath = getRootDirectoryPath();
                 Path path = rootDirectoryPath.resolve(name);

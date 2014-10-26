@@ -35,7 +35,7 @@ public class Interpreter extends CommandParser {
                             break;
                         }
                     }
-                    if (foundCommand) {
+                    if (!foundCommand) {
                         throw new ParserException("This command is unknown: " + command.getCommandName());
                     }
                 } catch (ArgumentException ex) {

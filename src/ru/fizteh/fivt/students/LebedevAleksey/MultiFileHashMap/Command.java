@@ -24,8 +24,8 @@ public abstract class Command {
                     + ", but expected " + name);
         }
         if (argumentsCount >= 0 && command.getArguments().length != argumentsCount) {
-            throw new ArgumentException("Invalid number of arguments: " + argumentsCount +
-                    " expected, " + command.getArguments().length + " found");
+            throw new ArgumentException("Invalid number of arguments: " + argumentsCount
+                    + " expected, " + command.getArguments().length + " found");
         } else {
             return action(interpreterState, command.getArguments());
         }
