@@ -126,7 +126,7 @@ public class MultiFileHashMap {
                             System.out.println();
                             return true;
                         } catch (TableNotFoundException e) {
-                            return false;
+                            return true;
                         } catch (DatabaseFileStructureException | LoadOrSaveException e) {
                             System.err.println(e.getMessage());
                             return false;
@@ -148,7 +148,7 @@ public class MultiFileHashMap {
                             }
                             return true;
                         } catch (TableNotFoundException e) {
-                            return false;
+                            return true;
                         } catch (DatabaseFileStructureException | LoadOrSaveException e) {
                             System.err.println(e.getMessage());
                             return false;
@@ -173,7 +173,7 @@ public class MultiFileHashMap {
                             System.err.println(e.getMessage());
                             return false;
                         } catch (TableNotFoundException e) {
-                            return false;
+                            return true;
                         }
                     }
                 },
@@ -189,7 +189,7 @@ public class MultiFileHashMap {
                             }
                             return true;
                         } catch (TableNotFoundException e) {
-                            return false;
+                            return true;
                         } catch (DatabaseFileStructureException | LoadOrSaveException e) {
                             System.err.println(e.getMessage());
                             return false;

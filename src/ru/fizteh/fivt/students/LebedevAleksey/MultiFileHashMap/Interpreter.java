@@ -40,6 +40,7 @@ public class Interpreter extends CommandParser {
                     }
                 } catch (ArgumentException ex) {
                     System.err.println(ex.getMessage());
+                    return false;
                 }
             }
         }
