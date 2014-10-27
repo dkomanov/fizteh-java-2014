@@ -14,16 +14,13 @@ public class RemoveCommand implements Command {
     @Override
 
     public void execute(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("wrong amount of arguments");
+        String result = db.remove(args[1]);
+        if (result == null) {
+            System.out.println("not found");
         } else {
-            String result = db.remove(args[1]);
-            if (result == null) {
-                System.out.println("not found");
-            } else {
-                System.out.println("removed");
-            }
+            System.out.println("removed");
         }
+
     }
 
     @Override
@@ -33,6 +30,6 @@ public class RemoveCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 2;
+        return 1;
     }
 }

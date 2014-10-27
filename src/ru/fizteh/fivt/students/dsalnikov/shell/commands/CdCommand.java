@@ -24,9 +24,6 @@ public class CdCommand implements Command {
     }
 
     public void execute(String[] s) throws IOException {
-        if (s.length != 2) {
-            throw new IllegalArgumentException("Incorrect amount of arguments");
-        } else {
             ShellState sh = link.getState();
             String currstate = sh.getState();
             String cdstate = s[1];
@@ -40,6 +37,5 @@ public class CdCommand implements Command {
             } else {
                 throw new NoSuchFileException("'" + cdstate + "' : No such file or directory");
             }
-        }
     }
 }

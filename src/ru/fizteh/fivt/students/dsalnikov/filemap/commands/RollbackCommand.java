@@ -13,11 +13,7 @@ public class RollbackCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("wrong amout of arguments");
-        } else {
-            db.rollback();
-        }
+        db.rollback();
     }
 
     @Override
@@ -27,6 +23,6 @@ public class RollbackCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 1;
+        return 0;
     }
 }

@@ -17,9 +17,7 @@ public class CatCommand implements Command {
 
     @Override
     public void execute(String[] args) throws IOException {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("Wrong amount of arguments");
-        } else if (StringUtils.processFile(link.getState().getState(), args[1]).isDirectory()) {
+         if (StringUtils.processFile(link.getState().getState(), args[1]).isDirectory()) {
             throw new IllegalArgumentException("can't cat directory");
         } else {
             File path = StringUtils.processFile(link.getState().getState(), args[1]);

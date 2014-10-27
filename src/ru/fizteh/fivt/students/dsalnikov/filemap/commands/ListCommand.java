@@ -14,10 +14,8 @@ public class ListCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("wrong amount of arguments");
-        } else {
-            db.list();
+        for (String s : db.list()) {
+            System.out.println(String.format("%s\n", s));
         }
     }
 
@@ -29,6 +27,6 @@ public class ListCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 1;
+        return 0;
     }
 }

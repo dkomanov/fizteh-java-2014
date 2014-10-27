@@ -14,11 +14,7 @@ public class CommitCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("wrong amount of arguments");
-        } else {
-            db.commit();
-        }
+        db.commit();
     }
 
     @Override
@@ -28,6 +24,6 @@ public class CommitCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 1;
+        return 0;
     }
 }

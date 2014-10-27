@@ -13,15 +13,11 @@ public class GetCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("wrong amount of arguments");
+        String result = db.get(args[1]);
+        if (result == null) {
+            System.out.println("not found");
         } else {
-            String result = db.get(args[1]);
-            if (result == null) {
-                System.out.println("not found");
-            } else {
-                System.out.println(String.format("found\n'%s'", result));
-            }
+            System.out.println(String.format("found\n'%s'", result));
         }
     }
 
@@ -32,6 +28,6 @@ public class GetCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 2;
+        return 1;
     }
 }

@@ -7,17 +7,18 @@ import ru.fizteh.fivt.students.dsalnikov.utils.FilePathsProvider;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
+import java.util.*;
 
 public class MultiFileTable implements Table {
 
-    private HashMap<String, SingleFileTable> db;
+    private Map<String, SingleFileTable> db;
     private File dbpath;
 
     public MultiFileTable(String path) {
         dbpath = new File(path);
         if (!dbpath.isDirectory() && dbpath.exists()) {
             System.err.println("proval");
+            throw new IllegalArgumentException("error while creating multifiletable");
         } else {
             db = new HashMap<>();
             if (dbpath.list() != null) {
@@ -57,10 +58,12 @@ public class MultiFileTable implements Table {
         }
     }
 
-    public void list() {
+    public List<String> list() {
+        List<String> rv = new ArrayList<>();
         for (SingleFileTable sft : db.values()) {
-            sft.list();
+            rv.addAll(sft.list());
         }
+        return rv;
     }
 
     public String remove(String key) {
@@ -89,8 +92,6 @@ public class MultiFileTable implements Table {
         try {
             for (File dirs : dbpath.listFiles()) {
                 for (File dbfile : dirs.listFiles()) {
-                    if (dbfile.length() == 0) {
-                    }
                     if (dirs.listFiles().length == 0) {
                         Files.delete(dirs.toPath());
                     }
@@ -117,7 +118,7 @@ public class MultiFileTable implements Table {
         return 0;
     }
 
-    public int getAmountOfCnages() {
+    public int getAmountOfChanges() {
         int changesCounter = 0;
 
         for (SingleFileTable f : db.values()) {

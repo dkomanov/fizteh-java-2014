@@ -5,15 +5,13 @@ import ru.fizteh.fivt.students.dsalnikov.utils.FileMapUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 
 public class SingleFileTable implements Table {
 
     private final File dbfile;
-    private HashSet<String> deleted;
+    private Set<String> deleted;
     private Map<String, String> changed;
     private Map<String, String> storage;
     private int changesCount;
@@ -28,12 +26,6 @@ public class SingleFileTable implements Table {
             System.err.println("file processing failed. Paths might be incorrect");
             System.exit(1);
         }
-    }
-
-    //Warning:only can be used with for empth files
-    public SingleFileTable(String filepath) {
-        dbfile = new File(filepath);
-        initialize();
     }
 
     private void initialize() {
@@ -77,10 +69,10 @@ public class SingleFileTable implements Table {
     }
 
     @Override
-    public void list() {
-        for (String s : storage.keySet()) {
-            System.out.println(s);
-        }
+    public List<String> list() {
+        List<String> rv = new ArrayList<>();
+        rv.addAll(storage.keySet());
+        return rv;
     }
 
     @Override

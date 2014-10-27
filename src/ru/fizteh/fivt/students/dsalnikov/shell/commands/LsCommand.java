@@ -24,15 +24,11 @@ public class LsCommand implements Command {
     }
 
     public void execute(String[] s) throws IOException {
-        if (s.length != 1) {
-            throw new IllegalArgumentException("Incorrect usage of Command ls: wrong amount of arguments");
-        } else {
-            ShellState sh = link.getState();
-            File dir = new File(sh.getState());
-            File[] arr = dir.listFiles();
-            for (File f : arr) {
-                System.out.println(f.getName());
-            }
+        ShellState sh = link.getState();
+        File dir = new File(sh.getState());
+        File[] arr = dir.listFiles();
+        for (File f : arr) {
+            System.out.println(f.getName());
         }
     }
 }

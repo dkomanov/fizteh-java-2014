@@ -15,7 +15,7 @@ public class DBTableProvider implements TableProvider {
         dbdir = dir;
         File f = new File(dir);
         if (!f.exists() || !f.isDirectory()) {
-            throw new IOException("NO!");
+            throw new IOException("Incorrect paths provided!!!!!1111111");
         }
     }
 
@@ -28,9 +28,7 @@ public class DBTableProvider implements TableProvider {
     @Override
     public Table createTable(String name) {
         File dir = new File(dbdir, name);
-        if (dir.exists()) {
-            System.out.println("already exists");
-        } else {
+        if (!dir.exists()) {
             dir.mkdir();
         }
         return new MultiFileTable(dir.toString());

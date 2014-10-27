@@ -10,6 +10,7 @@ import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -27,7 +28,7 @@ public class Main {
         RollbackCommand rolb = new RollbackCommand(t);
         SizeCommand siz = new SizeCommand(t);
         Shell sh = new Shell();
-        ArrayList<Command> commands = new ArrayList<>();
+        List<Command> commands = new ArrayList<>();
         commands.add(pc);
         commands.add(lc);
         commands.add(rc);
@@ -43,13 +44,13 @@ public class Main {
         sh.setCommands(commands);
         if (args.length == 0) {
             try {
-                sh.batchMode();
+                sh.interactiveMode();
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
         } else {
             try {
-                sh.commandMode(args);
+                sh.batchMode(args);
             } catch (Exception e) {
                 System.err.println(e.getMessage());
                 System.exit(1);

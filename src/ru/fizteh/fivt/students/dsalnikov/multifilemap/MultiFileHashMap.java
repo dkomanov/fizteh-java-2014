@@ -6,12 +6,13 @@ import ru.fizteh.fivt.students.dsalnikov.utils.NoTableException;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MultiFileHashMap implements MultiTable {
-    private Map<String, Integer> tableinfo;
-    private MultiFileTable currtable;
-    private File dbfolder;
+    private Map<String, Integer> tableInfo;
+    private MultiFileTable currTable;
+    private File dbFolder;
     private TableProvider manager;
 
 
@@ -19,8 +20,8 @@ public class MultiFileHashMap implements MultiTable {
     public MultiFileHashMap() {
         try {
             String path = System.getProperty("fizteh.table.dir");
-            dbfolder = new File(path);
-            tableinfo = new HashMap<>();
+            dbFolder = new File(path);
+            tableInfo = new HashMap<>();
             manager = new DBTableProvider(path);
             getSizeOfTable();
         } catch (Throwable thr) {
@@ -32,8 +33,8 @@ public class MultiFileHashMap implements MultiTable {
 
     @Override
     public void create(String name) {
-        if (!tableinfo.containsKey(name)) {
-            tableinfo.put(name, 0);
+        if (!tableInfo.containsKey(name)) {
+            tableInfo.put(name, 0);
         }
         manager.createTable(name);
     }
@@ -41,97 +42,105 @@ public class MultiFileHashMap implements MultiTable {
 
     @Override
     public void drop(String name) {
-        //erase directory from disk, remove tableinfo entry
-        if (currtable != null) {
-            if (currtable.getName().equals(name)) {
-                currtable = null;
+        //erase directory from disk, remove tableInfo entry
+        if (currTable != null) {
+            if (currTable.getName().equals(name)) {
+                currTable = null;
             }
         }
         manager.removeTable(name);
 
-        tableinfo.remove(name);
+        tableInfo.remove(name);
     }
 
     @Override
     public void use(String name) {
-        if (currtable != null) {
-            int changes = currtable.getAmountOfCnages();
-            if (changes > 0) {
-                System.out.println("Error: there are " + changes + " unsaved changes");
-            }
-        }
-        if (!tableinfo.containsKey(name)) {
-            System.out.println(String.format("%s not exists", name));
-        } else {
-            currtable = (MultiFileTable) manager.getTable(name);
-            tableinfo.put(name, currtable.size());
-        }
-
+        currTable = (MultiFileTable) manager.getTable(name);
+        tableInfo.put(name, currTable.size());
     }
 
     @Override
     public void showTables() {
         System.out.println(String.format("table_name row_count"));
-        for (String s : tableinfo.keySet()) {
-            System.out.println(String.format("%s\t\t%s", s, tableinfo.get(s)));
+        for (String s : tableInfo.keySet()) {
+            System.out.println(String.format("%s\t\t%s", s, tableInfo.get(s)));
+        }
+    }
+
+    @Override
+    public String getDbPath() {
+        return dbFolder.toString();
+    }
+
+    @Override
+    public File getDbFile() {
+        return dbFolder;
+    }
+
+    @Override
+    public int getAmountOfChanges() {
+        if (currTable == null) {
+            return 0;
+        } else {
+            return currTable.getAmountOfChanges();
         }
     }
 
     @Override
     public String getName() {
-        return currtable.getName();
+        return currTable.getName();
     }
 
     @Override
     public String get(String key) {
         checkTableUsed();
-        String result = currtable.get(key);
-        tableinfo.put(currtable.getName(), currtable.size());
+        String result = currTable.get(key);
+        tableInfo.put(currTable.getName(), currTable.size());
         return result;
     }
 
     @Override
     public String put(String key, String value) {
         checkTableUsed();
-        String result = currtable.put(key, value);
-        tableinfo.put(currtable.getName(), currtable.size());
+        String result = currTable.put(key, value);
+        tableInfo.put(currTable.getName(), currTable.size());
         return result;
     }
 
 
     @Override
-    public void list() {
+    public List<String> list() {
         checkTableUsed();
-        currtable.list();
+        return currTable.list();
     }
 
     @Override
     public String remove(String key) {
         checkTableUsed();
-        String result = currtable.remove(key);
-        tableinfo.put(currtable.getName(), currtable.size());
+        String result = currTable.remove(key);
+        tableInfo.put(currTable.getName(), currTable.size());
         return result;
     }
 
     @Override
     public int size() {
         checkTableUsed();
-        return currtable.size();
+        return currTable.size();
     }
 
     @Override
     public int commit() {
         checkTableUsed();
-        int result = currtable.commit();
-        tableinfo.put(currtable.getName(), currtable.size());
+        int result = currTable.commit();
+        tableInfo.put(currTable.getName(), currTable.size());
         return result;
     }
 
     @Override
     public int rollback() {
         checkTableUsed();
-        int result = currtable.rollback();
-        tableinfo.put(currtable.getName(), currtable.size());
+        int result = currTable.rollback();
+        tableInfo.put(currTable.getName(), currTable.size());
         return result;
     }
 
@@ -143,7 +152,7 @@ public class MultiFileHashMap implements MultiTable {
 
     private void getSizeOfTable() {
         int counter;
-        for (File table : dbfolder.listFiles()) {
+        for (File table : dbFolder.listFiles()) {
             counter = 0;
             try {
                 for (File subfolders : table.listFiles()) {
@@ -154,12 +163,12 @@ public class MultiFileHashMap implements MultiTable {
             } catch (NullPointerException exc) {
                 exc.getMessage();
             }
-            tableinfo.put(table.getName(), counter);
+            tableInfo.put(table.getName(), counter);
         }
     }
 
     private void checkTableUsed() {
-        if (currtable == null) {
+        if (currTable == null) {
             throw new NoTableException();
         }
     }

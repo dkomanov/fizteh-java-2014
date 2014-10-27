@@ -51,18 +51,20 @@ public class Shell<State extends ShellState> {
         for (String command : commands) {
             String[] cmdArgs = command.trim().split("\\s+");
             if (cmdArgs.length == 0 || cmdArgs[0].equals("")) {
-                continue;
             } else {
                 Command c = commandMap.get(cmdArgs[0]);
                 if (c == null) {
                     throw new IllegalArgumentException("no such Command declared: " + cmdArgs[0]);
+                }
+                if (c.getArgsCount() != cmdArgs.length - 1) {
+                    throw new IllegalArgumentException(String.format("%s command: wrong amount of arguments", c.getName()));
                 }
                 c.execute(cmdArgs);
             }
         }
     }
 
-    public void batchMode() throws Exception {
+    public void interactiveMode() throws Exception {
         boolean flag = true;
         Scanner sc = new Scanner(System.in);
         while (flag) {
@@ -92,7 +94,7 @@ public class Shell<State extends ShellState> {
         }
     }
 
-    public void commandMode(String[] args) throws Exception {
+    public void batchMode(String[] args) throws Exception {
         try {
             this.execute(args);
         } catch (FileAlreadyExistsException fae) {

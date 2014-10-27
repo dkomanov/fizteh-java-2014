@@ -4,6 +4,9 @@ package ru.fizteh.fivt.students.dsalnikov.multifilemap.commands;
 import ru.fizteh.fivt.students.dsalnikov.multifilemap.MultiTable;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
+import java.io.File;
+
+
 public class CreateCommand implements Command {
 
     MultiTable db;
@@ -14,10 +17,12 @@ public class CreateCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("wrong amount of arguments");
+        File tableDir = new File(db.getDbPath(), args[1]);
+        if (tableDir.exists()) {
+            System.out.println(args[1] + " exists");
         } else {
             db.create(args[1]);
+            System.out.println("created");
         }
     }
 
@@ -28,6 +33,6 @@ public class CreateCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 2;
+        return 1;
     }
 }
