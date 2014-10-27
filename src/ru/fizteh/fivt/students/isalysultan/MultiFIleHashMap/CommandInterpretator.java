@@ -61,5 +61,4 @@ public class CommandInterpretator {
             System.out.println("Command is not recognized.");
         }
     }
-
 }
