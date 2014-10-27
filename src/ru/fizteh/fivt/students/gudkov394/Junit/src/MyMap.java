@@ -7,7 +7,7 @@ import java.io.File;
 
 public class MyMap {
     public CurrentTable ct = new CurrentTable();
-    tableProviderClass tableProviderClass = new tableProviderClass();
+    TableProviderClass tableProviderClass = new TableProviderClass();
 
     public Boolean checkName(final String name) {
         String[] s = {"put", "get", "remove", "list", "exit", "create", "use", "drop", "#*#",

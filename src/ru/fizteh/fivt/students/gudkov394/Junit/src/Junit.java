@@ -14,7 +14,7 @@ public class Junit implements TableProviderFactory {
         }
         String[] argsForCreate = new String[0];
         System.setProperty("db.file", dir);
-        tableProviderClass tableProviderClass = new tableProviderClass();
+        TableProviderClass tableProviderClass = new TableProviderClass();
         return tableProviderClass;
     }
 }

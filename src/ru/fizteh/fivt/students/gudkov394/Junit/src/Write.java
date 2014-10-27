@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.gudkov394.Junit.src;
 
+import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
+import com.sun.xml.internal.ws.api.message.Message;
 import ru.fizteh.fivt.students.gudkov394.map.*;
 import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
@@ -8,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.IllegalFormatConversionException;
 import java.util.Set;
 
 /**
@@ -20,8 +23,8 @@ public class Write {
         Set<String> set = currentTable.keySet();
         for (String s : set) {
             int hashcode = s.hashCode();
-            int ndirectory = hashcode % 16;
-            int nfile = hashcode / 16 % 16;
+            int ndirectory = (hashcode % 16  + 16) % 16;
+            int nfile = (hashcode / 16  % 16 + 16) % 16;
 
             FileOutputStream output = null;
             try {
@@ -39,7 +42,7 @@ public class Write {
                 if (!newFile.exists()) {
                     newFile.createNewFile();
                 }
-                output = new FileOutputStream(newFile);
+                output = new FileOutputStream(newFile, true);
             } catch (IOException e) {
                 System.err.println("Ouput file didn't find");
                 System.exit(2);
@@ -47,6 +50,21 @@ public class Write {
             writeWord(s, output);
             String tmp = currentTable.get(s).toString();
             writeWord(tmp, output);
+            try {
+                output.close();
+            } catch (IOException e) {
+                throw new ExceptionHasMessage("I can't close File") {
+                    @Override
+                    public Message getFaultMessage() {
+                        return null;
+                    }
+
+                    @Override
+                    protected String getDefaultResourceBundleName() {
+                        return null;
+                    }
+                };
+            }
         }
     }
 
