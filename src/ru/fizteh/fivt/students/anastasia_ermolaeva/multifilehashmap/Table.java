@@ -42,7 +42,7 @@ public class Table implements Map<String, String>, AutoCloseable {
             read();
         } catch (IOException e) {
             System.err.println("Can't create a database file");
-            throw new ExitException(-1);
+            throw new ExitException(1);
         }
     }
     private  String readUtil(final RandomAccessFile dbFile) throws IOException {
@@ -63,7 +63,7 @@ public class Table implements Map<String, String>, AutoCloseable {
             if (!t.isDirectory()) {
                 System.err.println("Table subdirectories "
                         + "are not actually directories");
-                throw new ExitException(-1);
+                throw new ExitException(1);
             }
         }
         for (File directory: tableDirectories) {
@@ -103,13 +103,13 @@ public class Table implements Map<String, String>, AutoCloseable {
                         System.err.println("Subdirectories' files "
                                 + "have wrong names, "
                                 + "expected(0.dat-15.dat)");
-                        throw new ExitException(-1);
+                        throw new ExitException(1);
                     }
                 }
             } catch (NumberFormatException t) {
                 System.err.println("Subdirectories' names are wrong, "
                         + "expected(0.dir - 15.dir)");
-                throw new ExitException(-1);
+                throw new ExitException(1);
             }
         }
 
@@ -174,7 +174,7 @@ public class Table implements Map<String, String>, AutoCloseable {
                             dbFile.close();
                         } catch (Exception ex) {
                             System.err.println("Cannot write to table");
-                            throw new ExitException(-1);
+                            throw new ExitException(1);
                         }
                     } else {
                         //Deleting empty files.
