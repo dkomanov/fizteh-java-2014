@@ -57,7 +57,7 @@ public class Interpreter {
                 }
             }
         } catch (NoSuchElementException e) {
-            throw new ExitException(-1);
+            throw new ExitException(1);
         }
     }
 
