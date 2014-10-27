@@ -55,7 +55,7 @@ public class DataBase implements Map<String, String>, AutoCloseable {
         } catch (Exception e) {
             filemapSmthWrong("list", e.getMessage());
         }
-        return new String[0]; //warning
+        return new String[0]; // Unreachable code, add return to ignore Eclipse warning.
     }
 
     public String getPath() throws Exception {
