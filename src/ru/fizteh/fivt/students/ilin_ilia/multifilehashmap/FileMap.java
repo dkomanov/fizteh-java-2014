@@ -5,12 +5,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 public class FileMap {
     
@@ -18,7 +18,7 @@ public class FileMap {
     private String name;
     
     FileMap(final String path) throws IOException {
-        map = new TreeMap<>();
+        map = new HashMap<>();
         File fil = new File(path + ".dat");
         name = path + ".dat";
         if (!fil.exists()) {
@@ -131,6 +131,7 @@ public class FileMap {
         RandomAccessFile file = new RandomAccessFile(name, "rw");
         try {
             if (map.size() == 0) {
+                file.close();
                 new File(name).delete();
                 return;
             }
@@ -153,6 +154,7 @@ public class FileMap {
                 file.seek(pos);
                 file.writeInt(offIter.next());
             }
+            file.close();
         } catch (IOException e) {
             System.err.println("Can't write into a db file");
             System.exit(-1);
