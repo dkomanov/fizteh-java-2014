@@ -67,12 +67,13 @@ public class FileTable {
     public FileTable(Path filesPath, Table table) throws IOException {
         filePath = filesPath;
         RandomAccessFile file = new RandomAccessFile(filePath.toString(), "r");
+        openRead = true;
         if (file.length() > 0) {
             readFile(file, table);
             file.close();
-            openRead = true;
             return;
         }
+        file.close();
     }
 
     public void readFile(RandomAccessFile file, Table table) throws IOException {
@@ -101,7 +102,6 @@ public class FileTable {
             buff.reset();
         }
         Iterator<String> itKey = key.iterator();
-        Iterator<Integer> itOffset = offset.iterator();
         Iterator<Integer> itForEndOffset = offset.iterator();
         int size = (int) file.length();
         count = itForEndOffset.next();
@@ -129,7 +129,6 @@ public class FileTable {
                     ++count;
                 }
             }
-            String a = buff.toString("UTF-8");
             storage.put(itKey.next(), buff.toString("UTF-8"));
             buff.reset();
             count = afterCount;
@@ -167,7 +166,7 @@ public class FileTable {
     }
 
     public boolean empty() {
-        if (filePath == null) {
+        if (filePath == null || storage.isEmpty()) {
             return true;
         }
         return false;
