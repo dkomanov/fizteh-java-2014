@@ -11,12 +11,11 @@ public class Exit implements DBCommand {
     public boolean execute() {
         if (DbMain.fileStoredStringMap != null) {
             try {
-                if (DbMain.fileStoredStringMap != null
-                        && DbMain.currentTable != null) {
+                if (DbMain.fileStoredStringMap != null) {
                     DbMain.fileStoredStringMap.close();
                 }
             } catch (Exception e) {
-                System.err.println("Database Error");
+                System.err.println("Database Error - " + e.toString());
                 return false;
             }
         }

@@ -3,8 +3,8 @@ package ru.fizteh.fivt.students.maxim_rep.multifilehashmap.commands;
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.*;
 
 public class Put implements DBCommand {
-    String keyName;
-    String dataText;
+    private String keyName;
+    private String dataText;
 
     public Put(String keyName, String dataText) {
         this.keyName = keyName;

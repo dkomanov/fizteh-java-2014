@@ -7,7 +7,7 @@ import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.TableDataMap;
 
 public class Drop implements DBCommand {
 
-    String tableName;
+    private String tableName;
 
     public Drop(String tableName) {
         this.tableName = tableName;
@@ -21,11 +21,12 @@ public class Drop implements DBCommand {
         try {
             TableDataMap.removeFolder(new File(DbMain.getTablePath(tableName)));
         } catch (Exception e) {
-            System.err.println("Database error: filesystem damaged");
+            System.err.println("Database error: Filesystem damaged - "
+                    + e.toString());
             return false;
         }
 
-        if (tableName.equals(DbMain.currentTable)) {
+        if (tableName.equals(DbMain.getCurrentTableName())) {
             DbMain.fileStoredStringMap.clear();
         }
         return true;
@@ -33,6 +34,7 @@ public class Drop implements DBCommand {
 
     @Override
     public boolean execute() {
+
         if (!DbMain.databaseExists(DbMain.getTablePath(tableName))) {
             System.out.println(tableName + " not exists");
             return false;
@@ -43,8 +45,7 @@ public class Drop implements DBCommand {
                     + tableName);
             return false;
         } else {
-            if (tableName.equals(DbMain.currentTable)) {
-                DbMain.currentTable = null;
+            if (tableName.equals(DbMain.getCurrentTableName())) {
                 DbMain.fileStoredStringMap = null;
             }
             System.out.println("dropped");

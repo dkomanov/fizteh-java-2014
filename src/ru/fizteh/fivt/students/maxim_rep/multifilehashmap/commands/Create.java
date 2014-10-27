@@ -6,26 +6,30 @@ import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
 
 public class Create implements DBCommand {
 
-    String tableName;
+    private String tableName;
 
     public Create(String tableName) {
         this.tableName = tableName;
     }
 
     private static boolean createTable(String tableName) throws Exception {
-        File f = null;
-        f = new File(DbMain.getTablePath(tableName));
+        File f = new File(DbMain.getTablePath(tableName));
         if (!f.exists()) {
             f.mkdir();
             return true;
         } else if (f.exists() && f.isDirectory()) {
             return false;
         }
-        throw new Exception();
+        throw new Exception("Database Error: Failed to create table folder!");
     }
 
     @Override
     public boolean execute() {
+        if (!DbMain.databaseExists(DbMain.databaseFilePath)) {
+            System.out
+                    .println("Database error: Database folder doesn't exists!");
+            return false;
+        }
 
         try {
             if (createTable(tableName)) {

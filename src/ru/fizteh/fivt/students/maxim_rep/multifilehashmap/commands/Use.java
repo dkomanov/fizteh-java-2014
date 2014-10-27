@@ -7,7 +7,7 @@ import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.TableDataMap;
 
 public class Use implements DBCommand {
 
-    String tableName;
+    private String tableName;
 
     public Use(String tableName) {
         this.tableName = tableName;
@@ -15,6 +15,7 @@ public class Use implements DBCommand {
 
     @Override
     public boolean execute() {
+
         if (!DbMain.databaseExists(DbMain.getTablePath(tableName))) {
             System.out.println(tableName + " not exists");
             return false;
@@ -23,7 +24,6 @@ public class Use implements DBCommand {
             if (DbMain.fileStoredStringMap != null) {
                 try {
                     DbMain.fileStoredStringMap.close();
-                    DbMain.currentTable = null;
                 } catch (Exception e) {
                     System.err.println("Use Database Error: " + e.toString());
                     return false;
@@ -31,8 +31,7 @@ public class Use implements DBCommand {
             }
             try {
                 DbMain.fileStoredStringMap = new TableDataMap(
-                        DbMain.databasefilePath, tableName);
-                DbMain.currentTable = tableName;
+                        DbMain.databaseFilePath, tableName);
             } catch (IOException e) {
                 System.err.println("Use Database Error: " + e.toString());
                 return false;

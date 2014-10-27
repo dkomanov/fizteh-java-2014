@@ -4,7 +4,7 @@ import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
 
 public class Remove implements DBCommand {
 
-    String keyName;
+    private String keyName;
 
     public Remove(String keyName) {
         this.keyName = keyName;

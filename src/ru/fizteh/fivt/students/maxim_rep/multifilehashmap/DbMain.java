@@ -8,8 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class DbMain {
-    public static String databasefilePath;
-    public static String currentTable;
+    public static String databaseFilePath;
     public static TableDataMap fileStoredStringMap;
 
     public static boolean databaseExists(String filePath) {
@@ -21,19 +20,27 @@ public class DbMain {
         return true;
     }
 
+    public static String getCurrentTableName() {
+        if (fileStoredStringMap != null) {
+            return fileStoredStringMap.getTableName();
+        } else {
+            return null;
+        }
+    }
+
     public static String getTablePath(String tableName) {
-        return databasefilePath + System.getProperty("file.separator")
+        return databaseFilePath + System.getProperty("file.separator")
                 + tableName;
     }
 
     public static void main(String[] args) throws IOException {
-        databasefilePath = System.getProperty("fizteh.db.dir");
-        if (databasefilePath == null) {
+        databaseFilePath = System.getProperty("fizteh.db.dir");
+        if (databaseFilePath == null) {
             System.out.println("Use -Dfizteh.db.dir=\"dir\" in JVM parameter");
             System.exit(-1);
         }
 
-        if (!databaseExists(databasefilePath)) {
+        if (!databaseExists(databaseFilePath)) {
             System.out
                     .println("Database error: Database folder doesn't exists!");
             System.exit(-1);
@@ -78,7 +85,7 @@ public class DbMain {
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     System.in));
             String line = in.readLine();
-            if (line == null || line.equals(null)) {
+            if (line == null) {
                 System.err.println("Database Error: Wrong input");
                 return 0;
             }

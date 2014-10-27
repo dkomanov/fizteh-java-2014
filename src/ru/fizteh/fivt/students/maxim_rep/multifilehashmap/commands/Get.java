@@ -4,7 +4,7 @@ import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
 
 public class Get implements DBCommand {
 
-    String keyName;
+    private String keyName;
 
     public Get(String keyName) {
         this.keyName = keyName;
@@ -12,6 +12,7 @@ public class Get implements DBCommand {
 
     @Override
     public boolean execute() {
+
         if (DbMain.fileStoredStringMap == null) {
             System.out.println("no table");
             return false;

@@ -23,7 +23,8 @@ public class List implements DBCommand {
         }
 
         if (!list.toString().equals("")
-                && list.charAt(list.length() - 1) == ' ' && list.charAt(list.length() - 2) == ',') {
+                && list.charAt(list.length() - 1) == ' '
+                && list.charAt(list.length() - 2) == ',') {
             list.deleteCharAt(list.length() - 1);
             list.deleteCharAt(list.length() - 1);
         }
