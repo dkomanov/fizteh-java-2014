@@ -5,8 +5,8 @@ import java.util.*;
 
 public class MultiFileHashMap {
 
-    public static String path; // Way to main directory
-    public static Map<String, Integer> tableList; // Map with names and numbers of elementls of tables
+    public static String path; // Way to main directory.
+    public static Map<String, Integer> tableList; // Map with names and numbers of elementls of tables.
 
 
     public static void main(final String[] args) {
