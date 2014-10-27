@@ -8,12 +8,21 @@ public class CommandInterpretator {
             throws IOException {
         switch (command[0]) {
         case "create":
+            if (command.length < 2 || command.length > 2) {
+                System.err.println("Wrong arguments");
+            }
             Command.create(direct, command[1]);
             break;
         case "use":
+            if (command.length < 2 || command.length > 2) {
+                System.err.println("Wrong arguments");
+            }
             Command.use(direct, command[1], true);
             break;
         case "drop":
+            if (command.length < 2 || command.length > 2) {
+                System.err.println("Wrong arguments");
+            }
             Command.drop(direct, command[1]);
             break;
         case "show":
@@ -25,12 +34,21 @@ public class CommandInterpretator {
                 break;
             }
         case "put":
+            if (command.length < 3 || command.length > 3) {
+                System.err.println("Wrong arguments");
+            }
             direct.executePut(command[1], command[2]);
             break;
         case "get":
+            if (command.length < 2 || command.length > 2) {
+                System.err.println("Wrong arguments");
+            }
             direct.executeGet(command[1]);
             break;
         case "remove":
+            if (command.length < 2 || command.length > 2) {
+                System.err.println("Wrong arguments");
+            }
             direct.executeRemove(command[1]);
             break;
         case "list":
@@ -38,7 +56,7 @@ public class CommandInterpretator {
             break;
         case "exit":
             direct.executeExit();
-            return;
+            System.exit(0);
         default:
             System.out.println("Command is not recognized.");
         }
