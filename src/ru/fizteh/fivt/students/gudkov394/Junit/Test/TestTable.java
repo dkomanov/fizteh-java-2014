@@ -106,13 +106,13 @@ public class TestTable {
 
     @Test
     public void bigTest() {
-        for(int i = 0; i < 1000; ++i) {
-            table.put("new" + ((Integer)i).toString(), ((Integer) i).toString());
+        for (int i = 0; i < 1000; ++i) {
+            table.put("new" + ((Integer) i).toString(), ((Integer) i).toString());
         }
         Assert.assertEquals(table.commit(), 1000);
         Assert.assertEquals(table.size(), 1000);
-        for(int i = 0; i < 1000; ++i) {
-            table.remove("new" + ((Integer)i).toString());
+        for (int i = 0; i < 1000; ++i) {
+            table.remove("new" + ((Integer) i).toString());
         }
         Assert.assertEquals(0, table.size());
     }
