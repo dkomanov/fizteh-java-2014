@@ -74,7 +74,7 @@ public class Table {
         try {
             Path pathToFile = Paths.get(dbPath, arg).normalize();
             if (!pathToFile.toFile().exists()) {
-                System.out.println("tablename not exists");
+                System.out.println("[ " + arg + "] not exists");
                 return;
             }
             if (dbTable != null) {
