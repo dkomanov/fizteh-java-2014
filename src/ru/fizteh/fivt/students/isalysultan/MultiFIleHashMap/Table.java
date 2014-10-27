@@ -63,7 +63,7 @@ public class Table {
                 }
                 numberFile = Integer.parseInt(fileName.substring(0,
                         fileName.length() - 4));
-                Integer numberFileMap = numberDirectory * 16 + numberFile;
+                // Integer numberFileMap = numberDirectory * 16 + numberFile;
                 FileTable currentFileTable = new FileTable(filePath, this);
                 files[numberDirectory][numberFile] = currentFileTable;
             }
@@ -135,8 +135,14 @@ public class Table {
 
     public void tableOperationPut(String key, String value) throws IOException {
         byte externalKey = key.getBytes("UTF-8")[0];
-        int ndirectory = externalKey % 16;
+        int ndirectory = (externalKey % 16);
+        if (ndirectory < 0) {
+            ndirectory = -ndirectory;
+        }
         int nfile = (externalKey / 16) % 16;
+        if (nfile < 0) {
+            nfile = -nfile;
+        }
         if (files[ndirectory][nfile] == null) {
             files[ndirectory][nfile] = new FileTable();
         }
@@ -153,8 +159,11 @@ public class Table {
         byte externalKey = key.getBytes("UTF-8")[0];
         int ndirectory = externalKey % 16;
         int nfile = (externalKey / 16) % 16;
-        int numberFile = ndirectory * 16 + nfile;
         FileTable currTable = files[ndirectory][nfile];
+        if (currTable == null) {
+            System.out.println("not found");
+            return;
+        }
         CommandForMap.get(key, currTable);
     }
 
@@ -163,8 +172,11 @@ public class Table {
         byte externalKey = key.getBytes("UTF-8")[0];
         int ndirectory = externalKey % 16;
         int nfile = (externalKey / 16) % 16;
-        int numberFile = ndirectory * 16 + nfile;
         FileTable currTable = files[ndirectory][nfile];
+        if (currTable == null) {
+            System.out.println("not found");
+            return;
+        }
         CommandForMap.remove(key, currTable, this);
     }
 
