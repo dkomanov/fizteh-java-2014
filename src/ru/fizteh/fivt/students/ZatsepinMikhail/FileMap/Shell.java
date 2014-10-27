@@ -1,17 +1,18 @@
-package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
+package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class Shell {
+public class Shell<T> {
+    private HashMap<String, Command<T>> shellCommands;
 
-    private HashMap<String, Command> shellCommands;
-
-    public Shell() {
-        shellCommands = new HashMap();
+    private T objectForShell;
+    public Shell(T obj) {
+        shellCommands = new HashMap<>();
+        objectForShell = obj;
     }
 
-    public void addCommand(final Command newCommand) {
+    public void addCommand(Command<T> newCommand) {
         shellCommands.put(newCommand.toString(), newCommand);
     }
 
@@ -38,9 +39,9 @@ public class Shell {
                         ended = true;
                         break;
                     }
-                    Command commandToExecute = shellCommands.get(parsedArguments[0]);
+                    Command<T> commandToExecute = shellCommands.get(parsedArguments[0]);
                     if (commandToExecute != null) {
-                        if (!commandToExecute.run(parsedArguments)) {
+                        if (!commandToExecute.run(objectForShell, parsedArguments)) {
                             errorOccuried = true;
                         }
                     } else {
@@ -79,9 +80,9 @@ public class Shell {
             if (parsedArguments[0].equals("exit")) {
                 return !errorOccuried;
             }
-            Command commandToExecute = shellCommands.get(parsedArguments[0]);
+            Command<T> commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {
-                if (!commandToExecute.run(parsedArguments)) {
+                if (!commandToExecute.run(objectForShell, parsedArguments)) {
                     errorOccuried = true;
                 }
             } else {
@@ -92,3 +93,4 @@ public class Shell {
         return !errorOccuried;
     }
 }
+
