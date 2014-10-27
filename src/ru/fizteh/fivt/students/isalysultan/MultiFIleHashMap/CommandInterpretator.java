@@ -57,6 +57,7 @@ public class CommandInterpretator {
         case "exit":
             direct.executeExit();
             System.exit(0);
+            break;
         default:
             System.out.println("Command is not recognized.");
         }
