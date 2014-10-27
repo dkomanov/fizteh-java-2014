@@ -36,13 +36,13 @@ public class Main {
 
         if (args.length == 0) {
             try {
-                shell.batchMode();
+                shell.interactiveMode();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         } else {
             try {
-                shell.commandMode(args);
+                shell.batchMode(args);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

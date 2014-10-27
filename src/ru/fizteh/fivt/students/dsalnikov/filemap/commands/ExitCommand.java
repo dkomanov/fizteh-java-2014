@@ -13,12 +13,8 @@ public class ExitCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("wrong amount of arguments");
-        } else {
-            db.exit();
-            System.exit(0);
-        }
+        db.exit();
+        System.exit(0);
     }
 
     @Override
@@ -28,6 +24,6 @@ public class ExitCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 1;
+        return 0;
     }
 }

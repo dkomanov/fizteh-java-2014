@@ -13,11 +13,7 @@ public class SizeCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("wrong amount of arguments");
-        } else {
-            System.out.println(db.size());
-        }
+        System.out.println(db.size());
     }
 
     @Override
@@ -27,6 +23,6 @@ public class SizeCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 1;
+        return 0;
     }
 }

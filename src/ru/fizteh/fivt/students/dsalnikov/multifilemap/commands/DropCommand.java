@@ -13,11 +13,7 @@ public class DropCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("wrong amount of arguments");
-        } else {
-            db.drop(args[1]);
-        }
+        db.drop(args[1]);
     }
 
     @Override
@@ -27,6 +23,6 @@ public class DropCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 2;
+        return 1;
     }
 }

@@ -14,11 +14,7 @@ public class CreateCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("wrong amount of arguments");
-        } else {
-            db.create(args[1]);
-        }
+        db.create(args[1]);
     }
 
     @Override
@@ -28,6 +24,6 @@ public class CreateCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 2;
+        return 1;
     }
 }

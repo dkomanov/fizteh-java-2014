@@ -6,6 +6,7 @@ import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -21,7 +22,7 @@ public class Main {
             RollbackCommand rbc = new RollbackCommand(t);
             SizeCommand sz = new SizeCommand(t);
             Shell sh = new Shell();
-            ArrayList<Command> commands = new ArrayList<>();
+            List<Command> commands = new ArrayList<>();
             commands.add(pc);
             commands.add(lc);
             commands.add(rc);
@@ -31,20 +32,17 @@ public class Main {
             commands.add(rbc);
             commands.add(sz);
             sh.setCommands(commands);
-            if (args.length == 0) {
-                try {
-                    sh.batchMode();
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
+            try {
+                if (args.length == 0) {
+                    sh.interactiveMode();
+                } else {
+                    sh.batchMode(args);
                 }
-            } else {
-                try {
-                    sh.commandMode(args);
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
-                    System.exit(1);
-                }
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                System.exit(1);
             }
+
         } catch (Throwable thr) {
             System.err.println(thr.getMessage());
             System.exit(1);

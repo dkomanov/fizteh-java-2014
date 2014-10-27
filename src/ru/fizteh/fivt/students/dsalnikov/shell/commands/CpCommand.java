@@ -73,49 +73,45 @@ public class CpCommand implements Command {
     }
 
     public void execute(String[] str) throws Exception {
-        if (str.length != 3 && str.length != 4) {
-            throw new IllegalArgumentException("Illegal arguments");
-        } else {
-            if (str.length == 4) {
-                File source = new File(link.getState().getState(), str[2]);
-                source = source.toPath().normalize().toFile();
-                File destination = new File(link.getState().getState(), str[3]);
-                destination = destination.toPath().normalize().toFile();
-                if (str[1].equals("-r")) {
-                    checkPaths(source, destination);
-                    if (source.isFile() && destination.isDirectory()) {
-                        destination = new File(destination.getAbsolutePath(), source.getName());
-                        Files.copy(source.toPath(), destination.toPath());
-                    } else if (source.isFile()) {
-                        copyFile(source, destination);
-                    } else {
-                        File newDir = new File(destination, str[2]);
-                        newDir = newDir.toPath().normalize().toFile();
-                        if (!newDir.getAbsoluteFile().mkdirs()) {
-                            throw new Exception("error creating directory");
-                        }
-                        recursiveCopy(source, newDir);
-                    }
-                } else {
-                    throw new IllegalArgumentException("Flag " + str[1] + " is not supported in this command");
-                }
-            } else if (str.length == 3) {
-                File source = new File(link.getState().getState(), str[1]);
-                source = source.toPath().normalize().toFile();
-                File destination = new File(link.getState().getState(), str[2]);
-                destination = destination.toPath().normalize().toFile();
-                if (source.isDirectory()) {
-                    if (source.list().length != 0) {
-                        throw new DirectoryNotEmptyException("Directory isn't empty. Use -r flag to copy.");
-                    } else {
-                        File dir = new File(destination, str[1]);
-                        checkPaths(source, new File(destination, str[2]));
-                        dir.mkdir();
-                    }
-                } else {
-                    checkPaths(source, destination);
+        if (str.length == 4) {
+            File source = new File(link.getState().getState(), str[2]);
+            source = source.toPath().normalize().toFile();
+            File destination = new File(link.getState().getState(), str[3]);
+            destination = destination.toPath().normalize().toFile();
+            if (str[1].equals("-r")) {
+                checkPaths(source, destination);
+                if (source.isFile() && destination.isDirectory()) {
+                    destination = new File(destination.getAbsolutePath(), source.getName());
+                    Files.copy(source.toPath(), destination.toPath());
+                } else if (source.isFile()) {
                     copyFile(source, destination);
+                } else {
+                    File newDir = new File(destination, str[2]);
+                    newDir = newDir.toPath().normalize().toFile();
+                    if (!newDir.getAbsoluteFile().mkdirs()) {
+                        throw new Exception("error creating directory");
+                    }
+                    recursiveCopy(source, newDir);
                 }
+            } else {
+                throw new IllegalArgumentException("Flag " + str[1] + " is not supported in this command");
+            }
+        } else if (str.length == 3) {
+            File source = new File(link.getState().getState(), str[1]);
+            source = source.toPath().normalize().toFile();
+            File destination = new File(link.getState().getState(), str[2]);
+            destination = destination.toPath().normalize().toFile();
+            if (source.isDirectory()) {
+                if (source.list().length != 0) {
+                    throw new DirectoryNotEmptyException("Directory isn't empty. Use -r flag to copy.");
+                } else {
+                    File dir = new File(destination, str[1]);
+                    checkPaths(source, new File(destination, str[2]));
+                    dir.mkdir();
+                }
+            } else {
+                checkPaths(source, destination);
+                copyFile(source, destination);
             }
         }
     }

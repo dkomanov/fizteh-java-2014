@@ -19,10 +19,6 @@ public class PwdCommand implements Command {
     }
 
     public void execute(String[] emptyStr) {
-        if (emptyStr.length != 1) {
-            throw new IllegalArgumentException("Incorrect usage of command pwd: wrong amount of arguments");
-        } else {
-            System.out.println(link.getState().getState());
-        }
+        System.out.println(link.getState().getState());
     }
 }

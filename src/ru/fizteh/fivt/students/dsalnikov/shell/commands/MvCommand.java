@@ -20,9 +20,6 @@ public class MvCommand implements Command {
     }
 
     public void execute(String[] st) throws Exception {
-        if (st.length != 3) {
-            throw new IllegalArgumentException("Incorrect usage of Command mv : wrong amount of arguments");
-        }
         String[] rmstr = new String[3];
         String[] cpstr = new String[4];
         cpstr[1] = "-r";

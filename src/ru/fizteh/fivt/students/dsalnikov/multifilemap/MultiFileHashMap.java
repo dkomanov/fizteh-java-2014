@@ -6,6 +6,7 @@ import ru.fizteh.fivt.students.dsalnikov.utils.NoTableException;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MultiFileHashMap implements MultiTable {
@@ -100,9 +101,9 @@ public class MultiFileHashMap implements MultiTable {
 
 
     @Override
-    public void list() {
+    public List<String> list() {
         checkTableUsed();
-        currtable.list();
+        return currtable.list();
     }
 
     @Override

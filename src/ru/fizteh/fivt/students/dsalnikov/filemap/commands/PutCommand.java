@@ -13,16 +13,13 @@ public class PutCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 3) {
-            throw new IllegalArgumentException("wrong amount of arguments");
+        String result = db.put(args[1], args[2]);
+        if (result == null) {
+            System.out.println("new");
         } else {
-            String result = db.put(args[1], args[2]);
-            if (result == null) {
-                System.out.println("new");
-            } else {
-                System.out.println(String.format("overwrite\n'%s'", result));
-            }
+            System.out.println(String.format("overwrite\n'%s'", result));
         }
+
     }
 
     @Override
@@ -32,6 +29,6 @@ public class PutCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 3;
+        return 2;
     }
 }

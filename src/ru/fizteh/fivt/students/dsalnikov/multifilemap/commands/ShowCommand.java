@@ -13,9 +13,7 @@ public class ShowCommand implements Command {
 
     @Override
     public void execute(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("wrong amount of arguments");
-        } else if (!args[1].equals("tables")) {
+        if (!args[1].equals("tables")) {
             throw new IllegalArgumentException("wrong command: use show tables");
         } else {
             db.showTables();
@@ -29,6 +27,6 @@ public class ShowCommand implements Command {
 
     @Override
     public int getArgsCount() {
-        return 2;
+        return 1;
     }
 }
