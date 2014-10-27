@@ -12,6 +12,7 @@ public class CurrentTable implements Table {
     String name;
     Map currentTable = new HashMap<String, String>();
     Map newKey = new HashMap<String, String>();
+    Map removedKey = new HashMap<String, String>();
     private int number = 0;
     int alreadyAdded = 0;
 
@@ -54,9 +55,6 @@ public class CurrentTable implements Table {
 
     private int shadeOperationsRemindChanges() {
         currentChanges.clear();
-        for (Object s : newKey.keySet()) {
-            currentTable.remove(s);
-        }
         newKey.clear();
         int oldAlreadyAdded = alreadyAdded;
         alreadyAdded = 0;
@@ -83,6 +81,9 @@ public class CurrentTable implements Table {
         }
         ++number;
         String oldValue = null;
+        if (removedKey.containsKey(key)) {
+            removedKey.remove(key);
+        }
         if (!newKey.containsKey(key)) {
             ++alreadyAdded;
             newKey.put(key, value);
@@ -105,6 +106,9 @@ public class CurrentTable implements Table {
             throw new IllegalArgumentException();
         }
         --number;
+        if (!newKey.containsKey(currentArg) && currentTable.containsKey(currentArg)) {
+            removedKey.put(currentArg, currentTable.get(currentArg));
+        }
         if (newKey.containsKey(currentArg)) {
             --alreadyAdded;
             newKey.remove(currentArg);
@@ -123,6 +127,12 @@ public class CurrentTable implements Table {
 
     @Override
     public int rollback() {
+        for (Object s : newKey.keySet()) {
+            currentTable.remove(s);
+        }
+        for (Object s : removedKey.keySet()) {
+            currentTable.put(s, removedKey.get(s));
+        }
         return shadeOperationsRemindChanges();
     }
 

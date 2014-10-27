@@ -100,18 +100,23 @@ public class TestTable {
         table.put("new3", "3");
         Assert.assertEquals(3, table.rollback());
         Assert.assertEquals(0, table.rollback());
-        String oldValue = table.put("new1", "1");
+        table.put("new1", "1");
+        table.commit();
+        table.remove("new1");
+        table.rollback();
+        Assert.assertEquals("1",table.get("new1"));
+        String oldValue = table.put("new2", "2");
         Assert.assertNull(oldValue);
     }
 
     @Test
     public void bigTest() {
-        for (int i = 0; i < 1000; ++i) {
+        for (int i = 0; i < 100; ++i) {
             table.put("new" + ((Integer) i).toString(), ((Integer) i).toString());
         }
-        Assert.assertEquals(table.commit(), 1000);
-        Assert.assertEquals(table.size(), 1000);
-        for (int i = 0; i < 1000; ++i) {
+        Assert.assertEquals(table.commit(), 100);
+        Assert.assertEquals(table.size(), 100);
+        for (int i = 0; i < 100; ++i) {
             table.remove("new" + ((Integer) i).toString());
         }
         Assert.assertEquals(0, table.size());
