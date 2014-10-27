@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.deserg.filemap;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
