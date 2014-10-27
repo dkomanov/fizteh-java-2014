@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class Dir {
     private File name;
@@ -13,7 +13,7 @@ public class Dir {
     
     Dir(final String nam) throws IOException {
         name = new File(nam);
-        maps = new TreeMap<>();
+        maps = new HashMap<>();
         if (name.exists()) {
             for (String file: name.list()) {
                 String f = file.substring(0, file.length() - 4);
