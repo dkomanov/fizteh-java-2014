@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import ru.fizteh.fivt.students.valentine_lebedeva.Table;
 
-public final class FileMapTable extends Table {
+public class FileMapTable extends Table {
     private RandomAccessFile dbFile;
 
     public FileMapTable(final String fileName) throws IOException {

@@ -22,7 +22,7 @@ public class MultiFileTable extends Table {
     }
 
     @Override
-    public final Map<String, String> read() throws IOException {
+    public Map<String, String> read() throws IOException {
         if (directory.list().length != 0) {
             for (final File dir : directory.listFiles()) {
                 for (final File file : dir.listFiles()) {
@@ -40,7 +40,7 @@ public class MultiFileTable extends Table {
     }
 
     @Override
-    public final void write() throws IOException {
+    public void write() throws IOException {
         boolean curDirCreated = false;
         ArrayList<Map<String, String>> keys = new ArrayList<>();
         for (int i = 0; i < MAX_NUMBER_OF_DIRECTORIES; i++) {

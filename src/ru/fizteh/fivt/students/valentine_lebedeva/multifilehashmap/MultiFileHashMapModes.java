@@ -36,7 +36,4 @@ public final class MultiFileHashMapModes {
         System.exit(0);
     }
 
-    private MultiFileHashMapModes() {
-        // Never called. Added only for checkstyle.
-    }
 }
