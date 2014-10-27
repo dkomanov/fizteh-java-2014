@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.isalysultan.MultiFileHashMap;
 
-import java.util.Iterator;
 import java.util.Set;
 
 public class CommandForMap {
@@ -46,7 +45,6 @@ public class CommandForMap {
     public static void list(FileTable tables) {
         if (tables != null) {
             Set<String> result = tables.keySetMap();
-            Iterator<String> it = result.iterator();
             String answer = String.join(", ", result);
             System.out.println(answer);
         } else {
@@ -54,3 +52,4 @@ public class CommandForMap {
         }
     }
 }
+
