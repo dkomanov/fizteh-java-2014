@@ -37,7 +37,7 @@ public class Command {
     }
     
     public static void showTables(final String[] args, Table table, HashMap<String, Integer> dbInformation)
-    		throws Exception {
+            throws Exception {
         if (args.length != 2) {
             ErrorFunctions.wrongInput("show tables");
         }

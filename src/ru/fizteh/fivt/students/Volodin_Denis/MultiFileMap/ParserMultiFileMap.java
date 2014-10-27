@@ -8,7 +8,7 @@ public class ParserMultiFileMap {
     }
     
     public static void parser(final String[] args, Table table, HashMap<String, Integer> dbInformation)
-    		throws Exception {
+            throws Exception {
         switch (args[0]) {
             case "create":
                 Command.create(args, table, dbInformation);

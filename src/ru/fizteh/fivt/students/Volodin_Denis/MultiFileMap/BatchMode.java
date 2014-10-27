@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class BatchMode {
     public static void batch(final String[] args, Table table, HashMap<String, Integer> dbInformation)
-    		throws Exception {
+            throws Exception {
         try {
             StringBuilder helpArray = new StringBuilder();
             for (int i = 0; i < args.length; ++i) {
