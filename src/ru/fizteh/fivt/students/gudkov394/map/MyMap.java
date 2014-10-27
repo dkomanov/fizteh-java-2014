@@ -50,6 +50,8 @@ public class MyMap {
         Init init = new Init(currentTable, System.getProperty("db.file"));
         StringBuilder builder = new StringBuilder();
         for (String s : args) {
+            s =  s.replace('\'', ' ');
+            s = s.trim();
             builder.append(s).append(" ");
         }
         String string = new String(builder);
