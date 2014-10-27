@@ -67,7 +67,7 @@ public class Welcome {
                 }
                 String[] s = s1.split(";");
                 for (String newCommand : s) {
-                    if (newCommand.startsWith(" ")) {
+                    while (newCommand.startsWith(" ")) {
                         newCommand = newCommand.substring(1, newCommand.length());
                     }
                     arguments = newCommand.split("\\s+");
@@ -77,14 +77,21 @@ public class Welcome {
                     }
                     Command whatToDo = dbConnector.commands.get(arguments[0]);
                     if (whatToDo == null) {
-                        System.out.println("Not found command: " + arguments[0]);
+                        System.err.println("Not found command: " + arguments[0]);
+                        if (s.length > 1) {
+                            System.exit(-1);
+                        }
                         continue;
                     }
                     String[] newArgs = new String[arguments.length - 1];
                     if (arguments.length != 0) {
                         System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);
                     }
-                    dbConnector.run(whatToDo.name, newArgs, false);
+                    if (s.length > 1) {
+                        dbConnector.run(whatToDo.name, newArgs, true);
+                    } else {
+                        dbConnector.run(whatToDo.name, newArgs, false);
+                    }
                 }
                 if (exit) {
                     break;

@@ -16,6 +16,7 @@ public class Show extends Command {
         if (!checkArguments(args.length)) {
             return false;
         }
+
         if (!args[0].equals("tables")) {
             System.err.println("Bad show tables command.");
             if (packageMode) {
@@ -23,16 +24,15 @@ public class Show extends Command {
             }
             return false;
         }
+
         if (dbConnector.tables.isEmpty()) {
             return true;
         }
-        String s = "";
+
         for (Map.Entry<String, MFHMap> a : dbConnector.tables.entrySet()) {
-            s = a.getKey() + " " + a.getValue().size() + "\n";
-            if (!s.substring(0, s.length() - 1).equals("")) {
-                System.out.println(s.substring(0, s.length() - 1));
-            }
+            System.out.println(a.getKey() + " " + a.getValue().size());
         }
+
         return true;
     }
 }
