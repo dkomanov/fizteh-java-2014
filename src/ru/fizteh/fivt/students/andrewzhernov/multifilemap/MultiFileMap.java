@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.andrewzhernov.multifilemap;
 
 import java.util.Scanner;
-import java.util.Arrays;
 
 public class MultiFileMap {
     public static void main(String[] args) {
