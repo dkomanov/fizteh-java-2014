@@ -19,8 +19,8 @@ public class DatabaseSerializer {
     private RandomAccessFile outputStream;
     private int nrecords;
 
-    public DatabaseSerializer(final Path databasePath, final int dirName, final int fileName)
-            throws IOException {
+    public DatabaseSerializer(final Path databasePath, final int dirName,
+            final int fileName) throws IOException {
         fileMap = new HashMap<>();
         String dirString = Integer.toString(dirName) + ".dir";
         String fileString = Integer.toString(fileName) + ".dat";
@@ -50,7 +50,8 @@ public class DatabaseSerializer {
         return data;
     }
 
-    protected final void getData(final RandomAccessFile filedb) throws IOException {
+    protected final void getData(final RandomAccessFile filedb)
+            throws IOException {
         inputStream = new RandomAccessFile(filePathdb.toString(), "r");
         long bytesLeft = inputStream.length();
         while (bytesLeft > 0) {
@@ -78,7 +79,8 @@ public class DatabaseSerializer {
         inputStream.close();
     }
 
-    protected final void putData(final RandomAccessFile filedb) throws IOException {
+    protected final void putData(final RandomAccessFile filedb)
+            throws IOException {
         outputStream = new RandomAccessFile(filePathdb.toString(), "rw");
         filedb.setLength(0);
         Set<Map.Entry<String, String>> rows = fileMap.entrySet();

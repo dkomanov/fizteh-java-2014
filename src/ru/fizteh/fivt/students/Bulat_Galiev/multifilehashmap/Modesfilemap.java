@@ -34,7 +34,7 @@ public final class Modesfilemap {
                 parser(provider, input, false);
             } while (!input.equals("exit"));
         } catch (NullPointerException e) {
-            Filemapfunctions.exit(provider);
+            FileMapFunctions.exit(provider);
             System.exit(-1);
         }
     }
@@ -51,9 +51,9 @@ public final class Modesfilemap {
             }
             String arg = cmd.toString();
             parser(provider, arg, true);
-            Filemapfunctions.exit(provider);
+            FileMapFunctions.exit(provider);
         } catch (NullPointerException e) {
-            Filemapfunctions.exit(provider);
+            FileMapFunctions.exit(provider);
             System.exit(-1);
         }
     }
@@ -64,21 +64,21 @@ public final class Modesfilemap {
         switch (arg[0]) {
         case "use":
             if (arg.length == 2) {
-                Filemapfunctions.use(arg[1]);
+                FileMapFunctions.use(arg[1]);
             } else {
                 argproblem = true;
             }
             break;
         case "create":
             if (arg.length == 2) {
-                Filemapfunctions.create(arg[1]);
+                FileMapFunctions.create(arg[1]);
             } else {
                 argproblem = true;
             }
             break;
         case "drop":
             if (arg.length == 2) {
-                Filemapfunctions.drop(arg[1]);
+                FileMapFunctions.drop(arg[1]);
             } else {
                 argproblem = true;
             }
@@ -86,7 +86,7 @@ public final class Modesfilemap {
         case "show":
             if (arg.length == 2) {
                 if (arg[1].equals("tables")) {
-                    Filemapfunctions.showTables();
+                    FileMapFunctions.showTables();
                 } else {
                     System.err.println(arg[0] + " " + arg[1]
                             + " is incorrect command");
@@ -97,35 +97,35 @@ public final class Modesfilemap {
             break;
         case "put":
             if (arg.length == 3) {
-                Filemapfunctions.put(provider, arg[1], arg[2]);
+                FileMapFunctions.put(provider, arg[1], arg[2]);
             } else {
                 argproblem = true;
             }
             break;
         case "get":
             if (arg.length == 2) {
-                Filemapfunctions.get(provider, arg[1]);
+                FileMapFunctions.get(provider, arg[1]);
             } else {
                 argproblem = true;
             }
             break;
         case "remove":
             if (arg.length == 2) {
-                Filemapfunctions.remove(provider, arg[1]);
+                FileMapFunctions.remove(provider, arg[1]);
             } else {
                 argproblem = true;
             }
             break;
         case "list":
             if (arg.length == 1) {
-                Filemapfunctions.list(provider);
+                FileMapFunctions.list(provider);
             } else {
                 argproblem = true;
             }
             break;
         case "exit":
             if (arg.length == 1) {
-                Filemapfunctions.exit(provider);
+                FileMapFunctions.exit(provider);
                 System.exit(0);
             } else {
                 argproblem = true;
@@ -165,8 +165,8 @@ public final class Modesfilemap {
         }
     }
 
-    public static final class Filemapfunctions {
-        private Filemapfunctions() {
+    public static final class FileMapFunctions {
+        private FileMapFunctions() {
             // Disable instantiation to this class.
         }
 

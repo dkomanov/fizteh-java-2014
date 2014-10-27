@@ -62,6 +62,11 @@ public final class TableProvider {
     }
 
     public static void createTable(final String name) {
+        if (!name.matches("[a-zA-Z0-9.]*")) {
+            System.err.println("table name " + name
+                    + " contains invalid characters");
+            return;
+        }
         Path newTablePath = tablesDirPath.resolve(name);
         if (Files.exists(tablesDirPath)) {
             if (tableLinks.get(name) != null) {
