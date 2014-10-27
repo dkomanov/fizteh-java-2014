@@ -29,8 +29,9 @@ public class RootDirectory {
     }
 
     public void executeExit() throws IOException {
-        currentTable.write();
-        return;
+        if (currentTable != null) {
+            currentTable.write();
+        }
     }
 
     public RootDirectory() throws IOException {
@@ -90,13 +91,18 @@ public class RootDirectory {
     public void showTables() throws IOException {
         Set<String> keys = tableList.keySet();
         Iterator<String> it = keys.iterator();
-        Table currentTables = currentTable;
-        String currentTablesName = currentTables.getName();
+        Iterator<String> iter = keys.iterator();
+        Table functionCurrentTables = currentTable;
+        if (currentTable == null) {
+            Command.use(this, tableList.get(iter.next()).getName(), false);
+            functionCurrentTables = currentTable;
+        }
+        String currentTablesName = functionCurrentTables.getName();
         while (it.hasNext()) {
             String currentKey = it.next();
             if (currentTablesName.equals(currentKey)) {
                 System.out.print(currentKey + " ");
-                System.out.println(currentTables.get());
+                System.out.println(functionCurrentTables.get());
                 tableList.get(currentKey).nullNumberRecords();
                 continue;
             }
@@ -106,11 +112,7 @@ public class RootDirectory {
             System.out.println(currTables.get());
             tableList.get(currentKey).nullNumberRecords();
         }
-        if (currentTables != null) {
-            Command.use(this, currentTables.getName(), false);
-        } else {
-            currentTable = null;
-        }
+        Command.use(this, functionCurrentTables.getName(), false);
     }
 
     public void executePut(String key, String value) throws IOException {
