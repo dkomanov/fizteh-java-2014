@@ -22,7 +22,6 @@ public class Table {
         table = new File(path);
         tablename = name;
         getTable();
-        rm();
     }
 
     public void rm() throws Exception {
@@ -100,6 +99,7 @@ public class Table {
     private void putTable() throws Exception {
         String key;
         String value;
+        rm();
         for (Map.Entry<String, String> i : fm.entrySet()) {
             key = i.getKey();
             value = i.getValue();
