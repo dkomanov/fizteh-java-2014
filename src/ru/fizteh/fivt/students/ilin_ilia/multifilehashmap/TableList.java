@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class TableList {
     
@@ -15,7 +15,7 @@ public class TableList {
     
     TableList(final String path) throws IOException {
         dBPath = path;
-        dB = new TreeMap<>();
+        dB = new HashMap<>();
         File userDir = new File(dBPath);
         if (userDir.exists()) {
             for (String file: userDir.list()) {
