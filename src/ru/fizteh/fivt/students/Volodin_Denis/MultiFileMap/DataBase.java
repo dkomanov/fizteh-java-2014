@@ -53,7 +53,7 @@ public class DataBase implements Map<String, String>, AutoCloseable {
             }
             return listKeys;
         } catch (Exception e) {
-            filemapSmthWrong("list", e.getMessage());
+            ErrorFunctions.smthWrong("list", e.getMessage());
         }
         return new String[0]; // Unreachable code, add return to ignore Eclipse warning.
     }
@@ -91,7 +91,7 @@ public class DataBase implements Map<String, String>, AutoCloseable {
                             }
                         }
                     } catch (Exception e) {
-                        filemapErrorRead("read");
+                        ErrorFunctions.errorRead("read");
                     }
                 }
             }
@@ -116,14 +116,14 @@ public class DataBase implements Map<String, String>, AutoCloseable {
                                                                              + ".dat").normalize();
                 if (helpPath.toFile().exists()) {
                     if (!helpPath.toFile().delete()) {
-                        filemapSmthWrong("write", "file is not deleted");
+                        ErrorFunctions.smthWrong("write", "file is not deleted");
                     }
                 }
             }
             Path helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir").normalize();
             if (helpPath.toFile().exists()) {
                 if (!helpPath.toFile().delete()) {
-                    filemapSmthWrong("write", "folder is not deleted");
+                    ErrorFunctions.smthWrong("write", "folder is not deleted");
                 }
             }
         }
@@ -151,7 +151,7 @@ public class DataBase implements Map<String, String>, AutoCloseable {
                             output.write(database.get(key).getBytes("UTF-8"));
                         }
                     } catch (Exception e) {
-                        filemapErrorWrite("write");
+                        ErrorFunctions.errorWrite("write");
                     }
                 }
             }
@@ -179,7 +179,7 @@ public class DataBase implements Map<String, String>, AutoCloseable {
                 }
             }
         } catch (Exception exception) {
-            filemapSmthWrong("delete empty files", exception.getMessage());
+            ErrorFunctions.smthWrong("delete empty files", exception.getMessage());
         }
     }
   
@@ -246,17 +246,5 @@ public class DataBase implements Map<String, String>, AutoCloseable {
     @Override
     public Collection<String> values() {
         return database.values();
-    }
-    
-    private void filemapErrorRead(final String commandName) throws Exception {
-        throw new Exception(commandName + " : error reading from file");
-    }
-    
-    private void filemapErrorWrite(final String commandName) throws Exception {
-        throw new Exception(commandName + " : error writing to file");
-    }
-    
-    private void filemapSmthWrong(final String commandName, final String message) throws Exception {
-        throw new Exception(commandName + " :" + message);
     }
 }

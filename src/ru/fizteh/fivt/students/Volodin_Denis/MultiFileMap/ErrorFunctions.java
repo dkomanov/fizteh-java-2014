@@ -31,11 +31,22 @@ public class ErrorFunctions {
     }
     
     public static void security(final String commandName, final String arg) throws Exception {
-        throw new Exception(commandName + ": access to the [" + arg + "] is prohibeted.");
+        throw new Exception(commandName + ": access to the [" + arg + "] is prohibited.");
     }
     
     public static void smthWrong(final String commandName) throws Exception {
-        throw new Exception(commandName + "something went wrong.");
+        throw new Exception(commandName + "something gone wrong.");
     }
-
+    
+    public static void smthWrong(final String commandName, final String message) throws Exception {
+        throw new Exception(commandName + " :" + message);
+    }
+    
+    public static void errorRead(final String commandName) throws Exception {
+        throw new Exception(commandName + " : error reading from file");
+    }
+    
+    public static void errorWrite(final String commandName) throws Exception {
+        throw new Exception(commandName + " : error writing to file");
+    }
 }

@@ -35,7 +35,7 @@ public class Table {
             }
         }
         if (!Paths.get(dbPath).normalize().toFile().isDirectory()) {
-            System.err.println("Path [" + dbPath + "] is not directory.");
+            System.err.println("Path [" + dbPath + "] is not a directory.");
             System.exit(ReturnCodes.ERROR);
         }
     }
