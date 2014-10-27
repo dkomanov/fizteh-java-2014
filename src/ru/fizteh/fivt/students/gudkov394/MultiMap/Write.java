@@ -20,8 +20,8 @@ public class Write {
         Set<String> set = currentTable.keySet();
         for (String s : set) {
             int hashcode = s.hashCode();
-            int ndirectory = hashcode % 16;
-            int nfile = hashcode / 16 % 16;
+            int ndirectory = (hashcode  + 16 )% 16;
+            int nfile = (hashcode / 16  + 16)% 16;
 
             FileOutputStream output = null;
             try {
@@ -39,7 +39,7 @@ public class Write {
                 if (!newFile.exists()) {
                     newFile.createNewFile();
                 }
-                output = new FileOutputStream(newFile);
+                output = new FileOutputStream(newFile, true);
             } catch (IOException e) {
                 System.err.println("Ouput file didn't find");
                 System.exit(2);
@@ -52,11 +52,13 @@ public class Write {
 
     private void clearDirectory(File f) {
         String[] filesInDirectory = f.list();
-        for (String tmp : filesInDirectory) {
-            String[] arg = {"rm", "-r", tmp};
-            CurrentDirectory cd = new CurrentDirectory();
-            cd.changeCurrentDirectory(f.getPath());
-            RemoveDirectory remove = new RemoveDirectory(arg, cd);
+        if (filesInDirectory != null) {
+            for (String tmp : filesInDirectory) {
+                String[] arg = {"rm", "-r", tmp};
+                CurrentDirectory cd = new CurrentDirectory();
+                cd.changeCurrentDirectory(f.getPath());
+                RemoveDirectory remove = new RemoveDirectory(arg, cd);
+            }
         }
     }
 

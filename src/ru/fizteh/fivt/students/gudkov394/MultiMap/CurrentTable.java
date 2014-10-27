@@ -1,13 +1,12 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
-import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
 import java.io.File;
 import java.util.*;
 
-public class CurrentTable implements Table {
+public class CurrentTable {
     String name;
     Map currentTable = new HashMap<String, String>();
     private int number = 0;
@@ -81,20 +80,6 @@ public class CurrentTable implements Table {
         return oldValue;
     }
 
-    @Override
-    public int commit() {
-        return 0;
-    }
-
-    @Override
-    public int rollback() {
-        return 0;
-    }
-
-    @Override
-    public List<String> list() {
-        return (List<String>) keySet();
-    }
 
     public void create() {
         String s = getHomeDirectory();
@@ -129,9 +114,12 @@ public class CurrentTable implements Table {
         File f = new File(getHomeDirectory());
         if (f.exists()) {
             File[] files = f.listFiles();
-            for (File tmp : files) {
-                Init z = new Init(currentTable, tmp.toString());
+            if (files != null) {
+                for (File tmp : files) {
+                    Init z = new Init(currentTable, tmp.toString());
+                }
             }
+
         }
         number = currentTable.size();
     }

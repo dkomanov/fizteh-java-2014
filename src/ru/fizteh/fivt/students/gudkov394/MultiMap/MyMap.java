@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -69,11 +70,7 @@ public class MyMap {
                 System.err.println("wrong number of argument to Create");
                 System.exit(1);
             }
-            if (tables.containsKey(currentArgs[1])) {
-                System.out.println("tablename exists");
-            } else {
-                tables.put(currentArgs[1], new CurrentTable(currentArgs[1]));
-            }
+            createTable(currentArgs[1]);
         } else if ("use".equals(currentArgs[0])) {
             if (currentArgs.length != 2) {
                 System.err.println("wrong number of argument to use");
@@ -92,6 +89,7 @@ public class MyMap {
                 System.err.println("wrong number of argument to drop");
                 System.exit(1);
             }
+            removeTable(currentArgs[1]);
             if (tables.containsKey(currentArgs[1])) {
                 tables.get(currentArgs[1]).delete();
                 tables.remove(currentArgs[1]);
@@ -183,6 +181,41 @@ public class MyMap {
             interactive();
         } else {
             packageMode(args);
+        }
+    }
+
+    public CurrentTable getTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (!tables.containsKey(name)) {
+            return null;
+        }
+        return tables.get(name);
+    }
+
+    public CurrentTable createTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (tables.containsKey(name)) {
+            return null;
+        } else {
+            CurrentTable newTable = new CurrentTable(name);
+            tables.put(name, newTable);
+            return newTable;
+        }
+    }
+
+    public void removeTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (tables.containsKey(name)) {
+            tables.get(name).delete();
+            tables.remove(name);
+        } else {
+           throw new IllegalStateException();
         }
     }
 }
