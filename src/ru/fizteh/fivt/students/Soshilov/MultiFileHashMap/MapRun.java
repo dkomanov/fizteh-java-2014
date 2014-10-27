@@ -64,11 +64,10 @@ public class MapRun {
 
         Command command = commandMap.get(args[0]);
         if (command == null) {
-            System.err.println(args[0] + ": command not found");
-            System.exit(1);
+            throw new CommandException(args[0] + ": command not found");
         } else {
             if (args[0].equals("show") && !args[1].equals("tables")) {
-                System.err.println(args[0] + " " + args[1] + ": command not found");
+                throw new CommandException(args[0] + " " + args[1] + ": command not found");
             } else {
                 command.execute(Main.removeNameInArguments(args, args[0].equals("show") ? 2 : 1), db);
             }
