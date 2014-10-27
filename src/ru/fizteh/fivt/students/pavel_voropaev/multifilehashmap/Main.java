@@ -19,7 +19,7 @@ public class Main {
         try {
             database = new Database(dbPath);
         } catch (Exception e) {
-            System.err.print(e.getMessage());
+            System.err.print("Incorrect directory path: " + e.getMessage());
             System.exit(1);
         }
 

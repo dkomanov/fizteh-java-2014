@@ -130,7 +130,7 @@ public class MultiFileTable implements Closeable {
                     throw new IOException("Wrong file format.");
                 }
  
-                content[dirNum * 16 + fileNum].map.put(key, value);
+                content[dirNum * FILES + fileNum].map.put(key, value);
             } catch (EOFException e) {
                 break;
             }
@@ -190,7 +190,7 @@ public class MultiFileTable implements Closeable {
     
     private int getPlace(String key) {
         int hashcode = Math.abs(key.hashCode());
-        return hashcode % FOLDERS * 16 + hashcode / FOLDERS % FILES;
+        return hashcode % FOLDERS * FILES + hashcode / FOLDERS % FILES;
     }
     
     private Path getDirectoryPath(int fileNumber) {
