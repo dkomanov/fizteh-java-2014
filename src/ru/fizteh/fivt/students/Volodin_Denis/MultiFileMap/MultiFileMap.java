@@ -4,7 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-public class DBMain {
+public class MultiFileMap {
     
     private static HashMap<String, Integer> dbInformation; 
     
