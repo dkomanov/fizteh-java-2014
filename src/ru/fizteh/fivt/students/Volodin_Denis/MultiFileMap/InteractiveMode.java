@@ -24,7 +24,7 @@ public class InteractiveMode {
         } catch (Exception exception) {
             System.err.println("Smth wrong.");
             scanner.close();
-            System.exit(returnCodes.ERROR);
+            System.exit(ReturnCodes.ERROR);
         }
         scanner.close();
     }

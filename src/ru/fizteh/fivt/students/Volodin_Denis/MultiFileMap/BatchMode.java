@@ -3,7 +3,8 @@ package ru.fizteh.fivt.students.Volodin_Denis.MultiFileMap;
 import java.util.HashMap;
 
 public class BatchMode {
-    public static void batch(final String[] args, Table table, HashMap<String, Integer> dbInformation) throws Exception {
+    public static void batch(final String[] args, Table table, HashMap<String, Integer> dbInformation)
+    		throws Exception {
         try {
             StringBuilder helpArray = new StringBuilder();
             for (int i = 0; i < args.length; ++i) {
@@ -23,7 +24,7 @@ public class BatchMode {
             }
         } catch (Exception exception) {
             System.err.println("Smth wrong.");
-            System.exit(returnCodes.ERROR);
+            System.exit(ReturnCodes.ERROR);
         }
     }
 }

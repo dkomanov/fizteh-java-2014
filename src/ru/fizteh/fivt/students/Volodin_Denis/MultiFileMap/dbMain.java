@@ -4,7 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-public class dbMain {
+public class DBMain {
     
     private static HashMap<String, Integer> dbInformation; 
     
@@ -28,7 +28,7 @@ public class dbMain {
                 }
             } catch (Exception exception) {
                 System.err.println(exception.getMessage());
-                System.exit(returnCodes.ERROR);
+                System.exit(ReturnCodes.ERROR);
             }
             
             table.setTable(null);
@@ -39,8 +39,8 @@ public class dbMain {
             }
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
-            System.exit(returnCodes.ERROR);
+            System.exit(ReturnCodes.ERROR);
         }
-        System.exit(returnCodes.SUCCESS);
+        System.exit(ReturnCodes.SUCCESS);
     }
 }

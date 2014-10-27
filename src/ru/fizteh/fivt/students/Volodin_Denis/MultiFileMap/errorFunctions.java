@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.Volodin_Denis.MultiFileMap;
 
-public class errorFunctions {
+public class ErrorFunctions {
     
     public static void wrongQuantity(final String commandName) throws Exception {
         throw new Exception(commandName + ": wrong quantity of arguments.");

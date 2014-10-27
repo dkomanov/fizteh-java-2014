@@ -20,7 +20,7 @@ public class Table {
         dbPath = path;
         if (dbPath == null) {
             System.err.println("Path was not found.");
-            System.exit(returnCodes.ERROR);
+            System.exit(ReturnCodes.ERROR);
         }
         if (!Paths.get(dbPath).isAbsolute()) {
             dbPath = Paths.get(dbPath).toAbsolutePath().normalize().toString();
@@ -31,12 +31,12 @@ public class Table {
             } else {
                 System.err.println("Directory [" + Paths.get(dbPath).normalize().getParent().getFileName()
                                                  + "] does not exist.");
-                System.exit(returnCodes.ERROR);
+                System.exit(ReturnCodes.ERROR);
             }
         }
         if (!Paths.get(dbPath).normalize().toFile().isDirectory()) {
             System.err.println("Path [" + dbPath + "] is not directory.");
-            System.exit(returnCodes.ERROR);
+            System.exit(ReturnCodes.ERROR);
         }
     }
     
@@ -57,13 +57,13 @@ public class Table {
             if (Paths.get(dbPath, arg).normalize().toFile().isDirectory()) {
                 System.out.println(arg + " exists");
             } else {
-                errorFunctions.tableNameIsFile("create", arg);
+                ErrorFunctions.tableNameIsFile("create", arg);
             }
         } else {
             if (Paths.get(dbPath, arg).normalize().toFile().mkdir()) {
                 System.out.println("created");
             } else {
-                errorFunctions.notMkdir("create", arg);
+                ErrorFunctions.notMkdir("create", arg);
             }
         }
         dbInformation.put(Paths.get(dbPath, arg).normalize().getFileName().toString(), 0);
@@ -85,7 +85,7 @@ public class Table {
             }
             
             if (!pathToFile.toFile().isDirectory()) {
-                errorFunctions.notDirectory("drop", arg);
+                ErrorFunctions.notDirectory("drop", arg);
             }
             recursiveDrop(pathToFile);
         } catch (Exception exception) {
@@ -99,12 +99,12 @@ public class Table {
     private static void recursiveDrop(final Path pathToFile) throws Exception {
         try {
             if (!pathToFile.toFile().exists()) {
-                errorFunctions.notExists("drop", pathToFile.toString());
+                ErrorFunctions.notExists("drop", pathToFile.toString());
                 return;
             }
             if (pathToFile.toFile().isFile()) {
                 if (!pathToFile.toFile().delete()) {
-                    errorFunctions.smthWrong("drop");
+                    ErrorFunctions.smthWrong("drop");
                 }
             }
             if (pathToFile.toFile().isDirectory()) {
@@ -116,19 +116,19 @@ public class Table {
                         }
                         if (Paths.get(pathToFile.toString(), name).normalize().toFile().isFile()) {
                             if (!Paths.get(pathToFile.toString(), name).normalize().toFile().delete()) {
-                                errorFunctions.smthWrong("drop");
+                                ErrorFunctions.smthWrong("drop");
                             }
                         }
                     }
                 }
                 if (!pathToFile.toFile().delete()) {
-                    errorFunctions.smthWrong("drop");
+                    ErrorFunctions.smthWrong("drop");
                 }
             }
         } catch (InvalidPathException invException) {
-            errorFunctions.invalidName("drop", invException.getMessage());
+            ErrorFunctions.invalidName("drop", invException.getMessage());
         } catch (SecurityException secException) {
-            errorFunctions.security("drop", secException.getMessage());
+            ErrorFunctions.security("drop", secException.getMessage());
         }
     }
 
@@ -172,7 +172,7 @@ public class Table {
         if (dbTable != null) {
             dbTable.close();
         }
-        System.exit(returnCodes.SUCCESS);
+        System.exit(ReturnCodes.SUCCESS);
     }
     
     public void put(String key, String value) throws Exception {

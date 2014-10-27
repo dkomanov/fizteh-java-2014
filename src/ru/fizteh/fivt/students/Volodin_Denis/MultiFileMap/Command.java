@@ -6,10 +6,10 @@ public class Command {
     
     public static void create(String[] args, Table table, HashMap<String, Integer> dbInformation) throws Exception {
         if (args.length != 2) {
-            errorFunctions.wrongQuantity("create");
+            ErrorFunctions.wrongQuantity("create");
         }
         if (args[1].isEmpty()) {
-            errorFunctions.wrongInput("create");
+            ErrorFunctions.wrongInput("create");
         }
         
         table.create(args[1], dbInformation);
@@ -17,31 +17,32 @@ public class Command {
 
     public static void drop(final String[] args, Table table, HashMap<String, Integer> dbInformation) throws Exception {
         if (args.length != 2) {
-            errorFunctions.wrongQuantity("drop");
+            ErrorFunctions.wrongQuantity("drop");
         }
         if (args[1].isEmpty()) {
-            errorFunctions.wrongInput("drop");
+            ErrorFunctions.wrongInput("drop");
         }
         table.drop(args[1], dbInformation);
     }
 
     public static void use(final String[] args, Table table, HashMap<String, Integer> dbInformation) throws Exception {
         if (args.length != 2) {
-            errorFunctions.wrongQuantity("use");
+            ErrorFunctions.wrongQuantity("use");
         }
         if (args[1].isEmpty()) {
-            errorFunctions.wrongInput("use");
+            ErrorFunctions.wrongInput("use");
         }
         
         table.use(args[1], dbInformation);
     }
     
-    public static void showTables(final String[] args, Table table, HashMap<String, Integer> dbInformation) throws Exception {
+    public static void showTables(final String[] args, Table table, HashMap<String, Integer> dbInformation)
+    		throws Exception {
         if (args.length != 2) {
-            errorFunctions.wrongInput("show tables");
+            ErrorFunctions.wrongInput("show tables");
         }
         if (!args[1].equals("tables")) {
-            errorFunctions.wrongInput("show tables");
+            ErrorFunctions.wrongInput("show tables");
         }
         
         table.showTables(args[1], dbInformation);
@@ -49,17 +50,17 @@ public class Command {
     
     public static void exit(final String[] args, Table table) throws Exception {
         if (args.length != 1) {
-            errorFunctions.wrongQuantity("exit");
+            ErrorFunctions.wrongQuantity("exit");
         }
         table.exit();
     }
     
     public static void put(final String[] args, Table table) throws Exception {
         if (args.length != 3) {
-            errorFunctions.wrongQuantity("put");
+            ErrorFunctions.wrongQuantity("put");
         }
         if ((args[1].isEmpty()) || (args[2].isEmpty())) {
-            errorFunctions.wrongInput("put");
+            ErrorFunctions.wrongInput("put");
         }
         if (table.getTable() == null) {
             System.out.println("no table");
@@ -71,10 +72,10 @@ public class Command {
     
     public static void get(final String[] args, Table table) throws Exception {
         if (args.length != 2) {
-            errorFunctions.wrongQuantity("get");
+            ErrorFunctions.wrongQuantity("get");
         }
         if (args[1].isEmpty()) {
-            errorFunctions.wrongInput("get");
+            ErrorFunctions.wrongInput("get");
         }
         if (table.getTable() == null) {
             System.out.println("no table");
@@ -86,10 +87,10 @@ public class Command {
     
     public static void remove(final String[] args, Table table) throws Exception {
         if (args.length != 2) {
-            errorFunctions.wrongQuantity("remove");
+            ErrorFunctions.wrongQuantity("remove");
         }
         if (args[1].isEmpty()) {
-            errorFunctions.wrongInput("remove");
+            ErrorFunctions.wrongInput("remove");
         }
         if (table.getTable() == null) {
             System.out.println("no table");
@@ -100,7 +101,7 @@ public class Command {
     
     public static void list(final String[] args, Table table) throws Exception {
         if (args.length != 1) {
-            errorFunctions.wrongQuantity("list");
+            ErrorFunctions.wrongQuantity("list");
         }
         if (table.getTable() == null) {
             System.out.println("no table");
