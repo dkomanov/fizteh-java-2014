@@ -15,10 +15,10 @@ public class DropCommand extends DbManagerCommand {
     public void execute(final DbManager dbManager) throws IOException {
         String tableToDrop = args[0];
         if (!dbManager.containsTable(tableToDrop)) {
-            msg = new String(tableToDrop + " not exists");
+            msg = tableToDrop + " not exists";
         } else {
             dbManager.dropTable(tableToDrop);
-            msg = new String("dropped");
+            msg = "dropped";
         }
     }
 }

@@ -3,7 +3,8 @@ package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.db_commands.d
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.DbManager;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.Map;
+
 
 public class ShowTablesCommand extends DbManagerCommand {
     public ShowTablesCommand(final String[] args) {
@@ -12,7 +13,17 @@ public class ShowTablesCommand extends DbManagerCommand {
 
     @Override
     public void execute(final DbManager dbManager) throws IOException {
-        Set<String> tableNames = dbManager.getTableNames();
-        msg = String.join(", ", tableNames);
+        StringBuilder msgBuilder = new StringBuilder();
+        Map<String, Integer> tableNames = dbManager.showTables();
+        if (tableNames.size() == 0) {
+            msg = "";
+        } else {
+            for (Map.Entry<String, Integer> entry : tableNames.entrySet()) {
+                msgBuilder.append(entry.getKey() + " " + entry.getValue());
+                msgBuilder.append(System.lineSeparator());
+            }
+            msgBuilder.delete(msgBuilder.length() - 1, msgBuilder.length());
+            msg = msgBuilder.toString();
+        }
     }
 }

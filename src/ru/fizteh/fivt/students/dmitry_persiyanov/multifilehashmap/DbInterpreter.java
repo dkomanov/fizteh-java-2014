@@ -10,19 +10,23 @@ import java.util.Scanner;
 
 public final class DbInterpreter {
     public static final String PROMPT = "$ ";
-    private static final File ROOT_DIR = new File(System.getProperty("fizteh.db.dir"));
+    private static File rootDir;
     private static DbManager dbManager;
 
     public static void main(final String[] args) {
-        if (ROOT_DIR == null) {
+        String dbdir = System.getProperty("fizteh.db.dir");
+        if (dbdir == null) {
             System.err.println("You must specify a variable \"fizteh.db.dir\".");
             System.exit(1);
-        } else if (!ROOT_DIR.exists() || !ROOT_DIR.isDirectory()) {
-            System.err.println("fizteh.db.dir isn't a directory");
-            System.exit(1);
+        } else {
+            rootDir = new File(dbdir);
+            if (!rootDir.exists() || !rootDir.isDirectory()) {
+                System.err.println("fizteh.db.dir isn't a directory");
+                System.exit(1);
+            }
         }
-        dbManager = new DbManager(ROOT_DIR);
         try {
+            dbManager = new DbManager(rootDir);
             if (args.length == 0) {
                 interactiveMode();
             } else {

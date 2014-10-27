@@ -12,12 +12,26 @@ public final class TableManager {
     public final Path tablePath;
     public static final int MAX_DIRS_FOR_TABLE = 16;
     public static final int MAX_FILES_FOR_DIR = 16;
-    private List<List<Map<String, String>>> tableHashMap = null;
+    private int size;
+    private List<List<Map<String, String>>> tableHashMap;
 
     public TableManager(final Path tablePath) throws IOException {
         this.tablePath = tablePath.toAbsolutePath().normalize();
         initTableHashMap();
         TableLoaderDumper.loadTable(this.tablePath, tableHashMap);
+        recalculateSize();
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    private void recalculateSize() {
+        for (List<Map<String, String>> list : tableHashMap) {
+            for (Map<String, String> map : list) {
+                size += map.size();
+            }
+        }
     }
 
     public void dump() throws IOException {
@@ -33,7 +47,11 @@ public final class TableManager {
     public String put(final String key, final String value) {
         int dir = keyValueDirNum(key);
         int file = keyValueFileNum(key);
-        return tableHashMap.get(dir).get(file).put(key, value);
+        String oldValue = tableHashMap.get(dir).get(file).put(key, value);
+        if (oldValue == null) {
+            size++;
+        }
+        return oldValue;
     }
 
     public List<String> list() {
@@ -41,9 +59,8 @@ public final class TableManager {
         for (List<Map<String, String>> list : tableHashMap) {
             for (Map<String, String> map : list) {
                 Set<String> keySet = map.keySet();
-                Iterator<String> keySetIter = keySet.iterator();
-                while (keySetIter.hasNext()) {
-                    keysList.add(keySetIter.next());
+                for (String nextKey : keySet) {
+                    keysList.add(nextKey);
                 }
             }
         }
@@ -53,7 +70,11 @@ public final class TableManager {
     public String remove(final String key) {
         int dir = keyValueDirNum(key);
         int file = keyValueFileNum(key);
-        return tableHashMap.get(dir).get(file).get(key);
+        String oldValue = tableHashMap.get(dir).get(file).get(key);
+        if (oldValue != null) {
+            size--;
+        }
+        return oldValue;
     }
 
     public String getTableName() {
@@ -61,17 +82,17 @@ public final class TableManager {
     }
 
     private static int keyValueDirNum(final String key) {
-        byte b = key.getBytes()[0];
+        int b = key.getBytes()[0] + 128;
         return b % MAX_DIRS_FOR_TABLE;
     }
 
     private static int keyValueFileNum(final String key) {
-        byte b = key.getBytes()[0];
+        int b = key.getBytes()[0] + 128;
         return b / MAX_DIRS_FOR_TABLE % MAX_FILES_FOR_DIR;
     }
 
     private void initTableHashMap() {
-        tableHashMap = new ArrayList<List<Map<String, String>>>(MAX_DIRS_FOR_TABLE);
+        tableHashMap = new ArrayList<>(MAX_DIRS_FOR_TABLE);
         for (int i = 0; i < MAX_DIRS_FOR_TABLE; ++i) {
             tableHashMap.add(new ArrayList<Map<String, String>>(MAX_FILES_FOR_DIR));
             for (int j = 0; j < MAX_FILES_FOR_DIR; ++j) {

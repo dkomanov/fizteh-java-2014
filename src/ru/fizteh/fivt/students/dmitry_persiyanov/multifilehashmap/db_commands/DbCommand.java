@@ -4,9 +4,9 @@ import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.Ill
 
 public abstract class DbCommand {
     protected static int numOfArgs;
-    protected String[] args = null;
-    protected String msg = null;
-    protected String name = null;
+    protected String[] args;
+    protected String msg;
+    protected String name;
 
     public DbCommand(final String name, final String[] args) {
         this.args = args;

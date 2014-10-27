@@ -13,10 +13,10 @@ public class UseCommand extends DbManagerCommand {
     public void execute(final DbManager dbManager) throws IOException {
         String tableToUse = args[0];
         if (!dbManager.containsTable(tableToUse)) {
-            msg = new String(tableToUse + " not exists");
+            msg = tableToUse + " not exists";
         } else {
             dbManager.useTable(tableToUse);
-            msg = new String("using " + tableToUse);
+            msg = "using " + tableToUse;
         }
     }
 }

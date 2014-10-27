@@ -1,13 +1,10 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.table_loader_dumper;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.TableManager;
-import ru.fizteh.fivt.students.dmitry_persiyanov.multifilehashmap.exceptions.IsNotADirectoryException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -19,7 +16,7 @@ public final class TableLoaderDumper {
         File tableDir = new File(tablePath.toString());
         File[] tableDirectories = tableDir.listFiles();
         if (tableDirectories == null) {
-            throw new IsNotADirectoryException(tablePath.getFileName().toString());
+            throw new NotDirectoryException(tablePath.getFileName().toString());
         }
         for (int i = 0; i < tableDirectories.length; ++i) {
             int indexOfDir = parseNum(tableDirectories[i].toPath());
@@ -30,7 +27,7 @@ public final class TableLoaderDumper {
     private static void loadDirectory(final File directory, List<Map<String, String>> dirHashMap) throws IOException {
         File[] dirFiles = directory.listFiles();
         if (dirFiles == null) {
-            throw new IsNotADirectoryException(directory.getPath());
+            throw new NotDirectoryException(directory.getPath());
         }
         for (int i = 0; i < dirFiles.length; ++i) {
             int fileNum = parseNum(dirFiles[i].toPath());
@@ -102,7 +99,7 @@ public final class TableLoaderDumper {
     }
 
     private static void dumpDirectory(final Path dirPath, List<Map<String, String>> dirHashMap) throws IOException {
-        if (dirHashMap == null || dirHashMap.size() == 0) {
+        if (dirHashMap == null || isDirHashMapEmpty(dirHashMap)) {
             Files.deleteIfExists(dirPath);
         } else {
             if (!Files.exists(dirPath)) {
@@ -112,6 +109,15 @@ public final class TableLoaderDumper {
                 dumpFile(makeFilePathFromDirPath(dirPath, i), dirHashMap.get(i));
             }
         }
+    }
+
+    private static boolean isDirHashMapEmpty(final List<Map<String, String>> dirHashMap) {
+        for (Map<String, String> map : dirHashMap) {
+            if (!map.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static void dumpFile(final Path filePath, Map<String, String> fileHashMap) throws IOException {
@@ -141,6 +147,35 @@ public final class TableLoaderDumper {
                 raFile.seek(currentOffset);
             }
         }
+    }
+
+    public static int countKeys(final Path tablePath) throws IOException {
+        int res = 0;
+        File[] dirs = new File(tablePath.toString()).listFiles();
+        for (File dir : dirs) {
+            File[] files = dir.listFiles();
+            for (File file : files) {
+                res += countKeysInFile(file);
+            }
+        }
+        return res;
+    }
+
+    private static int countKeysInFile(final File file) throws IOException {
+        int res = 0;
+        byte b;
+        try (RandomAccessFile raFile = new RandomAccessFile(file, "r")) {
+            while (true) {
+                b = raFile.readByte();
+                if (b == 0) {
+                    res++;
+                    raFile.readInt();
+                }
+            }
+        } catch (EOFException e) {
+            // Catching eof.
+        }
+        return res;
     }
 
     private static Path makeDirPath(final Path tablePath, Integer dirNum) {

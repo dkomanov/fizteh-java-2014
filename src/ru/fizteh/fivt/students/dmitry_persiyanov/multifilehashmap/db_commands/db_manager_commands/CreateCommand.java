@@ -16,9 +16,9 @@ public class CreateCommand extends DbManagerCommand {
         String tableToCreate = args[0];
         if (!dbManager.containsTable(tableToCreate)) {
             dbManager.createTable(tableToCreate);
-            msg = new String("created");
+            msg = "created";
         } else {
-            msg = new String(tableToCreate + " exists");
+            msg = tableToCreate + " exists";
         }
     }
 }
