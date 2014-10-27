@@ -10,7 +10,7 @@ public class DropCommand extends Command {
     @Override
     public void execute(DataBaseOneDir base) throws Exception {
         if (!base.tables.containsKey(tableName)) {
-            System.out.println(tableName + " not exist");
+            System.out.println(tableName + " not exists");
         } else {
             base.tables.get(tableName).drop();
             base.tables.remove(tableName);

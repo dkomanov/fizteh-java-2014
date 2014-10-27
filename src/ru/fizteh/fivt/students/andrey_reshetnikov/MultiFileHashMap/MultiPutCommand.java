@@ -21,7 +21,7 @@ public class MultiPutCommand extends Command {
             int hashCode = Math.abs(key.hashCode());
             int ndirectory = hashCode % 16;
             int nfile = hashCode / 16 % 16;
-            System.out.println(ndirectory + " " + nfile);
+            //System.out.println(ndirectory + " " + nfile);
             PutCommand put = new PutCommand(key, value);
             if (base.getUsing().databases[ndirectory][nfile] == null) {
                 File insideMainDir = new File(base.getUsing().insideMainDir, String.valueOf(ndirectory) + ".dir");
