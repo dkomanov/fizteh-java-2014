@@ -57,7 +57,7 @@ public class MapRun {
      * We switch commands into different classes.
      * @param args Commands that were entered: name, its' arguments.
      */
-    public static void run(final String[] args) {
+    public static void run(final String[] args) throws CommandException {
         if (args.length == 0) {
             throw new RuntimeException("no command");
         }
@@ -84,7 +84,12 @@ public class MapRun {
                 System.out.print(signOfInvitation);
                 String currentString = sc.nextLine();
                 currentString = currentString.trim();
-                run(currentString.split("\\s+"));
+                try {
+                    run(currentString.split("\\s+"));
+                } catch (CommandException ex) {
+                    System.err.println(ex.getMessage());
+                }
+
             }
         }
     }
@@ -94,14 +99,14 @@ public class MapRun {
      * @param args Commands that were entered: name, its' arguments.
      */
     public static void batchMode(final String[] args) {
-        StringBuilder builder = new StringBuilder();
-        for (String s : args) {
-            builder.append(s).append(" ");
-        }
-        String string = new String(builder);
-        String[] commands = string.split("\\s*;\\s*");
+        String[] commands = Main.parsingCommands(args);
         for (String commandParams : commands) {
-            run(commandParams.split("\\s+"));
+            try {
+                run(commandParams.split("\\s+"));
+            } catch (CommandException ex) {
+                System.err.println(ex.getMessage());
+                System.exit(1);
+            }
         }
         System.exit(0);
     }

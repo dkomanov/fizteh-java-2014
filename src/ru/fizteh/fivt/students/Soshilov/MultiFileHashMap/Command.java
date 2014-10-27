@@ -11,6 +11,7 @@ public interface Command {
      * Function for execution every command that would be entered.
      * @param args Commands that were entered.
      * @param db Our main table.
+     * @throws CommandException Error in wrong arguments count.
      */
-    void execute(final String[] args, DataBase db);
+    void execute(final String[] args, DataBase db) throws CommandException;
 }

@@ -15,9 +15,10 @@ public class TableRemove implements Command {
      * Remove key + value by getting the key as argument.
      * @param args Commands that were entered.
      * @param db Our main table.
+     * @throws CommandException Error in wrong arguments count.
      */
     @Override
-    public void execute(final String[] args, DataBase db) {
+    public void execute(final String[] args, DataBase db) throws CommandException {
         Main.checkArguments("remove", args.length, argumentsCount);
 
         if (db.currentTableExists()) {

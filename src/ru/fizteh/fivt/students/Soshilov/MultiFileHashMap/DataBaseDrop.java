@@ -15,9 +15,10 @@ public class DataBaseDrop implements Command {
      * Drop (destroy) table.
      * @param args Commands that were entered.
      * @param db Our main table.
+     * @throws CommandException Error in wrong arguments count.
      */
     @Override
-    public void execute(final String[] args, DataBase db) {
+    public void execute(final String[] args, DataBase db) throws CommandException {
         Main.checkArguments("drop", args.length, argumentsCount);
 
         if (db.removeTable(args[1]) == null) {

@@ -32,8 +32,17 @@ public class DataBase {
      * Function, which can return a private field dbPath.
      * @return Path value - dbPath.
      */
-    public Path getDbPath() {
+/*    public Path getDbPath() {
         return dbPath;
+    }*/
+
+    /**
+     * Resolve the given path against this path of main database.
+     * @param other The path to resolve against this path.
+     * @return The resulting path.
+     */
+    public Path resolvePathAgainstDBPath(final String other) {
+        return dbPath.resolve(other);
     }
 
     /**
@@ -178,7 +187,7 @@ public class DataBase {
     /**
      * First we delete the database content.
      * If dbPath points at not a directory, we delete it. Else use next function.
-     * @throws IOException In case if we can not delete a file by its' path.
+     * @throws RuntimeException In case if we can not delete a file by its' path.
      */
     public void deleteDirectoryContent() throws RuntimeException {
         if (!Files.isDirectory(dbPath)) {

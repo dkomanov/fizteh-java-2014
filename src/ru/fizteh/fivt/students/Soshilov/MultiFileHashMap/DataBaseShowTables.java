@@ -17,9 +17,10 @@ public class DataBaseShowTables implements Command {
      * Show every table and its' elements' quantity.
      * @param args Commands that were entered.
      * @param db Our main table.
+     * @throws CommandException Error in wrong arguments count.
      */
     @Override
-    public void execute(final String[] args, DataBase db) {
+    public void execute(final String[] args, DataBase db) throws CommandException {
         Main.checkArguments("show tables", args.length, argumentsCount);
 
         for (HashMap.Entry<String, Table> entry: db.getSet()) {

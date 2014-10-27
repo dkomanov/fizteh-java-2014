@@ -17,13 +17,14 @@ public class DataBaseCreate implements Command {
      * Creates new table.
      * @param args Commands that were entered.
      * @param db Our main table.
+     * @throws CommandException Error in wrong arguments count.
      */
     @Override
-    public void execute(final String[] args, DataBase db) {
+    public void execute(final String[] args, DataBase db) throws CommandException {
         Main.checkArguments("create", args.length, argumentsCount);
 
         String tableName = args[1];
-        Path tablePath = db.getDbPath().resolve(tableName);
+        Path tablePath = db.resolvePathAgainstDBPath(tableName);
         //Converts a given string to a Path and resolves it against this Path
 
         if (db.putKeyAndValue(tableName, new Table(tablePath)) == null) {

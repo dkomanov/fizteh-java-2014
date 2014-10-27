@@ -15,9 +15,10 @@ public class DataBaseUse implements Command {
      * Change current table and use a new one.
      * @param args Commands that were entered.
      * @param db Our main table.
+     * @throws CommandException Error in wrong arguments count.
      */
     @Override
-    public void execute(final String[] args, DataBase db) {
+    public void execute(final String[] args, DataBase db) throws CommandException {
         Main.checkArguments("use", args.length, argumentsCount);
 
         Table table = db.getTable(args[1]);

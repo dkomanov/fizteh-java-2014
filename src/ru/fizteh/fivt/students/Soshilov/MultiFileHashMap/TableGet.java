@@ -15,9 +15,10 @@ public class TableGet implements Command {
      * Get the value by having a key.
      * @param args Commands that were entered.
      * @param db Our main table.
+     * @throws CommandException Error in wrong arguments count.
      */
     @Override
-    public void execute(final String[] args, DataBase db) {
+    public void execute(final String[] args, DataBase db) throws CommandException {
         Main.checkArguments("get", args.length, argumentsCount);
 
         if (db.currentTableExists()) {

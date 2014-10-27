@@ -23,10 +23,13 @@ public class Main {
      * @param length The count of arguments.
      * @param requiredLength The correct count.
      */
-    public static void checkArguments(final String command, int length, int requiredLength) {
+    public static void checkArguments(final String command, int length, int requiredLength) throws CommandException {
         if (length != requiredLength) {
-            System.err.println(command + ": " + (length < requiredLength ? "not enough" : "too many") + " arguments");
-            System.exit(1);
+            if (length < requiredLength) {
+                throw new CommandException(command + ": not enough arguments");
+            } else if (length > requiredLength) {
+                throw new CommandException(command + ": too many arguments");
+            }
         }
     }
 
@@ -42,5 +45,19 @@ public class Main {
             System.arraycopy(args, wordsInName, result, 0, args.length - wordsInName);
         }
         return result;
+    }
+
+    /**
+     * Parse commands in definite way to use after it.
+     * @param commands Entered data.
+     * @return Array of strings which is defined by every argument.
+     */
+    public static String[] parsingCommands(final String[] commands) {
+        StringBuilder builder = new StringBuilder();
+        for (String s : commands) {
+            builder.append(s).append(" ");
+        }
+        String string = new String(builder);
+        return string.split("\\s*;\\s*");
     }
 }
