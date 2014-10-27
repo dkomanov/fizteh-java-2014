@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class Table {
     private File tableName;
@@ -14,7 +14,7 @@ public class Table {
     
     Table(final String name) throws IOException {
         tableName  = new File(name);
-        data = new TreeMap<>();
+        data = new HashMap<>();
         if (tableName.exists()) {
             if (tableName.list() != null) {
                 for (String file: tableName.list()) {
