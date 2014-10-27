@@ -18,13 +18,15 @@ public class Command {
     }
 
     public final void execute(final TableState tableState,
-                        final String[] arguments) throws ExitException {
+                              final String[] arguments) throws ExitException,
+            IllegalNumberOfArgumentsException {
         if (arguments.length != numArguments) {
             System.err.println("Invalid number of arguments: "
                     + numArguments
                     + " expected, "
                     + arguments.length
                     + " found.");
+            throw new IllegalNumberOfArgumentsException();
         } else {
             callback.accept(tableState, arguments);
         }
