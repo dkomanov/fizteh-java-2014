@@ -42,8 +42,7 @@ public class MultiMapMain {
                                     if (!tableDirectory.mkdir()) {
                                         System.err.println("Can't create table directory");
                                         System.exit(1);
-                                    }
-                                    else {
+                                    } else {
                                         System.out.println("created");
                                         map.put(tableName, new HashMap<>());
                                     }
@@ -55,7 +54,8 @@ public class MultiMapMain {
                                 if (!map.containsKey(tableName)) {
                                     System.out.println(tableName + " not exists");
                                 } else {
-                                    Path tableDirectory = Paths.get(tableHolder.getRootPath().toAbsolutePath().toString()
+                                    Path tableDirectory = Paths.get(
+                                        tableHolder.getRootPath().toAbsolutePath().toString()
                                             + File.separator + tableName);
                                     String [] subDirs = tableDirectory.toFile().list();
                                     if (subDirs.length != 0) {
@@ -85,7 +85,7 @@ public class MultiMapMain {
                                         if (tableS.getCurrentTableName().equals(tableName)) {
                                             tableS.setCurrentTableName("");
                                         }
-                                    } catch(IOException e) {
+                                    } catch (IOException e) {
                                         System.err.println(e);
                                         System.exit(1);
                                     }
