@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.filemap;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * @author AlexeyZhuravlev
  */
@@ -9,12 +7,16 @@ public class RemoveCommand extends Command {
 
     private String key;
 
-    public RemoveCommand(String passedKey) {
-        key = passedKey;
+    public void putArguments(String[] args) {
+        key = args[1];
+    }
+
+    public int numberOfArguments() {
+        return 1;
     }
 
     @Override
-    public void execute(DataBase base, AtomicBoolean exitStatus) throws Exception {
+    public void execute(DataBase base) throws Exception {
         if (base.data.containsKey(key)) {
             base.data.remove(key);
             base.sync();

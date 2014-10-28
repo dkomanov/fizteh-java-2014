@@ -14,15 +14,15 @@ public class DataBase {
     public DataBase(String path) throws Exception {
         dbFileName = path;
         data = new HashMap<>();
-        DbReader reader = new DbReader(dbFileName);
-        reader.readData(data);
-        reader.close();
+        try (DbReader reader = new DbReader(dbFileName)) {
+            reader.readData(data);
+        }
     }
 
     public void sync() throws Exception {
-        DbWriter writer = new DbWriter(dbFileName);
-        writer.writeData(data);
-        writer.close();
+        try (DbWriter writer = new DbWriter(dbFileName)) {
+            writer.writeData(data);
+        }
     }
 
     public int recordsNumber() {

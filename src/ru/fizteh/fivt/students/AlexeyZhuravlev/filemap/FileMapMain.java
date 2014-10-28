@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.filemap;
 
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author AlexeyZhuravlev
@@ -28,23 +27,22 @@ public class FileMapMain {
     }
 
     private static void interactiveMode(DataBase base) {
-        AtomicBoolean exitStatus = new AtomicBoolean(false);
         Scanner scanner = new Scanner(System.in);
+        boolean exitStatus = false;
         do {
             System.out.print("$ ");
-            for (String s : scanner.nextLine().split(";")) {
+            for (String s : scanner.nextLine().split(";\\s*")) {
                 try {
                     Command newCommand = Command.fromString(s);
-                    newCommand.execute(base, exitStatus);
+                    newCommand.execute(base);
+                } catch (ExitCommandException e) {
+                    exitStatus = true;
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
                     System.err.flush();
                 }
-                if (exitStatus.get()) {
-                    break;
-                }
             }
-        } while (!exitStatus.get());
+        } while (!exitStatus);
     }
 
     private static void packageMode(DataBase base, String[] args) throws Exception {
@@ -53,12 +51,12 @@ public class FileMapMain {
             allCommands.append(s);
             allCommands.append(' ');
         }
-        String[] commands = allCommands.toString().split(";");
+        String[] commands = allCommands.toString().split(";\\s*", 0);
         for (String s: commands) {
-            AtomicBoolean exitStatus = new AtomicBoolean(false);
             Command newCommand = Command.fromString(s);
-            newCommand.execute(base, exitStatus);
-            if (exitStatus.get()) {
+            try {
+                newCommand.execute(base);
+            } catch (ExitCommandException e) {
                 break;
             }
         }

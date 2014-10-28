@@ -1,13 +1,16 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.filemap;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * @author AlexeyZhuravlev
  */
 public class ListCommand extends Command {
 
-    public String getList(DataBase base) {
+    public int numberOfArguments() {
+        return 0;
+    }
+
+    @Override
+    public void execute(DataBase base) {
         StringBuilder allKeys = new StringBuilder();
         for (String key : base.data.keySet()) {
             if (allKeys.length() > 0) {
@@ -15,12 +18,6 @@ public class ListCommand extends Command {
             }
             allKeys.append(key);
         }
-        return allKeys.toString();
+        System.out.println(allKeys.toString());
     }
-
-    @Override
-    public void execute(DataBase base, AtomicBoolean exitStatus) {
-        System.out.println(getList(base));
-    }
-
 }
