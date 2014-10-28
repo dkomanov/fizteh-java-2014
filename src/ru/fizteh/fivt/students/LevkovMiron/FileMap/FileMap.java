@@ -18,6 +18,14 @@ class FileMap {
     FileMap(PrintStream printStream) {
         map = new HashMap<String, String>();
         file = new File(System.getProperty("db.file"));
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                printStream.println("File doesn't exist. Can't create the file");
+                System.exit(-6);
+            }
+        }
         try (FileInputStream inStream = new FileInputStream(file)) {
             while (inStream.available() > 0) {
                 int keySize = readInt(inStream);
@@ -27,8 +35,7 @@ class FileMap {
                 map.put(key, value);
             }
             map.remove("");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             printStream.println("Incorrect file data. Didn't read");
             System.exit(-1);
         } catch (OutOfMemoryError e) {
@@ -37,7 +44,7 @@ class FileMap {
         }
     }
 
-    static String readString(final FileInputStream inStream, int size) throws IOException, OutOfMemoryError {
+    String readString(final FileInputStream inStream, int size) throws IOException, OutOfMemoryError {
         ArrayList<Byte> tempData = new ArrayList<Byte>();
         for (int i = 0; i < size; i++) {
             byte[] oneByte = new byte[1];
@@ -57,7 +64,7 @@ class FileMap {
             throw new OutOfMemoryError("Data is too large.");
         }
     }
-    static int readInt(final FileInputStream inStream) throws IOException, OutOfMemoryError {
+    int readInt(final FileInputStream inStream) throws IOException, OutOfMemoryError {
         byte[] utfData = new byte[4];
         if (inStream.read(utfData) < 4) {
             throw new OutOfMemoryError("Unexpected end of file.");
@@ -68,7 +75,7 @@ class FileMap {
         }
         return value;
     }
-    static void writeIntAndString(FileOutputStream stream, String key) throws IOException {
+    void writeIntAndString(FileOutputStream stream, String key) throws IOException {
         byte[] data = ByteBuffer.allocate(4).putInt(key.length()).array();
         stream.write(data);
         stream.write(key.getBytes("UTF-8"));
