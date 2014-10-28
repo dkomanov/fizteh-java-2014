@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author AlexeyZhuravlev
  */
-class DbWriter implements AutoCloseable{
+class DbWriter implements AutoCloseable {
 
     private DataOutputStream stream;
 
