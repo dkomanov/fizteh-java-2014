@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.Bulat_Galiev.multifilehashmap;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -62,23 +63,24 @@ public final class TableProvider {
     }
 
     public static void createTable(final String name) {
-        if (!name.matches("[a-zA-Z0-9.]*")) {
-            System.err.println("table name " + name
-                    + " contains invalid characters");
-            return;
-        }
-        Path newTablePath = tablesDirPath.resolve(name);
-        if (Files.exists(tablesDirPath)) {
-            if (tableLinks.get(name) != null) {
-                System.out.println(name + " exists");
-                return;
+        try {
+            Path newTablePath = tablesDirPath.resolve(name);
+            if (Files.exists(tablesDirPath)) {
+                if (tableLinks.get(name) != null) {
+                    System.out.println(name + " exists");
+                    return;
+                }
+                newTablePath.toFile().mkdir();
+                Table newTable = new Table(newTablePath, name);
+                tableLinks.put(name, newTable);
+                System.out.println("created");
+            } else {
+                throw new IllegalArgumentException("Incorrect name.");
             }
-            newTablePath.toFile().mkdir();
-            Table newTable = new Table(newTablePath, name);
-            tableLinks.put(name, newTable);
-            System.out.println("created");
-        } else {
-            throw new IllegalArgumentException("Incorrect name.");
+        } catch (InvalidPathException e) {
+            System.err.println("table name " + name + " is incorrect. "
+                    + e.getMessage());
+            return;
         }
     }
 
