@@ -79,7 +79,7 @@ public class Welcome {
                     if (whatToDo == null) {
                         System.err.println("Not found command: " + arguments[0]);
                         if (s.length > 1) {
-                            System.exit(-1);
+                            break;
                         }
                         continue;
                     }

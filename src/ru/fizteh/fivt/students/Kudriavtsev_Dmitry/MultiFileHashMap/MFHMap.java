@@ -81,6 +81,35 @@ public class MFHMap extends HashMap<String, String> {
         }
     }
 
+    int countOfCollisionsInFile(Path path) {
+        int count = 0;
+        try (DataInputStream iStream = new DataInputStream(Files.newInputStream(path))) {
+            while (iStream.available() > 0) {
+                int keySize = iStream.readInt();
+                if (keySize > Integer.bitCount(Integer.MAX_VALUE)) {
+                    System.err.println("Bad data in " + path.toString());
+                    iStream.close();
+                    return -1;
+                }
+                byte[] key = new byte[keySize];
+                if (iStream.read(key, 0, keySize) == -1) {
+                    endOfStream();
+                }
+
+                int valueSize = iStream.readInt();
+                byte[] value = new byte[valueSize];
+                if (iStream.read(value, 0, valueSize) == -1) {
+                    endOfStream();
+                }
+                ++count;
+            }
+        } catch (IOException e) {
+            System.err.println("It was exception on creating stream or in reading from file " + path.toString());
+            return -1;
+        }
+        return count;
+    }
+
     public void load() {
         for (int i = 0; i < DIRECTORIES_COUNT; ++i) {
             for (int j = 0; j < FILES_COUNT; ++j) {
@@ -155,7 +184,7 @@ public class MFHMap extends HashMap<String, String> {
                     }
                     writeToFile(streams[d][f], entry.getKey(), entry.getValue());
                     Integer collisionCount = changedFiles.get(pathOfFile.getKey());
-                    if (collisionCount != 0) {
+                    if (collisionCount > 0) {
                         --collisionCount;
                         changedFiles.put(pathOfFile.getKey(), collisionCount);
                     } else {
@@ -163,6 +192,7 @@ public class MFHMap extends HashMap<String, String> {
                     }
                 }
             }
+            changedFiles.clear();
 
         } catch (IOException e) {
             System.err.println("Can't write to disk: " + e.getMessage());
