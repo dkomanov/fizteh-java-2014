@@ -14,20 +14,13 @@ import java.nio.file.Paths;
  * Created by sautin1 on 10/12/14.
  */
 public class Main {
-    private static final String PROPERTY_NAME = "fizteh.db.dir";
 
     public static void main(String[] args) {
-        System.setProperty(PROPERTY_NAME,
-                "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test");
         int exitStatus = 0;
         try {
             Path filePath;
-            String filePathString = System.getProperty(PROPERTY_NAME);
-            if (filePathString == null) {
-                throw new IllegalArgumentException("Property " + PROPERTY_NAME + " does not exist");
-            } else {
-                filePath = Paths.get(filePathString);
-            }
+            String filePathString = "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test";
+            filePath = Paths.get(filePathString);
 
             StringTableIOToolsMultipleFiles ioTools = new StringTableIOToolsMultipleFiles(16, 16, "UTF-8");
             StringTableProviderFactory providerFactory = new StringTableProviderFactory();
