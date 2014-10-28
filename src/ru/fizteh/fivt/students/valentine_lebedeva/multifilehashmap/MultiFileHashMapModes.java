@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap;
 
 import java.util.Scanner;
 
+import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHashMapCommands.MultiFileHashMapExitCommand;
+
 public final class MultiFileHashMapModes {
     public static void interactive() throws Exception {
         try (Scanner input = new Scanner(System.in)) {
@@ -33,7 +35,9 @@ public final class MultiFileHashMapModes {
         for (int i = 0; i < cmdargs.length; i++) {
             parserCmd.parse(cmdargs[i], true);
         }
-        System.exit(0);
+        MultiFileHashMapExitCommand exit = new MultiFileHashMapExitCommand();
+        String[] tmp = {"exit"};
+        exit.execute(tmp, parserCmd);
     }
 
 }

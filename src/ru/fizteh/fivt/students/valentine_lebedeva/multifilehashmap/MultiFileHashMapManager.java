@@ -60,7 +60,7 @@ public final class MultiFileHashMapManager {
             if (commands.get(parseArgs[0]) != null) {
                 commands.get(parseArgs[0]).execute(parseArgs, this);
             } else {
-                throw new IllegalArgumentException("Wrong arguments");
+                throw new IllegalArgumentException("Wrong command");
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -78,8 +78,12 @@ public final class MultiFileHashMapManager {
         return workTable;
     }
 
-    public void putTables(final String key, final MultiFileTable value) {
+    public void putTable(final String key, final MultiFileTable value) {
         tables.put(key, value);
+    }
+
+    public void removeTable(final String key) {
+        tables.remove(key);
     }
 
     public HashMap<String, MultiFileTable> getTables() {

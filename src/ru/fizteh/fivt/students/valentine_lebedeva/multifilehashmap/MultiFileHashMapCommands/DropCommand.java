@@ -10,7 +10,7 @@ public final class DropCommand extends MultiFileHashMapCommand {
             throws IOException {
         checkArgs(2, args);
         if (parser.getTables().get(args[1]) != null) {
-            parser.getTables().remove(args[1]);
+            parser.removeTable(args[1]);
             System.out.println("dropped");
         } else {
             System.out.println(args[1] + " not exists");

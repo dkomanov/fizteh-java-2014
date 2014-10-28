@@ -21,7 +21,7 @@ public final class CreateCommand extends MultiFileHashMapCommand {
             File path = new File(System.getProperty("fizteh.db.dir"), args[1]);
             path.mkdir();
             MultiFileTable tmp = new MultiFileTable(path.getAbsolutePath());
-            parser.putTables(args[1], tmp);
+            parser.putTable(args[1], tmp);
             System.out.println("created");
         }
     }
