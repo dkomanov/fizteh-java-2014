@@ -33,10 +33,10 @@ public class Table implements Map<String, String>, AutoCloseable {
         this.name = name;
         this.allRecords = Collections.synchronizedMap(records);
     }
-    private void create(){
+    private void create() {
         try {
             read();
-        } catch ( ExitException e) {
+        } catch (ExitException e) {
             System.exit(e.getStatus());
         }
     }
@@ -53,15 +53,16 @@ public class Table implements Map<String, String>, AutoCloseable {
             byte[] word = new byte[wordLength];
             dbFile.read(word, 0, wordLength);
             return new String(word, "UTF-8");
-        } catch (IOException |SecurityException e) {
+        } catch (IOException | SecurityException e) {
             System.err.println("Error reading the table");
             throw new ExitException(1);
         }
     }
     private void read() throws ExitException {
         File pathDirectory =  dbPath.toFile();
-        if (pathDirectory.list().length == 0)
+        if (pathDirectory.list().length == 0) {
             return;
+        }
         File[] tableDirectories = pathDirectory.listFiles();
         for (File t: tableDirectories) {
             // Checking subdirectories.
@@ -205,7 +206,7 @@ public class Table implements Map<String, String>, AutoCloseable {
                                 + nDirectory.toString()
                                 + ".dir";
                     File directory = new File(newPath);
-                    if ( directory.exists()) {
+                    if (directory.exists()) {
                         String newFilePath = directory.getAbsolutePath()
                                 + File.separator
                                 + nFile.toString()
@@ -213,7 +214,7 @@ public class Table implements Map<String, String>, AutoCloseable {
                         File file = new File(newFilePath);
                         try {
                             Files.deleteIfExists(file.toPath());
-                        } catch (IOException |SecurityException e) {
+                        } catch (IOException | SecurityException e) {
                             System.err.println(e);
                             throw new ExitException(1);
                         }
