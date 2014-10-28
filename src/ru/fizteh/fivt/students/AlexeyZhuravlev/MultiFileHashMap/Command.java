@@ -14,7 +14,7 @@ public abstract class Command {
         COMMANDS.put("create", new CreateCommand());
         COMMANDS.put("drop", new DropCommand());
         COMMANDS.put("use", new UseCommand());
-        COMMANDS.put("show", new ShowTablesCommand());
+        COMMANDS.put("show_tables", new ShowTablesCommand());
         COMMANDS.put("put", new MultiPutCommand());
         COMMANDS.put("get", new MultiGetCommand());
         COMMANDS.put("remove", new MultiRemoveCommand());
@@ -26,20 +26,13 @@ public abstract class Command {
         if (s.length() < 1) {
             throw new Exception("Empty command");
         }
+        if (s.length() > 4 && s.substring(0, 5).equals("show ")) {
+            s = s.replaceFirst(" ", "_");
+        }
         String[] tokens = s.split("\\s+", 0);
         if (COMMANDS.containsKey(tokens[0])) {
             Command command = COMMANDS.get(tokens[0]);
-            if (tokens[0].equals("show")) {
-                if (tokens.length < 2) {
-                    throw new Exception("show is unknown command");
-                }
-                if (tokens.length > 2) {
-                    throw new Exception("Unexpected number of arguments: 2 required");
-                }
-                if (!tokens[1].equals("tables")) {
-                    throw new Exception(tokens[0] + " " + tokens[1] + " is unknown command");
-                }
-            } else if (tokens.length - 1 != command.numberOfArguments()) {
+            if (tokens.length - 1 != command.numberOfArguments()) {
                 throw new Exception("Unexpected number of arguments: " + command.numberOfArguments() + " required");
             }
             command.putArguments(tokens);

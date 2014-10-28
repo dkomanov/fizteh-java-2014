@@ -5,6 +5,10 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap;
  */
 public class MultiFileHashMapMain {
     public static void main(String[] args) {
+        standardRunner(args, new CommandExecutor());
+    }
+
+    public static void standardRunner(String[] args, AbstractCommandExecutor commandExecutor) {
         String path = System.getProperty("fizteh.db.dir");
         if (path == null) {
             System.err.println("No database directory name specified");
@@ -23,9 +27,7 @@ public class MultiFileHashMapMain {
             boolean exitStatus = false;
             do {
                 try {
-                    String s = getter.nextCommand();
-                    Command command = Command.fromString(s);
-                    command.execute(dbDir);
+                    commandExecutor.executeNextCommand(getter, dbDir);
                 } catch (ExitCommandException e) {
                     exitStatus = true;
                 } catch (Exception e) {
