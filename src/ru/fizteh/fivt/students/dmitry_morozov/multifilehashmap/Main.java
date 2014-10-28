@@ -31,7 +31,7 @@ public class Main {
             }
             currentDB = new MultiFileHashMap(parsed[1]);
             curTname = tablename;
-            return "using " + tablename + "\n";
+            return "using " + tablename;
         } else {
             return tablename + " not exists\n";
         }
@@ -97,21 +97,23 @@ public class Main {
 
     public static String drop(String tablename) {
         String got = maps.get(tablename);
+        String res = "";
         if (got.charAt(0) == 'f') { // Database found.
             String tname = got.split("\n")[1];
             if (!removeDirectory(tname)) {
                 System.err.println("deleting table from disk failed");
             } else {
                 maps.remove(tablename);
+                res = "dropped";
             }
             if (tablename.equals(curTname)) {
                 currentDB = null;
                 curTname = "";
             }
         } else {
-            return "tablename not exists";
+            res = "tablename not exists";
         }
-        return "";
+        return res;
     }
 
     public static boolean functionHandler(String[] comAndParams, int bIndex,

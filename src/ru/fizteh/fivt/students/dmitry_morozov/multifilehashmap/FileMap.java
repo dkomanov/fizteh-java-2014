@@ -43,6 +43,7 @@ public class FileMap {
             if (in.available() >= sizeOfInt) {
                 len = in.readInt();
                 if (0 != len % 2 || in.available() < len) {
+                    in.close();
                     throw new Exception("File was damaged");
                 }
                 len /= 2;
@@ -55,10 +56,12 @@ public class FileMap {
                 break;
             }
             if (in.available() < sizeOfInt) {
+                in.close();
                 throw new Exception("Couldn't set rw options");
             }
             len = in.readInt();
             if (0 != len % 2 || in.available() < len) {
+                in.close();
                 throw new Exception("File was damaged");
             }
             len /= 2;

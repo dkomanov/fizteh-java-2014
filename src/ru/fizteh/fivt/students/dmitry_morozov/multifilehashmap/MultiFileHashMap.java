@@ -99,12 +99,14 @@ public class MultiFileHashMap {
                 openedMaps.set(i);
                 maps[i].list(pw);
             }
-            if (! printed ) {
+            if (!printed) {
                 printed = !maps[i].isEmpty();
             }
         }
-        pw.println();
-        pw.flush();        
+        if (printed) {
+            pw.println();
+        }        
+        pw.flush();
     }
 
     public void exit() throws IOException {
@@ -135,8 +137,8 @@ public class MultiFileHashMap {
 
     private String getPath(int hash) { // Returns path to db-file by number of
                                        // database.
-        int ndir = hash % dirsAm;
-        int nfile = hash / dirsAm % dirsAm;
+        int ndir = Math.abs(hash % dirsAm);
+        int nfile = Math.abs(hash / dirsAm % dirsAm);
         String path = rootDir.getAbsolutePath();
         String suffix = "/";
         if (ndir < 10) {
