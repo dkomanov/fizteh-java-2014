@@ -18,7 +18,7 @@ public class Table {
         try {
             Path tabledir = dir.resolve(path);
             if (!tabledir.toFile().mkdir()) {
-                System.out.println("tablename exists");
+                System.out.println(path +"exists");
             } else {
                 System.out.println("created");
             }
@@ -34,7 +34,7 @@ public class Table {
         try {
             Path tabledir = dir.resolve(path);
             if (!tabledir.toFile().exists()) {
-                System.out.println("tablename not exists");
+                System.out.println(path +" not exists");
             } else {
                 if (tabledir == olddir) {
                     FileManager filemanager = new FileManager();
