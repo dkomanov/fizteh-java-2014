@@ -6,12 +6,10 @@ import java.io.PrintWriter;
 import java.util.BitSet;
 import java.util.TreeSet;
 
-import ru.fizteh.fivt.students.dmitry_morozov.multifilehashmap.FileMap;
-
 public class MultiFileHashMap {
 
-    private final static int fileMapsAm = 256;
-    private final static int dirsAm = 16;
+    private final int FILE_MAPS_AM = 256;
+    private final int DIRS_AM = 16;
     // private final int filesByDir = 16;
     private File rootDir;
     private BitSet openedMaps;
@@ -32,10 +30,10 @@ public class MultiFileHashMap {
 
     public MultiFileHashMap(String path) throws Exception {
         rootDir = safeMkDir(path);
-        openedMaps = new BitSet(fileMapsAm);
+        openedMaps = new BitSet(FILE_MAPS_AM);
         openedMaps.clear();
-        maps = new FileMap[fileMapsAm];
-        for (int i = 0; i < dirsAm; ++i) {
+        maps = new FileMap[FILE_MAPS_AM];
+        for (int i = 0; i < DIRS_AM; ++i) {
             String suffix = "/";
             if (i < 10) {
                 suffix += "0";
@@ -47,7 +45,7 @@ public class MultiFileHashMap {
     }
 
     public String put(String key, String value) throws Exception {
-        int mapNum = key.hashCode() % fileMapsAm;
+        int mapNum = key.hashCode() % FILE_MAPS_AM;
         if (openedMaps.get(mapNum)) {
             return maps[mapNum].put(key, value);
         } else {
@@ -59,7 +57,7 @@ public class MultiFileHashMap {
     }
 
     public String get(String key) throws Exception {
-        int mapNum = key.hashCode() % fileMapsAm;
+        int mapNum = key.hashCode() % FILE_MAPS_AM;
         if (openedMaps.get(mapNum)) {
             return maps[mapNum].get(key);
         } else {
@@ -71,7 +69,7 @@ public class MultiFileHashMap {
     }
 
     public String remove(String key) throws Exception {
-        int mapNum = key.hashCode() % fileMapsAm;
+        int mapNum = key.hashCode() % FILE_MAPS_AM;
         if (openedMaps.get(mapNum)) {
             return maps[mapNum].remove(key);
         } else {
@@ -84,7 +82,7 @@ public class MultiFileHashMap {
 
     public void list(PrintWriter pw) throws Exception {
         boolean printed = false;
-        for (int i = 0; i < fileMapsAm; i++) {
+        for (int i = 0; i < FILE_MAPS_AM; i++) {
             if (openedMaps.get(i)) {
                 if (printed && !maps[i].isEmpty()) {
                     pw.print(", ");
@@ -111,7 +109,7 @@ public class MultiFileHashMap {
 
     public void exit() throws IOException {
         TreeSet<Integer> toDelete = new TreeSet<Integer>();
-        for (int i = 0; i < fileMapsAm; i++) {
+        for (int i = 0; i < FILE_MAPS_AM; i++) {
             if (openedMaps.get(i)) {
                 if (maps[i].isEmpty()) {
                     toDelete.add(i);
@@ -123,7 +121,7 @@ public class MultiFileHashMap {
             File tdel = new File(getPath(num));
             tdel.delete();
         }
-        for (int i = 0; i < dirsAm; i++) {
+        for (int i = 0; i < DIRS_AM; i++) {
             String suffix = "/";
             if (i < 10) {
                 suffix += "0";
@@ -137,8 +135,8 @@ public class MultiFileHashMap {
 
     private String getPath(int hash) { // Returns path to db-file by number of
                                        // database.
-        int ndir = Math.abs(hash % dirsAm);
-        int nfile = Math.abs(hash / dirsAm % dirsAm);
+        int ndir = Math.abs(hash % DIRS_AM);
+        int nfile = Math.abs(hash / DIRS_AM % DIRS_AM);
         String path = rootDir.getAbsolutePath();
         String suffix = "/";
         if (ndir < 10) {
