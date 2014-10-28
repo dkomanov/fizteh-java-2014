@@ -63,7 +63,7 @@ public class MultiFileHashMap {
                         String value = readWordFromFile(readFileStream);
                         int hashcode = key.hashCode();
                         int ndirectory = Math.abs(hashcode) % KEYNUMBER;
-                        int nfile = hashcode / KEYNUMBER % KEYNUMBER;
+                        int nfile = Math.abs(hashcode) / KEYNUMBER % KEYNUMBER;
                         arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.put(key, value);
                     }
                 } catch (EOFException e) {
@@ -167,7 +167,7 @@ public class MultiFileHashMap {
         } else {
             int hashcode = key.hashCode();
             int ndirectory = Math.abs(hashcode) % KEYNUMBER;
-            int nfile = hashcode / KEYNUMBER % KEYNUMBER;
+            int nfile = Math.abs(hashcode) / KEYNUMBER % KEYNUMBER;
             if (!arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
             System.out.println("new");
             } else {
@@ -187,7 +187,7 @@ public class MultiFileHashMap {
         } else {
             int hashcode = key.hashCode();
             int ndirectory = Math.abs(hashcode) % KEYNUMBER;
-            int nfile = hashcode / KEYNUMBER % KEYNUMBER;
+            int nfile = Math.abs(hashcode) / KEYNUMBER % KEYNUMBER;
             if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
                 System.out.println("found");
                 System.out.println(arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.get(key));
@@ -283,7 +283,7 @@ public class MultiFileHashMap {
         } else {
             int hashcode = key.hashCode();
             int ndirectory = Math.abs(hashcode) % KEYNUMBER;
-            int nfile = hashcode / KEYNUMBER % KEYNUMBER;
+            int nfile = Math.abs(hashcode) / KEYNUMBER % KEYNUMBER;
             if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
                 arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.remove(key);
                 System.out.println("removed");
