@@ -94,7 +94,8 @@ public class MultiFileHashMap {
         for (int i = 0; i < KEYNUMBER; i++) {
             for (int j = 0; j < KEYNUMBER; j++) {
                 if (!arrayOfHashMaps[i][j].arrayOfHashMaps.isEmpty()) {
-                    File newDirs = new File(table.getPath() + File.separator + nameOfDir + File.separator + String.valueOf(i) + ".dir");
+                    File newDirs = new File(table.getPath() + File.separator + nameOfDir + File.separator + String.
+                            valueOf(i) + ".dir");
                     if (!newDirs.exists()) {
                         try {
                             newDirs.mkdir();
@@ -107,7 +108,7 @@ public class MultiFileHashMap {
                         try {
                             newFiles.createNewFile();
                         } catch (Exception e) {
-                            throw new Exception ("Fatal error. Cannot create new file");
+                            throw new Exception("Fatal error. Cannot create new file");
                         }
                     }
                     try {
@@ -125,7 +126,8 @@ public class MultiFileHashMap {
         Integer count = 0;
         for (int i = 0; i < KEYNUMBER; i++) {
             for (int j = 0; j < KEYNUMBER; j++) {
-                File newDirs = new File(table.getPath() + File.separator + path + File.separator + String.valueOf(i) + ".dir");
+                File newDirs = new File(table.getPath() + File.separator + path + File.separator + String.valueOf(i)
+                        + ".dir");
                 if (newDirs.exists()) {
                     File newFiles = new File(newDirs.getPath() + File.separator + String.valueOf(j) + ".dat");
                     if (newFiles.exists()) {
@@ -298,6 +300,7 @@ public class MultiFileHashMap {
 
         if (nameOfDir.equals("")) {
             System.out.println("no table");
+            return true;
         } else {
             for (ArrayOfHashMaps[] dirs : arrayOfHashMaps) {
                 for (ArrayOfHashMaps dirs2 : dirs) {
@@ -379,7 +382,7 @@ public class MultiFileHashMap {
             if (tokens.length == 1) {
                 return list();
             } else {
-                argumentsCountError(tokens[0]);;
+                argumentsCountError(tokens[0]);
                 return false;
             }
         } else if (tokens[0].equals("exit")) {
