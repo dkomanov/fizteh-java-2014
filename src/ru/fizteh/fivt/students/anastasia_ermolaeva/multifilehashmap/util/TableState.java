@@ -9,7 +9,8 @@ public class TableState {
     private final Map<String,
             Map<String, String>> map;
     private String currentTableName = "";
-    public TableState(final TableHolder tableHolder) throws ExitException {
+
+    public TableState(final TableHolder tableHolder) {
         map = new HashMap<>();
         Map<String, Table> m = tableHolder.getTableMap();
         for (Map.Entry<String, Table> entry : m.entrySet()) {
