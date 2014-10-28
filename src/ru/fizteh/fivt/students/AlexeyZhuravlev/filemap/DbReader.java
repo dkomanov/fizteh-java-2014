@@ -7,17 +7,15 @@ import java.util.HashMap;
 /**
  * @author AlexeyZhuravlev
  */
-class DbReader {
+class DbReader implements AutoCloseable {
 
     private DataInputStream stream;
 
     public DbReader(String path) throws Exception {
         try {
             File dbFile = new File(path);
-            if (!dbFile.exists()) {
-                if (!dbFile.createNewFile()) {
-                    throw new Exception("Cannot create new database file");
-                }
+            if (!dbFile.exists() && !dbFile.createNewFile()) {
+                throw new Exception("Cannot create new database file");
             }
             stream = new DataInputStream(new FileInputStream(path));
         } catch (IOException | SecurityException e) {
