@@ -20,9 +20,9 @@ public class DataBase {
     }
 
     public void sync() throws Exception {
-        DbWriter writer = new DbWriter(dbFileName);
-        writer.writeData(data);
-        writer.close();
+        try (DbWriter writer = new DbWriter(dbFileName)) {
+            writer.writeData(data);
+        }
     }
 
 }
