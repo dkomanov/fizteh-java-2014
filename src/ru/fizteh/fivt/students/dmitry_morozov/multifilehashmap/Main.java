@@ -55,7 +55,7 @@ public class Main {
         PrintWriter pw = new PrintWriter(sw);
         maps.list(pw);
         String tablenames = sw.toString();
-        String tnames[] = tablenames.split(", ");
+        String[] tnames = tablenames.split(", ");
         for (String str : tnames) {
             System.out.println(str);
         }
@@ -101,16 +101,14 @@ public class Main {
             String tname = got.split("\n")[1];
             if (!removeDirectory(tname)) {
                 System.err.println("deleting table from disk failed");
-            }
-            else {
+            } else {
                 maps.remove(tablename);
             }
             if (tablename.equals(curTname)) {
                 currentDB = null;
                 curTname = "";
             }
-        }
-        else {
+        } else {
             return "tablename not exists";
         }
         return "";
@@ -125,7 +123,7 @@ public class Main {
         if (com.equals("exit")) {
             res = false;
             if (currentDB == null) {
-                return true;
+                return false;
             }
             try {
                 currentDB.exit();
@@ -291,7 +289,7 @@ public class Main {
                 String[] commands = currentLine.split(";");
                 for (int i = 0; i < commands.length; i++) {
                     if (commands[i].length() > 0) {
-                         contFlag = commandSplitting(commands[i]);
+                        contFlag = commandSplitting(commands[i]);
                     }
                 }
             }
