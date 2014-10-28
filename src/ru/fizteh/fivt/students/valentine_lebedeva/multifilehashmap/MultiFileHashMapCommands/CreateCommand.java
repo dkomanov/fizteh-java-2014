@@ -6,11 +6,10 @@ import java.io.IOException;
 import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHashMapManager;
 import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileTable;
 
-public class CreateCommand extends MultiFileHashMapCommand {
-
+public final class CreateCommand extends MultiFileHashMapCommand {
     @Override
-    public final void execute(final String[] args,
-            final MultiFileHashMapManager parser) throws IOException {
+    public void execute(final String[] args, MultiFileHashMapManager parser)
+            throws IOException {
         checkArgs(2, args);
         if (!parser.getTables().isEmpty()
                 && parser.getTables().size() == MAX_NUMBER_OF_TABLES) {

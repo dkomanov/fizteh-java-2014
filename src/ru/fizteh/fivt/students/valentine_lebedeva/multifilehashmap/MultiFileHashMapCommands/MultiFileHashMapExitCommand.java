@@ -7,10 +7,10 @@ import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHash
 import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileTable;
 import ru.fizteh.fivt.students.valentine_lebedeva.shell.Cmd.Rm;
 
-public class MultiFileHashMapExitCommand extends MultiFileHashMapCommand {
+public final class MultiFileHashMapExitCommand extends MultiFileHashMapCommand {
     @Override
-    public final void execute(final String[] args,
-            final MultiFileHashMapManager parser) throws IOException {
+    public void execute(final String[] args, MultiFileHashMapManager parser)
+            throws IOException {
         File rmDir = new File(System.getProperty("fizteh.db.dir"));
         for (File file : rmDir.listFiles()) {
             if (file.list().length == 0) {

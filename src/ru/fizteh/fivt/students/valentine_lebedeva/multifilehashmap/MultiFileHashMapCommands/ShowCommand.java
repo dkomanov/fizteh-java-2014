@@ -6,9 +6,9 @@ import java.util.Map.Entry;
 import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHashMapManager;
 import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileTable;
 
-public class ShowCommand extends MultiFileHashMapCommand {
+public final class ShowCommand extends MultiFileHashMapCommand {
     @Override
-    public final void execute(final String[] args,
+    public void execute(final String[] args,
             final MultiFileHashMapManager parser) throws IOException {
         checkArgs(2, args);
         if (!args[1].equals("tables")) {

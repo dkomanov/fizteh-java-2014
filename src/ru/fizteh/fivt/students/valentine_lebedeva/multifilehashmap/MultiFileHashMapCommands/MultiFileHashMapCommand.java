@@ -8,8 +8,8 @@ import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.filemap.Cmd.C
 
 public class MultiFileHashMapCommand extends Command {
     @Override
-    public void execute(final String[] args,
-            final MultiFileHashMapManager parser) throws IOException {
+    public void execute(final String[] args, MultiFileHashMapManager parser)
+            throws IOException {
         // TODO Auto-generated method stub
     }
 

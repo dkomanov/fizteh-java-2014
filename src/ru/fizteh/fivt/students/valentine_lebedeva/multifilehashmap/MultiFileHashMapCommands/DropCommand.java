@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHashMapManager;
 
-public class DropCommand extends MultiFileHashMapCommand {
+public final class DropCommand extends MultiFileHashMapCommand {
     @Override
-    public final void execute(final String[] args,
-            final MultiFileHashMapManager parser) throws IOException {
+    public void execute(final String[] args, MultiFileHashMapManager parser)
+            throws IOException {
         checkArgs(2, args);
         if (parser.getTables().get(args[1]) != null) {
             parser.getTables().remove(args[1]);

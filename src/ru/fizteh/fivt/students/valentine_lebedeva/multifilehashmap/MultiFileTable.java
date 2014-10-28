@@ -9,7 +9,7 @@ import java.util.Map;
 import ru.fizteh.fivt.students.valentine_lebedeva.Table;
 import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.filemap.FileMapTable;
 
-public class MultiFileTable extends Table {
+public final class MultiFileTable extends Table {
     private static final int MAX_NUMBER_OF_DIRECTORIES = 16;
     private static final int MAX_NUMBER_OF_FILES = 16;
     private File directory;
@@ -35,7 +35,7 @@ public class MultiFileTable extends Table {
         return base;
     }
 
-    public final File getDirectory() {
+    public File getDirectory() {
         return directory;
     }
 
@@ -76,18 +76,18 @@ public class MultiFileTable extends Table {
         }
     }
 
-    public final int getNumberOfDirectory(final String key) {
+    public int getNumberOfDirectory(final String key) {
         int hashcode = key.hashCode();
         return hashcode % MAX_NUMBER_OF_DIRECTORIES;
     }
 
-    public final int getNumberOfFile(final String key) {
+    public int getNumberOfFile(final String key) {
         int hashcode = key.hashCode();
         return hashcode / MAX_NUMBER_OF_DIRECTORIES % MAX_NUMBER_OF_FILES;
     }
 
     @Override
-    public final void close() throws IOException {
+    public void close() throws IOException {
         this.write();
     }
 }
