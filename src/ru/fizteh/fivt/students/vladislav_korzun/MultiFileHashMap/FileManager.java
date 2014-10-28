@@ -91,15 +91,15 @@ public class FileManager {
     void writeTable(Path tabledir) {
         
         Map<String, String> buffer = new TreeMap<String, String>();
-        removedat(tabledir);
+        removedat(tabledir); 
         Set<String> keys = filemap.keySet();
         try {
             for (int i = 0; i < 16; i++) {
                 for (int j = 0; j < 16; j++) {
                     for (String key : keys) {
                         byte bt = key.getBytes("UTF-8")[0];
-                        int ndirectory = bt % 16;
-                        int nfile = bt / 16 % 16;
+                        int ndirectory = Math.abs(bt % 16);
+                        int nfile =  Math.abs(bt / 16 % 16);
                         if (ndirectory == i && nfile == j) {
                             buffer.put(key, filemap.get(key));
                         }

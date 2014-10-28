@@ -26,7 +26,7 @@ public class CommandExecutor {
                     value = command[2];
                     mapcommands.put(key, value); 
                 } else {
-                    System.out.println("You should select table first");
+                    System.out.println("no table");
                 }
                 break;
             case "get":
@@ -34,7 +34,7 @@ public class CommandExecutor {
                     key = command[1];
                     mapcommands.get(key);
                 } else {
-                    System.out.println("You should select table first");
+                    System.out.println("no table");
                 }
                 break;
             case "remove":
@@ -42,14 +42,14 @@ public class CommandExecutor {
                     key = command[1];
                     mapcommands.remove(key);
                 } else {
-                    System.out.println("You should select table first");
+                    System.out.println("no table");
                 }
                 break;
             case "list": 
                 if (!olddir.equals(dbdir)) {
                     mapcommands.list();
                 } else {
-                    System.out.println("You should select table first");
+                    System.out.println("no table");
                 }
                 break;
             case "exit":
@@ -63,7 +63,7 @@ public class CommandExecutor {
                 break;
             case "drop":
                 key = command[1];
-                table.drop(key);
+                table.drop(key, olddir, mapcommands.filemap);
                 break;
             case "use":
                 key = command[1];
@@ -75,8 +75,15 @@ public class CommandExecutor {
                     olddir = dbdir.resolve(key);
                 }
                 break;
-            case "showTables":
-                table.showTables(olddir, mapcommands.filemap);          
+            case "show":
+                switch(command[1]) {
+                case "tables": 
+                    table.showTables(olddir, mapcommands.filemap);
+                    break;
+                default:
+                    System.out.println("Invalid command");
+                    break;
+                }
                 break;
             default:
                 System.out.println("Invalid command");

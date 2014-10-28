@@ -30,13 +30,17 @@ public class Table {
         }
     }
     
-    void drop(String path) {
+    void drop(String path, Path olddir, Map<String, String> filemap) {
         try {
             Path tabledir = dir.resolve(path);
             if (!tabledir.toFile().exists()) {
                 System.out.println("tablename not exists");
             } else {
-                if (tabledir.toFile().isDirectory()) {
+                if (tabledir == olddir) {
+                    FileManager filemanager = new FileManager();
+                    filemanager.filemap = filemap;
+                    filemanager.writeTable(olddir);
+                } else if (tabledir.toFile().isDirectory()) {
                     removedat(tabledir);
                     tabledir.toFile().delete();
                     System.out.println("dropped");
@@ -67,7 +71,7 @@ public class Table {
             Path tabledir = dir.resolve(path);
             
             if (!tabledir.toFile().exists()) {
-                System.out.println("tablename not exists");
+                System.out.println(path + " not exists");
             } else {
                 if (tabledir.toFile().isDirectory()) {
                     FileManager filemanager = new FileManager();
@@ -76,7 +80,7 @@ public class Table {
                         filemanager.writeTable(olddir);
                     }
                     filemanager.readTable(tabledir);
-                    System.out.println("using tablename");
+                    System.out.println("using " + path);
                     return filemanager;
                 } else {
                     throw new IOException();
