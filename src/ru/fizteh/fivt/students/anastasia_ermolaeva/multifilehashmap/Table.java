@@ -4,10 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import ru.fizteh.fivt.students.anastasia_ermolaeva.
         multifilehashmap.util.ExitException;
@@ -19,44 +16,52 @@ public class Table implements Map<String, String>, AutoCloseable {
     private Path rootPath; //Root's directory.
     private String name;
 
-    public Table(final Path rootPath, final String name) throws ExitException {
+    public Table(final Path rootPath, final String name)  {
         this.rootPath = rootPath;
+        String path = rootPath.toAbsolutePath().toString()
+                + File.separator + name;
+        dbPath = Paths.get(path);
         this.name = name;
         this.allRecords = new HashMap<>();
         create();
     }
+    public Table(final Path rootPath, final String name, Map<String, String> records) {
+        this.rootPath = rootPath;
+        String path = rootPath.toAbsolutePath().toString()
+                + File.separator + name;
+        dbPath = Paths.get(path);
+        this.name = name;
+        this.allRecords = Collections.synchronizedMap(records);
+    }
+    private void create(){
+        try {
+            read();
+        } catch ( ExitException e) {
+            System.exit(e.getStatus());
+        }
+    }
+
     public static void main() {
 
     }
     public Map<String, String> getAllRecords() {
         return allRecords;
     }
-    public Path getTablePath() {
-        return dbPath;
-    }
-    public final void create() throws ExitException {
-        try {
-            String path = rootPath.toAbsolutePath().toString()
-                    + File.separator + name;
-            dbPath = Paths.get(path);
-            read();
-        } catch (IOException e) {
-            System.err.println("Can't create a database file");
-            throw new ExitException(1);
-        }
-    }
-    private  String readUtil(final RandomAccessFile dbFile) throws IOException {
+    private String readUtil(final RandomAccessFile dbFile) throws ExitException {
         try {
             int wordLength = dbFile.readInt();
             byte[] word = new byte[wordLength];
             dbFile.read(word, 0, wordLength);
             return new String(word, "UTF-8");
-        } catch (IOException e) {
-            throw new IOException("Cannot read from table");
+        } catch (IOException |SecurityException e) {
+            System.err.println("Error reading the table");
+            throw new ExitException(1);
         }
     }
-    private void read() throws IOException, ExitException {
+    private void read() throws ExitException {
         File pathDirectory =  dbPath.toFile();
+        if (pathDirectory.list().length == 0)
+            return;
         File[] tableDirectories = pathDirectory.listFiles();
         for (File t: tableDirectories) {
             // Checking subdirectories.
@@ -69,6 +74,11 @@ public class Table implements Map<String, String>, AutoCloseable {
         for (File directory: tableDirectories) {
             File[] directoryFiles = directory.listFiles();
             int k = directory.getName().indexOf('.');
+            if ((k < 0) || !(directory.getName().substring(k).equals(".dir"))) {
+                System.err.println("Table subdirectories doesn't "
+                        + "have appropriate name");
+                throw new ExitException(1);
+            }
             try {
                 /*
                 Delete .dir and check(automatically )
@@ -77,6 +87,10 @@ public class Table implements Map<String, String>, AutoCloseable {
                 error message is shown.
                 Then program would finish with exit code != 0.
                  */
+                if (directory.list().length == 0) {
+                    System.err.println("Table has the wrong format");
+                    throw new ExitException(1);
+                }
                 int nDirectory = Integer.parseInt(
                         directory.getName().substring(0, k));
                 for (File file : directoryFiles) {
@@ -86,9 +100,13 @@ public class Table implements Map<String, String>, AutoCloseable {
                         Checking files' names the same way
                         we did with directories earlier.
                         */
+                        if ((k < 0) || !(file.getName().substring(k).equals(".dat"))) {
+                            System.err.println("Table subdirectory's files doesn't "
+                                    + "have appropriate name");
+                            throw new ExitException(1);
+                        }
                         int nFile = Integer.parseInt(
                                 file.getName().substring(0, k));
-
                         try (RandomAccessFile dbFile = new RandomAccessFile(file.getAbsolutePath(), "r")) {
                             if (dbFile.length() > 0) {
                                 while (dbFile.getFilePointer() < dbFile.length()) {
@@ -98,24 +116,26 @@ public class Table implements Map<String, String>, AutoCloseable {
                                 }
                             }
                             dbFile.close();
+                        } catch (IOException e) {
+                            System.err.println("Error reading to table");
+                            throw new ExitException(1);
                         }
-                    } catch (NumberFormatException t) {
+                    } catch (NumberFormatException e) {
                         System.err.println("Subdirectories' files "
                                 + "have wrong names, "
                                 + "expected(0.dat-15.dat)");
                         throw new ExitException(1);
                     }
                 }
-            } catch (NumberFormatException t) {
+            } catch (NumberFormatException e) {
                 System.err.println("Subdirectories' names are wrong, "
                         + "expected(0.dir - 15.dir)");
                 throw new ExitException(1);
             }
         }
-
     }
 
-    private void write() throws Exception {
+    private void write() throws  ExitException {
         Map<String, String>[][] db = new Map[DIR_AMOUNT][FILES_AMOUNT];
         for (int i = 0; i < DIR_AMOUNT; i++) {
             for (int j = 0; j < FILES_AMOUNT; j++) {
@@ -125,107 +145,109 @@ public class Table implements Map<String, String>, AutoCloseable {
         for (Map.Entry<String, String> entry: allRecords.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            int nDirectory = Math.abs(key.getBytes("UTF-8")[0] % DIR_AMOUNT);
-            int nFile = Math.abs((key.getBytes("UTF-8")[0] / DIR_AMOUNT) % FILES_AMOUNT);
-            db[nDirectory][nFile].put(key, value);
+            try {
+                int nDirectory = Math.abs(key.getBytes("UTF-8")[0] % DIR_AMOUNT);
+                int nFile = Math.abs((key.getBytes("UTF-8")[0] / DIR_AMOUNT) % FILES_AMOUNT);
+                db[nDirectory][nFile].put(key, value);
+            } catch (UnsupportedEncodingException e) {
+                System.err.println("Can't encode the record");
+                throw new ExitException(1);
+            }
         }
         for (int i = 0; i < DIR_AMOUNT; i++) {
             for (int j = 0; j < FILES_AMOUNT; j++) {
-                try {
-                    if (!db[i][j].isEmpty()) {
-                        Integer nDirectory = i;
-                        Integer nFile = j;
-                        String newPath = dbPath.toAbsolutePath().toString()
+                if (!db[i][j].isEmpty()) {
+                    Integer nDirectory = i;
+                    Integer nFile = j;
+                    String newPath = dbPath.toAbsolutePath().toString()
+                            + File.separator
+                            + nDirectory.toString()
+                            + ".dir";
+                    File directory = new File(newPath);
+                    if (!directory.exists()) {
+                        if (!directory.mkdir()) {
+                            System.err.println("Cannot create directory");
+                            throw new ExitException(1);
+                        }
+                    }
+                    String newFilePath = directory.getAbsolutePath()
+                                + File.separator
+                                + nFile.toString()
+                                + ".dat";
+                    File file = new File(newFilePath);
+                    try {
+                        file.createNewFile();
+                    } catch (IOException | SecurityException e) {
+                        System.err.println(e);
+                        throw new ExitException(1);
+                    }
+                    try (RandomAccessFile dbFile = new
+                                RandomAccessFile(file, "rw")) {
+                        dbFile.setLength(0);
+                        for (Map.Entry<String, String> entry
+                                    : db[i][j].entrySet()) {
+                            String key = entry.getKey();
+                            String value = entry.getValue();
+                            writeUtil(key, dbFile);
+                            writeUtil(value, dbFile);
+                        }
+                        dbFile.close();
+                    } catch (IOException e) {
+                            System.err.println(e);
+                            throw new ExitException(1);
+                        }
+                } else {
+                //Deleting empty files and directories.
+                    Integer nDirectory = i;
+                    Integer nFile = j;
+                    String newPath = dbPath.toAbsolutePath().toString()
                                 + File.separator
                                 + nDirectory.toString()
                                 + ".dir";
-                        File directory = new File(newPath);
-                        if (!directory.exists()) {
-                            if (!directory.mkdir()) {
-                                throw new Exception("Cannot create directory");
-                            }
-                        }
+                    File directory = new File(newPath);
+                    if ( directory.exists()) {
                         String newFilePath = directory.getAbsolutePath()
                                 + File.separator
                                 + nFile.toString()
                                 + ".dat";
                         File file = new File(newFilePath);
-                        if (!file.exists()) {
-                            if (!file.createNewFile()) {
-                                throw new Exception("Cannot create file");
-                            }
-                        }
-                        try (RandomAccessFile dbFile = new
-                                RandomAccessFile(newFilePath, "rw")) {
-                            dbFile.setLength(0);
-                            for (Map.Entry<String, String> entry
-                                    : db[i][j].entrySet()) {
-                                String key = entry.getKey();
-                                String value = entry.getValue();
-                                try {
-                                    writeUtil(key, dbFile);
-                                    writeUtil(value, dbFile);
-                                } catch (SecurityException e) {
-                                    throw new Exception("Cannot create "
-                                            + "directory: "
-                                            + "access denied");
-                                }
-                            }
-                            dbFile.close();
-                        } catch (Exception ex) {
-                            System.err.println("Cannot write to table");
+                        try {
+                            Files.deleteIfExists(file.toPath());
+                        } catch (IOException |SecurityException e) {
+                            System.err.println(e);
                             throw new ExitException(1);
                         }
-                    } else {
-                        //Deleting empty files.
-                        Integer nDirectory = i;
-                        Integer nFile = j;
-                        String newPath = dbPath.toAbsolutePath().toString()
-                                + File.separator
-                                + nDirectory.toString()
-                                + ".dir";
-                        File directory = new File(newPath);
-                        if (directory.exists()) {
-                            String newFilePath = directory.getAbsolutePath()
-                                    + File.separator
-                                    + nFile.toString()
-                                    + ".dat";
-                            File file = new File(newFilePath);
-                            Files.deleteIfExists(file.toPath());
+                        if (directory.list().length == 0) {
+                            try {
+                                Files.delete(directory.toPath());
+                            } catch (IOException e) {
+                                System.err.println(e);
+                                throw new ExitException(1);
+                            }
                         }
                     }
-                } catch (IOException e) {
-                    System.err.println("Error with files");
                 }
             }
         }
-
+        for (int i = 0; i < DIR_AMOUNT; i++) {
+            for (int j = 0; j < FILES_AMOUNT; j++) {
+                db[i][j].clear();
+            }
+        }
     }
-    public final void close() throws Exception {
+    public final void close() throws ExitException {
         write();
-        //Deleting empty directories.
-        File pathDirectory =  dbPath.toFile();
-        File[] tableDirectories = pathDirectory.listFiles();
-        for (File directory: tableDirectories) {
-            File[] directoryFiles = directory.listFiles();
-            if (directoryFiles.length == 0) {
-                try {
-                    Files.delete(directory.toPath());
-                } catch (IOException | SecurityException e) {
-                    System.err.println(e);
-                }
-            }
-        }
     }
+
     private void writeUtil(final String word,
-                           final RandomAccessFile dbFile) throws IOException {
+                           final RandomAccessFile dbFile) throws ExitException {
         try {
             dbFile.writeInt(word.getBytes("UTF-8").length);
             dbFile.write(word.getBytes("UTF-8"));
-        } catch (Exception ex) {
-            throw new IOException("Cannot write in file");
+        } catch (IOException e) {
+            System.err.println(e);
+            throw new ExitException(1);
         }
-
     }
     @Override
     public int size() {
@@ -264,12 +286,12 @@ public class Table implements Map<String, String>, AutoCloseable {
 
     @Override
     public void putAll(Map<? extends String, ? extends String> m) {
-
+        allRecords.putAll(m);
     }
 
     @Override
     public void clear() {
-
+        allRecords.clear();
     }
 
     @Override
