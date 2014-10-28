@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Arrays;
@@ -12,7 +13,7 @@ public class MultiFileHashMap {
 
     private static class ArrayOfHashMaps {
 
-        private HashMap<String, String> arrayOfHashMaps;
+        private Map<String, String> arrayOfHashMaps;
 
     }
 
@@ -20,8 +21,12 @@ public class MultiFileHashMap {
     private static File table;
     private static String nameOfDir = "";
     private static ArrayOfHashMaps[][] arrayOfHashMaps;
+    
+    static void argumentsCountError(String command) throws Exception {
+        System.err.println("Error: " + command + " : wrong count of arguments");
+    }
 
-    static void newArrayOfHashMaps() {
+    static void newArrayOfHashMaps() throws Exception {
 
         arrayOfHashMaps = new ArrayOfHashMaps[KEYNUMBER][KEYNUMBER];
         for (int i = 0; i < KEYNUMBER; i++) {
@@ -30,26 +35,26 @@ public class MultiFileHashMap {
                 try {
                     arrayOfHashMaps[i][j].arrayOfHashMaps = new HashMap<>();
                 } catch (Exception e) {
-                    System.err
-                            .println("Fatal error. Can't create bigHashtable");
-                    System.exit(1);
+                    throw new Exception("Can't create bigHashtable");
                 }
             }
         }
     }
 
+    static void fatalError(String error) {
+        System.err.println("Fatal error: " + error);
+    }
+    
     static void createArrayOfHashMaps() throws Exception {
 
         newArrayOfHashMaps();
         File hashTable = new File(table.getPath() + File.separator + nameOfDir);
         String[] files = hashTable.list();
         for (String filesIter : files) {
-            File hashTableDir = new File(hashTable.getPath() + File.separator
-                    + filesIter);
+            File hashTableDir = new File(hashTable.getPath() + File.separator + filesIter);
             String[] files2 = hashTableDir.list();
             for (String filesIter2 : files2) {
-                File hashTableFile = new File(hashTableDir.getPath()
-                        + File.separator + filesIter2);
+                File hashTableFile = new File(hashTableDir.getPath() + File.separator + filesIter2);
                 DataInputStream readFileStream = new DataInputStream(
                         new FileInputStream(hashTableFile));
                 try {
@@ -57,34 +62,30 @@ public class MultiFileHashMap {
                         String key = readWordFromFile(readFileStream);
                         String value = readWordFromFile(readFileStream);
                         int hashcode = key.hashCode();
-                        int ndirectory = hashcode % KEYNUMBER;
+                        int ndirectory = Math.abs(hashcode) % KEYNUMBER;
                         int nfile = hashcode / KEYNUMBER % KEYNUMBER;
-                        arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.put(
-                                key, value);
+                        arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.put(key, value);
                     }
                 } catch (EOFException e) {
                     readFileStream.close();
                     break;
                 } catch (Exception e) {
                     readFileStream.close();
-                    System.err.println("Fatal error. Can't read file");
+                    throw new Exception("Fatal error. Can't read file");
                 }
-                readFileStream.close();
             }
         }
     }
 
-    static void writeArrayOfHashMaps() {
+    static void writeArrayOfHashMaps() throws Exception {
 
         File hashTable = new File(table.getPath() + File.separator + nameOfDir);
         String[] files = hashTable.list();
         for (String filesIter : files) {
-            File hashTableDir = new File(hashTable.getPath() + File.separator
-                    + filesIter);
+            File hashTableDir = new File(hashTable.getPath() + File.separator + filesIter);
             String[] files2 = hashTableDir.list();
             for (String filesIter2 : files2) {
-                File hashTableFile = new File(hashTableDir.getPath()
-                        + File.separator + filesIter2);
+                File hashTableFile = new File(hashTableDir.getPath() + File.separator + filesIter2);
                 if (hashTableFile.exists()) {
                     hashTableFile.delete();
                 }
@@ -93,51 +94,40 @@ public class MultiFileHashMap {
         for (int i = 0; i < KEYNUMBER; i++) {
             for (int j = 0; j < KEYNUMBER; j++) {
                 if (!arrayOfHashMaps[i][j].arrayOfHashMaps.isEmpty()) {
-                    File newDirs = new File(table.getPath() + File.separator
-                            + nameOfDir + File.separator + String.valueOf(i)
-                            + ".dir");
+                    File newDirs = new File(table.getPath() + File.separator + nameOfDir + File.separator + String.valueOf(i) + ".dir");
                     if (!newDirs.exists()) {
                         try {
                             newDirs.mkdir();
                         } catch (Exception e) {
-                            System.err
-                                    .println("Fatal error. Cannot create new dir");
-                            System.exit(1);
+                            throw new Exception("Fatal error. Cannot create new dir");
                         }
                     }
-                    File newFiles = new File(newDirs.getPath() + File.separator
-                            + String.valueOf(j) + ".dat");
+                    File newFiles = new File(newDirs.getPath() + File.separator + String.valueOf(j) + ".dat");
                     if (!newFiles.exists()) {
                         try {
                             newFiles.createNewFile();
                         } catch (Exception e) {
-                            System.err
-                                    .println("Fatal error. Cannot create new file");
-                            System.exit(1);
+                            throw new Exception ("Fatal error. Cannot create new file");
                         }
                     }
                     try {
-                        writeToFile(arrayOfHashMaps[i][j].arrayOfHashMaps,
-                                newFiles.getPath());
+                        writeToFile(arrayOfHashMaps[i][j].arrayOfHashMaps, newFiles.getPath());
                     } catch (Exception e) {
-                        System.err
-                                .println("Fatal error. Cannot save hashtable into file");
+                        throw new Exception("Fatal error. Cannot save hashtable into file");
                     }
                 }
             }
         }
     }
 
-    public static Integer countOfTable(final String path) {
+    private static Integer countOfTable(final String path) {
 
         Integer count = 0;
         for (int i = 0; i < KEYNUMBER; i++) {
             for (int j = 0; j < KEYNUMBER; j++) {
-                File newDirs = new File(table.getPath() + File.separator + path
-                        + File.separator + String.valueOf(i) + ".dir");
+                File newDirs = new File(table.getPath() + File.separator + path + File.separator + String.valueOf(i) + ".dir");
                 if (newDirs.exists()) {
-                    File newFiles = new File(newDirs.getPath() + File.separator
-                            + String.valueOf(j) + ".dat");
+                    File newFiles = new File(newDirs.getPath() + File.separator + String.valueOf(j) + ".dat");
                     if (newFiles.exists()) {
                         count++;
                     }
@@ -147,8 +137,7 @@ public class MultiFileHashMap {
         return count;
     }
 
-    public static String readWordFromFile(final DataInputStream dataInputStream)
-            throws Exception {
+    private static String readWordFromFile(final DataInputStream dataInputStream) throws Exception {
         int length = dataInputStream.readInt();
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < length; i++) {
@@ -157,27 +146,9 @@ public class MultiFileHashMap {
         return buf.toString();
     }
 
-    public static HashMap<String, String> createHashTable(final String path)
-            throws Exception {
-        HashMap<String, String> hashTable = new HashMap<>();
-        DataInputStream readFileStream = new DataInputStream(
-                new FileInputStream(path));
-        while (true) {
-            try {
-                String key = readWordFromFile(readFileStream);
-                String value = readWordFromFile(readFileStream);
-                hashTable.put(key, value);
-            } catch (Exception e) {
-                break;
-            }
-        }
-        return hashTable;
-    }
-
-    public static void writeToFile(final HashMap<String, String> hashTable,
+    private static void writeToFile(final Map<String, String> hashTable,
             final String path) throws Exception {
-        DataOutputStream writeToFileStream = new DataOutputStream(
-                new FileOutputStream(path));
+        DataOutputStream writeToFileStream = new DataOutputStream(new FileOutputStream(path));
 
         Set<String> keySet = hashTable.keySet();
         for (String iteratorSet : keySet) {
@@ -192,48 +163,42 @@ public class MultiFileHashMap {
     static boolean put(final String key, final String value) throws Exception {
 
         if (nameOfDir.equals("")) {
-            System.err.println("no table");
-            return true;
-        }
-        int hashcode = key.hashCode();
-        int ndirectory = hashcode % KEYNUMBER;
-        int nfile = hashcode / KEYNUMBER % KEYNUMBER;
-        if (!arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps
-                .containsKey(key)) {
-            System.out.println("new");
+            throw new Exception("no table");
         } else {
-            System.out.println("overwrite");
-            System.out
-                    .println(arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps
-                            .get(key));
-            arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.remove(key);
+            int hashcode = key.hashCode();
+            int ndirectory = Math.abs(hashcode) % KEYNUMBER;
+            int nfile = hashcode / KEYNUMBER % KEYNUMBER;
+            if (!arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
+            System.out.println("new");
+            } else {
+                System.out.println("overwrite");
+                System.out.println(arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.get(key));
+                arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.remove(key);
+            }
+            arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.put(key, value);
         }
-        arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.put(key, value);
-
         return true;
     }
 
-    static boolean get(final String key) {
+    static boolean get(final String key) throws Exception {
 
         if (nameOfDir.equals("")) {
-            System.err.println("no table");
-            return true;
-        }
-        int hashcode = key.hashCode();
-        int ndirectory = hashcode % KEYNUMBER;
-        int nfile = hashcode / KEYNUMBER % KEYNUMBER;
-        if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
-            System.out.println("found");
-            System.out
-                    .println(arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps
-                            .get(key));
+            System.out.println("no table");
         } else {
-            System.out.println("not found");
+            int hashcode = key.hashCode();
+            int ndirectory = Math.abs(hashcode) % KEYNUMBER;
+            int nfile = hashcode / KEYNUMBER % KEYNUMBER;
+            if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
+                System.out.println("found");
+                System.out.println(arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.get(key));
+            } else {
+                System.out.println("not found");
+            }
         }
         return true;
     }
 
-    static boolean create(final String key) {
+    static boolean create(final String key) throws Exception {
 
         if (Paths.get(table.toString(), key).toFile().exists()) {
             System.out.println(key + " exists");
@@ -242,40 +207,35 @@ public class MultiFileHashMap {
         try {
             Files.createDirectory(Paths.get(table.toString(), key));
         } catch (Exception e) {
-            System.err.println("Fatal error. Cannot create new dir");
-            System.exit(1);
+            throw new Exception("Fatal error. Cannot create new dir");
         }
         System.out.println("created");
         return true;
     }
 
-    static boolean drop(final String key) {
+    static boolean drop(final String key) throws Exception {
 
         String[] files = table.list();
         for (String filesIter : files) {
             if (filesIter.equals(key)) {
-                File newFileBuf = new File(table.getPath() + File.separator
-                        + key);
+                File newFileBuf = new File(table.getPath() + File.separator + key);
                 if (key.equals(nameOfDir)) {
                     newArrayOfHashMaps();
                 }
                 try {
                     String[] fil = newFileBuf.list();
                     for (String filIter : fil) {
-                        File hashTableDir = new File(newFileBuf.getPath() + File.separator
-                                + filIter);
+                        File hashTableDir = new File(newFileBuf.getPath() + File.separator + filIter);
                         String[] fil2 = hashTableDir.list();
                         for (String filIter2 : fil2) {
-                            File hashTableFile = new File(hashTableDir.getPath()
-                                    + File.separator + filIter2);
+                            File hashTableFile = new File(hashTableDir.getPath() + File.separator + filIter2);
                             hashTableFile.delete();
                         }
                         hashTableDir.delete();
                     }
                     newFileBuf.delete();
                 } catch (Exception e) {
-                    System.err.println("Fatal error. Cannot delete dir");
-                    System.exit(1);
+                    throw new Exception("Fatal error. Cannot delete dir");
                 }
                 if (key.equals(nameOfDir)) {
                     nameOfDir = "";
@@ -298,11 +258,7 @@ public class MultiFileHashMap {
                 }
                 nameOfDir = filesIter;
                 System.out.println("using " + key);
-                try {
-                    createArrayOfHashMaps();
-                } catch (Exception e) {
-                    return true;
-                }
+                createArrayOfHashMaps();
                 return true;
             }
         }
@@ -310,7 +266,7 @@ public class MultiFileHashMap {
         return true;
     }
 
-    static boolean showTables() {
+    static boolean showTables() throws Exception {
 
         writeArrayOfHashMaps();
         String[] files = table.list();
@@ -323,39 +279,37 @@ public class MultiFileHashMap {
     static boolean remove(final String key) throws Exception {
 
         if (nameOfDir.equals("")) {
-            System.err.println("no table");
-            return true;
-        }
-        int hashcode = key.hashCode();
-        int ndirectory = hashcode % KEYNUMBER;
-        int nfile = hashcode / KEYNUMBER % KEYNUMBER;
-        if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
-            arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.remove(key);
-            System.out.println("removed");
+            System.out.println("no table");
         } else {
-            System.out.println("not found");
+            int hashcode = key.hashCode();
+            int ndirectory = Math.abs(hashcode) % KEYNUMBER;
+            int nfile = hashcode / KEYNUMBER % KEYNUMBER;
+            if (arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.containsKey(key)) {
+                arrayOfHashMaps[ndirectory][nfile].arrayOfHashMaps.remove(key);
+                System.out.println("removed");
+            } else {
+                System.out.println("not found");
+            }
         }
-
         return true;
     }
 
     static boolean list() throws Exception {
 
         if (nameOfDir.equals("")) {
-            System.err.println("no table");
-            return true;
-        }
-        for (ArrayOfHashMaps[] dirs : arrayOfHashMaps) {
-            for (ArrayOfHashMaps dirs2 : dirs) {
-                Set<String> keySet = dirs2.arrayOfHashMaps.keySet();
-                Iterator<String> it = keySet.iterator();
-                while (it.hasNext()) {
-                    System.out.print(it.next() + " ");
+            System.out.println("no table");
+        } else {
+            for (ArrayOfHashMaps[] dirs : arrayOfHashMaps) {
+                for (ArrayOfHashMaps dirs2 : dirs) {
+                    Set<String> keySet = dirs2.arrayOfHashMaps.keySet();
+                    Iterator<String> it = keySet.iterator();
+                    while (it.hasNext()) {
+                        System.out.print(it.next() + " ");
+                    }
                 }
             }
+            System.out.println();
         }
-        System.out.println();
-
         return true;
     }
 
@@ -376,57 +330,56 @@ public class MultiFileHashMap {
             if (tokens.length == 3) {
                 return put(tokens[1], tokens[2]);
             } else {
-                System.err.println("Error: put: wrong count of arguments");
+                argumentsCountError(tokens[0]);
                 return false;
             }
         } else if (tokens[0].equals("get")) {
             if (tokens.length == 2) {
                 return get(tokens[1]);
             } else {
-                System.err.println("Error: get: wrong count of arguments");
+                argumentsCountError(tokens[0]);
                 return false;
             }
         } else if (tokens[0].equals("remove")) {
             if (tokens.length == 2) {
                 return remove(tokens[1]);
             } else {
-                System.err.println("Error: remove: wrong count of arguments");
+                argumentsCountError(tokens[0]);
                 return false;
             }
         } else if (tokens[0].equals("create")) {
             if (tokens.length == 2) {
                 return create(tokens[1]);
             } else {
-                System.err.println("Error: create: wrong count of arguments");
+                argumentsCountError(tokens[0]);
                 return false;
             }
         } else if (tokens[0].equals("drop")) {
             if (tokens.length == 2) {
                 return drop(tokens[1]);
             } else {
-                System.err.println("Error: drop: wrong count of arguments");
+                argumentsCountError(tokens[0]);
                 return false;
             }
         } else if (tokens[0].equals("use")) {
             if (tokens.length == 2) {
                 return use(tokens[1]);
             } else {
-                System.err.println("Error: use: wrong count of arguments");
+                argumentsCountError(tokens[0]);
                 return false;
             }
         } else if (tokens[0].equals("show") && tokens[1].equals("tables")) {
             if (tokens.length == 2) {
                 return showTables();
             } else {
-                System.err
-                        .println("Error: show tables: wrong count of arguments");
+                argumentsCountError(tokens[0] + tokens[1]);
                 return false;
             }
         } else if (tokens[0].equals("list")) {
             if (tokens.length == 1) {
                 return list();
             } else {
-                System.err.println("Error: list: wrong count of arguments");
+                argumentsCountError(tokens[0]);;
                 return false;
             }
         } else if (tokens[0].equals("exit")) {
@@ -436,12 +389,11 @@ public class MultiFileHashMap {
                 }
                 System.exit(0);
             } else {
-                System.err.println("Error: exit: wrong count of arguments");
+                argumentsCountError(tokens[0]);
                 return false;
             }
         } else {
             System.err.println("Unknown command!");
-            return false;
         }
 
         return true;
@@ -451,8 +403,7 @@ public class MultiFileHashMap {
         while (true) {
             try {
                 System.out.print("$ ");
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(System.in));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 String string = reader.readLine();
 
                 String[] commands = string.split(";");
@@ -469,40 +420,41 @@ public class MultiFileHashMap {
                     }
                 }
             } catch (Exception e) {
-                System.err
-                        .println("Fatal error. Program has been interrupted.");
+                System.err.println(e.getMessage());
                 System.exit(1);
             }
         }
     }
 
     public static void main(final String[] args) {
-        newArrayOfHashMaps();
+        try {
+            newArrayOfHashMaps();
+        } catch (Exception e) {
+            System.err.println("");
+        }
         try {
             table = new File(System.getProperty("fizteh.db.dir"));
         } catch (Exception e) {
-            System.err.println("Fatal error. Cannot read database");
+            fatalError("Cannot read database");
             System.exit(1);
         }
         if (!table.exists()) {
             try {
                 table.mkdir();
             } catch (Exception e) {
-                System.err.println("Fatal error. Cannot create new dir");
+                fatalError("Cannot create new dir");
                 System.exit(1);
             }
         }
         if (table.isFile()) {
-            System.err.println("Fatal error. Root folder is not a directory");
+            fatalError("Root folder is not a directory");
             System.exit(1);
         }
-
         String[] files = table.list();
         for (String filesIter : files) {
-            File bufFile = new File(table.getPath() + File.separator
-                    + filesIter);
+            File bufFile = new File(table.getPath() + File.separator + filesIter);
             if (bufFile.isFile()) {
-                System.err.println("Fatal error. Not all members are dirs");
+                fatalError("Not all members are dirs");
                 System.exit(1);
             }
         }
@@ -523,7 +475,7 @@ public class MultiFileHashMap {
                         System.exit(1);
                     }
                 } catch (Exception e) {
-                    System.err.println("Fatal error. Can't create hashtable");
+                    System.err.println(e.getMessage());
                     System.exit(1);
                 }
             }
