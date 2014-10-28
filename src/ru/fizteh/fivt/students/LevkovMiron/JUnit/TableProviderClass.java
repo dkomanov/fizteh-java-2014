@@ -8,7 +8,7 @@ import java.io.File;
 public class TableProviderClass implements TableProvider{
 
     File parentDirectory;
-    TableProviderClass(String dir) throws IllegalArgumentException{
+    TableProviderClass(String dir) throws IllegalArgumentException {
         try {
             parentDirectory = new File(dir);
         } catch (Exception e) {
@@ -20,7 +20,7 @@ public class TableProviderClass implements TableProvider{
     }
 
     @Override
-    public TableClass getTable(String name) throws IllegalArgumentException{
+    public TableClass getTable(String name) throws IllegalArgumentException {
         if (name == null) {
             throw new IllegalArgumentException();
         }
@@ -34,7 +34,7 @@ public class TableProviderClass implements TableProvider{
         return new TableClass(parentDirectory, tableFile);
     }
     @Override
-    public TableClass createTable(String name) throws IllegalArgumentException{
+    public TableClass createTable(String name) throws IllegalArgumentException {
         if (name == null) {
             throw new IllegalArgumentException();
         }
@@ -46,7 +46,7 @@ public class TableProviderClass implements TableProvider{
         return new TableClass(parentDirectory, tableFile);
     }
     @Override
-    public void removeTable(String name) throws IllegalArgumentException, IllegalStateException{
+    public void removeTable(String name) throws IllegalArgumentException, IllegalStateException {
         if (name == null) {
             throw new IllegalArgumentException();
         }
@@ -56,5 +56,16 @@ public class TableProviderClass implements TableProvider{
         }
         TableClass table = new TableClass(parentDirectory, tableFile);
         table.drop(tableFile);
+        removeFile(tableFile);
+    }
+    void removeFile(File deletedFile) {
+        if (!deletedFile.isDirectory()) {
+            deletedFile.delete();
+            return;
+        }
+        for (File f : deletedFile.listFiles()) {
+            removeFile(f);
+        }
+        deletedFile.delete();
     }
 }

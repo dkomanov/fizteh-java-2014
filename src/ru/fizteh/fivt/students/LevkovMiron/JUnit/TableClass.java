@@ -15,7 +15,7 @@ public class TableClass implements Table {
     File tableDirectory;
     HashMap<File, Integer> tableRowCounter;
 
-    TableClass(File parDir, File tabDir) {
+    public TableClass(File parDir, File tabDir) {
         parentDirectory = parDir;
         tableDirectory = tabDir;
         tableAfterChanges = new HashMap[20][20];
@@ -28,8 +28,9 @@ public class TableClass implements Table {
             }
         }
         tableRowCounter = new HashMap<File, Integer>();
+        tableRowCounter.put(tableDirectory, 0);
         try {
-            loadTable();
+            reloadTable();
         } catch (IOException e) {
             System.exit(-2);
         } catch (NullPointerException e) {
@@ -102,7 +103,7 @@ public class TableClass implements Table {
         fileToCreate.mkdir();
         tableRowCounter.put(fileToCreate, 0);
     }
-    void use(String name) throws IOException {
+    public void use(String name) throws IOException {
         int change = changesNumber();
         if (change > 0) {
             System.out.println(change + " unsaved changes");
@@ -114,11 +115,11 @@ public class TableClass implements Table {
             return;
         }
         tableDirectory = newTable;
-        loadTable();
+        reloadTable();
         System.out.println("Using " + name);
     }
-    void loadTable() throws IOException{
-        tableRowCounter.put(tableDirectory,0);
+    void reloadTable() throws IOException {
+        tableRowCounter.put(tableDirectory, 0);
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 tableBeforeChanges[i][j].clear();
@@ -132,7 +133,7 @@ public class TableClass implements Table {
                         String value = readString(inputStream, sz2);
                         tableAfterChanges[i][j].put(key, value);
                         tableBeforeChanges[i][j].put(key, value);
-                        tableRowCounter.put(tableDirectory,tableRowCounter.get(tableDirectory) + 1);
+                        tableRowCounter.put(tableDirectory, tableRowCounter.get(tableDirectory) + 1);
                     } catch (IOException e) {
                         throw new IOException("Can't read the file");
                     }
@@ -140,7 +141,7 @@ public class TableClass implements Table {
             }
         }
     }
-    static String readString(final FileInputStream inStream, int size) throws IOException, OutOfMemoryError {
+    String readString(final FileInputStream inStream, int size) throws IOException, OutOfMemoryError {
         ArrayList<Byte> tempData = new ArrayList<Byte>();
         for (int i = 0; i < size; i++) {
             byte[] oneByte = new byte[1];
@@ -159,7 +160,7 @@ public class TableClass implements Table {
             throw new OutOfMemoryError("Data is too large.");
         }
     }
-    static int readInt(final FileInputStream inStream) throws IOException, OutOfMemoryError {
+    int readInt(final FileInputStream inStream) throws IOException, OutOfMemoryError {
         byte[] utfData = new byte[4];
         if (inStream.read(utfData) < 4) {
             throw new OutOfMemoryError("Unexpected end of file.");
@@ -170,7 +171,7 @@ public class TableClass implements Table {
         }
         return value;
     }
-    static void writeIntAndString(FileOutputStream stream, String key) throws IOException {
+    void writeIntAndString(FileOutputStream stream, String key) throws IOException {
         byte[] data = ByteBuffer.allocate(4).putInt(key.length()).array();
         stream.write(data);
         stream.write(key.getBytes("UTF-8"));
@@ -180,12 +181,12 @@ public class TableClass implements Table {
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 for (Map.Entry<String, String> pair : tableAfterChanges[i][j].entrySet()) {
-                    if (!tableBeforeChanges[i][j].get(pair.getKey()).equals(pair.getValue())) {
+                    if (!pair.getValue().equals(tableBeforeChanges[i][j].get(pair.getKey()))) {
                         res++;
                     }
                 }
                 for (Map.Entry<String, String> pair : tableBeforeChanges[i][j].entrySet()) {
-                    if (!tableAfterChanges[i][j].get(pair.getKey()).equals(pair.getValue())) {
+                    if (!pair.getValue().equals(tableAfterChanges[i][j].get(pair.getKey()))) {
                         res++;
                     }
                 }
@@ -195,10 +196,10 @@ public class TableClass implements Table {
     }
     void rewrite() throws IOException {
         for (int i = 0; i < 16; i++) {
-            File directory = new File(tableDirectory.getAbsolutePath() + "/" + i + ".dir");
-            directory.mkdir();
             for (int j = 0; j < 16; j++) {
-                if (tableBeforeChanges[i][j].size() > 0) {
+                if (tableAfterChanges[i][j].size() > 0) {
+                    File directory = new File(tableDirectory.getAbsolutePath() + "/" + i + ".dir");
+                    directory.mkdir();
                     File f = new File(tableDirectory.getAbsolutePath() + "/" + i + ".dir/" + j + ".dat");
                     f.createNewFile();
                     rewriteFile(f, i, j);
@@ -213,17 +214,14 @@ public class TableClass implements Table {
             writeIntAndString(outStream, pair.getValue());
         }
     }
-    void showTables() {
+    public void showTables() {
         for (File table : parentDirectory.listFiles()) {
             if (table.isDirectory()) {
                 System.out.println(table.getName() + " " + tableRowCounter.get(table));
             }
         }
     }
-    void drop(File deletedFile) {
-        if (tableDirectory != null && tableDirectory.equals(deletedFile)) {
-            tableDirectory = null;
-        }
+    public void drop(File deletedFile) {
         if (!deletedFile.isDirectory()) {
             deletedFile.delete();
             return;
@@ -231,9 +229,19 @@ public class TableClass implements Table {
         for (File f : deletedFile.listFiles()) {
             drop(f);
         }
+        if (tableDirectory != null && tableDirectory.equals(deletedFile)) {
+            tableRowCounter.remove(tableDirectory);
+            for (int i = 0; i < 16; i++) {
+                for (int j = 0; j < 16; j++) {
+                    tableAfterChanges[i][j].clear();
+                    tableBeforeChanges[i][j].clear();
+                }
+            }
+            tableDirectory = null;
+        }
         deletedFile.delete();
     }
-    void exit() {
+    public void exit() {
         commit();
         System.exit(1);
     }
@@ -268,7 +276,7 @@ public class TableClass implements Table {
         return dbName;
     }
     @Override
-    public String get(String key) throws IllegalArgumentException{
+    public String get(String key) throws IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException();
         }
@@ -291,13 +299,15 @@ public class TableClass implements Table {
         return new ArrayList<String>(res);
     }
     @Override
-    public String put(String key, String value) throws IllegalArgumentException{
+    public String put(String key, String value) throws IllegalArgumentException {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         }
-        tableRowCounter.replace(tableDirectory, tableRowCounter.get(tableDirectory) + 1);
         int h1 = key.hashCode() % 16;
         int h2 = (key.hashCode() / 16) % 16;
+        if (!tableAfterChanges[h1][h2].containsKey(key)) {
+            tableRowCounter.replace(tableDirectory, tableRowCounter.get(tableDirectory) + 1);
+        }
         return tableAfterChanges[h1][h2].put(key, value);
     }
     @Override
@@ -308,22 +318,28 @@ public class TableClass implements Table {
                 tableAfterChanges[i][j].clear();
             }
         }
+        int size = 0;
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 for (Map.Entry<String, String> pair : tableBeforeChanges[i][j].entrySet()) {
                     tableAfterChanges[i][j].put(pair.getKey(), pair.getValue());
+                    size++;
                 }
             }
         }
+        tableRowCounter.put(tableDirectory, size);
         return result;
     }
     @Override
-    public String remove(String key) throws IllegalArgumentException{
+    public String remove(String key) throws IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException();
         }
         int h1 = key.hashCode() % 16;
         int h2 = (key.hashCode() / 16) % 16;
+        if (tableAfterChanges[h1][h2].containsKey(key)) {
+            tableRowCounter.replace(tableDirectory, tableRowCounter.get(tableDirectory) - 1);
+        }
         return tableAfterChanges[h1][h2].remove(key);
     }
 }

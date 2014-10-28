@@ -5,6 +5,10 @@ import ru.fizteh.fivt.students.LevkovMiron.JUnit.TableProvider;
 import ru.fizteh.fivt.students.LevkovMiron.JUnit.TableProviderClass;
 import ru.fizteh.fivt.students.LevkovMiron.JUnit.TableProviderFactoryClass;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by Мирон on 27.10.2014 PACKAGE_NAME.
  */
@@ -24,12 +28,16 @@ public class JUnitTest {
         provider.createTable("table1");
         Assert.assertNull(provider.createTable("table1"));
         Assert.assertNotNull(provider.createTable("table2"));
+        provider.removeTable("table1");
+        provider.removeTable("table2");
     }
     @Test
     public void TestTableProvider_get(){
         TableProvider provider = new TableProviderFactoryClass().create("C:/Test");
         Assert.assertNull(provider.getTable("table2"));
+        provider.createTable("table1");
         Assert.assertNotNull(provider.getTable("table1"));
+        provider.removeTable("table1");
     }
     @Test
     public void TestTableProvider_remove(){
@@ -43,97 +51,108 @@ public class JUnitTest {
 
     @Test
     public void TestTable_commit(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
+        TableProvider provider = new TableProviderFactoryClass().create("C:/Test");
+        provider.createTable("table1");
+        Table table = provider.getTable("table1");
+        table.put("1", "2");
+        table.commit();
+        table = provider.getTable("table1");
+        Assert.assertEquals(table.size(),1);
+        Assert.assertEquals(table.get("1"), "2");
+        provider.removeTable("table1");
     }
     @Test
     public void TestTable_rollback(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
+        TableProvider provider = new TableProviderFactoryClass().create("C:/Test");
+        provider.createTable("table2");
+        Table table = provider.getTable("table2");
+        table.put("1", "2");
+        Assert.assertEquals(table.size(), 1);
+        table.commit();
+        table.put("2", "3");
+        table.put("2", "4");
+        Assert.assertEquals(table.size(), 2);
+        Assert.assertEquals(table.rollback(), 1);
+        Assert.assertEquals(table.size(),1);
+        Assert.assertEquals(table.get("1"),"2");
+        table.remove("1");
+        table.rollback();
+        Assert.assertEquals(table.size(), 1);
+        Assert.assertEquals(table.get("1"),"2");
+        provider.removeTable("table2");
     }
     @Test
     public void TestTable_getName(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-        Assert.assertEquals(table.getName(),"table1");
+        TableProvider provider = new TableProviderFactoryClass().create("C:/Test");
+        provider.createTable("table1");
+        Table table = provider.getTable("table1");
+        Assert.assertEquals(table.getName(), "Test");
+        provider.removeTable("table1");
     }
     @Test
     public void TestTable_get(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
+        TableProvider provider = new TableProviderFactoryClass().create("C:/Test");
+        provider.createTable("table1");
+        Table table = provider.getTable("table1");
         table.put("1","2");
-        Assert.assertEquals(table.get("1"),"2");
+        Assert.assertEquals(table.get("1"), "2");
         Assert.assertNull(table.get("2"));
+        provider.removeTable("table1");
     }
     @Test
     public void TestTable_put(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
+        TableProvider provider = new TableProviderFactoryClass().create("C:/Test");
+        provider.createTable("table1");
+        Table table = provider.getTable("table1");
+        Assert.assertNull(table.put("1", "2"));
+        Assert.assertEquals(table.put("1", "3"), "2");
+        provider.removeTable("table1");
     }
     @Test
     public void TestTable_size(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
+        TableProvider provider = new TableProviderFactoryClass().create("C:/Test");
+        provider.createTable("table1");
+        Table table = provider.getTable("table1");
+        Assert.assertEquals(table.size(),0);
+        table.put("1", "2");
+        Assert.assertEquals(table.size(), 1);
+        table.put("2", "3");
+        Assert.assertEquals(table.size(), 2);
+        table.remove("1");
+        Assert.assertEquals(table.size(), 1);
+        table.put("2", "3");
+        Assert.assertEquals(table.size(), 1);
+        provider.removeTable("table1");
     }
     @Test
     public void TestTable_remove(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
+        TableProvider provider = new TableProviderFactoryClass().create("C:/Test");
+        provider.createTable("table1");
+        Table table = provider.getTable("table1");
+        table.put("1", "2");
+        Assert.assertNull(table.remove("a"));
+        Assert.assertEquals(table.remove("1"), "2");
+        Assert.assertEquals(table.size(), 0);
+        provider.removeTable("table1");
     }
     @Test
     public void TestTable_list(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
+        TableProvider provider = new TableProviderFactoryClass().create("C:/Test");
+        provider.createTable("table1");
+        Table table = provider.getTable("table1");
+        table.put("1","2");
+        table.put("2","3");
+        table.put("1","3");
+        List<String> list = table.list();
+        Collections.sort(list);
+        String[] arrayList = new String[2];
+        arrayList[0] = list.get(0);
+        arrayList[1] = list.get(1);
+        Assert.assertEquals(list.size(),2);
+        String[] testList = new String[2];
+        testList[0] = "1";
+        testList[1] = "2";
+        Assert.assertArrayEquals(testList,arrayList);
+        provider.removeTable("table1");
     }
-    @Test
-    public void TestTable_exit(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-    @Test
-    public void TestTable_drop(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-    @Test
-    public void TestTable_loadTable(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-    @Test
-    public void TestTable_showTables(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-    @Test
-    public void TestTable_rewrite(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-    @Test
-    public void TestTable_rewriteFile(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-    @Test
-    public void TestTable_changesNumber(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-    @Test
-    public void TestTable_use(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-    @Test
-    public void TestTable_create(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-    @Test
-    public void TestTable_runCommand(){
-        new TableProviderFactoryClass().create("C:/Test").createTable("table1");
-        Table table = new TableProviderFactoryClass().create("C:/Test").getTable("table1");
-    }
-
 }
