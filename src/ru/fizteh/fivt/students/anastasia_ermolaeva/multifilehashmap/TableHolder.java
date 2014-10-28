@@ -5,17 +5,14 @@ import ru.fizteh.fivt.students.anastasia_ermolaeva.
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
 
 public class TableHolder implements AutoCloseable {
     private Path rootPath;
     private Map<String, Table> tableMap;
 
-    public Path getRootPath(){
+    public Path getRootPath() {
         return rootPath;
     }
     public TableHolder(final Path rootPath) {
