@@ -17,7 +17,7 @@ public class PackageGetter implements CommandGetter {
             allCommands.append(s);
             allCommands.append(' ');
         }
-        commands.addAll(Arrays.asList(allCommands.toString().split(";")));
+        commands.addAll(Arrays.asList(allCommands.toString().split(";\\s*")));
     }
 
     @Override

@@ -2,16 +2,19 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap;
 
 import ru.fizteh.fivt.students.AlexeyZhuravlev.filemap.DataBase;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.filemap.GetCommand;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author AlexeyZhuravlev
  */
 public class MultiGetCommand extends Command {
-    private final String key;
+    private String key;
 
-    public MultiGetCommand(String passedKey) {
-        key = passedKey;
+    protected void putArguments(String[] args) {
+        key = args[1];
+    }
+
+    protected int numberOfArguments() {
+        return 1;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class MultiGetCommand extends Command {
             if (db == null) {
                 System.out.println("not found");
             } else {
-                get.execute(base.getUsing().databases[dir][file], new AtomicBoolean());
+                get.execute(base.getUsing().databases[dir][file]);
             }
         }
     }

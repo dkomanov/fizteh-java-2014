@@ -4,19 +4,22 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.filemap.DataBase;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.filemap.PutCommand;
 
 import java.io.File;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author AlexeyZhuravlev
  */
 public class MultiPutCommand extends Command {
 
-    private final String key;
-    private final String value;
+    private String key;
+    private String value;
 
-    public MultiPutCommand(String passedKey, String passedValue) {
-        key = passedKey;
-        value = passedValue;
+    protected void putArguments(String[] args) {
+        key = args[1];
+        value = args[2];
+    }
+
+    protected int numberOfArguments() {
+        return 2;
     }
 
     @Override
@@ -27,7 +30,6 @@ public class MultiPutCommand extends Command {
             int hashCode = Math.abs(key.hashCode());
             int dir = hashCode % 16;
             int file = hashCode / 16 % 16;
-            System.out.println(dir + " " + file);
             PutCommand put = new PutCommand(key, value);
             if (base.getUsing().databases[dir][file] == null) {
                 File subDir = new File(base.getUsing().mainDir, String.valueOf(dir) + ".dir");
@@ -44,7 +46,7 @@ public class MultiPutCommand extends Command {
                 }
                 base.getUsing().databases[dir][file] = new DataBase(dbFile.toString());
             }
-            put.execute(base.getUsing().databases[dir][file], new AtomicBoolean());
+            put.execute(base.getUsing().databases[dir][file]);
         }
     }
 }

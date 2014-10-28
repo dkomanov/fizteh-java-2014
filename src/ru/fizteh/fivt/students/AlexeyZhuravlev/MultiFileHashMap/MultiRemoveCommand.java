@@ -7,16 +7,19 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author AlexeyZhuravlev
  */
 public class MultiRemoveCommand extends Command {
-    private final String key;
+    private String key;
 
-    public MultiRemoveCommand(String passedKey) {
-        key = passedKey;
+    protected void putArguments(String[] args) {
+        key = args[1];
+    }
+
+    protected int numberOfArguments() {
+        return 1;
     }
 
     @Override
@@ -32,7 +35,7 @@ public class MultiRemoveCommand extends Command {
                 System.out.println("not found");
             } else {
                 DataBase db = base.getUsing().databases[dir][file];
-                remove.execute(db, new AtomicBoolean());
+                remove.execute(db);
                 if (db.recordsNumber() == 0) {
                     File dbFile = new File(db.dbFileName);
                     try {

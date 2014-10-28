@@ -5,10 +5,14 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap;
  */
 public class UseCommand extends Command {
 
-    private final String tableName;
+    private String tableName;
 
-    public UseCommand(String passedTableName) {
-        tableName = passedTableName;
+    protected void putArguments(String[] args) {
+        tableName = args[1];
+    }
+
+    protected int numberOfArguments() {
+        return 1;
     }
 
     @Override

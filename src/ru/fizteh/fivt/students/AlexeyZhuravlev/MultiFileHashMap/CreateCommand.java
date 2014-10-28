@@ -7,10 +7,14 @@ import java.io.File;
  */
 public class CreateCommand extends Command {
 
-    private final String tableName;
+    private String tableName;
 
-    public CreateCommand(String passedTableName) {
-        tableName = passedTableName;
+    protected final void putArguments(String[] args) {
+        tableName = args[1];
+    }
+
+    protected final int numberOfArguments() {
+        return 1;
     }
 
     @Override

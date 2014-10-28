@@ -1,56 +1,56 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap;
 
+import java.util.HashMap;
+
 /**
  * @author AlexeyZhuravlev
  */
 public abstract class Command {
 
-    private static void checkArgumentsNumber(int expected, int actual) throws Exception {
-        if (expected != actual) {
-            throw new Exception("Unexpected number of arguments: " + String.valueOf(expected) + " expected");
-        }
+    private static final HashMap<String, Command> COMMANDS;
+
+    static {
+        COMMANDS = new HashMap<>();
+        COMMANDS.put("create", new CreateCommand());
+        COMMANDS.put("drop", new DropCommand());
+        COMMANDS.put("use", new UseCommand());
+        COMMANDS.put("show", new ShowTablesCommand());
+        COMMANDS.put("put", new MultiPutCommand());
+        COMMANDS.put("get", new MultiGetCommand());
+        COMMANDS.put("remove", new MultiRemoveCommand());
+        COMMANDS.put("list", new MultiListCommand());
+        COMMANDS.put("exit", new ExitCommand());
     }
 
     public static Command fromString(String s) throws Exception {
         if (s.length() < 1) {
             throw new Exception("Empty command");
         }
-        String[] tokens = s.replaceFirst(" *", "").split("\\s+");
-        switch(tokens[0]) {
-            case "create":
-                checkArgumentsNumber(1, tokens.length - 1);
-                return new CreateCommand(tokens[1]);
-            case "drop":
-                checkArgumentsNumber(1, tokens.length - 1);
-                return new DropCommand(tokens[1]);
-            case "use":
-                checkArgumentsNumber(1, tokens.length - 1);
-                return new UseCommand(tokens[1]);
-            case "show":
-                checkArgumentsNumber(0, tokens.length - 2);
-                if (!tokens[1].equals("tables")) {
-                    throw new Exception(s + " is unknown command");
+        String[] tokens = s.split("\\s+", 0);
+        if (COMMANDS.containsKey(tokens[0])) {
+            Command command = COMMANDS.get(tokens[0]);
+            if (tokens[0].equals("show")) {
+                if (tokens.length < 2) {
+                    throw new Exception("show is unknown command");
                 }
-                return new ShowTablesCommand();
-            case "put":
-                checkArgumentsNumber(2, tokens.length - 1);
-                return new MultiPutCommand(tokens[1], tokens[2]);
-            case "get":
-                checkArgumentsNumber(1, tokens.length - 1);
-                return new MultiGetCommand(tokens[1]);
-            case "remove":
-                checkArgumentsNumber(1, tokens.length - 1);
-                return new MultiRemoveCommand(tokens[1]);
-            case "list":
-                checkArgumentsNumber(0, tokens.length - 1);
-                return new MultiListCommand();
-            case "exit":
-                checkArgumentsNumber(0, tokens.length - 1);
-                return new ExitCommand();
-            default:
-                throw new Exception(tokens[0] + " is unknown command");
+                if (tokens.length > 2) {
+                    throw new Exception("Unexpected number of arguments: 2 required");
+                }
+                if (!tokens[1].equals("tables")) {
+                    throw new Exception(tokens[0] + " " + tokens[1] + " is unknown command");
+                }
+            } else if (tokens.length - 1 != command.numberOfArguments()) {
+                throw new Exception("Unexpected number of arguments: " + command.numberOfArguments() + " required");
+            }
+            command.putArguments(tokens);
+            return command;
+        } else {
+            throw new Exception(tokens[0] + " is unknown command");
         }
     }
 
     public abstract void execute(DataBaseDir base) throws Exception;
+    protected void putArguments(String[] args) {
+    }
+    protected abstract int numberOfArguments();
 }

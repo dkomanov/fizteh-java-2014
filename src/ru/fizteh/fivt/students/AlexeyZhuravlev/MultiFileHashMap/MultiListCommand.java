@@ -7,6 +7,11 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.filemap.ListCommand;
  * @author AlexeyZhuravlev
  */
 public class MultiListCommand extends Command {
+
+    protected int numberOfArguments() {
+        return 0;
+    }
+
     @Override
     public void execute(DataBaseDir base) throws Exception {
         if (base.getUsing() == null) {

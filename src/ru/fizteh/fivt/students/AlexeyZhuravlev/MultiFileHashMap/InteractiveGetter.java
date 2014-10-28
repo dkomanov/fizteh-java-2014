@@ -21,8 +21,8 @@ public class InteractiveGetter implements CommandGetter {
         if (activeCommands.isEmpty()) {
             System.out.print("$ ");
             System.out.flush();
-            for (String s: scanner.nextLine().split(";")) {
-                activeCommands.add(s.replaceFirst(" *", ""));
+            for (String s: scanner.nextLine().split(";\\s*")) {
+                activeCommands.add(s);
             }
         }
         return activeCommands.remove();
