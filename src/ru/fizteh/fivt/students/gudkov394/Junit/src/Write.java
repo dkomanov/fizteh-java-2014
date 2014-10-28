@@ -1,8 +1,5 @@
 package ru.fizteh.fivt.students.gudkov394.Junit.src;
 
-import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
-import com.sun.xml.internal.ws.api.message.Message;
-import ru.fizteh.fivt.students.gudkov394.map.*;
 import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
@@ -52,17 +49,8 @@ public class Write {
             try {
                 output.close();
             } catch (IOException e) {
-                throw new ExceptionHasMessage("I can't close File") {
-                    @Override
-                    public Message getFaultMessage() {
-                        return null;
-                    }
-
-                    @Override
-                    protected String getDefaultResourceBundleName() {
-                        return null;
-                    }
-                };
+                System.err.println("Ouput file didn't close");
+                System.exit(2);
             }
         }
     }

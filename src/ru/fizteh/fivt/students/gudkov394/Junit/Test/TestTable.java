@@ -104,7 +104,7 @@ public class TestTable {
         table.commit();
         table.remove("new1");
         table.rollback();
-        Assert.assertEquals("1",table.get("new1"));
+        Assert.assertEquals("1", table.get("new1"));
         String oldValue = table.put("new2", "2");
         Assert.assertNull(oldValue);
     }
