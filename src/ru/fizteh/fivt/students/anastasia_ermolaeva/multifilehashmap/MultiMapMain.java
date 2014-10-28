@@ -14,7 +14,7 @@ public class MultiMapMain {
         //
     }
 
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) {
         String rootDirectory = System.getProperty("fizteh.db.dir");
         Path rootDirectoryPath = Paths.get(rootDirectory);
         File root = new File(rootDirectory);
@@ -28,7 +28,7 @@ public class MultiMapMain {
             } else {
                 try (TableHolder tableHolder = new TableHolder(rootDirectoryPath)) {
                     TableState tableState = new TableState(tableHolder);
-                    new Interpreter(tableState, new Command[]{
+                    new Interpreter(tableState, new Command[] {
                             new Command("create", 2, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String tableName = arguments[1];
@@ -41,30 +41,26 @@ public class MultiMapMain {
                                     File tableDirectory = new File(pathTableDirectory);
                                     if (!tableDirectory.mkdir()) {
                                         System.err.println("Can't create table directory");
+                                        System.exit(1);
                                     }
-                                    System.out.println("created");
-                                    try {
-                                        tableHolder.getTableMap().
-                                                put(tableName,
-                                                        new Table(rootDirectoryPath,
-                                                                tableName));
+                                    else {
+                                        System.out.println("created");
                                         map.put(tableName, new HashMap<>());
-                                    } catch (ExitException e) {
-                                        System.err.println("Error while creating");
                                     }
                                 }
                             }),
-                            new Command("drop", 2, (TableState tableS, String[] arguments) ->
-                            {
+                            new Command("drop", 2, (TableState tableS, String[] arguments) -> {
                                 Map<String,  Map<String, String>> map = tableS.getMap();
                                 String tableName = arguments[1];
                                 if (!map.containsKey(tableName)) {
                                     System.out.println(tableName + " not exists");
                                 } else {
-                                    Path tableDirectory = tableHolder.getTableMap().get(tableName).getTablePath();
-                                    try {
+                                    Path tableDirectory = Paths.get(tableHolder.getRootPath().toAbsolutePath().toString()
+                                            + File.separator + tableName);
+                                    String [] subDirs = tableDirectory.toFile().list();
+                                    if (subDirs.length != 0) {
                                         File[] subDirectories = tableDirectory.toFile().listFiles();
-                                        for (File directory: subDirectories) {
+                                        for (File directory : subDirectories) {
                                             try {
                                                 File[] directoryFiles = directory.listFiles();
                                                 for (File file : directoryFiles) {
@@ -72,27 +68,30 @@ public class MultiMapMain {
                                                         Files.delete(file.toPath());
                                                     } catch (IOException | SecurityException e) {
                                                         System.err.println(e);
+                                                        System.exit(1);
                                                     }
                                                 }
                                                 Files.delete(directory.toPath());
                                             } catch (IOException | SecurityException e) {
                                                 System.err.println(e);
+                                                System.exit(1);
                                             }
                                         }
+                                    }
+                                    try {
                                         Files.delete(tableDirectory);
                                         System.out.println("dropped");
-                                        tableHolder.getTableMap().remove(tableName);
                                         map.remove(tableName);
                                         if (tableS.getCurrentTableName().equals(tableName)) {
                                             tableS.setCurrentTableName("");
                                         }
-                                    } catch (IOException | SecurityException e) {
+                                    } catch(IOException e) {
                                         System.err.println(e);
+                                        System.exit(1);
                                     }
                                 }
                             }),
-                            new Command("use", 2, (TableState tableS, String[] arguments) ->
-                            {
+                            new Command("use", 2, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String tableName = arguments[1];
                                 if (!tableName.isEmpty()) {
@@ -104,8 +103,7 @@ public class MultiMapMain {
                                     }
                                 }
                             }),
-                            new Command("show tables", 1, (TableState tableS, String[] arguments) ->
-                            {
+                            new Command("show tables", 1, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 System.out.println("table_name row_count");
                                 for (Map.Entry<String, Map<String, String>> entry : map.entrySet()) {
@@ -113,8 +111,7 @@ public class MultiMapMain {
                                     System.out.println(entry.getValue().size());
                                 }
                             }),
-                            new Command("put", 3, (TableState tableS, String[] arguments) ->
-                            {
+                            new Command("put", 3, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
                                 if (currentTableName.equals("")) {
@@ -135,8 +132,7 @@ public class MultiMapMain {
                                     }
                                 }
                             }),
-                            new Command("get", 2, (TableState tableS, String[] arguments) ->
-                            {
+                            new Command("get", 2, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
                                 if (currentTableName.equals("")) {
@@ -154,8 +150,7 @@ public class MultiMapMain {
                                     }
                                 }
                             }),
-                            new Command("remove", 2, (TableState tableS, String[] arguments) ->
-                            {
+                            new Command("remove", 2, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
                                 if (currentTableName.equals("")) {
@@ -173,8 +168,7 @@ public class MultiMapMain {
                                     }
                                 }
                             }),
-                            new Command("list", 1, (TableState tableS, String[] arguments) ->
-                            {
+                            new Command("list", 1, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
                                 if (currentTableName.equals("")) {
@@ -186,17 +180,24 @@ public class MultiMapMain {
                                     System.out.println(joined);
                                 }
                             }),
-                            new Command("exit", 1, (TableState tableS, String[] arguments) ->
-                            {
+                            new Command("exit", 1, (TableState tableS, String[] arguments) -> {
                                 try {
+                                    for (Map.Entry<String, Map<String, String>> entry: tableS.getMap().entrySet()) {
+                                        tableHolder.getTableMap().put(entry.getKey(),
+                                                new Table(rootDirectoryPath,
+                                                        entry.getKey(), entry.getValue()));
+                                    }
                                     tableHolder.close();
                                     System.out.println("exit");
                                     System.exit(0);
-                                } catch (Exception t) {
-                                    System.exit(-1);
+                                } catch (ExitException e) {
+                                    System.out.println("exit");
+                                    System.exit(e.getStatus());
                                 }
                             })
                     }).run(args);
+                } catch (ExitException e) {
+                    System.exit(e.getStatus());
                 }
             }
         }
