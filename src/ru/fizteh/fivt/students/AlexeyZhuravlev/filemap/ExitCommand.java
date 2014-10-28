@@ -1,13 +1,16 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.filemap;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * @author AlexeyZhuravlev
  */
 public class ExitCommand extends Command {
+
+    public int numberOfArguments() {
+        return 0;
+    }
+
     @Override
-    public void execute(DataBase base, AtomicBoolean exitStatus) {
-        exitStatus.set(true);
+    public void execute(DataBase base) throws ExitCommandException {
+        throw new ExitCommandException();
     }
 }

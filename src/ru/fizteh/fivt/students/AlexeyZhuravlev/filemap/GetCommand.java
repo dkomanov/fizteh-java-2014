@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.filemap;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * @author AlexeyZhuravlev
  */
@@ -9,12 +7,16 @@ public class GetCommand extends Command {
 
     private String key;
 
-    public GetCommand(String passedKey) {
-        key = passedKey;
+    public int numberOfArguments() {
+        return 1;
+    }
+
+    public void putArguments(String[] args) {
+        key = args[1];
     }
 
     @Override
-    public void execute(DataBase base, AtomicBoolean exitStatus) {
+    public void execute(DataBase base) {
         String value = base.data.get(key);
         if (value == null) {
             System.out.println("not found");
