@@ -1,23 +1,28 @@
 package ru.fizteh.fivt.students.PotapovaSofia.MultiFileHashMap;
 
+import com.sun.javaws.exceptions.ExitException;
+
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Vector;
 
 public class CmdCreate implements Command {
     @Override
-    public void execute(Vector<String> args, DataBase db) {
-        if (args.size() < 2) {
-            CommandParser.fewArgs("create");
-        } else if (args.size() > 2) {
-            CommandParser.tooMuchArgs("create");
+    public void execute(Vector<String> args, DataBase db) throws IOException {
+        String tableName = args.get(1);
+        Path tablePath = db.getDbPath().resolve(tableName);
+        if (db.getDataBase().containsKey(tableName)) {
+            System.out.println(tableName + " exists");
         } else {
-            String tableName = args.get(1);
-            Path tablePath = db.getDbPath().resolve(tableName);
-            if (db.tables.put(tableName, new Table(tablePath)) == null) {
-                System.out.println("created");
-            } else {
-                System.out.println(args.get(1) + " exists");
+            String tableToCreatePath = db.getDbPath().toString() + File.separator + tableName;
+            File tableDirectory = new File(tableToCreatePath);
+            if (!tableDirectory.mkdir()) {
+                throw new IOException("Can't create table directory");
             }
+            System.out.println("created");
+            db.getDataBase().put(tableName, new Table(tablePath));
         }
     }
 }

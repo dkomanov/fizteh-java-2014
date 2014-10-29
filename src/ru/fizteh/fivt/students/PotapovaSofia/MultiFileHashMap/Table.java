@@ -12,7 +12,8 @@ public class Table extends HashMap<String, String> {
     Table(Path path) {
         tablePath = path;
     }
-    public void readToTable() throws IOException {
+
+    public void readFromTable() throws IOException {
         clear();
         for (int dir = 0; dir < 16; ++dir) {
             for (int file = 0; file < 16; ++file) {
@@ -41,39 +42,78 @@ public class Table extends HashMap<String, String> {
         return str;
     }
 
-    public void writeFromTable() throws IOException {
-        Files.createDirectory(tablePath);
+    public void writeToTable() throws IOException {
+        Map<String, String>[][] db = new Map[16][16];
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < 16; j++) {
+                db[i][j] = new HashMap<>();
+            }
+        }
         for (Map.Entry<String, String> entry : entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            int hashCode = key.hashCode();
-            int dir = hashCode % 16;
-            int file = hashCode / 16 % 16;
-            Path dirPath = tablePath.resolve(dir + ".dir");
-            Path filePath = dirPath.resolve(file + ".dat");
-            if (!Files.exists(dirPath)) {
-                try {
-                    Files.createDirectory(dirPath);
-                } catch (IOException ex) {
-                    throw new IOException(dirPath + ": unable to create");
+            Integer hashCode = key.hashCode();
+            Integer dir = hashCode % 16;
+            Integer file = hashCode / 16 % 16;
+            db[dir][file].put(key, value);
+        }
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < 16; j++) {
+                if (!db[i][j].isEmpty()) {
+                    Integer nDir = i;
+                    Integer nFile = j;
+                    Path dirPath = tablePath.resolve(nDir + ".dir");
+                    String newPath = dirPath.toString();
+                    File directory = new File(newPath);
+                    if (!directory.exists()) {
+                        if (!directory.mkdir()) {
+                            throw new IOException("Cannot create directory");
+                        }
+                    }
+                    String newFilePath = dirPath.resolve(nFile + ".dat").toString();
+                    File file = new File(newFilePath);
+                    if (!file.exists()) {
+                        if (!file.createNewFile()) {
+                            throw new IOException("Cannot create file");
+                        }
+                    }
+                    DataOutputStream out = new DataOutputStream(
+                            new FileOutputStream(newFilePath));
+                    for (Map.Entry<String, String> entry : db[i][j].entrySet()) {
+                        String key = entry.getKey();
+                        String value = entry.getValue();
+                        writeWord(out, key);
+                        writeWord(out, value);
+                    }
+                    out.close();
+                } else {
+                    Integer nDir = i;
+                    Integer nFile = j;
+                    Path dirPath = tablePath.resolve(nDir + ".dir");
+                    String newPath = dirPath.toString();
+                    File directory = new File(newPath);
+                    if (directory.exists()) {
+                        String newFilePath = dirPath.resolve(nFile + ".dat").toString();
+                        File file = new File(newFilePath);
+                        Files.deleteIfExists(file.toPath());
+                    }
                 }
             }
-            if (!Files.exists(filePath)) {
-                try {
-                    Files.createFile(filePath);
-                } catch (IOException ex) {
-                    throw new IOException(filePath + ": unable to create");
-                }
+        }
+        File pathDirectory =  tablePath.toFile();
+        File[] tableDirectories = pathDirectory.listFiles();
+        for (File directory: tableDirectories) {
+            File[] directoryFiles = directory.listFiles();
+            if (directoryFiles.length == 0) {
+                Files.delete(directory.toPath());
             }
-            DataOutputStream out = new DataOutputStream(Files.newOutputStream(filePath));
-            writeWord(out, key);
-            writeWord(out, value);
         }
     }
 
-    private void writeWord(DataOutputStream dataOutputStream, String word) throws IOException {
+    private void writeWord(DataOutputStream out, String word) throws IOException {
         byte[] byteWord = word.getBytes("UTF-8");
-        dataOutputStream.writeInt(byteWord.length);
-        dataOutputStream.write(byteWord);
+        out.writeInt(byteWord.length);
+        out.write(byteWord);
+        out.flush();
     }
 }
