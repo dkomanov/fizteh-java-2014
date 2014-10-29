@@ -103,12 +103,12 @@ public class TableList {
         }
     }
 
-    public void exit() throws FileNotFoundException {
+    public void exit() throws IOException {
         saveDB();
         System.exit(0);
     }
 
-    private void saveDB() throws FileNotFoundException {
+    private void saveDB() throws IOException {
         for (Table t: dB.values()) {
             t.saveTable();
         }
@@ -132,5 +132,33 @@ public class TableList {
                 return;
             }
         }
+    }
+
+    public boolean checkNameCorrection(final String name) {
+        for (int i = 0; i < name.length(); i++) {
+            switch (name.charAt(i)) {
+                case '*':
+                    return false;
+                case '\\':
+                    return false;
+                case '|':
+                    return false;
+                case '/':
+                    return false;
+                case '\"':
+                    return false;
+                case ':':
+                    return false;
+                case '?':
+                    return false;
+                case '>':
+                    return false;
+                case '<':
+                    return false;
+                default:
+                    break;
+            }
+        }
+        return true;
     }
 }
