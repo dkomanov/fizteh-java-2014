@@ -25,7 +25,7 @@ public class Interpreter {
     }
 
     public static boolean batchMode(final String[] args, TableList tL, boolean flag)
-    									throws NumberFormatException, IOException {
+                                        throws NumberFormatException, IOException {
         String arg = "";
         String [] arg1 = null;
         String [] arg2 = null;
@@ -263,5 +263,4 @@ public class Interpreter {
         }
         return false;
     }
-
 }
