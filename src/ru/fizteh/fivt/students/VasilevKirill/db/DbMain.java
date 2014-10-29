@@ -27,7 +27,7 @@ public class DbMain {
             System.err.println("Path is incorrect");
             System.exit(-1);
         }
-        try (FileMap fileMap = new FileMap(System.getProperty("db.file"))) {
+        try (FileMap fileMap = new FileMap(dbFile)) {
             Status newStatus = new Status(fileMap);
             if (args.length == 0) {
                 new Shell(commands, newStatus).handle(System.in);
@@ -40,7 +40,7 @@ public class DbMain {
             System.err.println(e.getMessage());
             System.exit(-1);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println(e.toString());
             System.exit(-1);
         }
         System.exit(0);
