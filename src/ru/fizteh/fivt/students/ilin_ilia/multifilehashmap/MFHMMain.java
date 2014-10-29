@@ -17,7 +17,7 @@ public class MFHMMain {
             if (args.length == 0) {
                 Interpreter.interactiveMode(tL);
             } else {
-                Interpreter.batchMode(args, tL);
+                Interpreter.batchMode(args, tL, true);
             }
         } catch (Exception e) {
             e.printStackTrace();
