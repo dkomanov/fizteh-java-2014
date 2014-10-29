@@ -8,6 +8,8 @@ import java.util.Map;
 
 public class Table extends HashMap<String, String> {
     private Path tablePath;
+    static final int DIR_COUNT = 16;
+    static final int FILE_COUNT = 16;
 
     Table(Path path) {
         tablePath = path;
@@ -15,8 +17,8 @@ public class Table extends HashMap<String, String> {
 
     public void readFromTable() throws IOException {
         clear();
-        for (int dir = 0; dir < 16; ++dir) {
-            for (int file = 0; file < 16; ++file) {
+        for (int dir = 0; dir < DIR_COUNT; ++dir) {
+            for (int file = 0; file < FILE_COUNT; ++file) {
                 Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
                 if (Files.exists(filePath)) {
                     DataInputStream in = new DataInputStream(Files.newInputStream(filePath));
@@ -43,9 +45,9 @@ public class Table extends HashMap<String, String> {
     }
 
     public void writeToTable() throws IOException {
-        Map<String, String>[][] db = new Map[16][16];
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        Map<String, String>[][] db = new Map[DIR_COUNT][FILE_COUNT];
+        for (int i = 0; i < DIR_COUNT; i++) {
+            for (int j = 0; j < FILE_COUNT; j++) {
                 db[i][j] = new HashMap<>();
             }
         }
@@ -53,12 +55,12 @@ public class Table extends HashMap<String, String> {
             String key = entry.getKey();
             String value = entry.getValue();
             Integer hashCode = key.hashCode();
-            Integer dir = hashCode % 16;
-            Integer file = hashCode / 16 % 16;
+            Integer dir = hashCode % DIR_COUNT;
+            Integer file = hashCode / DIR_COUNT % FILE_COUNT;
             db[dir][file].put(key, value);
         }
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        for (int i = 0; i < DIR_COUNT; i++) {
+            for (int j = 0; j < FILE_COUNT; j++) {
                 if (!db[i][j].isEmpty()) {
                     Integer nDir = i;
                     Integer nFile = j;
