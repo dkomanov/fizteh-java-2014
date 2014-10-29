@@ -22,7 +22,7 @@ public class DataBase {
         return dbPath;
     }
 
-    public Map<String, Table> getDataBase () {
+    public Map<String, Table> getDataBase() {
         return tables;
     }
 

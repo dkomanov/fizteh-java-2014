@@ -18,7 +18,7 @@ public class Main {
         }
     }
 
-    protected static Map<String, CommandHandler > commandMap;
+    protected static Map<String, CommandHandler> commandMap;
     public static DataBase db;
 
     public Main() throws IOException {
