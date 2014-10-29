@@ -16,13 +16,14 @@ public class FileMap {
     
     private Map<String, String> map;
     private String name;
+    private File fil;
     
     FileMap(final String path) throws IOException {
         map = new HashMap<>();
-        File fil = new File(path + ".dat");
+        fil = new File(path + ".dat");
         name = path + ".dat";
         if (!fil.exists()) {
-            fil.createNewFile();
+            //fil.createNewFile();
         } else {
             getFile();
         }
@@ -59,7 +60,8 @@ public class FileMap {
         return String.join(", ", map.keySet());
     }
     
-    public void exit() throws FileNotFoundException {
+    public void exit() throws IOException {
+        fil.createNewFile();
         putFile();
     }
     
