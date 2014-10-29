@@ -93,7 +93,7 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
             }
             returnValue = addedValue;
         } else {
-            // isOverwritten overwrite already overwritten entry
+            // overwrite already overwritten entry
             if (!overwrittenValue.equals(value)) {
                 overwrittenEntries.put(key, value);
             }
@@ -154,6 +154,7 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
             }
         } else if (isAdded) {
             addedEntries.remove(key);
+            returnValue = addedValue;
         }
 
         if (autoCommit) {

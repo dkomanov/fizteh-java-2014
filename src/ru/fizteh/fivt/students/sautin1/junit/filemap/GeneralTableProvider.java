@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.sautin1.junit.shell.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -82,13 +83,12 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
         if (tableMap.get(name) != null) {
             return null;
         }
-        if (Files.isDirectory(tablePath)) {
-            throw new IllegalArgumentException("Directory with such name already exists");
-        }
         try {
             Files.createDirectory(tablePath);
+        } catch (FileAlreadyExistsException e) {
+            throw new IllegalArgumentException("Directory with such name already exists");
         } catch (IOException e) {
-            throw new NullPointerException("IO error");
+            throw new IllegalArgumentException("IO error");
         }
 
         T newTable = establishTable(name);
@@ -98,7 +98,7 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
     }
 
     /**
-     * Remove table by its name.
+     * Remove table by its name. All table files are deleted.
      * @param name - name of the table.
      */
     public void removeTable(String name) {
