@@ -14,16 +14,22 @@ public class Drop extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            return false;
+            if (packageModeInInteractive) {
+                return false;
+            }
+            return true;
         }
 
         MFHMap map = dbConnector.tables.get(args[0]);
         if (map == null) {
             System.out.println(args[0] + " not exists");
+            if (packageModeInInteractive) {
+                return false;
+            }
             if (packageMode) {
                 System.exit(-1);
             }
-            return false;
+            return true;
         }
         if (dbConnector.activeTable == map) {
             dbConnector.tables.remove(args[0]);

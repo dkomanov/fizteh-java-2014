@@ -13,11 +13,17 @@ public class List extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            return false;
+            if (packageModeInInteractive) {
+                return false;
+            }
+            return true;
         }
         if (dbConnector.activeTable == null) {
+            if (packageModeInInteractive) {
+                return false;
+            }
             noTable();
-            return false;
+            return true;
         }
         Set<String> keySet = dbConnector.activeTable.keySet();
         int count = 0;

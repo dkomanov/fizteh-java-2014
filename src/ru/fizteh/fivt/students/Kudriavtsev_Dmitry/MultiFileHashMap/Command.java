@@ -9,6 +9,7 @@ public abstract class Command {
     protected String name;
     protected int argLen;
     protected boolean packageMode;
+    protected boolean packageModeInInteractive;
 
     public Command(String name, int argLen) {
         this.name = name;

@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.MultiFileHashMap;
 
 
 import java.io.File;
-import java.nio.file.Path;
 
 /**
  * Created by Дмитрий on 04.10.14.
@@ -16,11 +15,17 @@ public class Put extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            return false;
+            if (packageModeInInteractive) {
+                return false;
+            }
+            return true;
         }
         if (dbConnector.activeTable == null) {
+            if (packageModeInInteractive) {
+                return false;
+            }
             noTable();
-            return false;
+            return true;
         }
         String value = dbConnector.activeTable.put(args[0], args[1]);
         if (value != null) {

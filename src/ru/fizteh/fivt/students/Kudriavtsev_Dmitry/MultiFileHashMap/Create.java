@@ -12,7 +12,10 @@ public class Create extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            return false;
+            if (packageModeInInteractive) {
+                return false;
+            }
+            return true;
         }
         MFHMap map = new MFHMap(dbConnector.dbRoot.resolve(args[0]));
         if (dbConnector.tables.containsKey(args[0])) {

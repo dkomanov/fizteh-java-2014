@@ -68,13 +68,18 @@ public class Connector {
         }
     }
 
-    public void run(String name, String[] args, boolean packageMode) {
+    public boolean run(String name, String[] args, boolean packageMode, boolean packageModeInInteractive) {
         Command command = commands.get(name);
         command.packageMode = packageMode;
+        command.packageModeInInteractive = packageModeInInteractive;
         if (command != null) {
-            command.exec(this, args);
+            if (!command.exec(this, args)) {
+                return false;
+            }
         } else if (!args[0].equals("")) {
             System.err.println("args[0] + : command not found");
+            return false;
         }
+        return true;
     }
 }

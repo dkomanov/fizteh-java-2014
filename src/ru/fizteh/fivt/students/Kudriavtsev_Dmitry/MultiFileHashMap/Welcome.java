@@ -45,7 +45,7 @@ public class Welcome {
                     }
                     String[] newArgs = new String[arguments.length - j - 1];
                     System.arraycopy(arguments, j + 1, newArgs, 0, newArgs.length);
-                    dbConnector.run(whatToDo.name, newArgs, true);
+                    dbConnector.run(whatToDo.name, newArgs, true, false);
                 }
             } catch (Exception e) {
                 System.err.println("Exception: " + e.getMessage());
@@ -88,9 +88,11 @@ public class Welcome {
                         System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);
                     }
                     if (s.length > 1) {
-                        dbConnector.run(whatToDo.name, newArgs, true);
+                        if (!dbConnector.run(whatToDo.name, newArgs, false, true)) {
+                            break;
+                        }
                     } else {
-                        dbConnector.run(whatToDo.name, newArgs, false);
+                        dbConnector.run(whatToDo.name, newArgs, false, false);
                     }
                 }
                 if (exit) {

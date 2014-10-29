@@ -13,18 +13,27 @@ public class Get extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            return false;
+            if (packageModeInInteractive) {
+                return false;
+            }
+            return true;
         }
         if (dbConnector.activeTable == null) {
+            if (packageModeInInteractive) {
+                return false;
+            }
             noTable();
-            return false;
+            return true;
         }
         String value = dbConnector.activeTable.get(args[0]);
         if (value != null) {
             System.out.println("found");
             System.out.println(value);
         } else {
-            System.out.println("not found");
+            System.err.println("not found");
+            if (packageModeInInteractive) {
+                return false;
+            }
         }
         return true;
     }

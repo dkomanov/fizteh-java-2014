@@ -14,15 +14,21 @@ public class Show extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            return false;
+            if (packageModeInInteractive) {
+                return false;
+            }
+            return true;
         }
 
         if (!args[0].equals("tables")) {
             System.err.println("Bad show tables command.");
+            if (packageModeInInteractive) {
+                return false;
+            }
             if (packageMode) {
                 System.exit(-1);
             }
-            return false;
+            return true;
         }
 
         if (dbConnector.tables.isEmpty()) {
