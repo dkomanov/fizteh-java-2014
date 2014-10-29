@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.PotapovaSofia.MultiFileHashMap;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 

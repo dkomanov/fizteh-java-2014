@@ -1,11 +1,8 @@
 package ru.fizteh.fivt.students.PotapovaSofia.MultiFileHashMap;
 
-import com.sun.javaws.exceptions.ExitException;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Vector;
 
 public class CmdCreate implements Command {
