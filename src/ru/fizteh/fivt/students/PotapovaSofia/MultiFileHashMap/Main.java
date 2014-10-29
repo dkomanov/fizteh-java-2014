@@ -23,7 +23,6 @@ public class Main {
 
     public Main() throws IOException {
         commandMap = new HashMap();
-        //Path path = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("fizteh.db.dir"));
         String rootDirectory = System.getProperty("fizteh.db.dir");
         Path path = Paths.get(rootDirectory);
         if (!Files.exists(path)) {

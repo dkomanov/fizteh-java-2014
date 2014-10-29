@@ -10,7 +10,7 @@ public class CmdList implements Command {
             System.out.println("no table");
             return;
         }
-        Set keySet = db.currentTable.keySet();
+        Set<String> keySet = db.currentTable.keySet();
         String joined = String.join(", ", keySet);
         System.out.println(joined);
     }
