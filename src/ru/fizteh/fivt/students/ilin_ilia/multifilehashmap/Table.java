@@ -110,7 +110,7 @@ public class Table {
         System.out.println(String.join(", ", l));
     }
 
-    public void saveTable() throws FileNotFoundException {
+    public void saveTable() throws IOException {
         for (Dir d: data.values()) {
             d.save();
         }
