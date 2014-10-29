@@ -20,7 +20,7 @@ public class Dir {
                 maps.put(Integer.parseInt(f), new FileMap(Paths.get(name.getAbsolutePath()).resolve(f).toString()));
             }
         } else {
-            name.mkdir();
+            //name.mkdir();
         }
     }
 
@@ -79,7 +79,8 @@ public class Dir {
         return String.join(", ", l);
     }
 
-    public void save() throws FileNotFoundException {
+    public void save() throws IOException {
+        name.mkdir();
         for (int key: maps.keySet()) {
             maps.get(key).putFile();
             if (!maps.get(key).exists()) {
