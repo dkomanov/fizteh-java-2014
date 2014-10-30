@@ -1,14 +1,17 @@
 package ru.fizteh.fivt.storage.strings;
+
 import java.util.List;
 /**
  * @author Fedor Lavrentyev
  * @author Dmitriy Komanov
  */
 public interface Table {
+
     /**
      * Возвращает название базы данных.
      */
     String getName();
+
     /**
      * Получает значение по указанному ключу.
      *
@@ -18,6 +21,7 @@ public interface Table {
      * @throws IllegalArgumentException Если значение параметра key является null.
      */
     String get(String key);
+
     /**
      * Устанавливает значение по указанному ключу.
      *
@@ -29,6 +33,7 @@ public interface Table {
      * @throws IllegalArgumentException Если значение параметров key или value является null.
      */
     String put(String key, String value);
+
     /**
      * Удаляет значение по указанному ключу.
      *
@@ -38,6 +43,7 @@ public interface Table {
      * @throws IllegalArgumentException Если значение параметра key является null.
      */
     String remove(String key);
+
     /**
      * Возвращает количество ключей в таблице.
      *
@@ -50,6 +56,7 @@ public interface Table {
      * @return Количество сохранённых ключей.
      */
     int commit();
+
     /**
      * Выполняет откат изменений с момента последней фиксации.
      *
@@ -63,3 +70,4 @@ public interface Table {
      */
     List<String> list();
 }
+

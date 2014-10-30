@@ -4,6 +4,7 @@ package ru.fizteh.fivt.storage.strings;
  * @author Dmitriy Komanov
  */
 public interface TableProvider {
+
     /**
      * Возвращает таблицу с указанным названием.
      *
@@ -12,6 +13,7 @@ public interface TableProvider {
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
      */
     Table getTable(String name);
+
     /**
      * Создаёт таблицу с указанным названием.
      *
@@ -20,6 +22,7 @@ public interface TableProvider {
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
      */
     Table createTable(String name);
+
     /**
      * Удаляет таблицу с указанным названием.
      *

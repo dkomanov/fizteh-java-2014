@@ -7,6 +7,7 @@ package ru.fizteh.fivt.storage.strings;
  * @author Dmitriy Komanov
  */
 public interface TableProviderFactory {
+    
     /**
      * Возвращает объект для работы с базой данных.
      *
