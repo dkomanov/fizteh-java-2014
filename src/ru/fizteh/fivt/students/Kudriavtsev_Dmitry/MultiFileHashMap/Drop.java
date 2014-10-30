@@ -14,7 +14,7 @@ public class Drop extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
                 return false;
             }
             return true;
@@ -22,11 +22,11 @@ public class Drop extends Command {
 
         MFHMap map = dbConnector.tables.get(args[0]);
         if (map == null) {
-            System.out.println(args[0] + " not exists");
-            if (packageModeInInteractive) {
+            System.err.println(args[0] + " not exists");
+            if (batchModeInInteractive) {
                 return false;
             }
-            if (packageMode) {
+            if (batchMode) {
                 System.exit(-1);
             }
             return true;

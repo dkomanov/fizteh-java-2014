@@ -14,7 +14,7 @@ public class Show extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
                 return false;
             }
             return true;
@@ -22,10 +22,10 @@ public class Show extends Command {
 
         if (!args[0].equals("tables")) {
             System.err.println("Bad show tables command.");
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
                 return false;
             }
-            if (packageMode) {
+            if (batchMode) {
                 System.exit(-1);
             }
             return true;

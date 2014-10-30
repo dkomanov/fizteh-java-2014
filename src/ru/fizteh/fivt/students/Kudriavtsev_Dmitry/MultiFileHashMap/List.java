@@ -13,13 +13,14 @@ public class List extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
                 return false;
             }
             return true;
         }
         if (dbConnector.activeTable == null) {
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
+                System.err.println("No table");
                 return false;
             }
             noTable();

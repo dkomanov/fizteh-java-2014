@@ -8,8 +8,8 @@ public abstract class Command {
 
     protected String name;
     protected int argLen;
-    protected boolean packageMode;
-    protected boolean packageModeInInteractive;
+    protected boolean batchMode;
+    protected boolean batchModeInInteractive;
 
     public Command(String name, int argLen) {
         this.name = name;
@@ -24,7 +24,7 @@ public abstract class Command {
     protected boolean checkArguments(int argLen) {
         if (argLen != this.argLen) {
             System.err.println("Incorrect number of arguments in " + name);
-            if (packageMode) {
+            if (batchMode) {
                 System.exit(-1);
             }
             return false;
@@ -34,7 +34,7 @@ public abstract class Command {
 
     protected void noTable() {
         System.err.println("No table");
-        if (packageMode) {
+        if (batchMode) {
             System.exit(-1);
         }
     }

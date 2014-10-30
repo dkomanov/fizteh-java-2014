@@ -12,13 +12,14 @@ public class Remove extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
                 return false;
             }
             return true;
         }
         if (dbConnector.activeTable == null) {
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
+                System.err.println("No table");
                 return false;
             }
             noTable();
@@ -29,7 +30,7 @@ public class Remove extends Command {
             dbConnector.activeTable.changedFiles.put(dbConnector.activeTable.whereToSave(args[0]).getKey(), 0);
         } else {
             System.err.println("not found");
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
                 return false;
             }
         }

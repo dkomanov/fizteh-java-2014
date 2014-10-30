@@ -12,7 +12,7 @@ public class Use extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
                 return false;
             }
             return true;
@@ -21,10 +21,10 @@ public class Use extends Command {
         MFHMap map = dbConnector.tables.get(args[0]);
         if (map == null) {
             System.err.println(args[0] + " not exists");
-            if (packageModeInInteractive) {
+            if (batchModeInInteractive) {
                 return false;
             }
-            if (packageMode) {
+            if (batchMode) {
                 System.exit(-1);
             }
             return true;

@@ -68,10 +68,10 @@ public class Connector {
         }
     }
 
-    public boolean run(String name, String[] args, boolean packageMode, boolean packageModeInInteractive) {
+    public boolean run(String name, String[] args, boolean batchMode, boolean batchModeInInteractive) {
         Command command = commands.get(name);
-        command.packageMode = packageMode;
-        command.packageModeInInteractive = packageModeInInteractive;
+        command.batchMode = batchMode;
+        command.batchModeInInteractive = batchModeInInteractive;
         if (command != null) {
             if (!command.exec(this, args)) {
                 return false;
