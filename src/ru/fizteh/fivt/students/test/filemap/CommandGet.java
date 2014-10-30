@@ -1,13 +1,13 @@
 package ru.fizteh.fivt.students.deserg.filemap;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Created by deserg on 03.10.14.
  */
 public class CommandGet implements Command{
 
-    public void execute(Vector<String> args, FileMap fileMap) {
+    public void execute(ArrayList<String> args, FileMap fileMap) {
 
         if (args.size() < 2) {
             throw new MyException("Not enough arguments");

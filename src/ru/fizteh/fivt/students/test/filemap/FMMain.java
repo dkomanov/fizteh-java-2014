@@ -10,9 +10,9 @@ import java.util.*;
 
 public class FMMain {
 
-    protected static Map<String, Command> commandMap;
-    protected static Queue<Vector<String>> argumentsQueue;
-    protected static FileMap fileMap;
+    protected Map<String, Command> commandMap;
+    protected Queue<ArrayList<String>> argumentsQueue;
+    protected FileMap fileMap;
 
     public FMMain() {
 
@@ -82,7 +82,6 @@ public class FMMain {
             if (lineScan.hasNext()) {
                 lineStr = lineScan.nextLine();
             } else {
-                System.out.println("Input is closed");
                 System.exit(1);
             }
         } else {
@@ -97,7 +96,7 @@ public class FMMain {
 
         for (String commandBlock: commandBlockAr) {
             String[] argsStr = commandBlock.trim().split("\\s+");
-            Vector<String> argumentVector = new Vector<>();
+            ArrayList<String> argumentVector = new ArrayList<>();
 
             for (String arg: argsStr) {
                 argumentVector.add(arg);
@@ -117,12 +116,10 @@ public class FMMain {
         }
 
         while (argumentsQueue.size() > 0) {
-            Vector<String> arguments = new Vector<>(argumentsQueue.poll());
+            ArrayList<String> arguments = new ArrayList<>(argumentsQueue.poll());
 
             Command command = commandMap.get(arguments.get(0));
-            if (command == null) {
-                throw new MyException("No such command");
-            } else {
+            if (command != null) {
                 command.execute(arguments, fileMap);
             }
         }
