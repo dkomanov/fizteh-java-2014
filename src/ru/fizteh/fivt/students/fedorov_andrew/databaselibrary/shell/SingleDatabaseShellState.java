@@ -1,8 +1,9 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.Database;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.TableImpl;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.Database;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.TableImpl;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.ExitRequest;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.NoActiveTableException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Log;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
@@ -95,10 +96,10 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     }
 
     @Override
-    public void exit(int exitCode) {
+    public void exit(int exitCode) throws ExitRequest {
         cleanup();
         Log.close();
-        System.exit(exitCode);
+        throw new ExitRequest(exitCode);
     }
 
     /**

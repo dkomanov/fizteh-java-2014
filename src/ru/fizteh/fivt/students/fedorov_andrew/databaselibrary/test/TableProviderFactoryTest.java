@@ -10,12 +10,8 @@ import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.hamcrest.CoreMatchers.*;
 
@@ -95,21 +91,6 @@ public class TableProviderFactoryTest extends TestBase {
 
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("DB directory scan: found improper files");
-        factory.create(DB_ROOT.toString());
-    }
-
-    @Test
-    public void testCreateProviderWithCorruptTableFiles() throws IOException, DatabaseException {
-        Files.createDirectory(DB_ROOT);
-        Path tablePartPath = Paths.get(DB_ROOT.toString(), "table", "1.dir", "1.dat");
-        Files.createDirectories(tablePartPath.getParent());
-        Files.createFile(tablePartPath);
-        try (BufferedWriter writer = Files
-                .newBufferedWriter(tablePartPath, Charset.forName("UTF-8"))) {
-            writer.write("invalid data");
-        }
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage(startsWith("DB file is corrupt"));
         factory.create(DB_ROOT.toString());
     }
 }

@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.ExitRequest;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Log;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
@@ -10,7 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Map;
-
 
 /**
  * Class that represents a terminal which can execute some commands that work with some data.
@@ -39,66 +39,40 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
      */
     private boolean interactive;
 
-    public Shell(ShellStateImpl shellState) {
+    public Shell(ShellStateImpl shellState) throws TerminalException {
         this.shellState = shellState;
-        try {
-            init();
-        } catch (TerminalException exc) {
-            //already handled
-        }
+        init();
     }
-
 
     /**
      * Executes command in this shell
      * @param commandStr
      *         some shell command
-     * @return returns true if execution finished correctly; false otherwise;
+     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
      */
-    public boolean execute(String commandStr) {
+    public void execute(String commandStr) throws TerminalException, ExitRequest {
         String[] args = commandStr.trim().split("[ \t]{1,}");
         if (args[0].isEmpty()) {
-            return true;
+            return;
         }
 
         Log.log(Shell.class, "Invocation request: " + Arrays.toString(args));
 
         Command<ShellStateImpl> command = commandMap.get(args[0]);
         if (command == null) {
-            Log.log(Shell.class, String.format("Command not found by name %s", args[0]));
-            System.err.println("Sorry, this command is missing");
-            return false;
+            Utility.handleError(args[0] + ": command is missing", null, true);
         } else {
             try {
                 command.execute(shellState, args);
-
-                return true;
             } catch (Throwable exc) {
-                /*
-                    If it is TerminalException, error report is already written.
-                    Otherwise we should catch all type of throwables and write detailed
-                    error message to log, short error message to user.
-                  */
-                if (!(exc instanceof TerminalException)) {
-                    Log.log(
-                            Shell.class,
-                            exc,
-                            String.format("Error during execution of %s", args[0]));
-                    System.err.println(String.format("%s: Method execution error", args[0]));
+                // If it is TerminalException, error report is already written.
+                if (exc instanceof TerminalException || exc instanceof ExitRequest) {
+                    throw exc;
+                } else {
+                    Utility.handleError(args[0] + ": Method execution error", exc, true);
                 }
-                return false;
             }
         }
-    }
-
-    /**
-     * Called from {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.ShellState}
-     * when the shell should exit.
-     * @param exitCode
-     */
-    public void onExitRequest(int exitCode) {
-        Log.close();
-        System.exit(exitCode);
     }
 
     /**
@@ -124,66 +98,98 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
      * Execute commands from input stream. Commands are awaited until the-end-of-stream.
      * @param stream
      */
-    public void run(InputStream stream) {
+    public int run(InputStream stream) throws TerminalException {
         interactive = true;
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream), READ_BUFFER_SIZE);
-        try {
+        if (stream == null) {
+            throw new IllegalArgumentException("Input stream must not be null");
+        }
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(stream), READ_BUFFER_SIZE)) {
             while (true) {
-                System.out.println(shellState.getGreetingString());
+                System.out.print(shellState.getGreetingString());
                 String str = reader.readLine();
 
-                // end of stream
+                // End of stream.
                 if (str == null) {
                     break;
                 }
 
                 String[] commands = str.split(";");
                 for (int i = 0, len = commands.length; i < len; i++) {
-                    boolean correct = execute(commands[i]);
-                    if (!correct) {
+                    try {
+                        execute(commands[i]);
+                    } catch (ExitRequest request) {
+                        throw request;
+                    } catch (TerminalException exc) {
+                        // Exception is already handled.
                         break;
                     }
                 }
             }
         } catch (IOException exc) {
-            Log.log(Shell.class, exc, "Cannot parse inputstream for shell");
+            Log.log(Shell.class, exc, "Cannot parse input stream for shell");
+        } catch (ExitRequest request) {
+            return request.getCode();
+        } finally {
+            try {
+                shellState.persist();
+            } catch (Exception exc) {
+                Log.log(Shell.class, exc, "Failed to persist shell state");
+                try {
+                    shellState.exit(1);
+                } catch (ExitRequest request) {
+                    return request.getCode();
+                }
+            }
         }
 
-        try {
-            shellState.persist();
-        } catch (Exception exc) {
-            shellState.exit(1);
-        }
+        return 0;
     }
 
     /**
      * Execute commands from command line arguments. Note that command line arguments are first
      * concatenated into a single line then split and parsed.
      * @param args
+     *         Array of commands. If an error happens during execution of one of the commands in
+     *         the
+     *         sequence, next commands will not be executed.
+     * @return Exit code. 0 means normal status, anything else - abnormal termination (error).
      */
-    public void run(String[] args) {
-        interactive = false;
+    public int run(String[] args) {
+        try {
+            interactive = false;
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0, len = args.length; i < len; i++) {
-            sb.append((i == 0 ? "" : " ")).append(args[i]);
-        }
-        String cmds = sb.toString();
-        String[] commands = cmds.split(";");
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0, len = args.length; i < len; i++) {
+                sb.append((i == 0 ? "" : " ")).append(args[i]);
+            }
+            String allCommands = sb.toString();
+            String[] commands = allCommands.split(";");
 
-        for (int i = 0, len = commands.length; i < len; i++) {
-            boolean correct = execute(commands[i]);
-            if (!correct) {
+            try {
+                for (int i = 0, len = commands.length; i < len; i++) {
+                    execute(commands[i]);
+                }
+            } catch (ExitRequest request) {
+                throw request;
+            } catch (TerminalException exc) {
+                // Exception already handled.
                 shellState.exit(1);
             }
+
+            try {
+                shellState.persist();
+            } catch (Exception exc) {
+                Log.log(Shell.class, exc, "Failed to persist shell state");
+                shellState.exit(1);
+            }
+            shellState.exit(0);
+        } catch (ExitRequest request) {
+            return request.getCode();
         }
 
-        try {
-            shellState.persist();
-        } catch (Exception exc) {
-            shellState.exit(1);
-        }
-        shellState.exit(0);
+        return 0;
     }
 }

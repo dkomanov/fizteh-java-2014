@@ -37,7 +37,7 @@ public class TableRandomTests extends TestBase {
 
     @Parameters
     public static Iterable<Object[]> data() {
-        int testsCount = TestUtils.randInt(100, 1000);
+        int testsCount = TestUtils.randInt(50, 200);
 
         List<Object[]> testSuits = new LinkedList<>();
         ProbableActionSet<TestAction> generator = new ProbableActionSet<>();

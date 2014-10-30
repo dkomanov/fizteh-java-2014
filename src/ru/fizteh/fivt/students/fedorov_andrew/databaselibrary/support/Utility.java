@@ -22,7 +22,8 @@ public final class Utility {
     }
 
     /**
-     * Checks if {@code directory} and all its children having distance from {@code directory} up to
+     * Checks if {@code directory} and all its children having distance from {@code directory} up
+     * to
      * {@code depth} contain only directories
      * @param directory
      *         directory, root of local subtree
@@ -324,7 +325,6 @@ public final class Utility {
                 return visitFileFailed(path, exc);
             }
         }
-
 
         @Override
         public FileVisitResult visitFileFailed(T visitPath, IOException exc) throws IOException {

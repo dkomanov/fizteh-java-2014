@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary;
+package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;

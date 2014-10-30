@@ -60,7 +60,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             new AbstractCommand(null, "saves all data to file system and stops interpretation", 1) {
                 @Override
                 public void executeSafely(SingleDatabaseShellState state, String[] args)
-                        throws DatabaseException {
+                        throws DatabaseException, IllegalArgumentException {
                     state.persist();
                     state.exit(0);
                 }
@@ -75,7 +75,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
                     String value = state.getActiveDatabase().getActiveTable().get(key);
 
                     if (value == null) {
-                        System.out.println("not found");
+                        throw new DatabaseException("not found");
                     } else {
                         System.out.println("found");
                         System.out.println(value);
@@ -99,7 +99,6 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             for (Entry<String, Command<SingleDatabaseShellState>> cmdEntry : commands.entrySet()) {
                 String cmdName = cmdEntry.getKey();
                 Command<SingleDatabaseShellState> command = cmdEntry.getValue();
-
 
                 System.out.println(
                         String.format(
@@ -165,7 +164,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
                     String oldValue = state.getActiveDatabase().getActiveTable().remove(key);
 
                     if (oldValue == null) {
-                        System.out.println("not found");
+                        throw new DatabaseException("not found");
                     } else {
                         System.out.println("removed");
                     }
@@ -196,6 +195,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
         public void executeSafely(final SingleDatabaseShellState state, final String[] args)
                 throws DatabaseException {
             state.getActiveDatabase().useTable(args[1]);
+            System.out.println("using " + args[1]);
         }
     };
     private static final Commands INSTANCE = new Commands();

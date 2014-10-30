@@ -11,7 +11,7 @@ import org.junit.runners.JUnit4;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.DBTableProviderFactory;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
 
 import java.io.IOException;

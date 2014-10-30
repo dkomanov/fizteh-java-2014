@@ -13,7 +13,8 @@ public class Log {
     /**
      * Path to log file. By default - user.home
      */
-    private static final Path LOG_PATH;
+    private static final Path LOG_PATH =
+            Paths.get(System.getProperty("user.home"), "java_multifilehashmap.log");
     /**
      * If logging is disabled, no messages are output
      */
@@ -23,8 +24,10 @@ public class Log {
      */
     private static PrintWriter writer;
 
-    static {
-        LOG_PATH = Paths.get(System.getProperty("user.home"), "java_multifilehashmap.log");
+    private Log() {
+    }
+
+    private static void reopen() {
         try {
             writer = new PrintWriter(LOG_PATH.toAbsolutePath().toString());
         } catch (IOException exc) {
@@ -32,9 +35,6 @@ public class Log {
             System.err.println(exc.toString());
             System.exit(1);
         }
-    }
-
-    private Log() {
     }
 
     public static void close() {
@@ -58,6 +58,9 @@ public class Log {
     }
 
     public static void log(Class<?> logger, Throwable throwable, String message) {
+        if (writer == null) {
+            reopen();
+        }
         if (enableLogging) {
             StringBuilder sb = new StringBuilder(message == null ? 100 : message.length() * 2);
 

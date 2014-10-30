@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support;
 
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.DBTableProviderFactory;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 
 import java.io.IOException;
@@ -13,7 +13,8 @@ import java.util.Random;
 
 /**
  * This class provides some utility methods for testing.<br/> Note that some methods are linking to
- * {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility} class. The purpose
+ * {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility} class. The
+ * purpose
  * of this is that test classes should not contact with something that is not under test package.
  */
 public class TestUtils {

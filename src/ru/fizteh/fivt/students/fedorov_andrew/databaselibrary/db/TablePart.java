@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary;
+package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
@@ -99,12 +99,8 @@ public class TablePart {
      */
         HashMap<String, String> cloneDBMap = null;
 
-        if (tablePartMap == null) {
-            tablePartMap = new HashMap<>();
-        } else {
-            cloneDBMap = (HashMap<String, String>) tablePartMap.clone();
-            tablePartMap.clear();
-        }
+        cloneDBMap = (HashMap<String, String>) tablePartMap.clone();
+        tablePartMap.clear();
 
         try (DataInputStream stream = new DataInputStream(
                 new FileInputStream(

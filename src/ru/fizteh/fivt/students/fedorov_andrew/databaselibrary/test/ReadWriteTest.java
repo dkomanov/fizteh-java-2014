@@ -1,8 +1,7 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test;
 
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.TablePart;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.TablePart;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,12 +71,11 @@ public class ReadWriteTest {
      * @throws Exception
      */
     @org.junit.Test
-    @Ignore
     public void testReadWriteFileMap() throws Exception {
-        int tests = randInt(1000, 2000);
+        int tests = randInt(10, 50);
 
         int keysMin = 1;
-        int keysMax = 10000;
+        int keysMax = 1000;
 
         int keyMinLength = 1;
         int keyMaxLength = 1000;
@@ -93,7 +91,7 @@ public class ReadWriteTest {
 
         // standard tests
         for (int test = 0; test < tests; test++) {
-            System.out.println("test " + test);
+            //            System.out.println("test " + test);
             performReadWriteFileMapTest(
                     keysMin, keysMax, keyMinLength, keyMaxLength, valueMinLength, valueMaxLength);
         }

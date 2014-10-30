@@ -1,6 +1,7 @@
-package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary;
+package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TableCorruptException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
@@ -41,8 +42,7 @@ public class DBTableProvider implements TableProvider {
             TableImpl table = tables.get(name);
             if (table == null) {
                 throw new IllegalArgumentException(
-                        "Failed to get table",
-                        new TableCorruptException(name));
+                        "Table " + name + " is corrupt", new TableCorruptException(name));
             }
             return table;
         } else {
@@ -62,10 +62,8 @@ public class DBTableProvider implements TableProvider {
                 Files.createDirectory(tablePath);
             } catch (IOException exc) {
                 throw new IllegalArgumentException(
-                        "Bad name given",
-                        new DatabaseException(
-                                "Failed to create table directory",
-                                exc));
+                        "Bad name given", new DatabaseException(
+                        "Failed to create table directory", exc));
             }
         }
 
@@ -95,9 +93,8 @@ public class DBTableProvider implements TableProvider {
             //mark as corrupt
             tables.put(name, null);
             throw new IllegalArgumentException(
-                    "Bad name given",
-                    new DatabaseException(
-                            "Cannot remove table " + name + " from file system", exc));
+                    "Bad name given", new DatabaseException(
+                    "Cannot remove table " + name + " from file system", exc));
         }
     }
 
@@ -131,7 +128,7 @@ public class DBTableProvider implements TableProvider {
             throw new DatabaseException("Failed to scan database directory", exc);
         }
 
-        if (firstError != null) {
+        if (firstError != null && !(firstError instanceof DBFileCorruptException)) {
             throw firstError;
         }
     }

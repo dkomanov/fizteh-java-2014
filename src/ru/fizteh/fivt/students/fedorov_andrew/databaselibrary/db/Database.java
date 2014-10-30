@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary;
+package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.NoActiveTableException;
@@ -142,7 +142,7 @@ public class Database {
         try {
             activeTable = provider.getTable(tableName);
             if (activeTable == null) {
-                throw new IllegalArgumentException("table " + tableName + " not exists");
+                throw new IllegalArgumentException("Table " + tableName + " not exists");
             }
         } catch (Throwable thr) {
             activeTable = oldActiveTable;

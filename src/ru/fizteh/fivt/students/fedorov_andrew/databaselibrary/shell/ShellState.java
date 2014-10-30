@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.ExitRequest;
+
 /**
  * Base interface that encapsulates all data and commands to work with.
  * @param <S>
@@ -34,5 +36,5 @@ public interface ShellState<S extends ShellState<S>> extends CommandContainer<S>
      * Safely exit with cleanup.
      * @param exitCode
      */
-    void exit(int exitCode);
+    void exit(int exitCode) throws ExitRequest;
 }
