@@ -1,11 +1,9 @@
 package ru.fizteh.fivt.students.maxim_rep.multifilehashmap.commands;
 
+import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DatabaseException;
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
 
 public class Exit implements DBCommand {
-
-    public Exit() {
-    }
 
     @Override
     public boolean execute() {
@@ -15,7 +13,8 @@ public class Exit implements DBCommand {
                     DbMain.fileStoredStringMap.close();
                 }
             } catch (Exception e) {
-                System.err.println("Database Error - " + e.toString());
+                System.err.println((new DatabaseException(e.toString())
+                        .toString()));
                 return false;
             }
         }

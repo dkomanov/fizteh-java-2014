@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.maxim_rep.multifilehashmap.commands;
 import java.io.File;
 import java.util.ArrayList;
 
+import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DatabaseException;
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.TableDataMap;
 
@@ -31,7 +32,8 @@ public class Show implements DBCommand {
                     }
                     tablesArray.add(current.getName() + "\n" + tempMap.size());
                 } catch (Exception e) {
-                    System.err.println("Database Error - " + e.toString());
+                    System.err.println((new DatabaseException(e.toString())
+                            .toString()));
                     return null;
                 }
 
@@ -49,8 +51,8 @@ public class Show implements DBCommand {
     public boolean execute() {
 
         if (!DbMain.databaseExists(DbMain.databaseFilePath)) {
-            System.out
-                    .println("Database error: Database folder doesn't exists!");
+            System.err.println((new DatabaseException(
+                    "Database folder doesn't exists!").toString()));
             return false;
         }
 

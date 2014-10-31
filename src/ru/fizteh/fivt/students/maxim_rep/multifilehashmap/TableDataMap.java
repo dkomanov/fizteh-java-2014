@@ -14,8 +14,8 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
     private final String currentTableName;
     protected Map<String, String> map;
     private final String separator = System.getProperty("file.separator");
-    static final int DIVIDE_BYTE_BY_FOLDERS = 16;
-    static final int DIVIDE_BYTE_BY_FILES = 16;
+    private static final int DIVIDE_BYTE_BY_FOLDERS = 16;
+    private static final int DIVIDE_BYTE_BY_FILES = 16;
 
     class DataFilePath {
         protected String filePath;
@@ -57,7 +57,7 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
         }
     }
 
-    public static void removeFolder(File f) throws Exception {
+    public static void removeFolder(File f) throws IOException {
         if (f.exists()) {
             String[] files = f.list();
             for (int i = 0; i < files.length; ++i) {
@@ -74,8 +74,7 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
 
     private void makeFolders(String keyName) throws IOException {
         DataFilePath dataFilePath = new DataFilePath(keyName);
-        File f = null;
-        f = new File(dataFilePath.directoryPath);
+        File f = new File(dataFilePath.directoryPath);
         if (!f.exists()) {
             f.mkdir();
             f = new File(dataFilePath.filePath);
@@ -90,21 +89,16 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
                 throw new IOException(e);
             }
         }
-        DataOutputStream out;
-        FileOutputStream tmp;
+
         for (Entry<String, String> entry : map.entrySet()) {
             DataFilePath dataFilePath = new DataFilePath(entry.getKey());
             makeFolders(entry.getKey());
 
-            out = new DataOutputStream(tmp = new FileOutputStream(
-                    dataFilePath.filePath, true));
-            writeString(out, entry.getKey());
-            writeString(out, entry.getValue());
-            if (out != null) {
-                out.close();
-            }
-            if (tmp != null) {
-                tmp.close();
+            try (DataOutputStream out = new DataOutputStream(
+                    new FileOutputStream(dataFilePath.filePath, true))) {
+
+                writeString(out, entry.getKey());
+                writeString(out, entry.getValue());
             }
 
         }
@@ -116,7 +110,7 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
         out.write(bytes);
     }
 
-    public void loadFromTable() throws Exception {
+    public void loadFromTable() throws IOException {
         map = new HashMap<>();
 
         for (int i = 0; i < DIVIDE_BYTE_BY_FOLDERS; i++) {
@@ -146,8 +140,8 @@ public class TableDataMap implements Map<String, String>, AutoCloseable {
             length = in.readInt();
             bytes = new byte[length];
             in.read(bytes);
-        } catch (Error e) {
-            throw new IOException(e);
+        } catch (OutOfMemoryError e) {
+            throw new IOException("Filesystem damaged");
         }
         return new String(bytes, "UTF-8");
     }

@@ -64,6 +64,8 @@ public class Parser {
         if (num > needed) {
             System.out.println(command + ": too much arguments");
             return false;
+        } else if (num < needed) {
+            System.out.println(command + ": Wrong command syntax");
         }
         return true;
     }
@@ -139,7 +141,6 @@ public class Parser {
                 return new UnknownCommand("show");
             }
 
-            System.out.println(str + ": Wrong command syntax");
             return new EmptyCommand();
 
         }

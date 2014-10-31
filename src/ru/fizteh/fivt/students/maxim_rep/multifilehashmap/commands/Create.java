@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.maxim_rep.multifilehashmap.commands;
 
 import java.io.File;
 
+import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DatabaseException;
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
 
 public class Create implements DBCommand {
@@ -20,14 +21,14 @@ public class Create implements DBCommand {
         } else if (f.exists() && f.isDirectory()) {
             return false;
         }
-        throw new Exception("Database Error: Failed to create table folder!");
+        throw new DatabaseException("Failed to create table folder!");
     }
 
     @Override
     public boolean execute() {
         if (!DbMain.databaseExists(DbMain.databaseFilePath)) {
-            System.out
-                    .println("Database error: Database folder doesn't exists!");
+            System.err.println((new DatabaseException(
+                    "Database folder doesn't exists!").toString()));
             return false;
         }
 
@@ -42,7 +43,8 @@ public class Create implements DBCommand {
 
             }
         } catch (Exception e) {
-            System.err.println("Database Error: Couldn't create new table!");
+            System.err.println((new DatabaseException(
+                    "Couldn't create new table!").toString()));
             return false;
         }
 

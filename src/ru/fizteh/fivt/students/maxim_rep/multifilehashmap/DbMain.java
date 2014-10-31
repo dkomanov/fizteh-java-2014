@@ -55,7 +55,7 @@ public class DbMain {
     private static int commandMode(String[] args) throws IOException {
         String commandline = Parser.makeStringCommand(args);
 
-        if (commandline.equals(null)) {
+        if (commandline == null) {
             System.out.println();
             System.exit(0);
         }

@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.maxim_rep.multifilehashmap.commands;
 
+import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
@@ -16,20 +17,14 @@ public class List implements DBCommand {
             return false;
         }
 
-        StringBuilder list = new StringBuilder("");
+        ArrayList<String> keysTable = new ArrayList<String>();
         for (Entry<String, String> entry : DbMain.fileStoredStringMap
                 .entrySet()) {
-            list.append(entry.getKey() + ", ");
+            keysTable.add(entry.getKey());
         }
 
-        if (!list.toString().equals("")
-                && list.charAt(list.length() - 1) == ' '
-                && list.charAt(list.length() - 2) == ',') {
-            list.deleteCharAt(list.length() - 1);
-            list.deleteCharAt(list.length() - 1);
-        }
+        System.out.println(String.join(", ", keysTable));
 
-        System.out.println(list.toString());
         return true;
     }
 

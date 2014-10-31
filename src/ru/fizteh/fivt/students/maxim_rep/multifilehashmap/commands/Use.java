@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.maxim_rep.multifilehashmap.commands;
 
 import java.io.IOException;
 
+import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DatabaseException;
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.DbMain;
 import ru.fizteh.fivt.students.maxim_rep.multifilehashmap.TableDataMap;
 
@@ -25,7 +26,8 @@ public class Use implements DBCommand {
                 try {
                     DbMain.fileStoredStringMap.close();
                 } catch (Exception e) {
-                    System.err.println("Use Database Error: " + e.toString());
+                    System.err.println((new DatabaseException(e.toString())
+                            .toString()));
                     return false;
                 }
             }
@@ -33,7 +35,8 @@ public class Use implements DBCommand {
                 DbMain.fileStoredStringMap = new TableDataMap(
                         DbMain.databaseFilePath, tableName);
             } catch (IOException e) {
-                System.err.println("Use Database Error: " + e.toString());
+                System.err.println((new DatabaseException(e.toString())
+                        .toString()));
                 return false;
             }
         }
