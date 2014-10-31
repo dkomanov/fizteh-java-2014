@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.multifilehashmap;
+package ru.fizteh.fivt.students.torunova.junit;
 
-import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 
 import java.io.*;
 import java.util.HashMap;

@@ -1,13 +1,13 @@
-package ru.fizteh.fivt.students.torunova.multifilehashmap;
+package ru.fizteh.fivt.students.torunova.junit;
 
 /**
  * Created by nastya on 21.10.14.
  */
 
-import ru.fizteh.fivt.students.torunova.multifilehashmap.actions.Action;
-import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectDbNameException;
-import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.TableNotCreatedException;
+import ru.fizteh.fivt.students.torunova.junit.actions.Action;
+import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbNameException;
+import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
 
 import java.io.IOException;
 import java.io.InputStream;

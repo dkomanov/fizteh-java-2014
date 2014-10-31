@@ -1,5 +1,5 @@
-package ru.fizteh.fivt.students.torunova.multifilehashmap;
-import ru.fizteh.fivt.students.torunova.multifilehashmap.actions.*;
+package ru.fizteh.fivt.students.torunova.junit;
+import ru.fizteh.fivt.students.torunova.junit.actions.*;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashSet;

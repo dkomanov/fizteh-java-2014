@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.multifilehashmap.actions;
+package ru.fizteh.fivt.students.torunova.junit.actions;
 
-import ru.fizteh.fivt.students.torunova.multifilehashmap.Database;
+import ru.fizteh.fivt.students.torunova.junit.Database;
 
 /**
  * Created by nastya on 21.10.14.

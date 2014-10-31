@@ -1,8 +1,9 @@
-package ru.fizteh.fivt.students.torunova.multifilehashmap;
+package ru.fizteh.fivt.students.torunova.junit;
 
-import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectDbNameException;
-import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions.TableNotCreatedException;
+
+import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbNameException;
+import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +20,8 @@ public class  Database {
 
     public Database(String name) throws IncorrectDbNameException,
                                         IOException,
-                                        TableNotCreatedException,
-                                        IncorrectFileException {
+										TableNotCreatedException,
+										IncorrectFileException {
         if (name == null) {
             throw new IncorrectDbNameException("Name of database not specified."
                     + "Please,specify it via -Dfizteh.db.dir");

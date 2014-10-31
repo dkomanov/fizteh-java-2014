@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.torunova.multifilehashmap.exceptions;
+package ru.fizteh.fivt.students.torunova.junit.exceptions;
 
 /**
  * Created by nastya on 19.10.14.
