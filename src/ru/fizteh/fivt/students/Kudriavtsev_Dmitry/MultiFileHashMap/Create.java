@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.MultiFileHashMap;
 
+import java.io.IOException;
+
 /**
  * Created by Дмитрий on 07.10.14.
  */
@@ -12,12 +14,17 @@ public class Create extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            if (batchModeInInteractive) {
-                return false;
-            }
-            return true;
+            return !batchModeInInteractive;
         }
-        MFHMap map = new MFHMap(dbConnector.dbRoot.resolve(args[0]));
+        MFHMap map;
+        try {
+        map = new MFHMap(dbConnector.dbRoot.resolve(args[0]));
+        } catch (IOException e) {
+            System.err.println("can't create directory: " + dbConnector.dbRoot.resolve(args[0]).toString());
+            map = null;
+            System.exit(-1);
+        }
+
         if (dbConnector.tables.containsKey(args[0])) {
             System.out.println(args[0] + " exists");
         } else {

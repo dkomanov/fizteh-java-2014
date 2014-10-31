@@ -12,10 +12,7 @@ public class Use extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            if (batchModeInInteractive) {
-                return false;
-            }
-            return true;
+            return !batchModeInInteractive;
         }
 
         MFHMap map = dbConnector.tables.get(args[0]);

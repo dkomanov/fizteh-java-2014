@@ -28,15 +28,11 @@ public class Connector {
         dbRoot = dbPath;
         open();
 
-        commands.put("create", new Create());
-        commands.put("drop", new Drop());
-        commands.put("use", new Use());
-        commands.put("show", new Show());
-
-        commands.put("put", new Put());
-        commands.put("get", new Get());
-        commands.put("list", new List());
-        commands.put("remove", new Remove());
+        Command[] commandsArray = {new Create(), new Drop(), new Use(), new Show(),
+                                    new Put(), new Get(), new List(), new Remove()};
+        for (Command command : commandsArray) {
+            commands.put(command.name, command);
+        }
     }
 
     public void open() {
@@ -45,7 +41,14 @@ public class Connector {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(dbRoot)) {
                 for (Path file : stream) {
                     if (Files.isDirectory(file)) {
-                        MFHMap table = new MFHMap(file);
+                        MFHMap table;
+                        try {
+                        table = new MFHMap(file);
+                        } catch (IOException e) {
+                            System.err.println("can't create directory: " + file.toString());
+                            table = null;
+                            System.exit(-1);
+                        }
                         table.load();
                         tables.put(file.getFileName().toString(), table);
                     }
@@ -54,6 +57,7 @@ public class Connector {
                 System.err.println("can't load the database");
                 System.exit(-1);
             }
+
         }
     }
 

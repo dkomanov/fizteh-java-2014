@@ -14,10 +14,7 @@ public class Show extends Command {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (!checkArguments(args.length)) {
-            if (batchModeInInteractive) {
-                return false;
-            }
-            return true;
+            return !batchModeInInteractive;
         }
 
         if (!args[0].equals("tables")) {

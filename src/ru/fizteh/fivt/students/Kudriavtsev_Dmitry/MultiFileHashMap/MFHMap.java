@@ -18,15 +18,10 @@ public class MFHMap extends HashMap<String, String> {
     protected static final int FILES_COUNT = 16;
     protected static final int DIRECTORIES_COUNT = 16;
 
-    public MFHMap(Path path) {
+    public MFHMap(Path path) throws IOException {
         dbPath = path.normalize();
         if (!Files.exists(path)) {
-            try {
-                Files.createDirectory(path);
-            } catch (IOException e) {
-                System.err.println("can't create directory: " + path.toString());
-                System.exit(-1);
-            }
+            Files.createDirectory(path);
         }
     }
 
@@ -159,7 +154,7 @@ public class MFHMap extends HashMap<String, String> {
     public void unload() {
         deleteFiles(false);
         boolean[] dir = new boolean[DIRECTORIES_COUNT];
-        boolean[][] file = new boolean[DIRECTORIES_COUNT][FILES_COUNT];
+        //boolean[][] file = new boolean[DIRECTORIES_COUNT][FILES_COUNT];
         DataOutputStream[][] streams = new DataOutputStream[DIRECTORIES_COUNT][FILES_COUNT];
         try {
 
@@ -171,7 +166,7 @@ public class MFHMap extends HashMap<String, String> {
                 if (changedFiles.containsKey(pathOfFile.getKey())) {
                     int d = pathOfFile.getValue().getKey();
                     int f = pathOfFile.getValue().getValue();
-                    if (!file[d][f]) {
+                    if (streams[d][f] == null) {
                         if (!dir[d]) {
                             if (!Files.exists(nameOfPath(d))) {
                                 Files.createDirectory(nameOfPath(d));
@@ -180,7 +175,7 @@ public class MFHMap extends HashMap<String, String> {
                         }
                         streams[d][f] = new DataOutputStream(Files.newOutputStream(
                                 nameOfPath(d, f)));
-                        file[d][f] = true;
+                        //file[d][f] = true;
                     }
                     writeToFile(streams[d][f], entry.getKey(), entry.getValue());
                     Integer collisionCount = changedFiles.get(pathOfFile.getKey());

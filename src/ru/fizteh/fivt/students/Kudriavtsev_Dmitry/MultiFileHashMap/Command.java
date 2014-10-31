@@ -17,8 +17,7 @@ public abstract class Command {
     }
 
     public Command() {
-        this.name = null;
-        this.argLen = 0;
+        this(null, 0);
     }
 
     protected boolean checkArguments(int argLen) {
