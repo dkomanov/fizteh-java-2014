@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 public class Command {
     
-    public static void create(final String[] args, Table table, HashMap<String, Integer> dbInformation) throws Exception {
+    public static void create(final String[] args, Table table, HashMap<String, Integer> dbInformation)
+            throws Exception {
         if (args.length != 2) {
             ErrorFunctions.wrongQuantity("create");
         }
@@ -110,5 +111,4 @@ public class Command {
         
         table.use(args[1], dbInformation);
     }
-  
 }
