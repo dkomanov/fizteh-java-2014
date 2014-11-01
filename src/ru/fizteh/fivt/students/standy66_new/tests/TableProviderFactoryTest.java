@@ -21,7 +21,7 @@ public class TableProviderFactoryTest {
     private TableProviderFactory factory;
 
     @Rule
-    private TemporaryFolder temp = new TemporaryFolder();
+    public TemporaryFolder temp = new TemporaryFolder();
 
     public TableProviderFactoryTest(TableProviderFactory factory) {
         this.factory = factory;
