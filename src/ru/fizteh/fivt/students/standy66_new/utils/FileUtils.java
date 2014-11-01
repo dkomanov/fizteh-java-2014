@@ -7,8 +7,9 @@ import java.io.File;
  */
 public class FileUtils {
     public static boolean deleteRecursively(File f) {
-        if (f == null)
+        if (f == null) {
             return false;
+        }
         if (f.isDirectory()) {
             for (File sub : f.listFiles()) {
                 if (sub.isDirectory()) {
