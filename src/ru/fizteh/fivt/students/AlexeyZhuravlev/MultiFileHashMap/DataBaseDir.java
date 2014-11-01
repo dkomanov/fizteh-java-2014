@@ -9,9 +9,9 @@ import java.util.HashMap;
  */
 public class DataBaseDir {
 
-    HashMap<String, Table> tables;
-    String using;
-    File parentDirectory;
+    public HashMap<String, Table> tables;
+    public String using;
+    public File parentDirectory;
 
     public DataBaseDir(String path) throws Exception {
         parentDirectory = new File(path);

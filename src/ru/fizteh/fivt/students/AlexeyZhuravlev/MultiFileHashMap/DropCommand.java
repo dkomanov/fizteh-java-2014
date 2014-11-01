@@ -14,6 +14,12 @@ public class DropCommand extends Command {
         return 1;
     }
 
+    public DropCommand(String passedName) {
+        tableName = passedName;
+    }
+
+    public DropCommand() {}
+
     @Override
     public void execute(DataBaseDir base) throws Exception {
         if (!base.tables.containsKey(tableName)) {

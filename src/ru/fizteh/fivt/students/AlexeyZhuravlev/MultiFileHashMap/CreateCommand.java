@@ -13,6 +13,12 @@ public class CreateCommand extends Command {
         tableName = args[1];
     }
 
+    public CreateCommand(String passedName) {
+        tableName = passedName;
+    }
+
+    public CreateCommand() {}
+
     protected final int numberOfArguments() {
         return 1;
     }

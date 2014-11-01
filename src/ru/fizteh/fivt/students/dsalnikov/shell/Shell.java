@@ -41,7 +41,7 @@ public class Shell<State extends ShellState> {
             } else {
                 Command c = commandMap.get(cmdArgs[0]);
                 if (c == null) {
-                    throw new IllegalArgumentException("no such Command declared: " + cmdArgs[0]);
+                    throw new IllegalArgumentException("no such JUnitCommand declared: " + cmdArgs[0]);
                 }
                 c.execute(cmdArgs);
             }

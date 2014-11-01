@@ -25,7 +25,7 @@ public class MkdirCommand implements Command {
 
     public void execute(String[] s) throws IOException {
         if (s.length != 2) {
-            throw new IllegalArgumentException("Incorrect usage of Command mkdir: wrong amount of arguments");
+            throw new IllegalArgumentException("Incorrect usage of JUnitCommand mkdir: wrong amount of arguments");
         } else {
             ShellState sh = link.getState();
             File f = new File(s[1]);

@@ -11,7 +11,7 @@ import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 
 public class Table {
-    DataBase[][] databases;
+    public DataBase[][] databases;
     File mainDir;
 
     public Table(File tableDir) throws Exception {
@@ -29,6 +29,8 @@ public class Table {
             }
         }
     }
+
+    public Table() {}
 
     public void drop() throws Exception {
         for (int i = 0; i < 16; i++) {

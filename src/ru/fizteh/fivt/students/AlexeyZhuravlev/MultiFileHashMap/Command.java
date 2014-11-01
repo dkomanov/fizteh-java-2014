@@ -23,6 +23,10 @@ public abstract class Command {
     }
 
     public static Command fromString(String s) throws Exception {
+        return vocabularyGetter(s, COMMANDS);
+    }
+
+    public static Command vocabularyGetter(String s, HashMap<String, Command> commands) throws Exception {
         if (s.length() < 1) {
             throw new Exception("Empty command");
         }
@@ -30,8 +34,8 @@ public abstract class Command {
             s = s.replaceFirst(" ", "_");
         }
         String[] tokens = s.split("\\s+", 0);
-        if (COMMANDS.containsKey(tokens[0])) {
-            Command command = COMMANDS.get(tokens[0]);
+        if (commands.containsKey(tokens[0])) {
+            Command command = commands.get(tokens[0]);
             if (tokens.length - 1 != command.numberOfArguments()) {
                 throw new Exception("Unexpected number of arguments: " + command.numberOfArguments() + " required");
             }
@@ -42,8 +46,11 @@ public abstract class Command {
         }
     }
 
+
     public abstract void execute(DataBaseDir base) throws Exception;
     protected void putArguments(String[] args) {
     }
     protected abstract int numberOfArguments();
+    public void executeOnTable(Table table) throws Exception {
+    }
 }
