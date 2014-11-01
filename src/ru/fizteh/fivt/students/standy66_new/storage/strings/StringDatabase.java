@@ -31,8 +31,9 @@ public class StringDatabase implements TableProvider {
         }
         if (tableInstances.get(name) == null) {
             File tableDirectory = new File(dbDirectory, name);
-            if (!tableDirectory.exists())
+            if (!tableDirectory.exists()) {
                 return null;
+            }
             tableInstances.put(name, new StringTable(tableDirectory));
         }
         return tableInstances.get(name);

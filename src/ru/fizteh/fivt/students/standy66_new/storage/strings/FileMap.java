@@ -30,8 +30,9 @@ public class FileMap implements Map<String, String> {
     private void reload() throws IOException {
         cache.clear();
         changed.clear();
-        if (!mapFile.exists())
+        if (!mapFile.exists()) {
             return;
+        }
 
         try (FileChannel channel = new FileInputStream(mapFile).getChannel()) {
             ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
@@ -108,10 +109,11 @@ public class FileMap implements Map<String, String> {
     @Override
     public String remove(Object key) {
         if (key instanceof String) {
-            changed.add((String)key);
+            changed.add((String) key);
             return cache.remove(key);
-        } else
+        } else {
             return null;
+        }
     }
 
     @Override

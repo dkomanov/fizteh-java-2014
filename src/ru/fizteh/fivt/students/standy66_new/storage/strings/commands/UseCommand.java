@@ -17,13 +17,14 @@ public class UseCommand extends ContextualCommand {
     public void run(String[] arguments) throws Exception {
         super.run(arguments);
         Table newTable = getContext().getProvider().getTable(arguments[1]);
-        StringTable currentTable = (StringTable)getContext().getCurrentTable();
+        StringTable currentTable = (StringTable) getContext().getCurrentTable();
         if (newTable == null) {
             throw new TableNotExistsException(String.format("%s not exists", arguments[1]));
         } else {
             if (System.getProperty("junit") != null) {
                 if (currentTable != null && currentTable.unsavedChangesCount() > 0) {
-                    throw new UnsavedChangesException(String.format("%d unsaved changes", currentTable.unsavedChangesCount()));
+                    throw new UnsavedChangesException(String.format("%d unsaved changes",
+                            currentTable.unsavedChangesCount()));
                 }
             }
             getContext().setCurrentTable(newTable);
