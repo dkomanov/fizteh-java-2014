@@ -27,8 +27,8 @@ public class StringDatabase implements TableProvider {
 
     @Override
     public Table getTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("name is null");
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("name is null or empty");
         }
         if (tableInstances.get(name) == null) {
             File tableDirectory = new File(dbDirectory, name);
@@ -42,8 +42,8 @@ public class StringDatabase implements TableProvider {
 
     @Override
     public Table createTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("name is null");
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("name is null or empty");
         }
         File tableDirectory = new File(dbDirectory, name);
         if (tableDirectory.exists()) {
@@ -66,8 +66,8 @@ public class StringDatabase implements TableProvider {
 
     @Override
     public void removeTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("name is null");
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("name is null or empty");
         }
         File tableDirectory = new File(dbDirectory, name);
         if (!tableDirectory.exists()) {

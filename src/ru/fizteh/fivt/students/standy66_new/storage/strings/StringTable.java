@@ -155,8 +155,7 @@ public class StringTable implements Table {
         int nDirectory = hashcode % 16;
         int nFile = (hashcode / 16) % 16;
         File dir = new File(tableDirectory, String.format("%d.dir", nDirectory));
-        File file = new File(dir, String.format("%d.dat", nFile));
-        return file;
+        return new File(dir, String.format("%d.dat", nFile));
     }
 
     private FileMap getFileMapByKey(String key) {
