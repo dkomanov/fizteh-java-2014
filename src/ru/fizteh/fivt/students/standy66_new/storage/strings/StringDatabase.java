@@ -72,7 +72,8 @@ public class StringDatabase implements TableProvider {
         if (!tableDirectory.exists()) {
             throw new IllegalStateException("table doesn't exist");
         }
-        FileUtils.deleteRecursively(tableDirectory);
+        tableInstances.remove(name);
+        assert (FileUtils.deleteRecursively(tableDirectory));
     }
 
     private void checkTableName(String name) {
