@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.standy66_new.storage.strings;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.standy66_new.utils.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class StringDatabase implements TableProvider {
         if (!tableDirectory.exists()) {
             throw new IllegalStateException("table doesn't exist");
         }
-        deleteRecursively(tableDirectory);
+        FileUtils.deleteRecursively(tableDirectory);
     }
 
     public void commit() {
@@ -87,18 +88,4 @@ public class StringDatabase implements TableProvider {
         }
     }
 
-    private boolean deleteRecursively(File f) {
-        if (f.isDirectory()) {
-            for (File sub : f.listFiles()) {
-                if (sub.isDirectory()) {
-                    if (!deleteRecursively(sub)) {
-                        return false;
-                    }
-                } else if (!sub.delete()) {
-                    return false;
-                }
-            }
-        }
-        return f.delete();
-    }
 }

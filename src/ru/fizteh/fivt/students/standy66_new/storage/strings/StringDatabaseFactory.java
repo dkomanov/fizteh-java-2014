@@ -11,13 +11,16 @@ import java.io.File;
 public class StringDatabaseFactory implements TableProviderFactory {
     @Override
     public TableProvider create(String dir) {
-        if (dir == null) {
-            throw new IllegalArgumentException("dir is null");
+        if (dir == null || dir.isEmpty()) {
+            throw new IllegalArgumentException("dir is null or empty");
         }
         File f = new File(dir).getAbsoluteFile();
         f.mkdirs();
         if (f.isFile()) {
             throw new IllegalStateException("db dir is a regular file");
+        }
+        if (!f.canWrite()) {
+            throw new IllegalStateException("dir is read only");
         }
         return new StringDatabase(f);
     }
