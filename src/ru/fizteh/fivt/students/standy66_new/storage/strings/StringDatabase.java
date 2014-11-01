@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+/** TableProvider implementation
  * Created by astepanov on 20.10.14.
  */
 
@@ -21,15 +21,16 @@ public class StringDatabase implements TableProvider {
     private Map<String, Table> tableInstances;
 
     public StringDatabase(File directory) {
+        if (directory == null) {
+            throw new IllegalArgumentException("directory is null");
+        }
         dbDirectory = directory;
         tableInstances = new HashMap<>();
     }
 
     @Override
     public Table getTable(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("name is null or empty");
-        }
+        checkTableName(name);
         if (tableInstances.get(name) == null) {
             File tableDirectory = new File(dbDirectory, name);
             if (!tableDirectory.exists()) {
@@ -42,14 +43,14 @@ public class StringDatabase implements TableProvider {
 
     @Override
     public Table createTable(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("name is null or empty");
-        }
+        checkTableName(name);
         File tableDirectory = new File(dbDirectory, name);
         if (tableDirectory.exists()) {
             return null;
         }
-        tableDirectory.mkdirs();
+        if (!tableDirectory.mkdirs()) {
+            return null;
+        }
         tableInstances.put(name, new StringTable(tableDirectory));
         return tableInstances.get(name);
     }
@@ -66,14 +67,24 @@ public class StringDatabase implements TableProvider {
 
     @Override
     public void removeTable(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("name is null or empty");
-        }
+        checkTableName(name);
         File tableDirectory = new File(dbDirectory, name);
         if (!tableDirectory.exists()) {
             throw new IllegalStateException("table doesn't exist");
         }
         FileUtils.deleteRecursively(tableDirectory);
+    }
+
+    private void checkTableName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("table name is null");
+        }
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("table name is empty");
+        }
+        if (name.contains(File.pathSeparator)) {
+            throw new IllegalArgumentException("name contains file separator");
+        }
     }
 
     public void commit() {
