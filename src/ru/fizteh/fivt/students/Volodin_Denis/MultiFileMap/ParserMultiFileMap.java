@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 public class ParserMultiFileMap {
     ParserMultiFileMap() {
-        
     }
     
     public static void parser(final String[] args, Table table, HashMap<String, Integer> dbInformation)

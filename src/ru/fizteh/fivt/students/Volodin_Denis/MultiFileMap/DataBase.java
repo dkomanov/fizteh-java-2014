@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.Volodin_Denis.MultiFileMap;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
@@ -157,32 +156,7 @@ public class DataBase implements Map<String, String>, AutoCloseable {
             }
         }
     }
-
-    public void deleteEmptyFiles() throws Exception {
-        File helpPath;
-        try {
-            for (int i = 0; i < FOLDERS; ++i) {
-                for (int j = 0; j < FILES; ++j) {       
-                    helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir", Integer.toString(j)
-                                                                            + ".dat").normalize().toFile();
-                    if (helpPath.exists()) {
-                        if (helpPath.length() == 0) {
-                            helpPath.delete();
-                        }
-                    }
-                }
-                helpPath =  Paths.get(databasePath, Integer.toString(i) + ".dir").normalize().toFile();
-                if (helpPath.exists()) {
-                    if (helpPath.list().length == 0) {
-                        helpPath.delete();
-                    }
-                }
-            }
-        } catch (Exception exception) {
-            ErrorFunctions.smthWrong("delete empty files", exception.getMessage());
-        }
-    }
-  
+ 
     @Override
     public void close() throws Exception {
         writeOnDisk();        

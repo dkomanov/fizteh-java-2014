@@ -16,7 +16,7 @@ public class Table {
         dbTable = null;
     }
     
-    public void setPath(String path) throws Exception {
+    public void setPath(final String path) throws Exception {
         dbPath = path;
         if (dbPath == null) {
             System.err.println("Path was not found.");
@@ -40,7 +40,7 @@ public class Table {
         }
     }
     
-    public void setTable(DataBase table) throws Exception {
+    public void setTable(final DataBase table) throws Exception {
         dbTable = table;
     }
 
@@ -52,7 +52,7 @@ public class Table {
         return dbTable;
     }
     
-    public void create(String arg, HashMap<String, Integer> dbInformation) throws Exception {
+    public void create(final String arg, HashMap<String, Integer> dbInformation) throws Exception {
         if (Paths.get(dbPath, arg).normalize().toFile().exists()) {
             if (Paths.get(dbPath, arg).normalize().toFile().isDirectory()) {
                 System.out.println(arg + " exists");
@@ -69,8 +69,7 @@ public class Table {
         dbInformation.put(Paths.get(dbPath, arg).normalize().getFileName().toString(), 0);
     }
     
-    public void drop(String arg, HashMap<String, Integer> dbInformation) throws Exception {
-
+    public void drop(final String arg, HashMap<String, Integer> dbInformation) throws Exception {
         try {
             Path pathToFile = Paths.get(dbPath, arg).normalize();
             if (!pathToFile.toFile().exists()) {
@@ -95,7 +94,93 @@ public class Table {
         dbInformation.remove(Paths.get(dbPath, arg).normalize().getFileName().toString());
         System.out.println("dropped");
     }
+
+    public void exit() throws Exception {
+        if (dbTable != null) {
+            dbTable.close();
+        }
+        System.exit(ReturnCodes.SUCCESS);
+    }
     
+    public void get(final String key) throws Exception {
+        String value = dbTable.get(key);
+        if (value == null) {
+            System.out.println("not found");
+        } else {
+            System.out.println("found");
+            System.out.println(value);
+        }
+    }
+
+    public void list() throws Exception {
+        String[] keys = dbTable.list();
+        if (keys.length == 0) {
+            System.out.println("");
+        } else {
+            for (int i = 0; i + 1 < keys.length; ++i) {
+                System.out.print(keys[i] + ", ");
+            }
+            System.out.println(keys[keys.length - 1]);
+        }
+    }
+
+    public void put(final String key, final String value) throws Exception {
+        String oldValue = dbTable.get(key);
+        if (oldValue == null) {
+            System.out.println("new");
+        } else {
+            System.out.println("overwrite");
+            System.out.println(oldValue);
+        }
+        dbTable.put(key, value);
+    }
+
+    public void remove(final String key) throws Exception {
+        String value = dbTable.get(key);
+        if (value == null) {
+            System.out.println("not found");
+        } else {
+            dbTable.remove(key);
+            System.out.println("removed");
+        }
+    }
+    
+    public void showTables(final String arg, HashMap<String, Integer> dbInformation) throws Exception {
+        Set<String> tables = dbInformation.keySet();
+        if (!tables.isEmpty()) {
+            System.out.println("table_name row_count");
+        }
+        for (String table : tables) {
+            if (dbTable != null) {
+                if (table.equals(dbTable.getPath())) {
+                    System.out.println(table + " " + dbTable.list().length);
+                } else {
+                    System.out.println(table + " " + dbInformation.get(table));
+                }
+            } else {
+                System.out.println(table + " " + dbInformation.get(table));
+            }
+        }
+    }
+    
+    public void use(final String arg, HashMap<String, Integer> dbInformation) throws Exception {
+        if (!Paths.get(dbPath, arg).normalize().toFile().exists()) {
+            System.out.println(arg + " not exists");
+        } else {
+            if (dbTable != null) {
+                if (dbTable.getPath().equals(Paths.get(dbPath, arg).normalize().getFileName().toString())) {
+                    System.out.println("is already in use");
+                    return;
+                }
+                dbInformation.remove(dbTable.getPath());
+                dbInformation.put(dbTable.getPath(), dbTable.list().length);
+                dbTable.close();
+            }
+            dbTable = new DataBase(Paths.get(dbPath, arg).normalize().toString());
+            System.out.println("using " + arg);
+        }
+    }
+
     private static void recursiveDrop(final Path pathToFile) throws Exception {
         try {
             if (!pathToFile.toFile().exists()) {
@@ -129,92 +214,6 @@ public class Table {
             ErrorFunctions.invalidName("drop", invException.getMessage());
         } catch (SecurityException secException) {
             ErrorFunctions.security("drop", secException.getMessage());
-        }
-    }
-
-    public void use(String arg, HashMap<String, Integer> dbInformation) throws Exception {
-        if (!Paths.get(dbPath, arg).normalize().toFile().exists()) {
-            System.out.println(arg + " not exists");
-        } else {
-            if (dbTable != null) {
-                if (dbTable.getPath().equals(Paths.get(dbPath, arg).normalize().getFileName().toString())) {
-                    System.out.println("is already in use");
-                    return;
-                }
-                dbInformation.remove(dbTable.getPath());
-                dbInformation.put(dbTable.getPath(), dbTable.list().length);
-                dbTable.close();
-            }
-            dbTable = new DataBase(Paths.get(dbPath, arg).normalize().toString());
-            System.out.println("using " + arg);
-        }
-    }
-
-    public void showTables(String arg, HashMap<String, Integer> dbInformation) throws Exception {
-        Set<String> tables = dbInformation.keySet();
-        if (!tables.isEmpty()) {
-            System.out.println("table_name row_count");
-        }
-        for (String table : tables) {
-            if (dbTable != null) {
-                if (table.equals(dbTable.getPath())) {
-                    System.out.println(table + " " + dbTable.list().length);
-                } else {
-                    System.out.println(table + " " + dbInformation.get(table));
-                }
-            } else {
-                System.out.println(table + " " + dbInformation.get(table));
-            }
-        }
-    }
-    
-    public void exit() throws Exception {
-        if (dbTable != null) {
-            dbTable.close();
-        }
-        System.exit(ReturnCodes.SUCCESS);
-    }
-    
-    public void put(String key, String value) throws Exception {
-        String oldValue = dbTable.get(key);
-        if (oldValue == null) {
-            System.out.println("new");
-        } else {
-            System.out.println("overwrite");
-            System.out.println(oldValue);
-        }
-        dbTable.put(key, value);
-    }
-
-    public void get(String key) throws Exception {
-        String value = dbTable.get(key);
-        if (value == null) {
-            System.out.println("not found");
-        } else {
-            System.out.println("found");
-            System.out.println(value);
-        }
-    }
-   
-    public void remove(String key) throws Exception {
-        String value = dbTable.get(key);
-        if (value == null) {
-            System.out.println("not found");
-        } else {
-            dbTable.remove(key);
-            System.out.println("removed");
-        }
-    }
-
-    public void list() throws Exception {
-        String[] keys = dbTable.list();
-        if (keys.length == 0) {
-            System.out.println("");
-        } else {
-            for (int i = 0; i + 1 < keys.length; ++i) {
-                System.out.print(keys[i] + ", ");
-            }
-            System.out.println(keys[keys.length - 1]);
         }
     }
 }
