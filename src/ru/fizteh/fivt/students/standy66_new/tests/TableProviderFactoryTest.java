@@ -50,7 +50,7 @@ public class TableProviderFactoryTest {
     }
 
     @Test
-    public void createProviderShouldSucceed() throws IOException {
+    public void createProvider() throws IOException {
         factory.create(temp.newFolder().getAbsolutePath());
     }
 }

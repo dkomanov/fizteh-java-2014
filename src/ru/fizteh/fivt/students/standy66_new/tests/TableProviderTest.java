@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.standy66_new.tests;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -79,6 +80,36 @@ public class TableProviderTest {
     @Test(expected = IllegalArgumentException.class)
     public void removeTableFileSeparatorFail() throws IOException {
         newProvider().removeTable("azaza" + File.pathSeparator + "azaza");
+    }
+
+    @Test
+    public void createTable() throws IOException {
+        Assert.assertNotNull(newProvider().createTable("table name"));
+    }
+
+    @Test
+    public void createExistingTableShouldFail() throws IOException {
+        TableProvider provider = newProvider();
+        Assert.assertNotNull(provider.createTable("table"));
+        Assert.assertNull(provider.createTable("table"));
+    }
+
+    @Test
+    public void createAndDeleteTable() throws IOException {
+        TableProvider provider = newProvider();
+        Assert.assertNotNull(provider.createTable("table name"));
+        provider.removeTable("table name");
+        Assert.assertNull(provider.getTable("table name"));
+    }
+
+    @Test
+    public void getNonExistingTableShouldFail() throws IOException {
+        Assert.assertNull(newProvider().getTable("ololo"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void removeNonExistingTableShouldFail() throws IOException {
+        newProvider().removeTable("omg");
     }
 
     TableProvider newProvider() throws IOException {
