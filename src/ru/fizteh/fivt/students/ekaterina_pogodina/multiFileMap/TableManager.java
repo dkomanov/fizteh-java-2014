@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap;
 
+import ru.fizteh.fivt.students.ekaterina_pogodina.JUnit.DBaseTable;
+import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.Table;
 import ru.fizteh.fivt.students.ekaterina_pogodina.shell.Rm;
 
 import java.util.HashMap;
@@ -10,8 +12,11 @@ import java.nio.file.Paths;
 public class TableManager {
     public String currentTable;
     public Path path;
-    public Table usingTable;
-    public Map<String, Table> tables;
+    public BaseTable usingTable;
+    public Map<String, BaseTable> tables;
+    public Map<String, Table> basicTables;
+    private static final int SIZE1 = 16;
+    private static final int SIZE2 = 16;
 
     public TableManager(String dir) throws Exception {
         currentTable = null;
@@ -28,11 +33,13 @@ public class TableManager {
             throw new Exception("path is incorrect", e);
         }
         tables = new HashMap<>();
+        basicTables = new HashMap<>();
         String[] tablesList = path.toFile().list();
         for (String curDir : tablesList) {
             Path curTableDirPath = path.resolve(curDir);
             if (curTableDirPath.toFile().isDirectory()) {
-                tables.put(curDir, new Table(curDir));
+                tables.put(curDir, new BaseTable(curDir));
+                basicTables.put(curDir, new DBaseTable(tables.get(curDir)));
             } else {
                 throw new Exception("root directory contains non-directory files");
             }
@@ -54,6 +61,7 @@ public class TableManager {
             args[2] = newPath.toString();
             Rm.run(args, true, 2);
             tables.remove(name);
+            basicTables.remove(name);
         }
         return flag;
     }
@@ -66,9 +74,10 @@ public class TableManager {
             boolean flag = tables.containsKey(name);
             if (!flag) {
                 System.out.println("created");
-                tables.put(name, new Table(name));
+                tables.put(name, new BaseTable(name));
                 try {
-                    tables.put(name, new Table(name));
+                    tables.put(name, new BaseTable(name));
+                    basicTables.put(name, new DBaseTable(tables.get(name)));
                     Path newPath = path.resolve(name);
                     newPath.toFile().mkdir();
                 } catch (Exception e) {
@@ -87,16 +96,16 @@ public class TableManager {
             throw new Exception("Table name is null");
         }
         if (currentTable != null) {
-            Table curTable = tables.get(currentTable);
-            for (int i = 0; i < 16; i++) {
-                for (int j = 0; j < 16; j++) {
+            BaseTable curTable = tables.get(currentTable);
+            for (int i = 0; i < SIZE1; i++) {
+                for (int j = 0; j < SIZE2; j++) {
                     if (curTable.tableDateBase[i][j] != null) {
                         curTable.tableDateBase[i][j].close();
                     }
                 }
             }
             if (currentTable.equals(name)) {
-                throw new Exception(name + " exists");
+                throw new Exception(name + " is already using");
             }
         }
         try {
@@ -104,7 +113,7 @@ public class TableManager {
             if (flag) {
                 currentTable = name;
                 usingTable = tables.get(name);
-                System.out.println("Using " + name);
+                System.out.println("using " + name);
             } else {
                 System.out.println(name + " not exists");
             }
@@ -114,13 +123,13 @@ public class TableManager {
     }
 
     public void showTables(String[] args) throws Exception {
-        Table entryTable;
+        BaseTable entryTable;
         int rowCount;
-        for (Map.Entry<String, Table> entry: tables.entrySet()) {
+        for (Map.Entry<String, BaseTable> entry: tables.entrySet()) {
             rowCount = 0;
             entryTable = entry.getValue();
-            for (int i = 0; i < 16; i++) {
-                for (int j = 0; j < 16; j++) {
+            for (int i = 0; i < SIZE1; i++) {
+                for (int j = 0; j < SIZE2; j++) {
                     if (entryTable.tableDateBase[i][j] != null) {
                         rowCount = rowCount + entryTable.tableDateBase[i][j].rowCount();
                     }

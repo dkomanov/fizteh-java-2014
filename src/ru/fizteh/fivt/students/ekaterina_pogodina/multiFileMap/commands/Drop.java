@@ -18,8 +18,8 @@ public class Drop extends Command {
             s[0] = "rm";
             s[1] = "-r";
             s[2] = table.path.resolve(args[1]).toString();
-            remove.run(s, true, 2);.
-            System.out.print("dropped");
-        }*/
+        remove.run(s, true, 2);.
+        System.out.print("dropped");
+    }*/
     }
 }

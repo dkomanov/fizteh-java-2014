@@ -6,6 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Remove extends Command {
+
+    private static final int SIZE = 16;
+
     @Override
     public void execute(String[] args, TableManager table) throws Exception {
         if (table.currentTable == null) {
@@ -19,8 +22,8 @@ public class Remove extends Command {
         }
         String key = args[1];
         byte b = key.getBytes()[0];
-        int nDirectory = b % 16;
-        int nFile = b / 16 % 16;
+        int nDirectory = b % SIZE;
+        int nFile = b / SIZE % SIZE;
         table.usingTable.tableDateBase[nDirectory][nFile].remove(args);
         if (table.usingTable.tableDateBase[nDirectory][nFile].rowCount() == 0) {
             String s = null;

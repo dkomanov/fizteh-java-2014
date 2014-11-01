@@ -6,6 +6,9 @@ import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.TableManager;
 import java.nio.file.Path;
 
 public class Put extends Command {
+
+    private static final int SIZE = 16;
+
     @Override
     public void execute(String[] args, TableManager table) throws Exception {
         String tableName = table.currentTable;
@@ -22,8 +25,8 @@ public class Put extends Command {
         String key = args[1];
         String value = args[2];
         byte b = key.getBytes()[0];
-        int nDirectory = b % 16;
-        int nFile = b / 16 % 16;
+        int nDirectory = b % SIZE;
+        int nFile = b / SIZE % SIZE;
         String s;
 
         s = String.valueOf(nDirectory);

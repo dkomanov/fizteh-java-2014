@@ -93,11 +93,11 @@ public class Interpreter {
                         }
                         try {
                             Parser.parse(arg, table);
-                            Table curTable = table.tables.get(table.currentTable);
+                            BaseTable curTable = table.tables.get(table.currentTable);
                             for (int i = 0; i < 16; i++) {
-                                for (int j = 0; j < 16; j++) {
-                                    if (curTable.tableDateBase[i][j] != null) {
-                                        curTable.tableDateBase[i][j].close();
+                                            for (int j = 0; j < 16; j++) {
+                                                if (curTable.tableDateBase[i][j] != null) {
+                                                    curTable.tableDateBase[i][j].close();
                                     }
                                 }
                             }

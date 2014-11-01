@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.commands;
 
-import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.Table;
+import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.BaseTable;
 import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.TableManager;
 
 public class List extends Command {
@@ -9,7 +9,7 @@ public class List extends Command {
         if (table.currentTable == null) {
             throw new Exception("no table");
         }
-        Table entryTable = table.tables.get(table.currentTable);
+        BaseTable entryTable = table.tables.get(table.currentTable);
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 if (entryTable.tableDateBase[i][j] != null) {
