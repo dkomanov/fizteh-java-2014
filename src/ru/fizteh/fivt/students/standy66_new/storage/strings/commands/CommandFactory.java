@@ -51,11 +51,17 @@ public class CommandFactory {
         return new UseCommand(context);
     }
 
-    public SizeCommand sizeCommand() { return new SizeCommand(context); }
+    public SizeCommand sizeCommand() {
+        return new SizeCommand(context);
+    }
 
-    public CommitCommand commitCommand() { return new CommitCommand(context); }
+    public CommitCommand commitCommand() {
+        return new CommitCommand(context);
+    }
 
-    public RollbackCommand rollbackCommand() { return new RollbackCommand(context); }
+    public RollbackCommand rollbackCommand() {
+        return new RollbackCommand(context);
+    }
 
     public Map<String, Command> getCommandsMap(String locale) {
         Map<String, Command> map = new HashMap<>();
