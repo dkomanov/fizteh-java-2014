@@ -45,8 +45,13 @@ public final class TableProvider {
     }
 
     public static void changeCurTable(final String name) throws IOException {
-        tablesDirPath.resolve(name);
-        if (Files.exists(tablesDirPath)) {
+        try {
+            tablesDirPath.resolve(name);
+            int diff = currentTable.getdiffnrecords();
+            if (diff != 0) {
+                System.out.println(diff + " unsaved changes");
+                return;
+            }
             Table newTable = tableLinks.get(name);
             if (newTable != null) {
                 if (currentTable != null) {
@@ -57,8 +62,10 @@ public final class TableProvider {
             } else {
                 System.out.println(name + " does not exist");
             }
-        } else {
-            throw new IllegalArgumentException("Incorrect name.");
+        } catch (InvalidPathException e) {
+            System.err.println("table name " + name + " is incorrect. "
+                    + e.getMessage());
+            return;
         }
     }
 
@@ -85,11 +92,11 @@ public final class TableProvider {
     }
 
     public static void removeTable(final String name) throws IOException {
-        tablesDirPath.resolve(name);
-        if (Files.exists(tablesDirPath)) {
+        try {
+            tablesDirPath.resolve(name);
             Table removedTable = tableLinks.remove(name);
             if (removedTable == null) {
-                System.out.println(name + " not exists");
+                System.out.println(name + " does not exist");
             } else {
                 if (currentTable == removedTable) {
                     currentTable = null;
@@ -97,8 +104,10 @@ public final class TableProvider {
                 removedTable.deleteTable();
                 System.out.println("dropped");
             }
-        } else {
-            throw new IllegalArgumentException("Incorrect name.");
+        } catch (InvalidPathException e) {
+            System.err.println("table name " + name + " is incorrect. "
+                    + e.getMessage());
+            return;
         }
     }
 
