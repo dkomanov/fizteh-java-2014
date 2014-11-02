@@ -76,7 +76,7 @@ public class InterpreterTest {
     @Test
     public void testUserModeWriteErrorInStreamForUnexpectedCommand() {
         Interpreter test = new Interpreter(null, new Command[] {},
-                new ByteArrayInputStream((testCommand + newLine).getBytes() ), printStream);
+                new ByteArrayInputStream((testCommand + newLine).getBytes()), printStream);
         try {
             test.run(new String[]{});
         } catch (ExitException e) {
