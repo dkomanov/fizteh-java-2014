@@ -9,92 +9,101 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-
 public class TableHolderTest {
-    private final Path testDirectory = Paths.get(System.getProperty("fizteh.db.dir"));
+    private final Path testDirectory =
+            Paths.get(System.getProperty("fizteh.db.dir"));
     private final String tableDirectoryName = "Тест";
     private final Path tableDirPath = testDirectory.resolve(tableDirectoryName);
     private final String testTableName = "Тестовая таблица";
     private final String wrongTableName = ".";
 
     @Before
-    public void setUp() {
+    public final void setUp() {
         testDirectory.toFile().mkdir();
     }
 
     @Test
-    public void testTableHolderCreatedForNonexistentDirectory() {
+    public final void testTableHolderCreatedForNonexistentDirectory() {
         new TableHolder(tableDirPath.toString());
         assertTrue(tableDirPath.toFile().exists());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testTableHolderThrowsIllegalArgumentExceptionCreatedNotForDirectory() throws IOException {
-        File newFile = new File(testDirectory.toAbsolutePath() + File.separator + "filename.txt");
+    public final void testHolderThrowsExceptionCreatedNotForDirectory()
+           throws IOException {
+        File newFile = new File(testDirectory.toAbsolutePath()
+                + File.separator
+                + "filename.txt");
         newFile.createNewFile();
         new TableHolder(newFile.toString());
     }
     @Test(expected = IllegalArgumentException.class)
-    public void testTableHolderThrowsIllegalArgumentExceptionCreatedForInvalidPath() {
+    public final void testTableHolderThrowsExceptionCreatedForInvalidPath() {
         new TableHolder("\0");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testTableHolderThrowsIllegalArgumentExceptionCreatedForDirectoryContainedNonDirectories() throws IOException {
-        File newFile = new File(testDirectory.toAbsolutePath() + File.separator + "filename.txt");
+    public final void
+        testTableHolderThrowsExceptionCreatedForDirectoryWithNonDirectories()
+            throws IOException {
+        File newFile = new File(testDirectory.toAbsolutePath()
+                + File.separator
+                + "filename.txt");
         newFile.createNewFile();
         new TableHolder(newFile.toString());
     }
 
     @Test
-    public void testGetTableReturnsNullIfTableNameDoesNotExist() {
+    public final void testGetTableReturnsNullIfTableNameDoesNotExist() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.createTable(tableDirectoryName);
         assertNull(test.getTable("MyTable"));
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void testGetTableThrowsIllegalArgumentExceptionCalledForNullTableDirectoryName() {
+    public final void testGetTableThrowsExceptionCalledForNullTableName() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.getTable(null);
     }
     @Test (expected = IllegalArgumentException.class)
-    public void testGetTableThrowsIllegalArgumentExceptionCalledForWrongTableDirectoryName() {
+    public final void testGetTableThrowsExceptionCalledForWrongTableName() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.getTable(wrongTableName);
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void testCreateTableThrowsIllegalArgumentExceptionCalledForNullTableDirectoryName() {
+    public final void testCreateTableThrowsExceptionCalledForNullTableName() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.createTable(null);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateTableThrowsIllegalArgumentExceptionCalledForWrongTableDirectoryName() {
+    public final void testCreateTableThrowsExceptionCalledForWrongTableName() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.createTable(wrongTableName);
     }
     @Test
-    public void testCreateTableCreatedTableDirectoryOnTheDiskCalledForValidTableDirectoryName() {
+    public final void testCreateTableOnTheDiskCalledForValidTableName() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.createTable(testTableName);
         Path newTablePath = testDirectory.resolve(testTableName);
-        assertTrue(newTablePath.toFile().exists() && newTablePath.toFile().isDirectory());
+        assertTrue(newTablePath.toFile().exists()
+                && newTablePath.toFile().isDirectory());
     }
 
     @Test
-    public void testCreateTableReturnsNullCalledForExistentOnDiskTable() {
+    public final void testCreateTableReturnsNullCalledForExistentOnDiskTable() {
         tableDirPath.toFile().mkdir();
         TableHolder test = new TableHolder(testDirectory.toString());
         assertNull(test.createTable(tableDirectoryName));
     }
 
     @Test
-    public void testRemoveTableRemovedTableDirectoryOnTheDiskCalledForValidTableDirectoryName() throws Exception {
+    public final void testRemoveTableFromTheDiskCalledForValidTableName() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.createTable(testTableName);
         Path newTablePath = testDirectory.resolve(testTableName);
@@ -102,19 +111,19 @@ public class TableHolderTest {
         assertFalse(newTablePath.toFile().exists());
     }
     @Test(expected = IllegalArgumentException.class)
-    public void testRemoveTableThrowsIllegalArgumentExceptionCalledForNullTableDirectoryName() {
+    public final void testRemoveTableThrowsExceptionCalledForNullTableName() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.removeTable(null);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testRemoveTableThrowsIllegalStateExceptionIfTableNameDoesNotExist() {
+    public final void testRemoveTableThrowsExceptionIfTableNameDoesNotExist() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.removeTable("MyTable");
     }
 
     @After
-    public void tearDown() {
+    public final void tearDown() {
         for (File currentFile : testDirectory.toFile().listFiles()) {
             if (currentFile.isDirectory()) {
                 for (File subFile : currentFile.listFiles()) {
