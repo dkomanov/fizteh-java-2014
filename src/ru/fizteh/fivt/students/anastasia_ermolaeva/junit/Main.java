@@ -3,13 +3,13 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.junit;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Command;
-//import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.ExitException;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.ExitException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.Command;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Interpreter;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.TableState;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -175,14 +175,9 @@ public class Main {
                         }
                     }),
                     new Command("exit", 1, (TableState tableS, String[] arguments) -> {
-                        //try {
-                            ((TableHolder)tableS.getTableHolder()).close();
-                            System.out.println("exit");
-                            System.exit(0);
-                        //} catch (ExitException e) {
-                          //  System.out.println("exit");
-                           // System.exit(e.getStatus());
-                        //}
+                        ((TableHolder)tableS.getTableHolder()).close();
+                        System.out.println("exit");
+                        System.exit(0);
                     })
             }).run(args);
         } catch (ExitException e) {
