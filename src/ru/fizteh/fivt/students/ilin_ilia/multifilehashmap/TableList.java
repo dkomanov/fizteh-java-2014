@@ -43,11 +43,13 @@ public class TableList {
     public void drop(final String name) {
         if (dB.containsKey(name)) {
             dB.get(name).drop();
+            if (curTable != null) {
+                if (curTable.equals(name)) {
+                    curTable = null;
+                }
+            }
             //rm(name);
             dB.remove(name);
-            if (curTable.equals(name)) {
-                curTable = null;
-            }
             System.out.println("dropped");
         } else {
             System.out.println(name +  " not exists");
@@ -118,9 +120,6 @@ public class TableList {
     
     public void rm(final String name) {
         File fileName = new File(name);
-        if (curTable.equals(name)) {
-            curTable = null;
-        }
         if (fileName.isFile()) {
             fileName.delete();
             return;
