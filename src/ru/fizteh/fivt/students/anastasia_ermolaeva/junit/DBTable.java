@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.ExitException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
 
 public class DBTable implements Table {
     private static final int DIR_AMOUNT = 16;
