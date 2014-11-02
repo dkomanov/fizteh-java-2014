@@ -24,7 +24,7 @@ public class Interpreter {
             }
     }
 
-    public static boolean batchMode(final String[] args, TableList tL, boolean flag)
+    public static boolean batchMode(final String[] args, TableList tL, final boolean flag)
                                         throws NumberFormatException, IOException {
         String arg = "";
         String [] arg1 = null;
