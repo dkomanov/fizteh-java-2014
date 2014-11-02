@@ -70,8 +70,9 @@ public class DBTable implements Table {
 
     private void read() throws ExitException {
         File pathDirectory = dbPath.toFile();
-        if (pathDirectory.list()== null ||pathDirectory.list().length == 0)
+        if (pathDirectory.list()== null ||pathDirectory.list().length == 0) {
             return;
+        }
         File[] tableDirectories = pathDirectory.listFiles();
         for (File t : tableDirectories) {
             // Checking subdirectories.
@@ -96,8 +97,8 @@ public class DBTable implements Table {
                 Then program would finish with exit code != 0.
                  */
                 if (directory.list().length == 0) {
-                    throw new IllegalStateException
-                            ("Table has the wrong format");
+                    throw new IllegalStateException(
+                            "Table has the wrong format");
                 }
                 int nDirectory = Integer.parseInt(
                         directory.getName().substring(0, k));
@@ -111,15 +112,15 @@ public class DBTable implements Table {
                         if ((k < 0)
                                 || !(file.getName().
                                 substring(k).equals(".dat"))) {
-                            throw new IllegalStateException
-                                    ("Table subdirectory's files doesn't "
+                            throw new IllegalStateException(
+                                    "Table subdirectory's files doesn't "
                                          + "have appropriate name");
                         }
                         int nFile = Integer.parseInt(
                                 file.getName().substring(0, k));
                         try (RandomAccessFile dbFile =
-                                     new RandomAccessFile
-                                             (file.getAbsolutePath(), "r")) {
+                                     new RandomAccessFile(
+                                             file.getAbsolutePath(), "r")) {
                             if (dbFile.length() > 0) {
                                 while (dbFile.getFilePointer()
                                         < dbFile.length()) {
@@ -174,7 +175,7 @@ public class DBTable implements Table {
                 if (!db[i][j].isEmpty()) {
                     Integer nDirectory = i;
                     Integer nFile = j;
-                    Path newPath = dbPath.resolve(nDirectory.toString()+".dir");
+                    Path newPath = dbPath.resolve(nDirectory.toString() + ".dir");
                     File directory = newPath.toFile();
                     if (!directory.exists()) {
                         if (!directory.mkdir()) {
@@ -210,7 +211,7 @@ public class DBTable implements Table {
                     //Deleting empty files and directories.
                     Integer nDirectory = i;
                     Integer nFile = j;
-                    Path newPath = dbPath.resolve(nDirectory.toString()+".dir");
+                    Path newPath = dbPath.resolve(nDirectory.toString() + ".dir");
                     File directory = newPath.toFile();
                     if (directory.exists()) {
                         Path newFilePath = directory.toPath().
@@ -279,7 +280,7 @@ public class DBTable implements Table {
 
     @Override
     public String put(String key, String value) {
-        if (key == null || value == null ) {
+        if (key == null || value == null) {
             throw new
                     IllegalArgumentException("Key and/or value "
                     + "is a null-string");
@@ -355,14 +356,13 @@ public class DBTable implements Table {
                 // If the record was deleted during the session.
                 if (entry.getValue() == null) {
                     tempStorage.remove(entry.getKey());
-                }
-                else {
+                } else {
                     //If the value was changed during the session.
                     tempStorage.put(entry.getKey(),
                             entry.getValue());
                 }
             } else {
-                if(entry.getValue() != null) {
+                if (entry.getValue() != null) {
                     tempStorage.put(entry.getKey(), entry.getValue());
                 }
             }
