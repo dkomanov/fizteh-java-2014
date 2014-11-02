@@ -45,6 +45,9 @@ public class TableList {
             dB.get(name).drop();
             //rm(name);
             dB.remove(name);
+            if (curTable.equals(name)) {
+                curTable = null;
+            }
             System.out.println("dropped");
         } else {
             System.out.println(name +  " not exists");
@@ -113,8 +116,11 @@ public class TableList {
         }
     }
     
-    public static void rm(final String name) {
+    public void rm(final String name) {
         File fileName = new File(name);
+        if (curTable.equals(name)) {
+            curTable = null;
+        }
         if (fileName.isFile()) {
             fileName.delete();
             return;
