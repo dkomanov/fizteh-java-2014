@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.Command;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Command;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.IllegalNumberOfArgumentsException;
 
