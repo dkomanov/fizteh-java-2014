@@ -1,36 +1,37 @@
 package ru.fizteh.fivt.students.andrewzhernov.junit;
 
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.RandomAccessFile;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
 
-public class Table {
+public class Table implements TableInterface {
     private static final int DIRECTORIES_COUNT = 16;
     private static final int FILES_COUNT = 16;
     
     private Path path;
     private Map<String, String> table;
     private Map<String, String> changes;
-    private String commandOutput;
 
-    private static String readItem(RandomAccessFile file) throws Exception {
+    private static String readItem(RandomAccessFile file) throws IOException {
         int wordSize = file.readInt();
         byte[] word = new byte[wordSize];
         file.read(word, 0, wordSize);
-        return new String(word);
+        return new String(word, "UTF-8");
     }
 
-    private static void writeItem(RandomAccessFile file, String word) throws Exception {
-        file.writeInt(word.getBytes("UTF-8").length);
-        file.write(word.getBytes("UTF-8"));
+    private static void writeItem(RandomAccessFile file, String word) throws IOException {
+        byte[] byteWord = word.getBytes("UTF-8");
+        file.writeInt(byteWord.length);
+        file.write(byteWord);
     }
 
-    private void load() throws Exception {
+    private void load() throws IllegalArgumentException, IOException {
         table.clear();
         for (int i = 0; i < DIRECTORIES_COUNT; ++i) {
             Path tableDir = path.resolve(Integer.toString(i) + ".dir");
@@ -46,81 +47,81 @@ public class Table {
                         }
                         file.close();
                     } else if (Files.isDirectory(tableFile)) {
-                        throw new Exception(tableFile.toString() + ": is a directory");
+                        throw new IllegalArgumentException(tableFile.toString() + ": is a directory");
                     }
                 }            
             } else if (tableDir.toFile().isFile()) {
-                throw new Exception(tableDir.toString() + ": is a normal file");
+                throw new IllegalArgumentException(tableDir.toString() + ": is a normal file");
             }
         }
     }
 
-    private void save() throws Exception {
-        for (int i = 0; i < DIRECTORIES_COUNT; ++i) {
-            Path tableDir = path.resolve(Integer.toString(i) + ".dir");
-            if (!Files.isDirectory(tableDir)) {
-                Files.createDirectory(tableDir);
-            }
-            for (int j = 0; j < FILES_COUNT; ++j) {
-                Path tableFile = tableDir.resolve(Integer.toString(j) + ".dat");
-                if (!Files.exists(tableFile)) {
-                    Files.createFile(tableFile);
+    private void save() {
+        try {
+            for (int i = 0; i < DIRECTORIES_COUNT; ++i) {
+                Path tableDir = path.resolve(Integer.toString(i) + ".dir");
+                if (!Files.isDirectory(tableDir)) {
+                    Files.createDirectory(tableDir);
                 }
-                RandomAccessFile file = new RandomAccessFile(tableFile.toString(), "rw");
-                boolean hasWritten = false;
-                for (String key : table.keySet()) {
-                    int hashcode = key.hashCode();
-                    int first = hashcode % DIRECTORIES_COUNT;
-                    int second = hashcode / DIRECTORIES_COUNT % FILES_COUNT;
-                    if (i == first && j == second) {
-                        writeItem(file, key);
-                        writeItem(file, table.get(key));
-                        hasWritten = true;
+                for (int j = 0; j < FILES_COUNT; ++j) {
+                    Path tableFile = tableDir.resolve(Integer.toString(j) + ".dat");
+                    if (!Files.exists(tableFile)) {
+                        Files.createFile(tableFile);
+                    }
+                    RandomAccessFile file = new RandomAccessFile(tableFile.toString(), "rw");
+                    boolean hasWritten = false;
+                    for (String key : table.keySet()) {
+                        int hashcode = key.hashCode();
+                        int first = hashcode % DIRECTORIES_COUNT;
+                        int second = hashcode / DIRECTORIES_COUNT % FILES_COUNT;
+                        if (i == first && j == second) {
+                            writeItem(file, key);
+                            writeItem(file, table.get(key));
+                            hasWritten = true;
+                        }
+                    }
+                    file.close();
+                    if (!hasWritten) {
+                        Files.deleteIfExists(tableFile);
                     }
                 }
-                file.close();
-                if (!hasWritten) {
-                    Files.deleteIfExists(tableFile);
+                if (tableDir.toFile().list().length == 0) {
+                    Files.deleteIfExists(tableDir);
                 }
             }
-            if (tableDir.toFile().list().length == 0) {
-                Files.deleteIfExists(tableDir);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+    }
+
+    public Table(Path tablePath) throws IllegalArgumentException {
+        try {
+            table = new HashMap<String, String>();
+            changes = new HashMap<String, String>();
+            path = tablePath;
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+            } else if (Files.isDirectory(path)) {
+                load();
+            } else {
+                throw new IllegalArgumentException(path.toString() + ": is a normal file");
             }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 
-    public Table(Path tablePath) throws Exception {
-        commandOutput = null;
-        table = new HashMap<String, String>();
-        changes = new HashMap<String, String>();
-        path = tablePath;
-        if (!Files.exists(path)) {
-            Files.createDirectory(path);
-        } else if (Files.isDirectory(path)) {
-            load();
-        } else {
-            throw new Exception(path.toString() + ": is a normal file");
-        }
-    }
-
-    public void printCommandOutput() throws Exception {
-        if (commandOutput != null) {
-            System.out.println(commandOutput);
-            commandOutput = null;
-        }
-    }
-
-    public String getName() throws Exception {
-        commandOutput = null;
+    public String getName() {
         return path.toFile().getName();
     }
 
-    public int unsavedSize() throws Exception {
-        commandOutput = null;
+    public int unsavedSize() {
         return changes.size();
     }
 
-    public int size() throws Exception {
+    public int size() {
         int size = 0;
         for (String key : table.keySet()) {
             if (!changes.containsKey(key)) {
@@ -132,29 +133,35 @@ public class Table {
                 ++size;
             }
         }
-        commandOutput = String.format("%d", size);
         return size;
     }
 
-    public String put(String key, String value) throws Exception {
+    public String put(String key, String value) throws IllegalArgumentException {
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("invalid key/value");
+        }
         String oldValue = changes.get(key);
-        commandOutput = (oldValue != null) ? String.format("overwrite\n%s", oldValue) : ("new");
         changes.put(key, value);
-        return value;
+        return oldValue;
     }
 
-    public String get(String key) throws Exception {
+    public String get(String key) throws IllegalArgumentException {
+        if (key == null) {
+            throw new IllegalArgumentException("invalid key");
+        }
         String value;
         if (changes.containsKey(key)) {
             value = changes.get(key);
         } else {
             value = table.get(key);
         }
-        commandOutput = (value != null) ? String.format("found\n%s", value) : ("not found");
         return value;
     }
 
-    public String remove(String key) throws Exception {
+    public String remove(String key) throws IllegalArgumentException {
+        if (key == null) {
+            throw new IllegalArgumentException("invalid key");
+        }
         String value = null;
         if (changes.containsKey(key)) {
             value = changes.get(key);
@@ -164,12 +171,11 @@ public class Table {
         if (changes.get(key) != null || table.get(key) != null) {
             changes.put(key, null);
         }
-        commandOutput = String.format((value != null) ? "removed" : "not found");
         return value;
     }
 
-    public List<String> list() throws Exception {
-        List<String> list = new ArrayList<String>();
+    public List<String> list() {
+        List<String> list = new LinkedList<String>();
         for (String key : table.keySet()) {
             if (!changes.containsKey(key)) {
                 list.add(key);
@@ -180,11 +186,10 @@ public class Table {
                 list.add(key);
             }
         }
-        commandOutput = String.join(", ", list);
         return list;
     }
 
-    public int commit() throws Exception {
+    public int commit() {
         int amount = changes.size();
         for (String key : changes.keySet()) {
             String value = changes.get(key);
@@ -196,14 +201,12 @@ public class Table {
         }
         changes.clear();
         save();
-        commandOutput = String.format("%d", amount);
         return amount;
     }
 
-    public int rollback() throws Exception {
+    public int rollback() {
         int amount = changes.size();
         changes.clear();
-        commandOutput = String.format("%d", amount);
         return amount;
     }
 }
