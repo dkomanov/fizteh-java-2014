@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.Command;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.ExitException;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.IllegalNumberOfArgumentsException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.Command;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.IllegalNumberOfArgumentsException;
 
 public class Interpreter {
     public static final String PROMPT = "$ ";
