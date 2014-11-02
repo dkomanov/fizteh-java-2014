@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Command;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.IllegalNumberOfArgumentsException;
 
@@ -54,7 +53,7 @@ public class Interpreter {
         }
     }
 
-    private final void batchMode(final String[] args) throws ExitException {
+    private void batchMode(final String[] args) throws ExitException {
         StringBuilder cmd = new StringBuilder();
         for (String arg: args) {
             cmd.append(arg);
@@ -138,8 +137,9 @@ public class Interpreter {
                     Command command = commands.get(commandName);
                     if (command == null) {
                         out.println(ERR_MSG + commandName);
-                        if (!userMode)
+                        if (!userMode) {
                             throw new ExitException(1);
+                        }
                     } else {
                         try {
                             command.execute(tableState, arguments);
@@ -152,8 +152,9 @@ public class Interpreter {
                 }
             } catch (IllegalArgumentException e) {
                 System.err.println(e.getMessage());
-                if (!userMode)
+                if (!userMode) {
                     throw new ExitException(1);
+                }
             }
         }
     }
