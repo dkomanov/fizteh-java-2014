@@ -175,13 +175,13 @@ public class Main {
                         }
                     }),
                     new Command("exit", 1, (TableState tableS, String[] arguments) -> {
-                        ((TableHolder)tableS.getTableHolder()).close();
+                        ((TableHolder) tableS.getTableHolder()).close();
                         System.out.println("exit");
                         System.exit(0);
                     })
             }).run(args);
         } catch (ExitException e) {
-            ((TableHolder)tableState.getTableHolder()).close();
+            ((TableHolder) tableState.getTableHolder()).close();
             System.exit(e.getStatus());
         }
     }
