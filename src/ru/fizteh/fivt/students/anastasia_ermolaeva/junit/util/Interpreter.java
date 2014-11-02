@@ -1,13 +1,14 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util;
 
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.TableHolder;
-
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.Command;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.ExitException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.IllegalNumberOfArgumentsException;
 
 public class Interpreter {
     public static final String PROMPT = "$ ";
@@ -19,9 +20,14 @@ public class Interpreter {
     private InputStream in;
     private PrintStream out;
 
-    public Interpreter(final TableState tableState, final Command[] commands, InputStream inStream, PrintStream outStream) {
+    public Interpreter(final TableState tableState,
+                       final Command[] commands,
+                       final InputStream inStream,
+                       final PrintStream outStream) {
         if (inStream == null || outStream == null) {
-            throw new IllegalArgumentException("Input or output stream is null");
+            throw new
+                    IllegalArgumentException("Input or "
+                    + "output stream is null");
         }
         this.tableState = tableState;
         in = inStream;
@@ -41,15 +47,11 @@ public class Interpreter {
         }
     }
     public final void run(final String[] arguments) throws ExitException {
-       // try {
-            if (arguments.length == 0) {
+        if (arguments.length == 0) {
                 userMode();
-            } else {
-                batchMode(arguments);
-            }
-        //} catch (ExitException e) {
-          //  System.exit(e.getStatus());
-        //}
+        } else {
+            batchMode(arguments);
+        }
     }
 
     private final void batchMode(final String[] args) throws ExitException {
@@ -58,14 +60,11 @@ public class Interpreter {
             cmd.append(arg);
             cmd.append(' ');
         }
-        //cmd.append(STATEMENT_DELIMITER);
-        //cmd.append("exit");
         String[] commands = cmd.toString().trim().split(STATEMENT_DELIMITER);
         for (String command:commands) {
             commandHandler(command, false);
         }
         throw new ExitException(0);
-        //((TableHolder)tableState.getTableHolder()).close();
     }
 
     private void userMode() throws ExitException {
@@ -77,7 +76,6 @@ public class Interpreter {
                     line = scan.nextLine();
                 } catch (NoSuchElementException e) {
                     throw new ExitException(0);
-                    //System.exit(0);
                 }
                 String[] commands = line.trim().split(STATEMENT_DELIMITER);
                 for (String command:commands) {
