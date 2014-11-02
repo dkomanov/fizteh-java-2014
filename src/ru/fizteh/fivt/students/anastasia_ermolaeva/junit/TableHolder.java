@@ -11,23 +11,23 @@ import java.util.Map;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.
-        junit.util.ExitException;
 
 public class TableHolder implements TableProvider {
     private Path rootPath;
     private Map<String, DBTable> tableMap;
-    public TableHolder(String rootDir) {
+    public TableHolder(final String rootDir) {
         try {
             rootPath = Paths.get(rootDir);
             if (!rootPath.toFile().exists()) {
                 rootPath.toFile().mkdir();
             }
             if (!rootPath.toFile().isDirectory()) {
-                throw new IllegalArgumentException(rootDir + " is not directory");
+                throw new IllegalArgumentException(rootDir
+                        + " is not directory");
             }
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException(rootDir + "' is illegal directory name", e);
+            throw new IllegalArgumentException(rootDir
+                    + "' is illegal directory name", e);
         }
         tableMap = new HashMap<>();
         File rootDirectory = rootPath.toFile();
@@ -36,20 +36,19 @@ public class TableHolder implements TableProvider {
             File currentDir = new File(rootPath.toAbsolutePath().toString()
                     + File.separator + s);
             if (!currentDir.isDirectory()) {
-                throw new IllegalArgumentException("Child directories are not directories");
-                //System.err.println("Child directories are not directories");
-                //System.exit(1);
+                throw new IllegalArgumentException("Child directories "
+                        + "are not directories");
             } else {
                 String tableName = currentDir.getName();
                 tableMap.put(tableName, new DBTable(rootPath, tableName));
             }
         }
     }
-    public Map<String, DBTable> getTableMap() {
+    public final Map<String, DBTable> getTableMap() {
         return tableMap;
     }
 
-    public void close() {
+    public final void close() {
         for (Map.Entry<String, DBTable> entry : tableMap.entrySet()) {
             entry.getValue().close();
         }
@@ -57,8 +56,9 @@ public class TableHolder implements TableProvider {
     }
 
     @Override
-    public Table getTable(String name) {
-        if (name == null || name.contains(".")||name.contains("\\")||name.contains("/")) {
+    public final Table getTable(final String name) {
+        if (name == null || name.contains(".")
+                || name.contains("\\") || name.contains("/")) {
             throw new IllegalArgumentException("Table name is null or invalid");
         }
         String tableName = name;
@@ -70,25 +70,23 @@ public class TableHolder implements TableProvider {
     }
 
     @Override
-    public Table createTable(String name) {
-        if (name == null || name.contains(".")||name.contains("\\")||name.contains("/")) {
+    public final Table createTable(final String name) {
+        if (name == null || name.contains(".")
+                || name.contains("\\") || name.contains("/")) {
             throw new IllegalArgumentException("Table name is null or invalid");
         }
         String tableName = name;
         if (tableMap.containsKey(tableName)) {
             return null;
         } else {
-            //String pathTableDirectory = rootPath.toAbsolutePath().toString()
-              //      + File.separator
-               //     + tableName;
             Path pathTableDirectory = rootPath.resolve(tableName);
             File tableDirectory = pathTableDirectory.toFile();
-            //File tableDirectory = new File(pathTableDirectory);
             if (!tableDirectory.mkdir()) {
                 System.err.println("Can't create table directory");
                 System.exit(1);
             } else {
-                DBTable newTable = new DBTable(rootPath, tableName, new HashMap<>());
+                DBTable newTable = new DBTable(rootPath,
+                        tableName, new HashMap<>());
                 tableMap.put(tableName, newTable);
                 return newTable;
             }
@@ -97,8 +95,9 @@ public class TableHolder implements TableProvider {
     }
 
     @Override
-    public void removeTable(String name) {
-        if (name == null || name.matches(".*[\\\\/\\.]+.*")) {
+    public final void removeTable(final String name) {
+        if (name == null || name.contains(".")
+                || name.contains("\\") || name.contains("/")) {
             throw new IllegalArgumentException("Table name is not suitable");
         }
         String tableName = name;
@@ -114,15 +113,15 @@ public class TableHolder implements TableProvider {
                         File[] directoryFiles = directory.listFiles();
                         for (File file : directoryFiles) {
                             try {
-                                Files.delete(file.toPath());
+                                Files.deleteIfExists(file.toPath());
                             } catch (IOException | SecurityException e) {
-                                System.err.println(e);
+                                System.err.println(e.getMessage());
                                 System.exit(1);
                             }
                         }
                         Files.delete(directory.toPath());
                     } catch (IOException | SecurityException e) {
-                        System.err.println(e);
+                        System.err.println(e.getMessage());
                         System.exit(1);
                     }
                 }
