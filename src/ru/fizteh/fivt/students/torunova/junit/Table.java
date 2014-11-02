@@ -4,15 +4,12 @@ import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedExceptio
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by nastya on 19.10.14.
  */
-public class Table {
+public class Table implements ru.fizteh.fivt.storage.strings.Table{
     public static final int MAGIC_NUMBER = 16;
     String tableName;
     Map<File, FileMap> files = new HashMap<>();
@@ -47,8 +44,11 @@ public class Table {
         }
         tableName = table.getAbsolutePath();
     }
-
-    public String put(String key, String value) throws IOException, IncorrectFileException {
+	@Override
+    public String put(String key, String value) {
+		if (key == null || value == null) {
+			throw new IllegalArgumentException("Key or value is null");
+		}
         String result;
         String fileName = getFileName(key);
         String dirName = getDirName(key);
@@ -58,8 +58,15 @@ public class Table {
             result = files.get(file).put(key, value);
         } else {
                 file.getParentFile().mkdirs();
-                file.createNewFile();
-                FileMap fm = new FileMap(file.getAbsolutePath());
+			FileMap fm = null;
+			try {
+				file.createNewFile();
+				fm = new FileMap(file.getAbsolutePath());
+			} catch (IOException e) {
+				System.err.println("Caught IOException: " + e.getMessage());
+			} catch (IncorrectFileException e1) {
+				System.err.println("Caught IncorrectFileException :" + e1.getMessage());
+			}
                 result = fm.put(key, value);
                 files.put(file, fm);
         }
@@ -69,7 +76,17 @@ public class Table {
         return result;
     }
 
-    public String get(String key) throws IncorrectFileException, IOException {
+	@Override
+	public String getName() {
+		File ourTable = new File(tableName);
+		return ourTable.getName();
+	}
+
+	@Override
+	public String get(String key) {
+		if (key == null) {
+			throw new IllegalArgumentException("Key is null");
+		}
         String fileName = getFileName(key);
         String dirName = getDirName(key);
         File dir  = new File(tableName, dirName).getAbsoluteFile();
@@ -84,9 +101,9 @@ public class Table {
         }
         return fm.get(key);
     }
-
-    public boolean remove(String key) {
-        boolean result;
+	@Override
+    public String remove(String key) {
+        String result;
         String fileName = getFileName(key);
         String dirName = getDirName(key);
         File dir  = new File(tableName, dirName).getAbsoluteFile();
@@ -94,35 +111,69 @@ public class Table {
         if (files.containsKey(file)) {
             FileMap fm = files.get(file);
             result = fm.remove(key);
-            if (fm.isEmpty()) {
-                File directory = file.getParentFile().getAbsoluteFile();
-                file.delete();
-                directory.delete();
-                files.remove(file);
-            }
-            if (result) {
+            if (result != null) {
                 numberOfEntries--;
             }
             return result;
         }
-        return false;
+        return null;
     }
 
-    public Set<String> list() {
-        Set<String> listOfAllKeys = new HashSet<>();
+	@Override
+	public int size() {
+		return numberOfEntries;
+	}
+
+	public List<String> list() {
+        List<String> listOfAllKeys = new ArrayList<>();
         for (FileMap fm : files.values()) {
             listOfAllKeys.addAll(fm.list());
         }
         return listOfAllKeys;
     }
-
-    public void commit() throws IOException {
-        for (FileMap fm:files.values()) {
-            fm.close();
-        }
+	@Override
+    public int commit()  {
+		int numberOfChangedEntries = 0;
+		Set<Map.Entry<File, FileMap>> entrySet = new HashSet<>(files.entrySet());
+        for (Map.Entry<File, FileMap> entry : entrySet) {
+			FileMap fm = entry.getValue();
+			File file = entry.getKey();
+			try {
+				numberOfChangedEntries += fm.commit();
+			} catch (IOException e) {
+				System.err.println("Caught IOException: " + e.getMessage());
+			}
+			if (fm.isEmpty()) {
+				File directory = file.getParentFile().getAbsoluteFile();
+				file.delete();
+				if (directory.listFiles().length == 0) {
+					directory.delete();
+				}
+				files.remove(file);
+			}
+		}
+		return numberOfChangedEntries;
     }
 
-    private String getDirName(String key) {
+	@Override
+	public int rollback() {
+		int numberOfRevertedChanges = 0;
+		numberOfEntries = 0;
+		for (FileMap fm:files.values()) {
+			numberOfRevertedChanges += fm.rollback();
+			numberOfEntries += fm.size();
+		}
+		return numberOfRevertedChanges;
+	}
+	public int countChangedEntries() {
+		int numberOfChangedEntries = 0;
+		for (FileMap fm:files.values()) {
+			numberOfChangedEntries += fm.countChangedEntries();
+		}
+		return numberOfChangedEntries;
+	}
+
+	private String getDirName(String key) {
         int hashcode = key.hashCode();
         int ndirectory = hashcode % MAGIC_NUMBER;
         StringBuilder builder = new StringBuilder();

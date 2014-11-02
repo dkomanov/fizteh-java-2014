@@ -14,13 +14,14 @@ public class DropTable extends Action {
         if (!checkNumberOfArguments(1, args.length)) {
             return false;
         }
-        if (db.dropTable(args[0])) {
-            System.out.println("dropped");
-            return true;
-        } else {
-            System.out.println(args[0] + " does not exist");
-            return false;
-        }
+		try {
+			db.removeTable(args[0]);
+		} catch (IllegalStateException e) {
+			System.err.println(e.getMessage());
+			return false;
+		}
+        System.out.println("dropped");
+        return true;
     }
 
     @Override

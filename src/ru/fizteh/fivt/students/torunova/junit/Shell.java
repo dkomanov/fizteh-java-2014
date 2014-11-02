@@ -44,7 +44,7 @@ public class Shell {
     }
 
     public void run() {
-        String nextCommand = new String();
+        String nextCommand;
         String[] functions;
         while (true) {
             if (interactive) {
@@ -53,12 +53,13 @@ public class Shell {
             try {
                 nextCommand = scanner.nextLine();
             } catch (NoSuchElementException e) {
-                try {
-                    db.close();
-                } catch (IOException e1) {
-                    System.err.println("Caught IOException: " + e1.getMessage());
-                    abort();
-                }
+                if (!interactive) {
+					if (db.currentTable != null) {
+						db.currentTable.commit();
+					} else {
+						db.exit();
+					}
+				}
                 return;
             }
             functions = nextCommand.split(";");
@@ -92,38 +93,22 @@ public class Shell {
                             abort();
                         }
                     }
-
                     if (!interactive && !res) {
-                        try {
-                            db.close();
-                        } catch (IOException e) {
-                            System.err.println("Caught IOException" + e.getMessage());
-                            abort();
-                        }
-                        abort();
+						if (db.currentTable != null) {
+							db.currentTable.commit();
+						} else {
+							db.exit();
+						}
                     }
-                } else if (name.equals("exit")) {
-                    /*if (args.length > 0) {
-                        System.err.println("exit:too many arguments.");
-                    } else {*/
-                        try {
-                            db.close();
-                        } catch (IOException e) {
-                            System.err.println("Caught IOException" + e.getMessage());
-                            abort();
-                        }
-                        System.exit(0);
-                    //}
                 } else if (!Pattern.matches("\\s+", name)) {
                     System.err.println("Command not found.");
                     if (!interactive) {
-                        try {
-                            db.close();
-                        } catch (IOException e) {
-                            System.err.println("Caught IOException" + e.getMessage());
-                            abort();
-                        }
-                        abort();
+						if (db.currentTable != null) {
+							db.currentTable.commit();
+						} else {
+							db.exit();
+						}
+
                     }
                 }
             }

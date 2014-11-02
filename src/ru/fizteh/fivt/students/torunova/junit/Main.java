@@ -14,12 +14,16 @@ public class Main {
         Set<Action> actions = new HashSet<Action>();
         actions.add(new Put());
         actions.add(new Get());
-        actions.add(new List());
+        actions.add(new MyList());
         actions.add(new Remove());
         actions.add(new CreateTable());
         actions.add(new DropTable());
         actions.add(new UseTable());
         actions.add(new ShowTables());
+		actions.add(new Commit());
+		actions.add(new Rollback());
+		actions.add(new Exit());
+		actions.add(new Size());
         Shell shell;
         if (args.length > 0) {
             ByteArrayInputStream is = new ByteArrayInputStream(parseCommandsFromArray(args).getBytes());

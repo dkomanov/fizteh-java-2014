@@ -15,8 +15,8 @@ public class Remove extends Action {
             System.out.println("no table");
             return false;
         }
-        boolean result = db.currentTable.remove(args[0]);
-        if (result) {
+        String result = db.currentTable.remove(args[0]);
+        if (result != null) {
             System.out.println("removed");
         } else {
             System.out.println("not found");
