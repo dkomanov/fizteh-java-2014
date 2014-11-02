@@ -50,6 +50,7 @@ public class Write {
         }
     }
 
+
     private void clearDirectory(File f) {
         String[] filesInDirectory = f.list();
         if (filesInDirectory != null) {
