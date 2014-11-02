@@ -14,30 +14,33 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 public class DBTableTest {
-    private final Path testDirectory = Paths.get(System.getProperty("fizteh.db.dir"));
-    private static final String tableName = "Таблица1";
+    private final Path testDirectory
+            = Paths.get(System.getProperty("fizteh.db.dir"));
+    private  final String tableName = "Таблица1";
     private final Path tableDirectoryPath = testDirectory.resolve(tableName);
-    private static final String testKey1 = "ключ1";
-    private static final String testKey2 = "ключ2";
-    private static final String testKey3 = "key";
-    private static final String testValue1 = "значение1";
-    private static final String testValue2 = "значение2";
-    private static final String testValue3 = "value";
-    private static final String testFile = "Тестовый файл.txt";
-    private static final String validSubdirectory = "1.dir";
+    private final String testKey1 = "ключ1";
+    private final String testKey2 = "ключ2";
+    private final String testValue1 = "значение1";
+    private final String testValue2 = "значение2";
+    private final String testFile = "Тестовый файл.txt";
+    private final String validSubdirectory = "1.dir";
     private static final int DIR_AMOUNT = 16;
     private static final int FILES_AMOUNT = 16;
 
     @Before
-    public void setUp() {
+    public final  void setUp() {
         testDirectory.toFile().mkdir();
     }
     //Tests on wrong table format.
     @Test(expected = IllegalStateException.class)
-    public void testDBTableCreatedFromDirectoryWithNonDirectoryFiles() throws IOException {
+    public final void testDBTableCreatedFromDirectoryWithNonDirectories()
+            throws IOException {
         tableDirectoryPath.toFile().mkdir();
         Path newFilePath = tableDirectoryPath.resolve(testFile);
         newFilePath.toFile().createNewFile();
@@ -45,7 +48,7 @@ public class DBTableTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testDBTableCreatedFromDirectoryWithWrongSubdirectoriesNames() {
+    public final void testDBTableCreatedFromDirWithWrongSubdirectories() {
         tableDirectoryPath.toFile().mkdir();
         Path newSubdirectory = tableDirectoryPath.resolve("subdirectory");
         newSubdirectory.toFile().mkdir();
@@ -53,7 +56,7 @@ public class DBTableTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testDBTableCreatedFromDirectoryWithValidButEmptySubdirectories() {
+    public final void testDBTableCreatedFromDirWithEmptySubdirs() {
         tableDirectoryPath.toFile().mkdir();
         Path newSubdirectory = tableDirectoryPath.resolve(validSubdirectory);
         newSubdirectory.toFile().mkdir();
@@ -61,7 +64,8 @@ public class DBTableTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testDBTableCreatedFromDirectoryWithValidSubdirectoriesContainedWrongNameFiles() throws IOException {
+    public final void testDBTableCreatedFromDirWithSubdirsWithWrongFiles()
+            throws IOException {
         tableDirectoryPath.toFile().mkdir();
         Path newSubdirectory = tableDirectoryPath.resolve(validSubdirectory);
         newSubdirectory.toFile().mkdir();
@@ -72,21 +76,21 @@ public class DBTableTest {
 
     //GetTests.
     @Test
-    public void testGetReturnsNullIfKeyIsNotFound() {
+    public final void testGetReturnsNullIfKeyIsNotFound() {
         tableDirectoryPath.toFile().mkdir();
         Table test  = new DBTable(testDirectory, tableName);
         assertNull(test.get(testKey1));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetThrowsIllegalArgumentExceptionCalledForNullKey() {
+    public final void testGetThrowsIllegalArgumentExceptionCalledForNullKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test  = new DBTable(testDirectory, tableName);
         test.get(null);
     }
 
     @Test
-    public void testGetCalledForNonComittedKey() {
+    public final void testGetCalledForNonComittedKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -94,7 +98,7 @@ public class DBTableTest {
     }
 
     @Test
-    public void testGetCalledForComittedKey() {
+    public final void testGetCalledForComittedKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -103,7 +107,7 @@ public class DBTableTest {
     }
 
     @Test
-    public void testGetCalledForDeletedKeyBeforeCommit() {
+    public final void testGetCalledForDeletedKeyBeforeCommit() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -113,27 +117,27 @@ public class DBTableTest {
 
     //PutTests.
     @Test(expected = IllegalArgumentException.class)
-    public void testPutThrowsIllegalArgumentExceptionCalledForNullKey() {
+    public final void testPutThrowsIllegalArgumentExceptionCalledForNullKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test  = new DBTable(testDirectory, tableName);
         test.put(null, testValue1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testPutThrowsIllegalArgumentExceptionCalledForNullValue() {
+    public final void testPutThrowsExceptionCalledForNullValue() {
         tableDirectoryPath.toFile().mkdir();
         DBTable test  = new DBTable(testDirectory, tableName);
         test.put(testKey1, null);
     }
 
     @Test
-    public void testPutReturnsNullIfKeyHasNotBeenWrittenYet() {
+    public final void testPutReturnsNullIfKeyHasNotBeenWrittenYet() {
         tableDirectoryPath.toFile().mkdir();
         DBTable test  = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
     }
     @Test
-    public void testPutReturnsOldValueIfKeyExists() {
+    public final void testPutReturnsOldValueIfKeyExists() {
         tableDirectoryPath.toFile().mkdir();
         Table test  = new DBTable(testDirectory, tableName);
         test.put(testKey1, testValue1);
@@ -142,21 +146,21 @@ public class DBTableTest {
 
     //RemoveTests.
     @Test(expected = IllegalArgumentException.class)
-    public void testRemoveThrowsIllegalArgumentExceptionCalledForNullKey() {
+    public final void testRemoveThrowsExceptionCalledForNullKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test  = new DBTable(testDirectory, tableName);
         test.remove(null);
     }
 
     @Test
-    public void testRemoveReturnsNullIfKeyIsNotFound() {
+    public final void testRemoveReturnsNullIfKeyIsNotFound() {
         tableDirectoryPath.toFile().mkdir();
         Table test  = new DBTable(testDirectory, tableName);
         assertNull(test.remove(testKey1));
     }
 
     @Test
-    public void testRemoveCalledForDeletedKeyBeforeCommit(){
+    public final void testRemoveCalledForDeletedKeyBeforeCommit() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -165,7 +169,7 @@ public class DBTableTest {
     }
 
     @Test
-    public void testRemoveCalledForDeletedKeyAfterCommit(){
+    public final void testRemoveCalledForDeletedKeyAfterCommit() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -178,19 +182,25 @@ public class DBTableTest {
     Also checks implicitly inside put, get and remove tests.
     */
     @Test
-    public void testCommitCreatesRealFileOnTheDisk() throws UnsupportedEncodingException {
+    public final void testCommitCreatesRealFileOnTheDisk()
+            throws UnsupportedEncodingException {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
-        String subdirectoryName = Math.abs(testKey1.getBytes("UTF-8")[0] % DIR_AMOUNT) + ".dir";
-        String fileName = Math.abs((testKey1.getBytes("UTF-8")[0] / DIR_AMOUNT) % FILES_AMOUNT) + ".dat";
-        Path filePath = Paths.get(testDirectory.toString(), test.getName(),subdirectoryName, fileName);
+        String subdirectoryName = Math.abs(testKey1.getBytes("UTF-8")[0]
+                % DIR_AMOUNT) + ".dir";
+        String fileName = Math.abs((testKey1.getBytes("UTF-8")[0]
+                / DIR_AMOUNT) % FILES_AMOUNT)
+                + ".dat";
+        Path filePath = Paths.get(testDirectory.toString(),
+                test.getName(),
+                subdirectoryName, fileName);
         assertTrue(filePath.toFile().exists());
     }
 
     @Test
-    public void testCommitOverwritesCommitedKey() {
+    public final void testCommitOverwritesCommitedKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -201,7 +211,7 @@ public class DBTableTest {
     }
 
     @Test
-    public void testCommitRemovesExistentKeyAfterCommit() {
+    public final void testCommitRemovesExistentKeyAfterCommit() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -212,21 +222,26 @@ public class DBTableTest {
     }
 
     @Test
-    public void testCommitEmptiedAfterLoadingTable() {
+    public final void testCommitEmptiedAfterLoadingTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
         assertEquals(testValue1, test.remove(testKey1));
         test.commit();
-        String subdirectoryName = Math.abs(testKey1.getBytes()[0] % DIR_AMOUNT) + ".dir";
-        String fileName = Math.abs((testKey1.getBytes()[0] / DIR_AMOUNT) % FILES_AMOUNT) + ".dat";
-        Path filePath = Paths.get(testDirectory.toString(), test.getName(), subdirectoryName, fileName);
+        String subdirectoryName = Math.abs(testKey1.getBytes()[0]
+                % DIR_AMOUNT) + ".dir";
+        String fileName = Math.abs((testKey1.getBytes()[0]
+                / DIR_AMOUNT) % FILES_AMOUNT)
+                + ".dat";
+        Path filePath = Paths.get(testDirectory.toString(),
+                test.getName(),
+                subdirectoryName, fileName);
         assertFalse(filePath.toFile().exists());
     }
 
     @Test
-    public void testCommitReturnsNonZeroNumberOfChangesAfterPuttingNewRecord() {
+    public final void testCommitReturnsNonZeroChangesPuttingNewRecord() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -234,7 +249,7 @@ public class DBTableTest {
     }
 
     @Test
-    public void testCommitReturnsNotZeroNumberOfChangesAfterRewritingRecord() {
+    public final void testCommitReturnsNotZeroChangesRewriting() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -243,7 +258,7 @@ public class DBTableTest {
     }
 
     @Test
-    public void testCommitNoChanges(){
+    public final void testCommitNoChanges() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -253,7 +268,7 @@ public class DBTableTest {
 
     //RollbackTests.
     @Test
-    public void testRollbackAfterPuttingNewKey() {
+    public final void testRollbackAfterPuttingNewKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertEquals(0, test.size());
@@ -265,7 +280,7 @@ public class DBTableTest {
     }
 
     @Test
-    public void testRollbackNoChanges() {
+    public final void testRollbackNoChanges() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -276,14 +291,14 @@ public class DBTableTest {
 
     //List tests.
     @Test
-    public void testListCalledForEmptyTable() {
+    public final void testListCalledForEmptyTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertTrue(test.list().isEmpty());
     }
 
     @Test
-    public void testListCalledForNonEmptyNewTable() {
+    public final void testListCalledForNonEmptyNewTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -297,7 +312,7 @@ public class DBTableTest {
     }
 
     @Test
-    public void testListCalledForNonEmptyCommitedTable() {
+    public final void testListCalledForNonEmptyCommitedTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -313,7 +328,7 @@ public class DBTableTest {
 
     //Size tests.
     @Test
-    public void testSizeCalledForNonEmptyNonCommitedTable() {
+    public final void testSizeCalledForNonEmptyNonCommitedTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -323,7 +338,7 @@ public class DBTableTest {
     }
 
     @Test
-    public void testSizeCalledForNonEmptyCommitedTable() {
+    public final void testSizeCalledForNonEmptyCommitedTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         assertNull(test.put(testKey1, testValue1));
@@ -334,12 +349,13 @@ public class DBTableTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public final void tearDown() throws Exception {
         for (File currentTableDirectory : testDirectory.toFile().listFiles()) {
             if (currentTableDirectory.isDirectory()) {
-                for (File tableSubDirectory : currentTableDirectory.listFiles()) {
-                    if(tableSubDirectory.isDirectory()){
-                        for(File tableFile: tableSubDirectory.listFiles()) {
+                for (File tableSubDirectory
+                        :currentTableDirectory.listFiles()) {
+                    if (tableSubDirectory.isDirectory()) {
+                        for (File tableFile: tableSubDirectory.listFiles()) {
                             tableFile.delete();
                         }
                     }
