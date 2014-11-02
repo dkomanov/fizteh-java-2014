@@ -70,7 +70,7 @@ public class DBTable implements Table {
 
     private void read() throws ExitException {
         File pathDirectory = dbPath.toFile();
-        if (pathDirectory.list()== null ||pathDirectory.list().length == 0) {
+        if (pathDirectory.list() == null || pathDirectory.list().length == 0) {
             return;
         }
         File[] tableDirectories = pathDirectory.listFiles();
