@@ -23,10 +23,10 @@ public class DbMain {
         }
 
         Shell<FileMap> myShell = new Shell<>(myFileMap);
-        myShell.addCommand(new Get());
-        myShell.addCommand(new List());
-        myShell.addCommand(new Put());
-        myShell.addCommand(new Remove());
+        myShell.addCommand(new FmCommandGet());
+        myShell.addCommand(new FmCommandList());
+        myShell.addCommand(new FmCommandPut());
+        myShell.addCommand(new FmCommandRemove());
 
         if (args.length > 0) {
             if (!myShell.packetMode(args)) {

@@ -38,7 +38,7 @@ public class MFileHashMap {
         Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneTable: pairSet) {
             System.out.println(oneTable.getKey() + " "
-                + oneTable.getValue().getNumberOfPairs());
+                + oneTable.getValue().size());
         }
     }
 

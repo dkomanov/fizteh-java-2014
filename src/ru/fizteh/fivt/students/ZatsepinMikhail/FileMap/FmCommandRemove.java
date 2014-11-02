@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
-public class Remove extends CommandFileMap {
-    public Remove() {
+public class FmCommandRemove extends CommandFileMap {
+    public FmCommandRemove() {
         name = "remove";
         numberOfArguments = 2;
     }

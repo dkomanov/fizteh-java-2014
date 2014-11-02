@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
-public class Get extends CommandFileMap {
-    public Get() {
+public class FmCommandGet extends CommandFileMap {
+    public FmCommandGet() {
         name = "get";
         numberOfArguments = 2;
     }

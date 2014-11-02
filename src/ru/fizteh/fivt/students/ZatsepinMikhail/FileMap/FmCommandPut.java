@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
-public class Put extends CommandFileMap {
-    public Put() {
+public class FmCommandPut extends CommandFileMap {
+    public FmCommandPut() {
         name = "put";
         numberOfArguments = 3;
     }

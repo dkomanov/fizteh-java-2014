@@ -3,8 +3,8 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 import java.util.Iterator;
 import java.util.Set;
 
-public class List extends CommandFileMap {
-    public List() {
+public class FmCommandList extends CommandFileMap {
+    public FmCommandList() {
         name = "list";
         numberOfArguments = 1;
     }

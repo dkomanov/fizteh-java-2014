@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.Remove;
+import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FmCommandRemove;
 
 public class CommandRemoveDistribute extends CommandMultiFileHashMap {
     public CommandRemoveDistribute() {
@@ -21,7 +21,7 @@ public class CommandRemoveDistribute extends CommandMultiFileHashMap {
             System.out.println("no table");
             return true;
         }
-        Remove removeCommand = new Remove();
+        FmCommandRemove removeCommand = new FmCommandRemove();
         return removeCommand.run(currentTable, args);
     }
 }

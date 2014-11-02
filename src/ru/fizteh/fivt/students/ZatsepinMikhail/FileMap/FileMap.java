@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
+import ru.fizteh.fivt.storage.strings.Table;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -7,40 +9,16 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-public class FileMap {
-    private HashMap<String, String> dataBase;
+public class FileMap implements Table {
+    private HashMap<String, String> stableData;
+    private HashMap<String, String> addedData;
+    private HashMap<String, String> changedData;
+    private HashSet<String> removedData;
     private String directoryOfTable;
 
-    public FileMap(String newDirectoryFile) {
-        directoryOfTable = newDirectoryFile;
-        dataBase = new HashMap<>();
-    }
-
-    public String get(String key) {
-        return dataBase.get(key);
-    }
-
-    public String remove(String key) {
-        return dataBase.remove(key);
-    }
-
-    public String put(String key, String value) {
-        return dataBase.put(key, value);
-    }
-
-    public Set<String> keySet() {
-        return dataBase.keySet();
-    }
-
-    public int getNumberOfPairs() {
-        return dataBase.size();
-    }
-
-    public int getNumberOfDirectory(int hash) {
+    private int getNumberOfDirectory(int hash) {
         int result = hash % 16;
         if (result < 0) {
             result += 16;
@@ -48,12 +26,131 @@ public class FileMap {
         return result;
     }
 
-    public int getNumberOfFile(int hash) {
+    private int getNumberOfFile(int hash) {
         int result = hash / 16 % 16;
         if (result < 0) {
             result += 16;
         }
         return result;
+    }
+
+
+    public FileMap(String newDirectoryFile) {
+        directoryOfTable = newDirectoryFile;
+        stableData = new HashMap<>();
+        addedData = new HashMap<>();
+        changedData = new HashMap<>();
+        removedData = new HashSet<>();
+    }
+
+    public String getName() {
+        return Paths.get(directoryOfTable).getFileName().toString();
+    }
+
+    public String get(String key) throws IllegalArgumentException {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        if (removedData.contains(key)) {
+            return null;
+        }
+        if (changedData.containsKey(key)) {
+            return changedData.get(key);
+        }
+        if (addedData.containsKey(key)) {
+            return addedData.get(key);
+        }
+        return stableData.get(key);
+    }
+
+    public String remove(String key) throws IllegalArgumentException {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        if (removedData.contains(key)) {
+            return null;
+        }
+        if (addedData.containsKey(key)) {
+            return addedData.remove(key);
+        }
+        if (changedData.containsKey(key)) {
+            removedData.add(key);
+            return changedData.remove(key);
+        }
+        if (stableData.containsKey(key)) {
+            removedData.add(key);
+        }
+        return stableData.get(key);
+    }
+
+    public String put(String key, String value) throws IllegalArgumentException {
+        if (key == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+        if (removedData.contains(key)) {
+            removedData.remove(key);
+        }
+        if (changedData.containsKey(key)) {
+            return changedData.put(key, value);
+        }
+        if (addedData.containsKey(key)) {
+            return addedData.put(key, value);
+        }
+        addedData.put(key, value);
+        return stableData.get(key);
+    }
+
+    public Set<String> keySet() {
+        return stableData.keySet();
+    }
+
+    public int size() {
+        return stableData.size() + addedData.size() - removedData.size();
+    }
+
+    public int rollback() {
+        //tmp decision:
+        int result = changedData.size() + removedData.size() + addedData.size();
+        addedData.clear();
+        changedData.clear();
+        removedData.clear();
+        return result;
+    }
+
+    public int commit() {
+        int result = stableData.size() + addedData.size() - removedData.size();
+        stableData.keySet().removeAll(removedData);
+        stableData.putAll(changedData);
+        stableData.putAll(addedData);
+        boolean allRight = true;
+        if (changedData.size() + removedData.size() > 0) {
+            Set<String> reloadKeys = removedData;
+            reloadKeys.addAll(changedData.keySet());
+            for (String oneKey : reloadKeys) {
+                if (!load(oneKey, false)) {
+                    allRight = false;
+                }
+            }
+        }
+        for (String oneKey : addedData.keySet()) {
+            if (!load(oneKey, true)) {
+                allRight = false;
+            }
+        }
+
+        if (allRight) {
+            return result;
+        } else {
+            //tmp decision
+            return -1;
+        }
+    }
+
+    public List<String> list() {
+        ArrayList<String> keyList = new ArrayList<>(stableData.keySet());
+        keyList.removeAll(removedData);
+        keyList.addAll(addedData.keySet());
+        return keyList;
     }
 
     public boolean init() {
@@ -128,7 +225,7 @@ public class FileMap {
                             }
 
                             try {
-                                dataBase.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+                                stableData.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
                             } catch (UnsupportedEncodingException e) {
                                 System.out.println("unsupported encoding");
                                 return false;
@@ -159,9 +256,10 @@ public class FileMap {
         int numberOfDirectory = getNumberOfDirectory(key.hashCode());
         int numberOfFile = getNumberOfFile(key.hashCode());
         if (appendFile) {
+            keySet.clear();
             keySet.add(key);
         } else {
-            Set<String> keySetFromDB = dataBase.keySet();
+            Set<String> keySetFromDB = stableData.keySet();
             for (String oneKey : keySetFromDB) {
                 if (numberOfDirectory == getNumberOfDirectory(oneKey.hashCode())
                         & numberOfFile == getNumberOfFile(oneKey.hashCode())) {
@@ -197,22 +295,19 @@ public class FileMap {
             for (String oneKey : keySet) {
                 int keyNumberOfDirectory = getNumberOfDirectory(oneKey.hashCode());
                 int keyNnumberOfFiles = getNumberOfFile(oneKey.hashCode());
-                if (!appendFile & (numberOfFile == keyNnumberOfFiles)
-                        & (numberOfDirectory == keyNumberOfDirectory) | appendFile) {
-                    try {
-                        byte[] keyByte = oneKey.getBytes("UTF-8");
-                        byte[] valueByte = dataBase.get(oneKey).getBytes("UTF-8");
-                        outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
-                        outputStream.write(keyByte);
-                        outputStream.write(bufferForSize.putInt(0, valueByte.length).array());
-                        outputStream.write(valueByte);
-                    } catch (UnsupportedEncodingException e) {
-                        System.out.println("unsupported encoding");
-                        return false;
-                    } catch (IOException e) {
-                        System.out.println("io exception");
-                        return false;
-                    }
+                try {
+                    byte[] keyByte = oneKey.getBytes("UTF-8");
+                    byte[] valueByte = stableData.get(oneKey).getBytes("UTF-8");
+                    outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
+                    outputStream.write(keyByte);
+                    outputStream.write(bufferForSize.putInt(0, valueByte.length).array());
+                    outputStream.write(valueByte);
+                } catch (UnsupportedEncodingException e) {
+                    System.out.println("unsupported encoding");
+                    return false;
+                } catch (IOException e) {
+                    System.out.println("io exception");
+                    return false;
                 }
             }
         } catch (FileNotFoundException e) {

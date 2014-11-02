@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.List;
+import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FmCommandList;
 
 public class CommandListDistribute extends CommandMultiFileHashMap {
     public CommandListDistribute() {
@@ -21,7 +21,7 @@ public class CommandListDistribute extends CommandMultiFileHashMap {
             System.out.println("no table");
             return true;
         }
-        List commandList = new List();
+        FmCommandList commandList = new FmCommandList();
         return commandList.run(currentTable, args);
     }
 }

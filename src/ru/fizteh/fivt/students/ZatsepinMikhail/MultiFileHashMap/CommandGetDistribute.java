@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.Get;
+import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FmCommandGet;
 
 public class CommandGetDistribute extends CommandMultiFileHashMap {
     public CommandGetDistribute() {
@@ -21,7 +21,7 @@ public class CommandGetDistribute extends CommandMultiFileHashMap {
             System.out.println("no table");
             return true;
         }
-        Get commandGet = new Get();
+        FmCommandGet commandGet = new FmCommandGet();
         return commandGet.run(currentTable, args);
     }
 }
