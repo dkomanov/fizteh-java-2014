@@ -6,14 +6,19 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.
-        junit.util.ExitException;
+        junit.multifilehashmap.ExitException;
 
-public class DBTable implements Table/*, AutoCloseable*/ {
+public class DBTable implements Table {
     private static final int DIR_AMOUNT = 16;
     private static final int FILES_AMOUNT = 16;
     private Map<String, String> allRecords; //Records readed from real file
@@ -21,23 +26,18 @@ public class DBTable implements Table/*, AutoCloseable*/ {
     private Path dbPath; // The table's directory.
     private String name;
 
-    public DBTable(final Path rootPath, final String Name) {
-        //String path = rootPath.toAbsolutePath().toString()
-          //      + File.separator + name;
-        dbPath = rootPath.resolve(Name);
-        //dbPath = Paths.get(path);
-        name = Name;
+    public DBTable(final Path rootPath, final String name) {
+        dbPath = rootPath.resolve(name);
+        this.name = name;
         allRecords = new HashMap<>();
         sessionChanges = new HashMap<>();
         create();
     }
 
-    public DBTable(final Path rootPath, final String Name, Map<String, String> records) {
-        //String path = rootPath.toAbsolutePath().toString()
-            //    + File.separator + name;
-        //dbPath = Paths.get(path);
-        dbPath = rootPath.resolve(Name);
-        name = Name;
+    public DBTable(final Path rootPath, final String name,
+                   final Map<String, String> records) {
+        dbPath = rootPath.resolve(name);
+        this.name = name;
         allRecords = Collections.synchronizedMap(records);
         sessionChanges = new HashMap<>();
     }
@@ -52,14 +52,12 @@ public class DBTable implements Table/*, AutoCloseable*/ {
             System.exit(e.getStatus());
         }
     }
-    public Path getDBTablePath(){
+    public final Path getDBTablePath() {
         return dbPath;
     }
-    //public Map<String, String> getAllRecords() {
-      //  return allRecords;
-    //}
 
-    private String readUtil(final RandomAccessFile dbFile) throws ExitException {
+    private String readUtil(final RandomAccessFile dbFile)
+            throws ExitException {
         try {
             int wordLength = dbFile.readInt();
             byte[] word = new byte[wordLength];
@@ -72,7 +70,6 @@ public class DBTable implements Table/*, AutoCloseable*/ {
     }
 
     private void read() throws ExitException {
-        //System.out.println(dbPath.toString());
         File pathDirectory = dbPath.toFile();
         if (pathDirectory.list()== null ||pathDirectory.list().length == 0)
             return;
@@ -82,9 +79,6 @@ public class DBTable implements Table/*, AutoCloseable*/ {
             if (!t.isDirectory()) {
                 throw new IllegalStateException("Table subdirectories "
                            + "are not actually directories");
-                //System.err.println("Table subdirectories "
-                     //   + "are not actually directories");
-                //throw new ExitException(1);
             }
         }
         for (File directory : tableDirectories) {
@@ -93,9 +87,6 @@ public class DBTable implements Table/*, AutoCloseable*/ {
             if ((k < 0) || !(directory.getName().substring(k).equals(".dir"))) {
                 throw new IllegalStateException("Table subdirectories don't "
                                + "have appropriate name");
-                //System.err.println("Table subdirectories don't "
-                 //       + "have appropriate name");
-                //throw new ExitException(1);
             }
             try {
                 /*
@@ -106,9 +97,8 @@ public class DBTable implements Table/*, AutoCloseable*/ {
                 Then program would finish with exit code != 0.
                  */
                 if (directory.list().length == 0) {
-                    throw new IllegalStateException("Table has the wrong format");
-                    //System.err.println("Table has the wrong format");
-                    //throw new ExitException(1);
+                    throw new IllegalStateException
+                            ("Table has the wrong format");
                 }
                 int nDirectory = Integer.parseInt(
                         directory.getName().substring(0, k));
@@ -119,18 +109,21 @@ public class DBTable implements Table/*, AutoCloseable*/ {
                         Checking files' names the same way
                         we did with directories earlier.
                         */
-                        if ((k < 0) || !(file.getName().substring(k).equals(".dat"))) {
-                            throw new IllegalStateException("Table subdirectory's files doesn't "
+                        if ((k < 0)
+                                || !(file.getName().
+                                substring(k).equals(".dat"))) {
+                            throw new IllegalStateException
+                                    ("Table subdirectory's files doesn't "
                                          + "have appropriate name");
-                            //System.err.println("Table subdirectory's files doesn't "
-                              //      + "have appropriate name");
-                            //throw new ExitException(1);
                         }
                         int nFile = Integer.parseInt(
                                 file.getName().substring(0, k));
-                        try (RandomAccessFile dbFile = new RandomAccessFile(file.getAbsolutePath(), "r")) {
+                        try (RandomAccessFile dbFile =
+                                     new RandomAccessFile
+                                             (file.getAbsolutePath(), "r")) {
                             if (dbFile.length() > 0) {
-                                while (dbFile.getFilePointer() < dbFile.length()) {
+                                while (dbFile.getFilePointer()
+                                        < dbFile.length()) {
                                     String key = readUtil(dbFile);
                                     String value = readUtil(dbFile);
                                     allRecords.put(key, value);
@@ -145,18 +138,13 @@ public class DBTable implements Table/*, AutoCloseable*/ {
                         throw new IllegalStateException("Subdirectories' files "
                                     + "have wrong names, "
                                      + "expected(0.dat-15.dat)");
-                        //System.err.println("Subdirectories' files "
-                           //     + "have wrong names, "
-                           //     + "expected(0.dat-15.dat)");
-                        //throw new ExitException(1);
                     }
                 }
             } catch (NumberFormatException e) {
-                throw new IllegalStateException("Subdirectories' names are wrong, "
-                              + "expected(0.dir - 15.dir)");
-                //System.err.println("Subdirectories' names are wrong, "
-                  //      + "expected(0.dir - 15.dir)");
-                //throw new ExitException(1);
+                throw new
+                        IllegalStateException("Subdirectories' names "
+                        + "are wrong, "
+                        + "expected(0.dir - 15.dir)");
             }
         }
     }
@@ -172,8 +160,10 @@ public class DBTable implements Table/*, AutoCloseable*/ {
             String key = entry.getKey();
             String value = entry.getValue();
             try {
-                int nDirectory = Math.abs(key.getBytes("UTF-8")[0] % DIR_AMOUNT);
-                int nFile = Math.abs((key.getBytes("UTF-8")[0] / DIR_AMOUNT) % FILES_AMOUNT);
+                int nDirectory = Math.abs(key.getBytes("UTF-8")[0]
+                        % DIR_AMOUNT);
+                int nFile = Math.abs((key.getBytes("UTF-8")[0] / DIR_AMOUNT)
+                        % FILES_AMOUNT);
                 db[nDirectory][nFile].put(key, value);
             } catch (UnsupportedEncodingException e) {
                 System.err.println("Can't encode the record");
@@ -186,10 +176,6 @@ public class DBTable implements Table/*, AutoCloseable*/ {
                     Integer nDirectory = i;
                     Integer nFile = j;
                     Path newPath = dbPath.resolve(nDirectory.toString()+".dir");
-                    //String newPath = dbPath.toAbsolutePath().toString()
-                      //      + File.separator
-                        //    + nDirectory.toString()
-                          //  + ".dir";
                     File directory = newPath.toFile();
                     if (!directory.exists()) {
                         if (!directory.mkdir()) {
@@ -197,16 +183,13 @@ public class DBTable implements Table/*, AutoCloseable*/ {
                             throw new ExitException(1);
                         }
                     }
-                    //String newFilePath = directory.getAbsolutePath()
-                         //   + File.separator
-                           // + nFile.toString()
-                          //  + ".dat";
-                    Path newFilePath = directory.toPath().resolve(nFile.toString() + ".dat");
+                    Path newFilePath = directory.toPath().
+                            resolve(nFile.toString() + ".dat");
                     File file = newFilePath.toFile();
                     try {
                         file.createNewFile();
                     } catch (IOException | SecurityException e) {
-                        System.err.println(e);
+                        System.err.println(e.getMessage());
                         throw new ExitException(1);
                     }
                     try (RandomAccessFile dbFile = new
@@ -221,27 +204,19 @@ public class DBTable implements Table/*, AutoCloseable*/ {
                         }
                         dbFile.close();
                     } catch (IOException e) {
-                        System.err.println(e);
+                        System.err.println(e.getMessage());
                         throw new ExitException(1);
                     }
                 } else {
                     //Deleting empty files and directories.
                     Integer nDirectory = i;
                     Integer nFile = j;
-                    //String newPath = dbPath.toAbsolutePath().toString()
-                      //      + File.separator
-                        //    + nDirectory.toString()
-                          //  + ".dir";
                     Path newPath = dbPath.resolve(nDirectory.toString()+".dir");
                     File directory = newPath.toFile();
                     if (directory.exists()) {
-                        //String newFilePath = directory.getAbsolutePath()
-                          //      + File.separator
-                            //    + nFile.toString()
-                              //  + ".dat";
-                        Path newFilePath = directory.toPath().resolve(nFile.toString() + ".dat");
+                        Path newFilePath = directory.toPath().
+                                resolve(nFile.toString() + ".dat");
                         File file = newFilePath.toFile();
-                        //File file = new File(newFilePath);
                         try {
                             Files.deleteIfExists(file.toPath());
                         } catch (IOException | SecurityException e) {
@@ -266,10 +241,9 @@ public class DBTable implements Table/*, AutoCloseable*/ {
             }
         }
     }
-// need check
-    public final void close() /*throws ExitException*/ {
+
+    public final void close() {
         commit();
-        //write(allRecords);
     }
 
     private void writeUtil(final String word,
@@ -278,7 +252,7 @@ public class DBTable implements Table/*, AutoCloseable*/ {
             dbFile.writeInt(word.getBytes("UTF-8").length);
             dbFile.write(word.getBytes("UTF-8"));
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
             throw new ExitException(1);
         }
     }
@@ -307,23 +281,24 @@ public class DBTable implements Table/*, AutoCloseable*/ {
     @Override
     public String put(String key, String value) {
         if (key == null || value == null ) {
-            throw new IllegalArgumentException("Key and/or value is a null-string");
+            throw new
+                    IllegalArgumentException("Key and/or value "
+                    + "is a null-string");
         }
-        if (sessionChanges.containsKey(key)) { // The record with key has already been changed or added during the session.
+        /*
+        The record with key has already been changed
+        or added during the session.
+        */
+        if (sessionChanges.containsKey(key)) {
             return sessionChanges.put(key, value);
-            /*if (sessionChanges.get(key) == null) { // The record with key has been deleted during the session.
-                sessionChanges.put(key, value);
-                return null;
-            }
-            else { //Value of the record associated with key has been changed during the session.
-                return sessionChanges.put(key, value);
-            }*/
         }
-        if (allRecords.containsKey(key)) { // The record with key hasn't been changed yet.
+        // The record with key hasn't been changed yet.
+        if (allRecords.containsKey(key)) {
            sessionChanges.put(key, value);
            return allRecords.get(key);
         }
-        return sessionChanges.put(key, value); // Absolutely new record.
+        // Absolutely new record
+        return sessionChanges.put(key, value);
     }
 
     @Override
@@ -332,10 +307,15 @@ public class DBTable implements Table/*, AutoCloseable*/ {
             throw new IllegalArgumentException("Key is a null-string");
         }
         if (sessionChanges.containsKey(key)) {
-            if (sessionChanges.get(key) == null) { // The record with key has been deleted during the session.
+            // The record with key has been deleted during the session.
+            if (sessionChanges.get(key) == null) {
                 return null;
             } else {
-                return sessionChanges.put(key, null);// The record with key has already been changed or added during the session.
+                /*
+                The record with key has already been changed
+                or added during the session.
+                */
+                return sessionChanges.put(key, null);
             }
         } else {
             if (allRecords.containsKey(key)) {
@@ -352,7 +332,8 @@ public class DBTable implements Table/*, AutoCloseable*/ {
         keyList.addAll(allRecords.keySet());
         for (Map.Entry<String, String> entry: sessionChanges.entrySet()) {
             if (keyList.contains(entry.getKey())) {
-                if (entry.getValue() == null) { // If the record was deleted during the session.
+                // If the record was deleted during the session.
+                if (entry.getValue() == null) {
                     keyList.remove(entry.getKey());
                 }
             } else {
@@ -372,11 +353,14 @@ public class DBTable implements Table/*, AutoCloseable*/ {
         tempStorage.putAll(allRecords);
         for (Map.Entry<String, String> entry: sessionChanges.entrySet()) {
             if (tempStorage.containsKey(entry.getKey())) {
-                if (entry.getValue() == null) { // If the record was deleted during the session.
+                // If the record was deleted during the session.
+                if (entry.getValue() == null) {
                     tempStorage.remove(entry.getKey());
                 }
                 else {
-                    tempStorage.put(entry.getKey(),entry.getValue()); //If the value was changed during the session.
+                    //If the value was changed during the session.
+                    tempStorage.put(entry.getKey(),
+                            entry.getValue());
                 }
             } else {
                 if(entry.getValue() != null) {
@@ -408,7 +392,8 @@ public class DBTable implements Table/*, AutoCloseable*/ {
         keyList.addAll(allRecords.keySet());
         for (Map.Entry<String, String> entry: sessionChanges.entrySet()) {
             if (keyList.contains(entry.getKey())) {
-                if (entry.getValue() == null) { // If the record was deleted during the session.
+                // If the record was deleted during the session.
+                if (entry.getValue() == null) {
                     keyList.remove(entry.getKey());
                 }
             } else {
