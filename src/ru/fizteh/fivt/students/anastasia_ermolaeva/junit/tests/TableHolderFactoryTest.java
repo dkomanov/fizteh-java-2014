@@ -12,18 +12,22 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertTrue;
 
 public class TableHolderFactoryTest {
-    private final Path testDirectory = Paths.get(System.getProperty("fizteh.db.dir"));
+    private final Path testDirectory
+            = Paths.get(System.getProperty("fizteh.db.dir"));
 
     @Before
-    public void setUp() throws Exception { testDirectory.toFile().mkdir(); }
+    public final void setUp()
+            throws Exception {
+        testDirectory.toFile().mkdir();
+    }
     @Test(expected = IllegalArgumentException.class)
-    public void testTableHolderFactoryThrowsIllegalArgumentExceptionCreatedNullTableHolder() {
+    public final void testFactoryThrowsExceptionCreatedNullTableHolder() {
         TableProviderFactory test = new TableHolderFactory();
         test.create(null);
     }
 
     @Test
-    public void testTableHolderFactoryCreatedNewValidTableHolder() {
+    public final void testTableHolderFactoryCreatedNewValidTableHolder() {
         TableProviderFactory test = new TableHolderFactory();
         TableProvider testProvider = test.create(testDirectory.toString());
         testProvider.createTable("MyTable");
@@ -31,7 +35,7 @@ public class TableHolderFactoryTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public final void tearDown() throws Exception {
         for (File currentFile : testDirectory.toFile().listFiles()) {
             if (currentFile.isDirectory()) {
                 for (File subFile : currentFile.listFiles()) {
