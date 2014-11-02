@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.tests;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.Command;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Command;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Interpreter;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.TableState;
