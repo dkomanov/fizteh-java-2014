@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
@@ -8,9 +9,13 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FmCommandRemove;
+import ru.fizteh.fivt.students.ZatsepinMikhail.shell.Command;
 
-public class MFileHashMap {
+public class MFileHashMap implements TableProvider {
     private String dataBaseDirectory;
     private HashMap<String, FileMap> tables;
     private FileMap currentTable;
@@ -18,6 +23,56 @@ public class MFileHashMap {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
     }
+
+    public Table getTable(String name) throws IllegalArgumentException {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (tables.containsKey(name)) {
+            return tables.get(name);
+        } else {
+            return null;
+        }
+    }
+
+    public Table createTable(String name) throws IllegalArgumentException {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (tables.containsKey(name)) {
+            return null;
+        } else {
+            Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
+            try {
+                Files.createDirectory(pathOfNewTable);
+                FileMap newTable = new FileMap(pathOfNewTable.toString());
+                tables.put(name, newTable);
+                return newTable;
+            } catch (IOException e) {
+                System.out.println(name + ": error while creating directory");
+                throw new IllegalArgumentException();
+            }
+        }
+    }
+
+    public void removeTable(String name) throws IllegalArgumentException, IllegalStateException {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (tables.containsKey(name)) {
+            String pathForRemoveTable = Paths.get(dataBaseDirectory, name).toString();
+            FmCommandRemove removeCommand = new FmCommandRemove();
+            String[] args = { "rm",
+                              "-r",
+                              pathForRemoveTable };
+            if (!removeCommand.run(currentTable, args)) {
+                throw new IllegalArgumentException();
+            }
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
 
     public void addTable(String tableName, FileMap newFileMap) {
         tables.put(tableName, newFileMap);
