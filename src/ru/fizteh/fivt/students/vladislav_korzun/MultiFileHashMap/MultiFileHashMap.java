@@ -9,15 +9,13 @@ public class MultiFileHashMap {
             Path dbdir = Paths.get(System.getProperty("fizteh.db.dir"));
             if (dbdir.toFile().exists()) {
                 if (dbdir.toFile().isDirectory()) {
-                    @SuppressWarnings("unused")
-                    Interpreter interpreter = new Interpreter(args, dbdir);
+                    new Interpreter(args, dbdir);
                 } else {   
                     throw new IllegalArgumentException();
                 }
             } else {
                 dbdir.toFile().mkdir();
-                @SuppressWarnings("unused")
-                Interpreter interpreter = new Interpreter(args, dbdir);
+                new Interpreter(args, dbdir);
             }
         } catch (IllegalArgumentException e) {
             System.err.println("Invalid path");

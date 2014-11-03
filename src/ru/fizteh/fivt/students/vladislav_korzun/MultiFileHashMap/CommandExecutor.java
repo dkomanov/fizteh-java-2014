@@ -4,13 +4,25 @@ import java.nio.file.Path;
 
 public class CommandExecutor {
         private Path dbdir;
-        private Path olddir;
+        private Path oldDirectory;
         private Table table;
         private MapCommands mapcommands;
         private FileManager db;
+        
+        private Boolean verify(String[] command, int desiredLength) throws Exception {
+            if (!oldDirectory.equals(dbdir)) {
+                if (command.length != desiredLength) {
+                    throw new Exception("Invalid number of arguments");
+                    
+                }
+                return true;
+            } else {
+                throw new Exception("no table"); 
+            }
+        }
         CommandExecutor(Path dbdirectory) {
             dbdir = dbdirectory;
-            olddir = dbdirectory;
+            oldDirectory = dbdirectory;
             table = new Table(dbdir);
             FileManager db = new FileManager();
             mapcommands = new MapCommands(db);
@@ -21,55 +33,32 @@ public class CommandExecutor {
         try {
             switch(command[0]) {
             case "put":
-                if (!olddir.equals(dbdir)) {
-                    if (command.length != 3) {
-                        throw new Exception("Invalid number of arguments");
-                    }
-                    key = command[1];
-                    value = command[2];
+                if (verify(command, 3)) {
                     mapcommands.put(key, value); 
-                } else {
-                    System.out.println("no table");
                 }
+                
                 break;
             case "get":
-                if (!olddir.equals(dbdir)) {
-                    if (command.length != 2) {
-                        throw new Exception("Invalid number of arguments");
-                    }
-                    key = command[1];
-                    mapcommands.get(key);
-                } else {
-                    System.out.println("no table");
+                if (verify(command, 2)) {
+                    mapcommands.get(key); 
                 }
                 break;
             case "remove":
-                if (!olddir.equals(dbdir)) {
-                    if (command.length != 2) {
-                        throw new Exception("Invalid number of arguments");
-                    }
-                    key = command[1];
-                    mapcommands.remove(key);
-                } else {
-                    System.out.println("no table");
+                if (verify(command, 2)) {
+                    mapcommands.remove(key); 
                 }
                 break;
             case "list": 
-                if (!olddir.equals(dbdir)) {
-                    if (command.length != 1) {
-                        throw new Exception("Invalid number of arguments");
-                    }
+                if (verify(command, 1)) {
                     mapcommands.list();
-                } else {
-                    System.out.println("no table");
                 }
                 break;
             case "exit":
                 if (command.length != 1) {
                     throw new Exception("Invalid number of arguments");
                 }
-                if (!olddir.equals(dbdir)) {
-                    mapcommands.exit(db, olddir);
+                if (!oldDirectory.equals(dbdir)) {
+                    mapcommands.exit(db, oldDirectory);
                 }
                 break;
             case "create":
@@ -84,7 +73,7 @@ public class CommandExecutor {
                     throw new Exception("Invalid number of arguments");
                 }
                 key = command[1];
-                table.drop(key, olddir, mapcommands.filemap);
+                table.drop(key, oldDirectory, mapcommands.filemap);
                 break;
             case "use":
                 if (command.length != 2) {
@@ -92,11 +81,11 @@ public class CommandExecutor {
                 }
                 key = command[1];
                 FileManager dbbuffer = new FileManager();
-                dbbuffer = table.use(key, olddir, mapcommands.filemap);
+                dbbuffer = table.use(key, oldDirectory, mapcommands.filemap);
                 if (dbbuffer != null) {
                     db = dbbuffer;
                     mapcommands = new MapCommands(db);
-                    olddir = dbdir.resolve(key);
+                    oldDirectory = dbdir.resolve(key);
                 }
                 break;
             case "show":
@@ -105,7 +94,7 @@ public class CommandExecutor {
                 }
                 switch(command[1]) {
                 case "tables": 
-                    table.showTables(olddir, mapcommands.filemap);
+                    table.showTables(oldDirectory, mapcommands.filemap);
                     break;
                 default:
                     System.out.println("Invalid command");

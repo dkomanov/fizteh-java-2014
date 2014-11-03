@@ -37,7 +37,6 @@ public class Interpreter {
         CommandExecutor cmd =  new CommandExecutor(dbdir);
         List<String[]> commands = new LinkedList<String[]>();
         Parser parser = new Parser();
-        @SuppressWarnings("resource")
         Scanner in = new Scanner(System.in);
         String[] command = null;
         String request = new String();
@@ -50,6 +49,7 @@ public class Interpreter {
                 cmd.executeCommands(command);
             }
         } while (!(command[0].equals("exit")));
+        in.close();
     }
 }
 

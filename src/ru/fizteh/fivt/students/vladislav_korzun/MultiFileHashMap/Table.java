@@ -30,16 +30,16 @@ public class Table {
         }
     }
     
-    void drop(String path, Path olddir, Map<String, String> filemap) {
+    void drop(String path, Path oldDirectory, Map<String, String> filemap) {
         try {
             Path tabledir = dir.resolve(path);
             if (!tabledir.toFile().exists()) {
                 System.out.println(path + " not exists");
             } else {
-                if (tabledir == olddir) {
+                if (tabledir == oldDirectory) {
                     FileManager filemanager = new FileManager();
                     filemanager.filemap = filemap;
-                    filemanager.writeTable(olddir);
+                    filemanager.writeTable(oldDirectory);
                 } else if (tabledir.toFile().isDirectory()) {
                     removedat(tabledir);
                     tabledir.toFile().delete();
@@ -66,7 +66,7 @@ public class Table {
         }
     }
     
-    FileManager use(String path, Path olddir, Map<String, String> filemap) {
+    FileManager use(String path, Path oldDirectory, Map<String, String> filemap) {
         try {
             Path tabledir = dir.resolve(path);
             
@@ -75,9 +75,9 @@ public class Table {
             } else {
                 if (tabledir.toFile().isDirectory()) {
                     FileManager filemanager = new FileManager();
-                    if (olddir != dir) {
+                    if (oldDirectory != dir) {
                         filemanager.filemap = filemap;
-                        filemanager.writeTable(olddir);
+                        filemanager.writeTable(oldDirectory);
                     }
                     filemanager.readTable(tabledir);
                     System.out.println("using " + path);
@@ -97,7 +97,7 @@ public class Table {
         return null;
     }
     
-    void showTables(Path olddir, Map<String, String> filemap) {
+    void showTables(Path oldDirectory, Map<String, String> filemap) {
         try {            
             if (!dir.toFile().exists()) {
                 System.out.println("Directory not exists");
@@ -108,7 +108,7 @@ public class Table {
                     for (int i = 0; i < tabledirs.length; i++) {
                         if (tabledirs[i].isDirectory()) {
                             System.out.print(tabledirs[i].getName() + " ");
-                            if (!tabledirs[i].getName().equals(olddir.toFile().getName())) {
+                            if (!tabledirs[i].getName().equals(oldDirectory.toFile().getName())) {
                                 filemanager.readTable(tabledirs[i].toPath());
                                 System.out.println(filemanager.filemap.size()); 
                             } else {
