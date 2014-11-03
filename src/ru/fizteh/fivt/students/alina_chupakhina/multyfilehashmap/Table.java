@@ -24,7 +24,7 @@ public class Table {
         getTable();
     }
 
-    public void remove() throws Exception {
+    public void rm() throws Exception {
         File[] dirs = this.table.listFiles();
         for (File dir : dirs) {
             if (!dir.isDirectory()) {
@@ -101,7 +101,7 @@ public class Table {
     private void putTable() throws Exception {
         String key;
         String value;
-        remove();
+        rm();
         for (Map.Entry<String, String> i : fm.entrySet()) {
             key = i.getKey();
             value = i.getValue();
