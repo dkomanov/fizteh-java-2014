@@ -11,9 +11,9 @@ public class Table {
     private File table;
     private Map<String, String> fm;
     private int numberOfElements;
-    private final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
+    private static final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
             = ": Invalid number of arguments";
-    private final int NUMBER_OF_PARTITIONS = 16;
+    private static final int NUMBER_OF_PARTITIONS = 16;
 
     Table(String name, String pathname) throws Exception {
         fm = new TreeMap<>();
@@ -39,12 +39,12 @@ public class Table {
             for (File dat : dats) {
                 if (!dat.delete()) {
                     System.out.println("Error while reading table " + tableName);
-                };
+                }
 
             }
             if (!dir.delete()) {
                 System.out.println("Error while reading table " + tableName);
-            };
+            }
         }
     }
 
@@ -77,7 +77,8 @@ public class Table {
                         numberOfElements++;
                         fm.put(key, value);
                         if (!(nDirectory ==  Math.abs(key.getBytes("UTF-8")[0] % NUMBER_OF_PARTITIONS))
-                                || !(nFile == Math.abs((key.getBytes("UTF-8")[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS))) {
+                                || !(nFile == Math.abs((key.getBytes("UTF-8")[0] 
+                                / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS))) {
                             System.err.println("Error while reading table " + tableName);
                             System.exit(-1);
                         }
