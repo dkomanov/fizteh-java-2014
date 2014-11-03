@@ -20,7 +20,6 @@ import static org.junit.Assert.*;
 public class TableTest {
     String key;
     String value;
-    String empty;
     String newValue;
     String providerDirectory;
     String tableName;
@@ -60,6 +59,14 @@ public class TableTest {
         assertTrue(testTable.get(key).equals(newValue));
         testTable.remove(key);
         assertNull(testTable.get(key));
+        testTable.rollback();
+
+        testTable.put(key, value);
+        testTable.commit();
+        testTable.put(key, newValue);
+        assertTrue(testTable.get(key).equals(newValue));
+        testTable.remove(key);
+        assertNull(testTable.get(key));
     }
 
     @Test
@@ -67,6 +74,14 @@ public class TableTest {
         assertNull(testTable.remove(key));
         testTable.put(key, value);
         assertTrue(testTable.remove(key).equals(value));
+
+        testTable.rollback();
+        testTable.put(key, value);
+        assertTrue(testTable.remove(key).equals(value));
+        testTable.put(key, value);
+        testTable.commit();
+        assertTrue(testTable.remove(key).equals(value));
+        assertNull(testTable.remove(key));
     }
 
     @Test
@@ -78,6 +93,24 @@ public class TableTest {
         assertTrue(testTable.get(key).equals(newValue));
         testTable.remove(key);
         assertNull(testTable.put(key, value));
+
+        String keyForCommit = "keyCM";
+        String valueForCommit = "vakueCM";
+        int size = 5;
+        for (int i = 0; i < size; ++i) {
+            assertNull(testTable.put(keyForCommit + i, valueForCommit + i));
+        }
+        testTable.commit();
+        for (int i = 0; i < size; ++i) {
+            assertTrue(testTable.get(keyForCommit + i).equals(valueForCommit + i));
+        }
+
+        String freshValue = "addValue";
+        testTable.rollback();
+        testTable.remove(keyForCommit + 1);
+        assertNull(testTable.put(keyForCommit + 1, valueForCommit + 1));
+        assertTrue(testTable.put(keyForCommit + 2, freshValue).equals(valueForCommit + 2));
+        assertTrue(testTable.put(keyForCommit + 2, freshValue + "*").equals(freshValue));
     }
 
     @Test
@@ -121,6 +154,8 @@ public class TableTest {
         assertTrue(testTable.rollback() == 0);
         testTable.put(key, newValue);
         testTable.remove(key);
+        assertTrue(testTable.commit() == size - 2);
+        testTable.put(key + 1, newValue + 2);
         assertTrue(testTable.commit() == size - 2);
     }
 

@@ -103,7 +103,13 @@ public class FileMap implements Table {
         if (addedData.containsKey(key)) {
             return addedData.put(key, value);
         }
-        addedData.put(key, value);
+
+        if (stableData.containsKey(key)) {
+            changedData.put(key, value);
+        } else {
+            addedData.put(key, value);
+        }
+
         if (wasDeleted) {
             return null;
         } else {
