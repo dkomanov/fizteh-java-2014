@@ -8,6 +8,7 @@ import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap.MFileHashMapFactory;
 import ru.fizteh.fivt.students.ZatsepinMikhail.shell.FileUtils;
 
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
@@ -51,7 +52,27 @@ public class TableProviderTest {
     }
 
     @Test
-    public void testRemoveTable() throws Exception {
+    public void testCreateTableDirNotExists() throws Exception {
+        FileUtils.rmdir(Paths.get(providerDirectory, tableName));
+        assertNotNull(provider.createTable(tableName));
+    }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateTableNull() throws Exception {
+        provider.createTable(null);
+    }
+
+    @Test
+    public void testRemoveTableDirExists() throws Exception {
+        provider.createTable(tableName);
+        provider.removeTable(tableName);
+        assertNull(provider.getTable(tableName));
+        assertTrue(!Files.exists(Paths.get(providerDirectory, tableName)));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRemoveTableDirNotExists() throws Exception {
+        FileUtils.rmdir(Paths.get(providerDirectory, tableName));
+        provider.removeTable(tableName);
     }
 }

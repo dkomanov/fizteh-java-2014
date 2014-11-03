@@ -13,6 +13,7 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.shell.CommandRm;
+import ru.fizteh.fivt.students.ZatsepinMikhail.shell.FileUtils;
 
 public class MFileHashMap implements TableProvider {
     private String dataBaseDirectory;
@@ -48,7 +49,6 @@ public class MFileHashMap implements TableProvider {
                 tables.put(name, newTable);
                 return newTable;
             } catch (IOException e) {
-                System.out.println(name + ": error while creating directory");
                 throw new IllegalArgumentException();
             }
         }
@@ -59,12 +59,9 @@ public class MFileHashMap implements TableProvider {
             throw new IllegalArgumentException();
         }
         if (tables.containsKey(name)) {
-            String pathForRemoveTable = Paths.get(dataBaseDirectory, name).toString();
-            CommandRm removeCommand = new CommandRm();
-            String[] args = {"rm",
-                             "-r",
-                             pathForRemoveTable };
-            if (!removeCommand.run(args)) {
+            Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
+            tables.remove(name);
+            if (FileUtils.rmdir(pathForRemoveTable)) {
                 throw new IllegalArgumentException();
             }
         } else {

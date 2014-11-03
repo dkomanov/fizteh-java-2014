@@ -13,7 +13,7 @@ public class FileUtils {
     }
 
     public static boolean rmdir(Path newDirectory) {
-        CommandMkdir command = new CommandMkdir();
+        CommandRm command = new CommandRm();
         if (!Files.isDirectory(newDirectory) | !Files.exists(newDirectory)) {
             return false;
         }
@@ -25,7 +25,7 @@ public class FileUtils {
     }
 
     public static boolean rmfile(Path newDirectory) {
-        CommandMkdir command = new CommandMkdir();
+        CommandRm command = new CommandRm();
         if (!Files.exists(newDirectory)) {
             return false;
         }
