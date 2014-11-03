@@ -90,6 +90,9 @@ public final class Modesfilemap {
                 } else {
                     System.err.println(arg[0] + " " + arg[1]
                             + " is incorrect command");
+                    if (mode) {
+                        System.exit(-1);
+                    }
                 }
             } else {
                 argproblem = true;
@@ -139,6 +142,9 @@ public final class Modesfilemap {
         }
         if (argproblem) {
             System.err.println(arg[0] + ": wrong number of arguments");
+            if (mode) {
+                System.exit(-1);
+            }
         }
     }
 
