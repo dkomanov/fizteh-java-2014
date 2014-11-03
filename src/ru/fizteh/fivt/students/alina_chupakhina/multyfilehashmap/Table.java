@@ -6,25 +6,25 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class Table {
-    private String tablename;
+    private String tableName;
     private String path;
     private File table;
     private Map<String, String> fm;
     private int numberOfElements;
-    private static final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
+    private final String INVALID_NUMBER_OF_ARGUMENTS_MESSAGE
             = ": Invalid number of arguments";
-    private static final int MAGIC_NUMBER = 16;
+    private final int NUMBER_OF_PARTITIONS = 16;
 
     Table(String name, String pathname) throws Exception {
         fm = new TreeMap<>();
         numberOfElements = 0;
         path = pathname + File.separator + name;
         table = new File(path);
-        tablename = name;
+        tableName = name;
         getTable();
     }
 
-    public void rm() throws Exception {
+    public void remove() throws Exception {
         File[] dirs = this.table.listFiles();
         for (File dir : dirs) {
             if (!dir.isDirectory()) {
@@ -38,12 +38,13 @@ public class Table {
             }
             for (File dat : dats) {
                 if (!dat.delete()) {
-                    System.out.println("Error while reading table " + tablename);
-                }
+                    System.out.println("Error while reading table " + tableName);
+                };
+
             }
             if (!dir.delete()) {
-                System.out.println("Error while reading table " + tablename);
-            }
+                System.out.println("Error while reading table " + tableName);
+            };
         }
     }
 
@@ -71,19 +72,13 @@ public class Table {
                 boolean end = false;
                 while (!end) {
                     try {
-                        int length = file.readInt();
-                        byte[] bytes = new byte[length];
-                        file.readFully(bytes);
-                        key = new String(bytes, "UTF-8");
-                        length = file.readInt();
-                        bytes = new byte[length];
-                        file.readFully(bytes);
-                        value = new String(bytes, "UTF-8");
+                        key = readValue(file);
+                        value = readValue(file);
                         numberOfElements++;
                         fm.put(key, value);
-                        if (!(nDirectory ==  Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER))
-                                || !(nFile == Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER))) {
-                            System.err.println("Error while reading table " + tablename);
+                        if (!(nDirectory ==  Math.abs(key.getBytes("UTF-8")[0] % NUMBER_OF_PARTITIONS))
+                                || !(nFile == Math.abs((key.getBytes("UTF-8")[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS))) {
+                            System.err.println("Error while reading table " + tableName);
                             System.exit(-1);
                         }
                     } catch (IOException e) {
@@ -95,16 +90,23 @@ public class Table {
         }
     }
 
+    private String readValue(RandomAccessFile file) throws Exception {
+        int length = file.readInt();
+        byte[] bytes = new byte[length];
+        file.readFully(bytes);
+        String value = new String(bytes, "UTF-8");
+        return value;
+    }
 
     private void putTable() throws Exception {
         String key;
         String value;
-        rm();
+        remove();
         for (Map.Entry<String, String> i : fm.entrySet()) {
             key = i.getKey();
             value = i.getValue();
-            Integer ndirectory = Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER);
-            Integer nfile = Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER);
+            Integer ndirectory = Math.abs(key.getBytes("UTF-8")[0] % NUMBER_OF_PARTITIONS);
+            Integer nfile = Math.abs((key.getBytes("UTF-8")[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS);
             String pathToDir = path + File.separator + ndirectory.toString()
                     + ".dir";
             //System.out.println(pathToDir);
@@ -120,7 +122,7 @@ public class Table {
                 file.createNewFile();
             }
             DataOutputStream outStream  = new DataOutputStream(
-                    new FileOutputStream(pathToFile));
+                    new FileOutputStream(pathToFile, true));
             byte[] byteWord = key.getBytes("UTF-8");
             outStream.writeInt(byteWord.length);
             outStream.write(byteWord);
@@ -182,7 +184,6 @@ public class Table {
                 System.out.print(", ");
             }
         }
-        System.out.println();
     }
 
     public void checkNumOfArgs(String operation,
@@ -198,12 +199,13 @@ public class Table {
     }
 
     public String getName() {
-        return tablename;
+        return tableName;
     }
 
     public Integer getNumberOfElements() {
         return numberOfElements;
     }
 }
+
 
 
