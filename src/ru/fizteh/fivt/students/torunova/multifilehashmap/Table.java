@@ -14,7 +14,7 @@ import java.util.Set;
  * Created by nastya on 19.10.14.
  */
 public class Table {
-    public static final int MAGIC_NUMBER = 16;
+    public static final int NUMBER_OF_PARTITIONS = 16;
     String tableName;
     Map<File, FileMap> files = new HashMap<>();
     int numberOfEntries;
@@ -29,10 +29,10 @@ public class Table {
         File nextDir;
         File nextFile;
         for (int i = 0; i < 16; i++) {
-            nextDir = new File(table, String.valueOf(i) + ".dir").getAbsoluteFile();
+            nextDir = new File(table, i + ".dir").getAbsoluteFile();
             if (nextDir.isDirectory()) {
                 for (int j = 0; j < 16; j++) {
-                    nextFile = new File(nextDir, String.valueOf(j) + ".dat");
+                    nextFile = new File(nextDir, j + ".dat");
                     if (nextFile.isFile()) {
                         FileMap fm = new FileMap(nextFile.getAbsolutePath());
                         if (fm.isEmpty()) {
@@ -125,7 +125,7 @@ public class Table {
 
     private String getDirName(String key) {
         int hashcode = key.hashCode();
-        int ndirectory = hashcode % MAGIC_NUMBER;
+        int ndirectory = hashcode % NUMBER_OF_PARTITIONS;
         StringBuilder builder = new StringBuilder();
         builder.append(ndirectory).append(".dir");
         return builder.toString();
@@ -133,7 +133,7 @@ public class Table {
 
     private String getFileName(String key) {
         int hashcode = key.hashCode();
-        int nfile = hashcode / MAGIC_NUMBER % MAGIC_NUMBER;
+        int nfile = hashcode / NUMBER_OF_PARTITIONS % NUMBER_OF_PARTITIONS;
         StringBuilder builder = new StringBuilder();
         builder.append(nfile).append(".dat");
         return  builder.toString();

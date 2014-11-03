@@ -106,15 +106,15 @@ public class  Database {
     /**
      * removes directory.
      *
-     * @param dir - directory name.
+     * @param dirName - directory name.
      */
-    private  boolean removeRecursive(final String dir) {
-        File dIr = new File(dir).getAbsoluteFile();
-        if (dIr.isDirectory()) {
-            if (dir.equals(System.getProperty("user.dir"))) {
-                System.setProperty("user.dir", dIr.getParent());
+    private  boolean removeRecursive(final String dirName) {
+        File dirFile = new File(dirName).getAbsoluteFile();
+        if (dirFile.isDirectory()) {
+            if (dirName.equals(System.getProperty("user.dir"))) {
+                System.setProperty("user.dir", dirFile.getParent());
             }
-            File[] content = dIr.listFiles();
+            File[] content = dirFile.listFiles();
             for (File item:content) {
                 if (item.isDirectory()) {
                     if (!removeRecursive(item.getAbsolutePath())) {
@@ -126,7 +126,7 @@ public class  Database {
                     }
                 }
             }
-            if (!dIr.delete()) {
+            if (!dirFile.delete()) {
                 return false;
             }
         } else {
