@@ -5,10 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class MultiFile {
-
     public HashMap<String, Integer> tableNames = null;
     public String fileMapPath;
-
     public static void main(String[] args) {
         MultiFile multiFileHashMap = new MultiFile();
         try {
@@ -21,7 +19,6 @@ public class MultiFile {
             System.exit(1);
         }
     }
-
     private boolean checkTable(String name) {
         File dircheck = new File(fileMapPath + File.separator + name);
         if (!dircheck.exists() || !dircheck.isDirectory()) {
@@ -54,7 +51,7 @@ public class MultiFile {
             try {
                 value = reader.readDataFromFile().size();
             } catch (IOException e) {
-                System.err.println("bad reader");
+                e.printStackTrace();
             }
             tableNames.put(table.getName(), value);
         }
@@ -72,4 +69,5 @@ public class MultiFile {
         }
         initBase();
     }
+
 }

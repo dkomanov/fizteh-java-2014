@@ -1,25 +1,30 @@
 package ru.fizteh.fivt.students.artem_gritsay.MultiFile;
 
-import java.io.*;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Set;
 
 public class Launcher {
-
-    private boolean exitFlag = false;
+    private boolean exitFlag;
     private HashMap<String, Integer> tableNames;
-    private PrintStream printStream = System.out;
-    private HashMap<String, String>[][] keysPath = null;
+    private PrintStream printStream;
+    private HashMap<String, String>[][] keysPath;
     private String parentDir;
-    private String currentTable = null;
+    private String currentTable;
     private MultiReader reader;
     private MultiWrite writer;
-
-
     private boolean exec(InputStream inputStream, boolean isPackage) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
         while (true) {
+            System.out.print("$ ");
             String request = bufferedReader.readLine();
             if (request == null) {
                 writeData();
@@ -79,8 +84,12 @@ public class Launcher {
     }
 
     public Launcher(HashMap<String, Integer> tables, String path) {
+        exitFlag = false;
         tableNames = tables;
         parentDir = path;
+        printStream = System.out;
+        keysPath = null;
+        currentTable = null;
     }
 
     public boolean launch(String[] arguments) throws IOException {
@@ -252,7 +261,7 @@ public class Launcher {
             }
             return true;
         } catch (SecurityException e) {
-            System.err.println("Security exeption");
+            e.printStackTrace();
         }
         return false;
     }

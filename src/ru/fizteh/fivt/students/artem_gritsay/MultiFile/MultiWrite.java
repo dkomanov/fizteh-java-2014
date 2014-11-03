@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 
-
 public class MultiWrite {
     private String fileMapPath;
 
@@ -26,7 +25,5 @@ public class MultiWrite {
         dataOutputStream.writeInt(byteWord.length);
         dataOutputStream.write(byteWord);
     }
-
-
 
 }

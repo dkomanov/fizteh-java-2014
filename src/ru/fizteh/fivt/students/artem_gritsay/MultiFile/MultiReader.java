@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public class MultiReader {
-
     private String fileMapPath;
 
     public MultiReader(String path) {
+
         fileMapPath = path;
     }
 
@@ -33,7 +33,7 @@ public class MultiReader {
         try {
             dataInputStream.readFully(bytes, 1, 3);
         } catch (EOFException e) {
-            throw new IOException("Something goes wrong");
+            throw new IOException(e.getMessage());
         }
         int length = ByteBuffer.wrap(bytes).getInt();
         if (length < 0) {
@@ -44,7 +44,7 @@ public class MultiReader {
             try {
                 byteArrayOutputStream.write(dataInputStream.readByte());
             } catch (EOFException e) {
-                throw new IOException("Something goes wrong");
+                throw new IOException(e.getMessage());
             }
         }
         return new String(byteArrayOutputStream.toByteArray(), "UTF-8");
