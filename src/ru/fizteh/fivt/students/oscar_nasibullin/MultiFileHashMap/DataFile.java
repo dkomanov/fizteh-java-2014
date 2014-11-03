@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.oscar_nasibullin.MultiFileHashMap;
 import java.io.*;
 import java.util.*;
 
-public class DataFile implements Map<String,String> , AutoCloseable{
+public class DataFile implements Map<String, String> , AutoCloseable{
     private final Map<String, String> getCache;
     private final Map<String, String> putCache;
     private final DataFileHasher datHash ;
