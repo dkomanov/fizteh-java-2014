@@ -198,8 +198,9 @@ public class DataFile { // Interacts with .dat file.
             throw new IllegalArgumentException("Error: key == null");
         }
         try {
-            if (!(folderFileIndexes.folderIndex == Math.abs(key.getBytes("UTF-8")[0] % TableManager.NUMBER_OF_PARTITIONS)
-                    && folderFileIndexes.fileIndex == Math.abs((key.getBytes("UTF-8")[0] / TableManager.NUMBER_OF_PARTITIONS)
+            if (!(folderFileIndexes.folderIndex == Math.abs(key.getBytes("UTF-8")[0]
+                    % TableManager.NUMBER_OF_PARTITIONS) && folderFileIndexes.fileIndex
+                    == Math.abs((key.getBytes("UTF-8")[0] / TableManager.NUMBER_OF_PARTITIONS)
                     % TableManager.NUMBER_OF_PARTITIONS))) {
                 throw new DatabaseCorruptedException("Wrong key in file " + filePath.toString());
             }

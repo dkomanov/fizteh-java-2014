@@ -132,7 +132,8 @@ class Coordinates implements Comparable<Coordinates> {
         }
         try {
             folderIndex = Math.abs(key.getBytes("UTF-8")[0] % TableManager.NUMBER_OF_PARTITIONS);
-            fileIndex = Math.abs((key.getBytes("UTF-8")[0] / TableManager.NUMBER_OF_PARTITIONS) % TableManager.NUMBER_OF_PARTITIONS);
+            fileIndex = Math.abs((key.getBytes("UTF-8")[0] / TableManager.NUMBER_OF_PARTITIONS)
+                    % TableManager.NUMBER_OF_PARTITIONS);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException("Bad key is given to constructor of Coordinates");
         }
