@@ -153,6 +153,10 @@ public class FileMap implements Table {
         return keyList;
     }
 
+    public int getNumberOfUncommitedChanges() {
+        return addedData.size() + changedData.size() + removedData.size();
+    }
+
     public boolean init() {
         String[] listOfDirectories = new File(directoryOfTable).list();
         if (listOfDirectories == null) {
