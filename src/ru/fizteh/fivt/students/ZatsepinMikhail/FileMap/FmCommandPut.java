@@ -14,10 +14,8 @@ public class FmCommandPut extends CommandFileMap {
         String oldValue = myFileMap.put(args[1], args[2]);
         if (oldValue != null) {
             System.out.println("overwrite\n" + oldValue);
-            myFileMap.load(args[1], false);
         } else {
             System.out.println("new");
-            myFileMap.load(args[1], true);
         }
         return true;
     }

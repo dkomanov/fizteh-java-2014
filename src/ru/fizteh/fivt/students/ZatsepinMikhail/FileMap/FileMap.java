@@ -34,6 +34,11 @@ public class FileMap implements Table {
         return result;
     }
 
+    private void clearStaff() {
+        removedData.clear();
+        addedData.clear();
+        changedData.clear();
+    }
 
     public FileMap(String newDirectoryFile) {
         directoryOfTable = newDirectoryFile;
@@ -87,8 +92,10 @@ public class FileMap implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         }
+        boolean wasDeleted = false;
         if (removedData.contains(key)) {
             removedData.remove(key);
+            wasDeleted = true;
         }
         if (changedData.containsKey(key)) {
             return changedData.put(key, value);
@@ -97,7 +104,11 @@ public class FileMap implements Table {
             return addedData.put(key, value);
         }
         addedData.put(key, value);
-        return stableData.get(key);
+        if (wasDeleted) {
+            return null;
+        } else {
+            return stableData.get(key);
+        }
     }
 
     public Set<String> keySet() {
@@ -111,9 +122,7 @@ public class FileMap implements Table {
     public int rollback() {
         //tmp decision:
         int result = changedData.size() + removedData.size() + addedData.size();
-        addedData.clear();
-        changedData.clear();
-        removedData.clear();
+        clearStaff();
         return result;
     }
 
@@ -138,6 +147,7 @@ public class FileMap implements Table {
             }
         }
 
+        clearStaff();
         if (allRight) {
             return result;
         } else {

@@ -17,7 +17,6 @@ public class FmCommandRemove extends CommandFileMap {
         } else {
             System.out.println("not found");
         }
-        myFileMap.load(args[1], false);
         return true;
     }
 }
