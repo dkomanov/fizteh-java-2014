@@ -93,9 +93,11 @@ public class FileManager {
         Map<String, String> buffer = new TreeMap<String, String>();
         removedat(tabledir); 
         Set<String> keys = filemap.keySet();
+        int numberDirectory = 16;
+        int numberFile = 16;
         try {
-            for (int i = 0; i < 16; i++) {
-                for (int j = 0; j < 16; j++) {
+            for (int i = 0; i < numberDirectory; i++) {
+                for (int j = 0; j < numberFile; j++) {
                     for (String key : keys) {
                         byte bt = key.getBytes("UTF-8")[0];
                         int ndirectory = Math.abs(bt % 16);
@@ -105,9 +107,9 @@ public class FileManager {
                         }
                     }
                     if (!buffer.isEmpty()) {
-                        Integer nd = i;
-                        Integer nf = j;
-                        String path = new String(nd.toString() + ".dir");
+                        Integer newDirectory = i;
+                        Integer newFile = j;
+                        String path = new String(newDirectory.toString() + ".dir");
                         
                         File dbdir = new File(tabledir.resolve(path).toString());
                         if (!dbdir.exists()) {
@@ -115,7 +117,7 @@ public class FileManager {
                                 throw new IOException("Can't create directory");
                             }
                         }
-                        path = new String(nf.toString() + ".dat");
+                        path = new String(newFile.toString() + ".dat");
                         File dbfile = new File(dbdir.toPath().resolve(path).toString());
                         if (!dbfile.exists()) {
                             if (!dbfile.createNewFile()) {
