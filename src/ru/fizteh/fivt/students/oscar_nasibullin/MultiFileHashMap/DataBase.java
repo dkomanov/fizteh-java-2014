@@ -17,7 +17,7 @@ public class DataBase {
         usingTable = "";
 
         String[] tablesNames = Paths.get(System.getProperty("fizteh.db.dir")).toFile().list();
-        for(String newTableName : tablesNames ) {
+        for (String newTableName : tablesNames) {
             List<String> args = new ArrayList<>();
             args.add("create");
             args.add(newTableName);
@@ -70,8 +70,9 @@ public class DataBase {
         }
         String rezultMessage = "";
         if (tables.containsKey(args.get(1))) {
-            if(tables.containsKey(usingTable))
+            if (tables.containsKey(usingTable)) {
                 tables.get(usingTable).close();
+            }
             usingTable = args.get(1);
             tables.get(usingTable).open();
             rezultMessage = "using " + usingTable;
@@ -89,11 +90,13 @@ public class DataBase {
         }
         String rezultMessage = "";
         for (Map.Entry<String, Table> entry : tables.entrySet()) {
-            if(!entry.getValue().name.equals(usingTable))
+            if (!entry.getValue().name.equals(usingTable)) {
                 entry.getValue().open();
-            rezultMessage += entry.getValue().name +  " " + entry.getValue().size() +"\n";
-            if(!entry.getValue().name.equals(usingTable))
+            }
+            rezultMessage += entry.getValue().name +  " " + entry.getValue().size() + "\n";
+            if (!entry.getValue().name.equals(usingTable)) {
                 entry.getValue().close();
+            }
         }
         return rezultMessage;
     }

@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.oscar_nasibullin.MultiFileHashMap;
 
 
 import java.io.*;
-import java.lang.String;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,8 @@ public class Table  {
 
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
-                DataFileHasher hasher = new DataFileHasher(i,j);
-                DataFile newDataFile = new DataFile(tablePath ,hasher);
+                DataFileHasher hasher = new DataFileHasher(i, j);
+                DataFile newDataFile = new DataFile(tablePath, hasher);
                 datFiles.put(hasher, newDataFile);
             }
         }
@@ -102,14 +101,15 @@ public class Table  {
         boolean firstWord = true;
         String rezultMessage = "";
 
-        for (Map.Entry<DataFileHasher, DataFile> dataEntry : datFiles.entrySet())
+        for (Map.Entry<DataFileHasher, DataFile> dataEntry : datFiles.entrySet()) {
 
             for (Map.Entry<String, String> entry : dataEntry.getValue().entrySet()) {
-            if (firstWord) {
-                rezultMessage = entry.getKey();
-                firstWord = false;
-            } else {
-                rezultMessage += ", " + entry.getKey();
+                if (firstWord) {
+                    rezultMessage = entry.getKey();
+                    firstWord = false;
+                } else {
+                    rezultMessage += ", " + entry.getKey();
+                }
             }
         }
         return rezultMessage;
@@ -126,14 +126,17 @@ public class Table  {
     public void clear() {
         String tablePath = System.getProperty("fizteh.db.dir") + "/" + name;
         File[] folders = Paths.get(tablePath).toFile().listFiles();
-        if (folders == null)
+        if (folders == null) {
             return;
+        }
         for (File folder : folders) {
             if (folder.isDirectory()) {
                 File[] files = folder.listFiles();
-                if (files != null)
-                    for (File file : files)
+                if (files != null) {
+                    for (File file : files) {
                         file.delete();
+                    }
+                }
             }
             folder.delete();
         }

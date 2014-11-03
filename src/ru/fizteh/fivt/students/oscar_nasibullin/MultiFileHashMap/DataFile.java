@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.oscar_nasibullin.MultiFileHashMap;
 import java.io.*;
 import java.util.*;
 
-public class DataFile implements Map<String,String>, AutoCloseable{
+public class DataFile implements Map<String,String> , AutoCloseable{
     private final Map<String, String> getCache;
     private final Map<String, String> putCache;
     private final DataFileHasher datHash ;
@@ -24,12 +24,12 @@ public class DataFile implements Map<String,String>, AutoCloseable{
     }
 
 
-    private  boolean DataFileExists() throws Exception {
+    private  boolean dataFileExists() throws Exception {
         if (datFile.exists()) {
-            if(datFile.isDirectory()) {
+            if (datFile.isDirectory()) {
                 throw new Exception("Expected .dat file, found directory");
             }
-            if(!datFile.isFile()) {
+            if (!datFile.isFile()) {
                 throw new Exception(datFile.getName() + "is not a file or corrupted");
             }
             return true;
@@ -47,7 +47,7 @@ public class DataFile implements Map<String,String>, AutoCloseable{
         byte b;
         int bytesCounter = 0;
         int firstOffset = -1;
-        if(!DataFileExists()) {
+        if (!dataFileExists()) {
             return;
         }
 
@@ -56,7 +56,7 @@ public class DataFile implements Map<String,String>, AutoCloseable{
                 b = datRAFile.readByte();
                 bytesCounter++;
                 bytesBuffer.write(b);
-                if(!datHash.Contains(b)) {
+                if (!datHash.contains(b)) {
                     throw new Exception(datFile.getName() + " corrupted.");
                 }
 
@@ -96,7 +96,7 @@ public class DataFile implements Map<String,String>, AutoCloseable{
     }
     private void exportData() throws Exception {
         int offset = 0;
-        if(!DataFileExists()) {
+        if (!dataFileExists()) {
             datFile.getParentFile().mkdir();
             datFile.createNewFile();
         }
@@ -119,7 +119,7 @@ public class DataFile implements Map<String,String>, AutoCloseable{
 
     public void commit() {
         for (Map.Entry<String, String> entry : putCache.entrySet()) {
-            if(getCache.containsKey(entry.getKey())) {
+            if (getCache.containsKey(entry.getKey())) {
                 getCache.remove(entry.getKey());
             }
             getCache.put(entry.getKey(), entry.getValue());
@@ -149,9 +149,9 @@ public class DataFile implements Map<String,String>, AutoCloseable{
 
     @Override
     public String get(Object key) {
-        if(putCache.containsKey(key)) {
+        if (putCache.containsKey(key)) {
             return putCache.get(key);
-        } else if(getCache.containsKey(key)) {
+        } else if (getCache.containsKey(key)) {
             return getCache.get(key);
         }
         return null;
@@ -159,14 +159,15 @@ public class DataFile implements Map<String,String>, AutoCloseable{
 
     @Override
     public String put(String key, String value) {
-        return putCache.put(key,value);
+        return putCache.put(key, value);
     }
 
     @Override
     public String remove(Object key) {
-        if(putCache.containsKey(key)) {
+        if (putCache.containsKey(key)) {
             putCache.remove(key);
-        }  if(getCache.containsKey(key)) {
+        }
+        if (getCache.containsKey(key)) {
             getCache.remove(key);
         }
         return null;
@@ -201,7 +202,7 @@ public class DataFile implements Map<String,String>, AutoCloseable{
     @Override
     public void close() throws Exception {
         commit();
-        if(!getCache.isEmpty()) {
+        if (!getCache.isEmpty()) {
             exportData();
             putCache.clear();
             getCache.clear();
