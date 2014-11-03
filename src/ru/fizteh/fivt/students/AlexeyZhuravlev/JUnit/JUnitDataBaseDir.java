@@ -10,7 +10,7 @@ import java.util.Map;
  * @author AlexeyZhuravlev
  */
 public class JUnitDataBaseDir {
-    HashMap<String, HybridTable> tables;
+    public HashMap<String, HybridTable> tables;
     public DataBaseDir usualDbDir;
 
     public JUnitDataBaseDir(String path) throws Exception {
@@ -20,6 +20,8 @@ public class JUnitDataBaseDir {
             tables.put(entry.getKey(), new HybridTable(entry.getValue()));
         }
     }
+
+    public JUnitDataBaseDir() {}
 
     public HybridTable getUsing() {
         return tables.get(usualDbDir.using);

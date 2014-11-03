@@ -2,8 +2,6 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit;
 
 import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.Table;
 
-import java.util.HashMap;
-
 /**
  * @author AlexeyZhuravlev
  */
@@ -18,15 +16,13 @@ public class FancyTable extends Table {
         }
     }
 
-    private void addMap(int i, int j, HashMap<String, String> map) {
-        databases[i][j].data = new HashMap<>(map);
-    }
-
     public void importMap(Table other) {
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
-                if (other.databases[i][j] != null) {
-                    addMap(i, j, other.databases[i][j].data);
+                if (other.databases[i][j] == null) {
+                    databases[i][j] = new FancyDataBase();
+                } else {
+                    databases[i][j] = new FancyDataBase(other.databases[i][j].data);
                 }
             }
         }

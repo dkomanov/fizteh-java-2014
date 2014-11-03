@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 /**
@@ -14,11 +12,7 @@ public class CommitCommand extends JUnitCommand {
             System.out.println("no table");
         } else {
             PrintStream out = System.out;
-            System.setOut(new PrintStream(new OutputStream() {
-                @Override
-                public void write(int b) throws IOException {
-                }
-            }));
+            System.setOut(new PrintStream(new DummyOutputStream()));
             int num = base.getUsing().commit();
             System.setOut(out);
             System.out.println(num);

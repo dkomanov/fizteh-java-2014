@@ -9,6 +9,12 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.CreateCommand;
 public class JUnitCreateCommand extends JUnitCommand {
     private String tableName;
 
+    public JUnitCreateCommand(String passedTableName) {
+        tableName = passedTableName;
+    }
+
+    public JUnitCreateCommand() {}
+
     @Override
     public void execute(JUnitDataBaseDir base) throws Exception {
         Command command = new CreateCommand(tableName);

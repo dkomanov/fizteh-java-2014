@@ -13,6 +13,10 @@ public class FancyDataBase extends DataBase {
         data = new HashMap<>();
     }
 
+    public FancyDataBase(HashMap<String, String> passedData) {
+        data = new HashMap<>(passedData);
+    }
+
     public void sync() throws Exception{
     }
 }

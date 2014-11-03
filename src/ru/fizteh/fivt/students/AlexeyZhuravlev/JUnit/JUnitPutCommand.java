@@ -11,6 +11,13 @@ public class JUnitPutCommand extends JUnitCommand {
     String key;
     String value;
 
+    public JUnitPutCommand(String passedKey, String passedValue) {
+        key = passedKey;
+        value = passedValue;
+    }
+
+    public JUnitPutCommand() {}
+
     @Override
     public void execute(JUnitDataBaseDir base) throws Exception {
         Command put = new MultiPutCommand(key, value);

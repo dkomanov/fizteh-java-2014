@@ -10,6 +10,12 @@ public class JUnitRemoveCommand extends JUnitCommand {
 
     String key;
 
+    public JUnitRemoveCommand(String passedKey) {
+        key = passedKey;
+    }
+
+    public JUnitRemoveCommand() {}
+
     @Override
     public void execute(JUnitDataBaseDir base) throws Exception {
         if (base.getUsing() == null) {

@@ -9,6 +9,12 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.DropCommand;
 public class JUnitDropCommand extends JUnitCommand {
     String tableName;
 
+    public JUnitDropCommand(String passedTableName) {
+        tableName = passedTableName;
+    }
+
+    public JUnitDropCommand() {}
+
     @Override
     public void execute(JUnitDataBaseDir base) throws Exception {
         Command drop = new DropCommand(tableName);
