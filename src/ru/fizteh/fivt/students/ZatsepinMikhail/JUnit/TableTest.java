@@ -2,17 +2,13 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.JUnit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap.MFileHashMapFactory;
 
-import java.lang.reflect.Array;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -162,10 +158,8 @@ public class TableTest {
     @Test
     public void testList() throws Exception {
         int size = 5;
-        ArrayList<String> actualList = new ArrayList();
         for (int i = 0; i < size; ++i) {
             testTable.put(key + i, value + i);
-            actualList.add(key + i);
         }
         boolean theSame = true;
         List<String> testList = testTable.list();

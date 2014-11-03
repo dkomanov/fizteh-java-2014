@@ -15,10 +15,6 @@ public class CommandCreate extends CommandMultiFileHashMap {
 
     @Override
     public boolean run(MFileHashMap myMultiDataBase, String[] args) {
-        if (numberOfArguments != args.length) {
-            System.out.println(name + ": wrong number of arguments");
-            return false;
-        }
         Path pathOfNewTable = Paths.get(myMultiDataBase.getDataBaseDirectory()
             + System.getProperty("file.separator") + args[1]);
         if (Files.exists(pathOfNewTable) & Files.isDirectory(pathOfNewTable)) {

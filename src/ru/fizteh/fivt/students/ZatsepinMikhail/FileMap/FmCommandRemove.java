@@ -7,10 +7,6 @@ public class FmCommandRemove extends CommandFileMap {
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-        if (args.length != numberOfArguments) {
-            System.out.println(name + ": wrong number of arguments");
-            return false;
-        }
         String value = myFileMap.remove(args[1]);
         if (value != null) {
             System.out.println("removed");

@@ -10,11 +10,6 @@ public class CommandSize extends CommandMultiFileHashMap {
 
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
-        if (numberOfArguments != args.length) {
-            System.out.println(name + ": wrong number of arguments");
-            return false;
-        }
-
         FileMap currentTable = myMap.getCurrentTable();
         if (currentTable == null) {
             System.out.println("no table");

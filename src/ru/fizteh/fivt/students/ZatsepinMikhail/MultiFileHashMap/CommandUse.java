@@ -10,10 +10,6 @@ public class CommandUse extends CommandMultiFileHashMap {
 
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
-        if (numberOfArguments != args.length) {
-            System.out.println(name + ": wrong number of arguments");
-            return false;
-        }
         FileMap newCurrentTable = myMap.findTableByName(args[1]);
         if (newCurrentTable != null) {
             FileMap currentTable = myMap.getCurrentTable();

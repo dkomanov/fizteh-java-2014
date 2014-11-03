@@ -11,11 +11,6 @@ public class CommandRemoveDistribute extends CommandMultiFileHashMap {
 
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
-        if (numberOfArguments != args.length) {
-            System.out.println(name + ": wrong number of arguments");
-            return false;
-        }
-
         FileMap currentTable = myMap.getCurrentTable();
         if (myMap.getCurrentTable() == null) {
             System.out.println("no table");

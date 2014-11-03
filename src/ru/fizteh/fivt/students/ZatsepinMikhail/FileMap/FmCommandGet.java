@@ -7,10 +7,6 @@ public class FmCommandGet extends CommandFileMap {
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-        if (args.length != numberOfArguments) {
-            System.out.println(name + ": wrong number of arguments");
-            return false;
-        }
         String value = myFileMap.get(args[1]);
         if (value != null) {
             System.out.println("found\n" + value);

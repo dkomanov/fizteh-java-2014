@@ -313,8 +313,6 @@ public class FileMap implements Table {
         try (FileOutputStream outputStream
                      = new FileOutputStream(fileForLoad.toString(), appendFile)) {
             for (String oneKey : keySet) {
-                int keyNumberOfDirectory = getNumberOfDirectory(oneKey.hashCode());
-                int keyNnumberOfFiles = getNumberOfFile(oneKey.hashCode());
                 try {
                     byte[] keyByte = oneKey.getBytes("UTF-8");
                     byte[] valueByte = stableData.get(oneKey).getBytes("UTF-8");

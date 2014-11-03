@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class FmCommandList extends CommandFileMap {
     public FmCommandList() {
@@ -12,10 +10,6 @@ public class FmCommandList extends CommandFileMap {
 
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-        if (args.length != numberOfArguments) {
-            System.out.println(name + ": wrong number of arguments");
-            return false;
-        }
         List<String> allKeys = myFileMap.list();
         int counter = 0;
         for (String oneKey : allKeys) {

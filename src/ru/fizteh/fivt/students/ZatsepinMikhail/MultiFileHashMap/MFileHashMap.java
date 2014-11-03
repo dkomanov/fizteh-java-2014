@@ -12,8 +12,6 @@ import java.util.Map.Entry;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FmCommandRemove;
-import ru.fizteh.fivt.students.ZatsepinMikhail.shell.Command;
 import ru.fizteh.fivt.students.ZatsepinMikhail.shell.CommandRm;
 
 public class MFileHashMap implements TableProvider {
@@ -63,9 +61,9 @@ public class MFileHashMap implements TableProvider {
         if (tables.containsKey(name)) {
             String pathForRemoveTable = Paths.get(dataBaseDirectory, name).toString();
             CommandRm removeCommand = new CommandRm();
-            String[] args = { "rm",
-                              "-r",
-                              pathForRemoveTable };
+            String[] args = {"rm",
+                             "-r",
+                             pathForRemoveTable };
             if (!removeCommand.run(args)) {
                 throw new IllegalArgumentException();
             }
