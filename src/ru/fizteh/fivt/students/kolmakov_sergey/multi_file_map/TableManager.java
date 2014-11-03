@@ -12,7 +12,7 @@ public class TableManager {
     private Map<String, Table> tableManagerMap;
     private Table currentTable;
     private final Path databasePath;
-    protected static final int MAGIC_NUMBER = 16;
+    protected static final int NUMBER_OF_PARTITIONS = 16;
     protected static final String FOLDER_NAME_PATTERN = "([0-9]|1[0-5])\\.dir";
     protected static final String FILE_NAME_PATTERN = "([0-9]|1[0-5])\\.dat";
     private static final String ILLEGAL_TABLE_NAME_PATTERN = ".*\\.|\\..*|.*(/|\\\\).*";
@@ -131,8 +131,8 @@ class Coordinates implements Comparable<Coordinates> {
             throw new IllegalArgumentException("Error: key == null");
         }
         try {
-            folderIndex = Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER);
-            fileIndex = Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER) % TableManager.MAGIC_NUMBER);
+            folderIndex = Math.abs(key.getBytes("UTF-8")[0] % TableManager.NUMBER_OF_PARTITIONS);
+            fileIndex = Math.abs((key.getBytes("UTF-8")[0] / TableManager.NUMBER_OF_PARTITIONS) % TableManager.NUMBER_OF_PARTITIONS);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException("Bad key is given to constructor of Coordinates");
         }

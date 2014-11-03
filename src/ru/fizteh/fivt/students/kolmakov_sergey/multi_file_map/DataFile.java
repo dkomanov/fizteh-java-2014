@@ -38,9 +38,9 @@ public class DataFile { // Interacts with .dat file.
                 // First byte check.
                 b = dataBaseFile.readByte();
                 ++counter;
-                if (coordinates.fileIndex != Math.abs((Byte.valueOf(b) / TableManager.MAGIC_NUMBER)
-                        % TableManager.MAGIC_NUMBER) || coordinates.folderIndex != Math.abs(Byte.valueOf(b)
-                        % TableManager.MAGIC_NUMBER)) {
+                if (coordinates.fileIndex != Math.abs((Byte.valueOf(b) / TableManager.NUMBER_OF_PARTITIONS)
+                        % TableManager.NUMBER_OF_PARTITIONS) || coordinates.folderIndex != Math.abs(Byte.valueOf(b)
+                        % TableManager.NUMBER_OF_PARTITIONS)) {
                     throw new DatabaseCorruptedException("Unexpected key in file " + filePath.toString());
                 }
                 // Get others bytes of key.
@@ -198,9 +198,9 @@ public class DataFile { // Interacts with .dat file.
             throw new IllegalArgumentException("Error: key == null");
         }
         try {
-            if (!(folderFileIndexes.folderIndex == Math.abs(key.getBytes("UTF-8")[0] % TableManager.MAGIC_NUMBER)
-                    && folderFileIndexes.fileIndex == Math.abs((key.getBytes("UTF-8")[0] / TableManager.MAGIC_NUMBER)
-                    % TableManager.MAGIC_NUMBER))) {
+            if (!(folderFileIndexes.folderIndex == Math.abs(key.getBytes("UTF-8")[0] % TableManager.NUMBER_OF_PARTITIONS)
+                    && folderFileIndexes.fileIndex == Math.abs((key.getBytes("UTF-8")[0] / TableManager.NUMBER_OF_PARTITIONS)
+                    % TableManager.NUMBER_OF_PARTITIONS))) {
                 throw new DatabaseCorruptedException("Wrong key in file " + filePath.toString());
             }
         } catch (UnsupportedEncodingException e) {
