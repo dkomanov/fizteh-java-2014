@@ -47,11 +47,6 @@ public final class TableProvider {
     public static void changeCurTable(final String name) throws IOException {
         try {
             tablesDirPath.resolve(name);
-            int diff = currentTable.getdiffnrecords();
-            if (diff != 0) {
-                System.out.println(diff + " unsaved changes");
-                return;
-            }
             Table newTable = tableLinks.get(name);
             if (newTable != null) {
                 if (currentTable != null) {
