@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class FmCommandList extends CommandFileMap {
@@ -15,14 +16,13 @@ public class FmCommandList extends CommandFileMap {
             System.out.println(name + ": wrong number of arguments");
             return false;
         }
-        Set<String> keySet = myFileMap.keySet();
-        Iterator<String> iteratorOverKeySet = keySet.iterator();
+        List<String> allKeys = myFileMap.list();
         int counter = 0;
-        while (iteratorOverKeySet.hasNext()) {
+        for (String oneKey : allKeys) {
             if (counter > 0) {
                 System.out.print(", ");
             }
-            System.out.print(iteratorOverKeySet.next());
+            System.out.print(oneKey);
             ++counter;
         }
         if (counter > 0) {
