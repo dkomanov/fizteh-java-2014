@@ -22,7 +22,7 @@ public class MapRun {
      */
     protected static DataBase db;
 
-    private static String signOfInvitation = "$ ";
+    public static final String SIGN_OF_INVITATION = "$ ";
 
     /**
      * Fill db and commandMap before the object of the class would be made.
@@ -80,7 +80,7 @@ public class MapRun {
     public static void interactiveMode() {
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {
-                System.out.print(signOfInvitation);
+                System.out.print(SIGN_OF_INVITATION);
                 String currentString = sc.nextLine();
                 currentString = currentString.trim();
                 try {

@@ -23,7 +23,7 @@ public class DataBaseCreate implements Command {
     public void execute(final String[] args, DataBase db) throws CommandException {
         Main.checkArguments("create", args.length, argumentsCount);
 
-        String tableName = args[1];
+        String tableName = args[0];
         Path tablePath = db.resolvePathAgainstDBPath(tableName);
         //Converts a given string to a Path and resolves it against this Path
 

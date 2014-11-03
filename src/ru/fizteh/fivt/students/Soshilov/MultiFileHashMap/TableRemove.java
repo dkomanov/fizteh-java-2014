@@ -26,7 +26,7 @@ public class TableRemove implements Command {
             return;
         }
 
-        String key = args[1];
+        String key = args[0];
         String value = db.removeKeyAndValueFromCurrentTable(key);
         if (value == null) {
             System.out.println("not found");

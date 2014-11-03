@@ -26,8 +26,8 @@ public class TablePut implements Command {
             return;
         }
 
-        String key = args[1];
-        String value = args[2];
+        String key = args[0];
+        String value = args[1];
         if (db.putKeyAndValueIntoCurrentTable(key, value) != null) {
             System.out.println("overwrite");
         } else {

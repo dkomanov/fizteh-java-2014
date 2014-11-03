@@ -21,7 +21,7 @@ public class DataBaseUse implements Command {
     public void execute(final String[] args, DataBase db) throws CommandException {
         Main.checkArguments("use", args.length, argumentsCount);
 
-        Table table = db.getTable(args[1]);
+        Table table = db.getTable(args[0]);
         if (table == null) {
             System.out.println("tablename does not exists");
         } else {

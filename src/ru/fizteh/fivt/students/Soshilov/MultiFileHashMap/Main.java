@@ -41,9 +41,7 @@ public class Main {
      */
     public static String[] removeNameInArguments(final String[] args, int wordsInName) {
         String[] result = new String[args.length - wordsInName];
-        for (int i = wordsInName; i < args.length; ++i) {
-            System.arraycopy(args, wordsInName, result, 0, args.length - wordsInName);
-        }
+        System.arraycopy(args, wordsInName, result, 0, args.length - wordsInName);
         return result;
     }
 

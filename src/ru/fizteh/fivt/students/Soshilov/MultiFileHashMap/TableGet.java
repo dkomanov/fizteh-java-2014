@@ -26,7 +26,7 @@ public class TableGet implements Command {
             return;
         }
 
-        String key = args[1];
+        String key = args[0];
         String value = db.getValueFromCurrentTable(key);
         if (value != null) {
             System.out.println("found\n" + value);

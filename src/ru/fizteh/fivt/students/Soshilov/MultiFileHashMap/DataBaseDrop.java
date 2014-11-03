@@ -21,7 +21,7 @@ public class DataBaseDrop implements Command {
     public void execute(final String[] args, DataBase db) throws CommandException {
         Main.checkArguments("drop", args.length, argumentsCount);
 
-        if (db.removeTable(args[1]) == null) {
+        if (db.removeTable(args[0]) == null) {
             System.out.println("tablename does not exists");
         } else {
             System.out.println("dropped");
