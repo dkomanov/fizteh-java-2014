@@ -22,9 +22,7 @@ public class FileMap {
         map = new HashMap<>();
         fil = new File(path + ".dat");
         name = path + ".dat";
-        if (!fil.exists()) {
-            //fil.createNewFile();
-        } else {
+        if (fil.exists()) {
             getFile();
         }
     }
