@@ -2,15 +2,14 @@ package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryReader;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryWriter;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import static ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableUtils.*;
+
+import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,20 +17,28 @@ import java.util.regex.Pattern;
 import static java.nio.file.StandardOpenOption.*;
 
 public class MultiFileTable implements Table {
+    private ArrayList<Class<?>> signature = new ArrayList<>();
     private Map<String, Storeable> stableData = new HashMap<>();
     private Map<String, Storeable> added = new HashMap<>();
     private Map<String, Storeable> changed = new HashMap<>();
     private Set<String> removed = new HashSet<>();
+    private int pending = 0;
     private Path dbPath;
     private String name;
-    private int pending = 0;
-    private TableEntryReader reader;
-    private TableEntryWriter writer;
+
+    private TableEntrySerializer serializer;
 
     private static Pattern fileNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dat$");
     private static Pattern directoryNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dir$");
 
-    public MultiFileTable(Path path, TableEntryReader reader, TableEntryWriter writer) {
+    /**
+     * Creates a MultiFileTable instance and loads data from disk. Table signature is inferred from loaded data.
+     * @param path Root for the store.
+     * @param serializer An object that transforms TableEntry rows to String values and back.
+     *
+     * @throws ConnectionInterruptException An I/O error occured during disk operations.
+     */
+    public MultiFileTable(Path path, TableEntrySerializer serializer) throws ConnectionInterruptException {
         dbPath = path;
         name = path.getFileName().toString();
         try {
@@ -39,10 +46,33 @@ public class MultiFileTable implements Table {
                 Files.createDirectory(path);
             }
         } catch (IOException e) {
-            //
+            throw new ConnectionInterruptException("database: directory creation failed: " + e.getMessage());
         }
-        this.reader = reader;
-        this.writer = writer;
+        this.serializer = serializer;
+        load();
+    }
+
+    /**
+     * Creates a MultiFileTable instance.
+     * @param path Root for the store.
+     * @param signature Types for table columns.
+     * @param serializer An object that transforms TableEntry rows to String values and back.
+     *
+     * @throws ConnectionInterruptException An I/O error occured during disk operations.
+     */
+    public MultiFileTable(Path path, List<Class<?>> signature, TableEntrySerializer serializer)
+            throws ConnectionInterruptException {
+        dbPath = path;
+        name = path.getFileName().toString();
+        try {
+            if (!Files.exists(path)) {
+                Files.createDirectory(path);
+            }
+        } catch (IOException e) {
+            throw new ConnectionInterruptException("database: directory creation failed: " + e.getMessage());
+        }
+        this.serializer = serializer;
+        this.signature = new ArrayList<>(signature);
     }
 
     @Override
@@ -172,14 +202,18 @@ public class MultiFileTable implements Table {
 
     @Override
     public int getColumnsCount() {
-        return 0;
+        return signature.size();
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        return null;
+        return signature.get(columnIndex);
     }
 
+    /**
+     * Returns list of keys in current version of the table.
+     * @return List of keys.
+     */
     public List<String> list() {
         List<String> keySet = new ArrayList<>(stableData.keySet());
         keySet.removeAll(removed);
@@ -209,6 +243,20 @@ public class MultiFileTable implements Table {
         return p;
     }
 
+    private void readSignature() throws IOException {
+        signature.clear();
+        try (BufferedReader reader = Files.newBufferedReader(dbPath.resolve("signature.tsv"))){
+            String line = reader.readLine();
+            for (String token : line.split("\t")) {
+                try {
+                    signature.add(stringToClass(token));
+                } catch (ClassNotFoundException e) {
+                    throw new IOException("database: invalid signature file");
+                }
+            }
+        }
+    }
+
     private String readKeyValue(DataInputStream is) throws IOException, ConnectionInterruptException {
         int keyLen = is.readInt();
         byte[] keyBytes = new byte[keyLen];
@@ -223,26 +271,39 @@ public class MultiFileTable implements Table {
             throw new ConnectionInterruptException("database: db file is invalid");
         }
 
-        String key = new String(keyBytes, "UTF-8");
-        Storeable value = reader.deserialize(new String(valueBytes, "UTF-8"));
-        stableData.put(key, value);
-        return key;
+        try {
+            String key = new String(keyBytes, "UTF-8");
+            Storeable value;
+            value = serializer.deserialize(this, new String(valueBytes, "UTF-8"));
+            stableData.put(key, value);
+            return key;
+        } catch (ParseException e) {
+            throw new ConnectionInterruptException("database: parse failed");
+        }
     }
 
     public void load() throws ConnectionInterruptException {
         clear();
+        try {
+            readSignature();
+        } catch (IOException e) {
+            throw new ConnectionInterruptException("database: read failed: " + e.getMessage());
+        }
         try (DirectoryStream<Path> tableStream = Files.newDirectoryStream(dbPath)) {
-            for (Path dir: tableStream) {
-                Matcher dirMatcher = directoryNamePattern.matcher(dir.getFileName().toString());
-                if (!dirMatcher.find()) {
-                    throw new ConnectionInterruptException("database: extra directories in table folder");
+            for (Path dir : tableStream) {
+                if (dir.getFileName().toString().equals("signature.tsv")) {
+                    continue;
                 }
+                Matcher dirMatcher = directoryNamePattern.matcher(dir.getFileName().toString());
                 if (!Files.isDirectory(dir)) {
                     throw new ConnectionInterruptException("database: extra files in table folder");
                 }
+                if (!dirMatcher.find()) {
+                    throw new ConnectionInterruptException("database: extra directories in table folder");
+                }
                 int d = Integer.decode(dirMatcher.group(1));
                 try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)) {
-                    for (Path file: dirStream) {
+                    for (Path file : dirStream) {
                         Matcher fileMatcher = fileNamePattern.matcher(file.getFileName().toString());
                         if (!fileMatcher.find()) {
                             throw new ConnectionInterruptException("database: extra files in table folder");
@@ -267,9 +328,18 @@ public class MultiFileTable implements Table {
         }
     }
 
+    private void writeSignature() throws IOException {
+        PrintWriter out = new PrintWriter(dbPath.resolve("signature.tsv").toString());
+        for (Class<?> type : signature) {
+            out.print(classToString(type));
+            out.print("\t");
+        }
+        out.close();
+    }
+
     private void writeKeyValue(DataOutputStream os, String key, Storeable value) throws IOException {
         byte[] keyBytes = key.getBytes("UTF-8");
-        byte[] valueBytes = writer.serialize(value).getBytes("UTF-8");
+        byte[] valueBytes = serializer.serialize(this, value).getBytes("UTF-8");
         os.writeInt(keyBytes.length);
         os.write(keyBytes);
         os.writeInt(valueBytes.length);
@@ -305,6 +375,8 @@ public class MultiFileTable implements Table {
             if (!Files.exists(dbPath)) {
                 Files.createDirectory(dbPath);
             }
+
+            writeSignature();
 
             streams = new DataOutputStream[16][16];
             for (int i = 0; i < 16; i++) {

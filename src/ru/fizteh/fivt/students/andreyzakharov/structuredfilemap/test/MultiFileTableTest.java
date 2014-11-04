@@ -9,14 +9,7 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.ConnectionInterruptException;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTable;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableProvider;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableProviderFactory;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryJsonReader;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryJsonWriter;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryReader;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryWriter;
+import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -54,8 +47,7 @@ public class MultiFileTableTest {
     MultiFileTable f;
     MultiFileTable g;
 
-    static TableEntryReader reader = new TableEntryJsonReader();
-    static TableEntryWriter writer = new TableEntryJsonWriter();
+    static TableEntrySerializer serializer = new TableEntryJsonSerializer();
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -103,14 +95,18 @@ public class MultiFileTableTest {
 
     @Before
     public void preRun() {
-        f = new MultiFileTable(root.resolve(dbNames[0]), reader, writer);
-        g = new MultiFileTable(root.resolve(dbNames[0]), reader, writer);
+        try {
+            f = new MultiFileTable(root.resolve(dbNames[0]), serializer);
+            g = new MultiFileTable(root.resolve(dbNames[0]), serializer);
+        } catch (ConnectionInterruptException e) {
+            //
+        }
     }
 
     @Test
     public void testGetName() throws Exception {
         for (String name : dbNames) {
-            MultiFileTable f = new MultiFileTable(root.resolve(name), reader, writer);
+            MultiFileTable f = new MultiFileTable(root.resolve(name), serializer);
             assertEquals(name, f.getName());
             f.unload();
         }

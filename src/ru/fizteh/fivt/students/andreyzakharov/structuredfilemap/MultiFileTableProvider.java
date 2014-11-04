@@ -4,11 +4,6 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryJsonReader;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryJsonWriter;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryReader;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.serialized.TableEntryWriter;
-
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -22,8 +17,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     private Path dbRoot;
     private Map<String, MultiFileTable> tables;
     private MultiFileTable activeTable;
-    TableEntryReader reader = new TableEntryJsonReader();
-    TableEntryWriter writer = new TableEntryJsonWriter();
+    TableEntrySerializer serializer = new TableEntryJsonSerializer();
 
     public MultiFileTableProvider(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
@@ -58,7 +52,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        if (name == null) {
+        if (name == null || columnTypes == null || columnTypes.isEmpty()) {
             throw new IllegalArgumentException("null argument");
         }
         Path path = dbRoot.resolve(name);
@@ -73,7 +67,11 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
                     }
                 }
             }
-            tables.put(name, new MultiFileTable(dbRoot.resolve(name), reader, writer));
+            try {
+                tables.put(name, new MultiFileTable(dbRoot.resolve(name), columnTypes, serializer));
+            } catch (ConnectionInterruptException e) {
+                throw new IOException("connection: " + e.getMessage());
+            }
             return tables.get(name);
         } else {
             return null;
@@ -115,14 +113,14 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        Storeable entry = reader.deserialize(value);
+        Storeable entry = serializer.deserialize(table, value);
         // verify
         return entry;
     }
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        String data = writer.serialize(value);
+        String data = serializer.serialize(table, value);
         // verify
         return data;
     }
@@ -143,8 +141,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(dbRoot)) {
                 for (Path file : stream) {
                     if (Files.isDirectory(file)) {
-                        MultiFileTable table = new MultiFileTable(file, reader, writer);
-                        table.load();
+                        MultiFileTable table = new MultiFileTable(file, serializer);
                         tables.put(file.getFileName().toString(), table);
                     }
                 }

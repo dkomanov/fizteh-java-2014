@@ -3,8 +3,12 @@ package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.test;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableProviderFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -28,18 +32,20 @@ public class MultiFileTableProviderTest {
 
     @Test
     public void testGetTableNonExistent() throws Exception {
-        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
+        TableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {
-            d.createTable(name, null);
+            List<Class<?>> classes = new ArrayList<>();
+            classes.add(String.class);
+            d.createTable(name, classes);
             assertNull(d.getTable(otherName));
         }
     }
 
     @Test
     public void testGetTable() throws Exception {
-        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
+        TableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {
@@ -50,7 +56,7 @@ public class MultiFileTableProviderTest {
 
     @Test
     public void testCreateTableNull() throws Exception {
-        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
+        TableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         exception.expect(IllegalArgumentException.class);
@@ -59,7 +65,7 @@ public class MultiFileTableProviderTest {
 
     @Test
     public void testCreateTableExisting() throws Exception {
-        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
+        TableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {
@@ -70,7 +76,7 @@ public class MultiFileTableProviderTest {
 
     @Test
     public void testCreateTable() throws Exception {
-        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
+        TableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {
@@ -81,7 +87,7 @@ public class MultiFileTableProviderTest {
 
     @Test
     public void testRemoveTableNull() throws Exception {
-        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
+        TableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         exception.expect(IllegalArgumentException.class);
@@ -90,7 +96,7 @@ public class MultiFileTableProviderTest {
 
     @Test
     public void testRemoveTableNonExistent() throws Exception {
-        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
+        TableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         exception.expect(IllegalStateException.class);
@@ -99,7 +105,7 @@ public class MultiFileTableProviderTest {
 
     @Test
     public void testRemoveTable() throws Exception {
-        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
+        TableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {
