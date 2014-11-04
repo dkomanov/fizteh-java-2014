@@ -37,7 +37,9 @@ public class DBTableTest {
     public final  void setUp() {
         testDirectory.toFile().mkdir();
     }
-    //Tests on wrong table format.
+    /*
+    * Tests on wrong table format.
+    */
     @Test(expected = IllegalStateException.class)
     public final void testDBTableCreatedFromDirectoryWithNonDirectories()
             throws IOException {
@@ -74,7 +76,9 @@ public class DBTableTest {
         new DBTable(testDirectory, tableName);
     }
 
-    //GetTests.
+    /*
+    * GetTests.
+    */
     @Test
     public final void testGetReturnsNullIfKeyIsNotFound() {
         tableDirectoryPath.toFile().mkdir();
@@ -115,7 +119,9 @@ public class DBTableTest {
         assertNull(test.get(testKey1));
     }
 
-    //PutTests.
+    /* 
+    * PutTests.
+    */
     @Test(expected = IllegalArgumentException.class)
     public final void testPutThrowsIllegalArgumentExceptionCalledForNullKey() {
         tableDirectoryPath.toFile().mkdir();
@@ -144,7 +150,9 @@ public class DBTableTest {
         assertEquals(testValue1, test.put(testKey1, testValue2));
     }
 
-    //RemoveTests.
+    /*
+    * RemoveTests.
+    */
     @Test(expected = IllegalArgumentException.class)
     public final void testRemoveThrowsExceptionCalledForNullKey() {
         tableDirectoryPath.toFile().mkdir();
@@ -178,8 +186,9 @@ public class DBTableTest {
         assertNull(test.remove(testKey1));
     }
 
-    /*CommitTests.
-    Also checks implicitly inside put, get and remove tests.
+    /*
+    * Commit tests.
+    * Also checks implicitly inside put, get and remove tests.
     */
     @Test
     public final void testCommitCreatesRealFileOnTheDisk()
@@ -266,7 +275,9 @@ public class DBTableTest {
         assertEquals(0, test.commit());
     }
 
-    //RollbackTests.
+    /*
+    * RollbackTests.
+    */
     @Test
     public final void testRollbackAfterPuttingNewKey() {
         tableDirectoryPath.toFile().mkdir();
@@ -289,7 +300,9 @@ public class DBTableTest {
         assertEquals(0, test.rollback());
     }
 
-    //List tests.
+    /*
+    * List tests.
+    */
     @Test
     public final void testListCalledForEmptyTable() {
         tableDirectoryPath.toFile().mkdir();
@@ -326,7 +339,9 @@ public class DBTableTest {
         assertEquals(expectedKeySet, tableKeySet);
     }
 
-    //Size tests.
+    /* 
+    * Size tests.
+    */
     @Test
     public final void testSizeCalledForNonEmptyNonCommitedTable() {
         tableDirectoryPath.toFile().mkdir();
