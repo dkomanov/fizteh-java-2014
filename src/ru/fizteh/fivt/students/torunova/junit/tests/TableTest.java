@@ -1,16 +1,17 @@
 package ru.fizteh.fivt.students.torunova.junit.tests;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.students.torunova.junit.Table;
 
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TableTest {
 	Table testTable;
@@ -42,32 +43,74 @@ public class TableTest {
 	}
 
 	@Test
-	public void testPut() throws Exception {
-
+	public void testPutNewKeyAndValue() throws Exception {
+		assertEquals(null, testTable.put("key", "value"));
 	}
 
 	@Test
-	public void testRemove() throws Exception {
+	public void testPutWithOwerwritingOldValue() throws Exception {
+		testTable.put("key", "value1");
+		assertEquals("value1", testTable.put("key", "value2"));
+	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testPutNullKeyWithNotNullValue() throws Exception {
+		testTable.put(null, "value");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testPutNullKeyWithNullValue() throws Exception {
+		testTable.put(null, null);
+	}
+	@Test(expected = IllegalArgumentException.class)
+	public void testPutNotNullKeyWithNullValue() throws Exception {
+		testTable.put("key", null);
+	}
+
+	@Test
+	public void testRemoveExistingKey() throws Exception {
+		testTable.put("key", "value");
+		assertEquals("value", testTable.remove("key"));
+	}
+
+	@Test
+	public void testRemoveNotExistingKey() throws Exception {
+		assertEquals(null, testTable.remove("notExistingKey"));
 	}
 
 	@Test
 	public void testSize() throws Exception {
-
+		testTable.put("key1", "value1");
+		testTable.put("key2", "value2");
+		assertEquals(2, testTable.size());
 	}
 
 	@Test
 	public void testCommit() throws Exception {
-
+		testTable.put("key1", "value1");
+		testTable.put("key2", "value2");
+		testTable.remove("key1");
+		assertEquals(1, testTable.commit());
 	}
 
 	@Test
 	public void testRollback() throws Exception {
-
+		testTable.put("key1", "value1");
+		testTable.put("key2", "value2");
+		testTable.remove("key1");
+		assertEquals(1, testTable.rollback());
 	}
 
 	@Test
 	public void testList() throws Exception {
-
+		testTable.put("key1", "value1");
+		testTable.put("key2", "value2");
+		List<String> keys = new ArrayList<>();
+		keys.add("key1");
+		keys.add("key2");
+		Collections.sort(keys);
+		List<String> realKeys = testTable.list();
+		Collections.sort(realKeys);
+ 		assertEquals(keys, realKeys);
 	}
 }

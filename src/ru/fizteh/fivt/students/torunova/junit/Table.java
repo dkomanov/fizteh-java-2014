@@ -15,7 +15,23 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
     Map<File, FileMap> files = new HashMap<>();
     int numberOfEntries;
 
-    public Table(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
+	@Override
+	public boolean equals(Object t) {
+		if (!(t instanceof Table)) {
+			return false;
+		}
+		Table table = (Table) t;
+		return tableName.equals(table.tableName)
+				&& files.equals(table.files)
+				&& numberOfEntries == table.numberOfEntries;
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	public Table(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
         File table = new File(newTableName).getAbsoluteFile();
         if (!table.exists()) {
             if (!table.mkdirs()) {
@@ -111,9 +127,7 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         if (files.containsKey(file)) {
             FileMap fm = files.get(file);
             result = fm.remove(key);
-            if (result != null) {
-                numberOfEntries--;
-            }
+            numberOfEntries--;
             return result;
         }
         return null;

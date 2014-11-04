@@ -20,7 +20,21 @@ public class  Database implements TableProvider{
     public Map<String, Table> tables = new HashMap<>();
     public Table currentTable = null;
 
-    public Database(String name) throws IncorrectDbNameException,
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object db1) {
+		if (!(db1 instanceof Database)) {
+			return false;
+		}
+		Database db = (Database) db1;
+		return dbName.equals(db.dbName);
+	}
+
+	public Database(String name) throws IncorrectDbNameException,
                                         IOException,
 										TableNotCreatedException,
 										IncorrectFileException {
@@ -86,8 +100,9 @@ public class  Database implements TableProvider{
                     currentTable = null;
                 }
             }
-        }
-        throw new IllegalStateException(currentTable + "does not exist");
+        } else {
+			throw new IllegalStateException("does not exist");
+		}
     }
 
     public boolean useTable(String name) {
@@ -164,5 +179,6 @@ public class  Database implements TableProvider{
         }
         return true;
     }
+
 
 }
