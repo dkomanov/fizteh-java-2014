@@ -20,9 +20,18 @@ import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitExc
 public class DBTable implements Table {
     private static final int DIR_AMOUNT = 16;
     private static final int FILES_AMOUNT = 16;
-    private Map<String, String> allRecords; //Records readed from real file
+    /*
+    * Records readed from real file.
+    */
+    private Map<String, String> allRecords;
+    /*
+    * Writes changes during session .
+    */
     private Map<String, String> sessionChanges;
-    private Path dbPath; // The table's directory.
+    /*
+    * Path to table's directory.
+    */
+    private Path dbPath;
     private String name;
 
     public DBTable(final Path rootPath, final String name) {
@@ -37,13 +46,10 @@ public class DBTable implements Table {
                    final Map<String, String> records) {
         dbPath = rootPath.resolve(name);
         this.name = name;
-        allRecords = Collections.synchronizedMap(records);
+        allRecords = records;
         sessionChanges = new HashMap<>();
     }
 
-    /*public static void main() {
-        //
-    }*/
     private void create() {
         try {
             read();
