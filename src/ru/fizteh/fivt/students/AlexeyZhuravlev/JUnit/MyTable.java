@@ -80,10 +80,14 @@ public class MyTable implements Table {
 
     @Override
     public int commit() {
+        PrintStream out = System.out;
+        System.setOut(new PrintStream(new DummyOutputStream()));
         try {
             return table.commit();
         } catch (Exception e) {
             throw new RuntimeException();
+        } finally {
+            System.setOut(out);
         }
     }
 
