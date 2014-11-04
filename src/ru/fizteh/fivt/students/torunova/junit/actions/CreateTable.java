@@ -16,9 +16,9 @@ public class CreateTable extends Action{
                                 throws IOException,
                                 IncorrectFileException,
                                 TableNotCreatedException {
-		if (!checkNumberOfArguments(1, args.length)) {
-			return false;
-		}
+        if (!checkNumberOfArguments(1, args.length)) {
+            return false;
+        }
         String tableName = args[0];
         if (tableName.contains(File.separator) || tableName.equals("..") || tableName.equals(".")) {
             throw new TableNotCreatedException("create: illegal name for table.");

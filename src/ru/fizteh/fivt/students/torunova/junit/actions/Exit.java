@@ -12,19 +12,19 @@ import java.io.IOException;
 public class Exit extends Action {
 
 
-	@Override
-	public boolean run(String[] args, Database db) throws IOException, IncorrectFileException, TableNotCreatedException {
-		if (checkNumberOfArguments(0,args.length)) {
-			if (db.exit()) {
-				System.exit(0);
-			}
-			return false;
-		}
-		return false;
-	}
+    @Override
+    public boolean run(String[] args, Database db) throws IOException, IncorrectFileException, TableNotCreatedException {
+        if (checkNumberOfArguments(0,args.length)) {
+            if (db.exit()) {
+                System.exit(0);
+            }
+            return false;
+        }
+        return false;
+    }
 
-	@Override
-	public String getName() {
-		return "exit";
-	}
+    @Override
+    public String getName() {
+        return "exit";
+    }
 }

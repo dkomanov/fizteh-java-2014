@@ -54,12 +54,12 @@ public class Shell {
                 nextCommand = scanner.nextLine();
             } catch (NoSuchElementException e) {
                 if (!interactive) {
-					if (db.currentTable != null) {
-						db.currentTable.commit();
-					} else {
-						db.exit();
-					}
-				}
+                    if (db.currentTable != null) {
+                        db.currentTable.commit();
+                    } else {
+                        db.exit();
+                    }
+                }
                 return;
             }
             functions = nextCommand.split(";");
@@ -94,20 +94,20 @@ public class Shell {
                         }
                     }
                     if (!interactive && !res) {
-						if (db.currentTable != null) {
-							db.currentTable.commit();
-						} else {
-							db.exit();
-						}
+                        if (db.currentTable != null) {
+                            db.currentTable.commit();
+                        } else {
+                            db.exit();
+                        }
                     }
                 } else if (!Pattern.matches("\\s+", name)) {
                     System.err.println("Command not found.");
                     if (!interactive) {
-						if (db.currentTable != null) {
-							db.currentTable.commit();
-						} else {
-							db.exit();
-						}
+                        if (db.currentTable != null) {
+                            db.currentTable.commit();
+                        } else {
+                            db.exit();
+                        }
 
                     }
                 }

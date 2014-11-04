@@ -10,21 +10,21 @@ import java.io.IOException;
  * Created by nastya on 01.11.14.
  */
 public class Commit extends Action {
-	@Override
-	public boolean run(String[] args, Database db) throws IOException, IncorrectFileException, TableNotCreatedException {
-		if (checkNumberOfArguments(0,args.length)) {
-			if (db.currentTable == null) {
-				System.err.println("no table");
-				return false;
-			}
-			System.out.println(db.currentTable.commit());
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean run(String[] args, Database db) throws IOException, IncorrectFileException, TableNotCreatedException {
+        if (checkNumberOfArguments(0,args.length)) {
+            if (db.currentTable == null) {
+                System.err.println("no table");
+                return false;
+            }
+            System.out.println(db.currentTable.commit());
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public String getName() {
-		return "commit";
-	}
+    @Override
+    public String getName() {
+        return "commit";
+    }
 }

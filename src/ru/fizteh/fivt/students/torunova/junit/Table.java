@@ -15,23 +15,23 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
     Map<File, FileMap> files = new HashMap<>();
     int numberOfEntries;
 
-	@Override
-	public boolean equals(Object t) {
-		if (!(t instanceof Table)) {
-			return false;
-		}
-		Table table = (Table) t;
-		return tableName.equals(table.tableName)
-				&& files.equals(table.files)
-				&& numberOfEntries == table.numberOfEntries;
-	}
+    @Override
+    public boolean equals(Object t) {
+        if (!(t instanceof Table)) {
+            return false;
+        }
+        Table table = (Table) t;
+        return tableName.equals(table.tableName)
+                && files.equals(table.files)
+                && numberOfEntries == table.numberOfEntries;
+    }
 
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 
-	public Table(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
+    public Table(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
         File table = new File(newTableName).getAbsoluteFile();
         if (!table.exists()) {
             if (!table.mkdirs()) {
@@ -60,11 +60,11 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         }
         tableName = table.getAbsolutePath();
     }
-	@Override
+    @Override
     public String put(String key, String value) {
-		if (key == null || value == null) {
-			throw new IllegalArgumentException("Key or value is null");
-		}
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("Key or value is null");
+        }
         String result;
         String fileName = getFileName(key);
         String dirName = getDirName(key);
@@ -74,15 +74,15 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
             result = files.get(file).put(key, value);
         } else {
                 file.getParentFile().mkdirs();
-			FileMap fm = null;
-			try {
-				file.createNewFile();
-				fm = new FileMap(file.getAbsolutePath());
-			} catch (IOException e) {
-				System.err.println("Caught IOException: " + e.getMessage());
-			} catch (IncorrectFileException e1) {
-				System.err.println("Caught IncorrectFileException :" + e1.getMessage());
-			}
+            FileMap fm = null;
+            try {
+                file.createNewFile();
+                fm = new FileMap(file.getAbsolutePath());
+            } catch (IOException e) {
+                System.err.println("Caught IOException: " + e.getMessage());
+            } catch (IncorrectFileException e1) {
+                System.err.println("Caught IncorrectFileException :" + e1.getMessage());
+            }
                 result = fm.put(key, value);
                 files.put(file, fm);
         }
@@ -92,17 +92,17 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         return result;
     }
 
-	@Override
-	public String getName() {
-		File ourTable = new File(tableName);
-		return ourTable.getName();
-	}
+    @Override
+    public String getName() {
+        File ourTable = new File(tableName);
+        return ourTable.getName();
+    }
 
-	@Override
-	public String get(String key) {
-		if (key == null) {
-			throw new IllegalArgumentException("Key is null");
-		}
+    @Override
+    public String get(String key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key is null");
+        }
         String fileName = getFileName(key);
         String dirName = getDirName(key);
         File dir  = new File(tableName, dirName).getAbsoluteFile();
@@ -117,7 +117,7 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         }
         return fm.get(key);
     }
-	@Override
+    @Override
     public String remove(String key) {
         String result;
         String fileName = getFileName(key);
@@ -133,61 +133,61 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         return null;
     }
 
-	@Override
-	public int size() {
-		return numberOfEntries;
-	}
+    @Override
+    public int size() {
+        return numberOfEntries;
+    }
 
-	public List<String> list() {
+    public List<String> list() {
         List<String> listOfAllKeys = new ArrayList<>();
         for (FileMap fm : files.values()) {
             listOfAllKeys.addAll(fm.list());
         }
         return listOfAllKeys;
     }
-	@Override
+    @Override
     public int commit()  {
-		int numberOfChangedEntries = 0;
-		Set<Map.Entry<File, FileMap>> entrySet = new HashSet<>(files.entrySet());
+        int numberOfChangedEntries = 0;
+        Set<Map.Entry<File, FileMap>> entrySet = new HashSet<>(files.entrySet());
         for (Map.Entry<File, FileMap> entry : entrySet) {
-			FileMap fm = entry.getValue();
-			File file = entry.getKey();
-			try {
-				numberOfChangedEntries += fm.commit();
-			} catch (IOException e) {
-				System.err.println("Caught IOException: " + e.getMessage());
-			}
-			if (fm.isEmpty()) {
-				File directory = file.getParentFile().getAbsoluteFile();
-				file.delete();
-				if (directory.listFiles().length == 0) {
-					directory.delete();
-				}
-				files.remove(file);
-			}
-		}
-		return numberOfChangedEntries;
+            FileMap fm = entry.getValue();
+            File file = entry.getKey();
+            try {
+                numberOfChangedEntries += fm.commit();
+            } catch (IOException e) {
+                System.err.println("Caught IOException: " + e.getMessage());
+            }
+            if (fm.isEmpty()) {
+                File directory = file.getParentFile().getAbsoluteFile();
+                file.delete();
+                if (directory.listFiles().length == 0) {
+                    directory.delete();
+                }
+                files.remove(file);
+            }
+        }
+        return numberOfChangedEntries;
     }
 
-	@Override
-	public int rollback() {
-		int numberOfRevertedChanges = 0;
-		numberOfEntries = 0;
-		for (FileMap fm:files.values()) {
-			numberOfRevertedChanges += fm.rollback();
-			numberOfEntries += fm.size();
-		}
-		return numberOfRevertedChanges;
-	}
-	public int countChangedEntries() {
-		int numberOfChangedEntries = 0;
-		for (FileMap fm:files.values()) {
-			numberOfChangedEntries += fm.countChangedEntries();
-		}
-		return numberOfChangedEntries;
-	}
+    @Override
+    public int rollback() {
+        int numberOfRevertedChanges = 0;
+        numberOfEntries = 0;
+        for (FileMap fm:files.values()) {
+            numberOfRevertedChanges += fm.rollback();
+            numberOfEntries += fm.size();
+        }
+        return numberOfRevertedChanges;
+    }
+    public int countChangedEntries() {
+        int numberOfChangedEntries = 0;
+        for (FileMap fm:files.values()) {
+            numberOfChangedEntries += fm.countChangedEntries();
+        }
+        return numberOfChangedEntries;
+    }
 
-	private String getDirName(String key) {
+    private String getDirName(String key) {
         int hashcode = key.hashCode();
         int ndirectory = hashcode % MAGIC_NUMBER;
         StringBuilder builder = new StringBuilder();

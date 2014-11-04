@@ -14,12 +14,12 @@ public class DropTable extends Action {
         if (!checkNumberOfArguments(1, args.length)) {
             return false;
         }
-		try {
-			db.removeTable(args[0]);
-		} catch (IllegalStateException e) {
-			System.err.println(e.getMessage());
-			return false;
-		}
+        try {
+            db.removeTable(args[0]);
+        } catch (IllegalStateException e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
         System.out.println("dropped");
         return true;
     }

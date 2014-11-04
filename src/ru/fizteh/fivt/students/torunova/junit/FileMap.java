@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class FileMap {
     Map<String, String> map = new HashMap<>();
-	Map<String, String> diff = new HashMap<>();
+    Map<String, String> diff = new HashMap<>();
     String file;
 
     public FileMap(final String f) throws IncorrectFileException, IOException {
@@ -34,7 +34,7 @@ public class FileMap {
                         "Error in file " + file + " : real value length does not match specified in file length.");
             }
             map.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
-			diff.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+            diff.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
         }
     }
 
@@ -62,12 +62,12 @@ public class FileMap {
         return diff.size();
     }
 
-	public int rollback() {
-		int numberOfRevertedChanges = countChangedEntries();
-		diff = new HashMap<>();
-		diff.putAll(map);
-		return numberOfRevertedChanges;
-	}
+    public int rollback() {
+        int numberOfRevertedChanges = countChangedEntries();
+        diff = new HashMap<>();
+        diff.putAll(map);
+        return numberOfRevertedChanges;
+    }
     public int commit() throws  IOException {
         DataOutputStream fos = new DataOutputStream(new FileOutputStream(file));
         Set<String> keys = diff.keySet();
@@ -78,25 +78,25 @@ public class FileMap {
             fos.writeInt(diff.get(key).getBytes("UTF-8").length);
             fos.write(diff.get(key).getBytes("UTF-8"));
         }
-		int numberOfChangedEntries = countChangedEntries();
-		map = new HashMap<>();
-		map.putAll(diff);
-		return  numberOfChangedEntries;
+        int numberOfChangedEntries = countChangedEntries();
+        map = new HashMap<>();
+        map.putAll(diff);
+        return  numberOfChangedEntries;
     }
-	public int countChangedEntries() {
-		int numberOfChangedEntries = 0;
-		Set<String> allKeys = new HashSet<>();
-		allKeys.addAll(diff.keySet());
-		allKeys.addAll(map.keySet());
-		for (String key: allKeys) {
-			if (map.get(key) == null || diff.get(key) == null) {
-				numberOfChangedEntries++;
-				continue;
-			}
-			if (!map.get(key).equals(diff.get(key))) {
-				numberOfChangedEntries++;
-			}
-		}
-		return numberOfChangedEntries;
-	}
+    public int countChangedEntries() {
+        int numberOfChangedEntries = 0;
+        Set<String> allKeys = new HashSet<>();
+        allKeys.addAll(diff.keySet());
+        allKeys.addAll(map.keySet());
+        for (String key: allKeys) {
+            if (map.get(key) == null || diff.get(key) == null) {
+                numberOfChangedEntries++;
+                continue;
+            }
+            if (!map.get(key).equals(diff.get(key))) {
+                numberOfChangedEntries++;
+            }
+        }
+        return numberOfChangedEntries;
+    }
 }

@@ -20,24 +20,24 @@ public class  Database implements TableProvider{
     public Map<String, Table> tables = new HashMap<>();
     public Table currentTable = null;
 
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 
-	@Override
-	public boolean equals(Object db1) {
-		if (!(db1 instanceof Database)) {
-			return false;
-		}
-		Database db = (Database) db1;
-		return dbName.equals(db.dbName);
-	}
+    @Override
+    public boolean equals(Object db1) {
+        if (!(db1 instanceof Database)) {
+            return false;
+        }
+        Database db = (Database) db1;
+        return dbName.equals(db.dbName);
+    }
 
-	public Database(String name) throws IncorrectDbNameException,
+    public Database(String name) throws IncorrectDbNameException,
                                         IOException,
-										TableNotCreatedException,
-										IncorrectFileException {
+                                        TableNotCreatedException,
+                                        IncorrectFileException {
         if (name == null) {
             throw new IncorrectDbNameException("Name of database not specified."
                     + "Please,specify it via -Dfizteh.db.dir");
@@ -55,46 +55,46 @@ public class  Database implements TableProvider{
         }
     }
 
-	@Override
-	public ru.fizteh.fivt.storage.strings.Table getTable(String name) {
-		if (name == null || Pattern.matches(".*" + File.separator + ".*", name)
-				|| name.equals("..") || name.equals(".")) {
-			throw new IllegalArgumentException("illegal table name");
-		}
-		return tables.get(name);
-	}
+    @Override
+    public ru.fizteh.fivt.storage.strings.Table getTable(String name) {
+        if (name == null || Pattern.matches(".*" + File.separator + ".*", name)
+                || name.equals("..") || name.equals(".")) {
+            throw new IllegalArgumentException("illegal table name");
+        }
+        return tables.get(name);
+    }
 
-	@Override
-	public ru.fizteh.fivt.storage.strings.Table createTable(String tableName) {
-		if (tableName == null || Pattern.matches(".*" + File.separator + ".*", tableName)
-				|| tableName.equals("..") || tableName.equals(".")) {
-			throw new IllegalArgumentException("illegal table name");
-		}
+    @Override
+    public ru.fizteh.fivt.storage.strings.Table createTable(String tableName) {
+        if (tableName == null || Pattern.matches(".*" + File.separator + ".*", tableName)
+                || tableName.equals("..") || tableName.equals(".")) {
+            throw new IllegalArgumentException("illegal table name");
+        }
         File table = new File(dbName, tableName);
         String newTableName = table.getAbsolutePath();
         if (!tables.containsKey(tableName)) {
-			Table newTable = null;
-			try {
-				newTable = new Table(newTableName);
-			} catch (TableNotCreatedException e) {
-				System.err.println("Caught TableNotCreatedException: " + e.getMessage());
-			} catch (IncorrectFileException e1) {
-				System.err.println("Caught IncorrectFileException: " + e1.getMessage());
-			} catch (IOException e2) {
-				System.err.println("Caught IOException: " + e2.getMessage());
-			}
-			tables.put(tableName, newTable);
+            Table newTable = null;
+            try {
+                newTable = new Table(newTableName);
+            } catch (TableNotCreatedException e) {
+                System.err.println("Caught TableNotCreatedException: " + e.getMessage());
+            } catch (IncorrectFileException e1) {
+                System.err.println("Caught IncorrectFileException: " + e1.getMessage());
+            } catch (IOException e2) {
+                System.err.println("Caught IOException: " + e2.getMessage());
+            }
+            tables.put(tableName, newTable);
             return newTable;
         }
         return null;
     }
 
-	@Override
-	public void removeTable(String name) {
-		if (name == null || Pattern.matches(".*" + File.separator + ".*", name)
-				|| name.equals("..") || name.equals(".")) {
-			throw new IllegalArgumentException("illegal table name");
-		}
+    @Override
+    public void removeTable(String name) {
+        if (name == null || Pattern.matches(".*" + File.separator + ".*", name)
+                || name.equals("..") || name.equals(".")) {
+            throw new IllegalArgumentException("illegal table name");
+        }
         File f = new File(dbName, name);
         if (tables.containsKey(name)) {
             boolean result = removeRecursive(f.getAbsolutePath());
@@ -105,8 +105,8 @@ public class  Database implements TableProvider{
                 }
             }
         } else {
-			throw new IllegalStateException("does not exist");
-		}
+            throw new IllegalStateException("does not exist");
+        }
     }
 
     public boolean useTable(String name) {
@@ -124,14 +124,14 @@ public class  Database implements TableProvider{
     }
 
     public boolean exit() {
-		if (currentTable != null) {
-			int numberOfUnsavedChanges = currentTable.countChangedEntries();
-			if (numberOfUnsavedChanges != 0) {
-				System.err.println(numberOfUnsavedChanges + " unsaved changes");
-				return false;
-			}
-		}
-		return true;
+        if (currentTable != null) {
+            int numberOfUnsavedChanges = currentTable.countChangedEntries();
+            if (numberOfUnsavedChanges != 0) {
+                System.err.println(numberOfUnsavedChanges + " unsaved changes");
+                return false;
+            }
+        }
+        return true;
 
     }
     /**
