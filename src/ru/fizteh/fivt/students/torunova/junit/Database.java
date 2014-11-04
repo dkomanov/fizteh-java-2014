@@ -57,7 +57,8 @@ public class  Database implements TableProvider{
 
 	@Override
 	public ru.fizteh.fivt.storage.strings.Table getTable(String name) {
-		if (name == null || Pattern.matches(".*" + File.separator + ".*", name) || name.equals("..") || name.equals(".")) {
+		if (name == null || Pattern.matches(".*" + File.separator + ".*", name)
+				|| name.equals("..") || name.equals(".")) {
 			throw new IllegalArgumentException("illegal table name");
 		}
 		return tables.get(name);
@@ -65,8 +66,10 @@ public class  Database implements TableProvider{
 
 	@Override
 	public ru.fizteh.fivt.storage.strings.Table createTable(String tableName) {
-		if (tableName == null || Pattern.matches(".*" + File.separator + ".*", tableName) || tableName.equals("..") || tableName.equals("."))
+		if (tableName == null || Pattern.matches(".*" + File.separator + ".*", tableName)
+				|| tableName.equals("..") || tableName.equals(".")) {
 			throw new IllegalArgumentException("illegal table name");
+		}
         File table = new File(dbName, tableName);
         String newTableName = table.getAbsolutePath();
         if (!tables.containsKey(tableName)) {
@@ -88,7 +91,8 @@ public class  Database implements TableProvider{
 
 	@Override
 	public void removeTable(String name) {
-		if (name == null || Pattern.matches(".*" + File.separator + ".*", name) || name.equals("..") || name.equals(".")) {
+		if (name == null || Pattern.matches(".*" + File.separator + ".*", name)
+				|| name.equals("..") || name.equals(".")) {
 			throw new IllegalArgumentException("illegal table name");
 		}
         File f = new File(dbName, name);
