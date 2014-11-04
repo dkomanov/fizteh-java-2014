@@ -6,6 +6,7 @@ import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.fileshell.RemoveCommand;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -17,9 +18,10 @@ public class DataBaseTableTest {
     private static DataBaseTableProviderFactory factory = new DataBaseTableProviderFactory();
     private static DataBaseTableProvider database;
 
+    public static final String PATH = "D:\\test\\test";
     @Before
     public void initDataBase() {
-        database = factory.create("D:\\test\\test");
+        database = factory.create(PATH);
     }
 
     @Test
@@ -142,9 +144,40 @@ public class DataBaseTableTest {
         table.rollback();
 
         assertEquals(table.size(), 1000);
-
     }
 
+    @Test
+    public void testCommitRollback() {
+        database.createTable("table");
+        Table table = database.getTable("table");
+        for (int i = 0; i < 100; ++i) {
+            table.put(Integer.toString(i), Integer.toString(i));
+        }
+        assertEquals(table.size(), 100);
+        assertEquals(table.rollback(), 100);
+        assertEquals(table.size(), 0);
+
+        for (int i = 0; i < 100; ++i) {
+            table.put(Integer.toString(i), Integer.toString(i));
+        }
+        assertEquals(table.commit(), 100);
+        assertEquals(table.size(), 100);
+
+        /*
+            Test for correct writing to file
+         */
+        DataBaseTable loadedTable = null;
+        try {
+            loadedTable = new DataBaseTable(Paths.get(PATH), "table");
+        } catch (Exception e) {
+            assertTrue(false);
+        }
+        ArrayList<String> list = new ArrayList<>(loadedTable.list());
+        for (String key: list) {
+            assertEquals(loadedTable.get(key), key);
+        }
+
+    }
 
 
     @After

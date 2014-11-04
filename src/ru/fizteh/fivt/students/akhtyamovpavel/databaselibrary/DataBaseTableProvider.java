@@ -8,10 +8,13 @@ import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.C
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.ListCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.PutCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.RollbackCommand;
+import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.fileshell.MakeDirectoryCommand;
+import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.fileshell.RemoveCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.table.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -91,7 +94,13 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
 
     private void onLoadCheck() throws Exception {
         if (!Files.exists(dataBaseDirectory)) {
-            throw new Exception("connect: no such database");
+            try {
+                Files.createDirectory(dataBaseDirectory);
+            } catch (SecurityException se) {
+                throw new Exception("connect: permission to database file denied correctly");
+            } catch (IOException ioe) {
+                throw new Exception("connect: input/output error");
+            }
         }
         if (!Files.isDirectory(dataBaseDirectory)) {
             throw new Exception("connect: path isn't a directory");
@@ -217,8 +226,19 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         return fileMap;
     }
 
+    public String onExistCheck(String name, boolean existMode) {
+        Path newPath = Paths.get(getDataBaseDirectory().toString(), name);
+        if (!Files.exists(newPath) && existMode) {
+            return name + " not exists";
+        }
+        if (Files.exists(newPath) && !existMode) {
+            return name + " exists";
+        }
+        return null;
+    }
+
     @Override
-    public Table createTable(String name) throws IllegalArgumentException, IllegalStateException {
+    public Table createTable(String name) throws IllegalArgumentException {
 
         if (name == null) {
             throw new IllegalArgumentException("null table name");
@@ -226,13 +246,15 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         ArrayList<String> arguments = new ArrayList<>();
         arguments.add(name);
         DataBaseTable table = null;
-        try {
-            new CreateTableCommand(this).executeCommand(arguments);
-            table = new DataBaseTable(dataBaseDirectory, name);
-        } catch (FileAlreadyExistsException fae) {
+        if (onExistCheck(name, false) != null) {
             return null;
+        }
+        try {
+            new MakeDirectoryCommand(this).executeCommand(arguments);
+            table = new DataBaseTable(dataBaseDirectory, name);
+            insertTable(name);
         } catch (Exception e) {
-            System.err.println("connection error");
+            throw new IllegalArgumentException("incorrect name of table");
         }
         return table;
     }
@@ -242,15 +264,24 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         if (name == null) {
             throw new IllegalArgumentException("null table name");
         }
-        ArrayList<String> arguments = new ArrayList<>();
-        arguments.add(name);
 
-        try {
-            new DropTableCommand(this).executeCommand(arguments);
-        } catch (FileNotFoundException fae) {
-            throw new IllegalStateException("table doesn't exist");
-        } catch (Exception e) {
-            System.err.println("remove error");
+        if (!tableSet.containsKey(name)) {
+            throw new IllegalStateException(name + "not exists");
         }
+        ArrayList<String> argumentsForRemove = new ArrayList<String>();
+        argumentsForRemove.add("-r");
+        argumentsForRemove.add(name);
+        try {
+            new RemoveCommand(getDataBaseDirectory()).executeCommand(argumentsForRemove);
+        } catch (Exception e){
+            throw new IllegalArgumentException("wrong state");
+        }
+
+        removeTableFile(name);
+        if (name.equals(getOpenedTableName())) {
+            setOpenedTableName(null);
+            setFileMap(null);
+        }
+
     }
 }

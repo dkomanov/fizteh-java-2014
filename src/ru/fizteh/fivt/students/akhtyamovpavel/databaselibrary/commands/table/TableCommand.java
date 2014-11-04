@@ -19,18 +19,7 @@ public abstract class TableCommand implements Command {
         this.shell = shell;
     }
 
-    public boolean onExistCheck(String name, boolean existMode) {
-        Path newPath = Paths.get(shell.getDataBaseDirectory().toString(), name);
-        if (!Files.exists(newPath) && existMode) {
-            System.out.println(name + " doesn't exist");
-            return false;
-        }
-        if (Files.exists(newPath) && !existMode) {
-            System.out.println(name + " exists");
-            return false;
-        }
-        return true;
-    }
+
 
     public DataBaseTableProvider getShell() {
         return shell;

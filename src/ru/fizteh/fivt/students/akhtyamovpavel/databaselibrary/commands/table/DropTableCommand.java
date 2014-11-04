@@ -23,24 +23,13 @@ public class DropTableCommand extends TableCommand implements Command {
             throw new Exception("usage drop tablename");
         }
         try {
-            if (!onExistCheck(arguments.get(0), EXIST)) {
-                return null;
-            }
-        } catch (Exception e) {
-            throw new FileNotFoundException();
+            shell.removeTable(arguments.get(0));
+            return "dropped";
+        } catch (IllegalStateException e) {
+            return e.getMessage();
+        } catch (IllegalArgumentException e) {
+            throw new Exception(e.getMessage());
         }
-
-        ArrayList<String> argumentsForRemove = new ArrayList<String>();
-        argumentsForRemove.add("-r");
-        argumentsForRemove.add(arguments.get(0));
-        new RemoveCommand(getShell().getDataBaseDirectory()).executeCommand(argumentsForRemove);
-        System.out.println("dropped");
-        shell.removeTableFile(arguments.get(0));
-        if (arguments.get(0).equals(shell.getOpenedTableName())) {
-            shell.setOpenedTableName(null);
-            shell.setFileMap(null);
-        }
-        return null;
     }
 
     @Override

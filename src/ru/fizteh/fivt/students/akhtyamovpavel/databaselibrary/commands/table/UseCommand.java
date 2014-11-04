@@ -22,9 +22,7 @@ public class UseCommand extends TableCommand implements Command{
             throw new Exception("usage: use tableName");
         }
 
-        if (!onExistCheck(arguments.get(0), EXIST)) {
-            return null;
-        }
+
         if (shell.getOpenedTable() != null) {
             if (shell.getOpenedTableName().equals(arguments.get(0))) {
                 return "using " + arguments.get(0);
