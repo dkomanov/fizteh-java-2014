@@ -127,18 +127,15 @@ public class TableList {
         File fileName = new File(name);
         if (fileName.isFile()) {
             fileName.delete();
-            return;
         }
         if (fileName.isDirectory()) {
             if (fileName.list().length == 0) {
                 fileName.delete();
-                return;
             } else {
                 for (String s: fileName.list()) {
                     rm(Paths.get(fileName.getAbsolutePath()).resolve(s).toString());
                 }
                 fileName.delete();
-                return;
             }
         }
     }
