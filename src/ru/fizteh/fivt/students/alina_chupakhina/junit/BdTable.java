@@ -16,7 +16,7 @@ public class BdTable implements Table {
     public int unsavedChangesCounter;
     public int numOfState;
 
-    BdTable(String name, String pathname) throws Exception {
+    BdTable(String name, String pathname) {
         fm = new TreeMap<>();
         tableStates = new TreeMap<>();
         File dir = new File(pathname);
