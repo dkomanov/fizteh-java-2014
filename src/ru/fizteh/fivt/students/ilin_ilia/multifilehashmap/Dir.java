@@ -18,8 +18,6 @@ public class Dir {
                 String f = file.substring(0, file.length() - 4);
                 maps.put(Integer.parseInt(f), new FileMap(Paths.get(name.getAbsolutePath()).resolve(f).toString()));
             }
-        } else {
-            //name.mkdir();
         }
     }
 
