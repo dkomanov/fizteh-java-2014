@@ -11,8 +11,9 @@ import java.io.IOException;
  */
 public class Commit extends Action {
     @Override
-    public boolean run(String[] args, Database db) throws IOException, IncorrectFileException, TableNotCreatedException {
-        if (checkNumberOfArguments(0,args.length)) {
+    public boolean run(String[] args, Database db)
+            throws IOException, IncorrectFileException, TableNotCreatedException {
+        if (checkNumberOfArguments(0, args.length)) {
             if (db.currentTable == null) {
                 System.err.println("no table");
                 return false;

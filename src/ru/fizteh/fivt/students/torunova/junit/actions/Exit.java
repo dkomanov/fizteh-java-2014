@@ -13,8 +13,9 @@ public class Exit extends Action {
 
 
     @Override
-    public boolean run(String[] args, Database db) throws IOException, IncorrectFileException, TableNotCreatedException {
-        if (checkNumberOfArguments(0,args.length)) {
+    public boolean run(String[] args, Database db)
+            throws IOException, IncorrectFileException, TableNotCreatedException {
+        if (checkNumberOfArguments(0, args.length)) {
             if (db.exit()) {
                 System.exit(0);
             }

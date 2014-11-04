@@ -11,8 +11,9 @@ import java.io.IOException;
  */
 public class Size extends Action {
     @Override
-    public boolean run(String[] args, Database db) throws IOException, IncorrectFileException, TableNotCreatedException {
-        if (!checkNumberOfArguments(0,args.length)) {
+    public boolean run(String[] args, Database db)
+            throws IOException, IncorrectFileException, TableNotCreatedException {
+        if (!checkNumberOfArguments(0, args.length)) {
             return false;
         }
         if (db.currentTable == null) {
