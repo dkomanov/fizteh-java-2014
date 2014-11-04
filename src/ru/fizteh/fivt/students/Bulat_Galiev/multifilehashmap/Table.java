@@ -40,7 +40,11 @@ public final class Table {
 
     public void get(final String key) throws IOException {
         DatabaseSerializer databaseFile = databaseFiles.get(new Key(key));
-        databaseFile.get(key);
+        if (databaseFile != null) {
+            databaseFile.get(key);
+        } else {
+            System.out.println("not found");
+        }
     }
 
     public void put(final String key, final String value) throws IOException {
@@ -57,7 +61,11 @@ public final class Table {
 
     public void remove(final String key) throws IOException {
         DatabaseSerializer databaseFile = databaseFiles.get(new Key(key));
-        databaseFile.remove(key);
+        if (databaseFile != null) {
+            databaseFile.remove(key);
+        } else {
+            System.out.println("not found");
+        }
     }
 
     public int size() {
