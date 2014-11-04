@@ -64,7 +64,7 @@ public class Shell {
 	Method method = methodsMap.get(args[0]);
 	if (method == null) {
 	    Log.log(Shell.class,
-		    String.format("JUnitCommand not found by name %s", args[0]));
+		    String.format("Command not found by name %s", args[0]));
 	    System.err.println("Sorry, this command is missing");
 	    return false;
 	} else {

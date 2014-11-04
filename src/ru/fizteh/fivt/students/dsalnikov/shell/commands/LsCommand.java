@@ -25,7 +25,7 @@ public class LsCommand implements Command {
 
     public void execute(String[] s) throws IOException {
         if (s.length != 1) {
-            throw new IllegalArgumentException("Incorrect usage of JUnitCommand ls: wrong amount of arguments");
+            throw new IllegalArgumentException("Incorrect usage of Command ls: wrong amount of arguments");
         } else {
             ShellState sh = link.getState();
             File dir = new File(sh.getState());

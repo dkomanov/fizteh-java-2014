@@ -20,7 +20,7 @@ public class ExitCommand implements Command {
 
     public void execute(String[] st) {
         if (st.length != 1) {
-            throw new IllegalArgumentException("Incorrect usage of JUnitCommand exit: wrong amount of arguments");
+            throw new IllegalArgumentException("Incorrect usage of Command exit: wrong amount of arguments");
         } else {
             System.exit(0);
         }
