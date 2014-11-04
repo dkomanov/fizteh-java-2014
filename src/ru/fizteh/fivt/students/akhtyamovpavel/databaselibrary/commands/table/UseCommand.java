@@ -27,7 +27,7 @@ public class UseCommand extends TableCommand implements Command{
         }
         if (shell.getOpenedTable() != null) {
             if (shell.getOpenedTableName().equals(arguments.get(0))) {
-                return "using" + arguments.get(0);
+                return "using " + arguments.get(0);
             } else {
 
                 if (shell.getOpenedTable().hasUnsavedChanges()) {

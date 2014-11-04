@@ -20,11 +20,13 @@ public class PutCommand implements Command {
         if (arguments.size() != 2) {
             throw new Exception("usage: put key value");
         }
+        String result = shell.getOpenedTable().put(arguments.get(0), arguments.get(1));
         if (!shell.getOpenedTable().containsKey(arguments.get(0))) {
             shell.putKeyToTable(shell.getOpenedTableName());
+            return "new\n" + result;
+        } else {
+            return "overwrite\n" + result;
         }
-
-        return shell.getOpenedTable().put(arguments.get(0), arguments.get(1));
     }
 
     @Override

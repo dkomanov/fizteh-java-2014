@@ -160,14 +160,12 @@ public class DataBaseTable implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null key or value");
         }
-        if (tableData.containsKey(key)) {
-            System.out.println("overwrite");
-            String oldValue = tableData.get(key);
+        if (tempData.containsKey(key)) {
+            String oldValue = tempData.get(key);
             tempData.put(key, value);
             unsavedSize++;
             return oldValue;
         } else {
-            System.out.println("new");
             tempData.put(key, value);
             unsavedSize++;
             return value;
