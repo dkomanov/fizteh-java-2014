@@ -8,10 +8,6 @@ package ru.fizteh.fivt.students.Soshilov.MultiFileHashMap;
  */
 public class TableList implements Command {
     /**
-     * Correct quantity of arguments of this command.
-     */
-    final int argumentsCount = 0;
-    /**
      * List whole table.
      * @param args Commands that were entered.
      * @param db Our main table.
@@ -19,6 +15,7 @@ public class TableList implements Command {
      */
     @Override
     public void execute(final String[] args, DataBase db) throws CommandException {
+        final int argumentsCount = 0;
         Main.checkArguments("list", args.length, argumentsCount);
 
         if (db.currentTableExists()) {

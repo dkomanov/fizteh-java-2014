@@ -36,14 +36,14 @@ public class Table extends HashMap<String, String> {
      * @param filePath The path to file read from.
      * @param dir Expected dir name.
      * @param file Expected file name.
-     * @throws Exception All exceptions than could be thrown by different problems with reading from file.
+     * @throws IOException All exceptions than could be thrown by different problems with reading from file.
      */
-    private void readKeyAndValue(final Path filePath, final int dir, final int file) throws Exception {
+    private void readKeyAndValue(final Path filePath, final int dir, final int file) throws IOException {
         //If File(filePath) does not exist, get away from here.
         if (Files.exists(filePath)) {
             try (DataInputStream inputStream = new DataInputStream(Files.newInputStream(filePath))) {
                 if (inputStream.available() == 0) {
-                    throw new Exception("file '" + filePath + "' is empty");
+                    throw new IOException("file '" + filePath + "' is empty");
                 }
                 while (inputStream.available() > 0) {
                     //available from FilterInputStream Returns an estimate of the number of bytes that can be read.
@@ -51,7 +51,7 @@ public class Table extends HashMap<String, String> {
                     //readInt from DataInput Reads four input bytes and returns an int value.
 
                     if (inputStream.available() < keyLength) {
-                        throw new Exception("wrong key size");
+                        throw new IOException("wrong key size");
                     }
 
                     byte[] keyInBytes = new byte[keyLength];
@@ -60,7 +60,7 @@ public class Table extends HashMap<String, String> {
 
                     int valueLength = inputStream.readInt();
                     if (inputStream.available() < valueLength) {
-                        throw new Exception("wrong value size");
+                        throw new IOException("wrong value size");
                     }
                     byte[] valueInBytes = new byte[valueLength];
                     inputStream.read(valueInBytes, 0, valueLength);
@@ -70,23 +70,23 @@ public class Table extends HashMap<String, String> {
 
                     int hashValue = keyString.hashCode();
                     if (hashValue % F_AND_DIR_COUNT != dir || hashValue / F_AND_DIR_COUNT % F_AND_DIR_COUNT != file) {
-                        throw new Exception("wrong key file");
+                        throw new IOException("wrong key file");
                     }
 
                     put(keyString, valueString);
                 }
 
             } catch (IOException e) {
-                throw new Exception("cannot read from file");
+                throw new IOException("cannot read from file");
             }
         }
     }
 
     /**
      * Reading and filling the HashMap from every file.
-     * @throws Exception All exceptions than could be thrown from previous method readKeyAndValue.
+     * @throws IOException All exceptions than could be thrown from previous method readKeyAndValue.
      */
-    public void read() throws Exception {
+    public void read() throws IOException {
         clear();
         //first clear the HashMap
         for (int dir = 0; dir < F_AND_DIR_COUNT; ++dir) {
@@ -94,7 +94,7 @@ public class Table extends HashMap<String, String> {
                 Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
                 try {
                     readKeyAndValue(filePath, dir, file);
-                } catch (Exception ex) {
+                } catch (IOException ex) {
                     System.err.println(ex.getMessage());
                     System.exit(1);
                 }
@@ -107,9 +107,9 @@ public class Table extends HashMap<String, String> {
      * @param filePath A path to a File to write to.
      * @param keyStr A String presentment of key.
      * @param valueStr A String presentment of value.
-     * @throws Exception All exceptions than could be writing to file.
+     * @throws IOException All exceptions than could be writing to file.
      */
-    private void writeKeyAndValue(final Path filePath, final String keyStr, final String valueStr) throws Exception {
+    private void writeKeyAndValue(final Path filePath, final String keyStr, final String valueStr) throws IOException {
         try (DataOutputStream outputStream = new DataOutputStream(Files.newOutputStream(filePath))) {
             byte[] keyInBytes = keyStr.getBytes("UTF-8");
             byte[] valueInBytes = valueStr.getBytes("UTF-8");
@@ -120,22 +120,22 @@ public class Table extends HashMap<String, String> {
             outputStream.writeInt(valueInBytes.length);
             outputStream.write(valueInBytes);
         } catch (IOException ex) {
-            throw new Exception("cannot read from file");
+            throw new IOException("cannot read from file");
         }
     }
 
     /**
      * Write the content of HashMap (by using Nested Class).
-     * @throws Exception All exceptions than could be thrown from previous method writeKeyAndValue.
+     * @throws IOException All exceptions than could be thrown from previous method writeKeyAndValue.
      */
-    public void write() throws Exception {
+    public void write() throws IOException {
         if (Files.exists(tablePath)) {
-            throw new Exception("directory exists: an empty directory must not exist");
+            throw new IOException("directory exists: an empty directory must not exist");
         } else {
             try {
                 Files.createDirectory(tablePath);
             } catch (IOException ex) {
-                throw new Exception("cannot create a directory");
+                throw new IOException("cannot create a directory");
             }
         }
 
@@ -155,14 +155,14 @@ public class Table extends HashMap<String, String> {
                 try {
                     Files.createDirectory(dirPath);
                 } catch (IOException ex) {
-                    throw new Exception("cannot create '" + dirPath + "'");
+                    throw new IOException("cannot create '" + dirPath + "'");
                 }
             }
             if (!Files.exists(filePath)) {
                 try {
                     Files.createFile(filePath);
                 } catch (IOException ex) {
-                    throw new Exception("cannot create '" + filePath + "'");
+                    throw new IOException("cannot create '" + filePath + "'");
                 }
             }
             writeKeyAndValue(filePath, keyInString, valueInString);

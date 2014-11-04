@@ -8,10 +8,6 @@ package ru.fizteh.fivt.students.Soshilov.MultiFileHashMap;
  */
 public class TableRemove implements Command {
     /**
-     * Correct quantity of arguments of this command.
-     */
-    final int argumentsCount = 1;
-    /**
      * Remove key + value by getting the key as argument.
      * @param args Commands that were entered.
      * @param db Our main table.
@@ -19,6 +15,7 @@ public class TableRemove implements Command {
      */
     @Override
     public void execute(final String[] args, DataBase db) throws CommandException {
+        final int argumentsCount = 1;
         Main.checkArguments("remove", args.length, argumentsCount);
 
         if (db.currentTableExists()) {

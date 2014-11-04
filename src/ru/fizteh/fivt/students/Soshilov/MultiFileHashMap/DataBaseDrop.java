@@ -8,10 +8,6 @@ package ru.fizteh.fivt.students.Soshilov.MultiFileHashMap;
  */
 public class DataBaseDrop implements Command {
     /**
-     * Correct quantity of arguments of this command.
-     */
-    final int argumentsCount = 1;
-    /**
      * Drop (destroy) table.
      * @param args Commands that were entered.
      * @param db Our main table.
@@ -19,6 +15,7 @@ public class DataBaseDrop implements Command {
      */
     @Override
     public void execute(final String[] args, DataBase db) throws CommandException {
+        final int argumentsCount = 1;
         Main.checkArguments("drop", args.length, argumentsCount);
 
         if (db.removeTable(args[0]) == null) {

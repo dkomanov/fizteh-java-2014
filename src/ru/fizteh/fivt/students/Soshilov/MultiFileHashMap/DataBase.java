@@ -29,14 +29,6 @@ public class DataBase {
     private Path dbPath;
 
     /**
-     * Function, which can return a private field dbPath.
-     * @return Path value - dbPath.
-     */
-/*    public Path getDbPath() {
-        return dbPath;
-    }*/
-
-    /**
      * Resolve the given path against this path of main database.
      * @param other The path to resolve against this path.
      * @return The resulting path.
@@ -46,7 +38,7 @@ public class DataBase {
     }
 
     /**
-     * Function, that just return a set from map like entrySet().
+     * Return a set from map like entrySet().
      * @return A Set view of the mappings contained in this map.
      */
     public Set<Map.Entry<String, Table>> getSet() {
@@ -54,7 +46,7 @@ public class DataBase {
     }
 
     /**
-     * Function than just return a Table (value of map) by key like get().
+     * Return a Table (value of map) by key like get().
      * @param key A string - name of table.
      * @return The value to which the specified key is mapped, or null if this map contains no mapping for the key
      */
@@ -63,7 +55,7 @@ public class DataBase {
     }
 
     /**
-     * Function, thant puts a new pair of key and value in map.
+     * Puts a new pair of key and value in map.
      * @param key A string - name of table.
      * @param table A table - variable of Table type.
      * @return The previous value associated with key, or null if there was no mapping for key.
@@ -150,9 +142,10 @@ public class DataBase {
 
     /**
      * Reading from database (it contains 16 directories, each contains 16 files), by using read from class Table
-     * @throws Exception In case if we can not read from a table.
+     * @throws IOException Exception In case if we can not read from a table.
+     * @throws IllegalArgumentException Exception In case if we can not read from a table.
      */
-    public void read() throws Exception {
+    public void read() throws IOException, IllegalArgumentException {
         if (dbPath == null) {
             throw new IllegalArgumentException("no database path");
         } else if (!Files.exists(dbPath)) {
@@ -175,9 +168,9 @@ public class DataBase {
 
     /**
      * Writes to database from tables, by using write from class Table.
-     * @throws Exception In case if we can not write to a table.
+     * @throws IOException In case if we can not write to a table.
      */
-    public void write() throws Exception {
+    public void write() throws IOException {
         deleteDirectoryContent();
         for (HashMap.Entry<String, Table> entry: tables.entrySet()) {
             entry.getValue().write();

@@ -10,10 +10,6 @@ import java.util.HashMap;
  */
 public class DataBaseShowTables implements Command {
     /**
-     * Correct quantity of arguments of this command.
-     */
-    final int argumentsCount = 0;
-    /**
      * Show every table and its' elements' quantity.
      * @param args Commands that were entered.
      * @param db Our main table.
@@ -21,6 +17,7 @@ public class DataBaseShowTables implements Command {
      */
     @Override
     public void execute(final String[] args, DataBase db) throws CommandException {
+        final int argumentsCount = 0;
         Main.checkArguments("show tables", args.length, argumentsCount);
 
         for (HashMap.Entry<String, Table> entry: db.getSet()) {

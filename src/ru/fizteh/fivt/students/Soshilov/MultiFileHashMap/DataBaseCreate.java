@@ -10,10 +10,6 @@ import java.nio.file.Path;
  */
 public class DataBaseCreate implements Command {
     /**
-     * Correct quantity of arguments of this command.
-     */
-    final int argumentsCount = 1;
-    /**
      * Creates new table.
      * @param args Commands that were entered.
      * @param db Our main table.
@@ -21,6 +17,7 @@ public class DataBaseCreate implements Command {
      */
     @Override
     public void execute(final String[] args, DataBase db) throws CommandException {
+        final int argumentsCount = 1;
         Main.checkArguments("create", args.length, argumentsCount);
 
         String tableName = args[0];
