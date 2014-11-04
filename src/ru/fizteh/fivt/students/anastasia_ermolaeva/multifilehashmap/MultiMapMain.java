@@ -10,10 +10,6 @@ import java.util.*;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.*;
 
 public class MultiMapMain {
-    private MultiMapMain() {
-        //
-    }
-
     public static void main(final String[] args) {
         String rootDirectory = System.getProperty("fizteh.db.dir");
         Path rootDirectoryPath = Paths.get(rootDirectory);
@@ -114,9 +110,7 @@ public class MultiMapMain {
                             new Command("put", 3, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
-                                if (currentTableName.equals("")) {
-                                    System.out.println("no table");
-                                } else {
+                                if (tableS.checkCurrentTable()) {
                                     Map<String, String> currentStorage = map.get(currentTableName);
                                     if (!arguments[1].isEmpty() && !arguments[2].isEmpty()) {
                                         String key = arguments[1];
@@ -135,9 +129,7 @@ public class MultiMapMain {
                             new Command("get", 2, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
-                                if (currentTableName.equals("")) {
-                                    System.out.println("no table");
-                                } else {
+                                if (tableS.checkCurrentTable()) {
                                     Map<String, String> currentStorage = map.get(currentTableName);
                                     if (!arguments[1].isEmpty()) {
                                         String key = arguments[1];
@@ -153,9 +145,7 @@ public class MultiMapMain {
                             new Command("remove", 2, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
-                                if (currentTableName.equals("")) {
-                                    System.out.println("no table");
-                                } else {
+                                if (tableS.checkCurrentTable()) {
                                     Map<String, String> currentStorage = map.get(currentTableName);
                                     if (!arguments[1].isEmpty()) {
                                         String key = arguments[1];
@@ -171,9 +161,7 @@ public class MultiMapMain {
                             new Command("list", 1, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String currentTableName = tableS.getCurrentTableName();
-                                if (currentTableName.equals("")) {
-                                    System.out.println("no table");
-                                } else {
+                                if (tableS.checkCurrentTable()) {
                                     Map<String, String> currentStorage = map.get(currentTableName);
                                     List<String> list = new ArrayList<>(currentStorage.keySet());
                                     String joined = String.join(", ", list);
