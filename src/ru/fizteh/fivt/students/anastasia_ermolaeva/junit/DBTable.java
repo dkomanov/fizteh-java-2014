@@ -41,9 +41,9 @@ public class DBTable implements Table {
         sessionChanges = new HashMap<>();
     }
 
-    public static void main() {
+    /*public static void main() {
         //
-    }
+    }*/
     private void create() {
         try {
             read();
