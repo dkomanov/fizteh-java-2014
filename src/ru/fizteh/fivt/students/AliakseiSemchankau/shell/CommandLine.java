@@ -153,6 +153,7 @@ public class CommandLine {
     }
 
     public void doCD(Vector<String> args) {
+
         if (args.size() > 2) {
             throw new ShellException("too much arguments for cd");
         }
@@ -194,15 +195,6 @@ public class CommandLine {
 
     public void doCP(Vector<String> args) {
 
-        // for (String curArgument: args)
-        //System.out.println(curArgument);
-
-        // boolean wantToContinue;
-
-        //Scanner scan = new Scanner(System.in);
-
-        // wantToContinue = scan.hasNextBoolean();
-
         if (args.size() == 1) {
             throw new ShellException("no arguments for cp");
         }
@@ -238,9 +230,11 @@ public class CommandLine {
         if (!makeRecursion) {
             doNonRecursianCP(args);
         }
+
     }
 
     public void doRecursianCP(Vector<String> args) {
+
         Path objectToCopy = currentDirectory.resolve(args.get(2)).toAbsolutePath();
         Path addressToCopy = currentDirectory.resolve(args.get(3)).toAbsolutePath();
 
@@ -248,20 +242,19 @@ public class CommandLine {
         addressToCopy.normalize();
 
         if (subString(objectToCopy.toString(), addressToCopy.toString())) {
-            throw new ShellException("you are trying to copy a directory inside it");
+            throw new ShellException(objectToCopy + "you are trying to copy a directory inside it(doRecursianCP)");
         }
 
         if (!Files.exists(objectToCopy)) {
-            throw new ShellException("something wrong with that file");
+            throw new ShellException(objectToCopy + "something wrong with that file(doRecursianCP)");
         }
+
 
         if (!Files.isDirectory(addressToCopy)) {
-            throw new ShellException("adress is not a direction");
+            throw new ShellException(addressToCopy + " adress is not a direction");
         }
 
-
         addressToCopy = Paths.get(addressToCopy.toString(), objectToCopy.getFileName().toString());
-
 
         try {
             Files.copy(objectToCopy, addressToCopy, StandardCopyOption.REPLACE_EXISTING);
@@ -299,21 +292,30 @@ public class CommandLine {
         addressToCopy.normalize();
 
         if (!Files.exists(objectToCopy)) {
-            throw new ShellException("something wrong with that file");
+            throw new ShellException(objectToCopy + " something wrong with that file(doNonRecursianCP)");
         }
 
         if (Files.isDirectory(objectToCopy)) {
-            throw new ShellException("you are trying to make nonrekursive cp for directory");
+            throw new ShellException(objectToCopy + " you are trying to make nonrekursive cp for directory(doNonRecursianCP)");
         }
 
         if (!Files.isDirectory(addressToCopy)) {
-            throw new ShellException("adress is not a direction");
+            if (!Files.exists(addressToCopy)) {
+                try {
+                    Files.createFile(addressToCopy);
+                } catch (IOException ioexc) {
+                    throw new ShellException(addressToCopy + "can't create(doRecursianCP)");
+                }
+                //throw new ShellException(addressToCopy + " adress is not a direction");
+            }
+        } else {
+            addressToCopy = Paths.get(addressToCopy.toString(), objectToCopy.getFileName().toString());
         }
 
-        addressToCopy = Paths.get(addressToCopy.toString(), objectToCopy.getFileName().toString());
 
-        System.out.println(objectToCopy.toString());
-        System.out.println(addressToCopy.toString());
+
+        //System.out.println(objectToCopy.toString());
+        //System.out.println(addressToCopy.toString());
 
         // if (objectToCopy.equals(addressToCopy))
         // {
@@ -382,6 +384,9 @@ public class CommandLine {
         if (!makeRecursion) {
             doNonRecursianRM(args);
         }
+
+
+
     }
 
     public void doRecursianRM(Vector<String> args) {
