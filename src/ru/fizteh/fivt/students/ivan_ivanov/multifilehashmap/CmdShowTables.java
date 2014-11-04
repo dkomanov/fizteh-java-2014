@@ -33,11 +33,7 @@ public class CmdShowTables implements Command {
                     ((MultiFileHashMap) shell).getMFHMState().getCurrentTable()).getDataBase();
             MultiFileHashMapUtils.write(fileForWrite, mapForWrite);
         }
-
-        /*if (((MultiFileHashMap) shell).getMFHMState().getFlag() == 0) {
-            ((MultiFileHashMap) shell).getMFHMState().changeFlag();
-        }*/
-
+        
         System.out.println("table_name row_count");
 
         Set<String> tables = ((MultiFileHashMap) shell).getMFHMState().getTableSet();
