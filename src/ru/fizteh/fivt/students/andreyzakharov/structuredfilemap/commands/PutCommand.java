@@ -31,4 +31,9 @@ public class PutCommand implements Command {
             return "wrong type (" + e.getMessage() + ")";
         }
     }
+
+    @Override
+    public String toString() {
+        return "put";
+    }
 }

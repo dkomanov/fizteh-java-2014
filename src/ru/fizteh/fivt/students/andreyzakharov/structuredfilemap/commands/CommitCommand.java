@@ -14,4 +14,9 @@ public class CommitCommand implements Command {
         }
         return Integer.toString(connector.getCurrent().commit());
     }
+
+    @Override
+    public String toString() {
+        return "commit";
+    }
 }

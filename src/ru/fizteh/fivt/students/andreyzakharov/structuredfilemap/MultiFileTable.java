@@ -248,11 +248,7 @@ public class MultiFileTable implements Table {
         try (BufferedReader reader = Files.newBufferedReader(dbPath.resolve("signature.tsv"))){
             String line = reader.readLine();
             for (String token : line.split("\t")) {
-                try {
-                    signature.add(stringToClass(token));
-                } catch (ClassNotFoundException e) {
-                    throw new IOException("database: invalid signature file");
-                }
+                signature.add(stringToClass(token));
             }
         }
     }

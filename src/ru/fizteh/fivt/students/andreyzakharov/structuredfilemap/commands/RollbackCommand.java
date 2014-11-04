@@ -14,4 +14,9 @@ public class RollbackCommand implements Command {
         }
         return Integer.toString(connector.getCurrent().rollback());
     }
+
+    @Override
+    public String toString() {
+        return "rollback";
+    }
 }

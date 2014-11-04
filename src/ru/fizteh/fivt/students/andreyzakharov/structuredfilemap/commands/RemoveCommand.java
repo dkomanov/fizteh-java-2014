@@ -22,4 +22,9 @@ public class RemoveCommand implements Command {
             return "not found";
         }
     }
+
+    @Override
+    public String toString() {
+        return "remove";
+    }
 }

@@ -1,31 +1,39 @@
 package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MultiFileTableUtils {
+    static private Map<Class<?>, String> ctsMap = new HashMap<>();
+    static private Map<String, Class<?>> stcMap = new HashMap<>();
+
+    static {
+        ctsMap.put(Integer.class, "int");
+        ctsMap.put(Long.class, "long");
+        ctsMap.put(Float.class, "float");
+        ctsMap.put(Double.class, "double");
+        ctsMap.put(Byte.class, "byte");
+        ctsMap.put(Boolean.class, "boolean");
+        ctsMap.put(String.class, "String");
+
+        stcMap.put("int", Integer.class);
+        stcMap.put("long", Long.class);
+        stcMap.put("float", Float.class);
+        stcMap.put("double", Double.class);
+        stcMap.put("byte", Byte.class);
+        stcMap.put("boolean", Boolean.class);
+        stcMap.put("String", String.class);
+    }
+
     private MultiFileTableUtils() {
         // not used
     }
 
     public static String classToString(Class<?> type) {
-        if (type == Integer.class) return "int";
-        if (type == Long.class) return "long";
-        if (type == Float.class) return "float";
-        if (type == Double.class) return "double";
-        if (type == Boolean.class) return "bool";
-        if (type == Byte.class) return "byte";
-        if (type == String.class) return "String";
-        return null;
+        return ctsMap.get(type);
     }
 
-    public static Class<?> stringToClass(String string) throws ClassNotFoundException {
-        switch (string) {
-            case "int": return Integer.class;
-            case "long": return Long.class;
-            case "float": return Float.class;
-            case "double": return Double.class;
-            case "bool": return Boolean.class;
-            case "byte": return Byte.class;
-            case "String": return String.class;
-            default: throw new ClassNotFoundException("no such class");
-        }
+    public static Class<?> stringToClass(String string) {
+        return stcMap.get(string);
     }
 }

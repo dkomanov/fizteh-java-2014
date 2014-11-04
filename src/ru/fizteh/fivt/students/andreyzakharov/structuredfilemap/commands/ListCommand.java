@@ -21,4 +21,9 @@ public class ListCommand implements Command {
             return String.join(", ", keys);
         }
     }
+
+    @Override
+    public String toString() {
+        return "list";
+    }
 }

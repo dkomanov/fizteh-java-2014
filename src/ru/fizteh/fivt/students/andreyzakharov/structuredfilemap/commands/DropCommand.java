@@ -20,4 +20,9 @@ public class DropCommand implements Command {
         }
         return "deleted";
     }
+
+    @Override
+    public String toString() {
+        return "drop";
+    }
 }

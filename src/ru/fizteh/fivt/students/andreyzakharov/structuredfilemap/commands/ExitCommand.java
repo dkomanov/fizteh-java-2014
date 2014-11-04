@@ -13,4 +13,9 @@ public class ExitCommand implements Command {
         System.exit(0);
         return null; // silly Java
     }
+
+    @Override
+    public String toString() {
+        return "exit";
+    }
 }

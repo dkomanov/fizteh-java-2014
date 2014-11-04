@@ -31,4 +31,9 @@ public class UseCommand implements Command {
             return args[1] + " not exists";
         }
     }
+
+    @Override
+    public String toString() {
+        return "use";
+    }
 }

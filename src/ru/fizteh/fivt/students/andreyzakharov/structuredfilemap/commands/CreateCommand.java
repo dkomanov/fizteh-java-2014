@@ -23,11 +23,7 @@ public class CreateCommand implements Command {
         args[2] = args[2].substring(1);
         args[args.length-1] = args[args.length-1].substring(0, args[args.length-1].length()-1);
         for (int i = 2; i < args.length; ++i) {
-            try {
-                signature.add(stringToClass(args[i]));
-            } catch (ClassNotFoundException e) {
-                return "wrong type (invalid type specification)";
-            }
+            signature.add(stringToClass(args[i]));
         }
 
         Table newTable;
@@ -41,5 +37,10 @@ public class CreateCommand implements Command {
         } else {
             return "created";
         }
+    }
+
+    @Override
+    public String toString() {
+        return "create";
     }
 }

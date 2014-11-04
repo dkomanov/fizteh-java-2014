@@ -14,4 +14,9 @@ public class SizeCommand implements Command {
         }
         return Integer.toString(connector.getCurrent().size());
     }
+
+    @Override
+    public String toString() {
+        return "size";
+    }
 }

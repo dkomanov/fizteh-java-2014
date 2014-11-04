@@ -23,4 +23,9 @@ public class GetCommand implements Command {
             return "found\n" + connector.serialize(connector.getCurrent(), value);
         }
     }
+
+    @Override
+    public String toString() {
+        return "get";
+    }
 }

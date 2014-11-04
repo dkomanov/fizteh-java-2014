@@ -33,4 +33,9 @@ public class ShowCommand implements Command {
             return sb.substring(0, sb.length() - 1);
         }
     }
+
+    @Override
+    public String toString() {
+        return "show";
+    }
 }
