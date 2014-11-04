@@ -17,8 +17,8 @@ public class DataBaseDir {
         parentDirectory = new File(path);
         using = null;
         tables = new HashMap<>();
-        if (!Files.exists(parentDirectory.toPath())) {
-            throw new Exception("Databases directory does not exists");
+        if (!Files.exists(parentDirectory.toPath()) && !parentDirectory.mkdir()) {
+            throw new Exception("Cannot create working directory");
         }
         if (!parentDirectory.isDirectory()) {
             throw new Exception("Specified fizteh.db.dir is not a directory");
