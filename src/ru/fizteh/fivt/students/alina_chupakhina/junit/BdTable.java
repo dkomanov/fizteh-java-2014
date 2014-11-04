@@ -90,6 +90,9 @@ public class BdTable implements Table {
      */
     @Override
     public String remove(String key){
+        if (key == null) {
+            throw new IllegalArgumentException("Key or value is a null-string");
+        }
         String s = fm.remove(key);
         if (s != null) {
             unsavedChangesCounter++;
@@ -116,40 +119,45 @@ public class BdTable implements Table {
      * @return Количество сохранённых ключей.
      */
     @Override
-    public int commit() throws Exception {
+    public int commit() {
         String key;
         String value;
         rm();
-        for (Map.Entry<String, String> i : fm.entrySet()) {
-            key = i.getKey();
-            value = i.getValue();
-            Integer ndirectory = Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER);
-            Integer nfile = Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER);
-            String pathToDir = path + File.separator + ndirectory.toString()
-                    + ".dir";
-            //System.out.println(pathToDir);
-            File file = new File(pathToDir);
-            if (!file.exists()) {
-                file.mkdir();
+        try {
+            for (Map.Entry<String, String> i : fm.entrySet()) {
+                key = i.getKey();
+                value = i.getValue();
+                Integer ndirectory = Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER);
+                Integer nfile = Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER);
+                String pathToDir = path + File.separator + ndirectory.toString()
+                        + ".dir";
+                //System.out.println(pathToDir);
+                File file = new File(pathToDir);
+                if (!file.exists()) {
+                    file.mkdir();
+                }
+                String pathToFile = path + File.separator + ndirectory.toString()
+                        + ".dir" + File.separator + nfile.toString() + ".dat";
+                //System.out.println(pathToFile);
+                file = new File(pathToFile);
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                DataOutputStream outStream = new DataOutputStream(
+                        new FileOutputStream(pathToFile, true));
+                byte[] byteWord = key.getBytes("UTF-8");
+                outStream.writeInt(byteWord.length);
+                outStream.write(byteWord);
+                outStream.flush();
+                byteWord = value.getBytes("UTF-8");
+                outStream.writeInt(byteWord.length);
+                outStream.write(byteWord);
+                outStream.flush();
+                outStream.close();
             }
-            String pathToFile = path + File.separator + ndirectory.toString()
-                    + ".dir" + File.separator + nfile.toString() + ".dat";
-            //System.out.println(pathToFile);
-            file = new File(pathToFile);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            DataOutputStream outStream  = new DataOutputStream(
-                    new FileOutputStream(pathToFile, true));
-            byte[] byteWord = key.getBytes("UTF-8");
-            outStream.writeInt(byteWord.length);
-            outStream.write(byteWord);
-            outStream.flush();
-            byteWord = value.getBytes("UTF-8");
-            outStream.writeInt(byteWord.length);
-            outStream.write(byteWord);
-            outStream.flush();
-            outStream.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            System.exit(-1);
         }
         TableState ts = new TableState (fm, unsavedChangesCounter, numberOfElements);
         tableStates.put(++numOfState, ts);
@@ -158,14 +166,19 @@ public class BdTable implements Table {
         return n;
     }
 
-    public void rm() throws Exception {
+    public void rm() {
 
         File[] dirs = this.table.listFiles();
         if (dirs != null) {
             for (File dir : dirs) {
                 if (!dir.isDirectory()) {
-                    throw new Exception(dir.getName()
-                            + " is not directory");
+                    try {
+                        throw new Exception(dir.getName()
+                                + " is not directory");
+                    } catch (Exception e) {
+                        System.err.println(e.getMessage());
+                        System.exit(-1);
+                    }
                 }
                 File[] dats = dir.listFiles();
                 if (dats.length == 0) {
@@ -228,3 +241,4 @@ public class BdTable implements Table {
         return list;
     }
 }
+
