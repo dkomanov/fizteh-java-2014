@@ -59,7 +59,11 @@ public class FileMap {
     }
     
     public void exit() throws IOException {
-        fil.createNewFile();
+        try {
+            fil.createNewFile();
+        } catch (SecurityException e) {
+            System.err.println("Can't create the following file: \"" + fil.getName() + "\"");
+        }
         putFile();
     }
     
@@ -112,10 +116,12 @@ public class FileMap {
             }
         } catch (IOException e) {
             System.err.println("Can't read db file");
+            e.printStackTrace();
             file.close();
             System.exit(-1);
         } catch (Exception e) {
             System.err.println("Wrong input file");
+            e.printStackTrace();
             System.exit(-1);
         }
         try {
@@ -123,6 +129,7 @@ public class FileMap {
             file.close();
         } catch (IOException e) {
             System.err.println("Can't close db file");
+            e.printStackTrace();
             System.exit(-1);
         }
     }
@@ -157,6 +164,7 @@ public class FileMap {
             file.close();
         } catch (IOException e) {
             System.err.println("Can't write into a db file");
+            e.printStackTrace();
             System.exit(-1);
         }
     }
