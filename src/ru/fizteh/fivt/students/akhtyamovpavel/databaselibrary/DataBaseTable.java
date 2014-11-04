@@ -202,7 +202,7 @@ public class DataBaseTable implements Table {
     @Override
     public int commit() {
         int commitSize = unsavedSize;
-        tableData = tempData;
+        tableData = new HashMap<>(tempData);
         try {
             saveMap();
         } catch (Exception e) {

@@ -91,6 +91,62 @@ public class DataBaseTableTest {
         assertEquals(tableList, keyList);
     }
 
+    @Test
+    public void testRemove() {
+        database.createTable("table");
+        Table table = database.getTable("table");
+        for (int i = 0; i < 100; ++i) {
+            table.put(Integer.toString(i), Integer.toString(i));
+        }
+
+        for (int i = 0; i < 100; ++i) {
+            assertEquals(Integer.toString(i),
+                    table.remove(Integer.toString(i)));
+        }
+
+        for (int i = 0; i < 100; ++i) {
+            assertNull(table.remove(Integer.toString(i)));
+        }
+
+        try {
+            table.remove(null);
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testSize() {
+        database.createTable("table");
+        Table table = database.getTable("table");
+        for (int i = 0; i < 100; ++i) {
+            table.put(Integer.toString(i), Integer.toString(i));
+        }
+
+        assertEquals(table.size(), 100);
+        for (int i = 50; i < 1000; ++i) {
+            table.put(Integer.toString(i), "hello");
+        }
+        assertEquals(table.size(), 1000);
+
+        table.commit();
+
+        for (int i = 0; i < 500; ++i) {
+            table.remove(Integer.toString(i));
+        }
+
+
+        assertEquals(table.size(), 500);
+
+        table.rollback();
+
+        assertEquals(table.size(), 1000);
+
+    }
+
+
+
     @After
     public void releaseTables() {
         ArrayList<String> arguments = new ArrayList<>();
