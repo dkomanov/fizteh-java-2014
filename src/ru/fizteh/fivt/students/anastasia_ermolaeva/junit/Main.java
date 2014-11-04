@@ -4,12 +4,13 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Command;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.ExitException;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Interpreter;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.TableState;
 
 import java.util.List;
 import java.util.Map;
+
 
 public class Main {
 
@@ -50,7 +51,7 @@ public class Main {
                         }
                     }),
                     new Command("use", 2, (TableState tableS, String[] arguments) -> {
-                        TableHolder holder = (TableHolder) tableS.getTableHolder();
+                        TableHolder holder = (TableHolder)tableS.getTableHolder();
                         String tableName = arguments[1];
                         Table newCurrentTable = holder.getTable(tableName);
                         String currentTableName = tableS.getCurrentTableName();
@@ -73,7 +74,7 @@ public class Main {
                         }
                     }),
                     new Command("show tables", 1, (TableState tableS, String[] arguments) -> {
-                        TableHolder holder = (TableHolder) tableS.getTableHolder();
+                        TableHolder holder = (TableHolder)tableS.getTableHolder();
                         Map<String, DBTable> tables = holder.getTableMap();
                         System.out.println("table_name row_count");
                         for (Map.Entry<String, DBTable> entry : tables.entrySet()) {
@@ -82,11 +83,9 @@ public class Main {
                         }
                     }),
                     new Command("put", 3, (TableState tableS, String[] arguments) -> {
-                        TableHolder holder = (TableHolder) tableS.getTableHolder();
+                        TableHolder holder = (TableHolder)tableS.getTableHolder();
                         String currentTableName = tableS.getCurrentTableName();
-                        if (currentTableName.equals("")) {
-                            System.out.println("no table");
-                        } else {
+                        if (tableS.checkCurrentTable()) {
                             Table currentTable = holder.getTable(currentTableName);
                             String key = arguments[1];
                             String value = arguments[2];
@@ -100,11 +99,9 @@ public class Main {
                         }
                     }),
                     new Command("get", 2, (TableState tableS, String[] arguments) -> {
-                        TableHolder holder = (TableHolder) tableS.getTableHolder();
+                        TableHolder holder = (TableHolder)tableS.getTableHolder();
                         String currentTableName = tableS.getCurrentTableName();
-                        if (currentTableName.equals("")) {
-                            System.out.println("no table");
-                        } else {
+                        if (tableS.checkCurrentTable()) {
                             Table currentTable = holder.getTable(currentTableName);
                             String key = arguments[1];
                             String value = currentTable.get(key);
@@ -117,11 +114,9 @@ public class Main {
                         }
                     }),
                     new Command("remove", 2, (TableState tableS, String[] arguments) -> {
-                        TableHolder holder = (TableHolder) tableS.getTableHolder();
+                        TableHolder holder = (TableHolder)tableS.getTableHolder();
                         String currentTableName = tableS.getCurrentTableName();
-                        if (currentTableName.equals("")) {
-                            System.out.println("no table");
-                        } else {
+                        if (tableS.checkCurrentTable()) {
                             Table currentTable = holder.getTable(currentTableName);
                             String key = arguments[1];
                             String value = currentTable.remove(key);
@@ -133,11 +128,9 @@ public class Main {
                         }
                     }),
                     new Command("list", 1, (TableState tableS, String[] arguments) -> {
-                        TableHolder holder = (TableHolder) tableS.getTableHolder();
+                        TableHolder holder = (TableHolder)tableS.getTableHolder();
                         String currentTableName = tableS.getCurrentTableName();
-                        if (currentTableName.equals("")) {
-                            System.out.println("no table");
-                        } else {
+                        if (tableS.checkCurrentTable()) {
                             Table currentTable = holder.getTable(currentTableName);
                             List<String> list = currentTable.list();
                             String joined = String.join(", ", list);
@@ -145,43 +138,37 @@ public class Main {
                         }
                     }),
                     new Command("size", 1, (TableState tableS, String[] arguments) -> {
-                        TableHolder holder = (TableHolder) tableS.getTableHolder();
+                        TableHolder holder = (TableHolder)tableS.getTableHolder();
                         String currentTableName = tableS.getCurrentTableName();
-                        if (currentTableName.equals("")) {
-                            System.out.println("no table");
-                        } else {
+                        if (tableS.checkCurrentTable()) {
                             Table currentTable = holder.getTable(currentTableName);
                             System.out.println(currentTable.size());
                         }
                     }),
                     new Command("commit", 1, (TableState tableS, String[] arguments) ->  {
-                        TableHolder holder = (TableHolder) tableS.getTableHolder();
+                        TableHolder holder = (TableHolder)tableS.getTableHolder();
                         String currentTableName = tableS.getCurrentTableName();
-                        if (currentTableName.equals("")) {
-                            System.out.println("no table");
-                        } else {
+                        if (tableS.checkCurrentTable()) {
                             Table currentTable = holder.getTable(currentTableName);
                             System.out.println(currentTable.commit());
                         }
                     }),
                     new Command("rollback", 1, (TableState tableS, String[] arguments) ->  {
-                        TableHolder holder = (TableHolder) tableS.getTableHolder();
+                        TableHolder holder = (TableHolder)tableS.getTableHolder();
                         String currentTableName = tableS.getCurrentTableName();
-                        if (currentTableName.equals("")) {
-                            System.out.println("no table");
-                        } else {
+                        if (tableS.checkCurrentTable()) {
                             Table currentTable = holder.getTable(currentTableName);
                             System.out.println(currentTable.rollback());
                         }
                     }),
                     new Command("exit", 1, (TableState tableS, String[] arguments) -> {
-                        ((TableHolder) tableS.getTableHolder()).close();
+                        ((TableHolder)tableS.getTableHolder()).close();
                         System.out.println("exit");
                         System.exit(0);
                     })
             }).run(args);
         } catch (ExitException e) {
-            ((TableHolder) tableState.getTableHolder()).close();
+            ((TableHolder)tableState.getTableHolder()).close();
             System.exit(e.getStatus());
         }
     }
