@@ -40,30 +40,13 @@ public final class TableLoaderDumper {
         if (raFile.length() != 0) {
             try (ByteArrayOutputStream buf = new ByteArrayOutputStream()) {
                 long currentSeek = 0;
-                int b = -1;
                 LinkedList<String> keys = new LinkedList<>();
                 LinkedList<Integer> offsets = new LinkedList<>();
                 // Reading keys and offsets.
-                while ((b = (int) raFile.readByte()) != 0) {
-                    currentSeek++;
-                    buf.write(b);
-                }
-                currentSeek++;
-                keys.add(buf.toString("UTF-8"));
-                buf.reset();
-                int firstOffset = raFile.readInt();
-                offsets.add(firstOffset);
-                currentSeek += 4;
+                currentSeek = readKeyAndOffset(raFile, currentSeek, keys, offsets);
+                int firstOffset = offsets.getFirst();
                 while (currentSeek != firstOffset) {
-                    while ((b = (int) raFile.readByte()) != 0) {
-                        currentSeek++;
-                        buf.write(b);
-                    }
-                    currentSeek++;
-                    keys.add(buf.toString("UTF-8"));
-                    buf.reset();
-                    offsets.add(raFile.readInt());
-                    currentSeek += 4;
+                    currentSeek = readKeyAndOffset(raFile, currentSeek, keys, offsets);
                 }
                 // End of reading keys and offsets.
                 // Reading values and filling hashmap.
@@ -88,6 +71,24 @@ public final class TableLoaderDumper {
                 buf.reset();
             }
         }
+    }
+
+    private static long readKeyAndOffset(RandomAccessFile raFile, long currentSeek, LinkedList<String> keys,
+                                        LinkedList<Integer> offsets) throws IOException {
+        try (ByteArrayOutputStream buf = new ByteArrayOutputStream()) {
+            int b = -1;
+            while ((b = (int) raFile.readByte()) != 0) {
+                currentSeek++;
+                buf.write(b);
+            }
+            currentSeek++;
+            keys.add(buf.toString("UTF-8"));
+            buf.reset();
+            int offset = raFile.readInt();
+            offsets.add(offset);
+            currentSeek += 4;
+        }
+        return currentSeek;
     }
 
     // Table dumping methods.

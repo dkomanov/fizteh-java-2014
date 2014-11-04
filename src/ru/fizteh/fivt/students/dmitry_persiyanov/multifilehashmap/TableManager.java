@@ -82,12 +82,12 @@ public final class TableManager {
     }
 
     private static int keyValueDirNum(final String key) {
-        int b = key.getBytes()[0] + 128;
+        char b = key.charAt(0);
         return b % MAX_DIRS_FOR_TABLE;
     }
 
     private static int keyValueFileNum(final String key) {
-        int b = key.getBytes()[0] + 128;
+        char b = key.charAt(0);
         return b / MAX_DIRS_FOR_TABLE % MAX_FILES_FOR_DIR;
     }
 
