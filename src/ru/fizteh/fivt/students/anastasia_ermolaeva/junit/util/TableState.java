@@ -18,4 +18,14 @@ public class TableState {
     public final void setCurrentTableName(final String currentTableName) {
         this.currentTableName = currentTableName;
     }
+    /*
+    * False - no chosen table.
+    */
+    public final boolean checkCurrentTable() {
+        boolean result = currentTableName.equals("");
+        if (result) {
+            System.out.println("no table");
+        }
+        return !result;
+    }
 }
