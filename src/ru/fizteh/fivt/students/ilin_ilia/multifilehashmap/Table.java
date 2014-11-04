@@ -22,7 +22,11 @@ public class Table {
                 }
             }
         } else {
-            tableName.mkdir();
+            try {
+                tableName.mkdir();
+            } catch (SecurityException e) {
+                System.err.println("Can't create the following directory: \"" + tableName.getName() + "\"");
+            }
         }
     }
     
