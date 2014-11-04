@@ -12,8 +12,14 @@ public class Table implements Map<String, String>, AutoCloseable {
     static final int DIR_AMOUNT = 16;
     static final int FILES_AMOUNT = 16;
     private Map<String, String> allRecords = null;
-    private Path dbPath = null; // The table's directory.
-    private Path rootPath; //Root's directory.
+    /*
+    * Path to table's directory.
+    */
+    private Path dbPath;
+    /* 
+    * Path to root directory.
+    */
+    private Path rootPath; 
     private String name;
 
     public Table(final Path rootPath, final String name)  {
@@ -65,7 +71,9 @@ public class Table implements Map<String, String>, AutoCloseable {
         }
         File[] tableDirectories = pathDirectory.listFiles();
         for (File t: tableDirectories) {
-            // Checking subdirectories.
+            /*
+            * Checking subdirectories.
+            */
             if (!t.isDirectory()) {
                 System.err.println("Table subdirectories "
                         + "are not actually directories");
@@ -198,7 +206,9 @@ public class Table implements Map<String, String>, AutoCloseable {
                             throw new ExitException(1);
                         }
                 } else {
-                //Deleting empty files and directories.
+                /*
+                * Deleting empty files and directories.
+                */
                     Integer nDirectory = i;
                     Integer nFile = j;
                     String newPath = dbPath.toAbsolutePath().toString()
