@@ -21,9 +21,12 @@ public class RollbackCommand implements Command {
         if (!arguments.isEmpty()) {
             throw new Exception("usage rollback");
         }
+        if (table.getOpenedTable() == null) {
+            return "no table";
+        }
 
         try {
-            String result = Integer.toString(table.getOpenedTable().rollback()) + " unsaved changes";
+            String result = Integer.toString(table.getOpenedTable().rollback());
             table.rollbackTableSize(table.getOpenedTableName());
             return result;
         } catch (Exception e) {

@@ -2,9 +2,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.table;
 
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.Command;
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.fileshell.RemoveCommand;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**

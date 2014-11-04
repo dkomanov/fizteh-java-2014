@@ -11,4 +11,8 @@ public class DataBaseTableProviderFactory implements TableProviderFactory {
     public DataBaseTableProvider create(String dir) {
         return new DataBaseTableProvider(dir);
     }
+
+    public DataBaseTableProvider create(String dir, boolean testMode) throws Exception {
+        return new DataBaseTableProvider(dir, testMode);
+    }
 }

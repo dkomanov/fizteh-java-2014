@@ -20,7 +20,9 @@ public class PutCommand implements Command {
         if (arguments.size() != 2) {
             throw new Exception("usage: put key value");
         }
-
+        if (shell.getOpenedTable() == null) {
+            return "no table";
+        }
         if (!shell.getOpenedTable().containsKey(arguments.get(0))) {
             shell.putKeyToTable(shell.getOpenedTableName());
             String result = shell.getOpenedTable().put(arguments.get(0), arguments.get(1));

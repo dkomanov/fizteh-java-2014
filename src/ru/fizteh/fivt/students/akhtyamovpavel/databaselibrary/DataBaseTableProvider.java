@@ -4,18 +4,13 @@ package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.Command;
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.CommitCommand;
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.ListCommand;
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.PutCommand;
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.RollbackCommand;
+import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.*;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.fileshell.MakeDirectoryCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.fileshell.RemoveCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.table.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +27,31 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
     private String openedTableName;
     private DataBaseTable fileMap;
     private HashMap<String, Integer> tableSet;
+
+    public DataBaseTableProvider(String dir) {
+        try {
+            initDataBaseDirectory(dir);
+            onLoadCheck();
+        } catch (Exception e) {
+            printException(e.getMessage());
+        }
+
+        try {
+            initCommands();
+            initTableSizes();
+        } catch (Exception e) {
+            printException(e.getMessage());
+        }
+    }
+
+    public DataBaseTableProvider(String dir, boolean testMode) throws Exception {
+        if (testMode) {
+            initDataBaseDirectory(dir);
+            onLoadCheck();
+            initCommands();
+            initTableSizes();
+        }
+    }
 
     public void removeTableFile(String table) {
         tableSet.remove(table);
@@ -60,21 +80,6 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         tableSet.put(table, value);
     }
 
-    public DataBaseTableProvider(String dir) {
-        try {
-            initDataBaseDirectory(dir);
-            onLoadCheck();
-        } catch (Exception e) {
-            printException(e.getMessage());
-        }
-        initCommands();
-        try {
-            initTableSizes();
-        } catch (Exception e) {
-            printException(e.getMessage());
-        }
-    }
-
     private void initDataBaseDirectory(String dir) {
         dataBaseDirectory = Paths.get(System.getProperty("user.dir")).resolve(dir);
         fileMap = null;
@@ -90,6 +95,7 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         addCommand(new ExitCommand(this));
         addCommand(new UseCommand(this, false));
         addCommand(new ShowTablesCommand(this));
+        refreshCommands();
     }
 
     private void onLoadCheck() throws Exception {
@@ -132,7 +138,7 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
 
             String[] listOfFolders = newPath.toFile().list();
 
-            for (String interFolder: listOfFolders) {
+            for (String interFolder : listOfFolders) {
                 if (!formats.contains(interFolder)) {
                     throw new Exception("connection: database was broken");
                 }
@@ -150,7 +156,7 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
 
     private void initTableSizes() throws Exception {
         String[] listOfTables = dataBaseDirectory.toFile().list();
-        for (String table: listOfTables) {
+        for (String table : listOfTables) {
             ArrayList<String> argument = new ArrayList<>();
             argument.add(table);
             new UseCommand(this, true).executeCommand(argument);
@@ -170,7 +176,6 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
     private void addCommand(Command command) {
         commandNames.put(command.getName(), command);
     }
-
 
 
     public Path getDataBaseDirectory() {
@@ -203,7 +208,7 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         commandNames.remove("rollback");
         addCommand(new PutCommand(this));
         addCommand(new ListCommand(this));
-        addCommand(new PutCommand(this));
+        addCommand(new GetCommand(this));
         addCommand(new ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.RemoveCommand(this));
         addCommand(new RollbackCommand(this));
         addCommand(new CommitCommand(this));
@@ -217,10 +222,19 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         if (name.equals(openedTableName)) {
             return fileMap;
         }
-        try {
-            fileMap = new DataBaseTable(getDataBaseDirectory(), name);
-        } catch (Exception e) {
+        if (onExistCheck(name, true) != null) {
             return null;
+        }
+        try {
+            if (fileMap != null && fileMap.hasUnsavedChanges()) {
+                throw new IllegalArgumentException(fileMap.getNumberOfChanges() + " unsaved changes");
+            }
+            fileMap = new DataBaseTable(getDataBaseDirectory(), name);
+            refreshCommands();
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException(iae.getMessage());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("connection error");
         }
         openedTableName = name;
         return fileMap;
@@ -266,14 +280,14 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         }
 
         if (!tableSet.containsKey(name)) {
-            throw new IllegalStateException(name + "not exists");
+            throw new IllegalStateException(name + " not exists");
         }
         ArrayList<String> argumentsForRemove = new ArrayList<String>();
         argumentsForRemove.add("-r");
         argumentsForRemove.add(name);
         try {
             new RemoveCommand(getDataBaseDirectory()).executeCommand(argumentsForRemove);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new IllegalArgumentException("wrong state");
         }
 

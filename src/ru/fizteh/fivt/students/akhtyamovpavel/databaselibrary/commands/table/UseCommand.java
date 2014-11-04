@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.table;
 
+import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.Command;
 
@@ -8,8 +9,9 @@ import java.util.ArrayList;
 /**
  * Created by user1 on 14.10.2014.
  */
-public class UseCommand extends TableCommand implements Command{
+public class UseCommand extends TableCommand implements Command {
     private boolean isSilent;
+
     public UseCommand(DataBaseTableProvider shell, boolean isSilent) {
         super(shell);
         this.isSilent = isSilent;
@@ -23,29 +25,19 @@ public class UseCommand extends TableCommand implements Command{
         }
 
 
-        if (shell.getOpenedTable() != null) {
-            if (shell.getOpenedTableName().equals(arguments.get(0))) {
-                return "using " + arguments.get(0);
-            } else {
-
-                if (shell.getOpenedTable().hasUnsavedChanges()) {
-                    throw new Exception(Integer.toString(shell.getOpenedTable()
-                            .getNumberOfChanges()) + " unsaved changes");
-                }
-            }
-        }
-
         try {
-            shell.getTable(arguments.get(0));
-            shell.refreshCommands();
+            Table table = shell.getTable(arguments.get(0));
             if (!isSilent) {
-
-                return "using " + arguments.get(0);
+                if (table == null) {
+                    return arguments.get(0) + " not exists";
+                } else {
+                    return "using " + arguments.get(0);
+                }
             } else {
                 return null;
             }
-        } catch (Exception e) {
-            throw new Exception("changing table error");
+        } catch (IllegalArgumentException iae) {
+            throw new Exception(iae.getMessage());
         }
 
     }

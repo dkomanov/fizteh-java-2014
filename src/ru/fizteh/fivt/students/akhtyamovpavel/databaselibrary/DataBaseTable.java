@@ -18,15 +18,13 @@ import java.util.List;
  * Created by user1 on 30.09.2014.
  */
 public class DataBaseTable implements Table {
+    public static final int NUMBER_OF_FILES = 16;
+    public static final int NUMBER_OF_DIRECTORIES = 16;
     Path dataBasePath;
     String tableName;
-
     HashMap<String, String> tableData;
     HashMap<String, String> tempData;
     int unsavedSize = 0;
-
-    public static final int NUMBER_OF_FILES = 16;
-    public static final int NUMBER_OF_DIRECTORIES = 16;
 
     public DataBaseTable(Path path, String tableName) throws Exception {
         tableData = new HashMap<>();
@@ -95,7 +93,7 @@ public class DataBaseTable implements Table {
                 listOfValues.get(i).add(new ArrayList<>());
             }
         }
-        for (HashMap.Entry<String, String> entry: tableData.entrySet()) {
+        for (HashMap.Entry<String, String> entry : tableData.entrySet()) {
             int hashCode = entry.getKey().hashCode();
             int directoryNumber = hashCode % 16;
             int fileNumber = hashCode / 16 % 16;
@@ -142,7 +140,7 @@ public class DataBaseTable implements Table {
 
     private void clearGarbage() throws Exception {
         String[] filesList = dataBasePath.toFile().list();
-        for (String fileName: filesList) {
+        for (String fileName : filesList) {
             ArrayList<String> arguments = new ArrayList<>();
             arguments.add("-r");
             arguments.add(fileName);

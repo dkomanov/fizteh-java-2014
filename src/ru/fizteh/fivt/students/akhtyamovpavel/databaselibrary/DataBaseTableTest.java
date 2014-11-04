@@ -15,10 +15,10 @@ import static org.junit.Assert.*;
 
 public class DataBaseTableTest {
 
+    public static final String PATH = "D:\\test\\test";
     private static DataBaseTableProviderFactory factory = new DataBaseTableProviderFactory();
     private static DataBaseTableProvider database;
 
-    public static final String PATH = "D:\\test\\test";
     @Before
     public void initDataBase() {
         database = factory.create(PATH);
@@ -173,7 +173,7 @@ public class DataBaseTableTest {
             assertTrue(false);
         }
         ArrayList<String> list = new ArrayList<>(loadedTable.list());
-        for (String key: list) {
+        for (String key : list) {
             assertEquals(loadedTable.get(key), key);
         }
 

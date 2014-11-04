@@ -14,10 +14,15 @@ public class CommitCommand implements Command {
     public CommitCommand(DataBaseTableProvider table) {
         this.table = table;
     }
+
     @Override
     public String executeCommand(ArrayList<String> arguments) throws Exception {
         if (!arguments.isEmpty()) {
             throw new Exception("usage: commit");
+        }
+
+        if (table.getOpenedTable() == null) {
+            return "no table";
         }
 
         try {
