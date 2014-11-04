@@ -4,7 +4,7 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Command;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.ExitException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Interpreter;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.TableState;
 
