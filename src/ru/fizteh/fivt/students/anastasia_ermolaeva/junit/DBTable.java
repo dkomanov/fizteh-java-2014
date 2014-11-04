@@ -81,7 +81,9 @@ public class DBTable implements Table {
         }
         File[] tableDirectories = pathDirectory.listFiles();
         for (File t : tableDirectories) {
-            // Checking subdirectories.
+            /*
+            *Checking subdirectories.
+            */
             if (!t.isDirectory()) {
                 throw new IllegalStateException("Table subdirectories "
                            + "are not actually directories");
@@ -214,7 +216,9 @@ public class DBTable implements Table {
                         throw new ExitException(1);
                     }
                 } else {
-                    //Deleting empty files and directories.
+                    /*
+                    *Deleting empty files and directories.
+                    */
                     Integer nDirectory = i;
                     Integer nFile = j;
                     Path newPath = dbPath.resolve(nDirectory.toString() + ".dir");
@@ -292,18 +296,22 @@ public class DBTable implements Table {
                     + "is a null-string");
         }
         /*
-        The record with key has already been changed
-        or added during the session.
+        * The record with key has already been changed
+        * or added during the session.
         */
         if (sessionChanges.containsKey(key)) {
             return sessionChanges.put(key, value);
         }
-        // The record with key hasn't been changed yet.
+        /*
+        *The record with key hasn't been changed yet.
+        */
         if (allRecords.containsKey(key)) {
            sessionChanges.put(key, value);
            return allRecords.get(key);
         }
-        // Absolutely new record
+        /*
+        * Absolutely new record.
+        */
         return sessionChanges.put(key, value);
     }
 
@@ -313,13 +321,15 @@ public class DBTable implements Table {
             throw new IllegalArgumentException("Key is a null-string");
         }
         if (sessionChanges.containsKey(key)) {
-            // The record with key has been deleted during the session.
+            /*
+            * The record with key has been deleted during the session.
+            */
             if (sessionChanges.get(key) == null) {
                 return null;
             } else {
                 /*
-                The record with key has already been changed
-                or added during the session.
+                * The record with key has already been changed
+                * or added during the session.
                 */
                 return sessionChanges.put(key, null);
             }
@@ -338,7 +348,9 @@ public class DBTable implements Table {
         keyList.addAll(allRecords.keySet());
         for (Map.Entry<String, String> entry: sessionChanges.entrySet()) {
             if (keyList.contains(entry.getKey())) {
-                // If the record was deleted during the session.
+                /* 
+                * If the record was deleted during the session.
+                */
                 if (entry.getValue() == null) {
                     keyList.remove(entry.getKey());
                 }
@@ -354,16 +366,22 @@ public class DBTable implements Table {
     @Override
     public int commit() {
         int numberOfChanges = sessionChanges.size();
-        // Execute changes to disk
+        /* 
+        * Execute changes to disk
+        */
         Map<String, String> tempStorage = new HashMap<>();
         tempStorage.putAll(allRecords);
         for (Map.Entry<String, String> entry: sessionChanges.entrySet()) {
             if (tempStorage.containsKey(entry.getKey())) {
-                // If the record was deleted during the session.
+                /* 
+                * If the record was deleted during the session.
+                */
                 if (entry.getValue() == null) {
                     tempStorage.remove(entry.getKey());
                 } else {
-                    //If the value was changed during the session.
+                    /*
+                    * If the value was changed during the session.
+                    */
                     tempStorage.put(entry.getKey(),
                             entry.getValue());
                 }
@@ -397,7 +415,9 @@ public class DBTable implements Table {
         keyList.addAll(allRecords.keySet());
         for (Map.Entry<String, String> entry: sessionChanges.entrySet()) {
             if (keyList.contains(entry.getKey())) {
-                // If the record was deleted during the session.
+                /*
+                * If the record was deleted during the session.
+                */
                 if (entry.getValue() == null) {
                     keyList.remove(entry.getKey());
                 }
