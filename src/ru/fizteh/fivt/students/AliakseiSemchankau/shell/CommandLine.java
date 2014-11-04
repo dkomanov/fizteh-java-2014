@@ -296,7 +296,7 @@ public class CommandLine {
         }
 
         if (Files.isDirectory(objectToCopy)) {
-            throw new ShellException(objectToCopy + " you are trying to make nonrekursive cp for directory(doNonRecursianCP)");
+            throw new ShellException(objectToCopy + " nonrekursive cp for directory(doNonRecursianCP)");
         }
 
         if (!Files.isDirectory(addressToCopy)) {
