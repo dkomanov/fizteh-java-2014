@@ -21,6 +21,11 @@ public class TableList {
                 dB.put(file, new Table(Paths.get(path).resolve(file).toString()));
             }
         } else {
+            try {
+                userDir.mkdir();
+            } catch (SecurityException e) {
+                System.err.println("Can't create the following directory: \"" + userDir.getName() + "\"");
+            }
             userDir.mkdir();
         }
     }
