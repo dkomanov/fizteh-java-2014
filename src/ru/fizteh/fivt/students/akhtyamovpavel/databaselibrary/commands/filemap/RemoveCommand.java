@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap;
 
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTable;
+import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.Command;
 
 import java.util.ArrayList;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
  * Created by user1 on 06.10.2014.
  */
 public class RemoveCommand implements Command {
-    private DataBaseTable shell;
+    private DataBaseTableProvider shell;
 
-    public RemoveCommand(DataBaseTable shell) {
+    public RemoveCommand(DataBaseTableProvider shell) {
         this.shell = shell;
     }
 
@@ -21,11 +21,12 @@ public class RemoveCommand implements Command {
             throw new Exception("usage: remove key");
         }
 
-        if (shell == null) {
+        if (shell.getOpenedTable() == null) {
             return "no table";
         }
-        if (shell.containsKey(arguments.get(0))) {
-            shell.remove(arguments.get(0));
+        if (shell.getOpenedTable().containsKey(arguments.get(0))) {
+            shell.getOpenedTable().remove(arguments.get(0));
+            shell.removeKeyFromTable(arguments.get(0));
             return "removed";
         } else {
             return "not found";

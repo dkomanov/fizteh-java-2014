@@ -218,7 +218,9 @@ public class DataBaseTable implements Table {
     @Override
     public int rollback() {
         tempData = new HashMap<>(tableData);
-        return unsavedSize;
+        int resultSize = unsavedSize;
+        unsavedSize = 0;
+        return resultSize;
     }
 
     @Override

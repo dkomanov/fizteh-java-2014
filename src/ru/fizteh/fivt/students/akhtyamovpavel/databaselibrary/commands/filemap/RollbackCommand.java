@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap;
 
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTable;
+import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.Command;
 
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
  */
 public class RollbackCommand implements Command {
 
-    private DataBaseTable table;
+    private DataBaseTableProvider table;
 
-    public RollbackCommand(DataBaseTable table) {
+    public RollbackCommand(DataBaseTableProvider table) {
         this.table = table;
     }
 
@@ -23,8 +23,11 @@ public class RollbackCommand implements Command {
         }
 
         try {
-            return Integer.toString(table.rollback()) + " unsaved changes";
+            String result = Integer.toString(table.getOpenedTable().rollback()) + " unsaved changes";
+            table.rollbackTableSize(table.getOpenedTableName());
+            return result;
         } catch (Exception e) {
+
             throw new Exception(e.getMessage());
         }
     }

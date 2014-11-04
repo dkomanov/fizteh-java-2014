@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap;
 
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTable;
+import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.Command;
 
 import java.util.ArrayList;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
  * Created by user1 on 06.10.2014.
  */
 public class ListCommand implements Command {
-    private DataBaseTable shell;
+    private DataBaseTableProvider shell;
 
-    public ListCommand(DataBaseTable shell) {
+    public ListCommand(DataBaseTableProvider shell) {
         this.shell = shell;
     }
 
@@ -21,10 +21,10 @@ public class ListCommand implements Command {
         if (!arguments.isEmpty()) {
             throw new Exception("usage: list");
         }
-        if (shell == null) {
+        if (shell.getOpenedTable() == null) {
             return "no table";
         }
-        return String.join(",", shell.list());
+        return String.join(",", shell.getOpenedTable().list());
     }
 
     @Override

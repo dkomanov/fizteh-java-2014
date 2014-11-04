@@ -53,8 +53,11 @@ public abstract class AbstractTableProvider {
     private void processCommand(CommandStorage command) {
         try {
             if (commandNames.containsKey(command.getCommandName())) {
-                System.out.println(commandNames.get(command.getCommandName())
-                        .executeCommand(command.getArgumentsList()));
+                String message = commandNames.get(command.getCommandName())
+                        .executeCommand(command.getArgumentsList());
+                if (message != null) {
+                    System.out.println(message);
+                }
             } else {
                 printException(command.getCommandName() + ": command not found");
             }

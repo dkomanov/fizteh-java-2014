@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap;
 
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTable;
+import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.Command;
 
 import java.util.ArrayList;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
  * Created by user1 on 06.10.2014.
  */
 public class PutCommand implements Command {
-    private DataBaseTable shell;
+    private DataBaseTableProvider shell;
 
-    public PutCommand(DataBaseTable shell) {
+    public PutCommand(DataBaseTableProvider shell) {
         this.shell = shell;
     }
 
@@ -20,7 +20,11 @@ public class PutCommand implements Command {
         if (arguments.size() != 2) {
             throw new Exception("usage: put key value");
         }
-        return shell.put(arguments.get(0), arguments.get(1));
+        if (!shell.getOpenedTable().containsKey(arguments.get(0))) {
+            shell.putKeyToTable(shell.getOpenedTableName());
+        }
+
+        return shell.getOpenedTable().put(arguments.get(0), arguments.get(1));
     }
 
     @Override

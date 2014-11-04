@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap;
 
 
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTable;
+import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.Command;
 
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
  * Created by user1 on 06.10.2014.
  */
 public class GetCommand implements Command {
-    private DataBaseTable shell;
+    private DataBaseTableProvider shell;
 
-    public GetCommand(DataBaseTable shell) {
+    public GetCommand(DataBaseTableProvider shell) {
         this.shell = shell;
     }
 
@@ -21,11 +21,11 @@ public class GetCommand implements Command {
         if (arguments.size() != 1) {
             throw new Exception("usage: get key");
         }
-        if (shell == null) {
+        if (shell.getOpenedTable() == null) {
             return "no table";
         }
-        if (shell.containsKey(arguments.get(0))) {
-            return "found\n" + shell.get(arguments.get(0));
+        if (shell.getOpenedTable().containsKey(arguments.get(0))) {
+            return "found\n" + shell.getOpenedTable().get(arguments.get(0));
         } else {
             return "not found";
         }

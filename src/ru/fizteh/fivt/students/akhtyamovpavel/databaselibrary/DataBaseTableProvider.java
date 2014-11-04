@@ -8,12 +8,10 @@ import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.C
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.ListCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.PutCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.RollbackCommand;
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.fileshell.RemoveCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.table.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,6 +52,11 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         tableSet.put(table, value + 1);
     }
 
+    public void rollbackTableSize(String table) {
+        int value = fileMap.size();
+        tableSet.put(table, value);
+    }
+
     public DataBaseTableProvider(String dir) {
         try {
             initDataBaseDirectory(dir);
@@ -62,11 +65,11 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
             printException(e.getMessage());
         }
         initCommands();
-        /*try {
+        try {
             initTableSizes();
         } catch (Exception e) {
             printException(e.getMessage());
-        }*/
+        }
     }
 
     private void initDataBaseDirectory(String dir) {
@@ -141,10 +144,11 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         for (String table: listOfTables) {
             ArrayList<String> argument = new ArrayList<>();
             argument.add(table);
-            //new UseCommand(this, true).executeCommand(argument);
-            //tableSet.put(table, fileMap.size());
+            new UseCommand(this, true).executeCommand(argument);
+            tableSet.put(table, fileMap.size());
         }
         fileMap = null;
+        openedTableName = null;
     }
 
     @Override
@@ -188,12 +192,12 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         commandNames.remove("remove");
         commandNames.remove("commit");
         commandNames.remove("rollback");
-        addCommand(new PutCommand(fileMap));
-        addCommand(new ListCommand(fileMap));
-        addCommand(new PutCommand(fileMap));
-        addCommand(new ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.RemoveCommand(fileMap));
-        addCommand(new RollbackCommand(fileMap));
-        addCommand(new CommitCommand(fileMap));
+        addCommand(new PutCommand(this));
+        addCommand(new ListCommand(this));
+        addCommand(new PutCommand(this));
+        addCommand(new ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.filemap.RemoveCommand(this));
+        addCommand(new RollbackCommand(this));
+        addCommand(new CommitCommand(this));
     }
 
     @Override

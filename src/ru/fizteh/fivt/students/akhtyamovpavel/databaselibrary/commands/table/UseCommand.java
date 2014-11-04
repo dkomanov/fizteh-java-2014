@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.table;
 
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTable;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.Command;
 
@@ -30,6 +29,7 @@ public class UseCommand extends TableCommand implements Command{
             if (shell.getOpenedTableName().equals(arguments.get(0))) {
                 return "using" + arguments.get(0);
             } else {
+
                 if (shell.getOpenedTable().hasUnsavedChanges()) {
                     throw new Exception(Integer.toString(shell.getOpenedTable()
                             .getNumberOfChanges()) + " unsaved changes");
@@ -37,11 +37,11 @@ public class UseCommand extends TableCommand implements Command{
             }
         }
 
-
         try {
             shell.getTable(arguments.get(0));
             shell.refreshCommands();
             if (!isSilent) {
+
                 return "using " + arguments.get(0);
             } else {
                 return null;
