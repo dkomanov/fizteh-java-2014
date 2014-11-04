@@ -77,7 +77,11 @@ public class Dir {
     }
 
     public void save() throws IOException {
-        name.mkdir();
+        try {
+            name.mkdir();
+        } catch (SecurityException e) {
+            System.err.println("Can't create the following directory: \"" + name.getName() + "\"");
+        }
         for (int key: maps.keySet()) {
             maps.get(key).putFile();
             if (!maps.get(key).exists()) {
