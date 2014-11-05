@@ -1,14 +1,17 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.tests;
 
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.TableHolderFactory;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+
 import static org.junit.Assert.assertTrue;
 
 public class TableHolderFactoryTest {
@@ -20,6 +23,7 @@ public class TableHolderFactoryTest {
             throws Exception {
         testDirectory.toFile().mkdir();
     }
+
     @Test(expected = IllegalArgumentException.class)
     public final void testFactoryThrowsExceptionCreatedNullTableHolder() {
         TableProviderFactory test = new TableHolderFactory();
@@ -35,15 +39,28 @@ public class TableHolderFactoryTest {
     }
 
     @After
-    public final void tearDown() throws Exception {
-        for (File currentFile : testDirectory.toFile().listFiles()) {
-            if (currentFile.isDirectory()) {
-                for (File subFile : currentFile.listFiles()) {
-                    subFile.delete();
+    public final void tearDown() throws IOException {
+        Files.walkFileTree(testDirectory, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                    throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException e)
+                    throws IOException {
+                if (e == null) {
+                    Files.delete(dir);
+                    return FileVisitResult.CONTINUE;
+                } else {
+                        /*
+                         * directory iteration failed
+                          */
+                    throw e;
                 }
             }
-            currentFile.delete();
-        }
-        testDirectory.toFile().delete();
+        });
     }
 }
