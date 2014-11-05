@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.moskupols.multifilehashmap;
 import ru.fizteh.fivt.students.moskupols.cliutils.*;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.StringJoiner;
 
 /**
@@ -33,7 +35,7 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
                 return new Remove(argv);
 
             case "list":
-                return new List(argv);
+                return new ListCmd(argv);
 
             case "exit":
                 return new Exit(argv);
@@ -48,7 +50,9 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
                 return new Use(argv);
 
             case "show":
-                if (!"tables".equals(argv[1])) {
+                if (argv.length < 2) {
+                    throw new UnknownCommandException("show");
+                } else if (!"tables".equals(argv[1])) {
                     throw new UnknownCommandException("show " + argv[1]);
                 }
                 return new ShowTables(argv);
@@ -103,7 +107,6 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
                     System.out.println(String.format("%s exists", argv[1]));
                 } else {
                     System.out.println("created");
-                    provider.releaseTable(newTable);
                 }
             } catch (IOException e) {
                 throw new CommandExecutionException(this, "Error while creating: " + e.getMessage(), e);
@@ -121,9 +124,6 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
             checkArgumentNumber(this, 2, argv.length);
             try {
                 final boolean removingCur = currentTable != null && currentTable.getName().equals(argv[1]);
-                if (removingCur) {
-                    provider.releaseTable(currentTable);
-                }
                 if (provider.removeTable(argv[1])) {
                     System.out.println("dropped");
                 } else {
@@ -154,7 +154,7 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
                 } else {
                     if (currentTable != null) {
                         try {
-                            provider.releaseTable(currentTable);
+                            currentTable.flush();
                         } catch (IOException e) {
                             throw new CommandExecutionException(
                                     this, "Error while saving database: " + e.getMessage(), e);
@@ -178,18 +178,21 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
         @Override
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 2, argv.length);
+            List<String> lines = new LinkedList<>();
             for (String name : provider.listNames()) {
                 final int size;
                 try {
-                    final MultiFileMap table = provider.getTable(name);
+                    final MultiFileMap table =
+                            currentTable != null && name.equals(currentTable.getName())
+                                    ? currentTable
+                                    : provider.getTable(name);
                     size = table.size();
-                    provider.releaseTable(table);
                 } catch (IOException e) {
                     throw new CommandExecutionException(this, e.getMessage(), e);
                 }
-                System.out.println(String.format("%s %d", name, size));
+                lines.add(String.format("%s %d", name, size));
             }
-
+            lines.forEach(System.out::println);
         }
     }
 
@@ -203,7 +206,7 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
             checkArgumentNumber(this, 1, argv.length);
             if (currentTable != null) {
                 try {
-                    provider.releaseTable(currentTable);
+                    currentTable.flush();
                 } catch (IOException e) {
                     throw new CommandExecutionException(this, e.getMessage(), e);
                 }
@@ -212,8 +215,8 @@ public class MultiFileHashMapCommandFactory implements CommandFactory {
         }
     }
 
-    private class List extends MultiFileHashMapCommand {
-        protected List(String[] argv) {
+    private class ListCmd extends MultiFileHashMapCommand {
+        protected ListCmd(String[] argv) {
             super("list", argv);
         }
 
