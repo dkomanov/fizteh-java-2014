@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.tests;
 
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
