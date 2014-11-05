@@ -1,20 +1,19 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.junit;
 
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.DatabaseIOException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
 import java.util.ArrayList;
-
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DBTable implements Table {
     static final String DIR_SUFFIX = ".dir";
@@ -42,7 +41,7 @@ public class DBTable implements Table {
         this.name = name;
         allRecords = new HashMap<>();
         sessionChanges = new HashMap<>();
-        create();
+        read();
     }
 
     public DBTable(final Path rootPath, final String name,
@@ -53,67 +52,40 @@ public class DBTable implements Table {
         sessionChanges = new HashMap<>();
     }
 
-    private void create() {
-        try {
-            read();
-        } catch (ExitException e) {
-            System.exit(e.getStatus());
-        }
-    }
-
     public final Path getDBTablePath() {
         return dbPath;
     }
 
-    private String readUtil(final RandomAccessFile dbFile)
-            throws ExitException {
+    private String readUtil(final RandomAccessFile dbFile) {
         try {
             int wordLength = dbFile.readInt();
             byte[] word = new byte[wordLength];
             dbFile.read(word, 0, wordLength);
             return new String(word, ENCODING);
         } catch (IOException | SecurityException e) {
-            //System.err.println("Error reading the table");
-            throw new ExitException(e.getMessage(), 1);
+            throw new DatabaseIOException(e.getMessage());
         }
     }
 
-    private void read() throws ExitException {
-        File pathDirectory = dbPath.toFile();
-        if (pathDirectory.list() == null || pathDirectory.list().length == 0) {
-            return;
-        }
-        File[] tableDirectories = pathDirectory.listFiles();
-        for (File t : tableDirectories) {
-            /*
-            *Checking subdirectories.
-            */
-            if (!t.isDirectory()) {
-                throw new IllegalStateException("Table subdirectories "
-                        + "are not actually directories");
-            }
-        }
-        for (File directory : tableDirectories) {
+    private void read() {
+        Utility.checkDirectorySubdirs(dbPath);
+        for (File directory : dbPath.toFile().listFiles()) {
             File[] directoryFiles = directory.listFiles();
             int k = directory.getName().indexOf('.');
             if ((k < 0) || !(directory.getName().substring(k).equals(DIR_SUFFIX))) {
-                throw new IllegalStateException("Table subdirectories don't "
+                throw new DatabaseIOException("Table subdirectories don't "
                         + "have appropriate name");
             }
             try {
                 /*
-                Delete .dir and check(automatically )
-                if the subdirectory has the suitable name.
-                If not, then parseInt throws NumberFormatException,
-                error message is shown.
-                Then program would finish with exit code != 0.
+                * Delete .dir and check
+                * if the subdirectory has the suitable name.
                  */
                 if (directory.list().length == 0) {
-                    throw new IllegalStateException(
+                    throw new DatabaseIOException(
                             "Table has the wrong format");
                 }
-                int nDirectory = Integer.parseInt(
-                        directory.getName().substring(START_P, k));
+                Integer.parseInt(directory.getName().substring(START_P, k));
                 for (File file : directoryFiles) {
                     try {
                         k = file.getName().indexOf('.');
@@ -124,12 +96,11 @@ public class DBTable implements Table {
                         if ((k < 0)
                                 || !(file.getName().
                                 substring(k).equals(FILE_SUFFIX))) {
-                            throw new IllegalStateException(
+                            throw new DatabaseIOException(
                                     "Table subdirectory's files doesn't "
                                             + "have appropriate name");
                         }
-                        int nFile = Integer.parseInt(
-                                file.getName().substring(START_P, k));
+                        Integer.parseInt(file.getName().substring(START_P, k));
                         try (RandomAccessFile dbFile =
                                      new RandomAccessFile(
                                              file.getAbsolutePath(), "r")) {
@@ -143,11 +114,10 @@ public class DBTable implements Table {
                             }
                             dbFile.close();
                         } catch (IOException e) {
-                            //System.err.println();
-                            throw new ExitException(e.getMessage(), 1);
+                            throw new DatabaseIOException(e.getMessage());
                         }
                     } catch (NumberFormatException e) {
-                        throw new IllegalStateException("Subdirectories' files "
+                        throw new DatabaseIOException("Subdirectories' files "
                                 + "have wrong names, "
                                 + "expected: " + START_P + FILE_SUFFIX
                                 + (FILES_AMOUNT - 1) + FILE_SUFFIX);
@@ -155,7 +125,7 @@ public class DBTable implements Table {
                 }
             } catch (NumberFormatException e) {
                 throw new
-                        IllegalStateException("Subdirectories' names "
+                        DatabaseIOException("Subdirectories' names "
                         + "are wrong, "
                         + "expected: " + START_P + DIR_SUFFIX
                         + (DIR_AMOUNT - 1) + DIR_SUFFIX);
@@ -163,14 +133,14 @@ public class DBTable implements Table {
         }
     }
 
-    private void write(Map<String, String> records) throws ExitException {
+    private void write() {
         Map<String, String>[][] db = new Map[DIR_AMOUNT][FILES_AMOUNT];
         for (int i = 0; i < DIR_AMOUNT; i++) {
             for (int j = 0; j < FILES_AMOUNT; j++) {
                 db[i][j] = new HashMap<>();
             }
         }
-        for (Map.Entry<String, String> entry : records.entrySet()) {
+        for (Map.Entry<String, String> entry : allRecords.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             try {
@@ -180,34 +150,28 @@ public class DBTable implements Table {
                         % FILES_AMOUNT);
                 db[nDirectory][nFile].put(key, value);
             } catch (UnsupportedEncodingException e) {
-                //System.err.println();
-                throw new ExitException(e.getMessage(), 1);
+                throw new DatabaseIOException(e.getMessage());
             }
         }
         for (int i = 0; i < DIR_AMOUNT; i++) {
             for (int j = 0; j < FILES_AMOUNT; j++) {
                 if (!db[i][j].isEmpty()) {
-                    Integer nDirectory = i;
-                    Integer nFile = j;
-                    Path newPath = dbPath.resolve(nDirectory.toString() + DIR_SUFFIX);
+                    int nDirectory = i;
+                    int nFile = j;
+                    Path newPath = dbPath.resolve(nDirectory + DIR_SUFFIX);
                     File directory = newPath.toFile();
                     if (!directory.exists()) {
                         if (!directory.mkdir()) {
-                            //System.err.println();
-                            throw new ExitException("Cannot create directory", 1);
+                            throw new DatabaseIOException("Cannot create directory for files");
                         }
                     }
                     Path newFilePath = directory.toPath().
-                            resolve(nFile.toString() + FILE_SUFFIX);
-                    File file = newFilePath.toFile();
+                            resolve(nFile + FILE_SUFFIX);
                     try {
-                        file.createNewFile();
-                    } catch (IOException | SecurityException e) {
-                        //System.err.println(e.getMessage());
-                        throw new ExitException(e.getMessage(), 1);
-                    }
-                    try (RandomAccessFile dbFile = new
-                            RandomAccessFile(file, "rw")) {
+                        Files.deleteIfExists(newFilePath);
+                        Files.createFile(newFilePath);
+                        RandomAccessFile dbFile = new
+                                RandomAccessFile(newFilePath.toFile(), "rw");
                         dbFile.setLength(0);
                         for (Map.Entry<String, String> entry
                                 : db[i][j].entrySet()) {
@@ -218,58 +182,41 @@ public class DBTable implements Table {
                         }
                         dbFile.close();
                     } catch (IOException e) {
-                        //System.err.println(e.getMessage());
-                        throw new ExitException(e.getMessage(), 1);
+                        throw new DatabaseIOException(e.getMessage());
                     }
                 } else {
                     /*
                     *Deleting empty files and directories.
                     */
-                    Integer nDirectory = i;
-                    Integer nFile = j;
-                    Path newPath = dbPath.resolve(nDirectory.toString() + DIR_SUFFIX);
+                    int nDirectory = i;
+                    int nFile = j;
+                    Path newPath = dbPath.resolve(nDirectory + DIR_SUFFIX);
                     File directory = newPath.toFile();
                     if (directory.exists()) {
                         Path newFilePath = directory.toPath().
-                                resolve(nFile.toString() + FILE_SUFFIX);
+                                resolve(nFile + FILE_SUFFIX);
                         File file = newFilePath.toFile();
                         try {
                             Files.deleteIfExists(file.toPath());
-                        } catch (IOException | SecurityException e) {
-                            //System.err.println(e);
-                            throw new ExitException(e.getMessage(), 1);
-                        }
-                        if (directory.list().length == 0) {
-                            try {
+                            if (directory.list().length == 0) {
                                 Files.delete(directory.toPath());
-                            } catch (IOException e) {
-                                //System.err.println(e);
-                                throw new ExitException(e.getMessage(), 1);
                             }
+                        } catch (IOException | SecurityException e) {
+                            throw new DatabaseIOException(e.getMessage());
                         }
                     }
                 }
             }
         }
-        for (int i = 0; i < DIR_AMOUNT; i++) {
-            for (int j = 0; j < FILES_AMOUNT; j++) {
-                db[i][j].clear();
-            }
-        }
-    }
-
-    public final void close() {
-        commit();
     }
 
     private void writeUtil(final String word,
-                           final RandomAccessFile dbFile) throws ExitException {
+                           final RandomAccessFile dbFile) {
         try {
             dbFile.writeInt(word.getBytes(ENCODING).length);
             dbFile.write(word.getBytes(ENCODING));
         } catch (IOException e) {
-            //System.err.println(e.getMessage());
-            throw new ExitException(e.getMessage(), 1);
+            throw new DatabaseIOException(e.getMessage());
         }
     }
 
@@ -292,6 +239,32 @@ public class DBTable implements Table {
         } else {
             return allRecords.get(key);
         }
+    }
+
+    private Map<String, String> makeRelevantVersion() {
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.putAll(allRecords);
+        for (Map.Entry<String, String> entry : sessionChanges.entrySet()) {
+            if (resultMap.containsKey(entry.getKey())) {
+                /*
+                * If the record was deleted during the session.
+                */
+                if (entry.getValue() == null) {
+                    resultMap.remove(entry.getKey());
+                } else {
+                    /*
+                    * If the value was changed during the session.
+                    */
+                    resultMap.put(entry.getKey(),
+                            entry.getValue());
+                }
+            } else {
+                if (entry.getValue() != null) {
+                    resultMap.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return resultMap;
     }
 
     @Override
@@ -350,23 +323,7 @@ public class DBTable implements Table {
 
     @Override
     public int size() {
-        Set<String> keyList = new HashSet<>();
-        keyList.addAll(allRecords.keySet());
-        for (Map.Entry<String, String> entry : sessionChanges.entrySet()) {
-            if (keyList.contains(entry.getKey())) {
-                /* 
-                * If the record was deleted during the session.
-                */
-                if (entry.getValue() == null) {
-                    keyList.remove(entry.getKey());
-                }
-            } else {
-                if (entry.getValue() != null) {
-                    keyList.add(entry.getKey());
-                }
-            }
-        }
-        return keyList.size();
+        return makeRelevantVersion().size();
     }
 
     @Override
@@ -375,36 +332,10 @@ public class DBTable implements Table {
         /* 
         * Execute changes to disk
         */
-        Map<String, String> tempStorage = new HashMap<>();
-        tempStorage.putAll(allRecords);
-        for (Map.Entry<String, String> entry : sessionChanges.entrySet()) {
-            if (tempStorage.containsKey(entry.getKey())) {
-                /* 
-                * If the record was deleted during the session.
-                */
-                if (entry.getValue() == null) {
-                    tempStorage.remove(entry.getKey());
-                } else {
-                    /*
-                    * If the value was changed during the session.
-                    */
-                    tempStorage.put(entry.getKey(),
-                            entry.getValue());
-                }
-            } else {
-                if (entry.getValue() != null) {
-                    tempStorage.put(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-        try {
-            write(tempStorage);
-            allRecords = tempStorage;
-            //allRecords = Collections.synchronizedMap(tempStorage);
+        if (numberOfChanges != 0) {
+            allRecords = makeRelevantVersion();
+            write();
             sessionChanges.clear();
-        } catch (ExitException e) {
-            System.err.println("Error while commiting");
-            System.exit(e.getStatus());
         }
         return numberOfChanges;
     }
@@ -418,23 +349,9 @@ public class DBTable implements Table {
 
     @Override
     public List<String> list() {
-        Set<String> keyList = new HashSet<>();
-        keyList.addAll(allRecords.keySet());
-        for (Map.Entry<String, String> entry : sessionChanges.entrySet()) {
-            if (keyList.contains(entry.getKey())) {
-                /*
-                * If the record was deleted during the session.
-                */
-                if (entry.getValue() == null) {
-                    keyList.remove(entry.getKey());
-                }
-            } else {
-                keyList.add(entry.getKey());
-            }
-        }
+        Map<String, String> relevantMap = makeRelevantVersion();
         List<String> list = new ArrayList<>();
-        list.addAll(keyList);
+        list.addAll(relevantMap.keySet());
         return list;
     }
 }
-
