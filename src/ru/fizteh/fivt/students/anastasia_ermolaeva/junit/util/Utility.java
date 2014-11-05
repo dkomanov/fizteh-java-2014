@@ -6,8 +6,9 @@ import java.nio.file.Path;
 public class Utility {
     public static void checkTableName(final String name) {
         if (name == null || name.contains(".")
-                || name.contains("\\") || name.contains("/"))
+                || name.contains("\\") || name.contains("/")) {
             throw new IllegalArgumentException("Table name is null or invalid");
+                }
     }
 
     public static void checkDirectorySubdirs(Path directory) {
