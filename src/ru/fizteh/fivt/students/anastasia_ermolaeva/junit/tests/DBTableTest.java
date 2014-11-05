@@ -77,6 +77,7 @@ public class DBTableTest {
     public final void testGetReturnsNullIfKeyIsNotFound() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.get(testKey1));
     }
 
@@ -91,7 +92,9 @@ public class DBTableTest {
     public final void testGetCalledForNonComittedKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertEquals(testValue1, test.get(testKey1));
     }
 
@@ -99,8 +102,11 @@ public class DBTableTest {
     public final void testGetCalledForComittedKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         test.commit();
+        
         assertEquals(testValue1, test.get(testKey1));
     }
 
@@ -108,8 +114,11 @@ public class DBTableTest {
     public final void testGetCalledForDeletedKeyBeforeCommit() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertEquals(testValue1, test.remove(testKey1));
+        
         assertNull(test.get(testKey1));
     }
 
@@ -132,6 +141,7 @@ public class DBTableTest {
     public final void testPutReturnsNullIfKeyHasNotBeenWrittenYet() {
         tableDirectoryPath.toFile().mkdir();
         DBTable test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
     }
 
@@ -140,6 +150,7 @@ public class DBTableTest {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
         test.put(testKey1, testValue1);
+        
         assertEquals(testValue1, test.put(testKey1, testValue2));
     }
 
@@ -155,6 +166,7 @@ public class DBTableTest {
     public final void testRemoveReturnsNullIfKeyIsNotFound() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.remove(testKey1));
     }
 
@@ -162,8 +174,11 @@ public class DBTableTest {
     public final void testRemoveCalledForDeletedKeyBeforeCommit() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertEquals(testValue1, test.remove(testKey1));
+        
         assertNull(test.remove(testKey1));
     }
 
@@ -171,21 +186,28 @@ public class DBTableTest {
     public final void testRemoveCalledForDeletedKeyAfterCommit() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertEquals(testValue1, test.remove(testKey1));
+        
         test.commit();
+        
         assertNull(test.remove(testKey1));
     }
 
     /*CommitTests.
     Also checks implicitly inside put, get and remove tests.
     */
+    
     @Test
     public final void testCommitCreatesRealFileOnTheDisk()
             throws UnsupportedEncodingException {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         test.commit();
         String subdirectoryName = Math.abs(testKey1.getBytes("UTF-8")[0]
                 % DIR_AMOUNT) + ".dir";
@@ -195,6 +217,7 @@ public class DBTableTest {
         Path filePath = Paths.get(testDirectory.toString(),
                 test.getName(),
                 subdirectoryName, fileName);
+                
         assertTrue(filePath.toFile().exists());
     }
 
@@ -202,10 +225,15 @@ public class DBTableTest {
     public final void testCommitOverwritesCommitedKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         test.commit();
+        
         assertEquals(testValue1, test.put(testKey1, testValue2));
+        
         test.commit();
+        
         assertEquals(testValue2, test.get(testKey1));
     }
 
@@ -213,10 +241,15 @@ public class DBTableTest {
     public final void testCommitRemovesExistentKeyAfterCommit() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         test.commit();
+        
         assertEquals(testValue1, test.remove(testKey1));
+        
         test.commit();
+        
         assertNull(test.get(testKey1));
     }
 
@@ -224,9 +257,13 @@ public class DBTableTest {
     public final void testCommitEmptiedAfterLoadingTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         test.commit();
+        
         assertEquals(testValue1, test.remove(testKey1));
+        
         test.commit();
         String subdirectoryName = Math.abs(testKey1.getBytes()[0]
                 % DIR_AMOUNT) + ".dir";
@@ -236,6 +273,7 @@ public class DBTableTest {
         Path filePath = Paths.get(testDirectory.toString(),
                 test.getName(),
                 subdirectoryName, fileName);
+                
         assertFalse(filePath.toFile().exists());
     }
 
@@ -243,7 +281,9 @@ public class DBTableTest {
     public final void testCommitReturnsNonZeroChangesPuttingNewRecord() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertEquals(1, test.commit());
     }
 
@@ -251,8 +291,11 @@ public class DBTableTest {
     public final void testCommitReturnsNotZeroChangesRewriting() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertEquals(testValue1, test.put(testKey1, testValue2));
+        
         assertEquals(1, test.commit());
     }
 
@@ -260,8 +303,11 @@ public class DBTableTest {
     public final void testCommitNoChanges() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertEquals(1, test.commit());
+        
         assertEquals(0, test.commit());
     }
 
@@ -270,11 +316,17 @@ public class DBTableTest {
     public final void testRollbackAfterPuttingNewKey() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertEquals(0, test.size());
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertEquals(1, test.size());
+        
         assertEquals(1, test.rollback());
+        
         assertEquals(0, test.size());
+        
         assertNull(test.get(testKey1));
     }
 
@@ -282,9 +334,13 @@ public class DBTableTest {
     public final void testRollbackNoChanges() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         test.rollback();
+        
         assertEquals(0, test.size());
+        
         assertEquals(0, test.rollback());
     }
 
@@ -293,6 +349,7 @@ public class DBTableTest {
     public final void testListCalledForEmptyTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertTrue(test.list().isEmpty());
     }
 
@@ -300,13 +357,17 @@ public class DBTableTest {
     public final void testListCalledForNonEmptyNewTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertNull(test.put(testKey2, testValue2));
+        
         Set<String> expectedKeySet = new HashSet<>();
         expectedKeySet.add(testKey1);
         expectedKeySet.add(testKey2);
         Set<String> tableKeySet = new HashSet<>();
         tableKeySet.addAll(test.list());
+        
         assertEquals(expectedKeySet, tableKeySet);
     }
 
@@ -314,14 +375,20 @@ public class DBTableTest {
     public final void testListCalledForNonEmptyCommitedTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertNull(test.put(testKey2, testValue2));
+        
         test.commit();
+        
         assertEquals(testValue2, test.remove(testKey2));
+        
         Set<String> expectedKeySet = new HashSet<>();
         expectedKeySet.add(testKey1);
         Set<String> tableKeySet = new HashSet<>();
         tableKeySet.addAll(test.list());
+        
         assertEquals(expectedKeySet, tableKeySet);
     }
 
@@ -330,9 +397,13 @@ public class DBTableTest {
     public final void testSizeCalledForNonEmptyNonCommitedTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertNull(test.put(testKey2, testValue2));
+        
         assertEquals(testValue2, test.remove(testKey2));
+        
         assertEquals(1, test.size());
     }
 
@@ -340,10 +411,15 @@ public class DBTableTest {
     public final void testSizeCalledForNonEmptyCommitedTable() {
         tableDirectoryPath.toFile().mkdir();
         Table test = new DBTable(testDirectory, tableName);
+        
         assertNull(test.put(testKey1, testValue1));
+        
         assertNull(test.put(testKey2, testValue2));
+        
         test.commit();
+        
         assertEquals(testValue2, test.remove(testKey2));
+        
         assertEquals(1, test.size());
     }
 
