@@ -64,7 +64,7 @@ public class MultiFileTable extends AbstractTable {
                 int nFile = hashCode / DIRECTORIES_NUMBER % FILES_NUMBER;
 
                 Path subDirectoryPath = getDirectoryPath(key);
-                Path filePath = getFilePath(key);
+                Path filePath = getFilePath(subDirectoryPath, key);
 
                 if (!Files.exists(subDirectoryPath)) {
                     Files.createDirectory(subDirectoryPath);
@@ -101,7 +101,7 @@ public class MultiFileTable extends AbstractTable {
                         value = reader.read();
 
                         Path subDirectoryPath = getDirectoryPath(key);
-                        Path filePath = getFilePath(key);
+                        Path filePath = getFilePath(subDirectoryPath, key);
 
                         if (directory.compareTo(subDirectoryPath) != 0
                                 || path.compareTo(filePath) != 0) {
@@ -124,11 +124,11 @@ public class MultiFileTable extends AbstractTable {
         return directoryPath.resolve(directoryName);
     }
 
-    private Path getFilePath(String key) {
+    private Path getFilePath(Path subDirectory,String key) {
         int hashCode = Math.abs(key.hashCode());
         int nFile = hashCode / DIRECTORIES_NUMBER % FILES_NUMBER;
 
         String fileName = new StringBuilder().append(nFile).append(".dat").toString();
-        return directoryPath.resolve(fileName);
+        return subDirectory.resolve(fileName);
     }
 }

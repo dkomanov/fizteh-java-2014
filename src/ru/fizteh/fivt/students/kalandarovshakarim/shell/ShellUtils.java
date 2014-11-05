@@ -95,8 +95,9 @@ public class ShellUtils {
             for (Path file : newDirectoryStream) {
                 if (Files.isDirectory(file)) {
                     rmDir(file);
+                } else {
+                    Files.delete(file);
                 }
-                Files.delete(file);
             }
             Files.delete(path);
         }
