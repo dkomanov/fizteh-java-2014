@@ -18,8 +18,12 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
 
 public class DBTable implements Table {
-    private static final int DIR_AMOUNT = 16;
-    private static final int FILES_AMOUNT = 16;
+    static final String DIR_SUFFIX = ".dir";
+    static final String FILE_SUFFIX = ".dat";
+    static final String ENCODING = "UTF-8";
+    static final int START_P = 0;
+    static final int DIR_AMOUNT = 16;
+    static final int FILES_AMOUNT = 16;
     /*
     * Records readed from real file.
     */
@@ -57,6 +61,7 @@ public class DBTable implements Table {
             System.exit(e.getStatus());
         }
     }
+
     public final Path getDBTablePath() {
         return dbPath;
     }
@@ -67,10 +72,10 @@ public class DBTable implements Table {
             int wordLength = dbFile.readInt();
             byte[] word = new byte[wordLength];
             dbFile.read(word, 0, wordLength);
-            return new String(word, "UTF-8");
+            return new String(word, ENCODING);
         } catch (IOException | SecurityException e) {
-            System.err.println("Error reading the table");
-            throw new ExitException(1);
+            //System.err.println("Error reading the table");
+            throw new ExitException(e.getMessage(), 1);
         }
     }
 
@@ -86,15 +91,15 @@ public class DBTable implements Table {
             */
             if (!t.isDirectory()) {
                 throw new IllegalStateException("Table subdirectories "
-                           + "are not actually directories");
+                        + "are not actually directories");
             }
         }
         for (File directory : tableDirectories) {
             File[] directoryFiles = directory.listFiles();
             int k = directory.getName().indexOf('.');
-            if ((k < 0) || !(directory.getName().substring(k).equals(".dir"))) {
+            if ((k < 0) || !(directory.getName().substring(k).equals(DIR_SUFFIX))) {
                 throw new IllegalStateException("Table subdirectories don't "
-                               + "have appropriate name");
+                        + "have appropriate name");
             }
             try {
                 /*
@@ -109,7 +114,7 @@ public class DBTable implements Table {
                             "Table has the wrong format");
                 }
                 int nDirectory = Integer.parseInt(
-                        directory.getName().substring(0, k));
+                        directory.getName().substring(START_P, k));
                 for (File file : directoryFiles) {
                     try {
                         k = file.getName().indexOf('.');
@@ -119,13 +124,13 @@ public class DBTable implements Table {
                         */
                         if ((k < 0)
                                 || !(file.getName().
-                                substring(k).equals(".dat"))) {
+                                substring(k).equals(FILE_SUFFIX))) {
                             throw new IllegalStateException(
                                     "Table subdirectory's files doesn't "
-                                         + "have appropriate name");
+                                            + "have appropriate name");
                         }
                         int nFile = Integer.parseInt(
-                                file.getName().substring(0, k));
+                                file.getName().substring(START_P, k));
                         try (RandomAccessFile dbFile =
                                      new RandomAccessFile(
                                              file.getAbsolutePath(), "r")) {
@@ -139,20 +144,22 @@ public class DBTable implements Table {
                             }
                             dbFile.close();
                         } catch (IOException e) {
-                            System.err.println("Error reading to table");
-                            throw new ExitException(1);
+                            //System.err.println();
+                            throw new ExitException(e.getMessage(), 1);
                         }
                     } catch (NumberFormatException e) {
                         throw new IllegalStateException("Subdirectories' files "
-                                    + "have wrong names, "
-                                     + "expected(0.dat-15.dat)");
+                                + "have wrong names, "
+                                + "expected: " + START_P + FILE_SUFFIX
+                                + (FILES_AMOUNT - 1) + FILE_SUFFIX);
                     }
                 }
             } catch (NumberFormatException e) {
                 throw new
                         IllegalStateException("Subdirectories' names "
                         + "are wrong, "
-                        + "expected(0.dir - 15.dir)");
+                        + "expected: " + START_P + DIR_SUFFIX
+                        + (DIR_AMOUNT - 1) + DIR_SUFFIX);
             }
         }
     }
@@ -168,14 +175,14 @@ public class DBTable implements Table {
             String key = entry.getKey();
             String value = entry.getValue();
             try {
-                int nDirectory = Math.abs(key.getBytes("UTF-8")[0]
+                int nDirectory = Math.abs(key.getBytes(ENCODING)[0]
                         % DIR_AMOUNT);
-                int nFile = Math.abs((key.getBytes("UTF-8")[0] / DIR_AMOUNT)
+                int nFile = Math.abs((key.getBytes(ENCODING)[0] / DIR_AMOUNT)
                         % FILES_AMOUNT);
                 db[nDirectory][nFile].put(key, value);
             } catch (UnsupportedEncodingException e) {
-                System.err.println("Can't encode the record");
-                throw new ExitException(1);
+                //System.err.println();
+                throw new ExitException(e.getMessage(), 1);
             }
         }
         for (int i = 0; i < DIR_AMOUNT; i++) {
@@ -183,22 +190,22 @@ public class DBTable implements Table {
                 if (!db[i][j].isEmpty()) {
                     Integer nDirectory = i;
                     Integer nFile = j;
-                    Path newPath = dbPath.resolve(nDirectory.toString() + ".dir");
+                    Path newPath = dbPath.resolve(nDirectory.toString() + DIR_SUFFIX);
                     File directory = newPath.toFile();
                     if (!directory.exists()) {
                         if (!directory.mkdir()) {
-                            System.err.println("Cannot create directory");
-                            throw new ExitException(1);
+                            //System.err.println();
+                            throw new ExitException("Cannot create directory", 1);
                         }
                     }
                     Path newFilePath = directory.toPath().
-                            resolve(nFile.toString() + ".dat");
+                            resolve(nFile.toString() + FILE_SUFFIX);
                     File file = newFilePath.toFile();
                     try {
                         file.createNewFile();
                     } catch (IOException | SecurityException e) {
-                        System.err.println(e.getMessage());
-                        throw new ExitException(1);
+                        //System.err.println(e.getMessage());
+                        throw new ExitException(e.getMessage(), 1);
                     }
                     try (RandomAccessFile dbFile = new
                             RandomAccessFile(file, "rw")) {
@@ -212,8 +219,8 @@ public class DBTable implements Table {
                         }
                         dbFile.close();
                     } catch (IOException e) {
-                        System.err.println(e.getMessage());
-                        throw new ExitException(1);
+                        //System.err.println(e.getMessage());
+                        throw new ExitException(e.getMessage(), 1);
                     }
                 } else {
                     /*
@@ -221,24 +228,24 @@ public class DBTable implements Table {
                     */
                     Integer nDirectory = i;
                     Integer nFile = j;
-                    Path newPath = dbPath.resolve(nDirectory.toString() + ".dir");
+                    Path newPath = dbPath.resolve(nDirectory.toString() + DIR_SUFFIX);
                     File directory = newPath.toFile();
                     if (directory.exists()) {
                         Path newFilePath = directory.toPath().
-                                resolve(nFile.toString() + ".dat");
+                                resolve(nFile.toString() + FILE_SUFFIX);
                         File file = newFilePath.toFile();
                         try {
                             Files.deleteIfExists(file.toPath());
                         } catch (IOException | SecurityException e) {
-                            System.err.println(e);
-                            throw new ExitException(1);
+                            //System.err.println(e);
+                            throw new ExitException(e.getMessage(), 1);
                         }
                         if (directory.list().length == 0) {
                             try {
                                 Files.delete(directory.toPath());
                             } catch (IOException e) {
-                                System.err.println(e);
-                                throw new ExitException(1);
+                                //System.err.println(e);
+                                throw new ExitException(e.getMessage(), 1);
                             }
                         }
                     }
@@ -259,11 +266,11 @@ public class DBTable implements Table {
     private void writeUtil(final String word,
                            final RandomAccessFile dbFile) throws ExitException {
         try {
-            dbFile.writeInt(word.getBytes("UTF-8").length);
-            dbFile.write(word.getBytes("UTF-8"));
+            dbFile.writeInt(word.getBytes(ENCODING).length);
+            dbFile.write(word.getBytes(ENCODING));
         } catch (IOException e) {
-            System.err.println(e.getMessage());
-            throw new ExitException(1);
+            //System.err.println(e.getMessage());
+            throw new ExitException(e.getMessage(), 1);
         }
     }
 
@@ -306,8 +313,8 @@ public class DBTable implements Table {
         *The record with key hasn't been changed yet.
         */
         if (allRecords.containsKey(key)) {
-           sessionChanges.put(key, value);
-           return allRecords.get(key);
+            sessionChanges.put(key, value);
+            return allRecords.get(key);
         }
         /*
         * Absolutely new record.
@@ -346,7 +353,7 @@ public class DBTable implements Table {
     public int size() {
         Set<String> keyList = new HashSet<>();
         keyList.addAll(allRecords.keySet());
-        for (Map.Entry<String, String> entry: sessionChanges.entrySet()) {
+        for (Map.Entry<String, String> entry : sessionChanges.entrySet()) {
             if (keyList.contains(entry.getKey())) {
                 /* 
                 * If the record was deleted during the session.
@@ -371,7 +378,7 @@ public class DBTable implements Table {
         */
         Map<String, String> tempStorage = new HashMap<>();
         tempStorage.putAll(allRecords);
-        for (Map.Entry<String, String> entry: sessionChanges.entrySet()) {
+        for (Map.Entry<String, String> entry : sessionChanges.entrySet()) {
             if (tempStorage.containsKey(entry.getKey())) {
                 /* 
                 * If the record was deleted during the session.
@@ -393,7 +400,8 @@ public class DBTable implements Table {
         }
         try {
             write(tempStorage);
-            allRecords = Collections.synchronizedMap(tempStorage);
+            allRecords = tempStorage;
+            //allRecords = Collections.synchronizedMap(tempStorage);
             sessionChanges.clear();
         } catch (ExitException e) {
             System.err.println("Error while commiting");
@@ -413,7 +421,7 @@ public class DBTable implements Table {
     public List<String> list() {
         Set<String> keyList = new HashSet<>();
         keyList.addAll(allRecords.keySet());
-        for (Map.Entry<String, String> entry: sessionChanges.entrySet()) {
+        for (Map.Entry<String, String> entry : sessionChanges.entrySet()) {
             if (keyList.contains(entry.getKey())) {
                 /*
                 * If the record was deleted during the session.
@@ -430,3 +438,4 @@ public class DBTable implements Table {
         return list;
     }
 }
+
