@@ -9,15 +9,19 @@ public class TableState {
     public TableState(final TableProvider tableHolder) {
         holder = tableHolder;
     }
+
     public final TableProvider getTableHolder() {
         return holder;
     }
+
     public final String getCurrentTableName() {
         return currentTableName;
     }
+
     public final void setCurrentTableName(final String currentTableName) {
         this.currentTableName = currentTableName;
     }
+
     /*
     * False - no chosen table.
     */
