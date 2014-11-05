@@ -7,8 +7,10 @@ import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +22,11 @@ public class TableHolder implements TableProvider {
         try {
             rootPath = Paths.get(rootDir);
             if (!rootPath.toFile().exists()) {
-                rootPath.toFile().mkdir();
+                try {
+                    Files.createDirectory(rootPath);
+                } catch (IOException e) {
+                    throw new DatabaseIOException(e.getMessage());
+                }
             }
             if (!rootPath.toFile().isDirectory()) {
                 throw new IllegalArgumentException(rootDir
@@ -68,14 +74,14 @@ public class TableHolder implements TableProvider {
             return null;
         } else {
             Path pathTableDirectory = rootPath.resolve(tableName);
-            File tableDirectory = pathTableDirectory.toFile();
-            if (!tableDirectory.mkdir()) {
-                throw new DatabaseIOException("Can't create table directory");
-            } else {
+            try {
+                Files.createDirectory(pathTableDirectory);
                 DBTable newTable = new DBTable(rootPath,
                         tableName, new HashMap<>());
                 tableMap.put(tableName, newTable);
                 return newTable;
+            } catch (IOException e) {
+                    throw new DatabaseIOException("Can't create table directory");
             }
         }
     }
@@ -88,33 +94,7 @@ public class TableHolder implements TableProvider {
             throw new IllegalStateException(tableName + " doesn't exist");
         } else {
             Path tableDirectory = tableMap.get(tableName).getDBTablePath();
-            try {
-                Files.walkFileTree(tableDirectory, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                            throws IOException {
-                        Files.delete(file);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult postVisitDirectory(Path dir, IOException e)
-                            throws IOException {
-                        if (e == null) {
-                            Files.delete(dir);
-                            return FileVisitResult.CONTINUE;
-                        } else {
-                            /*
-                             * Directory iteration failed.
-                              */
-                            throw e;
-                        }
-                    }
-                });
-            } catch (IOException | SecurityException e) {
-                System.err.println(e.getMessage());
-                System.exit(1);
-            }
+            Utility.recursiveDelete(tableDirectory);
         }
     }
 }
