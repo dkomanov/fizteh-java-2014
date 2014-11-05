@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util;
 
 import java.util.function.BiConsumer;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.ExitException;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.IllegalNumberOfArgumentsException;
 
 public class Command {
     private String name;
