@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.ExitException;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util.IllegalNumberOfArgumentsException;
 
 public class Interpreter {
     public static final String PROMPT = "$ ";
@@ -18,49 +16,61 @@ public class Interpreter {
     private final TableState tableState;
     private InputStream in;
     private PrintStream out;
+    private PrintStream err;
 
     public Interpreter(final TableState tableState,
                        final Command[] commands,
                        final InputStream inStream,
-                       final PrintStream outStream) {
-        if (inStream == null || outStream == null) {
+                       final PrintStream outStream,
+                       final PrintStream errStream) {
+        if (inStream == null || outStream == null || errStream == null) {
             throw new
-                    IllegalArgumentException("Input or "
-                    + "output stream is null");
+                    IllegalArgumentException("Given streams are not valid");
         }
         this.tableState = tableState;
         in = inStream;
         out = outStream;
+        err = errStream;
         this.commands = new HashMap<>();
         for (Command command : commands) {
             this.commands.put(command.getName(), command);
         }
     }
+
     public Interpreter(final TableState tableState, final Command[] commands) {
         this.in = System.in;
         this.out = System.out;
+        this.err = System.err;
         this.tableState = tableState;
         this.commands = new HashMap<>();
         for (Command command : commands) {
             this.commands.put(command.getName(), command);
         }
     }
+
     public final void run(final String[] arguments) throws ExitException {
-        if (arguments.length == 0) {
+        try {
+            if (arguments.length == 0) {
                 userMode();
-        } else {
-            batchMode(arguments);
+            } else {
+                batchMode(arguments);
+            }
+        } catch (ExitException e) {
+            if (!e.getMessage().equals("")) {
+                err.println(e.getMessage());
+            }
+            throw e;
         }
     }
 
-    private void batchMode(final String[] args) throws ExitException {
+    private final void batchMode(final String[] args) throws ExitException {
         StringBuilder cmd = new StringBuilder();
-        for (String arg: args) {
+        for (String arg : args) {
             cmd.append(arg);
             cmd.append(' ');
         }
         String[] commands = cmd.toString().trim().split(STATEMENT_DELIMITER);
-        for (String command:commands) {
+        for (String command : commands) {
             commandHandler(command, false);
         }
         throw new ExitException(0);
@@ -77,12 +87,12 @@ public class Interpreter {
                     throw new ExitException(0);
                 }
                 String[] commands = line.trim().split(STATEMENT_DELIMITER);
-                for (String command:commands) {
+                for (String command : commands) {
                     commandHandler(command, true);
                 }
             }
         } catch (NoSuchElementException e) {
-            throw new ExitException(1);
+            throw new ExitException(e.getMessage(), 1);
         }
     }
 
@@ -100,60 +110,49 @@ public class Interpreter {
                 }
                 Command command = commands.get(cmdName);
                 if (command == null) {
-                    out.println(ERR_MSG + cmdName);
-                    if (!userMode) {
-                        throw new ExitException(1);
+                    if (userMode) {
+                        out.println(ERR_MSG + cmdName);
+                    } else {
+                        throw new ExitException(ERR_MSG + cmdName, 1);
                     }
                 } else {
                     try {
                         command.execute(tableState, newArguments);
                     } catch (IllegalNumberOfArgumentsException e) {
-                        if (!userMode) {
-                            throw new ExitException(1);
+                        if (userMode) {
+                            out.println(e.getErrMessage());
+                        } else {
+                            throw new ExitException(e.getErrMessage(), 1);
                         }
                     }
                 }
             } else {
-                Command command = commands.get(cmdName);
-                if (command == null) {
+                if (userMode) {
                     out.println(ERR_MSG + cmdName);
-                    if (!userMode) {
-                        throw new ExitException(1);
+                } else {
+                    throw new ExitException(ERR_MSG + cmdName, 1);
+                }
+            }
+        } else {
+            if ((arguments.length > 0) && !arguments[0].isEmpty()) {
+                String commandName = arguments[0];
+                Command command = commands.get(commandName);
+                if (command == null) {
+                    if (userMode) {
+                        out.println(ERR_MSG + commandName);
+                    } else {
+                        throw new ExitException(ERR_MSG + commandName, 1);
                     }
                 } else {
                     try {
                         command.execute(tableState, arguments);
                     } catch (IllegalNumberOfArgumentsException e) {
-                        if (!userMode) {
-                            throw new ExitException(1);
+                        if (userMode) {
+                            out.println(e.getErrMessage());
+                        } else {
+                            throw new ExitException(e.getErrMessage(), 1);
                         }
                     }
-                }
-            }
-        } else {
-            try {
-                if ((arguments.length > 0) && !arguments[0].isEmpty()) {
-                    String commandName = arguments[0];
-                    Command command = commands.get(commandName);
-                    if (command == null) {
-                        out.println(ERR_MSG + commandName);
-                        if (!userMode) {
-                            throw new ExitException(1);
-                        }
-                    } else {
-                        try {
-                            command.execute(tableState, arguments);
-                        } catch (IllegalNumberOfArgumentsException e) {
-                            if (!userMode) {
-                                throw new ExitException(1);
-                            }
-                        }
-                    }
-                }
-            } catch (IllegalArgumentException e) {
-                System.err.println(e.getMessage());
-                if (!userMode) {
-                    throw new ExitException(1);
                 }
             }
         }
