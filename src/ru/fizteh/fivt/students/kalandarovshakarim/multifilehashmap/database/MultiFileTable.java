@@ -124,7 +124,7 @@ public class MultiFileTable extends AbstractTable {
         return directoryPath.resolve(directoryName);
     }
 
-    private Path getFilePath(Path subDirectory,String key) {
+    private Path getFilePath(Path subDirectory, String key) {
         int hashCode = Math.abs(key.hashCode());
         int nFile = hashCode / DIRECTORIES_NUMBER % FILES_NUMBER;
 
