@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util;
 
 public class ExitException extends Exception {
     private final int status;
-    private final String errMessage = "";
+    private final String errMessage;
 
     public final int getStatus() {
         return status;
@@ -16,6 +16,7 @@ public class ExitException extends Exception {
     }
 
     public ExitException(final int exitStatus) {
+        errMessage = "";
         status = exitStatus;
     }
 }
