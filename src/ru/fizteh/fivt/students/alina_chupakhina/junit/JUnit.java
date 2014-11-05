@@ -12,8 +12,7 @@ public class JUnit {
 
     public static void main(final String[] args) {
         try {
-            //path = System.getProperty("fizteh.db.dir");
-            path = "C:\\Ololo";
+            path = System.getProperty("fizteh.db.dir");
             if (path == null) {
                 throw new Exception("Enter directory");
             }
