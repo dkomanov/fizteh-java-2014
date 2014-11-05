@@ -1,21 +1,11 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util;
 
-public class ExitException extends Exception {
-    private final int status;
-    private String errMessage = "";
-
-    public final int getStatus() {
-        return status;
-    }
-    public final String  getMessage() {
+public class IllegalNumberOfArgumentsException extends Exception {
+    private String errMessage;
+    public String getErrMessage() {
         return errMessage;
     }
-    public ExitException(final String message, final int exitStatus) {
+    public IllegalNumberOfArgumentsException(String message) {
         errMessage = message;
-        status = exitStatus;
-    }
-
-    public ExitException(final int exitStatus) {
-        status = exitStatus;
     }
 }
