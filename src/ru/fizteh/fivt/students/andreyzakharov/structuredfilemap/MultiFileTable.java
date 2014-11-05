@@ -53,7 +53,7 @@ public class MultiFileTable implements Table {
     }
 
     /**
-     * Creates a MultiFileTable instance.
+     * Creates a MultiFileTable instance and unloads it to disk.
      * @param path Root for the store.
      * @param signature Types for table columns.
      * @param serializer An object that transforms TableEntry rows to String values and back.
@@ -73,6 +73,7 @@ public class MultiFileTable implements Table {
         }
         this.serializer = serializer;
         this.signature = new ArrayList<>(signature);
+        unload();
     }
 
     @Override
@@ -274,7 +275,7 @@ public class MultiFileTable implements Table {
             stableData.put(key, value);
             return key;
         } catch (ParseException e) {
-            throw new ConnectionInterruptException("database: parse failed");
+            throw new ConnectionInterruptException("database: JSON structure is invalid");
         }
     }
 
@@ -292,17 +293,17 @@ public class MultiFileTable implements Table {
                 }
                 Matcher dirMatcher = directoryNamePattern.matcher(dir.getFileName().toString());
                 if (!Files.isDirectory(dir)) {
-                    throw new ConnectionInterruptException("database: extra files in table folder");
+                    throw new ConnectionInterruptException("database: extra objects in table folder");
                 }
                 if (!dirMatcher.find()) {
-                    throw new ConnectionInterruptException("database: extra directories in table folder");
+                    throw new ConnectionInterruptException("database: extra objects in table folder");
                 }
                 int d = Integer.decode(dirMatcher.group(1));
                 try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)) {
                     for (Path file : dirStream) {
                         Matcher fileMatcher = fileNamePattern.matcher(file.getFileName().toString());
                         if (!fileMatcher.find()) {
-                            throw new ConnectionInterruptException("database: extra files in table folder");
+                            throw new ConnectionInterruptException("database: extra objects in table folder");
                         }
                         int f = Integer.decode(fileMatcher.group(1));
                         try (DataInputStream fileStream = new DataInputStream(
@@ -436,6 +437,9 @@ public class MultiFileTable implements Table {
                 if (Files.exists(dbPath.resolve(i + ".dir/"))) {
                     Files.delete(dbPath.resolve(i + ".dir/"));
                 }
+            }
+            if (Files.exists(dbPath.resolve("signature.tsv"))) {
+                Files.delete(dbPath.resolve("signature.tsv"));
             }
             if (Files.exists(dbPath)) {
                 Files.delete(dbPath);

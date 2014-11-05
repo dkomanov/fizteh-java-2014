@@ -16,14 +16,21 @@ public class CreateCommand implements Command {
         if (args.length < 3) {
             throw new CommandInterruptException("create: too few arguments");
         }
-        if (args[2].charAt(0) != '(' || args[args.length-1].charAt(args[args.length-1].length()-1) != ')') {
+        if (args.length > 3) {
+            throw new CommandInterruptException("create: too many arguments");
+        }
+        if (args[2].charAt(0) != '(' || args[2].charAt(args[2].length()-1) != ')') {
             return "wrong type (invalid type specification)";
         }
         List<Class<?>> signature = new ArrayList<>();
-        args[2] = args[2].substring(1);
-        args[args.length-1] = args[args.length-1].substring(0, args[args.length-1].length()-1);
-        for (int i = 2; i < args.length; ++i) {
-            signature.add(stringToClass(args[i]));
+        String[] types = args[2].substring(1, args[2].length()-1).split(",");
+        for (String type : types) {
+            Class<?> clazz = stringToClass(type.trim());
+            if (clazz != null) {
+                signature.add(clazz);
+            } else {
+                return "wrong type (" + type.trim() + " is not a valid type name)";
+            }
         }
 
         Table newTable;

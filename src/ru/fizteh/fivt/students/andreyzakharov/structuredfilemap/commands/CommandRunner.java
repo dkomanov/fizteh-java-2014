@@ -5,6 +5,7 @@ import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTablePr
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class CommandRunner {
     private Map<String, Command> commands = new HashMap<>();
@@ -32,7 +33,7 @@ public class CommandRunner {
     }
 
     public String run(MultiFileTableProvider connector, String commandString) throws CommandInterruptException {
-        String[] args = commandString.trim().split("\\s+");
+        String[] args = commandString.trim().split("\\s(?![^\\(]*\\))(?![^\\[]*\\])");
         Command command = commands.get(args[0]);
         if (command != null) {
             return command.execute(connector, args);
