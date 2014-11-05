@@ -14,8 +14,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class BdTableTest {
-    //private final String testDir = System.getProperty("java.io.tmpdir") + File.separator + "DbTestDir";
-    private final String testDir = "C:\\Ololo\\DbTestDir";
+    private final String testDir = System.getProperty("java.io.tmpdir") + File.separator + "DbTestDir";
     private final String tableName = "table1";
     private final String testFile = "Тестовый файл.txt";
     //The table directory must contain only files in such format:
