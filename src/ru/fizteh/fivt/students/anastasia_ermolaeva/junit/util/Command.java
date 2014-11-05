@@ -24,12 +24,12 @@ public class Command {
                               final String[] arguments) throws ExitException,
             IllegalNumberOfArgumentsException {
         if (arguments.length != numArguments) {
-            System.err.println("Invalid number of arguments: "
+            String errMessage = "Invalid number of arguments: "
                     + numArguments
                     + " expected, "
                     + arguments.length
-                    + " found.");
-            throw new IllegalNumberOfArgumentsException();
+                    + " found.";
+            throw new IllegalNumberOfArgumentsException(errMessage);
         } else {
             callback.accept(tableState, arguments);
         }
