@@ -63,7 +63,7 @@ public class Interpreter {
         }
     }
 
-    private final void batchMode(final String[] args) throws ExitException {
+    private void batchMode(final String[] args) throws ExitException {
         StringBuilder cmd = new StringBuilder();
         for (String arg : args) {
             cmd.append(arg);
