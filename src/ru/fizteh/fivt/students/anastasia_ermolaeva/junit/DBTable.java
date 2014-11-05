@@ -161,8 +161,10 @@ public class DBTable implements Table {
                     Path newPath = dbPath.resolve(nDirectory + DIR_SUFFIX);
                     File directory = newPath.toFile();
                     if (!directory.exists()) {
-                        if (!directory.mkdir()) {
-                            throw new DatabaseIOException("Cannot create directory for files");
+                        try {
+                            Files.createDirectory(newPath);
+                        } catch (IOException e) {
+                            throw new DatabaseIOException(e.getMessage());
                         }
                     }
                     Path newFilePath = directory.toPath().
