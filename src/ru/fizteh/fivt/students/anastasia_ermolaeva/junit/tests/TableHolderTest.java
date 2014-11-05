@@ -4,10 +4,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.TableHolder;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.DatabaseIOException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
 
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
 
@@ -21,14 +24,14 @@ public class TableHolderTest {
     private final String wrongTableName = ".";
 
     @Before
-    public final void setUp() {
-        testDirectory.toFile().mkdir();
+    public final void setUp() throws IOException {
+        Files.createDirectory(testDirectory);
     }
 
     @Test
     public final void testTableHolderCreatedForNonexistentDirectory() {
         new TableHolder(tableDirPath.toString());
-        
+
         assertTrue(tableDirPath.toFile().exists());
     }
 
@@ -45,7 +48,7 @@ public class TableHolderTest {
         new TableHolder("\0");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = DatabaseIOException.class)
     public final void
     testTableHolderThrowsExceptionCreatedForDirectoryWithNonDirectories()
             throws IOException {
@@ -58,7 +61,7 @@ public class TableHolderTest {
     public final void testGetTableReturnsNullIfTableNameDoesNotExist() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.createTable(tableDirectoryName);
-        
+
         assertNull(test.getTable("MyTable"));
     }
 
@@ -91,16 +94,17 @@ public class TableHolderTest {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.createTable(testTableName);
         Path newTablePath = testDirectory.resolve(testTableName);
-        
+
         assertTrue(newTablePath.toFile().exists()
                 && newTablePath.toFile().isDirectory());
     }
 
     @Test
-    public final void testCreateTableReturnsNullCalledForExistentOnDiskTable() {
-        tableDirPath.toFile().mkdir();
+    public final void testCreateTableReturnsNullCalledForExistentOnDiskTable()
+            throws IOException {
+        Files.createDirectory(tableDirPath);
         TableHolder test = new TableHolder(testDirectory.toString());
-        
+
         assertNull(test.createTable(tableDirectoryName));
     }
 
@@ -110,7 +114,7 @@ public class TableHolderTest {
         test.createTable(testTableName);
         Path newTablePath = testDirectory.resolve(testTableName);
         test.removeTable(testTableName);
-        
+
         assertFalse(newTablePath.toFile().exists());
     }
 
@@ -128,27 +132,6 @@ public class TableHolderTest {
 
     @After
     public final void tearDown() throws IOException {
-        Files.walkFileTree(testDirectory, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                    throws IOException {
-                Files.delete(file);
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException e)
-                    throws IOException {
-                if (e == null) {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
-                } else {
-                        /*
-                         * directory iteration failed
-                          */
-                    throw e;
-                }
-            }
-        });
+        Utility.recursiveDelete(testDirectory);
     }
 }
