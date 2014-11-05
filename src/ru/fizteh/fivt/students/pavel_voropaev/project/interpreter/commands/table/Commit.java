@@ -14,7 +14,6 @@ public class Commit extends TableAbstractCommand {
 
     @Override
     public void exec(String[] param, PrintStream out) throws InputMistakeException {
-            out.println(super.getActiveTable().commit());
+        out.println(super.getActiveTable().commit());
     }
-
 }

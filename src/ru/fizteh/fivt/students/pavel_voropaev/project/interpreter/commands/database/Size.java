@@ -17,8 +17,7 @@ public class Size extends AbstractCommand<TableProvider> {
         for (String entry : context.getTablesList()) {
             retVal += context.getTable(entry).size();
         }
-        
+
         out.println(retVal);
     }
-
 }

@@ -16,10 +16,10 @@ public class Main {
             System.err.println("You must specify fizteh.db.dir via -Dfizteh.db.dir JVM parameter");
             System.exit(1);
         }
-        
+
         TableProviderFactory factory = new DatabaseFactory();
         TableProvider db = factory.create(dbPath);
-        
+
         Command[] commands = new Command[]{
                 new Create(db), new Drop(db), new ShowTables(db), new Size(db), new Use(db),
                 new Commit(db), new Get(db), new ListKeys(db), new Put(db), new Remove(db), new Rollback(db),
@@ -28,7 +28,5 @@ public class Main {
         Interpreter interpreter = new Interpreter(commands);
         interpreter.run(args);
 
-
     }
-
 }

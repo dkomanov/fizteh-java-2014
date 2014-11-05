@@ -16,7 +16,7 @@ public interface TableProvider {
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
      */
     Table getTable(String name);
-    
+
     Table getActiveTable();
 
     /**
@@ -33,21 +33,19 @@ public interface TableProvider {
      *
      * @param name Название таблицы.
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
-     * @throws IllegalStateException Если таблицы с указанным названием не существует.
+     * @throws IllegalStateException    Если таблицы с указанным названием не существует.
      */
     void removeTable(String name);
-    
+
     /**
-     * 
      * @return List of existing tables.
      */
     List<String> getTablesList();
-    
+
     /**
-     * 
      * @param name Name of table to use.
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
-     * @throws IllegalStateException Если таблицы с указанным названием не существует.
+     * @throws IllegalStateException    Если таблицы с указанным названием не существует.
      */
     void setActiveTable(String name);
 }

@@ -28,9 +28,6 @@ public class Use extends AbstractCommand<TableProvider> {
             } catch (TableDoesNotExistException e) {
                 out.println(param[0] + " not exists");
             }
-
         }
-
     }
-
 }

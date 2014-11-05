@@ -6,12 +6,6 @@ public abstract class AbstractCommand<Type> implements Command {
     private final int argNum;
     protected final Type context;
 
-    protected AbstractCommand() {
-        this.name = null;
-        this.argNum = 0;
-        this.context = null;
-    }
-
     protected AbstractCommand(String name, int argNum, Type context) {
         this.name = name;
         this.argNum = argNum;

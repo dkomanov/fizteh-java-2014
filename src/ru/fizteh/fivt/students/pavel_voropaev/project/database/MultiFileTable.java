@@ -1,27 +1,16 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.database;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.ContainsWrongFilesException;
+import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
+
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-
-import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
-import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.*;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
 
 public class MultiFileTable implements Table {
 
@@ -29,7 +18,7 @@ public class MultiFileTable implements Table {
         public Map<String, String> map;
 
         public MultiFileMap() {
-            map = new HashMap<String, String>();
+            map = new HashMap<>();
         }
     }
 
@@ -111,23 +100,23 @@ public class MultiFileTable implements Table {
         for (Entry<String, String> entry : diff.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            
+
             if (value == null) {
                 content[getPlace(key)].map.remove(key);
             } else {
                 content[getPlace(key)].map.put(key, value);
             }
         }
-        
+
         int retVal = diff.size();
         diff.clear();
-        
+
         try {
             save();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        
+
         return retVal;
     }
 
@@ -142,7 +131,7 @@ public class MultiFileTable implements Table {
                 --size;
             }
         }
-        
+
         int retVal = diff.size();
         diff.clear();
         return retVal;
@@ -165,18 +154,14 @@ public class MultiFileTable implements Table {
         list.addAll(keySet);
         return list;
     }
-    
+
     @Override
     public List<String> getDiff() {
         List<String> list = new LinkedList<>();
         list.addAll(diff.keySet());
         return list;
     }
-    
-    public boolean isDiffEmpty() {
-        return diff.size() == 0;
-    }
-   
+
     private void load() throws IOException, IllegalArgumentException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
             for (Path entry : stream) {
@@ -198,11 +183,11 @@ public class MultiFileTable implements Table {
             }
         }
     }
-    
+
     private void readDir(Path entry, int dirNum) throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(entry)) {
             for (Path path : stream) {
-                String fileName = path.toString();       
+                String fileName = path.toString();
                 boolean correctFile = false;
                 for (int i = 0; i < FILES; ++i) {
                     if (fileName.endsWith(File.separator + Integer.toString(i) + ".dat")) {
@@ -228,7 +213,7 @@ public class MultiFileTable implements Table {
                 if (hashcode % FOLDERS != dirNum || hashcode / FOLDERS % FILES != fileNum) {
                     throw new IOException("Wrong file format.");
                 }
- 
+
                 content[dirNum * FILES + fileNum].map.put(key, value);
                 ++size;
             } catch (EOFException e) {
@@ -238,14 +223,13 @@ public class MultiFileTable implements Table {
         stream.close();
     }
 
-    private String readWord(DataInputStream stream) throws EOFException,
-            IOException {
+    private String readWord(DataInputStream stream) throws IOException {
         int length = stream.readInt();
         byte[] word = new byte[length];
         stream.readFully(word);
         return new String(word, "UTF-8");
     }
-    
+
     private void save() throws IOException {
         Utils.rm(directory);
         Files.createDirectory(directory);
@@ -260,11 +244,11 @@ public class MultiFileTable implements Table {
         }
     }
 
-   private void writeFile(int fileNum) throws IOException {
-       Path filePath = getFilePath(fileNum);
-       if (!Files.exists(filePath)) {
-           Files.createFile(filePath);
-       }
+    private void writeFile(int fileNum) throws IOException {
+        Path filePath = getFilePath(fileNum);
+        if (!Files.exists(filePath)) {
+            Files.createFile(filePath);
+        }
         FileOutputStream output = new FileOutputStream(getFilePath(fileNum).toString());
         Set<String> keyList = content[fileNum].map.keySet();
         ByteBuffer buffer = ByteBuffer.allocate(4);
@@ -287,20 +271,19 @@ public class MultiFileTable implements Table {
         }
         output.close();
     }
-    
+
     private int getPlace(String key) {
         int hashcode = Math.abs(key.hashCode());
         return hashcode % FOLDERS * FILES + hashcode / FOLDERS % FILES;
     }
-    
+
     private Path getDirectoryPath(int fileNumber) {
         String directoryName = new StringBuilder().append(fileNumber / FOLDERS).append(".dir").toString();
         return directory.resolve(directoryName);
     }
-    
+
     private Path getFilePath(int fileNumber) {
         String fileName = new StringBuilder().append(fileNumber % FOLDERS).append(".dat").toString();
         return getDirectoryPath(fileNumber).resolve(fileName);
     }
-
 }

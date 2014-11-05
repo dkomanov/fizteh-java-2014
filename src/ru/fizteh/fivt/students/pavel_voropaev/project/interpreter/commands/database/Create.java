@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.database;
 
-import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.AbstractCommand;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
@@ -22,5 +21,4 @@ public class Create extends AbstractCommand<TableProvider> {
             out.println(param[0] + " exists");
         }
     }
-
 }

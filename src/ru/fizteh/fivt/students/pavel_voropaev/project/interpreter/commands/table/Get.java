@@ -14,14 +14,12 @@ public class Get extends TableAbstractCommand {
 
     @Override
     public void exec(String[] param, PrintStream out) throws InputMistakeException {
-       String retVal = super.getActiveTable().get(param[0]);
-       if (retVal == null) {
-          out.println("not found");
-       } else {
-           out.println("found");
-           out.println(retVal);
-       }
-       
+        String retVal = super.getActiveTable().get(param[0]);
+        if (retVal == null) {
+            out.println("not found");
+        } else {
+            out.println("found");
+            out.println(retVal);
+        }
     }
-
 }

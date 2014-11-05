@@ -22,5 +22,4 @@ public class Drop extends AbstractCommand<TableProvider> {
 
         out.println("dropped");
     }
-
 }

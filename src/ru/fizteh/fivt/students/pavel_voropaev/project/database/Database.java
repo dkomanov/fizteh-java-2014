@@ -1,5 +1,10 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.database;
 
+import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.TableDoesNotExistException;
+import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
+import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
+
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -9,11 +14,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
-import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.*;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
 
 public class Database implements TableProvider {
     private Map<String, Table> tables;
@@ -31,10 +31,9 @@ public class Database implements TableProvider {
             }
         } catch (IllegalArgumentException | IOException e) {
             throw new IllegalArgumentException("Illegal database directory name: "
-                            + databasePath.toString(), e);
+                    + databasePath.toString(), e);
         }
         tables = new HashMap<>();
-
 
         try (DirectoryStream<Path> directory = Files.newDirectoryStream(databasePath)) {
             for (Path entry : directory) {
@@ -58,7 +57,7 @@ public class Database implements TableProvider {
 
         return tables.get(name);
     }
-    
+
     @Override
     public Table getActiveTable() {
         if (activeTable == null) {
@@ -106,15 +105,15 @@ public class Database implements TableProvider {
         list.addAll(tables.keySet());
         return list;
     }
-    
+
     @Override
     public void setActiveTable(String name) {
         if (getTable(name) == null) {
             throw new TableDoesNotExistException(name);
         }
-        activeTable = name;        
+        activeTable = name;
     }
-    
+
 
     private boolean isNameCorrect(String name) {
         if (name == null) {

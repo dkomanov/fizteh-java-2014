@@ -16,5 +16,4 @@ public class Rollback extends TableAbstractCommand {
     public void exec(String[] param, PrintStream out) throws InputMistakeException {
         out.println(super.getActiveTable().rollback());
     }
-
 }

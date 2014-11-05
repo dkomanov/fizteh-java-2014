@@ -9,6 +9,7 @@ public abstract class TableAbstractCommand extends AbstractCommand<TableProvider
     protected TableAbstractCommand(String name, int argNum, TableProvider context) {
         super(name, argNum, context);
     }
+
     protected Table getActiveTable() throws InputMistakeException {
         Table retVal = context.getActiveTable();
         if (retVal == null) {

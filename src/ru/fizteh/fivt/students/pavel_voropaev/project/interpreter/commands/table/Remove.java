@@ -14,13 +14,11 @@ public class Remove extends TableAbstractCommand {
 
     @Override
     public void exec(String[] param, PrintStream out) throws InputMistakeException {
-       String retVal = super.getActiveTable().remove(param[0]);
-       if (retVal == null) {
-           out.println("not found");
-       } else {
-           out.println("removed");
-       }
-       
+        String retVal = super.getActiveTable().remove(param[0]);
+        if (retVal == null) {
+            out.println("not found");
+        } else {
+            out.println("removed");
+        }
     }
-
 }

@@ -18,7 +18,6 @@ public interface Table {
      *
      * @param key Ключ.
      * @return Значение. Если не найдено, возвращает null.
-     *
      * @throws IllegalArgumentException Если значение параметра key является null.
      */
     String get(String key);
@@ -26,11 +25,10 @@ public interface Table {
     /**
      * Устанавливает значение по указанному ключу.
      *
-     * @param key Ключ.
+     * @param key   Ключ.
      * @param value Значение.
      * @return Значение, которое было записано по этому ключу ранее. Если ранее значения не было записано,
      * возвращает null.
-     *
      * @throws IllegalArgumentException Если значение параметров key или value является null.
      */
     String put(String key, String value);
@@ -40,7 +38,6 @@ public interface Table {
      *
      * @param key Ключ.
      * @return Значение. Если не найдено, возвращает null.
-     *
      * @throws IllegalArgumentException Если значение параметра key является null.
      */
     String remove(String key);
@@ -72,9 +69,8 @@ public interface Table {
      * @return Список ключей.
      */
     List<String> list();
-    
+
     /**
-     * 
      * @return List of changed keys.
      */
     List<String> getDiff();

@@ -8,4 +8,3 @@ public class InputMistakeException extends IOException {
         super(string);
     }
 }
-

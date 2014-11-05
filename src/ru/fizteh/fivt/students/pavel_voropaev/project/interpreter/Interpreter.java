@@ -1,12 +1,12 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter;
 
+import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.StopInterpretationException;
+
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
-import java.io.InputStream;
-
-
-import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.*;
-import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
 
 
 public class Interpreter {
@@ -64,11 +64,11 @@ public class Interpreter {
     }
 
     private void runInteractiveMode() throws StopInterpretationException {
-        Scanner in = new Scanner(System.in);
+        Scanner scan = new Scanner(in);
         while (true) {
-            System.out.print(PROMPT);
+            out.print(PROMPT);
             try {
-                String line = in.nextLine();
+                String line = scan.nextLine();
                 executeLine(line);
             } catch (NoSuchElementException e) {
                 err.println("Exit without saving!");
@@ -77,7 +77,7 @@ public class Interpreter {
                 err.println(e.getMessage());
             }
         }
-        in.close();
+        scan.close();
     }
 
     private void executeLine(String line) throws StopInterpretationException, InputMistakeException {
