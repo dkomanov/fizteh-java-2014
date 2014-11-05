@@ -6,10 +6,12 @@ import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.TableHolderFactory;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
 
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertTrue;
 
@@ -19,8 +21,8 @@ public class TableHolderFactoryTest {
 
     @Before
     public final void setUp()
-            throws Exception {
-        testDirectory.toFile().mkdir();
+            throws IOException {
+        Files.createDirectory(testDirectory);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -34,33 +36,12 @@ public class TableHolderFactoryTest {
         TableProviderFactory test = new TableHolderFactory();
         TableProvider testProvider = test.create(testDirectory.toString());
         testProvider.createTable("MyTable");
-        
+
         assertTrue(testDirectory.resolve("MyTable").toFile().exists());
     }
 
     @After
     public final void tearDown() throws IOException {
-        Files.walkFileTree(testDirectory, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                    throws IOException {
-                Files.delete(file);
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException e)
-                    throws IOException {
-                if (e == null) {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
-                } else {
-                        /*
-                         * directory iteration failed
-                          */
-                    throw e;
-                }
-            }
-        });
+        Utility.recursiveDelete(testDirectory);
     }
 }
