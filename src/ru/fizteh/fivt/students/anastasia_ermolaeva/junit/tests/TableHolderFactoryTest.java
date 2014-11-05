@@ -34,6 +34,7 @@ public class TableHolderFactoryTest {
         TableProviderFactory test = new TableHolderFactory();
         TableProvider testProvider = test.create(testDirectory.toString());
         testProvider.createTable("MyTable");
+        
         assertTrue(testDirectory.resolve("MyTable").toFile().exists());
     }
 
