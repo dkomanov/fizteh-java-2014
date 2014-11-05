@@ -28,6 +28,7 @@ public class TableHolderTest {
     @Test
     public final void testTableHolderCreatedForNonexistentDirectory() {
         new TableHolder(tableDirPath.toString());
+        
         assertTrue(tableDirPath.toFile().exists());
     }
 
@@ -57,6 +58,7 @@ public class TableHolderTest {
     public final void testGetTableReturnsNullIfTableNameDoesNotExist() {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.createTable(tableDirectoryName);
+        
         assertNull(test.getTable("MyTable"));
     }
 
@@ -89,6 +91,7 @@ public class TableHolderTest {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.createTable(testTableName);
         Path newTablePath = testDirectory.resolve(testTableName);
+        
         assertTrue(newTablePath.toFile().exists()
                 && newTablePath.toFile().isDirectory());
     }
@@ -97,6 +100,7 @@ public class TableHolderTest {
     public final void testCreateTableReturnsNullCalledForExistentOnDiskTable() {
         tableDirPath.toFile().mkdir();
         TableHolder test = new TableHolder(testDirectory.toString());
+        
         assertNull(test.createTable(tableDirectoryName));
     }
 
@@ -106,6 +110,7 @@ public class TableHolderTest {
         test.createTable(testTableName);
         Path newTablePath = testDirectory.resolve(testTableName);
         test.removeTable(testTableName);
+        
         assertFalse(newTablePath.toFile().exists());
     }
 
