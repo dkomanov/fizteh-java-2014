@@ -11,10 +11,12 @@ import java.util.Map;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
 
 public class TableHolder implements TableProvider {
     private Path rootPath;
     private Map<String, DBTable> tableMap;
+
     public TableHolder(final String rootDir) {
         try {
             rootPath = Paths.get(rootDir);
@@ -30,37 +32,27 @@ public class TableHolder implements TableProvider {
                     + "' is illegal directory name", e);
         }
         tableMap = new HashMap<>();
-        File rootDirectory = rootPath.toFile();
-        String[] childDirectories = rootDirectory.list();
-        for (String s: childDirectories) {
-            File currentDir = new File(rootPath.toAbsolutePath().toString()
-                    + File.separator + s);
-            if (!currentDir.isDirectory()) {
-                throw new IllegalArgumentException("Child directories "
-                        + "are not directories");
-            } else {
-                String tableName = currentDir.getName();
+        Utility.checkDirectorySubdirs(rootPath);
+        for (File currentSubdir : rootPath.toFile().listFiles()) {
+                String tableName = currentSubdir.getName();
                 tableMap.put(tableName, new DBTable(rootPath, tableName));
-            }
         }
     }
+
     public final Map<String, DBTable> getTableMap() {
         return tableMap;
     }
 
     public final void close() {
         for (Map.Entry<String, DBTable> entry : tableMap.entrySet()) {
-            entry.getValue().close();
+            entry.getValue().commit();
         }
         tableMap.clear();
     }
 
     @Override
     public final Table getTable(final String name) {
-        if (name == null || name.contains(".")
-                || name.contains("\\") || name.contains("/")) {
-            throw new IllegalArgumentException("Table name is null or invalid");
-        }
+        Utility.checkTableName(name);
         String tableName = name;
         if (tableMap.containsKey(tableName)) {
             return tableMap.get(tableName);
@@ -71,10 +63,7 @@ public class TableHolder implements TableProvider {
 
     @Override
     public final Table createTable(final String name) {
-        if (name == null || name.contains(".")
-                || name.contains("\\") || name.contains("/")) {
-            throw new IllegalArgumentException("Table name is null or invalid");
-        }
+        Utility.checkTableName(name);
         String tableName = name;
         if (tableMap.containsKey(tableName)) {
             return null;
@@ -83,6 +72,7 @@ public class TableHolder implements TableProvider {
             File tableDirectory = pathTableDirectory.toFile();
             if (!tableDirectory.mkdir()) {
                 System.err.println("Can't create table directory");
+                //throw new ExitException("Can't create table directory", 1);
                 System.exit(1);
             } else {
                 DBTable newTable = new DBTable(rootPath,
@@ -96,41 +86,37 @@ public class TableHolder implements TableProvider {
 
     @Override
     public final void removeTable(final String name) {
-        if (name == null || name.contains(".")
-                || name.contains("\\") || name.contains("/")) {
-            throw new IllegalArgumentException("Table name is not suitable");
-        }
+        Utility.checkTableName(name);
         String tableName = name;
         if (!tableMap.containsKey(tableName)) {
             throw new IllegalStateException(tableName + " doesn't exist");
         } else {
             Path tableDirectory = tableMap.get(tableName).getDBTablePath();
-            String [] subDirs = tableDirectory.toFile().list();
-            if (subDirs.length != 0) {
-                File[] subDirectories = tableDirectory.toFile().listFiles();
-                for (File directory : subDirectories) {
-                    try {
-                        File[] directoryFiles = directory.listFiles();
-                        for (File file : directoryFiles) {
-                            try {
-                                Files.deleteIfExists(file.toPath());
-                            } catch (IOException | SecurityException e) {
-                                System.err.println(e.getMessage());
-                                System.exit(1);
-                            }
-                        }
-                        Files.delete(directory.toPath());
-                    } catch (IOException | SecurityException e) {
-                        System.err.println(e.getMessage());
-                        System.exit(1);
-                    }
-                }
-            }
             try {
-                Files.delete(tableDirectory);
-                tableMap.remove(tableName);
-            } catch (IOException e) {
-                System.err.println(e);
+                Files.walkFileTree(tableDirectory, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                            throws IOException {
+                        Files.delete(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult postVisitDirectory(Path dir, IOException e)
+                            throws IOException {
+                        if (e == null) {
+                            Files.delete(dir);
+                            return FileVisitResult.CONTINUE;
+                        } else {
+                            /*
+                             * Directory iteration failed.
+                              */
+                            throw e;
+                        }
+                    }
+                });
+            } catch (IOException | SecurityException e) {
+                System.err.println(e.getMessage());
                 System.exit(1);
             }
         }
