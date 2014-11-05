@@ -197,7 +197,7 @@ public final class Main {
         });
 
         try {
-            dbInterpreter.run(args);
+            System.exit(dbInterpreter.run(args));
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 System.out.println(e.getMessage());
@@ -205,6 +205,7 @@ public final class Main {
                 System.out.println("Unexpected error in function run");
                 e.printStackTrace();
             }
+            System.exit(1);
         }
     }
 }

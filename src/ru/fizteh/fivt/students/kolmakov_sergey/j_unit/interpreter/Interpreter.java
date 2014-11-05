@@ -6,7 +6,6 @@ import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_exceptions.StopI
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.nio.file.InvalidPathException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,9 +13,10 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 
 public final class Interpreter {
-    public final String PROMPT = "$ ";
+    public static final String PROMPT = "$ ";
     public final static String BAD_COMMAND = "Command not found: ";
-    public final String STATEMENT_DELIMITER = ";";
+    public static final String STATEMENT_DELIMITER = ";";
+    public static final String EXIT_WITHOUT_HANDLER_MSG = "You must set exitHandler before using exit command";
     private final String PARAM_REGEXP = "\\s+";
     private InputStream in;
     private PrintStream out;
@@ -45,7 +45,7 @@ public final class Interpreter {
         exitHandler = callable;
     }
 
-    public void run(String[] args) throws Exception {
+    public int run(String[] args) throws Exception {
         try {
             if (args.length == 0) {
                 interactiveMode();
@@ -53,8 +53,9 @@ public final class Interpreter {
                 batchMode(args);
             }
         } catch (StopInterpreterException e) {
-            System.exit(e.exitCode);
+          return e.exitCode; //  Just stop Interpreter.
         }
+        return 0;
     }
 
     private void batchMode(String[] args) throws Exception {
@@ -85,7 +86,7 @@ public final class Interpreter {
                 parse(new String[]{"exit"}, batchModeOn);
             }
         } catch (WrongNumberOfArgumentsException e){
-            System.out.println(e.getMessage());
+            out.println(e.getMessage());
             if (batchModeOn) {
                 throw new StopInterpreterException(-1);
             }
@@ -97,7 +98,7 @@ public final class Interpreter {
             String commandName = cmdWithArgs[0];
             if (commandName.equals("exit")) {
                 if (exitHandler == null) {
-                    System.out.println("You must set exitHandler before using exit command");
+                    out.println(EXIT_WITHOUT_HANDLER_MSG);
                     throw new StopInterpreterException(-1);
                 }
                 if (exitHandler.call()) {
@@ -118,7 +119,7 @@ public final class Interpreter {
                 try {
                     command.execute(dbState, cuttedArgs);
                 } catch (RuntimeException e){
-                    System.out.println(e.getMessage());
+                    out.println(e.getMessage());
                     if (batchModeOn){
                         throw new StopInterpreterException(-1);
                     }
