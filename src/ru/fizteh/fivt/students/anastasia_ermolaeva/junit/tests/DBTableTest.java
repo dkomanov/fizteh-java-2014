@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.DBTable;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.DatabaseIOException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -35,7 +36,7 @@ public class DBTableTest {
     }
 
     //Tests on wrong table format.
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = DatabaseIOException.class)
     public final void testDBTableCreatedFromDirectoryWithNonDirectories()
             throws IOException {
         tableDirectoryPath.toFile().mkdir();
@@ -44,7 +45,7 @@ public class DBTableTest {
         new DBTable(testDirectory, tableName);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = DatabaseIOException.class)
     public final void testDBTableCreatedFromDirWithWrongSubdirectories() {
         tableDirectoryPath.toFile().mkdir();
         Path newSubdirectory = tableDirectoryPath.resolve("subdirectory");
@@ -52,7 +53,7 @@ public class DBTableTest {
         new DBTable(testDirectory, tableName);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = DatabaseIOException.class)
     public final void testDBTableCreatedFromDirWithEmptySubdirs() {
         tableDirectoryPath.toFile().mkdir();
         Path newSubdirectory = tableDirectoryPath.resolve(validSubdirectory);
@@ -60,7 +61,7 @@ public class DBTableTest {
         new DBTable(testDirectory, tableName);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = DatabaseIOException.class)
     public final void testDBTableCreatedFromDirWithSubdirsWithWrongFiles()
             throws IOException {
         tableDirectoryPath.toFile().mkdir();
