@@ -47,7 +47,9 @@ public class InterpreterTest {
         try {
             test.run(new String[]{});
         } catch (ExitException e) {
+            
             assertEquals(0, e.getStatus());
+            
             assertEquals(test.PROMPT + testOutput + newLine + test.PROMPT,
                    outputStream.toString());
         }
@@ -62,7 +64,9 @@ public class InterpreterTest {
         try {
             test.run(new String[]{testCommand + test.STATEMENT_DELIMITER, testCommand});
         } catch (ExitException e) {
+            
             assertEquals(0, e.getStatus());
+            
             assertEquals(testOutput + newLine + testOutput + newLine, outputStream.toString());
         }
     }
@@ -74,7 +78,9 @@ public class InterpreterTest {
         try {
             test.run(new String[]{testCommand});
         } catch (ExitException e) {
+            
             assertNotEquals(0, e.getStatus());
+            
             assertEquals(test.ERR_MSG + testCommand + newLine, errputStream.toString());
         }
     }
@@ -86,7 +92,9 @@ public class InterpreterTest {
         try {
             test.run(new String[]{});
         } catch (ExitException e) {
+            
             assertEquals(0, e.getStatus());
+            
             assertEquals(test.PROMPT + test.ERR_MSG
                     + testCommand + newLine + test.PROMPT, outputStream.toString());
         }
@@ -100,7 +108,9 @@ public class InterpreterTest {
         try {
             test.run(new String[]{testCommand + " argument"});
         } catch (ExitException e) {
+            
             assertEquals("Invalid number of arguments: 1 expected, 2 found." + newLine, errputStream.toString());
+            
             assertNotEquals(0, e.getStatus());
         }
     }
@@ -112,6 +122,7 @@ public class InterpreterTest {
         try {
             test.run(new String[]{});
         } catch (ExitException e) {
+            
             assertEquals(test.PROMPT + "Invalid number of arguments: 1 expected, 2 found." + newLine + test.PROMPT,
                     outputStream.toString());
         }
