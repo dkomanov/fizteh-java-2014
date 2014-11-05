@@ -1,20 +1,16 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.junit;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.FileVisitResult;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.DatabaseIOException;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TableHolder implements TableProvider {
     private Path rootPath;
@@ -37,8 +33,8 @@ public class TableHolder implements TableProvider {
         tableMap = new HashMap<>();
         Utility.checkDirectorySubdirs(rootPath);
         for (File currentSubdir : rootPath.toFile().listFiles()) {
-                String tableName = currentSubdir.getName();
-                tableMap.put(tableName, new DBTable(rootPath, tableName));
+            String tableName = currentSubdir.getName();
+            tableMap.put(tableName, new DBTable(rootPath, tableName));
         }
     }
 
@@ -74,9 +70,7 @@ public class TableHolder implements TableProvider {
             Path pathTableDirectory = rootPath.resolve(tableName);
             File tableDirectory = pathTableDirectory.toFile();
             if (!tableDirectory.mkdir()) {
-                System.err.println("Can't create table directory");
-                //throw new ExitException("Can't create table directory", 1);
-                System.exit(1);
+                throw new DatabaseIOException("Can't create table directory");
             } else {
                 DBTable newTable = new DBTable(rootPath,
                         tableName, new HashMap<>());
@@ -84,7 +78,6 @@ public class TableHolder implements TableProvider {
                 return newTable;
             }
         }
-        return null;
     }
 
     @Override
