@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.commands.CommandRunner;
 
 import java.nio.file.Path;
@@ -11,7 +10,6 @@ public class MultiFileTableShell {
     private CommandRunner commandrunner = new CommandRunner();
     private boolean batch;
     private Path dbPath;
-    private TableProvider activeConnector;
 
     public MultiFileTableShell(boolean batch) {
         String property = System.getProperty("fizteh.db.dir");
@@ -21,9 +19,6 @@ public class MultiFileTableShell {
         }
         dbPath = Paths.get(System.getProperty("user.dir")).resolve(property);
         this.batch = batch;
-
-        MultiFileTableProviderFactory factory = new MultiFileTableProviderFactory();
-        activeConnector = factory.create(property);
     }
 
     public static void main(String[] args) {

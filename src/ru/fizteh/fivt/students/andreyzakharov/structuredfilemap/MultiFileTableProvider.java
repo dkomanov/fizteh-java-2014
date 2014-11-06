@@ -10,6 +10,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,12 +125,19 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Storeable createFor(Table table) {
-        return null;
+        List<Object> values = new ArrayList<>(table.getColumnsCount());
+        return new TableEntry(values);
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-        return null;
+        List<Object> objValues = new ArrayList<>(values);
+        for (int i = 0; i < table.getColumnsCount(); ++i) {
+            if (objValues.get(i).getClass() != (table.getColumnType(i))) {
+                throw new ColumnFormatException("invalid column type");
+            }
+        }
+        return new TableEntry(objValues);
     }
 
     public void open() throws ConnectionInterruptException {

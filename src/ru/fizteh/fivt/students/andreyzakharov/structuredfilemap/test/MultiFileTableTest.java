@@ -43,7 +43,7 @@ public class MultiFileTableTest {
                 + maybeNull(Long.toString(random.nextLong())) + ","
                 + maybeNull(Float.toString(random.nextFloat())) + ","
                 + maybeNull(Double.toString(random.nextDouble())) + ","
-                + maybeNull(Byte.toString((byte)random.nextInt(128))) + ","
+                + maybeNull(Byte.toString((byte) random.nextInt(128))) + ","
                 + maybeNull(Boolean.toString(random.nextBoolean())) + "]";
     }
 
@@ -87,7 +87,7 @@ public class MultiFileTableTest {
 
     @After
     public void postRun() {
-        for (String name : dbNames) {
+        for (String ignored : dbNames) {
             try {
                 f.delete();
                 g.delete();
