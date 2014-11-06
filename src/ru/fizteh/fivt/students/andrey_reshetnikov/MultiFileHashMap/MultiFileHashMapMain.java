@@ -40,6 +40,12 @@ public class MultiFileHashMapMain {
                     }
                 }
             } while (!exitStatus);
+        } catch (MkdirException e) {
+            System.err.println("You cann't create a directory for the new table");
+            System.exit(1);
+        } catch (ExistsException e) {
+            System.err.println("Database directory does not exists");
+            System.exit(1);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             System.exit(1);

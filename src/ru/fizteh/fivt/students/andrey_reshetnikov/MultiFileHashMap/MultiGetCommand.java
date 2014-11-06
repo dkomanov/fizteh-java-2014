@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class MultiGetCommand extends Command {
     private final String key;
 
@@ -15,14 +13,14 @@ public class MultiGetCommand extends Command {
             System.out.println("no table");
         } else {
             int hashCode = Math.abs(key.hashCode());
-            int ndirectory = hashCode % 16;
-            int nfile = hashCode / 16 % 16;
+            int ndirectory = hashCode % modul;
+            int nfile = hashCode / modul % modul;
             GetCommand get = new GetCommand(key);
             DataBaseOneFile dataBase = base.getUsing().databases[ndirectory][nfile];
             if (dataBase == null) {
                 System.out.println("not found");
             } else {
-                get.execute(base.getUsing().databases[ndirectory][nfile], new AtomicBoolean());
+                get.execute(base.getUsing().databases[ndirectory][nfile], false);
             }
         }
     }

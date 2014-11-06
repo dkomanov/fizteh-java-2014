@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MultiRemoveCommand extends Command {
     private String key;
@@ -19,14 +18,14 @@ public class MultiRemoveCommand extends Command {
             System.out.println("no table");
         } else {
             int hashCode = Math.abs(key.hashCode());
-            int ndirectory = hashCode % 16;
-            int nfile = hashCode / 16 % 16;
+            int ndirectory = hashCode % modul;
+            int nfile = hashCode / modul % modul;
             RemoveCommand remove = new RemoveCommand(key);
             if (base.getUsing().databases[ndirectory][nfile] == null) {
                 System.out.println("not found");
             } else {
                 DataBaseOneFile dataBase = base.getUsing().databases[ndirectory][nfile];
-                remove.execute(dataBase, new AtomicBoolean());
+                remove.execute(dataBase, false);
                 if (dataBase.recordsNumber() == 0) {
                     File dbFile = new File(dataBase.dataBaseFileName);
                     try {

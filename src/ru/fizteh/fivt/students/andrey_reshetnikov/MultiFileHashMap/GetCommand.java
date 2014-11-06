@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class GetCommand extends CommandFileMap {
 
     private String key;
@@ -11,7 +9,7 @@ public class GetCommand extends CommandFileMap {
     }
 
     @Override
-    public void execute(DataBaseOneFile base, AtomicBoolean exitStatus) {
+    public void execute(DataBaseOneFile base, Boolean exitStatus) {
         String value = base.data.get(key);
         if (value == null) {
             System.out.println("not found");

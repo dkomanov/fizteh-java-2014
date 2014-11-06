@@ -11,10 +11,9 @@ public class DataBaseOneDir {
 
     public DataBaseOneDir(String path) throws Exception {
         mainDirectory = new File(path);
-        using = null;
         tables = new HashMap<>();
         if (!mainDirectory.exists()) {
-            throw new Exception("Database directory does not exists");
+            throw new ExistsException();
         }
         if (!mainDirectory.isDirectory()) {
             throw new Exception("Database isn't a directory");

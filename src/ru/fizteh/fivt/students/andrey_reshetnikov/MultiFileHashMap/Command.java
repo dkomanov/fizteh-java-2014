@@ -1,10 +1,11 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
 public abstract class Command {
+    protected final int modul = 16;
 
-    private static void checkNumberOfArguments(int x, int y) throws Exception {
-        if (x != y) {
-            throw new Exception("Incorrect number of arguments: " + String.valueOf(x));
+    private static void checkNumberOfArguments(int passed, int required) throws Exception {
+        if (passed != required) {
+            throw new Exception("Incorrect number of arguments: " + String.valueOf(passed));
         }
     }
 

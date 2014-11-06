@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class ListCommand extends CommandFileMap {
 
     public String getList(DataBaseOneFile base) {
@@ -16,7 +14,7 @@ public class ListCommand extends CommandFileMap {
     }
 
     @Override
-    public void execute(DataBaseOneFile base, AtomicBoolean exitStatus) {
+    public void execute(DataBaseOneFile base, Boolean exitStatus) {
         System.out.println(getList(base));
     }
 

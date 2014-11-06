@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
 import java.io.File;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MultiPutCommand extends Command {
 
@@ -19,8 +18,8 @@ public class MultiPutCommand extends Command {
             System.out.println("no table");
         } else {
             int hashCode = Math.abs(key.hashCode());
-            int ndirectory = hashCode % 16;
-            int nfile = hashCode / 16 % 16;
+            int ndirectory = hashCode % modul;
+            int nfile = hashCode / modul % modul;
             //System.out.println(ndirectory + " " + nfile);
             PutCommand put = new PutCommand(key, value);
             if (base.getUsing().databases[ndirectory][nfile] == null) {
@@ -38,7 +37,7 @@ public class MultiPutCommand extends Command {
                 }
                 base.getUsing().databases[ndirectory][nfile] = new DataBaseOneFile(dataBaseFile.toString());
             }
-            put.execute(base.getUsing().databases[ndirectory][nfile], new AtomicBoolean());
+            put.execute(base.getUsing().databases[ndirectory][nfile], false);
         }
     }
 }

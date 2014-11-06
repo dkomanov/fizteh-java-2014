@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class PutCommand extends CommandFileMap {
     private String key;
     private String value;
@@ -12,7 +10,7 @@ public class PutCommand extends CommandFileMap {
     }
 
     @Override
-    public void execute(DataBaseOneFile base, AtomicBoolean exitStatus) throws Exception {
+    public void execute(DataBaseOneFile base, Boolean exitStatus) throws Exception {
         String baseValue = base.data.get(key);
         if (baseValue != null) {
             System.out.println("overwrite");
