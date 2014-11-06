@@ -38,9 +38,13 @@ public class TableHolder implements TableProvider {
         }
         tableMap = new HashMap<>();
         Utility.checkDirectorySubdirs(rootPath);
-        for (File currentSubdir : rootPath.toFile().listFiles()) {
-            String tableName = currentSubdir.getName();
-            tableMap.put(tableName, new DBTable(rootPath, tableName));
+        try {
+            for (File currentSubdir : rootPath.toFile().listFiles()) {
+                String tableName = currentSubdir.getName();
+                tableMap.put(tableName, new DBTable(rootPath, tableName));
+            }
+        } catch(NullPointerException n) {
+            throw new DatabaseIOException("Access forbidden");
         }
     }
 
