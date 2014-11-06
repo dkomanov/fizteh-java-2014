@@ -1,10 +1,10 @@
 package ru.fizteh.fivt.students.Volodin_Denis.MultiFileMap;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class InteractiveMode {
-    public static void interactive(Table table, HashMap<String, Integer> dbInformation) {
+    public static void interactive(Table table, Map<String, Integer> dbInformation) {
         Scanner scanner = new Scanner(System.in);
         try {
             do {
@@ -22,7 +22,7 @@ public class InteractiveMode {
                 }
             } while(true);
         } catch (Exception exception) {
-            System.err.println("Smth wrong.");
+            System.err.println("Smth wrong: " + exception.getMessage());
             scanner.close();
             System.exit(ReturnCodes.ERROR);
         }

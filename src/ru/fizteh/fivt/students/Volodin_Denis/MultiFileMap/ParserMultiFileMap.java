@@ -1,12 +1,12 @@
 package ru.fizteh.fivt.students.Volodin_Denis.MultiFileMap;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class ParserMultiFileMap {
     ParserMultiFileMap() {
     }
     
-    public static void parser(final String[] args, Table table, HashMap<String, Integer> dbInformation)
+    public static void parser(final String[] args, Table table, Map<String, Integer> dbInformation)
             throws Exception {
         switch (args[0]) {
             case "create":

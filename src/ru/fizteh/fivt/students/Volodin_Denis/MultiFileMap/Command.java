@@ -1,10 +1,10 @@
 package ru.fizteh.fivt.students.Volodin_Denis.MultiFileMap;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class Command {
     
-    public static void create(final String[] args, Table table, HashMap<String, Integer> dbInformation)
+    public static void create(final String[] args, Table table, Map<String, Integer> dbInformation)
             throws Exception {
         if (args.length != 2) {
             ErrorFunctions.wrongQuantity("create");
@@ -16,7 +16,7 @@ public class Command {
         table.create(args[1], dbInformation);
     }
 
-    public static void drop(final String[] args, Table table, HashMap<String, Integer> dbInformation) throws Exception {
+    public static void drop(final String[] args, Table table, Map<String, Integer> dbInformation) throws Exception {
         if (args.length != 2) {
             ErrorFunctions.wrongQuantity("drop");
         }
@@ -89,7 +89,7 @@ public class Command {
         table.remove(args[1]);
     }
     
-    public static void showTables(final String[] args, Table table, HashMap<String, Integer> dbInformation)
+    public static void showTables(final String[] args, Table table, Map<String, Integer> dbInformation)
             throws Exception {
         if (args.length != 2) {
             ErrorFunctions.wrongInput("show tables");
@@ -101,7 +101,7 @@ public class Command {
         table.showTables(args[1], dbInformation);
     }
     
-    public static void use(final String[] args, Table table, HashMap<String, Integer> dbInformation) throws Exception {
+    public static void use(final String[] args, Table table, Map<String, Integer> dbInformation) throws Exception {
         if (args.length != 2) {
             ErrorFunctions.wrongQuantity("use");
         }

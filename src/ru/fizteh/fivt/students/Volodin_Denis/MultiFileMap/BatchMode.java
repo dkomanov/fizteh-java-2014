@@ -1,9 +1,9 @@
 package ru.fizteh.fivt.students.Volodin_Denis.MultiFileMap;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class BatchMode {
-    public static void batch(final String[] args, Table table, HashMap<String, Integer> dbInformation)
+    public static void batch(final String[] args, Table table, Map<String, Integer> dbInformation)
             throws Exception {
         try {
             StringBuilder helpArray = new StringBuilder();
@@ -23,7 +23,7 @@ public class BatchMode {
                 }
             }
         } catch (Exception exception) {
-            System.err.println("Smth wrong.");
+            System.err.println("Smth wrong: " + exception.getMessage());
             System.exit(ReturnCodes.ERROR);
         }
     }

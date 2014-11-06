@@ -139,15 +139,9 @@ public class DataBase implements Map<String, String>, AutoCloseable {
                     
                     try (FileOutputStream output = new FileOutputStream(helpPath.toString())) {
                         for (String key : keyList) {
-                            ByteBuffer buffer1 = ByteBuffer.allocate(4);
-                            byte[] keyByte = buffer1.putInt(key.getBytes("UTF-8").length).array();
-                            output.write(keyByte);
-                            output.write(key.getBytes("UTF-8"));
-                                                     
-                            ByteBuffer buffer2 = ByteBuffer.allocate(4);
-                            byte[] valueByte = buffer2.putInt(database.get(key).getBytes("UTF-8").length).array();
-                            output.write(valueByte);
-                            output.write(database.get(key).getBytes("UTF-8"));
+                            //
+                            writeOneWordOnDisk(key, output);
+                            writeOneWordOnDisk(database.get(key), output);
                         }
                     } catch (Exception e) {
                         ErrorFunctions.errorWrite("write");
@@ -156,7 +150,14 @@ public class DataBase implements Map<String, String>, AutoCloseable {
             }
         }
     }
- 
+
+    private void writeOneWordOnDisk(final String word, FileOutputStream output) throws Exception {
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+        byte[] wordByte = buffer.putInt(word.getBytes("UTF-8").length).array();
+        output.write(wordByte);
+        output.write(word.getBytes("UTF-8"));
+    }
+    
     @Override
     public void close() throws Exception {
         writeOnDisk();        

@@ -4,7 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class Table {
@@ -22,9 +22,7 @@ public class Table {
             System.err.println("Path was not found.");
             System.exit(ReturnCodes.ERROR);
         }
-        if (!Paths.get(dbPath).isAbsolute()) {
-            dbPath = Paths.get(dbPath).toAbsolutePath().normalize().toString();
-        }
+        dbPath = Paths.get(dbPath).toAbsolutePath().normalize().toString();
         if (!Paths.get(dbPath).normalize().toFile().exists()) {
             if (Paths.get(dbPath).normalize().getParent().toFile().exists()) {
                 Files.createDirectory(Paths.get(dbPath).normalize().getFileName());
@@ -52,7 +50,7 @@ public class Table {
         return dbTable;
     }
     
-    public void create(final String arg, HashMap<String, Integer> dbInformation) throws Exception {
+    public void create(final String arg, Map<String, Integer> dbInformation) throws Exception {
         if (Paths.get(dbPath, arg).normalize().toFile().exists()) {
             if (Paths.get(dbPath, arg).normalize().toFile().isDirectory()) {
                 System.out.println(arg + " exists");
@@ -69,7 +67,7 @@ public class Table {
         dbInformation.put(Paths.get(dbPath, arg).normalize().getFileName().toString(), 0);
     }
     
-    public void drop(final String arg, HashMap<String, Integer> dbInformation) throws Exception {
+    public void drop(final String arg, Map<String, Integer> dbInformation) throws Exception {
         try {
             Path pathToFile = Paths.get(dbPath, arg).normalize();
             if (!pathToFile.toFile().exists()) {
@@ -145,7 +143,7 @@ public class Table {
         }
     }
     
-    public void showTables(final String arg, HashMap<String, Integer> dbInformation) throws Exception {
+    public void showTables(final String arg, Map<String, Integer> dbInformation) throws Exception {
         Set<String> tables = dbInformation.keySet();
         if (!tables.isEmpty()) {
             System.out.println("table_name row_count");
@@ -163,7 +161,7 @@ public class Table {
         }
     }
     
-    public void use(final String arg, HashMap<String, Integer> dbInformation) throws Exception {
+    public void use(final String arg, Map<String, Integer> dbInformation) throws Exception {
         if (!Paths.get(dbPath, arg).normalize().toFile().exists()) {
             System.out.println(arg + " not exists");
         } else {
