@@ -63,7 +63,7 @@ public class Main {
                     Table newCurrentTable = holder.getTable(tableName);
                     String currentTableName = tableS.getCurrentTableName();
                     if (newCurrentTable != null) {
-                        if (tableS.checkCurrentTable()) {
+                        if (!currentTableName.equals("")) {
                             DBTable currentTable = holder.getTableMap().get(currentTableName);
                             if (currentTable.getNumberOfChanges() > 0) {
                                 System.out.println(currentTable.getNumberOfChanges()
