@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class MultiFileTableProviderFactoryTest {
-    String root = "/home/norrius/Apps/fizteh-java-2014/test/junit";
+    String root = "test/junit-structured";
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
