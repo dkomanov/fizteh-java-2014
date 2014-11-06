@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Created by astepanov on 26.09.14.
  */
-public class FileMap implements Map<String, String> {
+public class FileMap implements Map<String, String>, AutoCloseable {
     private File mapFile;
     private Map<String, String> cache;
     private Set<String> changed;
@@ -156,5 +156,10 @@ public class FileMap implements Map<String, String> {
         int keyChangedCount = changed.size();
         reload();
         return keyChangedCount;
+    }
+
+    @Override
+    public void close() throws Exception {
+        commit();
     }
 }
