@@ -60,7 +60,7 @@ public class DBTable implements Table {
             word = new byte[wordLength];
             dbFile.read(word, 0, wordLength);
             return new String(word, ENCODING);
-        } catch (IOException| OutOfMemoryError e) {
+        } catch (IOException | OutOfMemoryError e) {
             throw new DatabaseIOException(fileName + ": invalid file format");
         }
     }
