@@ -60,7 +60,7 @@ public class DBTable implements Table {
             word = new byte[wordLength];
             dbFile.read(word, 0, wordLength);
             return new String(word, ENCODING);
-        } catch (IOException | OutOfMemoryError e) {
+        } catch (IOException| OutOfMemoryError e) {
             throw new DatabaseIOException(fileName + ": invalid file format");
         }
     }
@@ -85,7 +85,7 @@ public class DBTable implements Table {
                             throw new DatabaseIOException(
                                     "Table has the wrong format");
                         }
-                        Integer.parseInt(directory.getName().substring(START_P, k));
+                        int nDirectory = Integer.parseInt(directory.getName().substring(START_P, k));
                         for (File file : directoryFiles) {
                             try {
                                 k = file.getName().indexOf('.');
@@ -100,7 +100,7 @@ public class DBTable implements Table {
                                             "Table subdirectory's files doesn't "
                                                     + "have appropriate name");
                                 }
-                                Integer.parseInt(file.getName().substring(START_P, k));
+                                int nFile = Integer.parseInt(file.getName().substring(START_P, k));
                                 try (RandomAccessFile dbFile =
                                              new RandomAccessFile(
                                                      file.getAbsolutePath(), "r")) {
@@ -108,8 +108,18 @@ public class DBTable implements Table {
                                         while (dbFile.getFilePointer()
                                                 < dbFile.length()) {
                                             String key = readUtil(dbFile, file.getName());
+                                            int expectedNDirectory = Math.abs(key.getBytes(ENCODING)[0]
+                                                    % DIR_AMOUNT);
+                                            int expectedNFile = Math.abs((key.getBytes(ENCODING)[0] / DIR_AMOUNT)
+                                                    % FILES_AMOUNT);
                                             String value = readUtil(dbFile, file.getName());
-                                            allRecords.put(key, value);
+                                            if (expectedNDirectory == nDirectory
+                                                    && expectedNFile == nFile) {
+                                                allRecords.put(key, value);
+                                            } else {
+                                                throw new DatabaseIOException("Records locates"
+                                                        + " in the wrong file");
+                                            }
                                         }
                                     }
                                     dbFile.close();
