@@ -11,8 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            Shell<SingleDatabaseShellState> shell =
-                    new Shell<>(new SingleDatabaseShellState());
+            Shell<SingleDatabaseShellState> shell = new Shell<>(new SingleDatabaseShellState());
             if (args.length == 0) {
                 shell.run(System.in);
             } else {

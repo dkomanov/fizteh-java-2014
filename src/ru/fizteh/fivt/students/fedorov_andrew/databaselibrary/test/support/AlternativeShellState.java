@@ -93,8 +93,7 @@ public class AlternativeShellState extends SimpleCommandContainer<AlternativeShe
     }
 
     @Override
-    public void init(Shell<ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.AlternativeShellState> host)
-            throws Exception {
+    public void init(Shell<AlternativeShellState> host) throws Exception {
         if (makeExceptionOnInit) {
             throw new SpontaniousException();
         }
