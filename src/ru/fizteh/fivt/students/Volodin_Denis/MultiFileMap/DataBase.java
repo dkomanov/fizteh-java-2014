@@ -139,7 +139,6 @@ public class DataBase implements Map<String, String>, AutoCloseable {
                     
                     try (FileOutputStream output = new FileOutputStream(helpPath.toString())) {
                         for (String key : keyList) {
-                            //
                             writeOneWordOnDisk(key, output);
                             writeOneWordOnDisk(database.get(key), output);
                         }
