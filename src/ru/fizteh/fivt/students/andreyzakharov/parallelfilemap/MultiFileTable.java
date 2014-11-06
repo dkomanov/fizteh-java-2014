@@ -18,12 +18,21 @@ import static ru.fizteh.fivt.students.andreyzakharov.parallelfilemap.MultiFileTa
 import static ru.fizteh.fivt.students.andreyzakharov.parallelfilemap.MultiFileTableUtils.stringToClass;
 
 public class MultiFileTable implements Table {
+    class MultiFileTableDiff {
+        Map<String, Storeable> added = new HashMap<>();
+        Map<String, Storeable> changed = new HashMap<>();
+        Set<String> removed = new HashSet<>();
+        int pending = 0;
+    }
+
     private ArrayList<Class<?>> signature = new ArrayList<>();
     private Map<String, Storeable> stableData = new HashMap<>();
-    private Map<String, Storeable> added = new HashMap<>();
-    private Map<String, Storeable> changed = new HashMap<>();
-    private Set<String> removed = new HashSet<>();
-    private int pending = 0;
+    private ThreadLocal<MultiFileTableDiff> diff = new ThreadLocal<MultiFileTableDiff>() {
+        @Override
+        protected MultiFileTableDiff initialValue() {
+            return new MultiFileTableDiff();
+        }
+    };
     private Path dbPath;
     private String name;
 
@@ -37,7 +46,7 @@ public class MultiFileTable implements Table {
      *
      * @param path       Root for the store.
      * @param serializer An object that transforms TableEntry rows to String values and back.
-     * @throws ConnectionInterruptException An I/O error occured during disk operations.
+     * @throws ConnectionInterruptException An I/O error occurred during disk operations.
      */
     public MultiFileTable(Path path, TableEntrySerializer serializer) throws ConnectionInterruptException {
         dbPath = path;
@@ -59,7 +68,7 @@ public class MultiFileTable implements Table {
      * @param path       Root for the store.
      * @param signature  Types for table columns.
      * @param serializer An object that transforms TableEntry rows to String values and back.
-     * @throws ConnectionInterruptException An I/O error occured during disk operations.
+     * @throws ConnectionInterruptException An I/O error occurred during disk operations.
      */
     public MultiFileTable(Path path, List<Class<?>> signature, TableEntrySerializer serializer)
             throws ConnectionInterruptException {
@@ -88,12 +97,12 @@ public class MultiFileTable implements Table {
             throw new IllegalArgumentException("null argument");
         }
 
-        if (removed.contains(key)) {
+        if (diff.get().removed.contains(key)) {
             return null;
-        } else if (added.containsKey(key)) {
-            return added.get(key);
-        } else if (changed.containsKey(key)) {
-            return changed.get(key);
+        } else if (diff.get().added.containsKey(key)) {
+            return diff.get().added.get(key);
+        } else if (diff.get().changed.containsKey(key)) {
+            return diff.get().changed.get(key);
         } else {
             return stableData.get(key);
         }
@@ -105,32 +114,32 @@ public class MultiFileTable implements Table {
             throw new IllegalArgumentException("null argument");
         }
 
-        if (removed.remove(key)) {
+        if (diff.get().removed.remove(key)) {
             if (stableData.get(key).equals(value)) {
-                --pending;
+                --diff.get().pending;
             } else {
-                changed.put(key, value);
+                diff.get().changed.put(key, value);
             }
             return null;
         } else {
             if (stableData.containsKey(key)) {
-                if (changed.containsKey(key)) {
+                if (diff.get().changed.containsKey(key)) {
                     if (stableData.get(key).equals(value)) {
-                        --pending;
-                        return changed.remove(key);
+                        --diff.get().pending;
+                        return diff.get().changed.remove(key);
                     } else {
-                        return changed.put(key, value);
+                        return diff.get().changed.put(key, value);
                     }
                 } else {
-                    ++pending;
-                    changed.put(key, value);
+                    ++diff.get().pending;
+                    diff.get().changed.put(key, value);
                     return stableData.get(key);
                 }
             } else {
-                if (!added.containsKey(key)) {
-                    ++pending;
+                if (!diff.get().added.containsKey(key)) {
+                    ++diff.get().pending;
                 }
-                return added.put(key, value);
+                return diff.get().added.put(key, value);
             }
         }
     }
@@ -142,20 +151,20 @@ public class MultiFileTable implements Table {
         }
 
         if (stableData.containsKey(key)) {
-            if (removed.add(key)) {
-                if (changed.containsKey(key)) {
-                    return changed.remove(key);
+            if (diff.get().removed.add(key)) {
+                if (diff.get().changed.containsKey(key)) {
+                    return diff.get().changed.remove(key);
                 } else {
-                    ++pending;
+                    ++diff.get().pending;
                     return stableData.get(key);
                 }
             } else {
                 return null;
             }
         } else {
-            if (added.containsKey(key)) {
-                --pending;
-                return added.remove(key);
+            if (diff.get().added.containsKey(key)) {
+                --diff.get().pending;
+                return diff.get().added.remove(key);
             } else {
                 return null;
             }
@@ -164,18 +173,18 @@ public class MultiFileTable implements Table {
 
     @Override
     public int size() {
-        return stableData.size() + added.size() - removed.size();
+        return stableData.size() + diff.get().added.size() - diff.get().removed.size();
     }
 
     public int getPending() {
-        return pending;
+        return diff.get().pending;
     }
 
     @Override
     public int commit() {
-        stableData.keySet().removeAll(removed);
-        stableData.putAll(changed);
-        stableData.putAll(added);
+        stableData.keySet().removeAll(diff.get().removed);
+        stableData.putAll(diff.get().changed);
+        stableData.putAll(diff.get().added);
 
         try {
             unload();
@@ -183,22 +192,22 @@ public class MultiFileTable implements Table {
             return -1;
         }
 
-        removed.clear();
-        changed.clear();
-        added.clear();
-        int p = pending;
-        pending = 0;
+        diff.get().removed.clear();
+        diff.get().changed.clear();
+        diff.get().added.clear();
+        int p = diff.get().pending;
+        diff.get().pending = 0;
 
         return p;
     }
 
     @Override
     public int rollback() {
-        removed.clear();
-        changed.clear();
-        added.clear();
-        int p = pending;
-        pending = 0;
+        diff.get().removed.clear();
+        diff.get().changed.clear();
+        diff.get().added.clear();
+        int p = diff.get().pending;
+        diff.get().pending = 0;
         return p;
     }
 
@@ -219,17 +228,13 @@ public class MultiFileTable implements Table {
      */
     public List<String> list() {
         List<String> keySet = new ArrayList<>(stableData.keySet());
-        keySet.removeAll(removed);
-        keySet.addAll(added.keySet());
+        keySet.removeAll(diff.get().removed);
+        keySet.addAll(diff.get().added.keySet());
         return keySet;
     }
 
     public void clear() {
         stableData.clear();
-        added.clear();
-        changed.clear();
-        removed.clear();
-        pending = 0;
     }
 
     private static class DfPair {
@@ -347,16 +352,18 @@ public class MultiFileTable implements Table {
     public void unload() throws ConnectionInterruptException {
         int[][] status = new int[16][16];
 
+        MultiFileTableDiff d = diff.get();
+
         DfPair p;
-        for (String key : added.keySet()) {
+        for (String key : diff.get().added.keySet()) {
             p = getHash(key);
             status[p.d][p.f] = 1;
         }
-        for (String key : removed) {
+        for (String key : diff.get().removed) {
             p = getHash(key);
             status[p.d][p.f] = -2;
         }
-        for (String key : changed.keySet()) {
+        for (String key : diff.get().changed.keySet()) {
             p = getHash(key);
             status[p.d][p.f] = -1;
         }

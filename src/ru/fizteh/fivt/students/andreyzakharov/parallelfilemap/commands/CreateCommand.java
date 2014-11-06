@@ -19,7 +19,11 @@ public class CreateCommand implements Command {
         if (args.length > 3) {
             throw new CommandInterruptException("create: too many arguments");
         }
-        if (args[2].charAt(0) != '(' || args[2].charAt(args[2].length() - 1) != ')') {
+        if (args[2].length() < 3
+                || args[2].charAt(0) != '('
+                || args[2].charAt(args[2].length() - 1) != ')'
+                || args[2].charAt(1) == ','
+                || args[2].charAt(args[2].length() - 2) == ',') {
             return "wrong type (invalid type specification)";
         }
         List<Class<?>> signature = new ArrayList<>();
@@ -33,6 +37,9 @@ public class CreateCommand implements Command {
                 return "wrong type (" + type.trim() + " is not a valid type name)";
             }
             signature.add(clazz);
+        }
+        if (types.length == 0) {
+            return "wrong type (empty type is not allowed)";
         }
 
         Table newTable;
