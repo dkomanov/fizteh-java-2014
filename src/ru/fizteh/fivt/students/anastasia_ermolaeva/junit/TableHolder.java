@@ -43,7 +43,7 @@ public class TableHolder implements TableProvider {
                 String tableName = currentSubdir.getName();
                 tableMap.put(tableName, new DBTable(rootPath, tableName));
             }
-        } catch(NullPointerException n) {
+        } catch (NullPointerException n) {
             throw new DatabaseIOException("Access forbidden");
         }
     }
