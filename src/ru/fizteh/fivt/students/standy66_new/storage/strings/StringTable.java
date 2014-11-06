@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.standy66_new.storage.strings;
 
+import org.omg.SendingContext.RunTime;
 import ru.fizteh.fivt.storage.strings.Table;
 
 import java.io.File;
@@ -85,8 +86,7 @@ public class StringTable implements Table {
                     try {
                         openedFiles.put(file, new FileMap(file));
                     } catch (IOException e) {
-                        System.err.println("IOException during opening file");
-                        //TODO: do something here
+                        throw new RuntimeException("IOException occured", e);
                     }
                 }
                 ans += openedFiles.get(file).size();
@@ -102,8 +102,7 @@ public class StringTable implements Table {
             try {
                 keyChangedCount += fm.commit();
             } catch (IOException e) {
-                System.err.println("IOException during commit");
-                //TODO: do something here
+                throw new RuntimeException("IOException occured", e);
             }
         }
         for (int i = 0; i < 16; i++) {
@@ -122,8 +121,7 @@ public class StringTable implements Table {
             try {
                 keyChangedCount += fm.rollback();
             } catch (IOException e) {
-                System.err.println("IOException during rollback");
-                //TODO: do something here
+                throw new RuntimeException("IOException occured", e);
             }
         }
         return keyChangedCount;
@@ -140,8 +138,7 @@ public class StringTable implements Table {
                     try {
                         openedFiles.put(file, new FileMap(file));
                     } catch (IOException e) {
-                        System.err.println("IOException during opening file");
-                        //TODO: do something here
+                        throw new RuntimeException("IOException occured", e);
                     }
                 }
                 list.addAll(openedFiles.get(file).keySet());
@@ -164,9 +161,7 @@ public class StringTable implements Table {
             try {
                 openedFiles.put(f, new FileMap(f));
             } catch (IOException e) {
-                System.err.println("IOException during opening file");
-                //TODO: do something here
-                return null;
+                throw new RuntimeException("IOException occured", e);
             }
         }
         return openedFiles.get(f);
