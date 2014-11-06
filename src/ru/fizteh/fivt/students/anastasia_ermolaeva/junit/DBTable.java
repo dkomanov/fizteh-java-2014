@@ -4,16 +4,10 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.DatabaseIOException;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DBTable implements Table {
     static final String DIR_SUFFIX = ".dir";
@@ -56,80 +50,92 @@ public class DBTable implements Table {
         return dbPath;
     }
 
-    private String readUtil(final RandomAccessFile dbFile) {
+    private String readUtil(final RandomAccessFile dbFile, final String fileName) {
+        byte[] word = null;
         try {
             int wordLength = dbFile.readInt();
-            byte[] word = new byte[wordLength];
+            if (wordLength <= 0) {
+                throw new DatabaseIOException(fileName + ": invalid file format");
+            }
+            word = new byte[wordLength];
             dbFile.read(word, 0, wordLength);
             return new String(word, ENCODING);
-        } catch (IOException | SecurityException e) {
-            throw new DatabaseIOException(e.getMessage());
+        } catch (IOException| OutOfMemoryError e) {
+            throw new DatabaseIOException(fileName + ": invalid file format");
         }
     }
 
     private void read() {
         Utility.checkDirectorySubdirs(dbPath);
-        for (File directory : dbPath.toFile().listFiles()) {
-            File[] directoryFiles = directory.listFiles();
-            int k = directory.getName().indexOf('.');
-            if ((k < 0) || !(directory.getName().substring(k).equals(DIR_SUFFIX))) {
-                throw new DatabaseIOException("Table subdirectories don't "
-                        + "have appropriate name");
-            }
-            try {
-                /*
-                * Delete .dir and check
-                * if the subdirectory has the suitable name.
-                 */
-                if (directory.list().length == 0) {
-                    throw new DatabaseIOException(
-                            "Table has the wrong format");
-                }
-                Integer.parseInt(directory.getName().substring(START_P, k));
-                for (File file : directoryFiles) {
+        try {
+            for (File directory : dbPath.toFile().listFiles()) {
+                try {
+                    File[] directoryFiles = directory.listFiles();
+                    int k = directory.getName().indexOf('.');
+                    if ((k < 0) || !(directory.getName().substring(k).equals(DIR_SUFFIX))) {
+                        throw new DatabaseIOException("Table subdirectories don't "
+                                + "have appropriate name");
+                    }
                     try {
-                        k = file.getName().indexOf('.');
+                    /*
+                    * Delete .dir and check
+                    * if the subdirectory has the suitable name.
+                     */
+                        if (directory.list().length == 0) {
+                            throw new DatabaseIOException(
+                                    "Table has the wrong format");
+                        }
+                        Integer.parseInt(directory.getName().substring(START_P, k));
+                        for (File file : directoryFiles) {
+                            try {
+                                k = file.getName().indexOf('.');
                         /*
                         Checking files' names the same way
                         we did with directories earlier.
                         */
-                        if ((k < 0)
-                                || !(file.getName().
-                                substring(k).equals(FILE_SUFFIX))) {
-                            throw new DatabaseIOException(
-                                    "Table subdirectory's files doesn't "
-                                            + "have appropriate name");
-                        }
-                        Integer.parseInt(file.getName().substring(START_P, k));
-                        try (RandomAccessFile dbFile =
-                                     new RandomAccessFile(
-                                             file.getAbsolutePath(), "r")) {
-                            if (dbFile.length() > 0) {
-                                while (dbFile.getFilePointer()
-                                        < dbFile.length()) {
-                                    String key = readUtil(dbFile);
-                                    String value = readUtil(dbFile);
-                                    allRecords.put(key, value);
+                                if ((k < 0)
+                                        || !(file.getName().
+                                        substring(k).equals(FILE_SUFFIX))) {
+                                    throw new DatabaseIOException(
+                                            "Table subdirectory's files doesn't "
+                                                    + "have appropriate name");
                                 }
+                                Integer.parseInt(file.getName().substring(START_P, k));
+                                try (RandomAccessFile dbFile =
+                                             new RandomAccessFile(
+                                                     file.getAbsolutePath(), "r")) {
+                                    if (dbFile.length() > 0) {
+                                        while (dbFile.getFilePointer()
+                                                < dbFile.length()) {
+                                            String key = readUtil(dbFile, file.getName());
+                                            String value = readUtil(dbFile, file.getName());
+                                            allRecords.put(key, value);
+                                        }
+                                    }
+                                    dbFile.close();
+                                } catch (IOException e) {
+                                    throw new DatabaseIOException(e.getMessage());
+                                }
+                            } catch (NumberFormatException e) {
+                                throw new DatabaseIOException("Subdirectories' files "
+                                        + "have wrong names, "
+                                        + "expected: " + START_P + FILE_SUFFIX
+                                        + (FILES_AMOUNT - 1) + FILE_SUFFIX);
                             }
-                            dbFile.close();
-                        } catch (IOException e) {
-                            throw new DatabaseIOException(e.getMessage());
                         }
                     } catch (NumberFormatException e) {
-                        throw new DatabaseIOException("Subdirectories' files "
-                                + "have wrong names, "
-                                + "expected: " + START_P + FILE_SUFFIX
-                                + (FILES_AMOUNT - 1) + FILE_SUFFIX);
+                        throw new
+                                DatabaseIOException("Subdirectories' names "
+                                + "are wrong, "
+                                + "expected: " + START_P + DIR_SUFFIX
+                                + (DIR_AMOUNT - 1) + DIR_SUFFIX);
                     }
+                } catch (NullPointerException n) {
+                    new DatabaseIOException("Access forbidden");
                 }
-            } catch (NumberFormatException e) {
-                throw new
-                        DatabaseIOException("Subdirectories' names "
-                        + "are wrong, "
-                        + "expected: " + START_P + DIR_SUFFIX
-                        + (DIR_AMOUNT - 1) + DIR_SUFFIX);
             }
+        } catch (NullPointerException n) {
+            throw new DatabaseIOException("Access forbidden");
         }
     }
 
