@@ -87,13 +87,40 @@ public class Interpreter {
                     throw new ExitException(0);
                 }
                 String[] commands = line.trim().split(STATEMENT_DELIMITER);
-                for (String command : commands) {
-                    commandHandler(command, true);
+                try {
+                    for (String command : commands) {
+                        commandHandler(command, true);
+                    }
+                } catch (IllegalCommandException e) {
+                    out.println(e.getErrMessage());
+                    continue;
                 }
             }
         } catch (NoSuchElementException e) {
             throw new ExitException(e.getMessage(), 1);
         }
+    }
+
+    private void handleCommand(String commandName, boolean userMode, String[] arguments) throws ExitException {
+        Command command = commands.get(commandName);
+        if (command == null) {
+            if (userMode) {
+                throw new IllegalCommandException(ERR_MSG + commandName);
+            } else {
+                throw new ExitException(ERR_MSG + commandName, 1);
+            }
+        } else {
+            try {
+                command.execute(tableState, arguments);
+            } catch (IllegalCommandException e) {
+                if (userMode) {
+                    throw e;
+                } else {
+                    throw new ExitException(e.getErrMessage(), 1);
+                }
+            }
+        }
+
     }
 
     private void commandHandler(String cmd,
@@ -108,52 +135,14 @@ public class Interpreter {
                 for (int i = 1; i < arguments.length - 1; i++) {
                     newArguments[i] = arguments[i + 1];
                 }
-                Command command = commands.get(cmdName);
-                if (command == null) {
-                    if (userMode) {
-                        out.println(ERR_MSG + cmdName);
-                    } else {
-                        throw new ExitException(ERR_MSG + cmdName, 1);
-                    }
-                } else {
-                    try {
-                        command.execute(tableState, newArguments);
-                    } catch (IllegalNumberOfArgumentsException e) {
-                        if (userMode) {
-                            out.println(e.getErrMessage());
-                        } else {
-                            throw new ExitException(e.getErrMessage(), 1);
-                        }
-                    }
-                }
+                handleCommand(cmdName, userMode, newArguments);
             } else {
-                if (userMode) {
-                    out.println(ERR_MSG + cmdName);
-                } else {
-                    throw new ExitException(ERR_MSG + cmdName, 1);
-                }
+                handleCommand(cmdName, userMode, arguments);
             }
         } else {
             if ((arguments.length > 0) && !arguments[0].isEmpty()) {
                 String commandName = arguments[0];
-                Command command = commands.get(commandName);
-                if (command == null) {
-                    if (userMode) {
-                        out.println(ERR_MSG + commandName);
-                    } else {
-                        throw new ExitException(ERR_MSG + commandName, 1);
-                    }
-                } else {
-                    try {
-                        command.execute(tableState, arguments);
-                    } catch (IllegalNumberOfArgumentsException e) {
-                        if (userMode) {
-                            out.println(e.getErrMessage());
-                        } else {
-                            throw new ExitException(e.getErrMessage(), 1);
-                        }
-                    }
-                }
+                handleCommand(commandName, userMode, arguments);
             }
         }
     }
