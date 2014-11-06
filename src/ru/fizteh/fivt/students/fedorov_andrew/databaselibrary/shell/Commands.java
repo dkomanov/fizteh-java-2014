@@ -62,7 +62,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
                 public void executeSafely(SingleDatabaseShellState state, String[] args)
                         throws DatabaseException, IllegalArgumentException {
                     state.persist();
-                    state.exit(0);
+                    state.prepareToExit(0);
                 }
             };
     public static final Command<SingleDatabaseShellState> GET =

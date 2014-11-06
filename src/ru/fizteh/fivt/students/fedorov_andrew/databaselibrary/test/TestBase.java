@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
 
@@ -14,7 +13,6 @@ public abstract class TestBase {
     protected static final Path DB_ROOT =
             Paths.get(System.getProperty("user.home"), "test", "JUnitDB");
 
-    @Ignore
     @BeforeClass
     public static void globalPrepareTestBase() throws IOException {
         if (Files.exists(DB_ROOT)) {

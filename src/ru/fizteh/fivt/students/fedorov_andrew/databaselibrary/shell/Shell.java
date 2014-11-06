@@ -50,7 +50,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
      *         some shell command
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
      */
-    public void execute(String commandStr) throws TerminalException, ExitRequest {
+    private void execute(String commandStr) throws TerminalException, ExitRequest {
         String[] args = commandStr.trim().split("[ \t]{1,}");
         if (args[0].isEmpty()) {
             return;
@@ -134,17 +134,13 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
             return request.getCode();
         } finally {
             try {
-                shellState.persist();
-            } catch (Exception exc) {
-                Log.log(Shell.class, exc, "Failed to persist shell state");
-                try {
-                    shellState.exit(1);
-                } catch (ExitRequest request) {
-                    return request.getCode();
-                }
+                persistSafelyAndPrepareToExit();
+            } catch (ExitRequest request) {
+                return request.getCode();
             }
         }
 
+        // If all contracts are honoured, this line is unreachable.
         return 0;
     }
 
@@ -176,20 +172,30 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
                 throw request;
             } catch (TerminalException exc) {
                 // Exception already handled.
-                shellState.exit(1);
+                shellState.prepareToExit(1);
             }
-
-            try {
-                shellState.persist();
-            } catch (Exception exc) {
-                Log.log(Shell.class, exc, "Failed to persist shell state");
-                shellState.exit(1);
-            }
-            shellState.exit(0);
+            persistSafelyAndPrepareToExit();
         } catch (ExitRequest request) {
             return request.getCode();
         }
 
+        // If all contracts are honoured, this line is unreachable.
         return 0;
+    }
+
+    /**
+     * Persists shell state. If fails, calls {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.ShellState#prepareToExit(int)}
+     * with non zero exit code.
+     */
+    private void persistSafelyAndPrepareToExit() throws ExitRequest {
+        try {
+            shellState.persist();
+            shellState.prepareToExit(0);
+        } catch (ExitRequest request) {
+            throw request;
+        } catch (Exception exc) {
+            Log.log(Shell.class, exc, "Failed to persist shell state");
+            shellState.prepareToExit(1);
+        }
     }
 }

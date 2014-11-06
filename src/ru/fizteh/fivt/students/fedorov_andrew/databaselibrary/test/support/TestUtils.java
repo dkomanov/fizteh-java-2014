@@ -14,8 +14,8 @@ import java.util.Random;
 /**
  * This class provides some utility methods for testing.<br/> Note that some methods are linking to
  * {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility} class. The
- * purpose
- * of this is that test classes should not contact with something that is not under test package.
+ * purpose is that test classes should not contact with utility methods from the main sources
+ * directly.
  */
 public class TestUtils {
     private static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();

@@ -35,6 +35,9 @@ public interface ShellState<S extends ShellState<S>> extends CommandContainer<S>
     /**
      * Safely exit with cleanup.
      * @param exitCode
+     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.ExitRequest
+     *         you must throw this exception to indicate that you really want to exit. Do no call
+     *         {@link System#exit(int)} instead of it.
      */
-    void exit(int exitCode) throws ExitRequest;
+    void prepareToExit(int exitCode) throws ExitRequest;
 }

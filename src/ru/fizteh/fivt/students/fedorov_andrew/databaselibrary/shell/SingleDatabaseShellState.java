@@ -96,7 +96,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     }
 
     @Override
-    public void exit(int exitCode) throws ExitRequest {
+    public void prepareToExit(int exitCode) throws ExitRequest {
         cleanup();
         Log.close();
         throw new ExitRequest(exitCode);

@@ -1,169 +1,39 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test;
 
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.Shell;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.SingleDatabaseShellState;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.BAOSDuplicator;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
- * Test of interpreter behaviour.
+ * Tests for database using {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.Shell}
+ * in batch and interactive mode.
  */
-public class ShellTest extends TestBase {
-    private static final String GREETING_REGEX = ".* \\$ ";
-
-    /**
-     * Here shell output can be found.
-     */
-    private static ByteArrayOutputStream out;
-
-    // Standard out and error streams are stored here.
-    private static PrintStream stdOut;
-    private static PrintStream stdErr;
-
-    /**
-     * Wrap over {@link #out} that is used as {@link System#out} and {@link System#err}.
-     */
-    private static PrintStream outAndErrPrintStream;
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-    Shell<SingleDatabaseShellState> interpreter;
-
+@RunWith(JUnit4.class)
+public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellState> {
     @BeforeClass
-    public static void globalPrepare() {
-        stdOut = System.out;
-        stdErr = System.err;
-        out = new BAOSDuplicator(stdOut);
+    public static void globalPrepareDatabaseShellTest() {
         System.setProperty(SingleDatabaseShellState.DB_DIRECTORY_PROPERTY_NAME, DB_ROOT.toString());
-        outAndErrPrintStream = new PrintStream(out);
-        System.setOut(outAndErrPrintStream);
-        System.setErr(outAndErrPrintStream);
-    }
-
-    @AfterClass
-    public static void globalCleanup() {
-        System.setOut(stdOut);
-        System.setErr(stdErr);
-    }
-
-    @Before
-    public void prepare() throws TerminalException {
-        interpreter = new Shell<>(new SingleDatabaseShellState());
-    }
-
-    @After
-    public void cleanup() throws IOException {
-        interpreter = null;
-        cleanDBRoot();
-        stdOut.println();
-        stdOut.println("-------------------------------------------------");
-    }
-
-    private String getOutput() {
-        return out.toString();
-    }
-
-    private int runBatch(boolean reinit, String... commands) {
-        // Clean what has been output before.
-        out.reset();
-
-        stdOut.println(Arrays.toString(commands));
-        for (int i = 0, len = commands.length; i < len; i++) {
-            commands[i] = commands[i].trim();
-            if (!commands[i].endsWith(";")) {
-                commands[i] = commands[i] + ";";
-            }
-        }
-
-        if (reinit) {
-            try {
-                prepare();
-            } catch (TerminalException exc) {
-                throw new AssertionError(exc);
-            }
-        }
-        return interpreter.run(commands);
-    }
-
-    private int runInteractive(boolean reinit, String... lines) throws TerminalException {
-        out.reset();
-
-        for (String cmd : lines) {
-            stdOut.println(cmd);
-        }
-        StringBuilder sb = new StringBuilder();
-        for (String cmd : lines) {
-            sb.append(String.format("%s%n", cmd));
-        }
-
-        if (reinit) {
-            try {
-                prepare();
-            } catch (TerminalException exc) {
-                throw new AssertionError(exc);
-            }
-        }
-        return interpreter.run(new ByteArrayInputStream(sb.toString().getBytes()));
-    }
-
-    private void runInteractiveExpectZero(String... lines) throws TerminalException {
-        runInteractiveExpectZero(false, lines);
-    }
-
-    private void runInteractiveExpectNonZero(String... lines) throws TerminalException {
-        runInteractiveExpectNonZero(false, lines);
-    }
-
-    private void runBatchExpectZero(String... commands) {
-        runBatchExpectZero(false, commands);
-    }
-
-    private void runBatchExpectNonZero(String... commands) {
-        runBatchExpectNonZero(false, commands);
-    }
-
-    private void runInteractiveExpectZero(boolean reinit, String... lines)
-            throws TerminalException {
-        assertEquals("Exit status 0 expected", 0, runInteractive(reinit, lines));
-    }
-
-    private void runInteractiveExpectNonZero(boolean reinit, String... lines)
-            throws TerminalException {
-        assertNotEquals("Non-zero exit status expected", 0, runInteractive(reinit, lines));
-    }
-
-    private void runBatchExpectZero(boolean reinit, String... commands) {
-        assertEquals("Exit status 0 expected", 0, runBatch(reinit, commands));
-    }
-
-    private void runBatchExpectNonZero(boolean reinit, String... commands) {
-        assertNotEquals("Non-zero exit status expected", 0, runBatch(reinit, commands));
     }
 
     private void createAndUseTable(String table) {
         runBatchExpectZero(String.format("create %1$s; use %1$s", table));
         assertEquals(
-                "Creating and using talbe",
+                "Creating and using table",
                 String.format("created%nusing %1$s%n", table),
                 getOutput());
     }
@@ -178,80 +48,16 @@ public class ShellTest extends TestBase {
                 getOutput());
     }
 
-    @Test
-    public void testWithWrongArgumentsNumber() {
-        String command = "create 1 2 3 4";
-        runBatchExpectNonZero(command);
-        assertThat(
-                "Wrong arguments error must be raised",
-                getOutput(),
-                startsWith("Wrong arguments number"));
+    @Override
+    protected Shell<SingleDatabaseShellState> constructInterpreter() throws TerminalException {
+        return new Shell<>(new SingleDatabaseShellState());
     }
 
-    @Test
-    public void testCreateTableWithInvalidName() {
-        String command = "create " + Paths.get("..", "table");
-        runBatchExpectNonZero(command);
-        assertEquals(
-                "Illegal table name error must be raised",
-                String.format("Table name is not correct%n"),
-                getOutput());
-    }
-
-    @Test
-    public void testCreateTableWithInvalidName1() {
-        String command = "create " + Paths.get("..", DB_ROOT.getFileName().toString(), "table");
-        runBatchExpectNonZero(command);
-        assertEquals(
-                "Illegal table name error must be raised",
-                String.format("Table name is not correct%n"),
-                getOutput());
-    }
-
-    @Test
-    public void testCreateTableWithInvalidName2() {
-        String command = "create " + Paths.get("outside", "inside");
-        runBatchExpectNonZero(command);
-        assertEquals(
-                "Illegal table name error must be raised",
-                String.format("Table name is not correct%n"),
-                getOutput());
-    }
-
-    @Test
-    public void testUseNotExistingTable() {
-        String name = "not_existing_table";
-        runBatchExpectNonZero("use " + name);
-        assertEquals(
-                "Attempt to use not existing table must raise error",
-                String.format("Table %s not exists%n", name),
-                getOutput());
-    }
-
-    @Test
-    public void testDropNotExistingTable() {
-        String name = "not_existing_table";
-        String command = "drop " + name;
-        runBatchExpectNonZero(command);
-        assertEquals(
-                "Attempt to use not existing table must raise error",
-                String.format("Table %s not exists%n", name),
-                getOutput());
-    }
-
-    @Test
-    public void testCreateTable() {
-        String name = "existing_table";
-        String command = "create " + name;
-
-        runBatchExpectZero(true, command);
-        assertEquals(
-                "Attempt to create not existing table", String.format("created%n"), getOutput());
-        runBatchExpectNonZero(true, command);
-        assertEquals(
-                "Attempt to create existing table",
-                String.format("Table %s exists%n", name),
-                getOutput());
+    @After
+    @Override
+    public void cleanup() throws IOException {
+        super.cleanup();
+        cleanDBRoot();
     }
 
     @Test
@@ -378,46 +184,6 @@ public class ShellTest extends TestBase {
         assertEquals("Start and exit - no output must be", "", getOutput());
     }
 
-    /**
-     * Constructs a multiline regular expression that expected output must match.<br/>
-     * Recommended to be used to test interpreter mode.
-     * According to the contract, the format of regex is the following:<br/>
-     * (greeting)(reports[0])<br/>
-     * (greeting)(reports[1])<br/>
-     * ...<br/>
-     * (greeting)(reports[reports.length - 1])<br/>
-     * (greeting)<br/>
-     * @param greetingRegex
-     * @param reports
-     *         An answer of the interpreter between two greetings. If it must me multiline, please
-     *         split lines with '$' + {@link System#lineSeparator()} + '^'.
-     * @return Regex for full interpreter answer.
-     * @see java.util.regex.Pattern
-     */
-    private String makeTerminalExpectedRegex(String greetingRegex, String... reports) {
-        StringBuilder sb = new StringBuilder(String.format("(?m)^%s", greetingRegex));
-        for (String s : reports) {
-            sb.append(String.format("%s$%n^%s", s, greetingRegex));
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Constructs a multiline message that expected output must be equal to.<br/>
-     * Recommended to be used to test batch mode.<br/>
-     * Each report is considered to be a separate line. Lines are separated using {@link
-     * System#lineSeparator()}.
-     * @param reports
-     * @return
-     */
-    private String makeTerminalExpectedMessage(String... reports) {
-        StringBuilder sb = new StringBuilder();
-        for (String s : reports) {
-            sb.append(String.format("%s%n", s));
-        }
-        return sb.toString();
-    }
-
     @Test
     public void testInteractiveMode() throws TerminalException {
         runInteractiveExpectZero("exit", "exit");
@@ -445,7 +211,6 @@ public class ShellTest extends TestBase {
                 String.format("table_name row_count$%n^%s 5", table),
                 String.format("Table %s not exists", fakeTable),
                 String.format("using %s$%n^a, b, c, d, e", table));
-        stdErr.println(regex);
         assertTrue("Interactive mode test fail", getOutput().matches(regex));
     }
 
@@ -609,6 +374,82 @@ public class ShellTest extends TestBase {
         assertEquals(
                 "Using corrupt table must raise error",
                 makeTerminalExpectedMessage("Table " + table + " is corrupt"),
+                getOutput());
+    }
+
+    @Test
+    public void testWithWrongArgumentsNumber() {
+        String command = "create 1 2 3 4";
+        runBatchExpectNonZero(command);
+        assertThat(
+                "Wrong arguments error must be raised",
+                getOutput(),
+                startsWith("Wrong arguments number"));
+    }
+
+    @Test
+    public void testCreateTableWithInvalidName() {
+        String command = "create " + Paths.get("..", "table");
+        runBatchExpectNonZero(command);
+        assertEquals(
+                "Illegal table name error must be raised",
+                String.format("Table name is not correct%n"),
+                getOutput());
+    }
+
+    @Test
+    public void testCreateTableWithInvalidName1() {
+        String command = "create " + Paths.get("..", DB_ROOT.getFileName().toString(), "table");
+        runBatchExpectNonZero(command);
+        assertEquals(
+                "Illegal table name error must be raised",
+                String.format("Table name is not correct%n"),
+                getOutput());
+    }
+
+    @Test
+    public void testCreateTableWithInvalidName2() {
+        String command = "create " + Paths.get("outside", "inside");
+        runBatchExpectNonZero(command);
+        assertEquals(
+                "Illegal table name error must be raised",
+                String.format("Table name is not correct%n"),
+                getOutput());
+    }
+
+    @Test
+    public void testUseNotExistingTable() {
+        String name = "not_existing_table";
+        runBatchExpectNonZero("use " + name);
+        assertEquals(
+                "Attempt to use not existing table must raise error",
+                String.format("Table %s not exists%n", name),
+                getOutput());
+    }
+
+    @Test
+    public void testDropNotExistingTable() {
+        String name = "not_existing_table";
+        String command = "drop " + name;
+        runBatchExpectNonZero(command);
+        assertEquals(
+                "Attempt to use not existing table must raise error",
+                String.format("Table %s not exists%n", name),
+                getOutput());
+    }
+
+    @Test
+    public void testCreateTable() {
+        String name = "existing_table";
+        String command = "create " + name;
+
+        runBatchExpectZero(true, command);
+        assertEquals(
+                "Attempt to create not existing table", String.format("created%n"), getOutput());
+        runBatchExpectNonZero(true, command);
+        assertEquals(
+                "Attempt to create existing table",
+                String.format("Table %s exists%n", name),
                 getOutput());
     }
 }
