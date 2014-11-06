@@ -38,7 +38,7 @@ public class DbMain {
             DataBaseTable base = new DataBaseTable(System.getProperty("fizteh.db.dir"));
 
             shell.addCommand(new ShellDbPut(base));
-            shell.addCommand(new ShellExit());
+            shell.addCommand(new ShellExit(base));
             shell.addCommand(new ShellDbGet(base));
             shell.addCommand(new ShellDbRemove(base));
             shell.addCommand(new ShellCreateTable(base));

@@ -74,6 +74,7 @@ public final class DataBaseTable {
     }
 
     public String show() throws IOException {
+        save();
         StringBuilder stringBuilder = new StringBuilder();
         MultiDataBase mdb;
 
@@ -82,6 +83,10 @@ public final class DataBaseTable {
             stringBuilder.append(str).append(" ").append(mdb.getCount()).append("\n");
         }
         return stringBuilder.toString();
+    }
+
+    public void exit() {
+        save();
     }
 
     public void save() {

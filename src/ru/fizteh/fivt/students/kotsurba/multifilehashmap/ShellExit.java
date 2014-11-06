@@ -4,7 +4,10 @@ import ru.fizteh.fivt.students.kotsurba.filemap.shell.SimpleShellCommand;
 
 public class ShellExit extends SimpleShellCommand {
 
-    public ShellExit() {
+    private DataBaseTable table;
+
+    public ShellExit(DataBaseTable newTable) {
+        table = newTable;
         setName("exit");
         setNumberOfArgs(1);
         setHint("usage: exit");
@@ -12,6 +15,7 @@ public class ShellExit extends SimpleShellCommand {
 
     @Override
     public void run() {
+        table.exit();
         System.exit(0);
     }
 

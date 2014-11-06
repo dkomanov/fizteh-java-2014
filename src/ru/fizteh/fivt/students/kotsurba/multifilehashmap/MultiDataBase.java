@@ -83,8 +83,8 @@ public final class MultiDataBase {
 
         String[] dirs = file.list();
         checkNames(dirs, "dir");
-        for (int i = 0; i < dirs.length; ++i) {
-            isCorrectDirectory(dataBaseDirectory + File.separator + dirs[i]);
+        for (String dir : dirs) {
+            isCorrectDirectory(dataBaseDirectory + File.separator + dir);
         }
     }
 
@@ -96,6 +96,7 @@ public final class MultiDataBase {
             }
         }
     }
+
 
     private void tryDeleteDirectory(final String name) {
         File file = new File(dataBaseDirectory + File.separator + name);
@@ -115,7 +116,6 @@ public final class MultiDataBase {
     public void loadFiles() {
         try {
             for (int i = 0; i < 16; ++i) {
-                tryAddDirectory(Integer.toString(i) + ".dir");
                 for (int j = 0; j < 16; ++j) {
                     DirFile node = new DirFile(i + j * 16);
                     MultiDataBaseFile file = new MultiDataBaseFile(getFullName(node), node.nDir, node.nFile);
@@ -131,8 +131,7 @@ public final class MultiDataBase {
     public String put(final String keyStr, final String valueStr) {
         DirFile node = new DirFile(keyStr.getBytes()[0]);
         DataBaseFile file = files[node.getHash()];
-        String result = file.put(keyStr, valueStr);
-        return result;
+        return file.put(keyStr, valueStr);
     }
 
     public String get(final String keyStr) {
@@ -162,9 +161,6 @@ public final class MultiDataBase {
         }
     }
 
-    public String getBaseDirectory() {
-        return dataBaseDirectory;
-    }
 
     public String list() {
         StringBuilder str = new StringBuilder();
@@ -190,6 +186,7 @@ public final class MultiDataBase {
 
     public void save() {
         for (int i = 0; i < 16; ++i) {
+            tryAddDirectory(Integer.toString(i) + ".dir");
             for (int j = 0; j < 16; ++j) {
                 if (files[new DirFile((i + j * 16)).getHash()] != null) {
                     files[new DirFile((i + j * 16)).getHash()].save();
