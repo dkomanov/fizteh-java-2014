@@ -109,7 +109,8 @@ public class InterpreterTest {
             test.run(new String[]{testCommand + " argument"});
         } catch (ExitException e) {
 
-            assertEquals("command: invalid number of arguments: 1 expected, 2 found." + newLine, errputStream.toString());
+            assertEquals("command: invalid number of arguments: 1 expected, 2 found."
+            + newLine, errputStream.toString());
 
             assertNotEquals(0, e.getStatus());
         }
@@ -123,7 +124,9 @@ public class InterpreterTest {
             test.run(new String[]{});
         } catch (ExitException e) {
 
-            assertEquals(test.PROMPT + "command: invalid number of arguments: 1 expected, 2 found." + newLine + test.PROMPT,
+            assertEquals(test.PROMPT
+            + "command: invalid number of arguments: 1 expected, 2 found."
+            + newLine + test.PROMPT,
                     outputStream.toString());
         }
     }
