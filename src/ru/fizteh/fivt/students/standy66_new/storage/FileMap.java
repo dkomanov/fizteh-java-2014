@@ -1,11 +1,8 @@
-package ru.fizteh.fivt.students.standy66_new.storage.strings;
+package ru.fizteh.fivt.students.standy66_new.storage;
 
 import ru.fizteh.fivt.students.standy66_new.exceptions.FileCorruptedException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -15,7 +12,6 @@ import java.util.*;
  * Created by astepanov on 26.09.14.
  */
 public class FileMap implements Map<String, String> {
-
     private File mapFile;
     private Map<String, String> cache;
     private Set<String> changed;

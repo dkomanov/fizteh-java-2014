@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.standy66_new.storage.strings;
 
-import org.omg.SendingContext.RunTime;
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.standy66_new.storage.FileMap;
 
 import java.io.File;
 import java.io.IOException;
