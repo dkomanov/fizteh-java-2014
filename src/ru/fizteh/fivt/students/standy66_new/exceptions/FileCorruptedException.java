@@ -5,8 +5,8 @@ import java.io.IOException;
 /**
  * Created by astepanov on 20.10.14.
  */
-public class FileMapCorruptedFile extends IOException {
-    public FileMapCorruptedFile(String message) {
+public class FileCorruptedException extends IOException {
+    public FileCorruptedException(String message) {
         super(message);
     }
 }

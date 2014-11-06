@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.standy66_new.storage.strings.commands;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.standy66_new.exceptions.TableNotExistsException;
-import ru.fizteh.fivt.students.standy66_new.exceptions.UnsavedChangesException;
+import ru.fizteh.fivt.students.standy66_new.exceptions.UncommitedChangesException;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.StringTable;
 
 /**
@@ -23,7 +23,7 @@ public class UseCommand extends ContextualCommand {
         } else {
             if (System.getProperty("junit") != null) {
                 if (currentTable != null && currentTable.unsavedChangesCount() > 0) {
-                    throw new UnsavedChangesException(String.format("%d unsaved changes",
+                    throw new UncommitedChangesException(String.format("%d unsaved changes",
                             currentTable.unsavedChangesCount()));
                 }
             }

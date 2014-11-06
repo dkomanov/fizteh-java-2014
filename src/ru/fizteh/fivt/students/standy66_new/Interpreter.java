@@ -38,7 +38,6 @@ public class Interpreter {
             String[] actions = line.split(";");
 
             for (String action : actions) {
-                /*TODO: there is multiword commands*/
                 String[] args =
                         Stream.of(action.split(" "))
                                 .filter((s) -> (s.length() > 0))
