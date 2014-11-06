@@ -32,15 +32,19 @@ public class MultiFileTableTest {
 
     static TableEntrySerializer serializer = new TableEntryJsonSerializer();
 
+    static String maybeNull(String string) {
+        return random.nextInt(5) == 0 ? "null" : string;
+    }
+
     static String randomValue() {
-        return "[\""
-                + UUID.randomUUID().toString() + "\","
-                + random.nextInt() + ","
-                + random.nextLong() + ","
-                + random.nextFloat() + ","
-                + random.nextDouble() + ","
-                + random.nextInt(128) + ","
-                + random.nextBoolean() + "]";
+        return "["
+                + maybeNull("\"" + UUID.randomUUID().toString() + "\"") + ","
+                + maybeNull(Integer.toString(random.nextInt())) + ","
+                + maybeNull(Long.toString(random.nextLong())) + ","
+                + maybeNull(Float.toString(random.nextFloat())) + ","
+                + maybeNull(Double.toString(random.nextDouble())) + ","
+                + maybeNull(Byte.toString((byte)random.nextInt(128))) + ","
+                + maybeNull(Boolean.toString(random.nextBoolean())) + "]";
     }
 
     static String nonExistentValueString = "[\"string\",0,0,0,0,0,false]";
