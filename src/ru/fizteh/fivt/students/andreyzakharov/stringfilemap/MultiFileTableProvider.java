@@ -10,12 +10,12 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DbConnector implements AutoCloseable, TableProvider {
+public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     Path dbRoot;
-    Map<String, FileMap> tables;
-    FileMap activeTable;
+    Map<String, MultiFileTable> tables;
+    MultiFileTable activeTable;
 
-    DbConnector(Path dbPath) throws ConnectionInterruptException {
+    MultiFileTableProvider(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
             try {
                 Files.createDirectory(dbPath);
@@ -38,13 +38,21 @@ public class DbConnector implements AutoCloseable, TableProvider {
         return tables.get(name);
     }
 
+    public MultiFileTable getCurrent() {
+        return activeTable;
+    }
+
+    public Map<String, MultiFileTable> getAllTables() {
+        return tables;
+    }
+
     @Override
     public Table createTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
         if (!tables.containsKey(name)) {
-            tables.put(name, new FileMap(dbRoot.resolve(name)));
+            tables.put(name, new MultiFileTable(dbRoot.resolve(name)));
             return tables.get(name);
         } else {
             return null;
@@ -56,7 +64,7 @@ public class DbConnector implements AutoCloseable, TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-        FileMap table = tables.get(name);
+        MultiFileTable table = tables.get(name);
         if (table != null) {
             if (activeTable == table) {
                 activeTable = null;
@@ -72,13 +80,25 @@ public class DbConnector implements AutoCloseable, TableProvider {
         }
     }
 
+    public void useTable(String name) throws IllegalStateException {
+        if (name == null) {
+            throw new IllegalArgumentException("null argument");
+        }
+        MultiFileTable table = tables.get(name);
+        if (table != null) {
+            activeTable = table;
+        } else {
+            throw new IllegalStateException("table does not exist");
+        }
+    }
+
     public void open() throws ConnectionInterruptException {
         if (tables == null) {
             tables = new HashMap<>();
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(dbRoot)) {
                 for (Path file : stream) {
                     if (Files.isDirectory(file)) {
-                        FileMap table = new FileMap(file);
+                        MultiFileTable table = new MultiFileTable(file);
                         table.load();
                         tables.put(file.getFileName().toString(), table);
                     }
@@ -93,7 +113,7 @@ public class DbConnector implements AutoCloseable, TableProvider {
     public void close() {
         if (tables != null) {
             try {
-                for (FileMap table : tables.values()) {
+                for (MultiFileTable table : tables.values()) {
                     table.unload();
                 }
             } catch (ConnectionInterruptException e) {

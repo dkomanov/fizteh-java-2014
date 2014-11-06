@@ -12,9 +12,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 
-public class FileMap implements Table {
+public class MultiFileTable implements Table {
     private Map<String, String> stableData = new HashMap<>();
     private Map<String, String> added = new HashMap<>();
     private Map<String, String> changed = new HashMap<>();
@@ -26,7 +27,7 @@ public class FileMap implements Table {
     private static Pattern fileNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dat$");
     private static Pattern directoryNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dir$");
 
-    public FileMap(Path path) {
+    public MultiFileTable(Path path) {
         dbPath = path;
         name = path.getFileName().toString();
         try {
@@ -128,7 +129,7 @@ public class FileMap implements Table {
         return stableData.size() + added.size() - removed.size();
     }
 
-    public int pending() {
+    public int getPending() {
         return pending;
     }
 
@@ -214,7 +215,7 @@ public class FileMap implements Table {
     public void load() throws ConnectionInterruptException {
         clear();
         try (DirectoryStream<Path> tableStream = Files.newDirectoryStream(dbPath)) {
-            for (Path dir: tableStream) {
+            for (Path dir : tableStream) {
                 Matcher dirMatcher = directoryNamePattern.matcher(dir.getFileName().toString());
                 if (!dirMatcher.find()) {
                     throw new ConnectionInterruptException("database: extra directories in table folder");
@@ -224,14 +225,13 @@ public class FileMap implements Table {
                 }
                 int d = Integer.decode(dirMatcher.group(1));
                 try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)) {
-                    for (Path file: dirStream) {
+                    for (Path file : dirStream) {
                         Matcher fileMatcher = fileNamePattern.matcher(file.getFileName().toString());
                         if (!fileMatcher.find()) {
                             throw new ConnectionInterruptException("database: extra files in table folder");
                         }
                         int f = Integer.decode(fileMatcher.group(1));
-                        try (DataInputStream fileStream = new DataInputStream(
-                                Files.newInputStream(dir.resolve(file)))) {
+                        try (DataInputStream fileStream = new DataInputStream(Files.newInputStream(file))) {
                             while (fileStream.available() > 0) {
                                 String key = readKeyValue(fileStream);
                                 DfPair p = getHash(key);

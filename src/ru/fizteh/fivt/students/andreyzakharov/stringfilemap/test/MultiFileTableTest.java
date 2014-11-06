@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.FileMap;
+import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.MultiFileTable;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,8 +16,8 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class FileMapTest {
-    static Path root = Paths.get("/home/norrius/Apps/fizteh-java-2014/test/junit");
+public class MultiFileTableTest {
+    static Path root = Paths.get("test/junit");
 
     static int n = 10000;
     static String[] keys = new String[n];
@@ -32,8 +32,8 @@ public class FileMapTest {
     static String[] vals2 = {"teleporter", "operation redstone", "value"};
     static int n2 = keys2.length;
 
-    FileMap f;
-    FileMap g;
+    MultiFileTable f;
+    MultiFileTable g;
 
     @BeforeClass
     public static void setUp() {
@@ -45,8 +45,8 @@ public class FileMapTest {
 
     @Before
     public void preRun() {
-        f = new FileMap(root.resolve(dbNames[0]));
-        g = new FileMap(root.resolve(dbNames[0]));
+        f = new MultiFileTable(root.resolve(dbNames[0]));
+        g = new MultiFileTable(root.resolve(dbNames[0]));
     }
 
     @Rule
@@ -55,7 +55,7 @@ public class FileMapTest {
     @Test
     public void testGetName() throws Exception {
         for (String name : dbNames) {
-            FileMap f = new FileMap(root.resolve(name));
+            MultiFileTable f = new MultiFileTable(root.resolve(name));
             assertEquals(name, f.getName());
             f.unload();
         }
@@ -202,34 +202,34 @@ public class FileMapTest {
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], vals[i]);
         }
-        assertEquals(n, f.pending());
+        assertEquals(n, f.getPending());
         assertEquals(n, f.commit());
         for (int i = 0; i < n / 2; ++i) {
             f.put(keys[i], vals[n - i - 1]);
         }
-        assertEquals(n / 2, f.pending());
+        assertEquals(n / 2, f.getPending());
         assertEquals(n / 2, f.commit());
         for (int i = 0; i < n; ++i) {
             f.remove(keys[i]);
         }
-        assertEquals(n, f.pending());
+        assertEquals(n, f.getPending());
         assertEquals(n, f.commit());
 
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], vals[i]);
         }
-        assertEquals(n, f.pending());
+        assertEquals(n, f.getPending());
         assertEquals(n, f.commit());
         for (int i = 0; i < n; ++i) {
             f.remove(keys[i]);
             f.put(keys[i], vals[i]);
-            assertEquals(0, f.pending());
+            assertEquals(0, f.getPending());
             assertEquals(0, f.commit());
         }
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], "something-probably-non-existent");
             f.put(keys[i], vals[i]);
-            assertEquals(0, f.pending());
+            assertEquals(0, f.getPending());
             assertEquals(0, f.commit());
         }
     }
@@ -239,12 +239,12 @@ public class FileMapTest {
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], vals[i]);
         }
-        assertEquals(n, f.pending());
+        assertEquals(n, f.getPending());
         assertEquals(n, f.rollback());
         for (int i = 0; i < n / 2; ++i) {
             f.put(keys[i], vals[n - i - 1]);
         }
-        assertEquals(n / 2, f.pending());
+        assertEquals(n / 2, f.getPending());
         assertEquals(n / 2, f.rollback());
 
         for (int i = 0; i < n; ++i) {
@@ -258,13 +258,13 @@ public class FileMapTest {
         for (int i = 0; i < n; ++i) {
             f.remove(keys[i]);
             f.put(keys[i], vals[i]);
-            assertEquals(0, f.pending());
+            assertEquals(0, f.getPending());
             assertEquals(0, f.rollback());
         }
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], "something-probably-non-existent");
             f.put(keys[i], vals[i]);
-            assertEquals(0, f.pending());
+            assertEquals(0, f.getPending());
             assertEquals(0, f.rollback());
         }
     }

@@ -4,13 +4,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.DbConnectorFactory;
+import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.MultiFileTableProviderFactory;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class DbConnectorTest {
-    String root = "/home/norrius/Apps/fizteh-java-2014/test/junit";
+public class MultiFileTableProviderTest {
+    String root = "test/junit";
     String[] names = {"test-db", "null", "database-01", "*[::]<>|\\?"};
     String otherName = "*()doesn't match any other name";
 
@@ -19,7 +19,7 @@ public class DbConnectorTest {
 
     @Test
     public void testGetTableNull() throws Exception {
-        DbConnectorFactory f = new DbConnectorFactory();
+        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         exception.expect(IllegalArgumentException.class);
@@ -28,7 +28,7 @@ public class DbConnectorTest {
 
     @Test
     public void testGetTableNonExistent() throws Exception {
-        DbConnectorFactory f = new DbConnectorFactory();
+        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {
@@ -39,7 +39,7 @@ public class DbConnectorTest {
 
     @Test
     public void testGetTable() throws Exception {
-        DbConnectorFactory f = new DbConnectorFactory();
+        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {
@@ -50,7 +50,7 @@ public class DbConnectorTest {
 
     @Test
     public void testCreateTableNull() throws Exception {
-        DbConnectorFactory f = new DbConnectorFactory();
+        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         exception.expect(IllegalArgumentException.class);
@@ -59,7 +59,7 @@ public class DbConnectorTest {
 
     @Test
     public void testCreateTableExisting() throws Exception {
-        DbConnectorFactory f = new DbConnectorFactory();
+        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {
@@ -70,7 +70,7 @@ public class DbConnectorTest {
 
     @Test
     public void testCreateTable() throws Exception {
-        DbConnectorFactory f = new DbConnectorFactory();
+        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {
@@ -81,7 +81,7 @@ public class DbConnectorTest {
 
     @Test
     public void testRemoveTableNull() throws Exception {
-        DbConnectorFactory f = new DbConnectorFactory();
+        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         exception.expect(IllegalArgumentException.class);
@@ -90,7 +90,7 @@ public class DbConnectorTest {
 
     @Test
     public void testRemoveTableNonExistent() throws Exception {
-        DbConnectorFactory f = new DbConnectorFactory();
+        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         exception.expect(IllegalStateException.class);
@@ -99,7 +99,7 @@ public class DbConnectorTest {
 
     @Test
     public void testRemoveTable() throws Exception {
-        DbConnectorFactory f = new DbConnectorFactory();
+        MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
         for (String name : names) {

@@ -1,10 +1,15 @@
-package ru.fizteh.fivt.students.andreyzakharov.stringfilemap;
+package ru.fizteh.fivt.students.andreyzakharov.stringfilemap.commands;
+
+import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.CommandInterruptException;
+import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.MultiFileTable;
+import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.MultiFileTableProvider;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ShowCommand implements Command {
     @Override
-    public String execute(DbConnector connector, String... args) throws CommandInterruptException {
+    public String execute(MultiFileTableProvider connector, String... args) throws CommandInterruptException {
         if (args.length < 2) {
             throw new CommandInterruptException("show: too few arguments");
         }
@@ -15,11 +20,12 @@ public class ShowCommand implements Command {
             throw new CommandInterruptException("show: unknown argument");
         }
 
-        if (connector.tables.isEmpty()) {
+        Map<String, MultiFileTable> tables = connector.getAllTables();
+        if (tables.isEmpty()) {
             return "";
         } else {
             StringBuilder sb = new StringBuilder();
-            for (HashMap.Entry<String, FileMap> e : connector.tables.entrySet()) {
+            for (HashMap.Entry<String, MultiFileTable> e : tables.entrySet()) {
                 sb.append(e.getKey());
                 sb.append(' ');
                 sb.append(e.getValue().size());
@@ -27,5 +33,10 @@ public class ShowCommand implements Command {
             }
             return sb.substring(0, sb.length() - 1);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "show";
     }
 }
