@@ -2,7 +2,10 @@ package ru.fizteh.fivt.students.standy66_new.storage;
 
 import ru.fizteh.fivt.students.standy66_new.exceptions.FileCorruptedException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -17,36 +20,13 @@ public class FileMap implements Map<String, String>, AutoCloseable {
     private Set<String> changed;
 
     public FileMap(File mapFile) throws IOException {
+        if (mapFile == null) {
+            throw new IllegalArgumentException("mapFile must not be null");
+        }
         this.mapFile = mapFile.getAbsoluteFile();
         cache = new HashMap<>();
         changed = new HashSet<>();
         reload();
-    }
-
-    private void reload() throws IOException {
-        cache.clear();
-        changed.clear();
-        if (!mapFile.exists()) {
-            return;
-        }
-
-        try (FileChannel channel = new FileInputStream(mapFile).getChannel()) {
-            ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-            try {
-
-                while (buffer.remaining() > 0) {
-                    int keySize = buffer.getInt();
-                    byte[] key = new byte[keySize];
-                    buffer.get(key);
-                    int valueSize = buffer.getInt();
-                    byte[] value = new byte[valueSize];
-                    buffer.get(value);
-                    cache.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
-                }
-            } catch (BufferUnderflowException e) {
-                throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
-            }
-        }
     }
 
     @Override
@@ -100,7 +80,6 @@ public class FileMap implements Map<String, String>, AutoCloseable {
         changed.add(key);
         return cache.put(key, value);
     }
-
 
     @Override
     public String remove(Object key) {
@@ -161,5 +140,39 @@ public class FileMap implements Map<String, String>, AutoCloseable {
     @Override
     public void close() throws Exception {
         commit();
+    }
+
+    private void reload() throws IOException {
+        cache.clear();
+        changed.clear();
+        if (!mapFile.exists()) {
+            return;
+        }
+
+        try (FileChannel channel = new FileInputStream(mapFile).getChannel()) {
+            ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            try {
+
+                while (buffer.remaining() > 0) {
+                    int keySize = buffer.getInt();
+                    if (keySize > channel.size()) {
+                        throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+                    }
+                    byte[] key = new byte[keySize];
+                    buffer.get(key);
+                    int valueSize = buffer.getInt();
+                    if (valueSize > channel.size()) {
+                        throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+                    }
+                    byte[] value = new byte[valueSize];
+                    buffer.get(value);
+                    cache.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+                }
+            } catch (BufferUnderflowException e) {
+                throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+            } catch (NegativeArraySizeException e) {
+                throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+            }
+        }
     }
 }
