@@ -8,8 +8,8 @@ public class MultiListCommand extends Command {
         } else {
             StringBuilder allKeys = new StringBuilder();
             ListCommand list = new ListCommand();
-            for (int i = 0; i < modul; i++) {
-                for (int j = 0; j < modul; j++) {
+            for (int i = 0; i < NUM_DIRECTORIES; i++) {
+                for (int j = 0; j < NUM_FILES; j++) {
                     DataBaseOneFile current = base.getUsing().databases[i][j];
                     if (current != null) {
                         String newList = list.getList(current);

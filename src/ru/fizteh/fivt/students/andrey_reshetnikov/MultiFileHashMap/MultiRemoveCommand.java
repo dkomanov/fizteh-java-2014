@@ -18,8 +18,8 @@ public class MultiRemoveCommand extends Command {
             System.out.println("no table");
         } else {
             int hashCode = Math.abs(key.hashCode());
-            int ndirectory = hashCode % modul;
-            int nfile = hashCode / modul % modul;
+            int ndirectory = hashCode % NUM_DIRECTORIES;
+            int nfile = hashCode / NUM_FILES % NUM_FILES;
             RemoveCommand remove = new RemoveCommand(key);
             if (base.getUsing().databases[ndirectory][nfile] == null) {
                 System.out.println("not found");

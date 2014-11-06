@@ -13,8 +13,8 @@ public class MultiGetCommand extends Command {
             System.out.println("no table");
         } else {
             int hashCode = Math.abs(key.hashCode());
-            int ndirectory = hashCode % modul;
-            int nfile = hashCode / modul % modul;
+            int ndirectory = hashCode % NUM_DIRECTORIES;
+            int nfile = hashCode / NUM_FILES % NUM_FILES;
             GetCommand get = new GetCommand(key);
             DataBaseOneFile dataBase = base.getUsing().databases[ndirectory][nfile];
             if (dataBase == null) {

@@ -1,7 +1,8 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
 public abstract class Command {
-    protected final int modul = 16;
+    protected static final int NUM_FILES = 16;
+    protected static final int NUM_DIRECTORIES = 16;
 
     private static void checkNumberOfArguments(int passed, int required) throws Exception {
         if (passed != required) {

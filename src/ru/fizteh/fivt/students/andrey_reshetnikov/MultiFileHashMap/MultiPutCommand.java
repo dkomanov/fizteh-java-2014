@@ -18,8 +18,8 @@ public class MultiPutCommand extends Command {
             System.out.println("no table");
         } else {
             int hashCode = Math.abs(key.hashCode());
-            int ndirectory = hashCode % modul;
-            int nfile = hashCode / modul % modul;
+            int ndirectory = hashCode % NUM_DIRECTORIES;
+            int nfile = hashCode / NUM_FILES % NUM_FILES;
             //System.out.println(ndirectory + " " + nfile);
             PutCommand put = new PutCommand(key, value);
             if (base.getUsing().databases[ndirectory][nfile] == null) {
