@@ -32,7 +32,7 @@ public class MultiFileMap {
      * @throws IOException it tableRoot is not directory or some chunk is corrupted.
      * @throws java.io.FileNotFoundException if there is no tableRoot directory.
      */
-    public MultiFileMap(Path tableRoot, int cacheSize) throws IOException {
+    protected MultiFileMap(Path tableRoot, int cacheSize) throws IOException {
         this.tableRoot = tableRoot;
         totalSize = 0;
         chunksCache = new LastAccessedChunksCache(cacheSize);
