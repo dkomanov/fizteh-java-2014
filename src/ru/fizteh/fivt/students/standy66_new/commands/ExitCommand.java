@@ -12,7 +12,6 @@ public class ExitCommand extends Command {
 
     @Override
     public void run(String[] arguments) throws Exception {
-        //TODO: commit maybe?
         super.run(arguments);
         throw new InterpreterInterruptionException("got exit command");
     }

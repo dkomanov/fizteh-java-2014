@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.standy66_new.storage.strings;
 
-import ru.fizteh.fivt.students.standy66_new.exceptions.FileMapCorruptedFile;
+import ru.fizteh.fivt.students.standy66_new.exceptions.FileCorruptedException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,7 +48,7 @@ public class FileMap implements Map<String, String> {
                     cache.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
                 }
             } catch (BufferUnderflowException e) {
-                throw new FileMapCorruptedFile(String.format("%s is corrupted", mapFile.getName()));
+                throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
             }
         }
     }
