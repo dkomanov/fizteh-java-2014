@@ -1,21 +1,21 @@
 package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.commands.*;
+import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.commands.CommandRunner;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class MultiFileTableShell {
-    CommandRunner commandrunner = new CommandRunner();
-    boolean batch;
-    Path dbPath;
-    TableProvider activeConnector;
+    private CommandRunner commandrunner = new CommandRunner();
+    private boolean batch;
+    private Path dbPath;
+    private TableProvider activeConnector;
 
     public MultiFileTableShell(boolean batch) {
         String property = System.getProperty("fizteh.db.dir");
-        if (property == null || property.equals("")) {
+        if (property == null || property.trim().isEmpty()) {
             System.err.println("Database root directory not set");
             System.exit(1);
         }

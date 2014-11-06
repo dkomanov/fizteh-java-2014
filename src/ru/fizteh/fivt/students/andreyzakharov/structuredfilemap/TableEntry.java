@@ -3,8 +3,6 @@ package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class TableEntry implements Storeable {
@@ -17,8 +15,8 @@ public class TableEntry implements Storeable {
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
         if (value.getClass() != fields[columnIndex].getClass()) {
-            throw new ColumnFormatException("Invalid column format: expected " +
-                    fields[columnIndex].getClass().getName() + ", got " + value.getClass().getName());
+            throw new ColumnFormatException("Invalid column format: expected "
+                    + fields[columnIndex].getClass().getName() + ", got " + value.getClass().getName());
         }
         fields[columnIndex] = value;
     }
@@ -33,7 +31,7 @@ public class TableEntry implements Storeable {
         if (!(fields[columnIndex] instanceof Integer)) {
             throw new ColumnFormatException("Column is not Integer");
         }
-        return (Integer)fields[columnIndex];
+        return (Integer) fields[columnIndex];
     }
 
     @Override
@@ -41,7 +39,7 @@ public class TableEntry implements Storeable {
         if (!(fields[columnIndex] instanceof Long)) {
             throw new ColumnFormatException("Column is not Long");
         }
-        return (Long)fields[columnIndex];
+        return (Long) fields[columnIndex];
     }
 
     @Override
@@ -49,7 +47,7 @@ public class TableEntry implements Storeable {
         if (!(fields[columnIndex] instanceof Byte)) {
             throw new ColumnFormatException("Column is not Byte");
         }
-        return (Byte)fields[columnIndex];
+        return (Byte) fields[columnIndex];
     }
 
     @Override
@@ -57,7 +55,7 @@ public class TableEntry implements Storeable {
         if (!(fields[columnIndex] instanceof Float)) {
             throw new ColumnFormatException("Column is not Float");
         }
-        return (Float)fields[columnIndex];
+        return (Float) fields[columnIndex];
     }
 
     @Override
@@ -65,7 +63,7 @@ public class TableEntry implements Storeable {
         if (!(fields[columnIndex] instanceof Double)) {
             throw new ColumnFormatException("Column is not Double");
         }
-        return (Double)fields[columnIndex];
+        return (Double) fields[columnIndex];
     }
 
     @Override
@@ -73,7 +71,7 @@ public class TableEntry implements Storeable {
         if (!(fields[columnIndex] instanceof Boolean)) {
             throw new ColumnFormatException("Column is not Boolean");
         }
-        return (Boolean)fields[columnIndex];
+        return (Boolean) fields[columnIndex];
     }
 
     @Override
@@ -81,6 +79,6 @@ public class TableEntry implements Storeable {
         if (!(fields[columnIndex] instanceof String)) {
             throw new ColumnFormatException("Column is not String");
         }
-        return (String)fields[columnIndex];
+        return (String) fields[columnIndex];
     }
 }

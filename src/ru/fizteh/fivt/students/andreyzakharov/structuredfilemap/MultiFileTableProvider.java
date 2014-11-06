@@ -4,6 +4,7 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
+
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -17,7 +18,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     private Path dbRoot;
     private Map<String, MultiFileTable> tables;
     private MultiFileTable activeTable;
-    TableEntrySerializer serializer = new TableEntryJsonSerializer();
+    private TableEntrySerializer serializer = new TableEntryJsonSerializer();
 
     public MultiFileTableProvider(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
@@ -113,16 +114,12 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        Storeable entry = serializer.deserialize(table, value);
-        // verify
-        return entry;
+        return serializer.deserialize(table, value);
     }
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        String data = serializer.serialize(table, value);
-        // verify
-        return data;
+        return serializer.serialize(table, value);
     }
 
     @Override

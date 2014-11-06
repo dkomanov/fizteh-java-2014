@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MultiFileTableUtils {
-    static private Map<Class<?>, String> ctsMap = new HashMap<>();
-    static private Map<String, Class<?>> stcMap = new HashMap<>();
+    private static Map<Class<?>, String> ctsMap = new HashMap<>();
+    private static Map<String, Class<?>> stcMap = new HashMap<>();
 
     static {
         ctsMap.put(Integer.class, "int");

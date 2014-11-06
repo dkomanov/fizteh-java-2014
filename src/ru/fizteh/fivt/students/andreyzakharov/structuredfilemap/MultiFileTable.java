@@ -3,8 +3,6 @@ package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
-import static ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableUtils.*;
-
 import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -14,7 +12,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableUtils.classToString;
+import static ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableUtils.stringToClass;
 
 public class MultiFileTable implements Table {
     private ArrayList<Class<?>> signature = new ArrayList<>();
@@ -33,9 +34,9 @@ public class MultiFileTable implements Table {
 
     /**
      * Creates a MultiFileTable instance and loads data from disk. Table signature is inferred from loaded data.
-     * @param path Root for the store.
-     * @param serializer An object that transforms TableEntry rows to String values and back.
      *
+     * @param path       Root for the store.
+     * @param serializer An object that transforms TableEntry rows to String values and back.
      * @throws ConnectionInterruptException An I/O error occured during disk operations.
      */
     public MultiFileTable(Path path, TableEntrySerializer serializer) throws ConnectionInterruptException {
@@ -54,10 +55,10 @@ public class MultiFileTable implements Table {
 
     /**
      * Creates a MultiFileTable instance and unloads it to disk.
-     * @param path Root for the store.
-     * @param signature Types for table columns.
-     * @param serializer An object that transforms TableEntry rows to String values and back.
      *
+     * @param path       Root for the store.
+     * @param signature  Types for table columns.
+     * @param serializer An object that transforms TableEntry rows to String values and back.
      * @throws ConnectionInterruptException An I/O error occured during disk operations.
      */
     public MultiFileTable(Path path, List<Class<?>> signature, TableEntrySerializer serializer)
@@ -213,6 +214,7 @@ public class MultiFileTable implements Table {
 
     /**
      * Returns list of keys in current version of the table.
+     *
      * @return List of keys.
      */
     public List<String> list() {
@@ -246,7 +248,7 @@ public class MultiFileTable implements Table {
 
     private void readSignature() throws IOException {
         signature.clear();
-        try (BufferedReader reader = Files.newBufferedReader(dbPath.resolve("signature.tsv"))){
+        try (BufferedReader reader = Files.newBufferedReader(dbPath.resolve("signature.tsv"))) {
             String line = reader.readLine();
             for (String token : line.split("\t")) {
                 signature.add(stringToClass(token));
@@ -306,8 +308,8 @@ public class MultiFileTable implements Table {
                             throw new ConnectionInterruptException("database: extra objects in table folder");
                         }
                         int f = Integer.decode(fileMatcher.group(1));
-                        try (DataInputStream fileStream = new DataInputStream(
-                                Files.newInputStream(dir.resolve(file)))) {
+                        Path filePath = dir.resolve(file);
+                        try (DataInputStream fileStream = new DataInputStream(Files.newInputStream(file))) {
                             while (fileStream.available() > 0) {
                                 String key = readKeyValue(fileStream);
                                 DfPair p = getHash(key);

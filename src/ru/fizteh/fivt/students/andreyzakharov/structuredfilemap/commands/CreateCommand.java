@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableUtils.*;
+import static ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableUtils.stringToClass;
 
 public class CreateCommand implements Command {
     @Override
@@ -19,18 +19,20 @@ public class CreateCommand implements Command {
         if (args.length > 3) {
             throw new CommandInterruptException("create: too many arguments");
         }
-        if (args[2].charAt(0) != '(' || args[2].charAt(args[2].length()-1) != ')') {
+        if (args[2].charAt(0) != '(' || args[2].charAt(args[2].length() - 1) != ')') {
             return "wrong type (invalid type specification)";
         }
         List<Class<?>> signature = new ArrayList<>();
-        String[] types = args[2].substring(1, args[2].length()-1).split(",");
+        String[] types = args[2].substring(1, args[2].length() - 1).split(",");
         for (String type : types) {
+            if (type.trim().isEmpty()) {
+                return "wrong type (empty type is not allowed)";
+            }
             Class<?> clazz = stringToClass(type.trim());
-            if (clazz != null) {
-                signature.add(clazz);
-            } else {
+            if (clazz == null) {
                 return "wrong type (" + type.trim() + " is not a valid type name)";
             }
+            signature.add(clazz);
         }
 
         Table newTable;

@@ -5,7 +5,6 @@ import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTablePr
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class CommandRunner {
     private Map<String, Command> commands = new HashMap<>();
@@ -13,7 +12,7 @@ public class CommandRunner {
     private void registerCommand(Command command) {
         commands.put(command.toString(), command);
     }
-    
+
     public CommandRunner() {
         registerCommand(new CreateCommand());
         registerCommand(new DropCommand());
