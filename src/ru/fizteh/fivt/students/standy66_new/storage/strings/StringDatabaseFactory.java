@@ -19,8 +19,8 @@ public class StringDatabaseFactory implements TableProviderFactory {
         if (f.isFile()) {
             throw new IllegalStateException("db dir is a regular file");
         }
-        if (!f.canWrite()) {
-            throw new IllegalStateException("dir is read only");
+        if (!f.canRead()) {
+            throw new IllegalStateException("dir cannot be read");
         }
         return new StringDatabase(f);
     }
