@@ -1,272 +1,248 @@
 package ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap;
 
+import ru.fizteh.fivt.storage.strings.Table;
+
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-/**
- * Created by denny_000 on 08.10.2014.
- */
-public class TableFileDAT implements TableInterface, SaveInMemoryInterface {
 
-    private RandomAccessFile binFile;
-    private Map<String, String> data = new TreeMap<>();
+public class TableFileDAT {
+    protected static final Charset CHARSET = Charset.forName("UTF-8");
+    protected static final String UNEXPECTED_END_OF_FILE = "Unexpected end of file.";
+    protected Map<String, String> data = new TreeMap<>();
     private boolean isLoaded = false;
-    private int directoryNumber;
-    private int fileNumber;
-    Path parentTablePath;
+    private TableHash table;
+    private int folderNum;
+    private int fileNum;
 
-
-    public TableFileDAT(Path pathToParentTable, int numOfDirectory, int numOfFile) {
-        data.clear();
-        directoryNumber = numOfDirectory;
-        fileNumber = numOfFile;
-        parentTablePath = pathToParentTable;
+    public TableFileDAT(TableHash parentTable, int folderNumber, int fileNumber) {
+        super();
+        table = parentTable;
+        folderNum = folderNumber;
+        fileNum = fileNumber;
     }
 
-    private void init() {
-        Path pathToDirectory = getDirectoryPath();
-        File dir = pathToDirectory.toFile();
-        if (!dir.exists()) {
-            return;
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    public void loadChecks() throws LoadOrSaveException, DatabaseFileStructureException {
+        File file = getSaveFilePath();
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new DatabaseFileStructureException("'" + file.getAbsolutePath() + "' is directory");
+            } else {
+                loadWork();
+            }
         }
-        Path pathToBinFile = getDATFilePath();
-        try { // Creating binfile.
-            try {
-                RandomAccessFile datFile
-                        = new RandomAccessFile(pathToBinFile.toString(), "rw");
-                binFile = datFile;
-                if (datFile.length() > 0) {
-                    read(datFile);
+    }
+
+    protected void loadWork() throws LoadOrSaveException, DatabaseFileStructureException {
+        File path = getSaveFilePath();
+        Exception error = null;
+        String exMessage = null;
+        try (FileInputStream inputStream = new FileInputStream(path)) {
+            try (DataInputStream reader = new DataInputStream(inputStream)) {
+                ArrayList<String> keys = new ArrayList<>();
+                ArrayList<Integer> begins = new ArrayList<>();
+                int index = 0;
+                do {
+                    ArrayList<Byte> keyString = new ArrayList<>();
+                    int inputByte;
+                    do {
+                        inputByte = reader.read();
+                        if (inputByte > 0) {
+                            keyString.add((byte) inputByte);
+                        }
+                        ++index;
+                    } while (inputByte > 0);
+                    if (inputByte < 0) {
+                        if (index == 1) {
+                            return;
+                        }
+                        throw new LoadOrSaveException(UNEXPECTED_END_OF_FILE);
+                    }
+                    keys.add(getString(keyString));
+                    begins.add(reader.readInt());
+                    index += 4;
+                } while (index < begins.get(0));
+                for (int i = 0; i < begins.size(); ++i) {
+                    int size = (i + 1 < begins.size() ? begins.get(i + 1) - begins.get(i) : inputStream.available());
+                    if (size < 0) {
+                        throw new LoadOrSaveException("Error in loading: file is corrupted.");
+                    }
+                    byte[] buffer = new byte[size];
+                    if (reader.read(buffer) != size) {
+                        throw new LoadOrSaveException(UNEXPECTED_END_OF_FILE);
+                    } else {
+                        data.put(keys.get(i), new String(buffer, CHARSET));
+                    }
+
                 }
-
-            } catch (FileNotFoundException e) {
-                pathToBinFile.toFile().createNewFile();
-                RandomAccessFile datFile
-                        = new RandomAccessFile(pathToBinFile.toString(), "r");
-                binFile = datFile;
             }
-        } catch (IOException e) {
-            System.err.println("Can't create file.");
-            System.err.println("Reason: " + e.getMessage());
-            System.exit(-1);
+        } catch (FileNotFoundException ex) {
+            try (FileOutputStream writer = new FileOutputStream(path)) {
+                writer.flush();
+            } catch (Exception cantCreateFileEx) {
+                exMessage = "Can't create file with database: " + cantCreateFileEx.getMessage();
+                error = cantCreateFileEx;
+            }
+        } catch (SecurityException ex) {
+            exMessage = "Security error in loading: " + ex.getMessage();
+            error = ex;
+        } catch (EOFException ex) {
+            exMessage = UNEXPECTED_END_OF_FILE;
+            error = ex;
+        } catch (IOException ex) {
+            exMessage = "Input/output error on loading data: " + ex.getMessage();
+            error = ex;
+        } catch (LoadOrSaveException ex) {
+            exMessage = "Error in loading : " + ex.getMessage();
+            error = ex;
         }
-        isLoaded = true;
+        if (error != null) {
+            throw new LoadOrSaveException("Can't load. " + exMessage, error);
+        }
     }
 
-    private Path getDirectoryPath() {
-        return parentTablePath.resolve(directoryNumber + ".dir");
+    public void load() throws LoadOrSaveException, DatabaseFileStructureException {
+        if (!isLoaded) {
+            loadChecks();
+            isLoaded = true;
+        }
     }
 
-    private Path getDATFilePath() {
-        return parentTablePath.resolve(directoryNumber + ".dir" + File.separator
-                + fileNumber + ".dat");
+    private String getString(ArrayList<Byte> line) {
+        byte[] lineBytes = new byte[line.size()];
+        for (int i = 0; i < lineBytes.length; ++i) {
+            lineBytes[i] = line.get(i);
+        }
+        return new String(lineBytes, CHARSET);
     }
 
-    @Override
+    public void save() throws LoadOrSaveException, DatabaseFileStructureException {
+        File path = getSaveFilePath();
+        if (empty()) {
+            try {
+                if (path.exists()) {
+                    if (!path.delete()) {
+                        throw new LoadOrSaveException("Can't delete file.");
+                    }
+                }
+                File parent = new File(path.getParent());
+                String[] list = parent.list();
+                if (parent.exists() && (list == null || list.length == 0)) {
+                    if (!parent.delete()) {
+                        throw new LoadOrSaveException("Can't delete folder.");
+                    }
+                }
+            } catch (SecurityException ex) {
+                throw new LoadOrSaveException("Access denied on save.", ex);
+            }
+        } else {
+            try {
+                File directory = path.getParentFile();
+                if (!directory.exists()) {
+                    Files.createDirectory(directory.toPath());
+                }
+                saveWork();
+            } catch (SecurityException ex) {
+                throw new LoadOrSaveException("Access denied on creating folder", ex);
+            } catch (FileAlreadyExistsException ex) {
+                throw new LoadOrSaveException("Something strange in creating folder", ex);
+            } catch (IOException ex) {
+                throw new LoadOrSaveException("Error creating folder: " + ex.getMessage(), ex);
+            }
+        }
+    }
+
+    public File getSaveFilePath() throws DatabaseFileStructureException {
+        return getFolderPath().resolve(fileNum + ".dat").toFile();
+    }
+
+    private Path getFolderPath() throws DatabaseFileStructureException {
+        return table.getDirectory().resolve(folderNum + ".dir");
+    }
+
+    public int count() {
+        return data.size();
+    }
+
+    public boolean empty() {
+        return count() == 0;
+    }
+
+    public void drop() throws LoadOrSaveException, DatabaseFileStructureException {
+        data.clear();
+        save();
+    }
+
+    public void saveWork() throws LoadOrSaveException, DatabaseFileStructureException {
+        File path = getSaveFilePath();
+        Exception error = null;
+        String exMessage = null;
+        try (FileOutputStream stream = new FileOutputStream(path)) {
+            try (DataOutputStream output = new DataOutputStream(stream)) {
+                List<String> keys = list();
+                ArrayList<byte[]> keysUtf8 = new ArrayList<>(keys.size());
+                int keysDataSize = 0;
+                ArrayList<byte[]> values = new ArrayList<>(keys.size());
+                for (String key : keys) {
+                    byte[] buffer = key.getBytes(CHARSET);
+                    keysUtf8.add(buffer);
+                    keysDataSize += buffer.length + 1 + Integer.BYTES;
+                    values.add(data.get(key).getBytes(CHARSET));
+                }
+                byte[] separator = new byte[]{0};
+                for (int i = 0; i < values.size(); i++) {
+                    output.write(keysUtf8.get(i));
+                    output.write(separator);
+                    output.writeInt(keysDataSize);
+                    keysDataSize += values.get(i).length;
+                }
+                for (int i = 0; i < keys.size(); i++) {
+                    output.write(values.get(i));
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            exMessage = "File not found on save: " + ex.getMessage();
+            error = ex;
+        } catch (SecurityException ex) {
+            exMessage = "Security error: " + ex.getMessage();
+            error = ex;
+        } catch (IOException ex) {
+            exMessage = "Error in save: " + ex.getMessage();
+            error = ex;
+        }
+        if (error != null) {
+            throw new LoadOrSaveException("Can't save. " + exMessage, error);
+        }
+    }
+
     public String put(String key, String value) {
-        if (!isLoaded) {
-            init();
-        }
-        String result = data.put(key, value);
-        if (result == null) {
-            System.out.println("new");
-        } else {
-            System.out.println("overwrite");
-            System.out.println(result);
-        }
-        return result;
+        return data.put(key, value);
     }
 
-    @Override
     public String get(String key) {
-        if (!isLoaded) {
-            init();
-        }
-        String result = data.get(key);
-        if (result == null) {
-            System.out.println("not found");
-        } else {
-            System.out.println("found");
-            System.out.println(result);
-        }
-        return result;
+        return data.get(key);
     }
 
-    public String getValue(String key) {
-        if (!isLoaded) {
-            init();
-        }
-        String result = data.get(key);
-        return result;
+    public String remove(String key) {
+        return data.remove(key);
     }
 
-    @Override
-    public boolean remove(String key) {
-        if (!isLoaded) {
-            init();
-        }
-        String result = data.remove(key);
-        if (result == null) {
-            System.out.println("not found");
-            return false;
-        } else {
-            System.out.println("removed");
-            return true;
-        }
-    }
-
-    @Override
     public List<String> list() {
-        if (!isLoaded) {
-            File file = getDATFilePath().toFile();
-            if (file.exists()) {
-                init();
-            }
-        }
-        List<String> result = new ArrayList<>(data.size());
-        Set<String> keys = data.keySet();
-        for (String key : keys) {
+        ArrayList<String> result = new ArrayList<>(data.size());
+        for (String key : data.keySet()) {
             result.add(key);
         }
         return result;
     }
-
-    public int getCount() {
-        if (!isLoaded) {
-            File file = getDATFilePath().toFile();
-            if (file.exists()) {
-                init();
-            }
-        }
-        return data.size();
-    }
-
-    @Override
-    public void write(RandomAccessFile whereTo) {
-        if (isLoaded) {
-            File datFile = getDATFilePath().toFile();
-            if (datFile.exists()) {
-                if (!datFile.delete()) {
-                    System.out.println("can't delete");
-                }
-            }
-        }
-        if (data.size() == 0) {
-            return;
-        }
-
-        File dir = getDirectoryPath().toFile();
-        if (!dir.exists()) {
-            dir.mkdir();
-        }
-        try {
-            RandomAccessFile datFile
-                    = new RandomAccessFile(getDATFilePath().toString(), "rw");
-            binFile = datFile;
-            whereTo = binFile;
-        } catch (IOException e) {
-            System.err.println("Can't create file.");
-            System.err.println("Reason: " + e.getMessage());
-            System.exit(-1);
-        }
-        try {
-            whereTo.setLength(0);
-            Set<String> keys = data.keySet();
-            List<Integer> offsetsPos = new LinkedList<Integer>();
-            for (String currentKey : keys) {
-                whereTo.write(currentKey.getBytes("UTF-8"));
-                whereTo.write('\0');
-                offsetsPos.add((int) whereTo.getFilePointer());
-                whereTo.writeInt(0);
-            }
-            List<Integer> offsets = new LinkedList<Integer>();
-            for (String currentKey : keys) {
-                offsets.add((int) whereTo.getFilePointer());
-                whereTo.write(data.get(currentKey).getBytes("UTF-8"));
-            }
-            Iterator<Integer> offIter = offsets.iterator();
-            for (int offsetPos : offsetsPos) {
-                whereTo.seek(offsetPos);
-                whereTo.writeInt(offIter.next());
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        try {
-            whereTo.close();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
-    @Override
-    public void read(final RandomAccessFile whereFrom) {
-        Path pathToDirectory = getDirectoryPath();
-        File dir = pathToDirectory.toFile();
-        if (!dir.exists()) {
-            return;
-        }
-        try {
-            ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
-            List<Integer> offsets = new LinkedList<Integer>();
-            List<String> keys = new LinkedList<String>();
-            byte b;
-            int bytesCounter = 0;
-            int firstOffset = -1;
-            do {
-                while ((b = whereFrom.readByte()) != 0) {
-                    bytesCounter++;
-                    bytesBuffer.write(b);
-                }
-                bytesCounter++;
-                if (firstOffset == -1) {
-                    firstOffset = whereFrom.readInt();
-                } else {
-                    offsets.add(whereFrom.readInt());
-                }
-                bytesCounter += 4;
-                keys.add(bytesBuffer.toString("UTF-8"));
-                bytesBuffer.reset();
-            } while (bytesCounter < firstOffset);
-            // Reading values until reaching the end of file.
-            offsets.add((int) whereFrom.length());
-            Iterator<String> keyIter = keys.iterator();
-            for (int nextOffset : offsets) {
-                while (bytesCounter < nextOffset) {
-                    bytesBuffer.write(whereFrom.readByte());
-                    bytesCounter++;
-                }
-                if (bytesBuffer.size() > 0) {
-                    data.put(keyIter.next(), bytesBuffer.toString("UTF-8"));
-                    bytesBuffer.reset();
-                } else {
-                    throw new IOException("File ends before reading last value.");
-                }
-            }
-            bytesBuffer.close();
-            binFile = whereFrom;
-            whereFrom.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    void clear() {
-        data.clear();
-        binFile = null;
-    }
-
-    public RandomAccessFile getBinFile() {
-        return binFile;
-    }
-
-    public void setBinFile(RandomAccessFile dbFile) {
-        binFile = dbFile;
-    }
-
-    private void create() {
-    }
 }
-
-
