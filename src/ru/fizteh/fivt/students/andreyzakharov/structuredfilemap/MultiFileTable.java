@@ -308,7 +308,6 @@ public class MultiFileTable implements Table {
                             throw new ConnectionInterruptException("database: extra objects in table folder");
                         }
                         int f = Integer.decode(fileMatcher.group(1));
-                        Path filePath = dir.resolve(file);
                         try (DataInputStream fileStream = new DataInputStream(Files.newInputStream(file))) {
                             while (fileStream.available() > 0) {
                                 String key = readKeyValue(fileStream);
