@@ -115,7 +115,7 @@ public class Interpreter {
         } else {
             try {
                 command.execute(tableState, arguments);
-            } catch (IllegalCommandException |NoActiveTableException e) {
+            } catch (IllegalCommandException | NoActiveTableException e) {
                 if (userMode) {
                     throw e;
                 } else {
