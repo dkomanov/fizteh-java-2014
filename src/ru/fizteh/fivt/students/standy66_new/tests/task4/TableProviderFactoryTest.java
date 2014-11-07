@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.standy66_new.tests.task3;
+package ru.fizteh.fivt.students.standy66_new.tests.task4;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class TableProviderFactoryTest {
 
     @Test(expected = RuntimeException.class)
     public void createProviderUnavailableShouldFail() {
-        factory.create("/etc/passwd");
+        factory.create("\\etc\\passwd");
     }
 
     @Test
