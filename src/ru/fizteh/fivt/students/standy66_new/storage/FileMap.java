@@ -15,6 +15,7 @@ import java.util.*;
  * Created by astepanov on 26.09.14.
  */
 public class FileMap implements Map<String, String>, AutoCloseable {
+    private final String charsetName = "UTF-8";
     private File mapFile;
     private Map<String, String> cache;
     private Set<String> changed;
@@ -116,10 +117,10 @@ public class FileMap implements Map<String, String>, AutoCloseable {
             ByteBuffer lengthBuffer = ByteBuffer.allocate(4);
             for (String key : cache.keySet()) {
                 String value = cache.get(key);
-                byte[] keyEncoded = key.getBytes("UTF-8");
+                byte[] keyEncoded = key.getBytes(charsetName);
                 fos.write(lengthBuffer.putInt(0, keyEncoded.length).array());
                 fos.write(keyEncoded);
-                byte[] valueEncoded = value.getBytes("UTF-8");
+                byte[] valueEncoded = value.getBytes(charsetName);
                 fos.write(lengthBuffer.putInt(0, valueEncoded.length).array());
                 fos.write(valueEncoded);
             }
@@ -166,7 +167,7 @@ public class FileMap implements Map<String, String>, AutoCloseable {
                     }
                     byte[] value = new byte[valueSize];
                     buffer.get(value);
-                    cache.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+                    cache.put(new String(key, charsetName), new String(value, charsetName));
                 }
             } catch (BufferUnderflowException e) {
                 throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
