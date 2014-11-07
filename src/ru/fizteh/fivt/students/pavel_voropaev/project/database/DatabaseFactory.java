@@ -21,8 +21,8 @@ public class DatabaseFactory implements TableProviderFactory {
             try {
                 Files.createDirectory(dirPath);
             } catch (IOException e) {
-                throw new RuntimeException(
-                        "Cannot create database " + dirPath.toString() + e.getMessage(), e);
+                throw new RuntimeException("Cannot create database "
+                        + dirPath.toString() + e.getMessage(), e);
             }
         }
         return new Database(dir);

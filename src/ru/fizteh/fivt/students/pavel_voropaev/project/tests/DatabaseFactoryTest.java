@@ -1,9 +1,10 @@
-package ru.fizteh.fivt.students.pavel_voropaev.project.database;
+package ru.fizteh.fivt.students.pavel_voropaev.project.tests;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
+import ru.fizteh.fivt.students.pavel_voropaev.project.database.DatabaseFactory;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProviderFactory;
 
 import java.io.IOException;

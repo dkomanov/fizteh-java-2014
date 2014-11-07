@@ -1,10 +1,11 @@
-package ru.fizteh.fivt.students.pavel_voropaev.project.database;
+package ru.fizteh.fivt.students.pavel_voropaev.project.tests;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.TableDoesNotExistException;
+import ru.fizteh.fivt.students.pavel_voropaev.project.database.Database;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
 

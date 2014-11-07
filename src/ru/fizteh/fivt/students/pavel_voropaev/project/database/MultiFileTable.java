@@ -25,6 +25,7 @@ public class MultiFileTable implements Table {
 
     private static final int FOLDERS = 16;
     private static final int FILES = 16;
+    private static final String ENCODING = "UTF-8";
 
     private String name;
     private Path directory;
@@ -179,10 +180,9 @@ public class MultiFileTable implements Table {
                 if (!Files.isDirectory(entry)) {
                     throw new ContainsWrongFilesException(directory.toString());
                 }
-                String entryStr = entry.toString();
                 boolean correctDir = false;
                 for (int i = 0; i < FOLDERS; ++i) {
-                    if (entryStr.endsWith(File.separator + Integer.toString(i) + ".dir")) {
+                    if (entry.endsWith(Integer.toString(i) + ".dir")) {
                         readDir(entry, i);
                         correctDir = true;
                         break;
@@ -198,11 +198,10 @@ public class MultiFileTable implements Table {
     private void readDir(Path entry, int dirNum) throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(entry)) {
             for (Path path : stream) {
-                String fileName = path.toString();
                 boolean correctFile = false;
                 for (int i = 0; i < FILES; ++i) {
-                    if (fileName.endsWith(File.separator + Integer.toString(i) + ".dat")) {
-                        readFile(fileName, dirNum, i);
+                    if (path.endsWith(Integer.toString(i) + ".dat")) {
+                        readFile(path.toString(), dirNum, i);
                         correctFile = true;
                         break;
                     }
@@ -238,7 +237,7 @@ public class MultiFileTable implements Table {
         int length = stream.readInt();
         byte[] word = new byte[length];
         stream.readFully(word);
-        return new String(word, "UTF-8");
+        return new String(word, ENCODING);
     }
 
     private void save() throws IOException {
@@ -267,8 +266,8 @@ public class MultiFileTable implements Table {
         try (FileOutputStream output = new FileOutputStream(getFilePath(fileNum).toString())) {
             while (it.hasNext()) {
                 String key = it.next();
-                byte[] keyByte = key.getBytes("UTF-8");
-                byte[] valueByte = content[fileNum].map.get(key).getBytes("UTF-8");
+                byte[] keyByte = key.getBytes(ENCODING);
+                byte[] valueByte = content[fileNum].map.get(key).getBytes(ENCODING);
 
                 output.write(buffer.putInt(0, keyByte.length).array());
                 output.write(keyByte);
