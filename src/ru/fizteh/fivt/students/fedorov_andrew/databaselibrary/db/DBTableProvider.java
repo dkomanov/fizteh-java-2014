@@ -22,6 +22,9 @@ public class DBTableProvider implements TableProvider {
      */
     private Map<String, TableImpl> tables;
 
+    /**
+     * Mapping (table name, last corruption reason). To keep user informed.
+     */
     private Map<String, TableCorruptException> corruptTables;
 
     /**
@@ -128,6 +131,11 @@ public class DBTableProvider implements TableProvider {
         }
     }
 
+    /**
+     * Returns mapping (table name, table).<br/>
+     * {@code Null} is used if a table is corrupt.
+     * @return
+     */
     public Set<Entry<String, TableImpl>> listTables() {
         return tables.entrySet();
     }

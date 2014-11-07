@@ -94,6 +94,13 @@ public class TableTest extends TestBase {
     }
 
     @Test
+    public void testRussianSymbols() {
+        table.put("ключ", "значение");
+
+        assertEquals("Russian symbols: put + get not synchronized", table.get("ключ"), "значение");
+    }
+
+    @Test
     public void testRemoveExistent() {
         table.put("key", "value1");
         int sizeBefore = table.size();

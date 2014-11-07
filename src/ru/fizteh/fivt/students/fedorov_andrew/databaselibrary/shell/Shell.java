@@ -129,7 +129,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
                 }
             }
         } catch (IOException exc) {
-            Log.log(Shell.class, exc, "Cannot parse input stream for shell");
+            Utility.handleError("Cannot read input stream: " + exc.getMessage(), exc, true);
         } catch (ExitRequest request) {
             exitRequested = true;
             return request.getCode();

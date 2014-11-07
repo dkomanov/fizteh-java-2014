@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class represents actual task implementation: work from terminal with a database, whose
@@ -76,6 +77,8 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     @Override
     public void init(Shell<SingleDatabaseShellState> host)
             throws IllegalArgumentException, DatabaseException {
+        Objects.requireNonNull(host, "Host shell must not be null");
+
         if (this.host != null) {
             throw new IllegalStateException("Initialization happened already");
         }

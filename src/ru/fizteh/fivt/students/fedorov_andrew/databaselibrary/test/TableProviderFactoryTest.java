@@ -74,6 +74,16 @@ public class TableProviderFactoryTest extends TestBase {
     }
 
     @Test
+    public void testCreateProviderWithFileAsRoot () throws IOException {
+        Files.createFile(DB_ROOT);
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Database root must be a directory");
+
+        factory.create(DB_ROOT.toString());
+    }
+
+    @Test
     public void testCreateProviderInDirWithBadFiles() throws DatabaseException, IOException {
         Files.createDirectory(DB_ROOT);
         Files.createFile(DB_ROOT.resolve("some file"));

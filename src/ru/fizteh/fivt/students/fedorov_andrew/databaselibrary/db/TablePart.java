@@ -97,9 +97,7 @@ public class TablePart {
      * if an exception occurs and database is cloned, recover if cloned
      * object is null - no recover is performed.
      */
-        HashMap<String, String> cloneDBMap = null;
-
-        cloneDBMap = (HashMap<String, String>) tablePartMap.clone();
+        HashMap<String, String> cloneDBMap = (HashMap<String, String>) tablePartMap.clone();
         tablePartMap.clear();
 
         try (DataInputStream stream = new DataInputStream(
