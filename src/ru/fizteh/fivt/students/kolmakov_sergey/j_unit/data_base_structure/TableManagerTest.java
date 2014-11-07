@@ -67,19 +67,19 @@ public class TableManagerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateTableThrowsExceptionCalledForWrongTableName_1() {
+    public void testCreateTableThrowsExceptionCalledForWrongTableName1() {
         TableProvider test = new TableManager(directoryPath.toString());
         test.createTable("badName.");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateTableThrowsExceptionCalledForWrongTableName_2() {
+    public void testCreateTableThrowsExceptionCalledForWrongTableName2() {
         TableProvider test = new TableManager(directoryPath.toString());
         test.createTable("bad/name");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateTableThrowsExceptionCalledForWrongTableName_3() {
+    public void testCreateTableThrowsExceptionCalledForWrongTableName3() {
         TableProvider test = new TableManager(directoryPath.toString());
         test.createTable("bad\\name");
     }
@@ -159,7 +159,7 @@ public class TableManagerTest {
     public void tearDown() {
         deleteRecursively(testDir.toFile());
     }
-    
+
     private static void deleteRecursively(File directory) {
         if (directory.isDirectory()) {
             try {

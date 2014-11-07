@@ -65,26 +65,26 @@ public class TableClassTest {
     @Test(expected = DatabaseCorruptedException.class)
     public void testTableClassThrowsExceptionWhenDirectoryFoundInWrongPlace()
             throws IOException, DatabaseCorruptedException {
-        Path FolderPath = testDir.resolve(folderName);
-        FolderPath.toFile().mkdir();
-        FolderPath.resolve(dataFileName).toFile().mkdir();
+        Path folderPath = testDir.resolve(folderName);
+        folderPath.toFile().mkdir();
+        folderPath.resolve(dataFileName).toFile().mkdir();
         new TableClass(testDir, tableName);
     }
 
     @Test(expected = DatabaseCorruptedException.class)
     public void testTableClassThrowsExceptionWhenFolderHasBadName()
             throws IOException, DatabaseCorruptedException {
-        Path FolderPath = testDir.resolve(folderName);
-        FolderPath.toFile().mkdir();
-        FolderPath.resolve(unexpectedFolderName).toFile().createNewFile();
+        Path folderPath = testDir.resolve(folderName);
+        folderPath.toFile().mkdir();
+        folderPath.resolve(unexpectedFolderName).toFile().createNewFile();
         new TableClass(testDir, tableName);
     }
 
     @Test
     public void testTableClassConstructorWhenDatabaseIsNotEmpty() throws IOException, DatabaseCorruptedException {
-        Path FolderPath = testDir.resolve(folderName);
-        FolderPath.toFile().mkdir();
-        Path subfilePath = FolderPath.resolve(dataFileName);
+        Path folderPath = testDir.resolve(folderName);
+        folderPath.toFile().mkdir();
+        Path subfilePath = folderPath.resolve(dataFileName);
         try (DataOutputStream file
                      = new DataOutputStream(new FileOutputStream(subfilePath.toString()))) {
             file.write(correctKeyStoredInDataFile.getBytes(encoding));
@@ -268,10 +268,10 @@ public class TableClassTest {
         test.commit();
         assertEquals(testValue, test.remove(testKey1));
         test.commit();
-        String FolderName = testKey1.getBytes()[0] % TableManager.NUMBER_OF_PARTITIONS + ".dir";
+        String folderName = testKey1.getBytes()[0] % TableManager.NUMBER_OF_PARTITIONS + ".dir";
         String fileName = (testKey1.getBytes()[0] / TableManager.NUMBER_OF_PARTITIONS)
                 % TableManager.NUMBER_OF_PARTITIONS + ".dat";
-        Path filePath = Paths.get(testDir.toString(), FolderName, fileName);
+        Path filePath = Paths.get(testDir.toString(), folderName, fileName);
         assertFalse(filePath.toFile().exists());
     }
 

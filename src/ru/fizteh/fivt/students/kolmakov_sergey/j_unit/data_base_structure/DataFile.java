@@ -147,14 +147,10 @@ public class DataFile { // Interacts with .dat file.
             throw new IllegalArgumentException("checkKey: key == null");
         }
         try {
-            if ((folderFileIndexes.folderIndex == Math.abs(key.getBytes(TableManager.CODE_FORMAT)[0]
+            return ((folderFileIndexes.folderIndex == Math.abs(key.getBytes(TableManager.CODE_FORMAT)[0]
                     % TableManager.NUMBER_OF_PARTITIONS) && folderFileIndexes.fileIndex
                     == Math.abs((key.getBytes(TableManager.CODE_FORMAT)[0] / TableManager.NUMBER_OF_PARTITIONS)
-                    % TableManager.NUMBER_OF_PARTITIONS))) {
-                return true;
-            } else {
-                return false;
-            }
+                    % TableManager.NUMBER_OF_PARTITIONS)));
         } catch (UnsupportedEncodingException e) {
             return false;
         }

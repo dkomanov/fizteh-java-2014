@@ -5,7 +5,6 @@ import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure.TableC
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.interpreter.Interpreter;
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.interpreter.Command;
 
-import java.nio.file.InvalidPathException;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
@@ -74,7 +73,7 @@ public final class Main {
                     if (newTable == null) {
                         throw new IllegalArgumentException(args[0] + " not exists");
                     }
-                    TableClass usedTable = (TableClass)state.getCurrentTable();
+                    TableClass usedTable = (TableClass) state.getCurrentTable();
                     if (usedTable != null && (usedTable.numberOfChanges() > 0) && usedTable != newTable) {
                         throw new IllegalArgumentException(usedTable.numberOfChanges() + " unsaved changes");
                     } else {
@@ -187,7 +186,7 @@ public final class Main {
         dbInterpreter.setExitHandler(new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                TableClass table = (TableClass)state.getCurrentTable();
+                TableClass table = (TableClass) state.getCurrentTable();
                 if (table != null && (table.numberOfChanges() > 0)) {
                     System.out.println(table.numberOfChanges() + " unsaved changes");
                     return false;

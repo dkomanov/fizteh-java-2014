@@ -13,8 +13,8 @@ public class TableClass implements Table {
     private Path tablePath;
     private Map<Coordinates, DataFile> tableMap;
     private Map<String, String> difference; // (null in Value) -> this entry must be removed.
-    private final String UNEXPECTED_FILES_MESSAGE = "Unexpected files found in directory ";
-    private final String EMPTY_FOLDERS_MESSAGE = "Empty folders found in ";
+    private final String unexpectedFilesMessage = "Unexpected files found in directory ";
+    private final String emptyFoldersMessage = "Empty folders found in ";
 
     public TableClass(Path tablePath, String name) throws DatabaseCorruptedException {
         tableMap = new HashMap<>();
@@ -26,16 +26,16 @@ public class TableClass implements Table {
             Path currentFolderPath = this.tablePath.resolve(currentFolderName);
             if (!currentFolderName.matches(TableManager.FOLDER_NAME_PATTERN)
                     || !currentFolderPath.toFile().isDirectory()) {
-                throw new DatabaseCorruptedException(UNEXPECTED_FILES_MESSAGE + tablePath.toString());
+                throw new DatabaseCorruptedException(unexpectedFilesMessage + tablePath.toString());
             }
             String[] fileList = currentFolderPath.toFile().list();
             if (fileList.length == 0) {
-                throw new DatabaseCorruptedException(EMPTY_FOLDERS_MESSAGE + tablePath.toString());
+                throw new DatabaseCorruptedException(emptyFoldersMessage + tablePath.toString());
             }
             for (String currentFileName : fileList) {
                 Path filePath = currentFolderPath.resolve(currentFileName);
                 if (!currentFileName.matches(TableManager.FILE_NAME_PATTERN) || !filePath.toFile().isFile()) {
-                    throw new DatabaseCorruptedException(UNEXPECTED_FILES_MESSAGE + tablePath.toString());
+                    throw new DatabaseCorruptedException(unexpectedFilesMessage + tablePath.toString());
                 }
                 int folderIndex = TableManager.excludeFolderNumber(currentFolderName);
                 int fileIndex = TableManager.excludeDataFileNumber(currentFileName);

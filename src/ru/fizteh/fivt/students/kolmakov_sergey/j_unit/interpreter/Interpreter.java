@@ -14,10 +14,10 @@ import java.util.concurrent.Callable;
 
 public final class Interpreter {
     public static final String PROMPT = "$ ";
-    public final static String BAD_COMMAND = "Command not found: ";
+    public static final  String BAD_COMMAND = "Command not found: ";
     public static final String STATEMENT_DELIMITER = ";";
     public static final String EXIT_WITHOUT_HANDLER_MSG = "You must set exitHandler before using exit command";
-    private final String PARAM_REGEXP = "\\s+";
+    private final String paramRegexp = "\\s+";
     private InputStream in;
     private PrintStream out;
     private DataBaseState dbState;
@@ -80,7 +80,7 @@ public final class Interpreter {
         String[] commands = line.split(STATEMENT_DELIMITER);
         try {
             for (String current : commands) {
-                parse(current.trim().split(PARAM_REGEXP), batchModeOn);
+                parse(current.trim().split(paramRegexp), batchModeOn);
             }
             if (batchModeOn) {
                 parse(new String[]{"exit"}, batchModeOn);

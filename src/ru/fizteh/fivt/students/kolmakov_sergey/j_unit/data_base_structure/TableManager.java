@@ -4,7 +4,6 @@ import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_exceptions.Datab
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -161,11 +160,11 @@ class Coordinates implements Comparable<Coordinates> {
         return 0;
     }
     @Override
-    public boolean equals (Object o) {
+    public boolean equals(Object o) {
         if (o == null || !(o instanceof Coordinates)) {
             return  false;
         } else {
-            Coordinates coordinates = (Coordinates)o;
+            Coordinates coordinates = (Coordinates) o;
             return folderIndex == coordinates.folderIndex && fileIndex == coordinates.fileIndex;
         }
     }
