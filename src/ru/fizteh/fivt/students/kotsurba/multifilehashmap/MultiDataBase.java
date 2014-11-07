@@ -11,6 +11,9 @@ public final class MultiDataBase {
     private String dataBaseDirectory;
     private DataBaseFile[] files;
 
+    public final int DIRECTORY_COUNT = 16;
+    public final int FILES_COUNT = 16;
+
     public final class DirFile {
         private int nDir;
         private int nFile;
@@ -115,9 +118,9 @@ public final class MultiDataBase {
 
     public void loadFiles() {
         try {
-            for (int i = 0; i < 16; ++i) {
-                for (int j = 0; j < 16; ++j) {
-                    DirFile node = new DirFile(i + j * 16);
+            for (int i = 0; i < DIRECTORY_COUNT; ++i) {
+                for (int j = 0; j < FILES_COUNT; ++j) {
+                    DirFile node = new DirFile(i + j * FILES_COUNT);
                     MultiDataBaseFile file = new MultiDataBaseFile(getFullName(node), node.nDir, node.nFile);
                     files[node.getHash()] = file;
                 }
@@ -148,8 +151,8 @@ public final class MultiDataBase {
     }
 
     public void drop() {
-        for (byte i = 0; i < 16; ++i) {
-            for (byte j = 0; j < 16; ++j) {
+        for (byte i = 0; i < DIRECTORY_COUNT; ++i) {
+            for (byte j = 0; j < FILES_COUNT; ++j) {
                 File file = new File(getFullName(new DirFile(i + j * 16)));
                 if (file.exists()) {
                     if (!file.delete()) {
@@ -177,7 +180,7 @@ public final class MultiDataBase {
     }
 
     public String getCount() {
-        Integer count = new Integer(0);
+        Integer count = 0;
         for (DataBaseFile dbf : files) {
             count += dbf.getKeyCount();
         }
@@ -185,11 +188,11 @@ public final class MultiDataBase {
     }
 
     public void save() {
-        for (int i = 0; i < 16; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT; ++i) {
             tryAddDirectory(Integer.toString(i) + ".dir");
-            for (int j = 0; j < 16; ++j) {
-                if (files[new DirFile((i + j * 16)).getHash()] != null) {
-                    files[new DirFile((i + j * 16)).getHash()].save();
+            for (int j = 0; j < FILES_COUNT; ++j) {
+                if (files[new DirFile((i + j * FILES_COUNT)).getHash()] != null) {
+                    files[new DirFile((i + j * FILES_COUNT)).getHash()].save();
                 }
             }
             tryDeleteDirectory(Integer.toString(i) + ".dir");
