@@ -61,6 +61,10 @@ public class StringDatabase implements TableProvider, AutoCloseable {
         }
     }
 
+    public File getFile() {
+        return dbDirectory;
+    }
+
     @Override
     public Table getTable(String name) {
         checkTableName(name);

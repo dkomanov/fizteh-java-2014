@@ -40,6 +40,10 @@ public class StringTable implements Table {
         }
     }
 
+    public File getFile() {
+        return tableDirectory;
+    }
+
     @Override
     public String getName() {
         return tableDirectory.getName();
