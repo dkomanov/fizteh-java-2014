@@ -8,5 +8,4 @@ public class NoActiveTableException extends IllegalStateException {
     public NoActiveTableException(String message) {
         errMessage = message;
     }
-    public NoActiveTableException() {}
 }
