@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.standy66_new.tests;
+package ru.fizteh.fivt.students.standy66_new.tests.task3;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,10 +18,9 @@ import java.util.Collection;
  */
 @RunWith(value = Parameterized.class)
 public class TableProviderFactoryTest {
-    private TableProviderFactory factory;
-
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
+    private TableProviderFactory factory;
 
     public TableProviderFactoryTest(TableProviderFactory factory) {
         this.factory = factory;

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.standy66_new.tests;
+package ru.fizteh.fivt.students.standy66_new.tests.task3;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
