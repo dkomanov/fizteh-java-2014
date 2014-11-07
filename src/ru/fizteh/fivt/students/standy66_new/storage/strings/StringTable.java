@@ -5,22 +5,39 @@ import ru.fizteh.fivt.students.standy66_new.storage.FileMap;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by astepanov on 20.10.14.
  */
 public class StringTable implements Table {
+    private static final int MAX_FILE_CHUNK = 16;
+    private static final int MAX_DIR_CHUNK = 16;
     private File tableDirectory;
     private Map<File, FileMap> openedFiles;
 
     public StringTable(File tableDirectory) {
-        //TODO: load all files here instead of easy loading
+        if (tableDirectory == null) {
+            throw new IllegalArgumentException("table directory should not be null");
+        }
+        if (tableDirectory.isFile()) {
+            throw new IllegalArgumentException("table directory should not point to a regular file");
+        }
         this.tableDirectory = tableDirectory;
         openedFiles = new HashMap<>();
+
+        for (int i = 0; i < MAX_DIR_CHUNK; i++) {
+            File dir = new File(tableDirectory, i + ".dir");
+            for (int j = 0; j < MAX_FILE_CHUNK; j++) {
+                File file = new File(dir, j + ".dat");
+                try {
+                    openedFiles.put(file, new FileMap(file));
+                } catch (IOException e) {
+                    throw new RuntimeException("IOException occured", e);
+                }
+            }
+        }
     }
 
     @Override
@@ -31,7 +48,7 @@ public class StringTable implements Table {
     @Override
     public String get(String key) {
         if (key == null) {
-            throw new IllegalArgumentException("key is null");
+            throw new IllegalArgumentException("key should not be null");
         }
         FileMap fm = getFileMapByKey(key);
         if (fm == null) {
@@ -44,7 +61,7 @@ public class StringTable implements Table {
     @Override
     public String put(String key, String value) {
         if (key == null) {
-            throw new IllegalArgumentException("key is null");
+            throw new IllegalArgumentException("key should not be null");
         }
         FileMap fm = getFileMapByKey(key);
         if (fm == null) {
@@ -68,31 +85,12 @@ public class StringTable implements Table {
     }
 
     public int unsavedChangesCount() {
-        int unsavedChangesCount = 0;
-        for (FileMap fm : openedFiles.values()) {
-            unsavedChangesCount += fm.unsavedChangesCount();
-        }
-        return unsavedChangesCount;
+        return openedFiles.values().stream().collect(Collectors.summingInt(fileMap -> fileMap.unsavedChangesCount()));
     }
 
     @Override
     public int size() {
-        int ans = 0;
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
-                File dir = new File(tableDirectory, String.format("%d.dir", i));
-                File file = new File(dir, String.format("%d.dat", j));
-                if (openedFiles.get(file) == null) {
-                    try {
-                        openedFiles.put(file, new FileMap(file));
-                    } catch (IOException e) {
-                        throw new RuntimeException("IOException occured", e);
-                    }
-                }
-                ans += openedFiles.get(file).size();
-            }
-        }
-        return ans;
+        return openedFiles.values().stream().collect(Collectors.summingInt(fileMap -> fileMap.size()));
     }
 
     @Override
@@ -129,41 +127,23 @@ public class StringTable implements Table {
 
     @Override
     public List<String> list() {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
-                File dir = new File(tableDirectory, String.format("%d.dir", i));
-                File file = new File(dir, String.format("%d.dat", j));
-                if (openedFiles.get(file) == null) {
-                    try {
-                        openedFiles.put(file, new FileMap(file));
-                    } catch (IOException e) {
-                        throw new RuntimeException("IOException occured", e);
-                    }
-                }
-                list.addAll(openedFiles.get(file).keySet());
-            }
-        }
-        return list;
+        return new ArrayList<>(openedFiles.values().stream().map(fileMap -> fileMap.keySet())
+                .reduce(new HashSet<>(), (accumulator, s) -> {
+                    accumulator.addAll(s);
+                    return accumulator;
+                }));
     }
 
-    private File getFileByKey(String key) {
+    private File getChunkFileByKey(String key) {
         int hashcode = key.hashCode();
-        int nDirectory = hashcode % 16;
-        int nFile = (hashcode / 16) % 16;
-        File dir = new File(tableDirectory, String.format("%d.dir", nDirectory));
-        return new File(dir, String.format("%d.dat", nFile));
+        int nDirectory = Integer.remainderUnsigned(hashcode, MAX_DIR_CHUNK);
+        int nFile = Integer.remainderUnsigned((hashcode / MAX_DIR_CHUNK), MAX_FILE_CHUNK);
+        File dir = new File(tableDirectory, nDirectory + ".dir");
+        return new File(dir, nFile + ".dat");
     }
 
     private FileMap getFileMapByKey(String key) {
-        File f = getFileByKey(key);
-        if (openedFiles.get(f) == null) {
-            try {
-                openedFiles.put(f, new FileMap(f));
-            } catch (IOException e) {
-                throw new RuntimeException("IOException occured", e);
-            }
-        }
-        return openedFiles.get(f);
+        File chunkFile = getChunkFileByKey(key);
+        return openedFiles.get(chunkFile);
     }
 }

@@ -15,13 +15,6 @@ public class StringDatabaseFactory implements TableProviderFactory {
             throw new IllegalArgumentException("dir is null or empty");
         }
         File f = new File(dir).getAbsoluteFile();
-        f.mkdirs();
-        if (f.isFile()) {
-            throw new IllegalStateException("db dir is a regular file");
-        }
-        if (!f.canRead()) {
-            throw new IllegalStateException("dir cannot be read");
-        }
         return new StringDatabase(f);
     }
 }
