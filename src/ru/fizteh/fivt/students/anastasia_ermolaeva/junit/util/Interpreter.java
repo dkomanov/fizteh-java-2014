@@ -94,6 +94,9 @@ public class Interpreter {
                 } catch (IllegalCommandException e) {
                     out.println(e.getErrMessage());
                     continue;
+                } catch (NoActiveTableException e) {
+                    out.println(e.getErrMessage());
+                    continue;
                 }
             }
         } catch (NoSuchElementException e) {
@@ -113,6 +116,12 @@ public class Interpreter {
             try {
                 command.execute(tableState, arguments);
             } catch (IllegalCommandException e) {
+                if (userMode) {
+                    throw e;
+                } else {
+                    throw new ExitException(e.getErrMessage(), 1);
+                }
+            } catch (NoActiveTableException e) {
                 if (userMode) {
                     throw e;
                 } else {
