@@ -57,7 +57,7 @@ public class Interpreter {
             }
         } catch (ExitException e) {
             if (!e.getMessage().equals("")) {
-                err.println(e.getMessage());
+                out.println(e.getMessage());
             }
             throw e;
         }
@@ -73,6 +73,9 @@ public class Interpreter {
         for (String command : commands) {
             commandHandler(command, false);
         }
+        String currentTableName = tableState.getCurrentTableName();
+        tableState.getTableHolder().getTable(currentTableName).commit();
+        //handleCommand("commit", true, new String[]{"commit"});
         throw new ExitException(0);
     }
 
@@ -91,11 +94,8 @@ public class Interpreter {
                     for (String command : commands) {
                         commandHandler(command, true);
                     }
-                } catch (IllegalCommandException e) {
-                    out.println(e.getErrMessage());
-                    continue;
-                } catch (NoActiveTableException e) {
-                    out.println(e.getErrMessage());
+                } catch (IllegalCommandException | NoActiveTableException e) {
+                    out.println(e.getMessage());
                     continue;
                 }
             }
@@ -115,21 +115,14 @@ public class Interpreter {
         } else {
             try {
                 command.execute(tableState, arguments);
-            } catch (IllegalCommandException e) {
+            } catch (IllegalCommandException |NoActiveTableException e) {
                 if (userMode) {
                     throw e;
                 } else {
-                    throw new ExitException(e.getErrMessage(), 1);
-                }
-            } catch (NoActiveTableException e) {
-                if (userMode) {
-                    throw e;
-                } else {
-                    throw new ExitException(e.getErrMessage(), 1);
+                    throw new ExitException(e.getMessage(), 1);
                 }
             }
         }
-
     }
 
     private void commandHandler(String cmd,
