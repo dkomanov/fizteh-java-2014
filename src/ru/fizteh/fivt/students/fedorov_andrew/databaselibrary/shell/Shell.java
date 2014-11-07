@@ -64,13 +64,11 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
         } else {
             try {
                 command.execute(shellState, args);
-            } catch (Throwable exc) {
+            } catch (TerminalException | ExitRequest exc) {
                 // If it is TerminalException, error report is already written.
-                if (exc instanceof TerminalException || exc instanceof ExitRequest) {
-                    throw exc;
-                } else {
-                    Utility.handleError(args[0] + ": Method execution error", exc, true);
-                }
+                throw exc;
+            } catch (Throwable exc) {
+                Utility.handleError(args[0] + ": Method execution error", exc, true);
             }
         }
     }
@@ -105,6 +103,8 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
             throw new IllegalArgumentException("Input stream must not be null");
         }
 
+        boolean exitRequested = false;
+
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(stream), READ_BUFFER_SIZE)) {
             while (true) {
@@ -131,12 +131,15 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
         } catch (IOException exc) {
             Log.log(Shell.class, exc, "Cannot parse input stream for shell");
         } catch (ExitRequest request) {
+            exitRequested = true;
             return request.getCode();
         } finally {
-            try {
-                persistSafelyAndPrepareToExit();
-            } catch (ExitRequest request) {
-                return request.getCode();
+            if (!exitRequested) {
+                try {
+                    persistSafelyAndPrepareToExit();
+                } catch (ExitRequest request) {
+                    return request.getCode();
+                }
             }
         }
 

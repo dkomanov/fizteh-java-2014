@@ -22,63 +22,6 @@ public final class Utility {
     }
 
     /**
-     * Checks if {@code directory} and all its children having distance from {@code directory} up
-     * to
-     * {@code depth} contain only directories
-     * @param directory
-     *         directory, root of local subtree
-     * @param depth
-     *         distance from root
-     * @return link to problematic file (that is in no-files directory) or {@code null} if
-     * everything is ok.
-     * @throws IOException
-     */
-    public static Path checkDirectoryContainsOnlyDirectories(final Path directory, final int depth)
-            throws IOException {
-        class DirChecker extends MyTreeWalker<Path> {
-            Path invalidPath = null;
-
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                    throws IOException {
-                /*
-                 * Example: dir=<directory>/dirA/dirB, depth = 2 -> do not go
-                 * inside dirB
-                 */
-
-                Path relPath = directory.relativize(dir);
-                if (relPath.getNameCount() >= depth) {
-                    return FileVisitResult.SKIP_SUBTREE;
-                } else {
-                    return FileVisitResult.CONTINUE;
-                }
-            }
-
-            @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException exc)
-                    throws IOException {
-                if (exc != null) {
-                    return visitFileFailed(dir, exc);
-                }
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                    throws IOException {
-                // if we find file, it is bad
-                invalidPath = file;
-                return FileVisitResult.TERMINATE;
-            }
-        }
-
-        DirChecker checker = new DirChecker();
-        Files.walkFileTree(directory, checker);
-
-        return checker.invalidPath;
-    }
-
-    /**
      * Handles an occurred exception.<br/> Equivalent to handleError(null, message, true);
      * @param message
      *         message that can be reported to user and is written to log.

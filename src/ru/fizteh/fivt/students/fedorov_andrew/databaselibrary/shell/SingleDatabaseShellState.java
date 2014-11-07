@@ -51,9 +51,9 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
                     Utility.removeEmptyFilesAndFolders(tableDirectory);
                 }
 
-                Log.log(Shell.class, "Cleaned up successfully");
+                Log.log(SingleDatabaseShellState.class, "Cleaned up successfully");
             } catch (IOException exc) {
-                Log.log(Shell.class, exc, "Failed to clean up");
+                Log.log(SingleDatabaseShellState.class, exc, "Failed to clean up");
             }
         }
     }
@@ -97,6 +97,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
 
     @Override
     public void prepareToExit(int exitCode) throws ExitRequest {
+        Log.log(SingleDatabaseShellState.class, "Preparing to exit with code " + exitCode);
         cleanup();
         Log.close();
         throw new ExitRequest(exitCode);

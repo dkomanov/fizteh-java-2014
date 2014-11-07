@@ -12,11 +12,7 @@ public class DBFileCorruptException extends DatabaseException {
         this(reason, null);
     }
 
-    public DBFileCorruptException(Throwable cause) {
-        this(null, cause);
-    }
-
     public DBFileCorruptException(String reason, Throwable cause) {
-        super("DB file is corrupt" + (reason == null ? null : (": " + reason)), cause);
+        super("DB file is corrupt: " + reason, cause);
     }
 }

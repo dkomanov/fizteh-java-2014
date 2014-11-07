@@ -209,7 +209,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
                 GREETING_REGEX,
                 "using " + table,
                 String.format("table_name row_count$%n^%s 5", table),
-                String.format("Table %s not exists", fakeTable),
+                String.format("%s not exists", fakeTable),
                 String.format("using %s$%n^a, b, c, d, e", table));
         assertTrue("Interactive mode test fail", getOutput().matches(regex));
     }
@@ -371,10 +371,10 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         }
 
         runBatchExpectNonZero(true, "use " + table);
-        assertEquals(
+        assertThat(
                 "Using corrupt table must raise error",
-                makeTerminalExpectedMessage("Table " + table + " is corrupt"),
-                getOutput());
+                getOutput(),
+                startsWith("Table " + table + " is corrupt"));
     }
 
     @Test
@@ -423,7 +423,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         runBatchExpectNonZero("use " + name);
         assertEquals(
                 "Attempt to use not existing table must raise error",
-                String.format("Table %s not exists%n", name),
+                String.format("%s not exists%n", name),
                 getOutput());
     }
 

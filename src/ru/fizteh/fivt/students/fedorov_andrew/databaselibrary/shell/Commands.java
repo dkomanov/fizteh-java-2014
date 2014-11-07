@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,10 +60,24 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
     public static final Command<SingleDatabaseShellState> EXIT =
             new AbstractCommand(null, "saves all data to file system and stops interpretation", 1) {
                 @Override
-                public void executeSafely(SingleDatabaseShellState state, String[] args)
+                public void execute(SingleDatabaseShellState state, String[] args)
+                        throws TerminalException {
+                    int exitCode = 0;
+
+                    try {
+                        state.persist();
+                    } catch (DatabaseException | IllegalArgumentException | IllegalStateException exc) {
+                        exitCode = 1;
+                        DATABASE_ERROR_HANDLER.handleException(exc, state);
+                    } finally {
+                        state.prepareToExit(exitCode);
+                    }
+                }
+
+                @Override
+                public void executeSafely(SingleDatabaseShellState shell, String[] args)
                         throws DatabaseException, IllegalArgumentException {
-                    state.persist();
-                    state.prepareToExit(0);
+                    // Not used.
                 }
             };
     public static final Command<SingleDatabaseShellState> GET =

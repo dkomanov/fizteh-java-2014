@@ -6,6 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
@@ -54,7 +55,7 @@ public class TableProviderFactoryTest extends TestBase {
     @Test
     public void testCreateProviderSystemRoot() throws DatabaseException {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage(startsWith("Failed to scan database directory"));
+        exception.expectMessage(startsWith("DB file is corrupt"));
         factory.create("/");
     }
 
@@ -78,19 +79,29 @@ public class TableProviderFactoryTest extends TestBase {
         Files.createFile(DB_ROOT.resolve("some file"));
 
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("DB directory scan: found improper files");
+        exception.expectMessage(
+                allOf(
+                        startsWith("DB file is corrupt"),
+                        containsString("Non-directory path found in database folder")));
         factory.create(DB_ROOT.toString());
     }
 
     @Test
     public void testCreateProviderInDirWithDirsContainingFiles()
             throws IOException, DatabaseException {
+        String table = "table";
+
         Files.createDirectory(DB_ROOT);
-        Files.createDirectory(DB_ROOT.resolve("table"));
-        Files.createFile(DB_ROOT.resolve("table").resolve("file"));
+        Files.createDirectory(DB_ROOT.resolve(table));
+        Files.createFile(DB_ROOT.resolve(table).resolve("file"));
 
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("DB directory scan: found improper files");
-        factory.create(DB_ROOT.toString());
+        exception.expectMessage(
+                allOf(
+                        startsWith("Table " + table + " is corrupt"),
+                        containsString("Database element must be a directory")));
+
+        TableProvider provider = factory.create(DB_ROOT.toString());
+        provider.getTable(table);
     }
 }

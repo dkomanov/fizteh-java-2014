@@ -207,7 +207,8 @@ public class TablePart {
             if (cloneDBMap != null) {
                 tablePartMap = cloneDBMap;
             }
-            throw new DBFileCorruptException(exc);
+            throw new DBFileCorruptException(
+                    "Failed to read data from file: " + tablePartFilePath.toString(), exc);
         }
 
         // if everything went ok

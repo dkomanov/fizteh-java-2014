@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.NoActiveTableException;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -124,8 +123,6 @@ public class Database {
      *         if failed to save changes for current table or failed to load new table.
      */
     public void useTable(String tableName) throws DatabaseException, IllegalArgumentException {
-        Utility.checkTableNameIsCorrect(tableName);
-
         if (activeTable != null) {
             if (tableName.equals(activeTable.getName())) {
                 return;
@@ -142,7 +139,7 @@ public class Database {
         try {
             activeTable = provider.getTable(tableName);
             if (activeTable == null) {
-                throw new IllegalArgumentException("Table " + tableName + " not exists");
+                throw new IllegalArgumentException(tableName + " not exists");
             }
         } catch (Throwable thr) {
             activeTable = oldActiveTable;

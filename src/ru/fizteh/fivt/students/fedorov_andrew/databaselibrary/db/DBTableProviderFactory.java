@@ -1,15 +1,40 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class DBTableProviderFactory implements TableProviderFactory {
+
+    /**
+     * @param databaseRoot
+     * @return
+     */
+    private void checkDatabaseDirectory(final Path databaseRoot) throws DatabaseException {
+        if (!Files.isDirectory(databaseRoot)) {
+            throw new DBFileCorruptException("Database root must be a directory");
+        }
+
+        try (DirectoryStream<Path> tableDirs = Files.newDirectoryStream(databaseRoot)) {
+            for (Path tableDirectory : tableDirs) {
+                if (!Files.isDirectory(tableDirectory)) {
+                    throw new DBFileCorruptException(
+                            "Non-directory path found in database folder: " + tableDirectory
+                                    .getFileName());
+                }
+            }
+        } catch (IOException exc) {
+            throw new DatabaseException(
+                    "Failed to scan database directory: " + exc.getMessage(),
+                    exc);
+        }
+    }
 
     @Override
     public DBTableProvider create(String dir) throws IllegalArgumentException {
@@ -32,15 +57,9 @@ public class DBTableProviderFactory implements TableProviderFactory {
             }
         } else {
             try {
-                Path problemFile = Utility.checkDirectoryContainsOnlyDirectories(databaseRoot, 2);
-
-                if (problemFile != null) {
-                    throw new IllegalArgumentException(
-                            "DB directory scan: found improper files", new DatabaseException(
-                            "File should not exist: " + problemFile));
-                }
-            } catch (IOException exc) {
-                throw new IllegalArgumentException("Failed to scan database directory " + dir, exc);
+                checkDatabaseDirectory(databaseRoot);
+            } catch (DatabaseException exc) {
+                throw new IllegalArgumentException(exc.getMessage(), exc);
             }
         }
 

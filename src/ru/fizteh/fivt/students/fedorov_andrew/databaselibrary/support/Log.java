@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
@@ -24,12 +25,18 @@ public class Log {
      */
     private static PrintWriter writer;
 
+    private static boolean firstOpen = true;
+
     private Log() {
     }
 
     private static void reopen() {
         try {
-            writer = new PrintWriter(LOG_PATH.toAbsolutePath().toString());
+            writer = new PrintWriter(
+                    new FileOutputStream(
+                            LOG_PATH.toAbsolutePath().toString(),
+                            !firstOpen));
+            firstOpen = false;
         } catch (IOException exc) {
             System.err.println(String.format("Cannot create log file: %s", LOG_PATH));
             System.err.println(exc.toString());
@@ -39,7 +46,7 @@ public class Log {
 
     public static void close() {
         if (writer != null) {
-            writer.append("Log closing");
+            writer.println("Log closing");
             writer.close();
             writer = null;
         }
