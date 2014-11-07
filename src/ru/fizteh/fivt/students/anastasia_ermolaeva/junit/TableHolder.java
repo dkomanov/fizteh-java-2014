@@ -99,6 +99,7 @@ public class TableHolder implements TableProvider {
         } else {
             Path tableDirectory = tableMap.get(tableName).getDBTablePath();
             Utility.recursiveDelete(tableDirectory);
+            tableMap.remove(tableName);
         }
     }
 }
