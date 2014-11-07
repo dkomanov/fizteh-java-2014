@@ -25,7 +25,7 @@ public class Main {
         try {
             start(new TableState(factory.create(rootDirectory)), args);
         } catch (DatabaseIOException e) {
-            System.err.println(e.getErrMessage());
+            System.err.println(e.getMessage());
             System.exit(1);
         } catch (ExitException t) {
             System.exit(t.getStatus());
