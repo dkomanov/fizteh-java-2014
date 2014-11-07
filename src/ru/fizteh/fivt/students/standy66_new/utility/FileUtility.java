@@ -1,11 +1,11 @@
-package ru.fizteh.fivt.students.standy66_new.utils;
+package ru.fizteh.fivt.students.standy66_new.utility;
 
 import java.io.File;
 
 /**
  * Created by andrew on 01.11.14.
  */
-public class FileUtils {
+public class FileUtility {
     public static boolean deleteRecursively(File f) {
         if (f == null) {
             return false;

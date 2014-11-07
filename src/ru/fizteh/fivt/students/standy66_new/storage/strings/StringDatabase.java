@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.standy66_new.storage.strings;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.students.standy66_new.utils.FileUtils;
+import ru.fizteh.fivt.students.standy66_new.utility.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
             throw new IllegalStateException("table doesn't exist");
         }
         tableInstances.remove(name);
-        if (!FileUtils.deleteRecursively(new File(dbDirectory, name))) {
+        if (!FileUtility.deleteRecursively(new File(dbDirectory, name))) {
             throw new RuntimeException("failed to remove table");
         }
     }
