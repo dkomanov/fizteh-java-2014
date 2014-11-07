@@ -27,8 +27,6 @@ public class TableManager implements TableProvider {
         tableManagerMap = new HashMap<>();
         if (!databasePath.toFile().exists()) {
             databasePath.toFile().mkdir();
-            System.out.print("Can't find data base folder.\nDirectory "
-                    + databasePath.toString() + " was created\n");
         } else if (!databasePath.toFile().isDirectory()) {
             throw new IllegalArgumentException(path + ": is not a directory");
         }
@@ -51,6 +49,12 @@ public class TableManager implements TableProvider {
 
     @Override
     public Table getTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("getTable: null argument");
+        }
+        if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
+            throw new IllegalArgumentException("getTable: wrong name of table");
+        }
         return tableManagerMap.get(name);
     }
 
@@ -59,10 +63,10 @@ public class TableManager implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("createTable: null argument");
         }
-        Path newTablePath = databasePath.resolve(name);
         if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
-            throw new InvalidPathException(name, "illegal name");
+            throw new IllegalArgumentException("createTable: wrong name of table");
         }
+        Path newTablePath = databasePath.resolve(name);
         if (tableManagerMap.get(name) != null) {
             return null;
         }
@@ -78,13 +82,13 @@ public class TableManager implements TableProvider {
 
     @Override
     public void removeTable(String name) {
-        Path tableDir = databasePath.resolve(name);
         if (name == null) {
             throw new IllegalArgumentException("Table name is null");
         }
         if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
-            throw new IllegalArgumentException("Illegal table name");
+            throw new IllegalArgumentException("removeTable: wrong name of table");
         }
+        Path tableDir = databasePath.resolve(name);
         Table removedTable = tableManagerMap.remove(name);
         if (removedTable == null) {
             throw new IllegalStateException("Table not found");
@@ -157,7 +161,7 @@ class Coordinates implements Comparable<Coordinates> {
         return 0;
     }
     @Override
-    public boolean equals (Object o){
+    public boolean equals (Object o) {
         if (o == null || !(o instanceof Coordinates)) {
             return  false;
         } else {

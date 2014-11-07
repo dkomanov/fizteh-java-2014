@@ -67,7 +67,7 @@ public class TableClass implements Table {
                             tableMap.put(new Coordinates(currentOperation.getKey()), dataFile);
                         }
                         dataFile.put(currentOperation.getKey(), currentOperation.getValue());
-                    } catch (DatabaseCorruptedException e){
+                    } catch (DatabaseCorruptedException e) {
                         throw new RuntimeException("Can't commit table '" + getName()
                                 + "': " + e.getMessage(), e);
                     }
@@ -167,14 +167,14 @@ public class TableClass implements Table {
     }
 
     @Override
-    public int rollback(){
+    public int rollback() {
         int numberOfChanges = difference.size();
         difference.clear();
         return numberOfChanges;
     }
 
     @Override
-    public String getName(){
+    public String getName() {
         return name;
     }
 

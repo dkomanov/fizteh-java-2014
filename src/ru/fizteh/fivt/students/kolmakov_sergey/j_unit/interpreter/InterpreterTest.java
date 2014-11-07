@@ -1,8 +1,8 @@
 package ru.fizteh.fivt.students.kolmakov_sergey.j_unit.interpreter;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
+import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure.DataBaseState;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -11,7 +11,6 @@ import java.util.function.BiConsumer;
 
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure.DataBaseState;
 
 public class InterpreterTest {
     private final String newLine = System.getProperty("line.separator");
@@ -67,7 +66,6 @@ public class InterpreterTest {
         interpreter.run(new String[] {});
         assertEquals(Interpreter.PROMPT + testOutput + newLine + Interpreter.PROMPT, outputStream.toString());
     }
-
 
     @Test
     public void testInterpreterRunInBatchMode() throws Exception {

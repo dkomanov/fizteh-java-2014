@@ -62,7 +62,7 @@ public class DataFile { // Interacts with .dat file.
     private void update() throws DatabaseCorruptedException, IOException {
         try (RandomAccessFile file = new RandomAccessFile(filePath.toString(), "r")) {
             if (file.length() == 0) {
-                return;
+                throw new DatabaseCorruptedException("Data base corrupted: empty file found");
             }
             List<String> keys = new LinkedList<>();
             List<Integer> offsets = new LinkedList<>();
@@ -79,7 +79,7 @@ public class DataFile { // Interacts with .dat file.
                 counter += 4;
                 String key = bytes.toString(TableManager.CODE_FORMAT);
                 bytes.reset();
-                if (!checkKey(key)){
+                if (!checkKey(key)) {
                     throw new DatabaseCorruptedException("Wrong key found in file " + filePath.toString());
                 }
                 keys.add(key);
@@ -105,7 +105,7 @@ public class DataFile { // Interacts with .dat file.
     }
 
     protected String put(String key, String value) {
-        if (!checkKey(key)){
+        if (!checkKey(key)) {
             throw new IllegalArgumentException("trying to put unexpected key in file " + filePath.toString());
         }
         if (value == null) {
@@ -115,14 +115,14 @@ public class DataFile { // Interacts with .dat file.
     }
 
     protected String get(String key) {
-        if (!checkKey(key)){
+        if (!checkKey(key)) {
             throw new IllegalArgumentException("trying to read unexpected key in file " + filePath.toString());
         }
         return fileMap.get(key);
     }
 
     protected String remove(String key) {
-        if (!checkKey(key)){
+        if (!checkKey(key)) {
             throw new IllegalArgumentException("trying to remove unexpected key from file " + filePath.toString());
         }
         return fileMap.remove(key);

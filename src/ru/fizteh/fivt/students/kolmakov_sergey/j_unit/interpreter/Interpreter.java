@@ -82,10 +82,10 @@ public final class Interpreter {
             for (String current : commands) {
                 parse(current.trim().split(PARAM_REGEXP), batchModeOn);
             }
-            if (batchModeOn){
+            if (batchModeOn) {
                 parse(new String[]{"exit"}, batchModeOn);
             }
-        } catch (WrongNumberOfArgumentsException e){
+        } catch (WrongNumberOfArgumentsException e) {
             out.println(e.getMessage());
             if (batchModeOn) {
                 throw new StopInterpreterException(-1);
@@ -103,7 +103,7 @@ public final class Interpreter {
                 }
                 if (exitHandler.call()) {
                     throw new StopInterpreterException(0);
-                } else if (batchModeOn){
+                } else if (batchModeOn) {
                     throw  new StopInterpreterException(-1);
                 }
                 return;
@@ -111,16 +111,16 @@ public final class Interpreter {
             Command command = commands.get(commandName);
             if (command == null) {
                 out.println(BAD_COMMAND + commandName);
-                if (batchModeOn){
+                if (batchModeOn) {
                     throw new StopInterpreterException(-1);
                 }
             } else {
                 String[] cuttedArgs = Arrays.copyOfRange(cmdWithArgs, 1, cmdWithArgs.length);
                 try {
                     command.execute(dbState, cuttedArgs);
-                } catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     out.println(e.getMessage());
-                    if (batchModeOn){
+                    if (batchModeOn) {
                         throw new StopInterpreterException(-1);
                     }
                 }

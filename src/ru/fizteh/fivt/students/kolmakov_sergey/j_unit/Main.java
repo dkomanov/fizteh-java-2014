@@ -20,8 +20,9 @@ public final class Main {
         }
         try {
             run(new DataBaseState(new TableManagerFactory().create(rootDirectory)), args);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             System.out.println(e.getMessage()); // If DB is corrupted.
+            System.exit(-1);
         }
     }
 
@@ -70,7 +71,7 @@ public final class Main {
                 public void accept(DataBaseState state, String[] args) {
                     TableProvider manager = state.getManager();
                     Table newTable = manager.getTable(args[0]);
-                    if (newTable == null){
+                    if (newTable == null) {
                         throw new IllegalArgumentException(args[0] + " not exists");
                     }
                     TableClass usedTable = (TableClass)state.getCurrentTable();
