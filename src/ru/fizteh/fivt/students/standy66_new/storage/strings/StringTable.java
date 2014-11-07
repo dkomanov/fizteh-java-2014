@@ -34,7 +34,7 @@ public class StringTable implements Table {
                 try {
                     openedFiles.put(file, new FileMap(file));
                 } catch (IOException e) {
-                    throw new RuntimeException("IOException occured", e);
+                    throw new RuntimeException("IOException occurred", e);
                 }
             }
         }
@@ -104,7 +104,7 @@ public class StringTable implements Table {
             try {
                 keyChangedCount += fm.commit();
             } catch (IOException e) {
-                throw new RuntimeException("IOException occured", e);
+                throw new RuntimeException("IOException occurred", e);
             }
         }
         for (int i = 0; i < 16; i++) {
@@ -123,7 +123,7 @@ public class StringTable implements Table {
             try {
                 keyChangedCount += fm.rollback();
             } catch (IOException e) {
-                throw new RuntimeException("IOException occured", e);
+                throw new RuntimeException("IOException occurred", e);
             }
         }
         return keyChangedCount;

@@ -43,7 +43,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
             try {
                 lockFile.createNewFile();
             } catch (IOException e) {
-                throw new RuntimeException("Caught IOException", e);
+                throw new RuntimeException("IOException occurred", e);
             }
         }
         dbDirectory = directory;
