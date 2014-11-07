@@ -4,28 +4,24 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import ru.fizteh.fivt.students.standy66_new.exceptions.FileCorruptedException;
 import ru.fizteh.fivt.students.standy66_new.storage.FileMap;
-import ru.fizteh.fivt.students.standy66_new.storage.strings.StringDatabase;
-
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+
+import static org.junit.Assert.*;
 
 /**
  * Some JUnit tests on FileMap.
  * Created by andrew on 01.11.14.
  */
 public class FileMapTest {
-    private FileMap fileMap;
-    private File fileMapFile;
-
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
+    private FileMap fileMap;
+    private File fileMapFile;
 
     @Before
     public void setUp() throws Exception {
@@ -97,7 +93,7 @@ public class FileMapTest {
     @Test(expected = FileCorruptedException.class)
     public void testIncorrectFile2() throws Exception {
         try (FileOutputStream fos = new FileOutputStream(fileMapFile)) {
-            fos.write(new byte[]{ 0, 0, 0, 1, 97, 127, 127, 127, 127 });
+            fos.write(new byte[]{0, 0, 0, 1, 97, 127, 127, 127, 127});
         }
         fileMap = new FileMap(fileMapFile);
     }
@@ -105,7 +101,7 @@ public class FileMapTest {
     @Test(expected = FileCorruptedException.class)
     public void testIncorrectFile3() throws Exception {
         try (FileOutputStream fos = new FileOutputStream(fileMapFile)) {
-            fos.write(new byte[]{ 0, 0, 0, 1, 97, -127, -127, -127, -127 });
+            fos.write(new byte[]{0, 0, 0, 1, 97, -127, -127, -127, -127});
         }
         fileMap = new FileMap(fileMapFile);
     }
@@ -113,7 +109,7 @@ public class FileMapTest {
     @Test(expected = FileCorruptedException.class)
     public void testIncorrectFile4() throws Exception {
         try (FileOutputStream fos = new FileOutputStream(fileMapFile)) {
-            fos.write(new byte[]{ 0, 0, 0, 1, 97, 0 });
+            fos.write(new byte[]{0, 0, 0, 1, 97, 0});
         }
         fileMap = new FileMap(fileMapFile);
     }
