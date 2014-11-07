@@ -38,6 +38,7 @@ public class MultiFileHashMapMain {
         }
         if (interpreter.run()) {
             ((StringDatabase) provider).commit();
+            ((StringDatabase) provider).close();
         }
     }
 }
