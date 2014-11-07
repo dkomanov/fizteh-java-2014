@@ -241,8 +241,6 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
                 makeTerminalExpectedMessage("no table"));
     }
 
-
-
     @Test
     public void testSize() {
         String table = "table";

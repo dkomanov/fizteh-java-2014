@@ -74,7 +74,7 @@ public class TableProviderFactoryTest extends TestBase {
     }
 
     @Test
-    public void testCreateProviderWithFileAsRoot () throws IOException {
+    public void testCreateProviderWithFileAsRoot() throws IOException {
         Files.createFile(DB_ROOT);
 
         exception.expect(IllegalArgumentException.class);
