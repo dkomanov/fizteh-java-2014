@@ -1,9 +1,10 @@
-package ru.fizteh.fivt.students.standy66_new.storage.structured;
+package ru.fizteh.fivt.students.standy66_new.storage.structured.table;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.StringTable;
+import ru.fizteh.fivt.students.standy66_new.storage.structured.StructuredDatabase;
 
 import java.io.File;
 import java.io.IOException;
