@@ -28,7 +28,7 @@ public class TableState {
     public final boolean checkCurrentTable() {
         boolean result = currentTableName.equals("");
         if (result) {
-            throw new NoActiveTableException("no table");
+            throw new NoActiveTableException();
         }
         return !result;
     }
