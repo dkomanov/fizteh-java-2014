@@ -36,7 +36,7 @@ public class TableEntryJsonSerializer implements TableEntrySerializer {
             throw new ParseException("not a valid boolean value", 0);
         });
         readerMap.put(String.class, string -> {
-            if (string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"') {
+            if (string.length() > 1 && string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"') {
                 return string.substring(1, string.length() - 1);
             }
             throw new ParseException("not a valid String value", 0);
@@ -53,17 +53,23 @@ public class TableEntryJsonSerializer implements TableEntrySerializer {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        if (value.charAt(0) != '[') {
+        value = value.trim();
+        if (value.length() < 3
+                || value.charAt(0) != '['
+                || value.charAt(value.length() - 1) != ']'
+                || value.charAt(1) == ','
+                || value.charAt(value.length()-2) == ',') {
             throw new ParseException("invalid JSON", 0);
         }
-        if (value.charAt(value.length() - 1) != ']') {
-            throw new ParseException("invalid JSON", value.length() - 1);
-        }
+
         String[] tokens = value.substring(1, value.length() - 1).split(",");
+        if (tokens.length != table.getColumnsCount()) {
+            throw new ParseException("column count mismatch", 0);
+        }
         List<Object> values = new ArrayList<>();
         for (int i = 0; i < table.getColumnsCount(); i++) {
             try {
-                if (tokens[i].trim().equals("null")) {
+                if (tokens[i].trim().toLowerCase().equals("null")) {
                     values.add(null);
                 } else {
                     values.add(readerMap.get(table.getColumnType(i)).getObject(tokens[i].trim()));
