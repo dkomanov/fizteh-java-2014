@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.standy66_new.tests.task3;
+package ru.fizteh.fivt.students.standy66_new.tests.task4;
 
 import org.junit.Before;
 import org.junit.Rule;
