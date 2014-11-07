@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  */
 public class MultiFileHashMapMain {
     public static void main(String[] args) {
-        System.setProperty("junit", "true");
+        System.setProperty("warn_unsaved", "true");
         String dbDir = System.getProperty("fizteh.db.dir");
         if (dbDir == null) {
             System.err.println("No dir specified, use -Dfizteh.db.dir=...");
@@ -39,6 +39,7 @@ public class MultiFileHashMapMain {
         }
         if (interpreter.run()) {
             ((StringDatabase) provider).commit();
+            ((StringDatabase) provider).close();
         }
     }
 }
