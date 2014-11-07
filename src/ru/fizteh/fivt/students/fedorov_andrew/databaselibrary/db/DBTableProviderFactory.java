@@ -31,8 +31,7 @@ public class DBTableProviderFactory implements TableProviderFactory {
             }
         } catch (IOException exc) {
             throw new DatabaseException(
-                    "Failed to scan database directory: " + exc.getMessage(),
-                    exc);
+                    "Failed to scan database directory: " + exc.getMessage(), exc);
         }
     }
 

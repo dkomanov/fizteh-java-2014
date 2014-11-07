@@ -57,19 +57,16 @@ public class DBTableProvider implements TableProvider {
         Utility.checkTableNameIsCorrect(name);
         Path tablePath = databaseRoot.resolve(name);
 
-        if (Files.exists(tablePath)) {
+        if (tables.containsKey(name) && tables.get(name) != null) {
             return null;
-        } else {
-            try {
-                Files.createDirectory(tablePath);
-            } catch (IOException exc) {
-                throw new IllegalArgumentException(
-                        "Bad name given", new DatabaseException(
-                        "Failed to create table directory", exc));
-            }
         }
 
-        TableImpl newTable = TableImpl.createTable(tablePath);
+        TableImpl newTable;
+        try {
+            newTable = TableImpl.createTable(tablePath);
+        } catch (DatabaseException exc) {
+            throw new IllegalArgumentException(exc.getMessage(), exc);
+        }
         tables.put(name, newTable);
         return newTable;
     }

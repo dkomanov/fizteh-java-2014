@@ -233,6 +233,15 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
     }
 
     @Test
+    public void testListWithoutActiveTable() {
+        runBatchExpectNonZero("list");
+        assertEquals(
+                "Calling method that uses table without active table must raise error",
+                getOutput(),
+                makeTerminalExpectedMessage("no table"));
+    }
+
+    @Test
     public void testSize() {
         String table = "table";
         runBatchExpectZero(

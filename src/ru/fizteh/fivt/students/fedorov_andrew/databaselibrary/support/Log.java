@@ -34,8 +34,7 @@ public class Log {
         try {
             writer = new PrintWriter(
                     new FileOutputStream(
-                            LOG_PATH.toAbsolutePath().toString(),
-                            !firstOpen));
+                            LOG_PATH.toAbsolutePath().toString(), !firstOpen));
             firstOpen = false;
         } catch (IOException exc) {
             System.err.println(String.format("Cannot create log file: %s", LOG_PATH));

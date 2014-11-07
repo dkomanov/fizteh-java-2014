@@ -144,7 +144,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
         }
 
         // If all contracts are honoured, this line is unreachable.
-        return 0;
+        throw new AssertionError("No exit request performed");
     }
 
     /**
@@ -183,7 +183,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
         }
 
         // If all contracts are honoured, this line is unreachable.
-        return 0;
+        throw new AssertionError("No exit request performed");
     }
 
     /**

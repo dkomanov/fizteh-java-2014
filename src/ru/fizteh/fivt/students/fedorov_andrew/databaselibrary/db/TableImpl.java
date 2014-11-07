@@ -95,9 +95,17 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
     /**
      * Constructs a new clear table.
      * @param tableRoot
+     *         Path to table root directory.
      * @return
      */
-    public static TableImpl createTable(Path tableRoot) {
+    public static TableImpl createTable(Path tableRoot) throws DatabaseException {
+        try {
+            Files.createDirectory(tableRoot);
+        } catch (IOException exc) {
+            throw new DatabaseException(
+                    "Failed to create table directory: " + tableRoot.getFileName(), exc);
+        }
+
         TableImpl table = new TableImpl(tableRoot);
         for (int dir = 0; dir < DIRECTORIES_COUNT; dir++) {
             for (int file = 0; file < FILES_COUNT; file++) {
@@ -182,8 +190,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
                         int keyHash = getHash(key);
                         if (keyHash != partHash) {
                             throw new TableCorruptException(
-                                    tableName,
-                                    "Some keys are stored in improper places");
+                                    tableName, "Some keys are stored in improper places");
                         }
                     }
 

@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.ExitRequest;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 
 /**
@@ -12,13 +11,14 @@ public class Main {
     public static void main(String[] args) {
         try {
             Shell<SingleDatabaseShellState> shell = new Shell<>(new SingleDatabaseShellState());
+            int exitCode;
             if (args.length == 0) {
-                shell.run(System.in);
+                exitCode = shell.run(System.in);
             } else {
-                shell.run(args);
+                exitCode = shell.run(args);
             }
-        } catch (ExitRequest request) {
-            System.exit(request.getCode());
+
+            System.exit(exitCode);
         } catch (TerminalException exc) {
             // Already handled.
             System.exit(1);
