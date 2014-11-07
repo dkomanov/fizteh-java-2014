@@ -24,7 +24,8 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
         @Override
         public void handleException(Exception exc, SingleDatabaseShellState shell)
                 throws TerminalException {
-            if (exc instanceof DatabaseException || exc instanceof IllegalArgumentException || exc instanceof IllegalStateException) {
+            if (exc instanceof DatabaseException || exc instanceof IllegalArgumentException
+                || exc instanceof IllegalStateException) {
                 Utility.handleError(exc.getMessage(), exc, true);
             } else if (exc instanceof RuntimeException) {
                 throw (RuntimeException) exc;
