@@ -303,7 +303,7 @@ public class MultiFileHashMap {
             return true;
         } else {
             writeArrayOfHashMaps();
-            StringBuffer bufString = new StringBuffer();;
+            StringBuffer bufString = new StringBuffer();
             for (ArrayOfHashMaps[] dirs : arrayOfHashMaps) {
                 for (ArrayOfHashMaps dirs2 : dirs) {
                     Set<String> keySet = dirs2.arrayOfHashMaps.keySet();
@@ -313,7 +313,7 @@ public class MultiFileHashMap {
                     }
                 }
             }
-            bufString.delete(bufString.length()-1, bufString.length());
+            bufString.delete(bufString.length() - 1, bufString.length());
             System.out.println(bufString);
         }
         return true;
