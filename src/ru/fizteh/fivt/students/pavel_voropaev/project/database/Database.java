@@ -30,8 +30,8 @@ public class Database implements TableProvider {
                 throw new IllegalArgumentException();
             }
         } catch (IllegalArgumentException | IOException e) {
-            throw new IllegalArgumentException("Illegal database directory name: "
-                    + databasePath.toString(), e);
+            throw new IllegalArgumentException(
+                    "Illegal database directory name: " + databasePath.toString(), e);
         }
         tables = new HashMap<>();
 
@@ -54,7 +54,6 @@ public class Database implements TableProvider {
         if (!isNameCorrect(name)) {
             throw new IllegalArgumentException("Illegal table name: " + name);
         }
-
         return tables.get(name);
     }
 
@@ -63,7 +62,6 @@ public class Database implements TableProvider {
         if (activeTable == null) {
             return null;
         }
-
         return getTable(activeTable);
     }
 
@@ -94,8 +92,8 @@ public class Database implements TableProvider {
         try {
             Utils.rm(databasePath.resolve(name));
         } catch (IOException e) {
-            throw new RuntimeException("Cannot remove directory (" + name
-                    + ") from disk: " + e.getMessage(), e);
+            throw new RuntimeException(
+                    "Cannot remove directory (" + name + ") from disk: " + e.getMessage(), e);
         }
     }
 
@@ -114,7 +112,6 @@ public class Database implements TableProvider {
         activeTable = name;
     }
 
-
     private boolean isNameCorrect(String name) {
         if (name == null) {
             return false;
@@ -125,7 +122,6 @@ public class Database implements TableProvider {
                 return false;
             }
         }
-
         return true;
     }
 }

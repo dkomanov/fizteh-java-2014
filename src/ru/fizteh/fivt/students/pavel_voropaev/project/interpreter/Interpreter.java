@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
 
-
 public class Interpreter {
     private static final String PROMPT = "$ ";
     private static final String STATEMENT_DELIMITER = ";";
@@ -80,7 +79,8 @@ public class Interpreter {
         scan.close();
     }
 
-    private void executeLine(String line) throws StopInterpretationException, InputMistakeException {
+    private void executeLine(String line) throws StopInterpretationException,
+            InputMistakeException {
         String[] statements = line.split(STATEMENT_DELIMITER);
         for (String statement : statements) {
             String[] chunks = Utils.findAll(PARAM_REGEXP, statement);
