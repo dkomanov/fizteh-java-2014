@@ -70,8 +70,8 @@ public class TableRow implements Storeable {
         return (String) row[columnIndex];
     }
 
-    private void assertClassesEqualityAtIndex(Class desired, int columnIndex) throws ColumnFormatException {
-        Class columnClass = tableSignature.getClassAt(columnIndex);
+    private void assertClassesEqualityAtIndex(Class<?> desired, int columnIndex) throws ColumnFormatException {
+        Class<?> columnClass = tableSignature.getClassAt(columnIndex);
         if (desired != columnClass) {
             throw new ColumnFormatException(
                     String.format("column class at: %d is %s, desired: %s", columnIndex,
