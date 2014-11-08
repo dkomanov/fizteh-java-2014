@@ -1,5 +1,9 @@
 package ru.fizteh.fivt.students.standy66_new.storage.structured.table;
 
+import ru.fizteh.fivt.storage.structured.Table;
+
+import java.util.stream.IntStream;
+
 /**
  * Created by andrew on 07.11.14.
  */
@@ -13,6 +17,13 @@ public class TableSignature {
             }
         }
         this.storedObjectClasses = storedObjectClasses;
+    }
+
+    public static TableSignature forTable(Table t) {
+        return new TableSignature(
+                IntStream.range(0, t.getColumnsCount())
+                        .mapToObj(i -> t.getColumnType(i))
+                        .toArray(size -> new Class<?>[size]));
     }
 
     public Class<?> getClassAt(int columnIndex) throws IndexOutOfBoundsException {
