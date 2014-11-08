@@ -5,25 +5,40 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.StringTable;
 import ru.fizteh.fivt.students.standy66_new.storage.structured.StructuredDatabase;
+import ru.fizteh.fivt.students.standy66_new.utility.ClassUtility;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by andrew on 07.11.14.
  */
 public class StructuredTable implements Table {
     private StringTable backendTable;
-    private File tableFile;
     private StructuredDatabase database;
+    private TableSignature tableSignature;
 
 
     public StructuredTable(File tableFile, StringTable backendTable, StructuredDatabase database) {
         this.backendTable = backendTable;
-        this.tableFile = tableFile;
         this.database = database;
-        //TODO: read signature.tsv
+        File signatureFile = new File(backendTable.getFile(), "signature.tsv");
+
+        try (Scanner scanner = new Scanner(signatureFile)) {
+            List<Class<?>> columnClasses = new ArrayList<>();
+            while (scanner.hasNext()) {
+                columnClasses.add(ClassUtility.forName(scanner.next()));
+            }
+            tableSignature = new TableSignature(columnClasses.toArray(new Class<?>[columnClasses.size()]));
+        } catch (FileNotFoundException e) {
+            throw new IllegalArgumentException("signature.tsv for table "
+                    + backendTable.getName() + " doesn't exist", e);
+        }
     }
 
     @Override
@@ -68,19 +83,16 @@ public class StructuredTable implements Table {
 
     @Override
     public int getColumnsCount() {
-        //TODO: not implemented
-        return 0;
+        return tableSignature.size();
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        //TODO: not implemented
-        return null;
+        return tableSignature.getClassAt(columnIndex);
     }
 
     @Override
     public String getName() {
-        //TODO: not implemented
         return backendTable.getName();
     }
 
