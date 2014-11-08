@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.test;
 
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableProviderFactory;
 
@@ -21,9 +23,6 @@ public class MultiFileTableProviderTest {
 
     MultiFileTableProviderFactory f;
     TableProvider d;
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @BeforeClass
     public static void setUp() {
@@ -47,9 +46,8 @@ public class MultiFileTableProviderTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testGetTableNull() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         d.getTable(null);
     }
 
@@ -71,9 +69,8 @@ public class MultiFileTableProviderTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testCreateTableNull() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         d.createTable(null, null);
     }
 
@@ -93,15 +90,13 @@ public class MultiFileTableProviderTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testRemoveTableNull() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         d.removeTable(null);
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void testRemoveTableNonExistent() throws Exception {
-        exception.expect(IllegalStateException.class);
         d.removeTable(otherName);
     }
 

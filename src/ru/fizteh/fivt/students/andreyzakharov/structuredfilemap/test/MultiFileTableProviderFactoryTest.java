@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.test;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.MultiFileTableProviderFactory;
 
 import static org.junit.Assert.assertNotNull;
@@ -10,9 +8,6 @@ import static org.junit.Assert.assertNull;
 
 public class MultiFileTableProviderFactoryTest {
     String root = "test/junit-structured";
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void testCreate() throws Exception {

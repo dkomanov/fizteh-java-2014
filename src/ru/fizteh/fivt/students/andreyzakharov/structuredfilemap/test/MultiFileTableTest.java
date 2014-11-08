@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.andreyzakharov.structuredfilemap.test;
 
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
@@ -54,9 +56,6 @@ public class MultiFileTableTest {
             assertEquals(a.getColumnAt(i), b.getColumnAt(i));
         }
     }
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -161,15 +160,13 @@ public class MultiFileTableTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testPutNullKey() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         f.put(null, values[0]);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testPutNullValue() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         f.put("", null);
     }
 
@@ -186,9 +183,8 @@ public class MultiFileTableTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testGetNull() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         f.get(null);
     }
 
@@ -202,9 +198,8 @@ public class MultiFileTableTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testRemoveNull() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         f.remove(null);
     }
 
