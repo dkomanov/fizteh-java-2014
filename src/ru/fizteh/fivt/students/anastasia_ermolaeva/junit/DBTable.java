@@ -72,7 +72,7 @@ public class DBTable implements Table {
                 try {
                     File[] directoryFiles = directory.listFiles();
                     int k = directory.getName().indexOf('.');
-                    if ((k < 0) || !(directory.getName().substring(k).equals(DIR_SUFFIX))) {
+                    if ((k < 0) || !(directory.getName().endsWith(DIR_SUFFIX))) {
                         throw new DatabaseIOException("Table subdirectories don't "
                                 + "have appropriate name");
                     }
@@ -95,7 +95,7 @@ public class DBTable implements Table {
                         */
                                 if ((k < 0)
                                         || !(file.getName().
-                                        substring(k).equals(FILE_SUFFIX))) {
+                                        endsWith(FILE_SUFFIX))) {
                                     throw new DatabaseIOException(
                                             "Table subdirectory's files doesn't "
                                                     + "have appropriate name");
