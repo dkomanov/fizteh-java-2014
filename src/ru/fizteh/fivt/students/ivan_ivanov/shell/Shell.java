@@ -60,8 +60,8 @@ public class Shell {
 
 
                 try {
-                	for (String aCmd : cmd) {
-                    exec.execute(this, aCmd);
+                    for (String aCmd : cmd) {
+                        exec.execute(this, aCmd);
                     }
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
