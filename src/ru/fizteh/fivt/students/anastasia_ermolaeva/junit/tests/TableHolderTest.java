@@ -25,7 +25,9 @@ public class TableHolderTest {
 
     @Before
     public final void setUp() throws IOException {
-        Files.createDirectory(testDirectory);
+        if (!testDirectory.toFile().exists()) {
+            Files.createDirectory(testDirectory);
+        }
     }
 
     @Test

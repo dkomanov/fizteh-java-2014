@@ -22,9 +22,10 @@ public class TableHolderFactoryTest {
     @Before
     public final void setUp()
             throws IOException {
-        Files.createDirectory(testDirectory);
+        if (!testDirectory.toFile().exists()) {
+            Files.createDirectory(testDirectory);
+        }
     }
-
     @Test(expected = IllegalArgumentException.class)
     public final void testFactoryThrowsExceptionCreatedNullTableHolder() {
         TableProviderFactory test = new TableHolderFactory();

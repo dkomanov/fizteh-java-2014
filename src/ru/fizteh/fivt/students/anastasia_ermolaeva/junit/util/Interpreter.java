@@ -73,9 +73,11 @@ public class Interpreter {
         for (String command : commands) {
             commandHandler(command, false);
         }
-        String currentTableName = tableState.getCurrentTableName();
-        if (!currentTableName.equals("")) {
-            tableState.getTableHolder().getTable(currentTableName).commit();
+        if (!(tableState == null)) {
+            String currentTableName = tableState.getCurrentTableName();
+            if (!currentTableName.equals("")) {
+                tableState.getTableHolder().getTable(currentTableName).commit();
+            }
         }
         throw new ExitException(0);
     }
