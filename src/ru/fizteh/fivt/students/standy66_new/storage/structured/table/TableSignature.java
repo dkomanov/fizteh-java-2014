@@ -1,7 +1,15 @@
 package ru.fizteh.fivt.students.standy66_new.storage.structured.table;
 
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.standy66_new.utility.ClassUtility;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.IntStream;
 
 /**
@@ -24,6 +32,24 @@ public class TableSignature {
                 IntStream.range(0, t.getColumnsCount())
                         .mapToObj(i -> t.getColumnType(i))
                         .toArray(size -> new Class<?>[size]));
+    }
+
+    public static TableSignature readFromFile(File signatureFile) throws FileNotFoundException {
+        try (Scanner scanner = new Scanner(signatureFile)) {
+            List<Class<?>> columnClasses = new ArrayList<>();
+            while (scanner.hasNext()) {
+                columnClasses.add(ClassUtility.forName(scanner.next()));
+            }
+            return new TableSignature(columnClasses.toArray(new Class<?>[columnClasses.size()]));
+        }
+    }
+
+    public void writeToFile(File signatureFile) throws FileNotFoundException {
+        try (PrintWriter printWriter = new PrintWriter(new FileOutputStream(signatureFile, false))) {
+            for (Class<?> storedObjectClass : storedObjectClasses) {
+                printWriter.println(ClassUtility.toString(storedObjectClass));
+            }
+        }
     }
 
     public Class<?> getClassAt(int columnIndex) throws IndexOutOfBoundsException {
