@@ -7,7 +7,11 @@ public class TableSignature {
     private Class<?>[] storedObjectClasses;
 
     public TableSignature(Class<?>... storedObjectClasses) {
-        //TODO: check if some of them is null
+        for (Class<?> storedObjectClass : storedObjectClasses) {
+            if (storedObjectClass == null) {
+                throw new IllegalArgumentException("column class should not be null");
+            }
+        }
         this.storedObjectClasses = storedObjectClasses;
     }
 
