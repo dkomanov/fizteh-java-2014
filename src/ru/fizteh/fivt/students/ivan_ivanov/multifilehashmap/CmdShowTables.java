@@ -25,7 +25,7 @@ public class CmdShowTables implements Command {
         if (!args[0].equals("tables")) {
             throw new IOException("Can't find key");
         }
-        
+
         if (((MultiFileHashMap) shell).getMFHMState().getFlag() == 1) {
             File fileForWrite = ((MultiFileHashMapTable)
                     ((MultiFileHashMap) shell).getMFHMState().getCurrentTable()).getDataFile();
@@ -33,7 +33,7 @@ public class CmdShowTables implements Command {
                     ((MultiFileHashMap) shell).getMFHMState().getCurrentTable()).getDataBase();
             MultiFileHashMapUtils.write(fileForWrite, mapForWrite);
         }
-        
+
         System.out.println("table_name row_count");
 
         Set<String> tables = ((MultiFileHashMap) shell).getMFHMState().getTableSet();

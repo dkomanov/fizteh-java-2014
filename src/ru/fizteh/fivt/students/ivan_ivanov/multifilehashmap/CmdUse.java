@@ -17,7 +17,7 @@ public class CmdUse implements Command {
 
     @Override
     public final void executeCmd(final Shell shell, final String[] args) throws IOException {
-        if (((MultiFileHashMap) shell).getMFHMState().getFlag() == 1) {
+        if (1 == ((MultiFileHashMap) shell).getMFHMState().getFlag()) {
             File fileForWrite = ((MultiFileHashMapTable)
                     ((MultiFileHashMap) shell).getMFHMState().getCurrentTable()).getDataFile();
             Map<String, String> mapForWrite = ((MultiFileHashMapTable)
@@ -25,7 +25,7 @@ public class CmdUse implements Command {
             MultiFileHashMapUtils.write(fileForWrite, mapForWrite);
         }
 
-        if (((MultiFileHashMap) shell).getMFHMState().getFlag() == 0) {
+        if (0 == ((MultiFileHashMap) shell).getMFHMState().getFlag()) {
             ((MultiFileHashMap) shell).getMFHMState().changeFlag();
         }
 

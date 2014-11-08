@@ -11,7 +11,7 @@ public class MultiFileHashMapExecutor extends Executor {
     }
 
     @Override
-    public final void list() {
+public final void list() {
 
         Command create = new CmdCreate();
         mapOfCmd.put(create.getName(), create);

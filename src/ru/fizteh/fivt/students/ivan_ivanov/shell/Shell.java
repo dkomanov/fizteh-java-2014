@@ -44,7 +44,6 @@ public class Shell {
                 exec.execute(this, cmd);
             } catch (Exception e) {
                 System.err.println(e.getMessage());
-                System.exit(1);
             }
         }
         exec.execute(this, "exit");
@@ -61,7 +60,7 @@ public class Shell {
 
 
                 try {
-                    for (String aCmd : cmd) {
+                	for (String aCmd : cmd) {
                     exec.execute(this, aCmd);
                     }
                 } catch (Exception e) {

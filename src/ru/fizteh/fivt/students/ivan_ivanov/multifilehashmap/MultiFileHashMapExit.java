@@ -16,8 +16,8 @@ public class MultiFileHashMapExit implements Command {
 
     @Override
     public final void executeCmd(final Shell shell, final String[] args) throws IOException {
-        if ((((MultiFileHashMap) shell).getMFHMState().getCurrentTable()) != null) {
-            File fileForWrite = ((MultiFileHashMapTable) 
+        if (!(((MultiFileHashMap) shell).getMFHMState().getCurrentTable()).equals(null)) {
+            File fileForWrite = ((MultiFileHashMapTable)
                     ((MultiFileHashMap) shell).getMFHMState().getCurrentTable()).getDataFile();
             Map<String, String> mapForWrite = ((MultiFileHashMapTable)
                     ((MultiFileHashMap) shell).getMFHMState().getCurrentTable()).getDataBase();
