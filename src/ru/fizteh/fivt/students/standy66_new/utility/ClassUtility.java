@@ -7,17 +7,17 @@ public class ClassUtility {
     public static Class forName(String className) {
         switch (className) {
             case "int":
-                return int.class;
+                return Integer.class;
             case "long":
-                return long.class;
+                return Long.class;
             case "byte":
-                return byte.class;
+                return Byte.class;
             case "float":
-                return float.class;
+                return Float.class;
             case "double":
-                return double.class;
+                return Double.class;
             case "boolean":
-                return boolean.class;
+                return Boolean.class;
             case "String":
                 return String.class;
             default:
