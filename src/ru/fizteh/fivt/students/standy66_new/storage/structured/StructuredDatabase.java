@@ -18,42 +18,50 @@ public class StructuredDatabase implements TableProvider {
     private StringDatabase backendDatabase;
 
     public StructuredDatabase(File databaseFile) {
+        //TODO: not implemented
         backendDatabase = new StringDatabase(databaseFile);
 
     }
 
     @Override
     public Table getTable(String name) {
+        //TODO: not implemented
         return null;
     }
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
+        //TODO: not implemented
         return null;
     }
 
     @Override
     public void removeTable(String name) throws IOException {
+        //TODO: not implemented
 
     }
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
+        //TODO: not implemented
         return null;
     }
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        //TODO: not implemented
         return null;
     }
 
     @Override
     public Storeable createFor(Table table) {
+        //TODO: not implemented
         return null;
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+        //TODO: not implemented
         return null;
     }
 }
