@@ -15,8 +15,12 @@ import java.util.Map;
 /**
  * Created by kagudkov on 25.10.14.
  */
-public class TableProviderClass  implements TableProvider{
+public class TableProviderClass implements TableProvider {
     public Map<String, CurrentTable> tables = new HashMap<String, CurrentTable>();
+    MySerialize serialize = new MySerialize();
+
+    public TableProviderClass(){
+    }
 
     @Override
     public Table getTable(String name) {
@@ -39,6 +43,7 @@ public class TableProviderClass  implements TableProvider{
         } else {
             CurrentTable newTable = new CurrentTable(name, (ArrayList<Class<?>>) columnTypes);
             tables.put(name, newTable);
+            newTable.tableProviderClass = this;
             return newTable;
         }
     }
@@ -58,22 +63,29 @@ public class TableProviderClass  implements TableProvider{
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        return null;
+        return serialize.deserialize(table, value);
     }
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        return null;
+        return serialize.serialize(table, value);
     }
 
     @Override
     public Storeable createFor(Table table) {
-        return null;
+        List<Object> values = new ArrayList<>(table.getColumnsCount());
+        return new tableContents(values);
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-        return null;
+        List<Object> valuesTmp = new ArrayList<>(values);
+        for (int i = 0; i < valuesTmp.size(); ++i) {
+            if (valuesTmp.get(i).getClass() != table.getColumnType(i)) {
+                throw new ColumnFormatException("wrong column type");
+            }
+        }
+        return new tableContents(valuesTmp);
     }
 
     public void put(String tmp, CurrentTable ct) {

@@ -18,6 +18,7 @@ public class CurrentTable implements Table {
     private Map removedKey = new HashMap<String, Storeable>();
     private int number = 0;
     int alreadyAdded = 0;
+    TableProviderClass tableProviderClass = null;
 
     public CurrentTable(String nameTmp, ArrayList<Class<?>> signatureTmp) {
         name = nameTmp;
@@ -53,7 +54,7 @@ public class CurrentTable implements Table {
     @Override
     public int commit() {
         for (Pair<CurrentTable, File> tmp : currentChanges) {
-            Write write = new Write(tmp.getKey(), tmp.getValue());
+            Write write = new Write(tmp.getKey(), tmp.getValue(), this, tableProviderClass);
         }
         return shadeOperationsRemindChanges();
     }
@@ -191,12 +192,13 @@ public class CurrentTable implements Table {
         currentTable.clear();
     }
 
-    public void init() {
+    public void init(TableProviderClass tableProviderClassTmp) {
+        tableProviderClass = tableProviderClassTmp;
         File f = new File(getHomeDirectory());
         if (f.exists()) {
             File[] files = f.listFiles();
             for (File tmp : files) {
-                Init z = new Init(currentTable, tmp.toString());
+                Init z = new Init(currentTable, tmp.toString(), tableProviderClass, this);
             }
         }
         number = currentTable.size();

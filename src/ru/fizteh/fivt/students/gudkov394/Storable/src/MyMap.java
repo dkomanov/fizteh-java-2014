@@ -2,12 +2,13 @@ package ru.fizteh.fivt.students.gudkov394.Storable.src;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Set;
 
 public class MyMap {
-    private  ArrayList<Class<?>> signature = new ArrayList<Class<?>>();
+    private ArrayList<Class<?>> signature = new ArrayList<Class<?>>();
     public CurrentTable ct = new CurrentTable(signature);
     TableProviderClass tableProviderClass = new TableProviderClass();
 
@@ -28,7 +29,7 @@ public class MyMap {
         if (s != null) {
             for (String tmp : s) {
                 CurrentTable ct = new CurrentTable(tmp, signature);
-                ct.init(); //в number запишем количество аргументов, а дальше поддерживаем его
+                ct.init(tableProviderClass); //в number запишем количество аргументов, а дальше поддерживаем его
                 ct.clear();
                 tableProviderClass.put(tmp, ct);
             }
@@ -46,7 +47,7 @@ public class MyMap {
     public void run(final String[] currentArgs) {
         if ("put".equals(currentArgs[0])) {
             if (obvious()) {
-                Put put = new Put(currentArgs, ct);
+                Put put = new Put(currentArgs, ct, tableProviderClass);
             }
         } else if ("get".equals(currentArgs[0])) {
             if (obvious()) {
@@ -71,7 +72,12 @@ public class MyMap {
                 System.err.println("wrong number of argument to Create");
                 System.exit(1);
             }
-            tableProviderClass.createTable(currentArgs[1]);
+            try {
+                tableProviderClass.createTable(currentArgs[1], signature);
+            } catch (IOException e) {
+                System.err.println("I can't create table");
+                System.exit(1);
+            }
         } else if ("use".equals(currentArgs[0])) {
             if (currentArgs.length != 2) {
                 System.err.println("wrong number of argument to use");
@@ -80,7 +86,7 @@ public class MyMap {
             if (tableProviderClass.tables.containsKey(currentArgs[1])) {
                 ct.clear();
                 ct = tableProviderClass.tables.get(currentArgs[1]);
-                ct.init();
+                ct.init(tableProviderClass);
                 System.out.println("using " + ct.getName());
             } else {
                 System.out.println("tablename not exists");
