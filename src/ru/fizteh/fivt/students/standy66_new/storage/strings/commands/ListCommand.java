@@ -4,7 +4,6 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.standy66_new.exceptions.NoTableSelectedException;
 
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by astepanov on 20.10.14.
@@ -21,7 +20,7 @@ public class ListCommand extends ContextualCommand {
         if (current == null) {
             throw new NoTableSelectedException("no table");
         }
-        System.out.println(Stream.of(current.list().toArray(new String[0]))
+        System.out.println(current.list().stream()
                 .collect(Collectors.joining(", ")));
     }
 }
