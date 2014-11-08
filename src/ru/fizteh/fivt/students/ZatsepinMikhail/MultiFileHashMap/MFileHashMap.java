@@ -28,6 +28,7 @@ public class MFileHashMap implements TableProvider {
         tables = new HashMap<>();
     }
 
+    @Override
     public Table getTable(String name) throws IllegalArgumentException {
         if (name == null) {
             throw new IllegalArgumentException();
@@ -39,6 +40,7 @@ public class MFileHashMap implements TableProvider {
         }
     }
 
+    @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException, IllegalArgumentException {
         if (name == null || columnTypes == null) {
             throw new IllegalArgumentException();
@@ -61,6 +63,7 @@ public class MFileHashMap implements TableProvider {
         }
     }
 
+    @Override
     public void removeTable(String name) throws IllegalArgumentException, IllegalStateException, IOException {
         if (name == null) {
             throw new IllegalArgumentException();
@@ -74,16 +77,25 @@ public class MFileHashMap implements TableProvider {
         }
     }
 
+    @Override
     public Storeable createFor(Table table) {
         Object[] startValues = new Object[table.getColumnsCount()];
         return new AbstractStoreable(startValues);
     }
 
-    Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException) {
+    @Override
+    public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
         if (CheckTypesValidity.canonicalTypes.size() != values.size()) {
             throw new IndexOutOfBoundsException("in createFor");
         }
-
+        int counter = 0;
+        for (Class<?> oneClass: CheckTypesValidity.canonicalTypes) {
+            if (oneClass.getClass() != values.get(0).getClass()) {
+                throw new ColumnFormatException("in createFor");
+            }
+            ++counter;
+        }
+        return new AbstractStoreable(values.toArray());
     }
 
     public void addTable(String tableName, FileMap newFileMap) {

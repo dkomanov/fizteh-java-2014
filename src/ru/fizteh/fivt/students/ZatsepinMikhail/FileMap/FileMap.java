@@ -60,10 +60,12 @@ public class FileMap implements Table {
         numberOfColumns = typeList.size();
     }
 
+    @Override
     public String getName() {
         return Paths.get(directoryOfTable).getFileName().toString();
     }
 
+    @Override
     public Storeable get(String key) throws IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException();
@@ -80,6 +82,7 @@ public class FileMap implements Table {
         return stableData.get(key);
     }
 
+    @Override
     public Storeable remove(String key) throws IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException();
@@ -100,6 +103,7 @@ public class FileMap implements Table {
         return stableData.get(key);
     }
 
+    @Override
     public Storeable put(String key, Storeable value) throws IllegalArgumentException, ColumnFormatException {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
@@ -133,14 +137,17 @@ public class FileMap implements Table {
         }
     }
 
+    @Override
     public int size() {
         return stableData.size() + addedData.size() - removedData.size();
     }
 
+    @Override
     public int getColumnsCount() {
         return numberOfColumns;
     }
 
+    @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
         if (columnIndex < 0 || columnIndex >= numberOfColumns) {
             throw new IndexOutOfBoundsException();
@@ -148,12 +155,14 @@ public class FileMap implements Table {
         return typeList.get(columnIndex);
     }
 
+    @Override
     public int rollback() {
         int result = changedData.size() + removedData.size() + addedData.size();
         clearStaff();
         return result;
     }
 
+    @Override
     public int commit() throws IOException {
         int result = changedData.size() + removedData.size() + addedData.size();
         stableData.keySet().removeAll(removedData);
