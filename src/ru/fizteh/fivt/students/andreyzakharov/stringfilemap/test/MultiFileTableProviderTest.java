@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.andreyzakharov.stringfilemap.test;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.MultiFileTableProviderFactory;
 
@@ -14,15 +12,11 @@ public class MultiFileTableProviderTest {
     String[] names = {"test-db", "null", "database-01", "*[::]<>|\\?"};
     String otherName = "*()doesn't match any other name";
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testGetTableNull() throws Exception {
         MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
-        exception.expect(IllegalArgumentException.class);
         d.getTable(null);
     }
 
@@ -48,12 +42,11 @@ public class MultiFileTableProviderTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testCreateTableNull() throws Exception {
         MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
-        exception.expect(IllegalArgumentException.class);
         d.createTable(null);
     }
 
@@ -79,21 +72,19 @@ public class MultiFileTableProviderTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testRemoveTableNull() throws Exception {
         MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
-        exception.expect(IllegalArgumentException.class);
         d.removeTable(null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testRemoveTableNonExistent() throws Exception {
         MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
 
-        exception.expect(IllegalStateException.class);
         d.removeTable(otherName);
     }
 

@@ -2,9 +2,7 @@ package ru.fizteh.fivt.students.andreyzakharov.stringfilemap.test;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.MultiFileTable;
 
 import java.nio.file.Path;
@@ -48,9 +46,6 @@ public class MultiFileTableTest {
         f = new MultiFileTable(root.resolve(dbNames[0]));
         g = new MultiFileTable(root.resolve(dbNames[0]));
     }
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void testGetName() throws Exception {
@@ -115,15 +110,13 @@ public class MultiFileTableTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testPutNullKey() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         f.put(null, "");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testPutNullValue() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         f.put("", null);
     }
 
@@ -143,9 +136,8 @@ public class MultiFileTableTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testGetNull() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         f.get(null);
     }
 
@@ -159,9 +151,8 @@ public class MultiFileTableTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testRemoveNull() throws Exception {
-        exception.expect(IllegalArgumentException.class);
         f.remove(null);
     }
 
