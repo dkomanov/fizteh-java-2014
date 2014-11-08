@@ -122,6 +122,12 @@ public class Interpreter {
                 } else {
                     throw new ExitException(e.getMessage(), 1);
                 }
+            } catch (IllegalArgumentException e) {
+                if (userMode) {
+                    out.println(e.getMessage());
+                } else {
+                    throw new ExitException(e.getMessage(), 1);
+                }
             }
         }
     }
