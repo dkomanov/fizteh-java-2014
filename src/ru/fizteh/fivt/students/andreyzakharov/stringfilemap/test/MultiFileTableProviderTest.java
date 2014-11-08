@@ -80,7 +80,7 @@ public class MultiFileTableProviderTest {
         d.removeTable(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void testRemoveTableNonExistent() throws Exception {
         MultiFileTableProviderFactory f = new MultiFileTableProviderFactory();
         TableProvider d = f.create(root);
