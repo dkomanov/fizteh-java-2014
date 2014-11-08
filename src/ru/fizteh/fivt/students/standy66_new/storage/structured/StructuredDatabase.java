@@ -32,10 +32,11 @@ public class StructuredDatabase implements TableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        backendDatabase.createTable(name);
+        StringTable table = (StringTable) backendDatabase.createTable(name);
         TableSignature tableSignature = new TableSignature(columnTypes.toArray(new Class<?>[columnTypes.size()]));
-
-        return null;
+        File signatureFile = new File(table.getFile(), "signature.tsv");
+        tableSignature.writeToFile(signatureFile);
+        return wrap(table);
     }
 
     @Override
@@ -45,8 +46,8 @@ public class StructuredDatabase implements TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        //TODO: not implemented
-        return null;
+        TableSignature tableSignature = TableSignature.forTable(table);
+        return TableRow.deserialize(tableSignature, value);
     }
 
     @Override
