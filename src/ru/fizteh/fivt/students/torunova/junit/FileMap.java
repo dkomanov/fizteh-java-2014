@@ -91,6 +91,9 @@ public class FileMap {
             if (length >= Runtime.getRuntime().freeMemory()) {
                 throw new IncorrectFileException("Cannot load file " + file + ". Ran out of memory.");
             }
+            if (length < 0) {
+                throw new IncorrectFileException("File " + file + " has wrong structure.");
+            }
             byte[] key = new byte[length];
             if (fis.read(key) != length) {
                 throw new IncorrectFileException("File " + file + " has wrong structure.");
@@ -101,6 +104,9 @@ public class FileMap {
             length = fis.readInt();
             if (length >= Runtime.getRuntime().freeMemory()) {
                 throw new IncorrectFileException("Cannot load file " + file + ". Ran out of memory.");
+            }
+            if (length < 0) {
+                throw new IncorrectFileException("File " + file + " has wrong structure.");
             }
             byte[] value = new byte[length];
             if (fis.read(value) != length) {

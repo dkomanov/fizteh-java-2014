@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class  Database implements TableProvider{
     public String dbName;
     public Map<String, Table> tables = new HashMap<>();
-    public Table currentTable = null;
+    public Table currentTable;
 
     @Override
     public int hashCode() {
@@ -63,17 +63,13 @@ public class  Database implements TableProvider{
 
     @Override
     public ru.fizteh.fivt.storage.strings.Table getTable(String name) {
-        if (!checkTableName(name)) {
-            throw new IllegalArgumentException("illegal table name");
-        }
+        checkTableName(name);
         return tables.get(name);
     }
 
     @Override
     public ru.fizteh.fivt.storage.strings.Table createTable(String tableName) {
-        if (!checkTableName(tableName)) {
-            throw new IllegalArgumentException("illegal table name");
-        }
+        checkTableName(tableName);
         File table = new File(dbName, tableName);
         String newTableName = table.getAbsolutePath();
         if (!tables.containsKey(tableName)) {
@@ -95,9 +91,7 @@ public class  Database implements TableProvider{
 
     @Override
     public void removeTable(String name) {
-        if (!checkTableName(name)) {
-            throw new IllegalArgumentException("illegal table name");
-        }
+        checkTableName(name);
         File f = new File(dbName, name);
         if (tables.containsKey(name)) {
             boolean result = removeRecursive(f.getAbsolutePath());
@@ -150,12 +144,12 @@ public class  Database implements TableProvider{
      * @param dir - directory name.
      */
     private  boolean removeRecursive(final String dir) {
-        File dIr = new File(dir).getAbsoluteFile();
-        if (dIr.isDirectory()) {
+        File directory = new File(dir).getAbsoluteFile();
+        if (directory.isDirectory()) {
             if (dir.equals(System.getProperty("user.dir"))) {
-                System.setProperty("user.dir", dIr.getParent());
+                System.setProperty("user.dir", directory.getParent());
             }
-            File[] content = dIr.listFiles();
+            File[] content = directory.listFiles();
             for (File item:content) {
                 if (item.isDirectory()) {
                     if (!removeRecursive(item.getAbsolutePath())) {
@@ -167,7 +161,7 @@ public class  Database implements TableProvider{
                     }
                 }
             }
-            if (!dIr.delete()) {
+            if (!directory.delete()) {
                 return false;
             }
         } else {
@@ -175,9 +169,11 @@ public class  Database implements TableProvider{
         }
         return true;
     }
-    private boolean checkTableName(String name) {
-        return !(name == null || Pattern.matches(".*" + Pattern.quote(File.separator) + ".*", name)
-                || name.equals("..") || name.equals("."));
+    private void checkTableName(String name) {
+        if (name == null || Pattern.matches(".*" + Pattern.quote(File.separator) + ".*", name)
+                || name.equals("..") || name.equals(".")) {
+            throw new IllegalArgumentException("illegal table name");
+        }
     }
 
 

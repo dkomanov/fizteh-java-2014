@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  * Created by nastya on 19.10.14.
  */
 public class Table implements ru.fizteh.fivt.storage.strings.Table{
-    public static final int NUMBER_OF_PARTITIONS = 16;
+    private static final int NUMBER_OF_PARTITIONS = 16;
     String tableName;
     Map<File, FileMap> files = new HashMap<>();
     int numberOfEntries;
@@ -43,13 +43,13 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         File[] tableFiles = table.listFiles();
         File[] filesOfDir;
         for (File nextDir: tableFiles) {
-            if (!(Pattern.matches("[0-15].dir", nextDir.getParentFile().getName()) && nextDir.isDirectory())) {
-                throw new TableNotCreatedException("Table " + getName() + " contains illegal files.");
+            if (!(Pattern.matches("([0-9]|1[0-5])\\.dir", nextDir.getName()) && nextDir.isDirectory())) {
+                throw new TableNotCreatedException("Table " + getName() + " contains illegal files: " + nextDir.getAbsolutePath());
             }
             filesOfDir = nextDir.listFiles();
             for (File nextFile:filesOfDir) {
-                if (!(Pattern.matches("[0-15].dat", nextFile.getName()) && nextFile.isFile())) {
-                    throw new TableNotCreatedException("Table " + getName() + " contains illegal files.");
+                if (!(Pattern.matches("([0-9]|1[0-5])\\.dat", nextFile.getName()) && nextFile.isFile())) {
+                    throw new TableNotCreatedException("Table " + getName() + " contains illegal files: " + nextFile.getAbsolutePath());
                 }
                 FileMap fm = new FileMap(nextFile.getAbsolutePath());
                 if (fm.isEmpty()) {
@@ -63,26 +63,7 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
                     numberOfEntries += fm.size();
                 }
             }
-
         }
-        /*for (int i = 0; i < 16; i++) {
-            nextDir = new File(table, String.valueOf(i) + ".dir").getAbsoluteFile();
-            if (nextDir.isDirectory()) {
-                for (int j = 0; j < 16; j++) {
-                    nextFile = new File(nextDir, String.valueOf(j) + ".dat");
-                    if (nextFile.isFile()) {
-                        FileMap fm = new FileMap(nextFile.getAbsolutePath());
-                        if (fm.isEmpty()) {
-                            nextFile.delete();
-                            nextDir.delete();
-                        } else {
-                            files.put(nextFile, fm);
-                            numberOfEntries += fm.size();
-                        }
-                    }
-                }
-            }
-        }*/
     }
     @Override
     public String put(String key, String value) {

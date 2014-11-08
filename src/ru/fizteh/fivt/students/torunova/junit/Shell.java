@@ -97,12 +97,17 @@ public class Shell {
                         }
                     } catch (RuntimeException e3) {
                         System.err.println(e3.getMessage());
+                        if (!interactive) {
+                            abort();
+                        }
                     }
                     if (!interactive && !res) {
                         if (db.currentTable != null) {
                             db.currentTable.commit();
-                            System.exit(1);
                         }
+                        System.exit(1);
+                    } else if (!res) {
+                        break;
                     }
                 } else if (!Pattern.matches("\\s*", name)) {
                     System.err.println("Command not found.");

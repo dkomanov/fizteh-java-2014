@@ -22,16 +22,9 @@ public class DatabaseFactory implements TableProviderFactory {
         }
         try {
             tp = new Database(dir);
-        } catch (IncorrectDbNameException e) {
+        } catch (IncorrectDbNameException | IOException | TableNotCreatedException
+                | IncorrectFileException | IncorrectDbException e) {
             throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (TableNotCreatedException e) {
-            throw new RuntimeException(e);
-        } catch (IncorrectFileException e) {
-            throw new RuntimeException(e);
-        } catch (IncorrectDbException e) {
-            throw  new RuntimeException(e);
         }
         return tp;
 
