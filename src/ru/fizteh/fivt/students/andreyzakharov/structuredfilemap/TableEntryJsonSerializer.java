@@ -22,11 +22,11 @@ public class TableEntryJsonSerializer implements TableEntrySerializer {
     private Map<Class, Writer> writerMap = new HashMap<>();
 
     public TableEntryJsonSerializer() {
-        readerMap.put(Integer.class, string -> Integer.valueOf(string));
-        readerMap.put(Long.class, string -> Long.valueOf(string));
-        readerMap.put(Float.class, string -> Float.valueOf(string));
-        readerMap.put(Double.class, string -> Double.valueOf(string));
-        readerMap.put(Byte.class, string -> Byte.valueOf(string));
+        readerMap.put(Integer.class, Integer::valueOf);
+        readerMap.put(Long.class, Long::valueOf);
+        readerMap.put(Float.class, Float::valueOf);
+        readerMap.put(Double.class, Double::valueOf);
+        readerMap.put(Byte.class, Byte::valueOf);
         readerMap.put(Boolean.class, string -> {
             if (string.trim().toLowerCase().equals("true")) {
                 return true;
@@ -42,12 +42,12 @@ public class TableEntryJsonSerializer implements TableEntrySerializer {
             throw new ParseException("not a valid String value", 0);
         });
 
-        writerMap.put(Integer.class, object -> object.toString());
-        writerMap.put(Long.class, object -> object.toString());
-        writerMap.put(Float.class, object -> object.toString());
-        writerMap.put(Double.class, object -> object.toString());
-        writerMap.put(Byte.class, object -> object.toString());
-        writerMap.put(Boolean.class, object -> object.toString());
+        writerMap.put(Integer.class, Object::toString);
+        writerMap.put(Long.class, Object::toString);
+        writerMap.put(Float.class, Object::toString);
+        writerMap.put(Double.class, Object::toString);
+        writerMap.put(Byte.class, Object::toString);
+        writerMap.put(Boolean.class, Object::toString);
         writerMap.put(String.class, object -> "\"" + object + "\"");
     }
 
