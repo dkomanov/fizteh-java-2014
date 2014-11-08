@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -12,10 +14,12 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class FileMap implements Table {
-    private HashMap<String, String> stableData;
-    private HashMap<String, String> addedData;
-    private HashMap<String, String> changedData;
+    private HashMap<String, Storeable> stableData;
+    private HashMap<String, Storeable> addedData;
+    private HashMap<String, Storeable> changedData;
     private HashSet<String> removedData;
+    private ArrayList<Class<?>> typeList;
+    private int numberOfColumns;
     private String directoryOfTable;
 
     private int getNumberOfDirectory(int hash) {
@@ -40,19 +44,27 @@ public class FileMap implements Table {
         changedData.clear();
     }
 
-    public FileMap(String newDirectoryFile) {
-        directoryOfTable = newDirectoryFile;
+    /**
+     * Create empty Filemap
+     *
+     * @param newDirectory - directory of this FileMap
+     * @param newTypeList - list of types (signature of table)
+     */
+    public FileMap(String newDirectory, ArrayList<Class<?>> newTypeList) {
+        directoryOfTable = newDirectory;
         stableData = new HashMap<>();
         addedData = new HashMap<>();
         changedData = new HashMap<>();
         removedData = new HashSet<>();
+        typeList = newTypeList;
+        numberOfColumns = typeList.size();
     }
 
     public String getName() {
         return Paths.get(directoryOfTable).getFileName().toString();
     }
 
-    public String get(String key) throws IllegalArgumentException {
+    public Storeable get(String key) throws IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException();
         }
@@ -68,7 +80,7 @@ public class FileMap implements Table {
         return stableData.get(key);
     }
 
-    public String remove(String key) throws IllegalArgumentException {
+    public Storeable remove(String key) throws IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException();
         }
@@ -88,10 +100,14 @@ public class FileMap implements Table {
         return stableData.get(key);
     }
 
-    public String put(String key, String value) throws IllegalArgumentException {
+    public Storeable put(String key, Storeable value) throws IllegalArgumentException, ColumnFormatException {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         }
+        /*
+        check for columns in value;
+         */
+
         boolean wasDeleted = false;
         if (removedData.contains(key)) {
             removedData.remove(key);
@@ -121,13 +137,24 @@ public class FileMap implements Table {
         return stableData.size() + addedData.size() - removedData.size();
     }
 
+    public int getColumnsCount() {
+        return numberOfColumns;
+    }
+
+    public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        if (columnIndex < 0 || columnIndex >= numberOfColumns) {
+            throw new IndexOutOfBoundsException();
+        }
+        return typeList.get(columnIndex);
+    }
+
     public int rollback() {
         int result = changedData.size() + removedData.size() + addedData.size();
         clearStaff();
         return result;
     }
 
-    public int commit() {
+    public int commit() throws IOException {
         int result = changedData.size() + removedData.size() + addedData.size();
         stableData.keySet().removeAll(removedData);
         stableData.putAll(changedData);
@@ -152,7 +179,7 @@ public class FileMap implements Table {
         if (allRight) {
             return result;
         } else {
-            return -1;
+            throw new IOException();
         }
     }
 
@@ -335,7 +362,6 @@ public class FileMap implements Table {
         }
         return true;
     }
-
 
     public boolean deleteEmptyFiles(Path directory, Path file) {
         try {
