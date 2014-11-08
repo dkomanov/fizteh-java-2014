@@ -117,23 +117,18 @@ public class FileMap implements Table {
         }
     }
 
-    public Set<String> keySet() {
-        return stableData.keySet();
-    }
-
     public int size() {
         return stableData.size() + addedData.size() - removedData.size();
     }
 
     public int rollback() {
-        //tmp decision:
         int result = changedData.size() + removedData.size() + addedData.size();
         clearStaff();
         return result;
     }
 
     public int commit() {
-        int result = stableData.size() + addedData.size() - removedData.size();
+        int result = changedData.size() + removedData.size() + addedData.size();
         stableData.keySet().removeAll(removedData);
         stableData.putAll(changedData);
         stableData.putAll(addedData);
@@ -157,7 +152,6 @@ public class FileMap implements Table {
         if (allRight) {
             return result;
         } else {
-            //tmp decision
             return -1;
         }
     }

@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
 
-public class TableProviderTest {
+public class TestTableProvider {
     String providerDirectory;
     String tableName;
     TableProvider provider;

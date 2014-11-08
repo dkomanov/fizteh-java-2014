@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class TableTest {
+public class TestTable {
     String key;
     String value;
     String newValue;

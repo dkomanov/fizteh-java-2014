@@ -6,10 +6,6 @@ public abstract class Command {
 
     public abstract boolean run(final String[] arguments);
 
-    public final String getName() {
-        return name;
-    }
-
     @Override
     public final String toString() {
         return name;

@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.shell.CommandRm;
 import ru.fizteh.fivt.students.ZatsepinMikhail.shell.FileUtils;
 
 public class MFileHashMap implements TableProvider {
