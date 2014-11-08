@@ -2,6 +2,15 @@ package ru.fizteh.fivt.students.standy66_new.storage.structured.table;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.students.standy66_new.utility.ClassUtility;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Created by andrew on 07.11.14.
@@ -13,6 +22,61 @@ public class TableRow implements Storeable {
     public TableRow(TableSignature tableSignature) {
         this.tableSignature = tableSignature;
         row = new Object[tableSignature.size()];
+    }
+
+    public static TableRow fromStoreable(TableSignature tableSignature, Storeable storeable) {
+        TableRow tableRow = new TableRow(tableSignature);
+        IntStream.range(0, tableSignature.size())
+                .forEach(i -> tableRow.setColumnAt(i, storeable.getColumnAt(i)));
+        return tableRow;
+    }
+
+    public static TableRow deserialize(TableSignature signature, String serializedValue) throws ParseException {
+        //TODO: test this bullshit
+        serializedValue = serializedValue.replaceAll("[\\]\\s]+$|^[\\[\\s]+", "");
+        List<String> tokens = Stream.of(serializedValue.split(","))
+                .map(s -> s.trim())
+                .collect(Collectors.toList());
+        if (tokens.size() != signature.size()) {
+            throw new ParseException("expected " + signature.size() + " arguments, found " + tokens.size(), 0);
+        }
+        TableRow tableRow = new TableRow(signature);
+        for (int i = 0; i < tokens.size(); i++) {
+            String token = tokens.get(i);
+            if (token.equals("null")) {
+                continue;
+            }
+            Class<?> expectedClass = signature.getClassAt(i);
+            if (token.startsWith("\"")) {
+                if (!token.endsWith("\"")) {
+                    throw new ParseException("\" expected at the end of the token", i);
+                }
+                if (expectedClass != String.class) {
+                    throw new ParseException("Expected: " + ClassUtility.toString(expectedClass)
+                            + ", got: " + token, i);
+                }
+                token = token.substring(1, token.length() - 1);
+            } else {
+                if (expectedClass == String.class) {
+                    throw new ParseException("Expected: String, got: " + token, i);
+                }
+            }
+
+            for (Method m : expectedClass.getMethods()) {
+                if (m.getName().startsWith("parse") && m.getParameterCount() == 1
+                        && m.getReturnType() == expectedClass) {
+                    try {
+                        tableRow.setColumnAt(i, expectedClass.cast(m.invoke(null, token)));
+                        break;
+                    } catch (IllegalAccessException e) {
+                        throw new ParseException("Error parsing", i);
+                    } catch (InvocationTargetException e) {
+                        throw new ParseException("Error parsing", i);
+                    }
+                }
+            }
+        }
+        return tableRow;
     }
 
     @Override
