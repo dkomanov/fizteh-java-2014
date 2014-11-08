@@ -24,7 +24,7 @@ public class StructuredTable implements Table {
     private TableSignature tableSignature;
 
 
-    public StructuredTable(File tableFile, StringTable backendTable, StructuredDatabase database) {
+    public StructuredTable(StringTable backendTable, StructuredDatabase database) {
         this.backendTable = backendTable;
         this.database = database;
         File signatureFile = new File(backendTable.getFile(), "signature.tsv");

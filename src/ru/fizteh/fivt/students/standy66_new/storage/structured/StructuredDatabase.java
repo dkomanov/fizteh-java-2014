@@ -5,6 +5,10 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.StringDatabase;
+import ru.fizteh.fivt.students.standy66_new.storage.strings.StringTable;
+import ru.fizteh.fivt.students.standy66_new.storage.structured.table.StructuredTable;
+import ru.fizteh.fivt.students.standy66_new.storage.structured.table.TableRow;
+import ru.fizteh.fivt.students.standy66_new.storage.structured.table.TableSignature;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +29,6 @@ public class StructuredDatabase implements TableProvider {
 
     @Override
     public Table getTable(String name) {
-        //TODO: not implemented
         return null;
     }
 
@@ -55,13 +58,21 @@ public class StructuredDatabase implements TableProvider {
 
     @Override
     public Storeable createFor(Table table) {
-        //TODO: not implemented
-        return null;
+        TableSignature tableSignature = TableSignature.forTable(table);
+        return new TableRow(tableSignature);
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-        //TODO: not implemented
-        return null;
+        TableSignature tableSignature = TableSignature.forTable(table);
+        Storeable storeable = new TableRow(tableSignature);
+        for (int i = 0; i < values.size(); i++) {
+            storeable.setColumnAt(i, values.get(i));
+        }
+        return storeable;
+    }
+
+    private StructuredTable wrap(ru.fizteh.fivt.storage.strings.Table table) {
+        return new StructuredTable((StringTable) table, this);
     }
 }
