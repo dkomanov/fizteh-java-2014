@@ -71,7 +71,7 @@ public class  Database implements TableProvider{
 
     @Override
     public ru.fizteh.fivt.storage.strings.Table createTable(String tableName) {
-        if(!checkTableName(tableName)) {
+        if (!checkTableName(tableName)) {
             throw new IllegalArgumentException("illegal table name");
         }
         File table = new File(dbName, tableName);

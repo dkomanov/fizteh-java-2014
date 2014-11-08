@@ -5,7 +5,6 @@ import ru.fizteh.fivt.students.torunova.junit.Table;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
 
-import java.io.File;
 import java.io.IOException;
 
 /**

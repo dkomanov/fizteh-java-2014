@@ -35,7 +35,7 @@ public class Shell {
             System.err.println("Caught IOException: " + e1.getMessage());
             abort();
         } catch (TableNotCreatedException e2) {
-            if(e2.getMessage() == null || e2.getMessage().isEmpty()) {
+            if (e2.getMessage() == null || e2.getMessage().isEmpty()) {
                 System.err.println("Caught TableNotCreatedException");
             } else {
                 System.err.println(e2.getMessage());

@@ -88,18 +88,20 @@ public class FileMap {
         int  length;
         while (fis.available() > 0) {
             length = fis.readInt();
-            if(length >= Runtime.getRuntime().freeMemory())
-                throw new IncorrectFileException("Cannot load file " + file +". Ran out of memory.");
+            if (length >= Runtime.getRuntime().freeMemory()) {
+                throw new IncorrectFileException("Cannot load file " + file + ". Ran out of memory.");
+            }
             byte[] key = new byte[length];
             if (fis.read(key) != length) {
                 throw new IncorrectFileException("File " + file + " has wrong structure.");
             }
-            if(!checkKey(new String(key,"UTF-8"))) {
+            if (!checkKey(new String(key, "UTF-8"))) {
                 throw new IncorrectFileException("File " + file + " contains illegal key.");
             }
             length = fis.readInt();
-            if(length >= Runtime.getRuntime().freeMemory())
+            if (length >= Runtime.getRuntime().freeMemory()) {
                 throw new IncorrectFileException("Cannot load file " + file + ". Ran out of memory.");
+            }
             byte[] value = new byte[length];
             if (fis.read(value) != length) {
                 throw new IncorrectFileException("File " + file + " has wrong structure.");
@@ -109,13 +111,14 @@ public class FileMap {
         }
     }
     private int getIndexOfFile() {
-        int indexOfFile = Integer.parseInt(file.substring(file.lastIndexOf(File.separatorChar)+1, file.lastIndexOf('.')));
+        int indexOfFile = Integer.parseInt(file.substring(file.lastIndexOf(File.separatorChar) + 1,
+                file.lastIndexOf('.')));
         return indexOfFile;
     }
     private int getIndexOfDir() {
         File f = new File(file).getAbsoluteFile();
         String dirName = f.getParentFile().getName();
-        int indexOfDir = Integer.parseInt(dirName.substring(0,dirName.indexOf('.')));
+        int indexOfDir = Integer.parseInt(dirName.substring(0, dirName.indexOf('.')));
         return indexOfDir;
     }
     private boolean checkKey(String key) {

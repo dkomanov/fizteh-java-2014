@@ -42,21 +42,22 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         tableName = table.getAbsolutePath();
         File[] tableFiles = table.listFiles();
         File[] filesOfDir;
-        for(File nextDir: tableFiles) {
-            if(!(Pattern.matches("[0-15].dir", nextDir.getParentFile().getName()) && nextDir.isDirectory()) ) {
+        for (File nextDir: tableFiles) {
+            if (!(Pattern.matches("[0-15].dir", nextDir.getParentFile().getName()) && nextDir.isDirectory())) {
                 throw new TableNotCreatedException("Table " + getName() + " contains illegal files.");
             }
             filesOfDir = nextDir.listFiles();
-            for(File nextFile:filesOfDir) {
-                if (!(Pattern.matches("[0-15].dat",nextFile.getName()) && nextFile.isFile() )) {
+            for (File nextFile:filesOfDir) {
+                if (!(Pattern.matches("[0-15].dat", nextFile.getName()) && nextFile.isFile())) {
                     throw new TableNotCreatedException("Table " + getName() + " contains illegal files.");
                 }
                 FileMap fm = new FileMap(nextFile.getAbsolutePath());
                 if (fm.isEmpty()) {
                     nextFile.delete();
                     nextDir = nextFile.getParentFile();
-                    if (nextDir.listFiles().length == 0)
+                    if (nextDir.listFiles().length == 0) {
                         nextDir.delete();
+                    }
                 } else {
                     files.put(nextFile, fm);
                     numberOfEntries += fm.size();
