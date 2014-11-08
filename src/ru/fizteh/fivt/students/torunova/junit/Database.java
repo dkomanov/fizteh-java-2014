@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.torunova.junit;
 
 
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbNameException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
@@ -22,7 +23,7 @@ public class  Database implements TableProvider{
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return dbName.hashCode();
     }
 
     @Override
@@ -37,7 +38,8 @@ public class  Database implements TableProvider{
     public Database(String name) throws IncorrectDbNameException,
                                         IOException,
                                         TableNotCreatedException,
-                                        IncorrectFileException {
+                                        IncorrectFileException,
+                                        IncorrectDbException {
         if (name == null) {
             throw new IncorrectDbNameException("Name of database not specified."
                     + "Please,specify it via -Dfizteh.db.dir");
@@ -45,20 +47,23 @@ public class  Database implements TableProvider{
         File db = new File(name).getAbsoluteFile();
         if (!db.exists()) {
             db.mkdirs();
+        } else if (!db.isDirectory()) {
+            throw new IncorrectDbNameException("File with this name already exists.");
         }
         dbName = db.getAbsolutePath();
         File[]dbTables = db.listFiles();
         for (File table:dbTables) {
             if (table.getAbsoluteFile().isDirectory()) {
                     tables.put(table.getName(), new Table(table.getAbsolutePath()));
+            } else {
+                throw new IncorrectDbException("Database contains illegal files.");
             }
         }
     }
 
     @Override
     public ru.fizteh.fivt.storage.strings.Table getTable(String name) {
-        if (name == null || Pattern.matches(".*" + File.separator + ".*", name)
-                || name.equals("..") || name.equals(".")) {
+        if (!checkTableName(name)) {
             throw new IllegalArgumentException("illegal table name");
         }
         return tables.get(name);
@@ -66,8 +71,7 @@ public class  Database implements TableProvider{
 
     @Override
     public ru.fizteh.fivt.storage.strings.Table createTable(String tableName) {
-        if (tableName == null || Pattern.matches(".*" + File.separator + ".*", tableName)
-                || tableName.equals("..") || tableName.equals(".")) {
+        if(!checkTableName(tableName)) {
             throw new IllegalArgumentException("illegal table name");
         }
         File table = new File(dbName, tableName);
@@ -77,11 +81,11 @@ public class  Database implements TableProvider{
             try {
                 newTable = new Table(newTableName);
             } catch (TableNotCreatedException e) {
-                System.err.println("Caught TableNotCreatedException: " + e.getMessage());
+                throw new RuntimeException(e);
             } catch (IncorrectFileException e1) {
-                System.err.println("Caught IncorrectFileException: " + e1.getMessage());
+                throw new RuntimeException(e1);
             } catch (IOException e2) {
-                System.err.println("Caught IOException: " + e2.getMessage());
+                throw new RuntimeException(e2);
             }
             tables.put(tableName, newTable);
             return newTable;
@@ -91,8 +95,7 @@ public class  Database implements TableProvider{
 
     @Override
     public void removeTable(String name) {
-        if (name == null || Pattern.matches(".*" + File.separator + ".*", name)
-                || name.equals("..") || name.equals(".")) {
+        if (!checkTableName(name)) {
             throw new IllegalArgumentException("illegal table name");
         }
         File f = new File(dbName, name);
@@ -118,22 +121,11 @@ public class  Database implements TableProvider{
     }
 
     public Map<String, Integer> showTables() {
-        Map<String, Integer> tables1 = new HashMap<String, Integer>();
-        tables.forEach((name, table)->tables1.put(name, table.numberOfEntries));
-        return tables1;
+        Map<String, Integer> tablesWithSize = new HashMap<String, Integer>();
+        tables.forEach((name, table)->tablesWithSize.put(name, table.numberOfEntries));
+        return tablesWithSize;
     }
 
-    public boolean exit() {
-        if (currentTable != null) {
-            int numberOfUnsavedChanges = currentTable.countChangedEntries();
-            if (numberOfUnsavedChanges != 0) {
-                System.err.println(numberOfUnsavedChanges + " unsaved changes");
-                return false;
-            }
-        }
-        return true;
-
-    }
     /**
      * removes file.
      * @param file - filename.
@@ -182,6 +174,10 @@ public class  Database implements TableProvider{
             return false;
         }
         return true;
+    }
+    private boolean checkTableName(String name) {
+        return !(name == null || Pattern.matches(".*" + Pattern.quote(File.separator) + ".*", name)
+                || name.equals("..") || name.equals("."));
     }
 
 

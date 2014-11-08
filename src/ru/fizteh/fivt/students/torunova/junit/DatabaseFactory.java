@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.torunova.junit;
 
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbNameException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
@@ -22,13 +23,15 @@ public class DatabaseFactory implements TableProviderFactory {
         try {
             tp = new Database(dir);
         } catch (IncorrectDbNameException e) {
-            System.err.println("Caught IncorrectDbNameException: " + e.getMessage());
+            throw new RuntimeException(e);
         } catch (IOException e) {
-            System.err.println("Caught IOException: " + e.getMessage());
+            throw new RuntimeException(e);
         } catch (TableNotCreatedException e) {
-            System.err.println("Caught TableNotCreatedException: " + e.getMessage());
+            throw new RuntimeException(e);
         } catch (IncorrectFileException e) {
-            System.err.println("Caught IncorrectFileException: " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (IncorrectDbException e) {
+            throw  new RuntimeException(e);
         }
         return tp;
 

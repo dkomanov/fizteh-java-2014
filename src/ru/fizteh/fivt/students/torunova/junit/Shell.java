@@ -5,6 +5,7 @@ package ru.fizteh.fivt.students.torunova.junit;
  */
 
 import ru.fizteh.fivt.students.torunova.junit.actions.Action;
+import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbNameException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
@@ -34,11 +35,17 @@ public class Shell {
             System.err.println("Caught IOException: " + e1.getMessage());
             abort();
         } catch (TableNotCreatedException e2) {
-            System.err.println("Caught TableNotCreatedException");
+            if(e2.getMessage() == null || e2.getMessage().isEmpty()) {
+                System.err.println("Caught TableNotCreatedException");
+            } else {
+                System.err.println(e2.getMessage());
+            }
             abort();
         } catch (IncorrectFileException e3) {
             System.err.println(e3.getMessage());
             abort();
+        } catch (IncorrectDbException e4) {
+            System.err.println(e4.getMessage());
         }
         interactive = isInteractive;
     }
@@ -53,12 +60,8 @@ public class Shell {
             try {
                 nextCommand = scanner.nextLine();
             } catch (NoSuchElementException e) {
-                if (!interactive) {
-                    if (db.currentTable != null) {
-                        db.currentTable.commit();
-                    } else {
-                        db.exit();
-                    }
+                if (db.currentTable != null) {
+                    db.currentTable.commit();
                 }
                 return;
             }
@@ -92,23 +95,22 @@ public class Shell {
                         if (!interactive) {
                             abort();
                         }
+                    } catch (RuntimeException e3) {
+                        System.err.println(e3.getMessage());
                     }
                     if (!interactive && !res) {
                         if (db.currentTable != null) {
                             db.currentTable.commit();
-                        } else {
-                            db.exit();
+                            System.exit(1);
                         }
                     }
-                } else if (!Pattern.matches("\\s+", name)) {
+                } else if (!Pattern.matches("\\s*", name)) {
                     System.err.println("Command not found.");
                     if (!interactive) {
                         if (db.currentTable != null) {
                             db.currentTable.commit();
-                        } else {
-                            db.exit();
+                            System.exit(1);
                         }
-
                     }
                 }
             }

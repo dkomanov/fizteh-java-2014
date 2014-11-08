@@ -5,12 +5,13 @@ import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedExceptio
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Created by nastya on 19.10.14.
  */
 public class Table implements ru.fizteh.fivt.storage.strings.Table{
-    public static final int MAGIC_NUMBER = 16;
+    public static final int NUMBER_OF_PARTITIONS = 16;
     String tableName;
     Map<File, FileMap> files = new HashMap<>();
     int numberOfEntries;
@@ -28,7 +29,7 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return tableName.hashCode();
     }
 
     public Table(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
@@ -38,9 +39,32 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
                 throw new TableNotCreatedException();
             }
         }
-        File nextDir;
-        File nextFile;
-        for (int i = 0; i < 16; i++) {
+        tableName = table.getAbsolutePath();
+        File[] tableFiles = table.listFiles();
+        File[] filesOfDir;
+        for(File nextDir: tableFiles) {
+            if(!(Pattern.matches("[0-15].dir", nextDir.getParentFile().getName()) && nextDir.isDirectory()) ) {
+                throw new TableNotCreatedException("Table " + getName() + " contains illegal files.");
+            }
+            filesOfDir = nextDir.listFiles();
+            for(File nextFile:filesOfDir) {
+                if (!(Pattern.matches("[0-15].dat",nextFile.getName()) && nextFile.isFile() )) {
+                    throw new TableNotCreatedException("Table " + getName() + " contains illegal files.");
+                }
+                FileMap fm = new FileMap(nextFile.getAbsolutePath());
+                if (fm.isEmpty()) {
+                    nextFile.delete();
+                    nextDir = nextFile.getParentFile();
+                    if (nextDir.listFiles().length == 0)
+                        nextDir.delete();
+                } else {
+                    files.put(nextFile, fm);
+                    numberOfEntries += fm.size();
+                }
+            }
+
+        }
+        /*for (int i = 0; i < 16; i++) {
             nextDir = new File(table, String.valueOf(i) + ".dir").getAbsoluteFile();
             if (nextDir.isDirectory()) {
                 for (int j = 0; j < 16; j++) {
@@ -57,8 +81,7 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
                     }
                 }
             }
-        }
-        tableName = table.getAbsolutePath();
+        }*/
     }
     @Override
     public String put(String key, String value) {
@@ -79,9 +102,9 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
                 file.createNewFile();
                 fm = new FileMap(file.getAbsolutePath());
             } catch (IOException e) {
-                System.err.println("Caught IOException: " + e.getMessage());
+                throw new RuntimeException(e);
             } catch (IncorrectFileException e1) {
-                System.err.println("Caught IncorrectFileException :" + e1.getMessage());
+                throw new RuntimeException(e1);
             }
                 result = fm.put(key, value);
                 files.put(file, fm);
@@ -155,7 +178,7 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
             try {
                 numberOfChangedEntries += fm.commit();
             } catch (IOException e) {
-                System.err.println("Caught IOException: " + e.getMessage());
+                throw new RuntimeException(e);
             }
             if (fm.isEmpty()) {
                 File directory = file.getParentFile().getAbsoluteFile();
@@ -188,16 +211,16 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
     }
 
     private String getDirName(String key) {
-        int hashcode = key.hashCode();
-        int ndirectory = hashcode % MAGIC_NUMBER;
+        int hashcode = Math.abs(key.hashCode());
+        int ndirectory = hashcode % NUMBER_OF_PARTITIONS;
         StringBuilder builder = new StringBuilder();
         builder.append(ndirectory).append(".dir");
         return builder.toString();
     }
 
     private String getFileName(String key) {
-        int hashcode = key.hashCode();
-        int nfile = hashcode / MAGIC_NUMBER % MAGIC_NUMBER;
+        int hashcode = Math.abs(key.hashCode());
+        int nfile = hashcode / NUMBER_OF_PARTITIONS % NUMBER_OF_PARTITIONS;
         StringBuilder builder = new StringBuilder();
         builder.append(nfile).append(".dat");
         return  builder.toString();

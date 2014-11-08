@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.torunova.junit.actions;
 
 import ru.fizteh.fivt.students.torunova.junit.Database;
+import ru.fizteh.fivt.students.torunova.junit.Table;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
 
@@ -20,10 +21,14 @@ public class CreateTable extends Action{
             return false;
         }
         String tableName = args[0];
-        if (tableName.contains(File.separator) || tableName.equals("..") || tableName.equals(".")) {
-            throw new TableNotCreatedException("create: illegal name for table.");
+        Table table = null;
+        try {
+            table = (Table) db.createTable(tableName);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            return false;
         }
-        if (db.createTable(tableName) != null) {
+        if (table != null) {
             System.out.println("created");
             return true;
         } else {
