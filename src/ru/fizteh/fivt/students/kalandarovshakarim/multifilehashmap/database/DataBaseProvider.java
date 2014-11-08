@@ -102,11 +102,9 @@ public class DataBaseProvider implements TableProvider {
         if (tableName == null) {
             throw new IllegalArgumentException("Null cannot be an argument");
         }
-        String[] invalidCharacters = {"|", "\\", "?", "*", "<", "\"", ":", ">", "/"};
-        for (String character : invalidCharacters) {
-            if (tableName.contains(character)) {
-                throw new IllegalArgumentException("Table name contains invalid characters");
-            }
+        String regex = ".*(\\||\\\\|\\?|\\*|<|\\\"|:|>|/).*";
+        if (tableName.matches(regex)) {
+            throw new IllegalArgumentException("Table name contains invalid characters");
         }
     }
 }

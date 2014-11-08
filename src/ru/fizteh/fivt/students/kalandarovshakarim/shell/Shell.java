@@ -7,6 +7,8 @@ package ru.fizteh.fivt.students.kalandarovshakarim.shell;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
@@ -21,26 +23,39 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.CommandParser;
  */
 public class Shell {
 
+    private static String PROMPT = "$ ";
+
     private final Map<String, Command> supportedCmds;
     private final String[] args;
+    private final InputStream in;
+    private final PrintStream out;
+    private final PrintStream err;
 
     public Shell(Command[] commands, String[] args) {
+        this(commands, args, System.in, System.out, System.err);
+    }
+
+    public Shell(Command[] commands, String[] args,
+            InputStream in, PrintStream out, PrintStream err) {
         this.supportedCmds = new HashMap<>();
         for (Command cmd : commands) {
             this.supportedCmds.put(cmd.getName(), cmd);
         }
         this.args = args;
+        this.in = in;
+        this.out = out;
+        this.err = err;
     }
 
     private int interactiveMode() {
-        try (Scanner input = new Scanner(System.in)) {
-            System.out.print("$ ");
-            while (input.hasNextLine()) {
-                String command = input.nextLine();
+        try (Scanner scanner = new Scanner(in)) {
+            out.print(PROMPT);
+            while (scanner.hasNextLine()) {
+                String command = scanner.nextLine();
                 processCommand(command);
-                System.out.print("$ ");
+                out.print(PROMPT);
             }
-            System.out.println();
+            out.println();
         }
         return 0;
     }
@@ -60,7 +75,7 @@ public class Shell {
         if (command.length() > 0) {
             String cmdName = CommandParser.getCmdName(command);
             if (!supportedCmds.containsKey(cmdName)) {
-                System.err.printf("'%s' Unknown command\n", cmdName);
+                err.printf("'%s' Unknown command\n", cmdName);
                 return false;
             }
             try {
@@ -76,14 +91,14 @@ public class Shell {
                 supportedCmds.get(cmdName).exec(params);
             } catch (FileNotFoundException | NoSuchFileException e) {
                 String msg = "%s: %s: No such File or Directory\n";
-                System.err.printf(msg, cmdName, e.getMessage());
+                err.printf(msg, cmdName, e.getMessage());
                 return false;
             } catch (AccessDeniedException e) {
                 String msg = "Cannot perform: %s: %s: Access denied\n";
-                System.err.printf(msg, cmdName, e.getMessage());
+                err.printf(msg, cmdName, e.getMessage());
                 return false;
             } catch (IllegalArgumentException | IllegalStateException | IOException e) {
-                System.err.printf("%s: %s\n", cmdName, e.getMessage());
+                err.printf("%s: %s\n", cmdName, e.getMessage());
                 return false;
             }
         }
@@ -95,8 +110,8 @@ public class Shell {
             String[] strStatus = (status == 0 ? new String[0] : new String[1]);
             supportedCmds.get("exit").exec(strStatus);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+            err.println(e.getMessage());
+            System.exit(0);
         }
     }
 

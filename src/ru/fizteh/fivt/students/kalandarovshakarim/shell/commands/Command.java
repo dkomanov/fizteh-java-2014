@@ -5,9 +5,7 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.shell.commands;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 
 /**
  *
@@ -19,6 +17,5 @@ public interface Command {
 
     int getArgsNum();
 
-    void exec(String[] args)
-            throws NoSuchFileException, FileNotFoundException, IOException;
+    void exec(String[] args) throws IOException;
 }

@@ -40,7 +40,7 @@ public abstract class AbstractTable implements Table {
     @Override
     public String put(String key, String value) {
         checkArgument(value);
-        
+
         if (table.containsKey(key) && value.equals(table.get(key))) {
             // If same value was overwritten.
             return value;
@@ -126,7 +126,7 @@ public abstract class AbstractTable implements Table {
 
     protected abstract void save() throws IOException;
 
-    void checkArgument(String argument) {
+    private void checkArgument(String argument) {
         if (argument == null) {
             throw new IllegalArgumentException("null");
         }

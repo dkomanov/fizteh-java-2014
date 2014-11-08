@@ -49,6 +49,7 @@ public class DataBaseProviderTest {
         for (String file : list) {
             Files.delete(dbPath.resolve(file));
         }
+        Files.delete(dbPath);
     }
 
     /**
@@ -62,6 +63,15 @@ public class DataBaseProviderTest {
             Table result = instance.getTable(name);
             assertNotNull(result);
         }
+    }
+
+    /**
+     * Test of getTable method, of class DataBaseProvider.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetTableWithInvalidName() {
+        System.out.println("getTable with invalid name");
+        instance.getTable("123////\\?");
     }
 
     /**
@@ -175,9 +185,14 @@ public class DataBaseProviderTest {
      * I called it testConstructor because load is private and Constructor
      * uses load.
      */
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testContsructor() {
         System.out.println("test load");
+        try {
+            Files.createFile(dbPath.resolve("nondirectory.dat"));
+        } catch (IOException e) {
+            // Nothing.
+        }
         new DataBaseProviderFactory().create(dbPath.toString());
     }
 }

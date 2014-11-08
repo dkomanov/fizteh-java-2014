@@ -29,7 +29,7 @@ public class MultiFileTableTest {
 
     @Before
     public void setUp() {
-        testDirectory = System.getProperty("test.dir") + "/test.db.dir";
+        testDirectory = System.getProperty("java.io.tmpdir");
         factory = new DataBaseProviderFactory();
         provider = factory.create(testDirectory);
         instance = provider.createTable(tableName);

@@ -40,8 +40,8 @@ public class DataBaseProviderFactoryTest {
             Files.createFile(txtFile);
         }
         existsDirectory = Paths.get(testDirectory, "test.db.dir").toString();
-        invalidDirectory = Paths.get(testDirectory, "notDirectory.txt/db.dir").toString();
-        withoutParentDirectory = Paths.get(testDirectory, "dirNotExists/db.dir").toString();
+        invalidDirectory = Paths.get(testDirectory, "notDirectory.txt", "db.dir").toString();
+        withoutParentDirectory = Paths.get(testDirectory, "dirNotExists", "db.dir").toString();
         withParentDirectory = Paths.get(testDirectory, "dirNotExists").toString();
         notDirectory = Paths.get(testDirectory, "notDirectory.txt").toString();
     }
