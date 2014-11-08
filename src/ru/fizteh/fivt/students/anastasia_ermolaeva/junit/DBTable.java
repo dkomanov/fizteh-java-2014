@@ -141,7 +141,7 @@ public class DBTable implements Table {
                                 + (DIR_AMOUNT - 1) + DIR_SUFFIX);
                     }
                 } catch (NullPointerException n) {
-                    new DatabaseIOException("Access forbidden");
+                    throw new DatabaseIOException("Access forbidden");
                 }
             }
         } catch (NullPointerException n) {
