@@ -22,26 +22,25 @@ public class StructuredDatabase implements TableProvider {
     private StringDatabase backendDatabase;
 
     public StructuredDatabase(File databaseFile) {
-        //TODO: not implemented
         backendDatabase = new StringDatabase(databaseFile);
-
     }
 
     @Override
     public Table getTable(String name) {
-        return null;
+        return wrap(backendDatabase.getTable(name));
     }
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        //TODO: not implemented
+        backendDatabase.createTable(name);
+        TableSignature tableSignature = new TableSignature(columnTypes.toArray(new Class<?>[columnTypes.size()]));
+
         return null;
     }
 
     @Override
     public void removeTable(String name) throws IOException {
-        //TODO: not implemented
-
+        backendDatabase.removeTable(name);
     }
 
     @Override
