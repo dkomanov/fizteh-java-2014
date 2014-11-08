@@ -22,9 +22,9 @@ public class Command {
                               final String[] arguments) {
         if (arguments.length != numArguments) {
             String errMessage = getName() + ": invalid number of arguments: "
-                    + numArguments
+                    + (numArguments - 1)
                     + " expected, "
-                    + arguments.length
+                    + (arguments.length - 1)
                     + " found.";
             throw new IllegalCommandException(errMessage);
         } else {
