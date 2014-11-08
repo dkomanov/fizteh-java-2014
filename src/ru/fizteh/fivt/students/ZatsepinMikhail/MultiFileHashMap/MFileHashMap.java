@@ -6,12 +6,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.AbstractStoreable;
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.CheckTypesValidity;
 import ru.fizteh.fivt.students.ZatsepinMikhail.shell.FileUtils;
 
 public class MFileHashMap implements TableProvider {
@@ -34,8 +39,11 @@ public class MFileHashMap implements TableProvider {
         }
     }
 
-    public Table createTable(String name) throws IllegalArgumentException {
-        if (name == null) {
+    public Table createTable(String name, List<Class<?>> columnTypes) throws IOException, IllegalArgumentException {
+        if (name == null || columnTypes == null) {
+            throw new IllegalArgumentException();
+        }
+        if (!CheckTypesValidity.run(columnTypes)) {
             throw new IllegalArgumentException();
         }
         if (tables.containsKey(name)) {
@@ -44,30 +52,39 @@ public class MFileHashMap implements TableProvider {
             Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
             try {
                 Files.createDirectory(pathOfNewTable);
-                FileMap newTable = new FileMap(pathOfNewTable.toString());
+                FileMap newTable = new FileMap(pathOfNewTable.toString(), columnTypes);
                 tables.put(name, newTable);
                 return newTable;
             } catch (IOException e) {
-                throw new IllegalArgumentException();
+                throw new IOException();
             }
         }
     }
 
-    public void removeTable(String name) throws IllegalArgumentException, IllegalStateException {
+    public void removeTable(String name) throws IllegalArgumentException, IllegalStateException, IOException {
         if (name == null) {
             throw new IllegalArgumentException();
         }
         if (tables.containsKey(name)) {
             Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
             tables.remove(name);
-            if (!FileUtils.rmdir(pathForRemoveTable)) {
-                throw new IllegalArgumentException();
-            }
+            FileUtils.rmdir(pathForRemoveTable);
         } else {
             throw new IllegalStateException();
         }
     }
 
+    public Storeable createFor(Table table) {
+        Object[] startValues = new Object[table.getColumnsCount()];
+        return new AbstractStoreable(startValues);
+    }
+
+    Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException) {
+        if (CheckTypesValidity.canonicalTypes.size() != values.size()) {
+            throw new IndexOutOfBoundsException("in createFor");
+        }
+
+    }
 
     public void addTable(String tableName, FileMap newFileMap) {
         tables.put(tableName, newFileMap);

@@ -18,7 +18,7 @@ public class FileMap implements Table {
     private HashMap<String, Storeable> addedData;
     private HashMap<String, Storeable> changedData;
     private HashSet<String> removedData;
-    private ArrayList<Class<?>> typeList;
+    private List<Class<?>> typeList;
     private int numberOfColumns;
     private String directoryOfTable;
 
@@ -50,7 +50,7 @@ public class FileMap implements Table {
      * @param newDirectory - directory of this FileMap
      * @param newTypeList - list of types (signature of table)
      */
-    public FileMap(String newDirectory, ArrayList<Class<?>> newTypeList) {
+    public FileMap(String newDirectory, List<Class<?>> newTypeList) {
         directoryOfTable = newDirectory;
         stableData = new HashMap<>();
         addedData = new HashMap<>();

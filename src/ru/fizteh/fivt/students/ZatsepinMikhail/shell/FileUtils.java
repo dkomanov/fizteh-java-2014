@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.shell;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -12,15 +13,11 @@ public class FileUtils {
         return command.run(args);
     }
 
-    public static boolean rmdir(Path newDirectory) {
-        CommandRm command = new CommandRm();
+    public static void rmdir(Path newDirectory) throws IOException {
         if (!Files.isDirectory(newDirectory) | !Files.exists(newDirectory)) {
-            return false;
+            throw new IllegalArgumentException();
         }
-        String[] args = {"rm",
-                         "-r",
-                         newDirectory.toString()
-        };
-        return command.run(args);
+        FileVisitorDelete myFileVisitorDelete = new FileVisitorDelete();
+        Files.walkFileTree(newDirectory, myFileVisitorDelete);
     }
 }
