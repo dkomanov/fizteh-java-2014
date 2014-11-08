@@ -23,15 +23,4 @@ public class FileUtils {
         };
         return command.run(args);
     }
-
-    public static boolean rmfile(Path newDirectory) {
-        CommandRm command = new CommandRm();
-        if (!Files.exists(newDirectory)) {
-            return false;
-        }
-        String[] args = {"rm",
-                         newDirectory.toString()
-        };
-        return command.run(args);
-    }
 }

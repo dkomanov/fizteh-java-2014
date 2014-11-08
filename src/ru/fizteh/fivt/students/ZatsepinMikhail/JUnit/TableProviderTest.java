@@ -52,6 +52,12 @@ public class TableProviderTest {
     }
 
     @Test
+    public void testCreateDouble() throws Exception {
+        provider.createTable(tableName);
+        assertNull(provider.createTable(tableName));
+    }
+
+    @Test
     public void testCreateTableDirNotExists() throws Exception {
         FileUtils.rmdir(Paths.get(providerDirectory, tableName));
         assertNotNull(provider.createTable(tableName));
@@ -70,9 +76,14 @@ public class TableProviderTest {
         assertTrue(!Files.exists(Paths.get(providerDirectory, tableName)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void testRemoveTableDirNotExists() throws Exception {
         FileUtils.rmdir(Paths.get(providerDirectory, tableName));
         provider.removeTable(tableName);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRemoveTableNull() throws Exception {
+        provider.removeTable(null);
     }
 }
