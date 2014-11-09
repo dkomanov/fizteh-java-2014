@@ -6,7 +6,6 @@ import java.util.Scanner;
 public class InteractiveMode {
 
     public static void interactive(RootDirectory direct) throws IOException {
-        @SuppressWarnings("resource")
         Scanner in = new Scanner(System.in);
         String[] parserCommand;
         CommandInterpretator newParser = new CommandInterpretator();
