@@ -7,7 +7,6 @@ public class BatchMode {
 
     public static void batchParser(RootDirectory direct, String[] argv)
             throws IOException {
-        @SuppressWarnings({ "unused", "resource" })
         Scanner in = new Scanner(System.in);
         StringBuilder allStringBuild = new StringBuilder();
         for (String argument : argv) {
@@ -20,16 +19,9 @@ public class BatchMode {
         String[] commands = allString.split(";");
         int i = 0;
         CommandInterpretator newParser = new CommandInterpretator();
-        boolean firstElement = true;
         while (i < commands.length) {
-            if (firstElement) {
-                String[] command = commands[0].split(" ");
-                newParser.executeCommand(direct, command);
-                firstElement = false;
-            } else {
-                String[] command = commands[i].trim().split(" ");
-                newParser.executeCommand(direct, command);
-            }
+            String[] command = commands[i].trim().split(" ");
+            newParser.executeCommand(direct, command);
             ++i;
         }
         System.exit(0);
