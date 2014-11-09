@@ -30,6 +30,9 @@ public class MultiTable {
             return;
         }
         for (File it : directories) {
+            if (!it.isDirectory()) {
+                continue;
+            }
             int numDirectory = Integer.parseInt(it.getName().substring(0, it.getName().indexOf(".")));
             File[] datFiles = it.listFiles();
             if (datFiles == null) {
@@ -148,6 +151,10 @@ public class MultiTable {
                     datIt.delete();
                 }
             }
+            datFiles = it.listFiles();
+            if (datFiles.length == 0) {
+                it.delete();
+            }
         }
     }
 
@@ -161,5 +168,25 @@ public class MultiTable {
             }
         }
         return numKeys;
+    }
+
+    public Map<String, String> getData() {
+        Map<String, String> data = new HashMap<>();
+        for (FileMap[] it : files) {
+            for (FileMap it2 : it) {
+                if (it2 == null) {
+                    continue;
+                }
+                Map<String, String> currentFileData = it2.getMap();
+                for (Map.Entry pair : currentFileData.entrySet()) {
+                    data.put((String) pair.getKey(), (String) pair.getValue());
+                }
+            }
+        }
+        return data;
+    }
+
+    public String getTableName() {
+        return tableDirectory.getName();
     }
 }

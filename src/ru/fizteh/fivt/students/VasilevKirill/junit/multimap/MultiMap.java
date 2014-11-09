@@ -35,21 +35,21 @@ public class MultiMap {
     }
 
     public boolean addTable(String name) throws IOException {
-        if (name != null) {
-            if (!tables.containsKey(name)) {
-                File newDir = new File(workingDirectory + File.separator + name);
-                if (!newDir.exists()) {
-                    if (!newDir.mkdir()) {
-                        throw new IOException("Can't create the directory: " + newDir.getName());
-                    }
-                }
-                tables.put(name, new MultiTable(newDir));
-                return true;
-            } else {
-                return false;
-            }
+        if (name == null) {
+            throw new IOException("Wrong arguments");
         }
-        return false;
+        if (!tables.containsKey(name)) {
+            File newDir = new File(workingDirectory + File.separator + name);
+            if (!newDir.exists()) {
+                if (!newDir.mkdir()) {
+                    throw new IOException("Can't create the directory: " + newDir.getName());
+                }
+            }
+            tables.put(name, new MultiTable(newDir));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean removeTable(String name) throws IOException {
@@ -104,5 +104,9 @@ public class MultiMap {
                 System.out.println(entry.getKey() + " " + multiTable.getNumKeys());
             }
         }
+    }
+
+    public MultiTable getMultiTable(String name) {
+        return tables.get(name);
     }
 }
