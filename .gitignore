@@ -1,0 +1,25 @@
+.DS_Store
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.war
+*.ear
+
+hs_err_pid*
+
+.idea
+*.iml
+out
+jars
+/bin
+
+.classpath
+.project
+workbench.xmi
+*.swp
+
+.settings
+.checkstyle
