@@ -29,12 +29,6 @@ public class Interpreter {
         }
     }
 
-    /**
-     * @param commands Массив команд, доступных интерпретатору. Должен содержать команду "exit"
-     * @param in       Входной поток
-     * @param out      Поток вывода
-     * @param err      Поток вывода ошибок
-     */
     public Interpreter(Command[] commands, InputStream in, PrintStream out, PrintStream err) {
         if (in == null || out == null || err == null) {
             throw new IllegalArgumentException("One of the iostreams is not initialized.");

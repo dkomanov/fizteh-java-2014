@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.database;
 
 import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.TableDoesNotExistException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
@@ -52,7 +53,7 @@ public class Database implements TableProvider {
     @Override
     public Table getTable(String name) {
         if (!isNameCorrect(name)) {
-            throw new IllegalArgumentException("Illegal table name: " + name);
+            throw new InputMistakeException("Illegal table name: " + name);
         }
         return tables.get(name);
     }
@@ -76,7 +77,7 @@ public class Database implements TableProvider {
             tables.put(name, newTable);
             return newTable;
         } catch (IOException e) {
-            throw new IllegalArgumentException("Illegal table name: " + e.getMessage(), e);
+            throw new InputMistakeException("Illegal table name: " + e.getMessage());
         }
     }
 
@@ -122,6 +123,10 @@ public class Database implements TableProvider {
                 return false;
             }
         }
+        if (name.matches(".*\\.|\\..*|.*(/|\\\\).*")) {
+            return false;
+        }
+
         return true;
     }
 }
