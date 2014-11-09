@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.TypesUtils;
 
 import java.io.IOException;
@@ -13,15 +14,34 @@ public class CommandCreate extends CommandMultiFileHashMap {
 
     @Override
     public boolean run(MFileHashMap myMultiDataBase, String[] args) {
-        if (args[2].charAt(0) != '(' || !args[args.length - 1].endsWith(")")) {
-            System.out.println(name + ": wrong arguments");
+        StringBuilder simpleBuilder = new StringBuilder();
+        for (int i = 2; i < args.length; ++i) {
+            if (i != 2) {
+                simpleBuilder.append(" ");
+            }
+            simpleBuilder.append(args[i]);
+        }
+        String concatArgs = simpleBuilder.toString();
+        if (concatArgs.lastIndexOf("(") != 0
+                || concatArgs.indexOf(")") != concatArgs.length() - 1) {
+            System.out.println("types should be in format: \"(type1 type2 ... typeN)\"");
             return false;
         }
-        List<Class<?>> types = TypesUtils.toTypeList(args, true);
+
+        concatArgs = new String(concatArgs.toCharArray(), 1, concatArgs.length() - 2);
+        List<Class<?>> types;
+        try {
+            types = TypesUtils.toTypeList(concatArgs.split("\\s+"));
+        } catch (ColumnFormatException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
         try {
             myMultiDataBase.createTable(args[1], types);
         } catch (IOException e) {
             return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
         return true;
     }

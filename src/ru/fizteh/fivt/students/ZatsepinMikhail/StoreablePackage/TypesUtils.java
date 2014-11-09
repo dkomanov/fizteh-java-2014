@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage;
 
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class TypesUtils {
     public static HashSet<Class<?>> canonicalTypes;
 
     static {
+        canonicalTypes = new HashSet<>();
         canonicalTypes.add(Integer.class);
         canonicalTypes.add(Long.class);
         canonicalTypes.add(Byte.class);
@@ -19,10 +21,7 @@ public class TypesUtils {
         canonicalTypes.add(String.class);
     }
 
-    public static boolean run(List<Class<?>> types) {
-        if (types.size() != canonicalTypes.size()) {
-            return false;
-        }
+    public static boolean checkTypes(List<Class<?>> types) {
         for (Class<?> oneClass : types) {
             if (!canonicalTypes.contains(oneClass)) {
                 return false;
@@ -31,7 +30,7 @@ public class TypesUtils {
         return true;
     }
 
-    public static boolean check(List<Class<?>> types, Storeable newValue) {
+    public static boolean checkNewStorableValue(List<Class<?>> types, Storeable newValue) {
         int counter = 0;
         for (Class<?> oneType : types) {
             if (!oneType.getClass().equals(newValue.getColumnAt(counter).getClass())) {
@@ -42,13 +41,9 @@ public class TypesUtils {
         return true;
     }
 
-    public static List<Class<?>> toTypeList(String[] types, boolean fromCommand) {
+    public static List<Class<?>> toTypeList(String[] types) throws ColumnFormatException {
         List<Class<?>> result = new ArrayList<>();
-        int start = 0;
-        if (fromCommand) {
-            start += 2;
-        }
-        for (int i = start; i < types.length; ++i) {
+        for (int i = 0; i < types.length; ++i) {
             switch(types[i]) {
                 case "int":
                     result.add(Integer.class);
@@ -72,7 +67,7 @@ public class TypesUtils {
                     result.add(String.class);
                     break;
                 default:
-                    return null;
+                    throw new ColumnFormatException("wrong type: " + types[i]);
             }
         }
         return result;
@@ -85,26 +80,26 @@ public class TypesUtils {
             if (counter > 0) {
                 s.append(" ");
             }
-            switch (oneClass.toString()) {
-                case "Integer":
+            switch (oneClass.getTypeName()) {
+                case "java.lang.Integer":
                     s.append("int");
                     break;
-                case "Byte":
+                case "java.lang.Byte":
                     s.append("byte");
                     break;
-                case "Long":
+                case "java.lang.Long":
                     s.append("long");
                     break;
-                case "Boolean":
+                case "java.lang.Boolean":
                     s.append("boolean");
                     break;
-                case "Float":
+                case "java.lang.Float":
                     s.append("float");
                     break;
-                case "Double":
+                case "java.lang.Double":
                     s.append("double");
                     break;
-                case "String":
+                case "java.lang.String":
                     s.append("string");
                     break;
                 default:

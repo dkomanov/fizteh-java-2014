@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 
+import java.io.IOException;
+
 public class CommandCommit extends CommandMultiFileHashMap{
     public CommandCommit() {
         name = "commit";
@@ -15,7 +17,12 @@ public class CommandCommit extends CommandMultiFileHashMap{
         if (currentTable == null) {
             System.out.println("no table");
         } else {
-            System.out.println(currentTable.commit());
+            try {
+                System.out.println(currentTable.commit());
+            } catch (IOException e) {
+                System.err.println("io exception while writing in file");
+                return false;
+            }
         }
         return true;
     }

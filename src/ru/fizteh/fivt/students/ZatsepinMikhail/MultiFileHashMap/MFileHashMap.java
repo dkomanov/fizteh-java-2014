@@ -33,7 +33,7 @@ public class MFileHashMap implements TableProvider {
     @Override
     public Table getTable(String name) throws IllegalArgumentException {
         if (name == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("null argument");
         }
         if (tables.containsKey(name)) {
             return tables.get(name);
@@ -45,10 +45,10 @@ public class MFileHashMap implements TableProvider {
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException, IllegalArgumentException {
         if (name == null || columnTypes == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("null argument");
         }
-        if (!TypesUtils.run(columnTypes)) {
-            throw new IllegalArgumentException();
+        if (!TypesUtils.checkTypes(columnTypes)) {
+            throw new IllegalArgumentException("wrong type columns");
         }
         if (tables.containsKey(name)) {
             return null;
@@ -73,7 +73,7 @@ public class MFileHashMap implements TableProvider {
     @Override
     public void removeTable(String name) throws IllegalArgumentException, IllegalStateException, IOException {
         if (name == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("null argument");
         }
         if (tables.containsKey(name)) {
             Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
@@ -145,7 +145,7 @@ public class MFileHashMap implements TableProvider {
                     String[] types;
                     if (input.hasNext()) {
                         types = input.nextLine().trim().split("\\s+");
-                        List<Class<?>> newTypeList = TypesUtils.toTypeList(types, false);
+                        List<Class<?>> newTypeList = TypesUtils.toTypeList(types);
                         if (newTypeList != null) {
                             tables.put(oneFile, new FileMap(oneTablePath.toString(), newTypeList, this));
                         }

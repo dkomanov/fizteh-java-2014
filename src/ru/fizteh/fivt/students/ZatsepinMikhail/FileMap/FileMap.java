@@ -78,7 +78,7 @@ public class FileMap implements Table {
     @Override
     public Storeable get(String key) throws IllegalArgumentException {
         if (key == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("null argument");
         }
         if (removedData.contains(key)) {
             return null;
@@ -95,7 +95,7 @@ public class FileMap implements Table {
     @Override
     public Storeable remove(String key) throws IllegalArgumentException {
         if (key == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("null argument");
         }
         if (removedData.contains(key)) {
             return null;
@@ -116,9 +116,9 @@ public class FileMap implements Table {
     @Override
     public Storeable put(String key, Storeable value) throws IllegalArgumentException {
         if (key == null || value == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("null argument");
         }
-        if (!TypesUtils.check(typeList, value)) {
+        if (!TypesUtils.checkNewStorableValue(typeList, value)) {
             throw new ColumnFormatException();
         }
         boolean wasDeleted = false;
