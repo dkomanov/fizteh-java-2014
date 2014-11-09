@@ -17,17 +17,17 @@ public class CmdDrop implements Command {
     @Override
     public final void executeCmd(final Shell shell, final String[] args) throws IOException {
 
-    	if (1 == ((MultiFileHashMap) shell).getMFHMState().getFlag()) {
-    		if (((MultiFileHashMap) shell).getMFHMState().getCurrentTable().getName().equals(args[0])) {
-    			Set<String> keys = ((MultiFileHashMap) shell).getMFHMState().
-    					getDataBaseFromCurrentTable().keySet();
-    			for (String key : keys) {
-    				((MultiFileHashMap) shell).getMFHMState().removeFromCurrentTable(key);
-    				}
-        		((MultiFileHashMap) shell).getMFHMState().setCurrentTable();
-        		((MultiFileHashMap) shell).getMFHMState().changeFlag();
-    		}
-    	}
+        if (1 == ((MultiFileHashMap) shell).getMFHMState().getFlag()) {
+            if (((MultiFileHashMap) shell).getMFHMState().getCurrentTable().getName().equals(args[0])) {
+                Set<String> keys = ((MultiFileHashMap) shell).getMFHMState().
+                        getDataBaseFromCurrentTable().keySet();
+                for (String key : keys) {
+                    ((MultiFileHashMap) shell).getMFHMState().removeFromCurrentTable(key);
+                    }
+                ((MultiFileHashMap) shell).getMFHMState().setCurrentTable();
+                ((MultiFileHashMap) shell).getMFHMState().changeFlag();
+            }
+        }
 
 
         if (((MultiFileHashMap) shell).getMFHMState().getTable(args[0]) == null) {
@@ -39,4 +39,3 @@ public class CmdDrop implements Command {
         }
     }
 }
-
