@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.andrewzhernov.junit;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.io.RandomAccessFile;
 import java.util.List;
 import java.util.LinkedList;

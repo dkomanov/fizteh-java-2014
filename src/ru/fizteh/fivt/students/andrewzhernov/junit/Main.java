@@ -1,9 +1,7 @@
 package ru.fizteh.fivt.students.andrewzhernov.junit;
 
 import java.util.List;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.HashMap;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,7 +15,7 @@ public class Main {
                     }
                     @Override
                     public void handle(Object object) throws Exception {
-                        System.out.println((Integer)object);
+                        System.out.println((Integer) object);
                     }
                 }),
                 new Command("put", 3, new HandlerInterface() {
@@ -27,7 +25,7 @@ public class Main {
                     }
                     @Override
                     public void handle(Object object) throws Exception {
-                        String value = (String)object;
+                        String value = (String) object;
                         if (value == null) {
                             System.out.println("new");
                         } else {
@@ -43,7 +41,7 @@ public class Main {
                     }
                     @Override
                     public void handle(Object object) throws Exception {
-                        String value = (String)object;
+                        String value = (String) object;
                         if (value == null) {
                             System.out.println("not found");
                         } else {
@@ -59,7 +57,7 @@ public class Main {
                     }
                     @Override
                     public void handle(Object object) throws Exception {
-                        if ((String)object == null) {
+                        if ((String) object == null) {
                             System.out.println("not found");
                         } else {
                             System.out.println("removed");
@@ -74,7 +72,7 @@ public class Main {
                     @Override
                     public void handle(Object object) throws Exception {
                         @SuppressWarnings("unchecked")
-                        List<String> list = (List<String>)object;
+                        List<String> list = (List<String>) object;
                         System.out.println(String.join(", ", list));
                     }
                 }),
@@ -85,7 +83,7 @@ public class Main {
                     }
                     @Override
                     public void handle(Object object) throws Exception {
-                        System.out.println((Integer)object);
+                        System.out.println((Integer) object);
                     }
                 }),
                 new Command("rollback", 1, new HandlerInterface() {
@@ -95,7 +93,7 @@ public class Main {
                     }
                     @Override
                     public void handle(Object object) throws Exception {
-                        System.out.println((Integer)object);
+                        System.out.println((Integer) object);
                     }
                 }),
                 new Command("create", 2, new HandlerInterface() {
@@ -137,7 +135,7 @@ public class Main {
                     @Override
                     public void handle(Object object) throws Exception {
                         @SuppressWarnings("unchecked")
-                        Map<String, Integer> tables = (Map<String, Integer>)object;
+                        Map<String, Integer> tables = (Map<String, Integer>) object;
                         for (String tablename : tables.keySet()) {
                             System.out.printf("%s %d\n", tablename, tables.get(tablename));
                         }
