@@ -1,105 +1,66 @@
 package ru.fizteh.fivt.students.dnovikov.junit;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-<<<<<<< Updated upstream
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.TableProvider;
-=======
->>>>>>> Stashed changes
-import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
-
-import java.io.File;
+import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.TableNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+import static org.junit.Assert.*;
 public class DataBaseProviderTest {
-    private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DbTestDir");
-    private final File testFile = Paths.get(testDir.toString(), "TestFile").toFile();
-    private final String dirName = "test";
-    private final Path dirPath = testDir.resolve(dirName);
 
-=======
-public class DataBaseProviderTest {
-    private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DbTestDir");
-    private final File testFile = Paths.get(testDir.toString(), "TestFile").toFile();
-    private final String workingDir = "test";
-    private final Path workingPath = testDir.resolve(workingDir);
+    @Rule
+    public TemporaryFolder tmpFolder = new TemporaryFolder();
+    public TableProvider provider;
 
     @Before
->>>>>>> Stashed changes
     public void setUp() throws IOException {
-        Files.createDirectory(testDir);
+        TableProviderFactory factory = new DataBaseProviderFactory();
+        provider = factory.create(tmpFolder.newFolder().getAbsolutePath());
     }
 
-    @Test(expected = LoadOrSaveException.class)
-<<<<<<< Updated upstream
-    public void testDataBaseProviderThrowsExceptionOfNonexistentDirectory() {
-        new DataBaseProvider(testDir.resolve(dirPath).toString());
+    @Test(expected = IllegalArgumentException.class)
+    public void getNullTable() {
+        provider.getTable(null);
     }
 
-    @Test(expected = LoadOrSaveException.class)
-    public void testDataBaseProviderThrowsExceptionCreatedNotDirectory() {
-=======
-    public void testDataBaseProviderThrowsExceptionDirectoryNotExists() {
-        new DataBaseProvider(testDir.resolve(workingDir).toString());zr
+    @Test(expected = IllegalArgumentException.class)
+    public void createNullTable() {
+        provider.createTable(null);
     }
 
-    @Test(expected = LoadOrSaveException.class)
-    public void testDataBaseProviderThrowsExceptionCreatedNotDirectory() throws IOException {
-        testFile.createNewFile();
->>>>>>> Stashed changes
-        new DataBaseProvider(testFile.toString());
+    @Test (expected = IllegalArgumentException.class)
+    public void removeNullTable() {
+        provider.removeTable(null);
     }
 
-    @Test(expected = LoadOrSaveException.class)
-    public void testDataBaseProviderThrowsExceptionCreatedInvalidPath() {
-        new DataBaseProvider("invalidPath");
+    @Test
+    public void createAndGetTable() {
+        provider.createTable("newTable");
+        assertNull(provider.getTable("notExistingTable"));
+        assertNotNull(provider.getTable("newTable"));
     }
 
-    @Test(expected = LoadOrSaveException.class)
-    public void testDataBaseProviderThrowsExceptionFileInDirectory() throws IOException {
-<<<<<<< Updated upstream
-        if (!testDir.toFile().exists()) {
-            Files.createDirectory(testDir);
-        }
-        if (!dirPath.toFile().exists())
-            Files.createDirectory(dirPath);
-
-        dirPath.resolve("fileName").toFile().createNewFile();
-        new DataBaseProvider(dirPath.toString());
+    @Test (expected = TableNotFoundException.class)
+    public void removeNotExistingTable() {
+        provider.removeTable("notExistingTable");
     }
 
-=======
-        Files.createDirectory(workingPath);
-        workingPath.resolve("fileName").toFile().createNewFile();
-        new DataBaseProvider(workingPath.toString());
+    @Test
+    public void createAndRemoveTable() {
+        assertNotNull(provider.createTable("newTable"));
+        assertNotNull(provider.getTable("newTable"));
+        provider.removeTable("newTable");
+        assertNull(provider.getTable("newTable"));
     }
->>>>>>> Stashed changes
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testDataBaseProviderThrowsExceptionCreateNullTableName() throws IOException {
-//        if (!testDir.toFile().exists()) {
-//            Files.createDirectory(testDir);
-//        }
-//        if (!dirPath.toFile().exists())
-//            Files.createDirectory(dirPath);
-//        TableProvider test = new DataBaseProvider(dirPath.toString());
-//        test.createTable(null);
-//    }
 
-<<<<<<< Updated upstream
-    @After
-    public void tearDown() {
-
-=======
-
-    @After
-    public void tearDown() {
-        workingPath.toFile().delete();
-        testFile.delete();
-        testDir.toFile().delete();
->>>>>>> Stashed changes
+    @Test
+    public void doubleTableCreation() {
+        assertNotNull(provider.createTable("newTable"));
+        assertNull(provider.createTable("newTable"));
     }
+
+
 }

@@ -10,10 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class DataBaseProvider implements TableProvider {
     private DataBaseTable currentTable = null;
@@ -22,9 +19,9 @@ public class DataBaseProvider implements TableProvider {
     private ArrayList<Table> tables = new ArrayList<>();
     private Map<String, Table> tableNames = new TreeMap<>();
 
-    public DataBaseProvider(String directoryPath) throws NullPointerException, LoadOrSaveException {
+    public DataBaseProvider(String directoryPath)throws LoadOrSaveException {
         if (directoryPath == null) {
-            throw new NullPointerException("database directory not set");
+            throw new IllegalArgumentException("database directory not set");
         } else {
             rootDirectory = new File(directoryPath).toPath();
         }
@@ -41,6 +38,9 @@ public class DataBaseProvider implements TableProvider {
 
     @Override
     public Table getTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("cannot get table: null");
+        }
         return tableNames.get(name);
     }
 
@@ -68,6 +68,9 @@ public class DataBaseProvider implements TableProvider {
 
     @Override
     public void removeTable(String name) throws LoadOrSaveException, TableNotFoundException {
+        if (name == null) {
+            throw new IllegalArgumentException("cannot remove table: null");
+        }
         DataBaseTable table = (DataBaseTable) tableNames.get(name);
         if (table == null) {
             throw new TableNotFoundException();
