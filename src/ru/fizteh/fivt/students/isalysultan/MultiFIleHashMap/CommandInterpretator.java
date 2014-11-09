@@ -37,29 +37,42 @@ public class CommandInterpretator {
             if (command.length < 3 || command.length > 3) {
                 System.err.println("Wrong arguments");
             }
-            direct.executePut(command[1], command[2]);
+            boolean useTable = direct.executePut(command[1], command[2]);
+            if (!useTable) {
+                System.out.println("no table");
+            }
             break;
         case "get":
             if (command.length < 2 || command.length > 2) {
                 System.err.println("Wrong arguments");
             }
-            direct.executeGet(command[1]);
+            useTable = direct.executeGet(command[1]);
+            if (!useTable) {
+                System.out.println("no table");
+            }
             break;
         case "remove":
             if (command.length < 2 || command.length > 2) {
                 System.err.println("Wrong arguments");
             }
-            direct.executeRemove(command[1]);
+            useTable = direct.executeRemove(command[1]);
+            if (!useTable) {
+                System.out.println("no table");
+            }
             break;
         case "list":
-            direct.executeList();
+            useTable = direct.executeList();
+            if (!useTable) {
+                System.out.println("no table");
+            }
             break;
-        case "exit":
+        case "exit": {
             direct.executeExit();
             System.exit(0);
-            break;
+        }
         default:
             System.out.println("Command is not recognized.");
         }
     }
+
 }
