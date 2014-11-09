@@ -1,9 +1,10 @@
-package ru.fizteh.fivt.students.alina_chupakhina.junit;
+package ru.fizteh.fivt.students.alina_chupakhina.junit.test;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.alina_chupakhina.junit.BdTable;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -14,12 +15,9 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class BdTableTest {
-    //private final String testDir = System.getProperty("java.io.tmpdir") + File.separator + "DbTestDir";
-    private final String testDir = "C:\\Ololo\\DbTestDir";
+    private final String testDir = System.getProperty("java.io.tmpdir") + File.separator + "DbTestDir";
     private final String tableName = "table1";
     private final String testFile = "Тестовый файл.txt";
-    //The table directory must contain only files in such format:
-    //"[path to the table directory]/*.dir/*.dat".
     private final int dirNumber = 1;
     private final int fileNumber = 1;
     private String correctKey;

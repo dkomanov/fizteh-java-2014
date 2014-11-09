@@ -1,14 +1,17 @@
 package ru.fizteh.fivt.students.alina_chupakhina.junit;
 
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.strings.TableProvider;
+
 import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class JUnit {
     public static String path;
-    public static Map<String, BdTable> tableList;
+    public static Map<String, Table> tableList;
     public static BdTable currentTable;
-    public static PvTable pv;
+    public static TableProvider pv;
 
     public static void main(final String[] args) {
         try {
@@ -24,13 +27,14 @@ public class JUnit {
             File[] children = dir.listFiles();
             for (File child : children) {
                 TablePF pf = new TablePF();
-                PvTable pv = pf.create(path);
+                pv = pf.create(path);
                 tableList.put(child.getName(), pv.getTable(child.getName()));
             }
+            Mode mode = new Mode();
             if (args.length > 0) {
-                Mode.batch(args);
+                mode.batch(args);
             } else {
-                Mode.interactive();
+                mode.interactive();
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
