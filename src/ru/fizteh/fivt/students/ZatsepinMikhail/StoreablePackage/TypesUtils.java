@@ -33,7 +33,7 @@ public class TypesUtils {
     public static boolean checkNewStorableValue(List<Class<?>> types, Storeable newValue) {
         int counter = 0;
         for (Class<?> oneType : types) {
-            if (!oneType.getClass().equals(newValue.getColumnAt(counter).getClass())) {
+            if (!oneType.equals(newValue.getColumnAt(counter).getClass())) {
                 return false;
             }
             ++counter;

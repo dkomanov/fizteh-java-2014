@@ -87,7 +87,7 @@ public class MFileHashMap implements TableProvider {
     @Override
     public Storeable createFor(Table table) {
         Object[] startValues = new Object[table.getColumnsCount()];
-        return new AbstractStoreable(startValues);
+        return new AbstractStoreable(startValues, table);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class MFileHashMap implements TableProvider {
                 throw new ColumnFormatException("types mismatch");
             }
         }
-        return new AbstractStoreable(values.toArray());
+        return new AbstractStoreable(values.toArray(), table);
     }
 
     @Override

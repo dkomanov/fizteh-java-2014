@@ -2,17 +2,20 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
 
 public class AbstractStoreable implements Storeable {
     private Object[] values;
+    private Table parentTable;
 
-    public AbstractStoreable(Object[] newValues) {
+    public AbstractStoreable(Object[] newValues, Table newParent) {
         values = newValues;
+        parentTable = newParent;
     }
 
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (values[columnIndex].getClass() != value.getClass()) {
+        if (!parentTable.getColumnType(columnIndex).equals(value.getClass())) {
             throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
                 + " , but got:" + value.getClass());
         } else {
@@ -27,7 +30,7 @@ public class AbstractStoreable implements Storeable {
 
     @Override
     public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (values[columnIndex].getClass() != Integer.class) {
+        if (!values[columnIndex].getClass().equals(Integer.class)) {
             throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
                     + " , but got:" + Integer.class);
         }
@@ -36,7 +39,7 @@ public class AbstractStoreable implements Storeable {
 
     @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (values[columnIndex].getClass() != Long.class) {
+        if (!values[columnIndex].getClass().equals(Long.class)) {
             throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
                     + " , but got:" + Long.class);
         }
@@ -45,7 +48,7 @@ public class AbstractStoreable implements Storeable {
 
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (values[columnIndex].getClass() != Byte.class) {
+        if (!values[columnIndex].getClass().equals(Byte.class)) {
             throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
                     + " , but got:" + Byte.class);
         }
@@ -54,7 +57,7 @@ public class AbstractStoreable implements Storeable {
 
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (values[columnIndex].getClass() != Float.class) {
+        if (!values[columnIndex].getClass().equals(Float.class)) {
             throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
                     + " , but got:" + Float.class);
         }
@@ -63,7 +66,7 @@ public class AbstractStoreable implements Storeable {
 
     @Override
     public Double getDoubleAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (values[columnIndex].getClass() != Double.class) {
+        if (!values[columnIndex].getClass().equals(Double.class)) {
             throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
                     + " , but got:" + Double.class);
         }
@@ -72,7 +75,7 @@ public class AbstractStoreable implements Storeable {
 
     @Override
     public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (values[columnIndex].getClass() != Boolean.class) {
+        if (!values[columnIndex].getClass().equals(Boolean.class)) {
             throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
                     + " , but got:" + Boolean.class);
         }
@@ -81,7 +84,7 @@ public class AbstractStoreable implements Storeable {
 
     @Override
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (values[columnIndex].getClass() != String.class) {
+        if (!values[columnIndex].getClass().equals(String.class)) {
             throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
                     + " , but got:" + String.class);
         }
