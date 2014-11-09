@@ -11,18 +11,18 @@ public class Command {
             return;
         }
         Table newTable = new Table(direct, tableName);
-        direct.tableInizial(newTable, tableName);
+        direct.tableInitialization(newTable, tableName);
     }
 
-    public static void use(RootDirectory direct, String tableName, boolean ind)
-            throws IOException {
+    public static void use(RootDirectory direct, String tableName,
+            boolean notForShowTables) throws IOException {
         if (!direct.checkTableExist(tableName)) {
-            if (ind) {
+            if (notForShowTables) {
                 System.out.println("tablename not exists");
             }
             return;
         }
-        direct.use(tableName, ind);
+        direct.use(tableName, notForShowTables);
     }
 
     public static void drop(RootDirectory direct, String tableName) {
