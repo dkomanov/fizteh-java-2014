@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ public class Serializator {
     }
 
     interface GetSmthDeser {
-        Object get(String s);
+        Object get(String s) throws IllegalArgumentException;
     }
 
 
@@ -63,9 +63,19 @@ public class Serializator {
         if (fields.length != table.getColumnsCount()) {
             throw new ParseException(valueXML, -1);
         }
-        Storeable result = table.getTableProvider().
+        FileMap one = (FileMap) table;
+        Storeable result = one.getTableProvider().createFor(table);
         for (int i = 0; i < fields.length; ++i) {
-            toFindApproriateDeser.get(table.getColumnType(i)).get(fields[i]);
+            if (fields[i].equals("<null/>")) {
+                result.setColumnAt(i, null);
+            } else {
+                try {
+                    result.setColumnAt(i, toFindApproriateDeser.get(table.getColumnType(i)).get(fields[i]));
+                } catch (IllegalArgumentException e) {
+                    throw new ParseException(fields[i], i);
+                }
+            }
         }
+        return result;
     }
 }

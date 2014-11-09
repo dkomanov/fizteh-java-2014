@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,6 +9,7 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -56,7 +58,7 @@ public class MFileHashMap implements TableProvider {
             Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
             try {
                 Files.createDirectory(pathOfNewTable);
-                FileMap newTable = new FileMap(pathOfNewTable.toString(), columnTypes);
+                FileMap newTable = new FileMap(pathOfNewTable.toString(), columnTypes, this);
                 tables.put(name, newTable);
                 return newTable;
             } catch (IOException e) {
@@ -88,14 +90,12 @@ public class MFileHashMap implements TableProvider {
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
         if (CheckTypesValidity.canonicalTypes.size() != values.size()) {
-            throw new IndexOutOfBoundsException("in createFor");
+            throw new IndexOutOfBoundsException("number of types");
         }
-        int counter = 0;
-        for (Class<?> oneClass: CheckTypesValidity.canonicalTypes) {
-            if (oneClass.getClass() != values.get(0).getClass()) {
-                throw new ColumnFormatException("in createFor");
+        for (int i = 0; i < table.getColumnsCount(); ++i) {
+            if (!table.getColumnType(i).equals(values.get(i).getClass())) {
+                throw new ColumnFormatException("types mismatch");
             }
-            ++counter;
         }
         return new AbstractStoreable(values.toArray());
     }
@@ -103,7 +103,7 @@ public class MFileHashMap implements TableProvider {
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
         for (int i = 0; i < table.getColumnsCount(); ++i) {
-            if (table.getColumnType(i).getClass() != value.getColumnAt(i).getClass()) {
+            if (!table.getColumnType(i).getClass().equals(value.getColumnAt(i).getClass())) {
                 throw new ColumnFormatException("need: " + table.getColumnType(i).getClass()
                     + ", but got:" + value.getColumnAt(i).getClass());
             }
@@ -151,8 +151,22 @@ public class MFileHashMap implements TableProvider {
         String[] listOfFiles = new File(dataBaseDirectory).list();
         for (String oneFile: listOfFiles) {
             Path oneTablePath = Paths.get(dataBaseDirectory, oneFile);
-            if (Files.isDirectory(oneTablePath)) {
-                tables.put(oneFile, new FileMap(oneTablePath.toString()));
+            Path oneTableSignaturePath = Paths.get(dataBaseDirectory, oneFile, "signature.tsv");
+            if (Files.isDirectory(oneTablePath) & Files.exists(oneTableSignaturePath)) {
+                try (Scanner input = new Scanner(oneTableSignaturePath)) {
+                    String[] types;
+                    if (input.hasNext()) {
+                        types = input.nextLine().trim().split("\\s+");
+                        List<Class<?>> newTypeList = CheckTypesValidity.toTypeList(types);
+                        if (newTypeList != null) {
+                            tables.put(oneFile, new FileMap(oneTablePath.toString(), newTypeList, this));
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    return false;
+                } catch (IOException e) {
+                    return false;
+                }
             }
         }
         boolean allRight = true;
