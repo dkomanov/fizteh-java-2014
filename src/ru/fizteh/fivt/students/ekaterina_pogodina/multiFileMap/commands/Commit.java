@@ -16,7 +16,7 @@ public class Commit extends Command {
         }
     }
     @Override
-    public void checkArgs(String[] args, TableManager table) throws Exception{
+    public void checkArgs(String[] args, TableManager table) throws Exception {
         if (args.length > 1) {
             table.manyArgs(args[1]);
         }

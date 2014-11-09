@@ -11,8 +11,8 @@ import java.util.Set;
 
 
 public class BaseTable {
-    int SIZEDIR = 16;
-    int SIZEDAT = 16;
+    static final int SIZEDIR = 16;
+    static final int SIZEDAT = 16;
     public String tableName;
     public Path path;
     public DataBase[][] tableDateBase;
