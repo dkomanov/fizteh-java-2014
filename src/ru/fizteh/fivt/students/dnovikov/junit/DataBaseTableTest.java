@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class DataBaseTableTest {
+public class DatabaseTableTest {
 
     @Before
     public void setUp() throws Exception {
