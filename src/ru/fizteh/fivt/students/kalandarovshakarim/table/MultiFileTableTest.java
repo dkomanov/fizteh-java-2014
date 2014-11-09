@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.fizteh.fivt.students.kalandarovshakarim.tests.database;
+package ru.fizteh.fivt.students.kalandarovshakarim.table;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,8 +12,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.*;
-import ru.fizteh.fivt.students.kalandarovshakarim.database.DataBaseProviderFactory;
 import static org.junit.Assert.*;
+import ru.fizteh.fivt.students.kalandarovshakarim.database.DataBaseProviderFactory;
 
 /**
  *
@@ -29,7 +30,7 @@ public class MultiFileTableTest {
 
     @Before
     public void setUp() {
-        testDirectory = System.getProperty("java.io.tmpdir");
+        testDirectory = Paths.get(System.getProperty("java.io.tmpdir"), "db.dir").toString();
         factory = new DataBaseProviderFactory();
         provider = factory.create(testDirectory);
         instance = provider.createTable(tableName);
