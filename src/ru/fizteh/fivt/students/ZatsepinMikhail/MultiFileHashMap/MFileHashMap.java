@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.AbstractStoreable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.CheckTypesValidity;
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.shell.FileUtils;
 
 public class MFileHashMap implements TableProvider {
@@ -96,6 +98,22 @@ public class MFileHashMap implements TableProvider {
             ++counter;
         }
         return new AbstractStoreable(values.toArray());
+    }
+
+    @Override
+    public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        for (int i = 0; i < table.getColumnsCount(); ++i) {
+            if (table.getColumnType(i).getClass() != value.getColumnAt(i).getClass()) {
+                throw new ColumnFormatException("need: " + table.getColumnType(i).getClass()
+                    + ", but got:" + value.getColumnAt(i).getClass());
+            }
+        }
+        return Serializator.serialize(table, value);
+    }
+
+    @Override
+    public Storeable deserialize(Table table, String value) throws ParseException {
+        return Serializator.deserialize(table, value);
     }
 
     public void addTable(String tableName, FileMap newFileMap) {

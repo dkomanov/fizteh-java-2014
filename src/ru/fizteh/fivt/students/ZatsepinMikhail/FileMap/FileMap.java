@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.CheckTypesValidity;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -21,6 +23,7 @@ public class FileMap implements Table {
     private List<Class<?>> typeList;
     private int numberOfColumns;
     private String directoryOfTable;
+    private TableProvider parent;
 
     private int getNumberOfDirectory(int hash) {
         int result = hash % 16;
@@ -50,7 +53,7 @@ public class FileMap implements Table {
      * @param newDirectory - directory of this FileMap
      * @param newTypeList - list of types (signature of table)
      */
-    public FileMap(String newDirectory, List<Class<?>> newTypeList) {
+    public FileMap(String newDirectory, List<Class<?>> newTypeList, TableProvider newParent) {
         directoryOfTable = newDirectory;
         stableData = new HashMap<>();
         addedData = new HashMap<>();
@@ -58,6 +61,11 @@ public class FileMap implements Table {
         removedData = new HashSet<>();
         typeList = newTypeList;
         numberOfColumns = typeList.size();
+        parent = newParent;
+    }
+
+    public TableProvider getTableProvider() {
+        return parent;
     }
 
     @Override
@@ -104,14 +112,13 @@ public class FileMap implements Table {
     }
 
     @Override
-    public Storeable put(String key, Storeable value) throws IllegalArgumentException, ColumnFormatException {
+    public Storeable put(String key, Storeable value) throws IllegalArgumentException {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         }
-        /*
-        check for columns in value;
-         */
-
+        if (!CheckTypesValidity.check(typeList, value)) {
+            throw new ColumnFormatException();
+        }
         boolean wasDeleted = false;
         if (removedData.contains(key)) {
             removedData.remove(key);
@@ -149,9 +156,6 @@ public class FileMap implements Table {
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= numberOfColumns) {
-            throw new IndexOutOfBoundsException();
-        }
         return typeList.get(columnIndex);
     }
 
@@ -275,7 +279,7 @@ public class FileMap implements Table {
                             }
 
                             try {
-                                stableData.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+                               stableData.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
                             } catch (UnsupportedEncodingException e) {
                                 System.out.println("unsupported encoding");
                                 return false;

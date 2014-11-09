@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -24,6 +26,17 @@ public class CheckTypesValidity {
             if (!canonicalTypes.contains(oneClass)) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    public static boolean check(List<Class<?>> types, Storeable newValue) {
+        int counter = 0;
+        for (Class<?> oneType : types) {
+            if (oneType.getClass() != newValue.getColumnAt(counter).getClass()) {
+                return false;
+            }
+            ++counter;
         }
         return true;
     }
