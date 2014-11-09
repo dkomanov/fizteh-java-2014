@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.FileMap;
+package ru.fizteh.fivt.students.ilivanov.MultiFileMap;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -18,7 +18,6 @@ public class FileUsing {
         this.file = file;
         map = new HashMap<>();
         maxLength = 1 << 24;
-        loadFromDisk();
     }
 
     private int readBytes(final DataInputStream input, final int bytes, final byte[] buffer) throws IOException {

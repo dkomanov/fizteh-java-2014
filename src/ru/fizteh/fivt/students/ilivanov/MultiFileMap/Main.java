@@ -1,20 +1,20 @@
-package ru.fizteh.fivt.students.ilivanov.FileMap;
+package ru.fizteh.fivt.students.ilivanov.MultiFileMap;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class Main {
     public static void main(final String[] args) throws Exception {
-        String file = System.getProperty("db.file");
+        String root = System.getProperty("fizteh.db.dir");
 
-        if (file == null) {
-            System.err.println("file isn't specified");
+        if (root == null) {
+            System.err.println("root directory isn't specified");
             System.exit(-1);
         }
 
         ShellBigBoss database = null;
         try {
-            database = new ShellBigBoss(file);
+            database = new ShellBigBoss(root);
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
             System.exit(-1);

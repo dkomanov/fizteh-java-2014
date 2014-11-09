@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.FileMap;
+package ru.fizteh.fivt.students.ilivanov.MultiFileMap;
 
 import java.io.BufferedReader;
 import java.io.IOException;
