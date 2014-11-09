@@ -31,6 +31,9 @@ public class MultiFileHashMap {
 
     public void run(String[] args) throws LoadOrSaveException, NullPointerException, IOException {
         String directoryPath = System.getProperty("fizteh.db.dir");
+        if (directoryPath == null) {
+            System.exit(1);
+        }
         TableProviderFactory factory = new DataBaseProviderFactory();
         dbConnector = (DataBaseProvider) factory.create(directoryPath);
         Interpreter interpreter = new Interpreter(dbConnector, new Command[]{
