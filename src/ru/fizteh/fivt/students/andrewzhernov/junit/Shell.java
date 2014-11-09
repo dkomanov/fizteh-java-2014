@@ -1,10 +1,6 @@
 package ru.fizteh.fivt.students.andrewzhernov.junit;
 
-import java.io.*;
 import java.util.Scanner;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.DirectoryStream;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -13,8 +9,8 @@ public class Shell {
     private static final String STATEMENT_DELIMITER = ";";
     private static final String PARAM_DELIMITER = "\\s+";
 
-    private final Map<String, Command> commands;
     private TableProvider database;
+    private Map<String, Command> commands;
 
     public Shell(TableProvider database, Command[] commands) throws Exception {
         this.database = database;
@@ -25,6 +21,9 @@ public class Shell {
     }
 
     public void run(String[] args) throws Exception {
+        if (args == null) {
+            throw new IllegalArgumentException("Invalid commands");
+        }
         if (args.length == 0) {
             interactiveMode();
         } else {
@@ -37,11 +36,10 @@ public class Shell {
         while (true) {
             System.out.print(PROMPT);
             try {
-                if (input.hasNextLine()) {
-                    exec(input.nextLine());
-                } else {
+                if (!input.hasNextLine()) {
                     break;
                 }
+                executeLine(input.nextLine());
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
@@ -50,28 +48,10 @@ public class Shell {
     }
 
     public void batchMode(String[] args) throws Exception {
-        exec(String.join(";", args));
+        executeLine(String.join(";", args));
     }
 
-    public static void removeDir(Path directory) throws IllegalStateException {
-        try {
-            if (Files.isDirectory(directory)) {
-                try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
-                    for (Path entry : stream) {
-                        removeDir(entry);
-                    }
-                }
-            }
-            if (!directory.toFile().delete()) {
-                throw new IllegalStateException("Can't remove " + directory.toString());
-            }
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    public void exec(String line) throws Exception {
+    public void executeLine(String line) throws Exception {
         String[] statements = line.split(STATEMENT_DELIMITER);
         for (String statement : statements) {
             String[] params = statement.trim().split(PARAM_DELIMITER);
@@ -87,7 +67,7 @@ public class Shell {
             if (command == null) {
                 throw new Exception("Command not found: " + cmdName);
             } else {
-                command.exec(database, params);
+                command.execute(database, params);
             }
         }
     }
