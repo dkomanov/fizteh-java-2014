@@ -29,7 +29,7 @@ public class InterpreterTest {
     }
 
     @Test
-    public final void testCommandWithoutUsingCurrentTable() throws Exception {;
+    public final void testCommandWithoutUsingCurrentTable() throws Exception {
         Interpreter interpreter = new Interpreter(printStream);
         interpreter.doCommand("put 1 1");
         assertEquals("no table" + newLine, outputStream.toString());
@@ -75,5 +75,4 @@ public class InterpreterTest {
         outputStream.close();
         printStream.close();
     }
-
 }

@@ -15,7 +15,7 @@ public class PvTable implements TableProvider {
     public static String path;
 
     public PvTable(String p) {
-        if (p == null){
+        if (p == null) {
             throw new IllegalArgumentException("Directory name is null");
         }
         path = p;
@@ -29,7 +29,7 @@ public class PvTable implements TableProvider {
      */
     @Override
     public Table getTable(String name) {
-        if (name == null){
+        if (name == null) {
             throw new IllegalArgumentException("Directory name is null");
         }
         BdTable t = new BdTable(name, path);
@@ -76,7 +76,8 @@ public class PvTable implements TableProvider {
                             t.numberOfElements++;
                             t.fm.put(key, value);
                             if (!(nDirectory == Math.abs(key.getBytes("UTF-8")[0] % NUMBER_OF_PARTITIONS))
-                                    || !(nFile == Math.abs((key.getBytes("UTF-8")[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS))) {
+                                    || !(nFile == Math.abs((key.getBytes("UTF-8")[0]
+                                    / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS))) {
                                 System.err.println("Error while reading table " + t.tableName);
                                 System.exit(-1);
                             }
@@ -102,7 +103,7 @@ public class PvTable implements TableProvider {
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
      */
     public Table createTable(String name) {
-        if (name == null){
+        if (name == null) {
             throw new IllegalArgumentException("Directory name is null");
         }
         String pathToTable = path + File.separator + name;

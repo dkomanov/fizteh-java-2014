@@ -56,7 +56,7 @@ public class ModeTest {
     @Test
     public final void testInteractiveModeWithInvalidCommandAtTheInvalidCommand() throws Exception {
         Mode mode = new Mode(new ByteArrayInputStream(testCommand.getBytes()), printStream);
-        try{
+        try {
             mode.interactive();
         } catch (NullPointerException e) {
             assertEquals(Mode.WELLCOME + testCommand + Interpreter.MESSAGE_INVALID_COMMAND
@@ -68,7 +68,7 @@ public class ModeTest {
     @Test
     public final void testInteractiveModeWithIllegalNumberOfElements() throws Exception {
         Mode mode = new Mode(new ByteArrayInputStream(new String("use").getBytes()), printStream);
-        try{
+        try {
             mode.interactive();
         } catch (NullPointerException e) {
             assertEquals(Mode.WELLCOME + "use" + Interpreter.MESSAGE_INVALID_NUMBER_OF_ARGUMENTS
@@ -78,8 +78,8 @@ public class ModeTest {
 
     @Test
     public final void testInteractiveModeWithEmptyString() throws Exception {
-        Mode mode = new Mode( new ByteArrayInputStream(new String(newLine).getBytes()), printStream);
-        try{
+        Mode mode = new Mode(new ByteArrayInputStream(new String(newLine).getBytes()), printStream);
+        try {
             mode.interactive();
         } catch (NullPointerException e) {
             assertEquals(Mode.WELLCOME + Mode.WELLCOME, outputStream.toString());

@@ -183,7 +183,7 @@ public class Interpreter {
         System.out.println("table_name row_count");
         for (Map.Entry<String, Table> i : JUnit.tableList.entrySet()) {
             String key = i.getKey();
-            Integer num = ((BdTable)(i.getValue())).numberOfElements;
+            Integer num = ((BdTable) (i.getValue())).numberOfElements;
             System.out.println(key + " " + num.toString());
         }
     }
