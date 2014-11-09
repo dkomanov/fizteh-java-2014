@@ -261,9 +261,14 @@ public class TablePart {
             bytes[pos + 3] = (byte) (value & 0xFF);
         }
 
-        // if db file not exists, create new empty file
+        // If db file not exists, create new empty file.
         if (!Files.exists(tablePartFilePath)) {
-            // creating parent directories
+            // Not creating file that will be empty.
+            if (bytes.length == 0) {
+                return;
+            }
+
+            // Creating parent directories.
             Path tablePartFileParent = tablePartFilePath.getParent();
             if (!Files.exists(tablePartFileParent)) {
                 Files.createDirectory(tablePartFileParent);
