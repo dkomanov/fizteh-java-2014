@@ -53,7 +53,7 @@ public class RootDirectory {
         }
     }
 
-    public void tableInizial(Table newTable, String tableName)
+    public void tableInitialization(Table newTable, String tableName)
             throws IOException {
         tableList.put(tableName, newTable);
         newTable.setName(tableName);
@@ -115,35 +115,42 @@ public class RootDirectory {
         Command.use(this, functionCurrentTables.getName(), false);
     }
 
-    public void executePut(String key, String value) throws IOException {
+    public boolean executePut(String key, String value) throws IOException {
         if (currentTable != null) {
             currentTable.tableOperationPut(key, value);
-            return;
+            return true;
         }
-        System.out.println("no table");
+        return false;
     }
 
-    public void executeGet(String key) throws UnsupportedEncodingException {
+    public boolean executeGet(String key) throws UnsupportedEncodingException {
         if (currentTable != null) {
-            currentTable.tableOperationGet(key);
-            return;
+            boolean find = currentTable.tableOperationGet(key);
+            if (!find) {
+                System.out.println("not found");
+            }
+            return true;
         }
-        System.out.println("no table");
+        return false;
     }
 
-    public void executeRemove(String key) throws UnsupportedEncodingException {
+    public boolean executeRemove(String key)
+            throws UnsupportedEncodingException {
         if (currentTable != null) {
-            currentTable.tableOperationRemove(key);
-            return;
+            boolean find = currentTable.tableOperationRemove(key);
+            if (!find) {
+                System.out.println("not found");
+            }
+            return true;
         }
-        System.out.println("no table");
+        return false;
     }
 
-    public void executeList() {
+    public boolean executeList() {
         if (currentTable != null) {
             currentTable.tableOperationList();
-            return;
+            return true;
         }
-        System.out.println("no table");
+        return false;
     }
 }
