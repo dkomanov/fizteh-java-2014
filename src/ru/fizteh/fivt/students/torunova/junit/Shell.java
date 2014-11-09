@@ -77,7 +77,7 @@ public class Shell {
                          res = commands.get(name).run(args, db);
                     } catch (IOException e) {
                         System.err.println("Caught IOException: " + e.getMessage());
-                        if (!interactive) {
+                        if (!interactive || name.equals("exit")) {
                             abort();
                         }
                     } catch (TableNotCreatedException e1) {
@@ -87,17 +87,17 @@ public class Shell {
                         } else {
                             System.err.println(message);
                         }
-                        if (!interactive) {
+                        if (!interactive || name.equals("exit")) {
                             abort();
                         }
                     } catch (IncorrectFileException e2) {
                         System.err.println(e2.getMessage());
-                        if (!interactive) {
+                        if (!interactive || name.equals("exit")) {
                             abort();
                         }
                     } catch (RuntimeException e3) {
                         System.err.println(e3.getMessage());
-                        if (!interactive) {
+                        if (!interactive || name.equals("exit")) {
                             abort();
                         }
                     }
@@ -114,8 +114,11 @@ public class Shell {
                     if (!interactive) {
                         if (db.currentTable != null) {
                             db.currentTable.commit();
-                            System.exit(1);
                         }
+                            System.exit(1);
+
+                    } else {
+                        break;
                     }
                 }
             }

@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        Set<Action> actions = new HashSet<Action>();
+        Set<Action> actions = new HashSet<>();
         actions.add(new Put());
         actions.add(new Get());
         actions.add(new MyList());
@@ -36,9 +36,8 @@ public class Main {
 
     private static String parseCommandsFromArray(final String[] commands) {
         StringBuilder b = new StringBuilder();
-        int length = commands.length;
-        for (int i = 0; i < length; i++) {
-            b.append(commands[i]).append(" ");
+        for (String command:commands) {
+            b.append(command).append(" ");
         }
         return b.toString();
     }

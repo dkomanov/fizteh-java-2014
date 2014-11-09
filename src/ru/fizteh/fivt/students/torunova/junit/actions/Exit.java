@@ -18,7 +18,7 @@ public class Exit extends Action {
         if (!checkNumberOfArguments(0, args.length)) {
             return false;
         }
-        if(db.currentTable != null) {
+        if (db.currentTable != null) {
             db.currentTable.commit();
         }
         System.exit(0);

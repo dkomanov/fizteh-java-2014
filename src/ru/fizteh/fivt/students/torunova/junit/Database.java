@@ -52,11 +52,13 @@ public class  Database implements TableProvider{
         }
         dbName = db.getAbsolutePath();
         File[]dbTables = db.listFiles();
-        for (File table:dbTables) {
-            if (table.getAbsoluteFile().isDirectory()) {
+        if (dbTables != null) {
+            for (File table : dbTables) {
+                if (table.getAbsoluteFile().isDirectory()) {
                     tables.put(table.getName(), new Table(table.getAbsolutePath()));
-            } else {
-                throw new IncorrectDbException("Database contains illegal files.");
+                } else {
+                    throw new IncorrectDbException("Database contains illegal files.");
+                }
             }
         }
     }
@@ -73,15 +75,11 @@ public class  Database implements TableProvider{
         File table = new File(dbName, tableName);
         String newTableName = table.getAbsolutePath();
         if (!tables.containsKey(tableName)) {
-            Table newTable = null;
+            Table newTable;
             try {
                 newTable = new Table(newTableName);
-            } catch (TableNotCreatedException e) {
+            } catch (TableNotCreatedException | IncorrectFileException | IOException e) {
                 throw new RuntimeException(e);
-            } catch (IncorrectFileException e1) {
-                throw new RuntimeException(e1);
-            } catch (IOException e2) {
-                throw new RuntimeException(e2);
             }
             tables.put(tableName, newTable);
             return newTable;
@@ -94,7 +92,7 @@ public class  Database implements TableProvider{
         checkTableName(name);
         File f = new File(dbName, name);
         if (tables.containsKey(name)) {
-            boolean result = removeRecursive(f.getAbsolutePath());
+            removeRecursive(f.getAbsolutePath());
             tables.remove(name);
             if (currentTable != null) {
                 if (currentTable.tableName.equals(f.getAbsolutePath())) {
@@ -115,15 +113,15 @@ public class  Database implements TableProvider{
     }
 
     public Map<String, Integer> showTables() {
-        Map<String, Integer> tablesWithSize = new HashMap<String, Integer>();
+        Map<String, Integer> tablesWithSize = new HashMap<>();
         tables.forEach((name, table)->tablesWithSize.put(name, table.numberOfEntries));
         return tablesWithSize;
     }
 
     /**
-     * removes file.
+     * removes file
      * @param file - filename.
-     * @return
+     * @return true if file is regular and deleted,false otherwise.
      */
     private  boolean remove(final String file) {
         File file1 = new File(file).getAbsoluteFile();
@@ -150,14 +148,16 @@ public class  Database implements TableProvider{
                 System.setProperty("user.dir", directory.getParent());
             }
             File[] content = directory.listFiles();
-            for (File item:content) {
-                if (item.isDirectory()) {
-                    if (!removeRecursive(item.getAbsolutePath())) {
-                        return false;
-                    }
-                } else {
-                    if (!remove(item.getAbsolutePath())) {
-                        return false;
+            if (content != null) {
+                for (File item : content) {
+                    if (item.isDirectory()) {
+                        if (!removeRecursive(item.getAbsolutePath())) {
+                            return false;
+                        }
+                    } else {
+                        if (!remove(item.getAbsolutePath())) {
+                            return false;
+                        }
                     }
                 }
             }

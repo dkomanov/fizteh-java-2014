@@ -117,15 +117,13 @@ public class FileMap {
         }
     }
     private int getIndexOfFile() {
-        int indexOfFile = Integer.parseInt(file.substring(file.lastIndexOf(File.separatorChar) + 1,
+        return Integer.parseInt(file.substring(file.lastIndexOf(File.separatorChar) + 1,
                 file.lastIndexOf('.')));
-        return indexOfFile;
     }
     private int getIndexOfDir() {
         File f = new File(file).getAbsoluteFile();
         String dirName = f.getParentFile().getName();
-        int indexOfDir = Integer.parseInt(dirName.substring(0, dirName.indexOf('.')));
-        return indexOfDir;
+        return Integer.parseInt(dirName.substring(0, dirName.indexOf('.')));
     }
     private boolean checkKey(String key) {
         int hashcode = Math.abs(key.hashCode());

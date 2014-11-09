@@ -42,25 +42,32 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         tableName = table.getAbsolutePath();
         File[] tableFiles = table.listFiles();
         File[] filesOfDir;
-        for (File nextDir: tableFiles) {
-            if (!(Pattern.matches("([0-9]|1[0-5])\\.dir", nextDir.getName()) && nextDir.isDirectory())) {
-                throw new TableNotCreatedException("Table " + getName() + " contains illegal files: " + nextDir.getAbsolutePath());
-            }
-            filesOfDir = nextDir.listFiles();
-            for (File nextFile:filesOfDir) {
-                if (!(Pattern.matches("([0-9]|1[0-5])\\.dat", nextFile.getName()) && nextFile.isFile())) {
-                    throw new TableNotCreatedException("Table " + getName() + " contains illegal files: " + nextFile.getAbsolutePath());
+        if (tableFiles != null) {
+            for (File nextDir : tableFiles) {
+                if (!(Pattern.matches("([0-9]|1[0-5])\\.dir", nextDir.getName()) && nextDir.isDirectory())) {
+                    throw new TableNotCreatedException("Table " + getName()
+                            + " contains illegal files: " + nextDir.getAbsolutePath());
                 }
-                FileMap fm = new FileMap(nextFile.getAbsolutePath());
-                if (fm.isEmpty()) {
-                    nextFile.delete();
-                    nextDir = nextFile.getParentFile();
-                    if (nextDir.listFiles().length == 0) {
-                        nextDir.delete();
+                filesOfDir = nextDir.listFiles();
+                if (filesOfDir != null) {
+                    for (File nextFile : filesOfDir) {
+                        if (!(Pattern.matches("([0-9]|1[0-5])\\.dat", nextFile.getName()) && nextFile.isFile())) {
+                            throw new TableNotCreatedException("Table " + getName()
+                                    + " contains illegal files: " + nextFile.getAbsolutePath());
+                        }
+                        FileMap fm = new FileMap(nextFile.getAbsolutePath());
+                        if (fm.isEmpty()) {
+                            nextFile.delete();
+                            nextDir = nextFile.getParentFile();
+                            File[] nextDirFiles = nextDir.listFiles();
+                            if (nextDirFiles != null && nextDirFiles.length == 0) {
+                                nextDir.delete();
+                            }
+                        } else {
+                            files.put(nextFile, fm);
+                            numberOfEntries += fm.size();
+                        }
                     }
-                } else {
-                    files.put(nextFile, fm);
-                    numberOfEntries += fm.size();
                 }
             }
         }
@@ -79,7 +86,7 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
             result = files.get(file).put(key, value);
         } else {
                 file.getParentFile().mkdirs();
-            FileMap fm = null;
+            FileMap fm;
             try {
                 file.createNewFile();
                 fm = new FileMap(file.getAbsolutePath());
@@ -165,7 +172,8 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
             if (fm.isEmpty()) {
                 File directory = file.getParentFile().getAbsoluteFile();
                 file.delete();
-                if (directory.listFiles().length == 0) {
+                File[] dirFiles = directory.listFiles();
+                if (dirFiles != null && dirFiles.length == 0) {
                     directory.delete();
                 }
                 files.remove(file);
