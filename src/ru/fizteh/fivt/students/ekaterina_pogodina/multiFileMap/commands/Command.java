@@ -4,4 +4,5 @@ import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.TableManager;
 
 public abstract class Command {
     public abstract void execute(String[] args, TableManager table) throws Exception;
+    public abstract void checkArgs(String[] args, TableManager table) throws Exception;
 }
