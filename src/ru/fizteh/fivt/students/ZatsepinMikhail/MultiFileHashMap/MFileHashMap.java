@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
@@ -19,7 +17,7 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.AbstractStoreable;
-import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.CheckTypesValidity;
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.TypesUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.shell.FileUtils;
 
@@ -49,15 +47,20 @@ public class MFileHashMap implements TableProvider {
         if (name == null || columnTypes == null) {
             throw new IllegalArgumentException();
         }
-        if (!CheckTypesValidity.run(columnTypes)) {
+        if (!TypesUtils.run(columnTypes)) {
             throw new IllegalArgumentException();
         }
         if (tables.containsKey(name)) {
             return null;
         } else {
             Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
+            Path pathOfNewTableSignatureFile = Paths.get(dataBaseDirectory, name, "signature.tsv");
             try {
                 Files.createDirectory(pathOfNewTable);
+                Files.createFile(pathOfNewTableSignatureFile);
+                try (FileWriter fout = new FileWriter(pathOfNewTableSignatureFile.toString())) {
+                    fout.write(TypesUtils.toFileSignature(columnTypes));
+                }
                 FileMap newTable = new FileMap(pathOfNewTable.toString(), columnTypes, this);
                 tables.put(name, newTable);
                 return newTable;
@@ -89,7 +92,7 @@ public class MFileHashMap implements TableProvider {
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (CheckTypesValidity.canonicalTypes.size() != values.size()) {
+        if (TypesUtils.canonicalTypes.size() != values.size()) {
             throw new IndexOutOfBoundsException("number of types");
         }
         for (int i = 0; i < table.getColumnsCount(); ++i) {
@@ -114,21 +117,6 @@ public class MFileHashMap implements TableProvider {
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
         return Serializator.deserialize(table, value);
-    }
-
-    public void addTable(String tableName, FileMap newFileMap) {
-        tables.put(tableName, newFileMap);
-    }
-
-    public void dropTable(String tableName) {
-        if (tables.get(tableName).equals(currentTable)) {
-            currentTable = null;
-        }
-        tables.remove(tableName);
-    }
-
-    public String getDataBaseDirectory() {
-        return dataBaseDirectory;
     }
 
     public void showTables() {
@@ -157,7 +145,7 @@ public class MFileHashMap implements TableProvider {
                     String[] types;
                     if (input.hasNext()) {
                         types = input.nextLine().trim().split("\\s+");
-                        List<Class<?>> newTypeList = CheckTypesValidity.toTypeList(types);
+                        List<Class<?>> newTypeList = TypesUtils.toTypeList(types, false);
                         if (newTypeList != null) {
                             tables.put(oneFile, new FileMap(oneTablePath.toString(), newTypeList, this));
                         }

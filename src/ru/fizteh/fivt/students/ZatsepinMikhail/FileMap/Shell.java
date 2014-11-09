@@ -41,7 +41,8 @@ public class Shell<T> {
                     }
                     Command<T> commandToExecute = shellCommands.get(parsedArguments[0]);
                     if (commandToExecute != null) {
-                        if (commandToExecute.numberOfArguments != parsedArguments.length) {
+                        if (commandToExecute.numberOfArguments != parsedArguments.length
+                                & commandToExecute.numberOfArguments != -1) {
                             System.out.println(commandToExecute.name + " wrong number of arguments");
                             errorOccuried = true;
                         } else if (!commandToExecute.run(objectForShell, parsedArguments)) {
@@ -85,7 +86,11 @@ public class Shell<T> {
             }
             Command<T> commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {
-                if (!commandToExecute.run(objectForShell, parsedArguments)) {
+                if (commandToExecute.numberOfArguments != parsedArguments.length
+                        & commandToExecute.numberOfArguments != -1) {
+                    System.out.println(commandToExecute.name + " wrong number of arguments");
+                    errorOccuried = true;
+                } else if (!commandToExecute.run(objectForShell, parsedArguments)) {
                     errorOccuried = true;
                 }
             } else {

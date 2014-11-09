@@ -1,32 +1,26 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.TypesUtils;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
+import java.util.List;
 
 public class CommandCreate extends CommandMultiFileHashMap {
     public CommandCreate() {
         name = "create";
-        numberOfArguments = 2;
+        numberOfArguments = -1;
     }
 
     @Override
     public boolean run(MFileHashMap myMultiDataBase, String[] args) {
-        Path pathOfNewTable = Paths.get(myMultiDataBase.getDataBaseDirectory()
-            + System.getProperty("file.separator") + args[1]);
-        if (Files.exists(pathOfNewTable) & Files.isDirectory(pathOfNewTable)) {
-            System.out.println(args[1] + " exists");
-            return true;
+        if (args[2].charAt(0) != '(' || !args[args.length - 1].endsWith(")")) {
+            System.out.println(name + ": wrong arguments");
+            return false;
         }
+        List<Class<?>> types = TypesUtils.toTypeList(args, true);
         try {
-            Files.createDirectory(pathOfNewTable);
-            System.out.println("created");
-            myMultiDataBase.addTable(args[1], new FileMap(pathOfNewTable.toString()));
+            myMultiDataBase.createTable(args[1], types);
         } catch (IOException e) {
-            System.out.println(name + ": error while creating directory");
             return false;
         }
         return true;

@@ -6,7 +6,7 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FmCommandPut;
 public class CommandPutDistribute extends CommandMultiFileHashMap {
     public CommandPutDistribute() {
         name = "put";
-        numberOfArguments = 3;
+        numberOfArguments = -1;
     }
 
     @Override

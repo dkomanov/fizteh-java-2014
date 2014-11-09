@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
+
 public class FmCommandRemove extends CommandFileMap {
     public FmCommandRemove() {
         name = "remove";
@@ -7,9 +9,8 @@ public class FmCommandRemove extends CommandFileMap {
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-       String value = myFileMap.remove(args[1]);
-
-        if (myFileMap.) {
+        Storeable value = myFileMap.remove(args[1]);
+        if (value != null) {
             System.out.println("removed");
         } else {
             System.out.println("not found");

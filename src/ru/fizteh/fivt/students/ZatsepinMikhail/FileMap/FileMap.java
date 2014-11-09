@@ -4,7 +4,7 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.CheckTypesValidity;
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.TypesUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.Serializator;
 
 import java.io.*;
@@ -118,7 +118,7 @@ public class FileMap implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         }
-        if (!CheckTypesValidity.check(typeList, value)) {
+        if (!TypesUtils.check(typeList, value)) {
             throw new ColumnFormatException();
         }
         boolean wasDeleted = false;
@@ -281,7 +281,8 @@ public class FileMap implements Table {
                             }
 
                             try {
-                                stableData.put(new String(key, "UTF-8"), Serializator.deserialize(this, new String(value, "UTF-8")));
+                                stableData.put(new String(key, "UTF-8"),
+                                        Serializator.deserialize(this, new String(value, "UTF-8")));
                             } catch (UnsupportedEncodingException e) {
                                 System.out.println("unsupported encoding");
                                 return false;

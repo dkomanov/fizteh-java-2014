@@ -2,12 +2,11 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class CheckTypesValidity {
+public class TypesUtils {
     public static HashSet<Class<?>> canonicalTypes;
 
     static {
@@ -43,10 +42,14 @@ public class CheckTypesValidity {
         return true;
     }
 
-    public static List<Class<?>> toTypeList(String[] types) {
+    public static List<Class<?>> toTypeList(String[] types, boolean fromCommand) {
         List<Class<?>> result = new ArrayList<>();
-        for (String oneType : types) {
-            switch(oneType) {
+        int start = 0;
+        if (fromCommand) {
+            start += 2;
+        }
+        for (int i = start; i < types.length; ++i) {
+            switch(types[i]) {
                 case "int":
                     result.add(Integer.class);
                     break;
@@ -73,5 +76,42 @@ public class CheckTypesValidity {
             }
         }
         return result;
+    }
+
+    public static String toFileSignature(List<Class<?>> types) {
+        StringBuilder s = new StringBuilder();
+        int counter = 0;
+        for (Class<?> oneClass : types) {
+            if (counter > 0) {
+                s.append(" ");
+            }
+            switch (oneClass.toString()) {
+                case "Integer":
+                    s.append("int");
+                    break;
+                case "Byte":
+                    s.append("byte");
+                    break;
+                case "Long":
+                    s.append("long");
+                    break;
+                case "Boolean":
+                    s.append("boolean");
+                    break;
+                case "Float":
+                    s.append("float");
+                    break;
+                case "Double":
+                    s.append("double");
+                    break;
+                case "String":
+                    s.append("string");
+                    break;
+                default:
+                    return null;
+            }
+            ++counter;
+        }
+        return s.toString();
     }
 }
