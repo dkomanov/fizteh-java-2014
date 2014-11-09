@@ -141,7 +141,10 @@ public class MyMap {
             currentString = currentString.replaceAll("\\s*;\\s*", ";");
             currentString = currentString.replaceAll("\\s+", " ");
             currentString = currentString.replaceAll("show tables", "#*#");
-            run(currentString.split("\\s+"));
+            String[] arrayCommands = currentString.split(";");
+            for (int j = 0; j < arrayCommands.length; ++j) {
+                run(arrayCommands[j].trim().split("\\s+"));
+            }
         }
 
     }

@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.gudkov394.Junit.src;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 
 public class Junit implements TableProviderFactory {
@@ -8,7 +7,7 @@ public class Junit implements TableProviderFactory {
     }*/
 
     @Override
-    public TableProvider create(String dir) {
+    public TableProviderClass create(String dir) {
         if (dir == null) {
             throw new IllegalArgumentException();
         }
