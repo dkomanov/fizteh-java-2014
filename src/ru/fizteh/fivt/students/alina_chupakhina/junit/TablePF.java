@@ -1,14 +1,15 @@
 package ru.fizteh.fivt.students.alina_chupakhina.junit;
 
+import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 
-/**
- * Created by opa on 04.11.2014.
- */
 public class TablePF implements TableProviderFactory {
 
     @Override
-    public PvTable create(String dir) {
+    public TableProvider create(String dir) {
+        if (dir == null) {
+            throw new IllegalArgumentException("Directory name is null");
+        }
         return new PvTable(dir);
     }
 }
