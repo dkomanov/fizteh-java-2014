@@ -97,7 +97,13 @@ public class Table extends FileMap {
         for (String key : db.keySet()) {
             int hashCode = key.hashCode();
             int dirNumber = hashCode % mod;
+            if (dirNumber < 0) {
+                dirNumber += 16;
+            }
             int fileNumber = hashCode / mod % mod;
+            if (fileNumber < 0) {
+                fileNumber += 16;
+            }
             dbParts[dirNumber][fileNumber].put(key, db.get(key));
         }
         for (int i = 0; i < mod; i++) {
