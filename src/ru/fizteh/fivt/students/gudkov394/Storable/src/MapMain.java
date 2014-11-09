@@ -44,7 +44,9 @@ public class MapMain {
                 case "string":
                     signature.add(String.class);
                     break;
-
+                default: System.err.println("Wrong name of type");
+                         System.exit(3);
+                    break;
             }
         }
         return signature;

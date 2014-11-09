@@ -149,7 +149,10 @@ public class MyMap {
             currentString = currentString.replaceAll("\\s*;\\s*", ";");
             currentString = currentString.replaceAll("\\s+", " ");
             currentString = currentString.replaceAll("show tables", "#*#");
-            run(currentString.split("\\s+"));
+            String[] arrayCommands = currentString.split(";");
+            for (int j = 0; j < arrayCommands.length; ++j) {
+                run(arrayCommands[j].trim().split("\\s(?![^\\(]*\\))(?![^\\[]*\\])"));
+            }
         }
 
     }
@@ -166,17 +169,24 @@ public class MyMap {
         string = string.replaceAll("\\s*;\\s*", ";");
         string = string.replaceAll("\\s+", " ");
         string = string.replaceAll("show tables", "#*#");
-        String[] commands = string.split(";|(\\s+)");
+        String[] commandsTMP = string.split(";");
+        ArrayList<String> commands = new ArrayList<>();
+        for (int j = 0; j < commandsTMP.length; ++j) {
+            String[] newString = commandsTMP[j].trim().split("\\s(?![^\\(]*\\))(?![^\\[]*\\])");
+            for (int k = 0; k < newString.length; ++k) {
+                commands.add(newString[k]);
+            }
+        }
         int i = 0;
-        while (i < commands.length) {
+        while (i < commands.size()) {
             int first = i;
             ++i;
-            while (i < commands.length && !checkName(commands[i])) {
+            while (i < commands.size() && !checkName(commands.get(i))) {
                 ++i;
             }
             int size = 0;
             for (int j = 0; j < i - first; ++j) {
-                if (commands[j + first].length() != 0) {
+                if (commands.get(j + first).length() != 0) {
                     ++size;
                 }
             }
@@ -184,8 +194,8 @@ public class MyMap {
             String[] s = new String[size];
             int tmpSize = 0;
             for (int j = 0; j < s.length; ++j) {
-                if (commands[j + first].length() != 0) {
-                    s[tmpSize] = commands[j + first];
+                if (commands.get(j + first).length() != 0) {
+                    s[tmpSize] = commands.get(j + first);
                     ++tmpSize;
                 }
             }

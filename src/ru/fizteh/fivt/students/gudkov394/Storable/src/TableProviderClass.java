@@ -19,7 +19,7 @@ public class TableProviderClass implements TableProvider {
     public Map<String, CurrentTable> tables = new HashMap<String, CurrentTable>();
     MySerialize serialize = new MySerialize();
 
-    public TableProviderClass(){
+    public TableProviderClass() {
     }
 
     @Override
@@ -74,7 +74,7 @@ public class TableProviderClass implements TableProvider {
     @Override
     public Storeable createFor(Table table) {
         List<Object> values = new ArrayList<>(table.getColumnsCount());
-        return new tableContents(values);
+        return new TableContents(values);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class TableProviderClass implements TableProvider {
                 throw new ColumnFormatException("wrong column type");
             }
         }
-        return new tableContents(valuesTmp);
+        return new TableContents(valuesTmp);
     }
 
     public void put(String tmp, CurrentTable ct) {

@@ -9,10 +9,10 @@ import java.util.List;
 /**
  * Created by kagudkov on 07.11.14.
  */
-public class tableContents implements Storeable {
+public class TableContents implements Storeable {
     private Object[] fields;
 
-    public tableContents(List<Object> values) {
+    public TableContents(List<Object> values) {
         fields = values.toArray();
     }
 

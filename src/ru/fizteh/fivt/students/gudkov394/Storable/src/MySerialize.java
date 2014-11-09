@@ -23,46 +23,46 @@ public class MySerialize implements Serializable {
         String getString(Object object);
     }
 
-    private Map<Class, Read> ReadMap = new HashMap<>();
-    private Map<Class, Write> WriteMap = new HashMap<>();
+    private Map<Class, Read> readMap = new HashMap<>();
+    private Map<Class, Write> writeMap = new HashMap<>();
 
     public MySerialize() {
-        ReadMap.put(Integer.class, new Read() {
+        readMap.put(Integer.class, new Read() {
             @Override
             public Object getObject(String string) throws ParseException {
                 return Integer.valueOf(string);
             }
         });
 
-        ReadMap.put(Long.class, new Read() {
+        readMap.put(Long.class, new Read() {
             @Override
             public Object getObject(String string) throws ParseException {
                 return Long.valueOf(string);
             }
         });
 
-        ReadMap.put(Float.class, new Read() {
+        readMap.put(Float.class, new Read() {
             @Override
             public Object getObject(String string) throws ParseException {
                 return Float.valueOf(string);
             }
         });
 
-        ReadMap.put(Double.class, new Read() {
+        readMap.put(Double.class, new Read() {
             @Override
             public Object getObject(String string) throws ParseException {
                 return Double.valueOf(string);
             }
         });
 
-        ReadMap.put(Byte.class, new Read() {
+        readMap.put(Byte.class, new Read() {
             @Override
             public Object getObject(String string) throws ParseException {
                 return Byte.valueOf(string);
             }
         });
 
-        ReadMap.put(Boolean.class, new Read() {
+        readMap.put(Boolean.class, new Read() {
             @Override
             public Object getObject(String string) throws ParseException {
                 if (string.trim().toLowerCase().equals("true")) {
@@ -74,7 +74,7 @@ public class MySerialize implements Serializable {
             }
         });
 
-        ReadMap.put(String.class, new Read() {
+        readMap.put(String.class, new Read() {
             @Override
             public Object getObject(String string) throws ParseException {
                 if (string.length() > 1 && string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"') {
@@ -84,49 +84,49 @@ public class MySerialize implements Serializable {
             }
         });
 
-        WriteMap.put(Integer.class, new Write() {
+        writeMap.put(Integer.class, new Write() {
             @Override
             public String getString(Object object) {
                 return object.toString();
             }
         });
 
-        WriteMap.put(Long.class, new Write() {
+        writeMap.put(Long.class, new Write() {
             @Override
             public String getString(Object object) {
                 return object.toString();
             }
         });
 
-        WriteMap.put(Float.class, new Write() {
+        writeMap.put(Float.class, new Write() {
             @Override
             public String getString(Object object) {
                 return object.toString();
             }
         });
 
-        WriteMap.put(Double.class, new Write() {
+        writeMap.put(Double.class, new Write() {
             @Override
             public String getString(Object object) {
                 return object.toString();
             }
         });
 
-        WriteMap.put(Byte.class, new Write() {
+        writeMap.put(Byte.class, new Write() {
             @Override
             public String getString(Object object) {
                 return object.toString();
             }
         });
 
-        WriteMap.put(Boolean.class, new Write() {
+        writeMap.put(Boolean.class, new Write() {
             @Override
             public String getString(Object object) {
                 return object.toString();
             }
         });
 
-        WriteMap.put(String.class, new Write() {
+        writeMap.put(String.class, new Write() {
             @Override
             public String getString(Object object) {
                 return "\"" + object + "\"";
@@ -148,7 +148,7 @@ public class MySerialize implements Serializable {
         for (int i = 0; i < table.getColumnsCount(); i++) {
             try {
                 if (!("null".equals(tokens[i].trim().toLowerCase()))) {
-                    contents.add(ReadMap.get(table.getColumnType(i)).getObject(tokens[i].trim()));
+                    contents.add(readMap.get(table.getColumnType(i)).getObject(tokens[i].trim()));
                 } else {
                     contents.add(null);
                 }
@@ -156,7 +156,7 @@ public class MySerialize implements Serializable {
                 throw new ParseException("not a valid ", 0);
             }
         }
-        return new tableContents(contents);
+        return new TableContents(contents);
     }
 
     public String serialize(Table table, Storeable value) {
@@ -164,7 +164,7 @@ public class MySerialize implements Serializable {
         StringBuilder stringBuilder = new StringBuilder("[");
         for (int i = 0; i < columnsCount; i++) {
             if (value.getColumnAt(i) != null) {
-                stringBuilder.append(WriteMap.get(table.getColumnType(i)).getString(value.getColumnAt(i)));
+                stringBuilder.append(writeMap.get(table.getColumnType(i)).getString(value.getColumnAt(i)));
             } else {
                 stringBuilder.append("null");
             }

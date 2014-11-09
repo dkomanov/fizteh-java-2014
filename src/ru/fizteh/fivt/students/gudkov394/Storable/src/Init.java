@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class Init {
-    public Init(Map<String, Storeable> currentTable, final String property, TableProviderClass tableProviderClass, CurrentTable table) {
+    public Init(Map<String, Storeable> currentTable, final String property,
+                TableProviderClass tableProviderClass, CurrentTable table) {
         if (property == null) {
             System.err.println("You forgot file");
             System.exit(4);
