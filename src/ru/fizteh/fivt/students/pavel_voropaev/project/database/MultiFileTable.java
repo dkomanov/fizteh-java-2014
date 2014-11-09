@@ -214,9 +214,8 @@ public class MultiFileTable implements Table {
     }
 
     private void readFile(String fileName, int dirNum, int fileNum) throws IOException {
-        DataInputStream stream = new DataInputStream(new FileInputStream(fileName));
-        while (true) {
-            try {
+        try (DataInputStream stream = new DataInputStream(new FileInputStream(fileName))) {
+            while (true) {
                 String key = readWord(stream);
                 String value = readWord(stream);
                 int hashcode = Math.abs(key.hashCode());
@@ -226,11 +225,10 @@ public class MultiFileTable implements Table {
 
                 content[dirNum * FILES + fileNum].map.put(key, value);
                 ++size;
-            } catch (EOFException e) {
-                break;
             }
+        } catch (EOFException e) {
+            // File is read.
         }
-        stream.close();
     }
 
     private String readWord(DataInputStream stream) throws IOException {

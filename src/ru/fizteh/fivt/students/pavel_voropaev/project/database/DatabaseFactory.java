@@ -22,7 +22,7 @@ public class DatabaseFactory implements TableProviderFactory {
                 Files.createDirectory(dirPath);
             } catch (IOException e) {
                 throw new RuntimeException("Cannot create database "
-                        + dirPath.toString() + e.getMessage(), e);
+                        + dirPath.toString(), e);
             }
         }
         return new Database(dir);

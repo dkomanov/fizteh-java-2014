@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project;
 
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.database.DatabaseFactory;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Command;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Interpreter;
@@ -14,11 +15,20 @@ public class Main {
         String dbPath = System.getProperty("fizteh.db.dir");
         if (dbPath == null) {
             System.err.println("You must specify fizteh.db.dir via -Dfizteh.db.dir JVM parameter");
-            System.exit(1);
+            System.exit(-1);
         }
 
-        TableProviderFactory factory = new DatabaseFactory();
-        TableProvider db = factory.create(dbPath);
+        TableProvider db = null;
+        try {
+            TableProviderFactory factory = new DatabaseFactory();
+            db = factory.create(dbPath);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            System.exit(-1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
 
         Command[] commands = new Command[]{
                 new Create(db), new Drop(db), new ShowTables(db), new Size(db), new Use(db),
@@ -26,7 +36,11 @@ public class Main {
                 new Exit(db)};
 
         Interpreter interpreter = new Interpreter(commands);
-        interpreter.run(args);
-
+        try {
+            interpreter.run(args);
+        } catch (InputMistakeException e) {
+            System.err.println(e.getMessage());
+            System.exit(-1);
+        }
     }
 }

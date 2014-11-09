@@ -19,6 +19,22 @@ public class Interpreter {
 
     private final Map<String, Command> commands;
 
+    // Provides you the ability to stop interpretation even if you forgot to include custom exit.
+    public class DefaultExit extends AbstractCommand<Object> {
+        public DefaultExit() {
+            super("exit", 0, new Object());
+        }
+        @Override
+        public void exec(String[] param, PrintStream out) {
+        }
+    }
+
+    /**
+     * @param commands Массив команд, доступных интерпретатору. Должен содержать команду "exit"
+     * @param in       Входной поток
+     * @param out      Поток вывода
+     * @param err      Поток вывода ошибок
+     */
     public Interpreter(Command[] commands, InputStream in, PrintStream out, PrintStream err) {
         if (in == null || out == null || err == null) {
             throw new IllegalArgumentException("One of the iostreams is not initialized.");
@@ -31,35 +47,34 @@ public class Interpreter {
         for (Command command : commands) {
             this.commands.put(command.getName(), command);
         }
+        if (!this.commands.containsKey("exit")) {
+            this.commands.put("exit", new DefaultExit());
+        }
     }
 
     public Interpreter(Command[] commands) {
         this(commands, System.in, System.out, System.err);
     }
 
-    public void run(String[] args) {
-        try {
-            if (args.length == 0) {
+    public void run(String[] args) throws InputMistakeException {
+        if (args.length == 0) {
+            try {
                 runInteractiveMode();
-            } else {
-                runBatchMode(args);
+            } catch (StopInterpretationException e) {
+                // Exit.
             }
-        } catch (StopInterpretationException e) {
-            // Just stop the interpretation.
+        } else {
+            runBatchMode(args);
         }
     }
 
-    private void runBatchMode(String[] args) {
+    private void runBatchMode(String[] args) throws InputMistakeException {
         try {
             executeLine(String.join(" ", args));
             err.println("Exit without saving!");
-        } catch (InputMistakeException e) {
-            out.println(e.getMessage());
-            System.exit(1);
         } catch (StopInterpretationException e) {
             // Exit with saving.
         }
-
     }
 
     private void runInteractiveMode() throws StopInterpretationException {
