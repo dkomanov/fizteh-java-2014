@@ -4,7 +4,6 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.database;
 
-import ru.fizteh.fivt.students.kalandarovshakarim.database.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,8 +17,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.students.kalandarovshakarim.database.DataBaseProvider;
-import ru.fizteh.fivt.students.kalandarovshakarim.database.DataBaseProviderFactory;
 
 /**
  *

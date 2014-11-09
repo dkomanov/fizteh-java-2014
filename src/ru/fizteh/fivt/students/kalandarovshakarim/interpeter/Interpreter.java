@@ -105,23 +105,11 @@ public class Interpreter {
         return true;
     }
 
-    private void terminate(int status) {
-        try {
-            String[] strStatus = (status == 0 ? new String[0] : new String[1]);
-            supportedCmds.get("exit").exec(strStatus);
-        } catch (Exception e) {
-            err.println(e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    public void exec() {
-        int status;
+    public int exec() {
         if (args.length == 0) {
-            status = interactiveMode();
+            return interactiveMode();
         } else {
-            status = batchMode();
+            return batchMode();
         }
-        terminate(status);
     }
 }

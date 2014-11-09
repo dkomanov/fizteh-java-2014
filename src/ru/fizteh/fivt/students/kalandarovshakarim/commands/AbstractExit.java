@@ -18,7 +18,6 @@ public abstract class AbstractExit<Type> extends AbstractCommand<Type> {
     @Override
     public void exec(String[] args) {
         onExit();
-        System.exit(args.length);
     }
 
     protected abstract void onExit();
