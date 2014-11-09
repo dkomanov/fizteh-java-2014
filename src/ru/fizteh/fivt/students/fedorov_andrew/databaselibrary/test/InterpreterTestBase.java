@@ -195,13 +195,11 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
         runBatchExpectNonZero(false, commands);
     }
 
-    protected void runInteractiveExpectZero(boolean reinit, String... lines)
-            throws TerminalException {
+    protected void runInteractiveExpectZero(boolean reinit, String... lines) throws TerminalException {
         assertEquals("Exit status 0 expected", 0, runInteractive(reinit, lines));
     }
 
-    protected void runInteractiveExpectNonZero(boolean reinit, String... lines)
-            throws TerminalException {
+    protected void runInteractiveExpectNonZero(boolean reinit, String... lines) throws TerminalException {
         assertNotEquals("Non-zero exit status expected", 0, runInteractive(reinit, lines));
     }
 

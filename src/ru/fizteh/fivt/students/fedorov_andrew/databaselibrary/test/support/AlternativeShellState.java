@@ -36,15 +36,13 @@ public class AlternativeShellState extends SimpleCommandContainer<AlternativeShe
         }
     };
 
-    public static final AlternativeCommand EXECUTE_SILENTLY =
-            new AlternativeCommand("execute_silently") {
-                @Override
-                public void execute(AlternativeShellState state, String[] args)
-                        throws TerminalException {
-                    TestUtils.randInt(2, 3400);
-                    return;
-                }
-            };
+    public static final AlternativeCommand EXECUTE_SILENTLY = new AlternativeCommand("execute_silently") {
+        @Override
+        public void execute(AlternativeShellState state, String[] args) throws TerminalException {
+            TestUtils.randInt(2, 3400);
+            return;
+        }
+    };
 
     private final Map<String, Command<AlternativeShellState>> commandMap;
 

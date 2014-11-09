@@ -68,9 +68,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
             table = null;
         }
         String greeting = String.format(
-                "%s%s $ ",
-                (table == null ? "" : (table.getName() + "@")),
-                activeDatabase.getDbDirectory());
+                "%s%s $ ", (table == null ? "" : (table.getName() + "@")), activeDatabase.getDbDirectory());
         return greeting;
     }
 

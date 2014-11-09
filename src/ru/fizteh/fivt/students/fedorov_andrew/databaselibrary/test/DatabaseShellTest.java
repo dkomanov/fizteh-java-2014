@@ -34,9 +34,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
     private void createAndUseTable(String table) {
         runBatchExpectZero(String.format("create %1$s; use %1$s", table));
         assertEquals(
-                "Creating and using table",
-                String.format("created%nusing %1$s%n", table),
-                getOutput());
+                "Creating and using table", String.format("created%nusing %1$s%n", table), getOutput());
     }
 
     @Test
@@ -77,9 +75,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         runBatchExpectNonZero(command);
 
         assertEquals(
-                "Attempt to use another table with uncommitted changes",
-                expectedReply,
-                getOutput());
+                "Attempt to use another table with uncommitted changes", expectedReply, getOutput());
     }
 
     @Test
@@ -98,9 +94,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         runBatchExpectZero(false, command);
 
         assertEquals(
-                "Attempt to use the same table with uncommitted changes",
-                expectedReply,
-                getOutput());
+                "Attempt to use the same table with uncommitted changes", expectedReply, getOutput());
     }
 
     @Test
@@ -201,10 +195,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
 
         runBatchExpectZero(false, "put a b; put b c; put c d; put d e; put e a; exit");
         runInteractiveExpectZero(
-                "use " + table,
-                "show tables",
-                "use " + fakeTable + "; list",
-                "use " + table + "; list");
+                "use " + table, "show tables", "use " + fakeTable + "; list", "use " + table + "; list");
 
         String regex = makeTerminalExpectedRegex(
                 GREETING_REGEX,
@@ -246,9 +237,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
     public void testSize() {
         String table = "table";
         runBatchExpectZero(
-                "create " + table,
-                "use " + table,
-                "put a b; put c d; put d e; remove c; put d dd; put k a");
+                "create " + table, "use " + table, "put a b; put c d; put d e; remove c; put d dd; put k a");
         runBatchExpectZero("size");
         assertEquals("Improper size printed", String.format("3%n"), getOutput());
     }
@@ -270,9 +259,8 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
                 DB_ROOT.resolve("path1").resolve("path2").toString());
 
         exception.expect(TerminalException.class);
-        exception
-                .expectMessage("Database directory parent path does not exist or is not a "
-                               + "directory");
+        exception.expectMessage(
+                "Database directory parent path does not exist or is not a " + "directory");
 
         try {
             interpreter = new Shell<>(new SingleDatabaseShellState());
@@ -393,9 +381,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         String command = "create 1 2 3 4";
         runBatchExpectNonZero(command);
         assertThat(
-                "Wrong arguments error must be raised",
-                getOutput(),
-                startsWith("Wrong arguments number"));
+                "Wrong arguments error must be raised", getOutput(), startsWith("Wrong arguments number"));
     }
 
     @Test
@@ -459,8 +445,6 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
                 "Attempt to create not existing table", String.format("created%n"), getOutput());
         runBatchExpectNonZero(true, command);
         assertEquals(
-                "Attempt to create existing table",
-                String.format("Table %s exists%n", name),
-                getOutput());
+                "Attempt to create existing table", String.format("Table %s exists%n", name), getOutput());
     }
 }

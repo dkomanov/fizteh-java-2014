@@ -136,9 +136,7 @@ public class TablePart {
                     throw new DBFileCorruptException(
                             String.format(
                                     "Attempt to read key part from %s to %s, but value should "
-                                    + "start here",
-                                    bufferOffset,
-                                    i));
+                                    + "start here", bufferOffset, i));
                 }
                 if (buffer[i] == 0) {
                     String currentKey = new String(buffer, bufferOffset, i - bufferOffset, "UTF-8");
@@ -162,8 +160,7 @@ public class TablePart {
                     if (i > nextValue) {
                         throw new DBFileCorruptException(
                                 String.format(
-                                        "Value shift for key '%s' is to early: %s; current "
-                                        + "position: %s",
+                                        "Value shift for key '%s' is to early: %s; current " + "position: %s",
                                         currentKey,
                                         valueShift,
                                         i));

@@ -17,7 +17,6 @@ public class TableCorruptException extends DatabaseException {
 
     public TableCorruptException(String tableName, String message, Throwable cause) {
         super(
-                "Table " + tableName + " is corrupt" + (message == null ? "" : (": " + message)),
-                cause);
+                "Table " + tableName + " is corrupt" + (message == null ? "" : (": " + message)), cause);
     }
 }

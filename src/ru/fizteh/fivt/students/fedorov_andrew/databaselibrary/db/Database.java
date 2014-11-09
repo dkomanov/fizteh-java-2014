@@ -52,8 +52,7 @@ public class Database {
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
      *         I/O errors and name duplication errors are here
      */
-    public boolean createTable(String tableName)
-            throws DatabaseException, IllegalArgumentException {
+    public boolean createTable(String tableName) throws DatabaseException, IllegalArgumentException {
         return provider.createTable(tableName) != null;
     }
 

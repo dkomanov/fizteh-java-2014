@@ -60,14 +60,12 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
     public static final Command<SingleDatabaseShellState> EXIT =
             new AbstractCommand(null, "saves all data to file system and stops interpretation", 1) {
                 @Override
-                public void execute(SingleDatabaseShellState state, String[] args)
-                        throws TerminalException {
+                public void execute(SingleDatabaseShellState state, String[] args) throws TerminalException {
                     int exitCode = 0;
 
                     try {
                         state.persist();
-                    } catch (DatabaseException | IllegalArgumentException | IllegalStateException
-                            exc) {
+                    } catch (DatabaseException | IllegalArgumentException | IllegalStateException exc) {
                         exitCode = 1;
                         DATABASE_ERROR_HANDLER.handleException(exc, state);
                     } finally {
@@ -110,8 +108,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             System.out.println(
                     String.format(
                             "You can set database directory to work with using environment "
-                            + "variable '%s'",
-                            SingleDatabaseShellState.DB_DIRECTORY_PROPERTY_NAME));
+                            + "variable '%s'", SingleDatabaseShellState.DB_DIRECTORY_PROPERTY_NAME));
 
             for (Entry<String, Command<SingleDatabaseShellState>> cmdEntry : commands.entrySet()) {
                 String cmdName = cmdEntry.getKey();
@@ -121,17 +118,14 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
                         String.format(
                                 "\t%s%s\t%s",
                                 cmdName,
-                                command.getInvocation() == null
-                                ? ""
-                                : (' ' + command.getInvocation()),
+                                command.getInvocation() == null ? "" : (' ' + command.getInvocation()),
                                 command.getInfo()));
 
             }
         }
 
         @Override
-        public void executeSafely(SingleDatabaseShellState state, String[] args)
-                throws DatabaseException {
+        public void executeSafely(SingleDatabaseShellState state, String[] args) throws DatabaseException {
             // not used
         }
     };
@@ -140,8 +134,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
                 @Override
                 public void executeSafely(SingleDatabaseShellState state, String[] args)
                         throws DatabaseException {
-                    java.util.List<String> keySet =
-                            state.getActiveDatabase().getActiveTable().list();
+                    java.util.List<String> keySet = state.getActiveDatabase().getActiveTable().list();
                     StringBuilder sb = new StringBuilder();
 
                     boolean comma = false;

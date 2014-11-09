@@ -13,8 +13,7 @@ import java.util.Map;
  * Not accessible fields are not collected.
  * @see java.lang.reflect.Field#isAccessible()
  */
-public class SimpleCommandContainer<State extends ShellState<State>>
-        implements CommandContainer<State> {
+public class SimpleCommandContainer<State extends ShellState<State>> implements CommandContainer<State> {
 
     private Map<String, Command<State>> commandsMap;
 
@@ -37,9 +36,7 @@ public class SimpleCommandContainer<State extends ShellState<State>>
                 Log.log("Registered command with name " + commandName);
             } catch (IllegalAccessException | ClassCastException exc) {
                 Log.log(
-                        SimpleCommandContainer.class,
-                        exc,
-                        "Failed to obtain Command field value: " + field);
+                        SimpleCommandContainer.class, exc, "Failed to obtain Command field value: " + field);
             }
         }
 

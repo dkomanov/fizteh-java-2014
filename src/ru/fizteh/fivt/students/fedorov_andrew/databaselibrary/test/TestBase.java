@@ -10,8 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public abstract class TestBase {
-    protected static final Path DB_ROOT =
-            Paths.get(System.getProperty("user.home"), "test", "JUnitDB");
+    protected static final Path DB_ROOT = Paths.get(System.getProperty("user.home"), "test", "JUnitDB");
 
     @BeforeClass
     public static void globalPrepareTestBase() throws IOException {

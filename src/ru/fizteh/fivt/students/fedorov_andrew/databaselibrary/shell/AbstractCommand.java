@@ -18,23 +18,23 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
      * Used for unsafe calls. Catches all extensions of {@link DatabaseException } and {@link
      * IllegalArgumentException }.
      */
-    protected static final AccurateExceptionHandler<SingleDatabaseShellState>
-            DATABASE_ERROR_HANDLER = new AccurateExceptionHandler<SingleDatabaseShellState>() {
+    protected static final AccurateExceptionHandler<SingleDatabaseShellState> DATABASE_ERROR_HANDLER =
+            new AccurateExceptionHandler<SingleDatabaseShellState>() {
 
-        @Override
-        public void handleException(Exception exc, SingleDatabaseShellState shell)
-                throws TerminalException {
-            if (exc instanceof DatabaseException || exc instanceof IllegalArgumentException
-                || exc instanceof IllegalStateException) {
-                Utility.handleError(exc.getMessage(), exc, true);
-            } else if (exc instanceof RuntimeException) {
-                throw (RuntimeException) exc;
-            } else {
-                throw new RuntimeException("Unexpected exception", exc);
-            }
-        }
+                @Override
+                public void handleException(Exception exc, SingleDatabaseShellState shell)
+                        throws TerminalException {
+                    if (exc instanceof DatabaseException || exc instanceof IllegalArgumentException
+                        || exc instanceof IllegalStateException) {
+                        Utility.handleError(exc.getMessage(), exc, true);
+                    } else if (exc instanceof RuntimeException) {
+                        throw (RuntimeException) exc;
+                    } else {
+                        throw new RuntimeException("Unexpected exception", exc);
+                    }
+                }
 
-    };
+            };
 
     private String info;
     private String invocationArgs;
@@ -48,10 +48,7 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
      * @param info
      *         Short description of command.
      */
-    public AbstractCommand(String invocationArgs,
-                           String info,
-                           int minimalArgsCount,
-                           int maximalArgsCount) {
+    public AbstractCommand(String invocationArgs, String info, int minimalArgsCount, int maximalArgsCount) {
         this.info = info;
         this.invocationArgs = invocationArgs;
         this.minimalArgsCount = minimalArgsCount;
@@ -70,8 +67,7 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
      * String[])}.
      */
     @Override
-    public void execute(final SingleDatabaseShellState state, final String[] args)
-            throws TerminalException {
+    public void execute(final SingleDatabaseShellState state, final String[] args) throws TerminalException {
         checkArgsNumber(args, minimalArgsCount, maximalArgsCount);
         Utility.performAccurately(
                 new AccurateAction() {
@@ -96,8 +92,7 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
     public abstract void executeSafely(SingleDatabaseShellState shell, String[] args)
             throws DatabaseException, IllegalArgumentException;
 
-    protected void checkArgsNumber(String[] args, int minimal, int maximal)
-            throws TerminalException {
+    protected void checkArgsNumber(String[] args, int minimal, int maximal) throws TerminalException {
         if (args.length < minimal || args.length > maximal) {
             handleError(null, new WrongArgsNumberException(this, args[0]), true);
         }

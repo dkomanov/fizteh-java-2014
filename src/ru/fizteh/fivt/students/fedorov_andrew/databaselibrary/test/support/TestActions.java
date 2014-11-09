@@ -13,9 +13,7 @@ import static ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.suppor
 public class TestActions {
     public static final TestAction PUT_NEW = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             String key = randString(randInt(3, 10));
             String value = randString(randInt(3, 10));
 
@@ -27,9 +25,7 @@ public class TestActions {
     };
     public static final TestAction PUT_OVERWRITE = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             String key = randElement(backMap.keySet());
             if (key == null) {
                 return;
@@ -46,9 +42,7 @@ public class TestActions {
     };
     public static final TestAction GET_EXISTENT = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             String key = randElement(backMap.keySet());
             if (key == null) {
                 return;
@@ -62,9 +56,7 @@ public class TestActions {
     };
     public static final TestAction GET_NOT_EXISTENT = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             String key = randString(randInt(3, 10));
 
             String valueTable = table.get(key);
@@ -75,9 +67,7 @@ public class TestActions {
     };
     public static final TestAction REMOVE_EXISTENT = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             String key = randElement(backMap.keySet());
             if (key == null) {
                 return;
@@ -97,9 +87,7 @@ public class TestActions {
     };
     public static final TestAction REMOVE_NOT_EXISTENT = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             String key = randString(randInt(3, 10));
 
             String oldValueTable = table.remove(key);
@@ -116,9 +104,7 @@ public class TestActions {
     };
     public static final TestAction SIZE = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             int sizeTable = table.size();
             int sizeMap = backMap.size();
 
@@ -127,9 +113,7 @@ public class TestActions {
     };
     public static final TestAction LIST = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             java.util.List<String> keysetTable = table.list();
             Set<String> keysetMap = backMap.keySet();
 
@@ -143,9 +127,8 @@ public class TestActions {
     };
     public static final TestAction COMMIT = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) throws DatabaseException {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap)
+                throws DatabaseException {
             int diffsMap = countDifferences(lastCommittedMap, backMap);
             int diffsTable = table.commit();
 
@@ -157,9 +140,7 @@ public class TestActions {
     };
     public static final TestAction ROLLBACK = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             int diffsMap = countDifferences(backMap, lastCommittedMap);
             int diffsTable = table.rollback();
 
@@ -171,9 +152,7 @@ public class TestActions {
     };
     public static final TestAction GLOBAL_CHECK = new TestAction() {
         @Override
-        public void perform(Table table,
-                            Map<String, String> backMap,
-                            Map<String, String> lastCommittedMap) {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             assertSynchronized(backMap.size(), table.size());
 
             for (String key : backMap.keySet()) {

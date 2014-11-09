@@ -58,14 +58,10 @@ public class InterpreterTest extends InterpreterTestBase<AlternativeShellState> 
             interpreter = new Shell<>(state);
         } catch (TerminalException exc) {
             assertThat(
-                    "Improper error message",
-                    exc.getMessage(),
-                    containsString("Spontanious exception"));
+                    "Improper error message", exc.getMessage(), containsString("Spontanious exception"));
         }
 
         assertEquals(
-                "Improper error output",
-                getOutput(),
-                makeTerminalExpectedMessage("Spontanious exception"));
+                "Improper error output", getOutput(), makeTerminalExpectedMessage("Spontanious exception"));
     }
 }

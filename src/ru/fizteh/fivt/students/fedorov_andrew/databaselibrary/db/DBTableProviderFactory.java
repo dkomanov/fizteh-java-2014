@@ -25,8 +25,7 @@ public class DBTableProviderFactory implements TableProviderFactory {
             for (Path tableDirectory : tableDirs) {
                 if (!Files.isDirectory(tableDirectory)) {
                     throw new DBFileCorruptException(
-                            "Non-directory path found in database folder: " + tableDirectory
-                                    .getFileName());
+                            "Non-directory path found in database folder: " + tableDirectory.getFileName());
                 }
             }
         } catch (IOException exc) {

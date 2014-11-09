@@ -145,9 +145,8 @@ public final class Utility {
         }
         Path tableNamePath = Paths.get(tableName).normalize();
         Path sampleParent = Paths.get("sample");
-        if (tableNamePath.getParent() != null || !sampleParent.resolve(tableName).normalize()
-                                                              .getFileName().toString()
-                                                              .equals(tableName)) {
+        if (tableNamePath.getParent() != null || !sampleParent.resolve(tableName).normalize().getFileName()
+                                                              .toString().equals(tableName)) {
             throw new IllegalArgumentException("Table name is not correct");
         }
     }
@@ -205,8 +204,7 @@ public final class Utility {
         }
 
         @Override
-        public FileVisitResult visitFile(Path visitPath, BasicFileAttributes attrs)
-                throws IOException {
+        public FileVisitResult visitFile(Path visitPath, BasicFileAttributes attrs) throws IOException {
             if (Files.size(visitPath) == 0) {
                 return super.visitFile(visitPath, attrs);
             } else {
@@ -237,8 +235,7 @@ public final class Utility {
         }
 
         @Override
-        public FileVisitResult visitFile(Path visitPath, BasicFileAttributes attrs)
-                throws IOException {
+        public FileVisitResult visitFile(Path visitPath, BasicFileAttributes attrs) throws IOException {
             try {
                 Files.delete(visitPath);
                 return FileVisitResult.CONTINUE;
@@ -258,8 +255,7 @@ public final class Utility {
      */
     public abstract static class MyTreeWalker<T> implements FileVisitor<T> {
         @Override
-        public FileVisitResult preVisitDirectory(T visitPath, BasicFileAttributes attrs)
-                throws IOException {
+        public FileVisitResult preVisitDirectory(T visitPath, BasicFileAttributes attrs) throws IOException {
             return FileVisitResult.CONTINUE;
         }
 

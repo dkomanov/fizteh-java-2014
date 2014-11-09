@@ -30,8 +30,7 @@ public class ProbableActionSet<Action> {
         return set;
     }
 
-    public static <E extends Enum<E>> ProbableActionSet<E> makeEquallyDistributedSet(Class<E>
-                                                                                             clazz) {
+    public static <E extends Enum<E>> ProbableActionSet<E> makeEquallyDistributedSet(Class<E> clazz) {
         E[] enums = clazz.getEnumConstants();
         ProbableActionSet<E> set = new ProbableActionSet<>();
         for (E en : enums) {
