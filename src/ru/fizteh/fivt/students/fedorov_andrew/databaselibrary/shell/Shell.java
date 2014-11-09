@@ -15,7 +15,8 @@ import java.util.Map;
 /**
  * Class that represents a terminal which can execute some commands that work with some data.
  * @param <ShellStateImpl>
- *         Concrete implementation of {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.ShellState}
+ *         Concrete implementation of {@link ru.fizteh.fivt.students.fedorov_andrew
+ *         .databaselibrary.shell.ShellState}
  *         the shell works with.
  * @author phoenix
  * @see Command
@@ -187,7 +188,8 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
     }
 
     /**
-     * Persists shell state. If fails, calls {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.ShellState#prepareToExit(int)}
+     * Persists shell state. If fails, calls {@link ru.fizteh.fivt.students.fedorov_andrew
+     * .databaselibrary.shell.ShellState#prepareToExit(int)}
      * with non zero exit code.
      */
     private void persistSafelyAndPrepareToExit() throws ExitRequest {

@@ -66,7 +66,8 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
 
                     try {
                         state.persist();
-                    } catch (DatabaseException | IllegalArgumentException | IllegalStateException exc) {
+                    } catch (DatabaseException | IllegalArgumentException | IllegalStateException
+                            exc) {
                         exitCode = 1;
                         DATABASE_ERROR_HANDLER.handleException(exc, state);
                     } finally {
@@ -108,7 +109,8 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
 
             System.out.println(
                     String.format(
-                            "You can set database directory to work with using environment variable '%s'",
+                            "You can set database directory to work with using environment "
+                            + "variable '%s'",
                             SingleDatabaseShellState.DB_DIRECTORY_PROPERTY_NAME));
 
             for (Entry<String, Command<SingleDatabaseShellState>> cmdEntry : commands.entrySet()) {

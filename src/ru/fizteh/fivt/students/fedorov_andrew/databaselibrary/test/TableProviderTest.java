@@ -40,7 +40,7 @@ public class TableProviderTest extends TestBase {
     }
 
     @Before
-    public void prepareProvider() throws DatabaseException {
+    public void prepareProvider() {
         provider = factory.create(DB_ROOT.toString());
     }
 
@@ -51,7 +51,7 @@ public class TableProviderTest extends TestBase {
     }
 
     @Test
-    public void testGetTableNull() throws DatabaseException {
+    public void testGetTableNull() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Table name must not be null");
         provider.getTable(null);
@@ -63,38 +63,67 @@ public class TableProviderTest extends TestBase {
     }
 
     @Test
-    public void testGetTableBadName() throws DatabaseException {
+    public void testGetTableBadName() {
         expectTableNameIsNotCorrect();
         provider.getTable(Paths.get("..", "t").toString());
     }
 
     @Test
-    public void testGetTableBadName1() throws DatabaseException {
+    public void testGetTableBadName1() {
         expectTableNameIsNotCorrect();
         provider.getTable(Paths.get("..", DB_ROOT.getFileName().toString(), "t").toString());
     }
 
     @Test
-    public void testGetTableBadName2() throws DatabaseException {
+    public void testGetTableBadName2() {
         expectTableNameIsNotCorrect();
         provider.getTable(Paths.get("subdir", "t1").toString());
     }
 
     @Test
-    public void testGetTableNotExistent() throws DatabaseException {
+    public void testGetTableBadName3() {
+        expectTableNameIsNotCorrect();
+        provider.getTable("..");
+    }
+
+    @Test
+    public void testGetTableBadName4() {
+        expectTableNameIsNotCorrect();
+        provider.getTable(".");
+    }
+
+    @Test
+    public void testGetTableBadName5() {
+        expectTableNameIsNotCorrect();
+        provider.getTable(Paths.get("..", "..").toString());
+    }
+
+    @Test
+    public void testGetTableBadName6() {
+        expectTableNameIsNotCorrect();
+        provider.getTable(Paths.get("..", "..", "t1").toString());
+    }
+
+    @Test
+    public void testCreateTableGoodName() {
+        provider.createTable("fizteh.students");
+    }
+
+    @Test
+    public void testGetTableNotExistent() {
         Table table = provider.getTable("not existent");
         assertNull("Not existent table should be null", table);
     }
 
     @Test
-    public void testCreateTableExistent() throws DatabaseException {
+    public void testCreateTableExistent() {
         provider.createTable("table");
         Table table = provider.createTable("table");
         assertNull("Cannot create duplicate table, should be null", table);
     }
 
     @Test
-    public void testRemoveTableNotExistent() throws DatabaseException {
+    public void testRemoveTableNotExistent() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage(allOf(startsWith("Table"), endsWith("not exists")));
         provider.removeTable("!not existent!");

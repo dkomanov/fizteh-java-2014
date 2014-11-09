@@ -162,7 +162,8 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
                         checkNameFormat(
                                 partFile.getFileName().toString(), FILE_EXTENSION, 0, FILES_COUNT);
                     }
-                    // Further checks will be performed during an attempt to read data from the file.
+                    // Further checks will be performed during an attempt to read data from the
+                    // file.
                 }
             }
         } catch (IOException exc) {

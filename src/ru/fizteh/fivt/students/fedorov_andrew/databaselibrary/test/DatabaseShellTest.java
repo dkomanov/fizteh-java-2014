@@ -20,7 +20,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
- * Tests for database using {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.Shell}
+ * Tests for database using {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell
+ * .Shell}
  * in batch and interactive mode.
  */
 @RunWith(JUnit4.class)
@@ -270,7 +271,8 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
 
         exception.expect(TerminalException.class);
         exception
-                .expectMessage("Database directory parent path does not exist or is not a directory");
+                .expectMessage("Database directory parent path does not exist or is not a "
+                               + "directory");
 
         try {
             interpreter = new Shell<>(new SingleDatabaseShellState());

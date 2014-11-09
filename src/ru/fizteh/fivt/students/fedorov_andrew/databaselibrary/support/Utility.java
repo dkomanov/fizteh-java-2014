@@ -144,7 +144,10 @@ public final class Utility {
             throw new IllegalArgumentException("Table name must not be null");
         }
         Path tableNamePath = Paths.get(tableName).normalize();
-        if (!Paths.get(tableName).equals(tableNamePath) || tableNamePath.getParent() != null) {
+        Path sampleParent = Paths.get("sample");
+        if (tableNamePath.getParent() != null || !sampleParent.resolve(tableName).normalize()
+                                                              .getFileName().toString()
+                                                              .equals(tableName)) {
             throw new IllegalArgumentException("Table name is not correct");
         }
     }

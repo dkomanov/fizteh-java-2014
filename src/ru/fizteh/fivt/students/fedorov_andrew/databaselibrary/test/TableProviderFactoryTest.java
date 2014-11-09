@@ -48,7 +48,8 @@ public class TableProviderFactoryTest extends TestBase {
     public void testCreateProviderBadString() throws DatabaseException {
         exception.expect(IllegalArgumentException.class);
         exception
-                .expectMessage("Database directory parent path does not exist or is not a directory");
+                .expectMessage("Database directory parent path does not exist or is not a "
+                               + "directory");
         factory.create("bad string");
     }
 
@@ -63,7 +64,8 @@ public class TableProviderFactoryTest extends TestBase {
     public void testCreateProviderFarNotExistingPath() throws DatabaseException {
         exception.expect(IllegalArgumentException.class);
         exception
-                .expectMessage("Database directory parent path does not exist or is not a directory");
+                .expectMessage("Database directory parent path does not exist or is not a "
+                               + "directory");
 
         factory.create(DB_ROOT.resolve("subdir_with_missing_parent").toString());
     }
