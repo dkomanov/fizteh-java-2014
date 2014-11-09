@@ -10,9 +10,6 @@ import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.SimpleComman
 import java.util.Arrays;
 import java.util.Map;
 
-/**
- * Created by phoenix on 06.11.14.
- */
 public class AlternativeShellState extends SimpleCommandContainer<AlternativeShellState>
         implements ShellState<AlternativeShellState> {
     public static final AlternativeCommand ECHO = new AlternativeCommand("echo") {
@@ -40,7 +37,6 @@ public class AlternativeShellState extends SimpleCommandContainer<AlternativeShe
         @Override
         public void execute(AlternativeShellState state, String[] args) throws TerminalException {
             TestUtils.randInt(2, 3400);
-            return;
         }
     };
 

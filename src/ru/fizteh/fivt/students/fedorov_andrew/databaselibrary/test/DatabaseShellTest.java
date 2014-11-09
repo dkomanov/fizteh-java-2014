@@ -102,7 +102,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         String table = "table";
 
         String command = String.format(
-                "put a b; commit; put b c; remove a; commit", table);
+                "put a b; commit; put b c; remove a; commit");
         String expectedReply = String.format("new%n1%nnew%nremoved%n2%n");
 
         createAndUseTable(table);
@@ -116,7 +116,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         String table = "table";
 
         String command = String.format(
-                "put a b; commit; put b c; remove a; rollback", table);
+                "put a b; commit; put b c; remove a; rollback");
         String expectedReply = String.format("new%n1%nnew%nremoved%n2%n");
 
         createAndUseTable(table);
@@ -320,7 +320,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
     }
 
     @Test
-    public void testShowCorruptTables() throws IOException, TerminalException {
+    public void testShowCorruptTables() throws Exception {
         String tableA = "tableA";
         String tableB = "tableB";
         String corruptTable = "corruptTable";

@@ -6,7 +6,7 @@ import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.Terminal
  * This class represents an executable shell command
  * @author phoenix
  */
-public interface Command<State extends ShellState> {
+public interface Command<State extends ShellState<State>> {
     void execute(State state, String[] args) throws TerminalException;
 
     /**

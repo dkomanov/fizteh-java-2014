@@ -17,6 +17,7 @@ import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestA
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,11 +33,11 @@ public class TableRandomTests extends TestBase {
     public List<TestAction> actions;
     private TableProvider provider;
     private Table table;
-    private Map<String, String> lastCommit = new HashMap<String, String>();
-    private Map<String, String> backMap = new HashMap<String, String>();
+    private Map<String, String> lastCommit = new HashMap<>();
+    private Map<String, String> backMap = new HashMap<>();
 
     @Parameters
-    public static Iterable<Object[]> data() {
+    public static Collection<Object[]> data() {
         int testsCount = TestUtils.randInt(50, 200);
 
         List<Object[]> testSuits = new LinkedList<>();
@@ -47,7 +48,7 @@ public class TableRandomTests extends TestBase {
 
         for (int testSuit = 0; testSuit < testsCount; testSuit++) {
             int actionsCount = TestUtils.randInt(10, 10 * (testSuit + 1));
-            List<TestAction> actions = new LinkedList<TestAction>();
+            List<TestAction> actions = new LinkedList<>();
 
             for (int i = 0; i < actionsCount; i++) {
                 actions.add(generator.nextAction());
@@ -68,8 +69,8 @@ public class TableRandomTests extends TestBase {
     public void prepare() throws DatabaseException {
         provider = factory.create(DB_ROOT.toString());
         table = provider.createTable("table");
-        lastCommit = new HashMap<String, String>();
-        backMap = new HashMap<String, String>();
+        lastCommit = new HashMap<>();
+        backMap = new HashMap<>();
     }
 
     @After

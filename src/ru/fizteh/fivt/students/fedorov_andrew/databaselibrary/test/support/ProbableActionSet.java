@@ -8,7 +8,7 @@ import java.util.LinkedList;
  * @author phoenix
  */
 public class ProbableActionSet<Action> {
-    private LinkedList<ProbableAction> actions;
+    private final LinkedList<ProbableAction> actions;
     private int probCasesSum;
 
     public ProbableActionSet() {

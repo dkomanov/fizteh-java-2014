@@ -52,7 +52,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
      */
     private void execute(String commandStr) throws TerminalException, ExitRequest {
-        String[] args = commandStr.trim().split("[ \t]{1,}");
+        String[] args = commandStr.trim().split("[ \t]+");
         if (args[0].isEmpty()) {
             return;
         }
@@ -118,15 +118,12 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
                 }
 
                 String[] commands = str.split(";");
-                for (int i = 0, len = commands.length; i < len; i++) {
-                    try {
-                        execute(commands[i]);
-                    } catch (ExitRequest request) {
-                        throw request;
-                    } catch (TerminalException exc) {
-                        // Exception is already handled.
-                        break;
+                try {
+                    for (String command : commands) {
+                        execute(command);
                     }
+                } catch (TerminalException exc) {
+                    // Exception is already handled.
                 }
             }
         } catch (IOException exc) {
@@ -169,11 +166,9 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
             String[] commands = allCommands.split(";");
 
             try {
-                for (int i = 0, len = commands.length; i < len; i++) {
-                    execute(commands[i]);
+                for (String command : commands) {
+                    execute(command);
                 }
-            } catch (ExitRequest request) {
-                throw request;
             } catch (TerminalException exc) {
                 // Exception already handled.
                 shellState.prepareToExit(1);

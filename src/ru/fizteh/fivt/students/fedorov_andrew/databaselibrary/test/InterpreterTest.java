@@ -33,7 +33,7 @@ public class InterpreterTest extends InterpreterTestBase<AlternativeShellState> 
 
         runInteractiveExpectZero(
                 AlternativeShellState.THROW_RUNTIME.getName(),
-                AlternativeShellState.ECHO.getName() + " " + echoMessage);
+                AlternativeShellState.ECHO.getName() + ' ' + echoMessage);
 
         String regex = makeTerminalExpectedRegex(
                 GREETING_REGEX, "(.* )?Method execution error", echoMessage);

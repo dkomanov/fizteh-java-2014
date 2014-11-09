@@ -35,10 +35,6 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      * Here shell output can be found.
      */
     private static ByteArrayOutputStream out;
-    /**
-     * Wrap over {@link #out} that is used as {@link System#out} and {@link System#err}.
-     */
-    private static PrintStream outAndErrPrintStream;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -51,7 +47,10 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
         stdErr = System.err;
         out = new BAOSDuplicator(stdOut);
 
-        outAndErrPrintStream = new PrintStream(out);
+        /*
+      Wrap over {@link #out} that is used as {@link System#out} and {@link System#err}.
+     */
+        PrintStream outAndErrPrintStream = new PrintStream(out);
         System.setOut(outAndErrPrintStream);
         System.setErr(outAndErrPrintStream);
     }
@@ -134,7 +133,7 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
         for (int i = 0, len = commands.length; i < len; i++) {
             commands[i] = commands[i].trim();
             if (!commands[i].endsWith(";")) {
-                commands[i] = commands[i] + ";";
+                commands[i] = commands[i] + ';';
             }
         }
 

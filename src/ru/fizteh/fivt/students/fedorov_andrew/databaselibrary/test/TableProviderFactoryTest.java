@@ -84,7 +84,7 @@ public class TableProviderFactoryTest extends TestBase {
     }
 
     @Test
-    public void testCreateProviderInDirWithBadFiles() throws DatabaseException, IOException {
+    public void testCreateProviderInDirWithBadFiles() throws Exception {
         Files.createDirectory(DB_ROOT);
         Files.createFile(DB_ROOT.resolve("some file"));
 
@@ -97,7 +97,7 @@ public class TableProviderFactoryTest extends TestBase {
     }
 
     @Test
-    public void testCreateProviderInDirWithDirsContainingFiles() throws IOException, DatabaseException {
+    public void testCreateProviderInDirWithDirsContainingFiles() throws Exception {
         String table = "table";
 
         Files.createDirectory(DB_ROOT);

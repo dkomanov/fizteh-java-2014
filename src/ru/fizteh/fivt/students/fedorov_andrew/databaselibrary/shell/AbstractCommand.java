@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.WrongArgsNumberException;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.AccurateAction;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.AccurateExceptionHandler;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 
@@ -19,28 +18,22 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
      * IllegalArgumentException }.
      */
     protected static final AccurateExceptionHandler<SingleDatabaseShellState> DATABASE_ERROR_HANDLER =
-            new AccurateExceptionHandler<SingleDatabaseShellState>() {
-
-                @Override
-                public void handleException(Exception exc, SingleDatabaseShellState shell)
-                        throws TerminalException {
-                    if (exc instanceof DatabaseException || exc instanceof IllegalArgumentException
-                        || exc instanceof IllegalStateException) {
-                        Utility.handleError(exc.getMessage(), exc, true);
-                    } else if (exc instanceof RuntimeException) {
-                        throw (RuntimeException) exc;
-                    } else {
-                        throw new RuntimeException("Unexpected exception", exc);
-                    }
+            (Exception exc, SingleDatabaseShellState shell) -> {
+                if (exc instanceof DatabaseException || exc instanceof IllegalArgumentException
+                    || exc instanceof IllegalStateException) {
+                    Utility.handleError(exc.getMessage(), exc, true);
+                } else if (exc instanceof RuntimeException) {
+                    throw (RuntimeException) exc;
+                } else {
+                    throw new RuntimeException("Unexpected exception", exc);
                 }
-
             };
 
-    private String info;
-    private String invocationArgs;
+    private final String info;
+    private final String invocationArgs;
 
-    private int minimalArgsCount;
-    private int maximalArgsCount;
+    private final int minimalArgsCount;
+    private final int maximalArgsCount;
 
     /**
      * @param invocationArgs
@@ -69,14 +62,7 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
     @Override
     public void execute(final SingleDatabaseShellState state, final String[] args) throws TerminalException {
         checkArgsNumber(args, minimalArgsCount, maximalArgsCount);
-        Utility.performAccurately(
-                new AccurateAction() {
-
-                    @Override
-                    public void perform() throws Exception {
-                        executeSafely(state, args);
-                    }
-                }, DATABASE_ERROR_HANDLER, state);
+        Utility.performAccurately(() -> executeSafely(state, args), DATABASE_ERROR_HANDLER, state);
     }
 
     @Override

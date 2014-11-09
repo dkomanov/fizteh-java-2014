@@ -39,7 +39,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     /**
      * Shell representing terminal.
      */
-    private Shell host;
+    private Shell<SingleDatabaseShellState> host;
 
     @Override
     public void cleanup() {
@@ -67,9 +67,8 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
         } catch (NoActiveTableException exc) {
             table = null;
         }
-        String greeting = String.format(
-                "%s%s $ ", (table == null ? "" : (table.getName() + "@")), activeDatabase.getDbDirectory());
-        return greeting;
+        return String.format(
+                "%s%s $ ", (table == null ? "" : (table.getName() + '@')), activeDatabase.getDbDirectory());
     }
 
     @Override

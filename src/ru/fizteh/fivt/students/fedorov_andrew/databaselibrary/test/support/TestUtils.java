@@ -19,7 +19,7 @@ import java.util.Random;
  */
 public class TestUtils {
     private static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static Random random = new Random();
+    private static final Random random = new Random();
 
     // Not for constructing
     private TestUtils() {
@@ -62,8 +62,7 @@ public class TestUtils {
             keyID--;
         }
 
-        T element = iterator.next();
-        return element;
+        return iterator.next();
     }
 
     public static <K, V> int countDifferences(Map<K, V> source, Map<K, V> target) {

@@ -13,7 +13,7 @@ import java.util.List;
  * @see java.io.PrintStream
  */
 public class BAOSDuplicator extends ByteArrayOutputStream {
-    private List<PrintStream> streams;
+    private final List<PrintStream> streams;
 
     public BAOSDuplicator(PrintStream... streams) {
         this.streams = Arrays.asList(streams);
@@ -34,6 +34,6 @@ public class BAOSDuplicator extends ByteArrayOutputStream {
     @Override
     public void flush() throws IOException {
         super.flush();
-        streams.forEach(ps -> ps.flush());
+        streams.forEach(PrintStream::flush);
     }
 }

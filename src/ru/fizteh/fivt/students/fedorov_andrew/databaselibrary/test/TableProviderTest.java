@@ -13,7 +13,6 @@ import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.TableImpl;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -142,7 +141,7 @@ public class TableProviderTest extends TestBase {
     }
 
     @Test
-    public void testStoreKeysInImproperPlaces() throws IOException, DatabaseException {
+    public void testStoreKeysInImproperPlaces() throws Exception {
         String tmpTable = "tmp";
 
         TableImpl table = TableImpl.createTable(DB_ROOT.resolve(tmpTable));

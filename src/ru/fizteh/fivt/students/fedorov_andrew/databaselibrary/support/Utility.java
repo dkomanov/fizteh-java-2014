@@ -175,7 +175,7 @@ public final class Utility {
      * @author phoenix
      */
     public static class EmptyFilesRemover extends FileTreeRemover {
-        private Path rootDirectory;
+        private final Path rootDirectory;
 
         /**
          * @param rootDirectory

@@ -286,7 +286,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
      */
     @Override
     public List<String> list() {
-        List<String> keySet = new LinkedList<String>();
+        List<String> keySet = new LinkedList<>();
 
         for (TablePart part : tableParts.values()) {
             keySet.addAll(part.keySet());

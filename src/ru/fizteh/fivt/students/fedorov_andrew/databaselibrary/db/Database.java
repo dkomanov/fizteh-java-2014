@@ -13,7 +13,6 @@ import java.util.Set;
  * @author phoenix
  */
 public class Database {
-    private final DBTableProviderFactory factory = new DBTableProviderFactory();
     private final DBTableProvider provider;
     /**
      * Root directory of all database files
@@ -31,12 +30,13 @@ public class Database {
      * @param dbDirectory
      * @throws DatabaseException
      */
-    private Database(Path dbDirectory) throws DatabaseException {
+    private Database(Path dbDirectory) {
         this.dbDirectory = dbDirectory;
+        DBTableProviderFactory factory = new DBTableProviderFactory();
         this.provider = factory.create(dbDirectory.toString());
     }
 
-    public static Database establishDatabase(Path dbDirectory) throws DatabaseException {
+    public static Database establishDatabase(Path dbDirectory) {
         return new Database(dbDirectory);
     }
 
@@ -52,7 +52,7 @@ public class Database {
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
      *         I/O errors and name duplication errors are here
      */
-    public boolean createTable(String tableName) throws DatabaseException, IllegalArgumentException {
+    public boolean createTable(String tableName) throws IllegalArgumentException {
         return provider.createTable(tableName) != null;
     }
 
@@ -63,7 +63,7 @@ public class Database {
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
      *         if tablename does not exist or failed to delete
      */
-    public void dropTable(String tableName) throws DatabaseException, IllegalArgumentException {
+    public void dropTable(String tableName) throws IllegalArgumentException {
         provider.removeTable(tableName);
 
         if (activeTable != null && activeTable.getName().equals(tableName)) {
@@ -84,7 +84,7 @@ public class Database {
      * Writes all changes in the database to file system.
      * @throws IOException
      */
-    public int commit() throws DatabaseException {
+    public int commit() {
         // actually we have to persist the active table.
         if (activeTable != null) {
             return activeTable.commit();
@@ -108,7 +108,7 @@ public class Database {
             if (table.getValue() == null) {
                 System.out.println(table.getKey() + " corrupt");
             } else {
-                System.out.println(table.getKey() + " " + table.getValue().size());
+                System.out.println(table.getKey() + ' ' + table.getValue().size());
             }
         }
     }

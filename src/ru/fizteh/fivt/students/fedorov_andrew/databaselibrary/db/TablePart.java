@@ -53,8 +53,8 @@ public class TablePart {
 
         this.tablePartFilePath = tablePartFilePath;
 
-        tablePartMap = new HashMap<String, String>();
-        lastCommittedMap = new HashMap<String, String>();
+        tablePartMap = new HashMap<>();
+        lastCommittedMap = new HashMap<>();
     }
 
     /**

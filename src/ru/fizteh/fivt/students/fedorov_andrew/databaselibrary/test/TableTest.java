@@ -21,7 +21,6 @@ import static org.junit.Assert.*;
 @RunWith(JUnit4.class)
 public class TableTest extends TestBase {
     private static TableProviderFactory factory;
-    private static TableProvider provider;
     private static Table table;
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -33,7 +32,7 @@ public class TableTest extends TestBase {
 
     @Before
     public void prepare() throws DatabaseException {
-        provider = factory.create(DB_ROOT.toString());
+        TableProvider provider = factory.create(DB_ROOT.toString());
         table = provider.createTable("table");
     }
 
@@ -97,7 +96,7 @@ public class TableTest extends TestBase {
     public void testRussianSymbols() {
         table.put("ключ", "значение");
 
-        assertEquals("Russian symbols: put + get not synchronized", table.get("ключ"), "значение");
+        assertEquals("Russian symbols: put + get not synchronized", "значение", table.get("ключ"));
     }
 
     @Test

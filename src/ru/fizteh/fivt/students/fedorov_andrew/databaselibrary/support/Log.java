@@ -73,28 +73,27 @@ public class Log {
             boolean appendSpace = false;
 
             if (logger != null) {
-                sb.append(logger.getSimpleName()).append(":");
+                sb.append(logger.getSimpleName()).append(':');
                 appendSpace = true;
             }
             if (message != null) {
                 if (appendSpace) {
-                    sb.append(" ");
+                    sb.append(' ');
                 }
                 sb.append(message);
                 appendSpace = true;
             }
             if (throwable != null) {
                 if (appendSpace) {
-                    sb.append(" ");
+                    sb.append(' ');
                 }
                 sb.append(throwable.toString());
             }
-            sb.append("\n");
+            sb.append('\n');
 
             while (throwable != null) {
                 StackTraceElement[] trace = throwable.getStackTrace();
-                for (int i = 0, len = trace.length; i < len; i++) {
-                    StackTraceElement e = trace[i];
+                for (StackTraceElement e : trace) {
                     sb.append(
                             String.format(
                                     "\tat %s.%s in %s line %d\n",

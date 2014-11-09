@@ -214,7 +214,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
 
     }
 
-    public static final Commands obtainInstance() {
+    public static Commands obtainInstance() {
         return INSTANCE;
     }
 }

@@ -9,6 +9,7 @@ import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.Terminal
  *         detailed message.
  * @author phoenix
  */
+@FunctionalInterface
 public interface AccurateExceptionHandler<T> {
     void handleException(Exception exc, T additionalData) throws TerminalException;
 }

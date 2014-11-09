@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support;
 
 import junit.framework.AssertionFailedError;
 import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
 
 import java.util.Map;
 import java.util.Set;
@@ -127,8 +126,7 @@ public class TestActions {
     };
     public static final TestAction COMMIT = new TestAction() {
         @Override
-        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap)
-                throws DatabaseException {
+        public void perform(Table table, Map<String, String> backMap, Map<String, String> lastCommittedMap) {
             int diffsMap = countDifferences(lastCommittedMap, backMap);
             int diffsTable = table.commit();
 

@@ -15,17 +15,17 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class DBTableProvider implements TableProvider {
-    private Path databaseRoot;
+    private final Path databaseRoot;
 
     /**
      * Mapping between table names and tables. Corrupt tables are null.
      */
-    private Map<String, TableImpl> tables;
+    private final Map<String, TableImpl> tables;
 
     /**
      * Mapping (table name, last corruption reason). To keep user informed.
      */
-    private Map<String, TableCorruptException> corruptTables;
+    private final Map<String, TableCorruptException> corruptTables;
 
     /**
      * Constructs a database table provider.
@@ -35,7 +35,7 @@ public class DBTableProvider implements TableProvider {
      */
     DBTableProvider(Path databaseRoot) throws DatabaseException {
         this.databaseRoot = databaseRoot;
-        this.tables = new HashMap<String, TableImpl>();
+        this.tables = new HashMap<>();
         this.corruptTables = new HashMap<>();
         reloadTables();
     }

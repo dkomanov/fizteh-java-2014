@@ -1,10 +1,10 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception;
 
 /**
- * Created by phoenix on 28.10.14.
+ * This exception describes exit request. Used in interpreter.
  */
 public class ExitRequest extends RuntimeException {
-    private int code;
+    private final int code;
 
     public ExitRequest(int code) {
         super("Exit request with status = " + code);
