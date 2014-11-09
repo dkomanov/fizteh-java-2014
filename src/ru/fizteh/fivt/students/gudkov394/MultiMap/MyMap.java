@@ -124,13 +124,14 @@ public class MyMap {
         CurrentTable currentTable = new CurrentTable();
         initMap();
         while (true) {
-
             String currentString = sc.nextLine();
-            currentString = currentString.trim();
             currentString = currentString.replaceAll("\\s*;\\s*", ";");
             currentString = currentString.replaceAll("\\s+", " ");
             currentString = currentString.replaceAll("show tables", "#*#");
-            run(currentString.split("\\s+"));
+            String[] arrayCommands = currentString.split(";");
+            for (int j = 0; j < arrayCommands.length; ++j) {
+                run(arrayCommands[j].trim().split("\\s+"));
+            }
         }
 
     }
@@ -215,7 +216,7 @@ public class MyMap {
             tables.get(name).delete();
             tables.remove(name);
         } else {
-           throw new IllegalStateException();
+            throw new IllegalStateException();
         }
     }
 }
