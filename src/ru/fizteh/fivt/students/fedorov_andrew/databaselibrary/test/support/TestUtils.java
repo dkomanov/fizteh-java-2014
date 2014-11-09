@@ -19,24 +19,24 @@ import java.util.Random;
  */
 public class TestUtils {
     private static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     // Not for constructing
     private TestUtils() {
     }
 
     public static int randInt(int a, int b) {
-        return random.nextInt(b - a + 1) + a;
+        return RANDOM.nextInt(b - a + 1) + a;
     }
 
     public static int randInt(int n) {
-        return random.nextInt(n);
+        return RANDOM.nextInt(n);
     }
 
     public static String randString(int length) {
         char[] data = new char[length];
         for (int i = 0; i < length; i++) {
-            data[i] = ALPHABET[random.nextInt(ALPHABET.length)];
+            data[i] = ALPHABET[RANDOM.nextInt(ALPHABET.length)];
         }
         return String.valueOf(data);
     }
