@@ -25,16 +25,8 @@ public class Serializator {
     private static HashMap<Class<?>, GetSmthSer> toFindApproriateSer;
     private static HashMap<Class<?>, GetSmthDeser> toFindApproriateDeser;
     static {
-        Storeable s = new AbstractStoreable(null, null);
         toFindApproriateSer = new HashMap<>();
         toFindApproriateDeser = new HashMap<>();
-
-        toFindApproriateSer.put(Integer.class, s::getIntAt);
-        toFindApproriateSer.put(Long.class, s::getLongAt);
-        toFindApproriateSer.put(Byte.class, s::getByteAt);
-        toFindApproriateSer.put(Float.class, s::getFloatAt);
-        toFindApproriateSer.put(Boolean.class, s::getBooleanAt);
-        toFindApproriateSer.put(String.class, s::getStringAt);
 
         toFindApproriateDeser.put(Integer.class, Integer::parseInt);
         toFindApproriateDeser.put(Long.class, Long::parseLong);
@@ -46,6 +38,13 @@ public class Serializator {
     }
 
     public static String serialize(Table table, Storeable value) {
+        toFindApproriateSer.put(Integer.class, value::getIntAt);
+        toFindApproriateSer.put(Long.class, value::getLongAt);
+        toFindApproriateSer.put(Byte.class, value::getByteAt);
+        toFindApproriateSer.put(Float.class, value::getFloatAt);
+        toFindApproriateSer.put(Boolean.class, value::getBooleanAt);
+        toFindApproriateSer.put(String.class, value::getStringAt);
+
         StringWriter stringWriter = new StringWriter();
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         try {
@@ -57,7 +56,7 @@ public class Serializator {
                 if (value.getColumnAt(i) == null) {
                     valueInColumn = "<null/>";
                 } else {
-                    valueInColumn = toFindApproriateSer.get(table.getColumnType(i).getClass()).get(i).toString();
+                    valueInColumn = toFindApproriateSer.get(table.getColumnType(i)).get(i).toString();
                 }
                 writer.writeCharacters(valueInColumn);
                 writer.writeEndElement();
@@ -78,17 +77,13 @@ public class Serializator {
         try {
             XMLEventReader reader = inputFactory.createXMLEventReader(inputStream);
             int count = 0;
-            while (reader.hasNext())
-            {
+            while (reader.hasNext()) {
                 XMLEvent event = (XMLEvent) reader.next();
-                if (event.isStartElement())
-                {
+                if (event.isStartElement()) {
                     StartElement element = event.asStartElement();
-                    if (element.getName().getLocalPart().equals("col"))
-                    {
+                    if (element.getName().getLocalPart().equals("col")) {
                         event = (XMLEvent) reader.next();
-                        if (event.isCharacters())
-                        {
+                        if (event.isCharacters()) {
                             String newValue = event.asCharacters().getData();
                             if (newValue.equals("<null/>")) {
                                 result.setColumnAt(count, null);
