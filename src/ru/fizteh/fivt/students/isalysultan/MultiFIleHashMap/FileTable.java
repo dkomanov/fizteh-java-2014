@@ -142,19 +142,17 @@ public class FileTable {
                 "rwd");
         endFile.setLength(0);
         Set<String> keys = storage.keySet();
-        Iterator<String> itKey = keys.iterator();
         ArrayList<Integer> offSetsForKey = new ArrayList<Integer>();
-        while (itKey.hasNext()) {
-            endFile.write((itKey.next()).getBytes("UTF-8"));
+        for (String currentKey : keys) {
+            endFile.write((currentKey).getBytes("UTF-8"));
             endFile.write('\0');
             offSetsForKey.add((int) endFile.getFilePointer());
             endFile.writeInt(0);
         }
-        itKey = keys.iterator();
         ArrayList<Integer> offSetsForValue = new ArrayList<Integer>();
-        while (itKey.hasNext()) {
+        for (String currentKey : keys) {
             offSetsForValue.add((int) endFile.getFilePointer());
-            endFile.write(storage.get(itKey.next()).getBytes("UTF-8"));
+            endFile.write(storage.get(currentKey).getBytes("UTF-8"));
         }
         Iterator<Integer> itOffSetKey = offSetsForKey.iterator();
         Iterator<Integer> itOffSetValue = offSetsForValue.iterator();
@@ -166,17 +164,11 @@ public class FileTable {
     }
 
     public boolean empty() {
-        if (filePath == null || storage.isEmpty()) {
-            return true;
-        }
-        return false;
+        return filePath == null || storage.isEmpty();
     }
 
     public boolean needToDeleteFile() {
-        if (this.empty() && openRead) {
-            return true;
-        }
-        return false;
+        return this.empty() && openRead;
     }
 
     public void deleteFile() {
@@ -184,10 +176,7 @@ public class FileTable {
     }
 
     public boolean fileOpenAndNotExist() {
-        if (openRead && filePath != null) {
-            return true;
-        }
-        return false;
+        return openRead && filePath != null;
     }
 
     public boolean open() {
