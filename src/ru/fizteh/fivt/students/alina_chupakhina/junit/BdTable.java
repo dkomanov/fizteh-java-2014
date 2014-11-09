@@ -6,31 +6,32 @@ import java.io.*;
 import java.util.*;
 
 public class BdTable implements Table {
-    public String tableName;
+    public String tablename;
     public String path;
     public File table;
     public Map<Integer, TableState> tableStates;
     public Map<String, String> fm;
     public int numberOfElements;
-    private static final int NUMBER_OF_PARTITIONS = 16;
+    private final int MAGIC_NUMBER = 16;
     public int unsavedChangesCounter;
     public int numOfState;
 
-    public BdTable(String name, String pathname) {
+    BdTable(String name, String pathname) {
         fm = new TreeMap<>();
         tableStates = new TreeMap<>();
+        File dir = new File(pathname);
         path = pathname + File.separator + name;
         table = new File(path);
-        tableName = name;
+        tablename = name;
         unsavedChangesCounter = 0;
         numOfState = 0;
-        TableState ts = new TableState(fm, unsavedChangesCounter, numberOfElements);
+        TableState ts = new TableState (fm, unsavedChangesCounter, numberOfElements);
         tableStates.put(numOfState, ts);
     }
 
     @Override
     public String getName() {
-        return tableName;
+        return tablename;
     };
 
     /**
@@ -42,7 +43,7 @@ public class BdTable implements Table {
      * @throws IllegalArgumentException Если значение параметра key является null.
      */
     @Override
-    public String get(String key) {
+    public String get(String key){
         if (key == null) {
             throw new IllegalArgumentException("Key is a null-string");
         }
@@ -88,7 +89,7 @@ public class BdTable implements Table {
      * @throws IllegalArgumentException Если значение параметра key является null.
      */
     @Override
-    public String remove(String key) {
+    public String remove(String key){
         if (key == null) {
             throw new IllegalArgumentException("Key or value is a null-string");
         }
@@ -108,7 +109,7 @@ public class BdTable implements Table {
      * @return Количество ключей в таблице.
      */
     @Override
-    public int size() {
+    public int size(){
         return numberOfElements;
     }
 
@@ -126,8 +127,8 @@ public class BdTable implements Table {
             for (Map.Entry<String, String> i : fm.entrySet()) {
                 key = i.getKey();
                 value = i.getValue();
-                Integer ndirectory = Math.abs(key.getBytes("UTF-8")[0] % NUMBER_OF_PARTITIONS);
-                Integer nfile = Math.abs((key.getBytes("UTF-8")[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS);
+                Integer ndirectory = Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER);
+                Integer nfile = Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER);
                 String pathToDir = path + File.separator + ndirectory.toString()
                         + ".dir";
                 //System.out.println(pathToDir);
@@ -158,7 +159,7 @@ public class BdTable implements Table {
             System.err.println(e.getMessage());
             System.exit(-1);
         }
-        TableState ts = new TableState(fm, unsavedChangesCounter, numberOfElements);
+        TableState ts = new TableState (fm, unsavedChangesCounter, numberOfElements);
         tableStates.put(++numOfState, ts);
         int n = unsavedChangesCounter;
         unsavedChangesCounter = 0;
@@ -186,13 +187,13 @@ public class BdTable implements Table {
                 }
                 for (File dat : dats) {
                     if (!dat.delete()) {
-                        System.out.println("Error while reading table " + tableName);
+                        System.out.println("Error while reading table " + tablename);
                     }
 
 
                 }
                 if (!dir.delete()) {
-                    System.out.println("Error while reading table " + tableName);
+                    System.out.println("Error while reading table " + tablename);
                 }
 
             }
@@ -205,12 +206,23 @@ public class BdTable implements Table {
      * @return Количество отменённых ключей.
      */
     @Override
-    public int rollback() {
+    public int rollback(){
+        System.out.println(numOfState);
+        if (numOfState == 0) {
+            TableState ts = tableStates.get(0);
+            fm = ts.fm;
+            numberOfElements = ts.numberOfElements;
+            int n = unsavedChangesCounter;
+            unsavedChangesCounter = ts.unsavedChangesCounter;
+            return n;
+        }
+
         TableState ts = tableStates.get(numOfState);
         fm = ts.fm;
         numberOfElements = ts.numberOfElements;
         int n = unsavedChangesCounter;
         unsavedChangesCounter = ts.unsavedChangesCounter;
+        numOfState--;
         return n;
     }
 
@@ -229,3 +241,4 @@ public class BdTable implements Table {
         return list;
     }
 }
+

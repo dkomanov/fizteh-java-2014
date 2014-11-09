@@ -11,13 +11,10 @@ import java.io.RandomAccessFile;
  * Created by opa on 29.10.2014.
  */
 public class PvTable implements TableProvider {
-    private static final int NUMBER_OF_PARTITIONS = 16;
+    private static final int MAGIC_NUMBER = 16;
     public static String path;
 
-    public PvTable(String p) {
-        if (p == null){
-            throw new IllegalArgumentException("Directory name is null");
-        }
+    PvTable(String p) {
         path = p;
     }
     /**
@@ -27,15 +24,9 @@ public class PvTable implements TableProvider {
      * @return Объект, представляющий таблицу. Если таблицы с указанным именем не существует, возвращает null.
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
      */
-    @Override
-    public Table getTable(String name) {
-        if (name == null){
-            throw new IllegalArgumentException("Directory name is null");
-        }
-        BdTable t = new BdTable(name, path);
-        if (!t.table.exists()) {
-            throw new NullPointerException("Directory name is null");
-        }
+    //@Override
+    public BdTable getTable(String name) {
+        BdTable t = new BdTable(name, JUnit.path);
         try {
             File[] dirs = t.table.listFiles();
             for (File dir : dirs) {
@@ -75,9 +66,9 @@ public class PvTable implements TableProvider {
                             value = new String(bytes, "UTF-8");
                             t.numberOfElements++;
                             t.fm.put(key, value);
-                            if (!(nDirectory == Math.abs(key.getBytes("UTF-8")[0] % NUMBER_OF_PARTITIONS))
-                                    || !(nFile == Math.abs((key.getBytes("UTF-8")[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS))) {
-                                System.err.println("Error while reading table " + t.tableName);
+                            if (!(nDirectory == Math.abs(key.getBytes("UTF-8")[0] % MAGIC_NUMBER))
+                                    || !(nFile == Math.abs((key.getBytes("UTF-8")[0] / MAGIC_NUMBER) % MAGIC_NUMBER))) {
+                                System.err.println("Error while reading table " + t.tablename);
                                 System.exit(-1);
                             }
                         } catch (IOException e) {
@@ -88,7 +79,7 @@ public class PvTable implements TableProvider {
                 }
             }
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println(e.getMessage()); 
             System.exit(-1);
         }
         return t;
@@ -102,16 +93,14 @@ public class PvTable implements TableProvider {
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
      */
     public Table createTable(String name) {
-        if (name == null){
-            throw new IllegalArgumentException("Directory name is null");
-        }
-        String pathToTable = path + File.separator + name;
+        String pathToTable = JUnit.path + File.separator + name;
         File table = new File(pathToTable);
         if (table.exists() && table.isDirectory()) {
             return null;
         } else {
-            Table t = new BdTable(name, path);
+            BdTable t = new BdTable(name, JUnit.path);
             table.mkdir();
+            JUnit.tableList.put(name, t);
             return t;
         }
     }
@@ -125,7 +114,7 @@ public class PvTable implements TableProvider {
      */
     public void removeTable(String name) {
         if (name == null) {
-            throw new IllegalArgumentException("Name table is null");
+            throw new IllegalArgumentException ("Name table is null");
         }
         String pathToTable = JUnit.path + File.separator + name;
         File table = new File(pathToTable);

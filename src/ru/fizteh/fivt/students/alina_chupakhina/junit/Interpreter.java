@@ -1,79 +1,76 @@
 package ru.fizteh.fivt.students.alina_chupakhina.junit;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
-
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
 public class Interpreter {
-    public static TableProvider pv = JUnit.pv;
-    public PrintStream out;
-    public static final String MESSAGE_INVALID_COMMAND = " - invalid command";
-    public static final String MESSAGE_INVALID_NUMBER_OF_ARGUMENTS = ": Invalid number of arguments";
-    public Interpreter(final PrintStream outStream) {
-        out = outStream;
-    }
-    public void doCommand(final String command)
+    public static PvTable pv = JUnit.pv;
+    public static void doCommand(final String command, final boolean isBatch)
             throws Exception {
         String[] args = command.trim().split("\\s+");
-        if (args[0].equals("create")) {
-            create(args);
-        } else if (args[0].equals("drop")) {
-            drop(args);
-        } else if (args[0].equals("use")) {
-            use(args);
-        } else if (args[0].equals("show")) {
-            showtables(args);
-        } else if (args[0].equals("put")) {
-            if (JUnit.currentTable == null) {
-                out.println("no table");
+        try {
+            if (args[0].equals("create")) {
+                create(args);
+            } else if (args[0].equals("drop")) {
+                drop(args);
+            } else if (args[0].equals("use")) {
+                use(args);
+            } else if (args[0].equals("show")) {
+                showtables(args);
+            } else if (args[0].equals("put")) {
+                if (JUnit.currentTable == null) {
+                    System.err.println("no table");
+                } else {
+                    put(args);
+                }
+            } else if (args[0].equals("get")) {
+                if (JUnit.currentTable == null) {
+                    System.err.println("no table");
+                } else {
+                    get(args);
+                }
+            } else if (args[0].equals("remove")) {
+                if (JUnit.currentTable == null) {
+                    System.err.println("no table");
+                } else {
+                    remove(args);
+                }
+            } else if (args[0].equals("list")) {
+                if (JUnit.currentTable == null) {
+                    System.err.println("no table");
+                } else {
+                    list(args);
+                }
+            } else if (args[0].equals("commit")) {
+                if (JUnit.currentTable == null) {
+                    System.err.println("no table");
+                } else {
+                    commit(args);
+                }
+            } else if (args[0].equals("rollback")) {
+                if (JUnit.currentTable == null) {
+                    System.err.println("no table");
+                } else {
+                    rollback(args);
+                }
+            }else if (args[0].equals("size")) {
+                if (JUnit.currentTable == null) {
+                    System.err.println("no table");
+                } else {
+                    size(args);
+                }
+            } else if (args[0].equals("exit")) {
+                exit(args);
+            } else if (args[0].equals("")) {
+                //Nothing
             } else {
-                put(args);
+                throw new Exception(args[0] + " - invalid command");
             }
-        } else if (args[0].equals("get")) {
-            if (JUnit.currentTable == null) {
-                out.println("no table");
-            } else {
-                get(args);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            if (isBatch) {
+                System.exit(-1);
             }
-        } else if (args[0].equals("remove")) {
-            if (JUnit.currentTable == null) {
-                out.println("no table");
-            } else {
-                remove(args);
-            }
-        } else if (args[0].equals("list")) {
-            if (JUnit.currentTable == null) {
-                out.println("no table");
-            } else {
-                list(args);
-            }
-        } else if (args[0].equals("commit")) {
-            if (JUnit.currentTable == null) {
-                out.println("no table");
-            } else {
-                commit(args);
-            }
-        } else if (args[0].equals("rollback")) {
-            if (JUnit.currentTable == null) {
-                out.println("no table");
-            } else {
-                rollback(args);
-            }
-        } else if (args[0].equals("size")) {
-            if (JUnit.currentTable == null) {
-                out.println("no table");
-            } else {
-                size(args);
-            }
-        } else if (args[0].equals("exit")) {
-            exit(args);
-        } else if (args[0].equals("")) {
-            //Nothing
-        } else {
-            throw new IllegalArgumentException(args[0] + MESSAGE_INVALID_COMMAND);
         }
     }
 
@@ -121,10 +118,8 @@ public class Interpreter {
 
     public static void create(String[] args) throws Exception {
         checkNumOfArgs("create", 2, args.length);
-        Table t = pv.createTable(args[1]);
-        if (t != null) {
+        if (pv.createTable(args[1]) != null) {
             System.out.println("created");
-            JUnit.tableList.put(args[1], t);
         } else {
             System.out.println(args[1] + " exists");
         }
@@ -146,12 +141,11 @@ public class Interpreter {
         if (JUnit.tableList.get(args[1]) == null) {
             System.out.println(args[1] + " not exists");
         } else {
-            if (JUnit.currentTable != null && JUnit.currentTable.unsavedChangesCounter > 0) {
-                System.out.println(JUnit.currentTable.unsavedChangesCounter + " unsaved changes");
-            } else {
-                JUnit.currentTable = (BdTable) JUnit.tableList.get(args[1]);
-                System.out.println("using " + args[1]);
+            if (JUnit.currentTable != null) {
+                throw new Exception(JUnit.currentTable.unsavedChangesCounter + " unsaved changes");
             }
+            JUnit.currentTable = JUnit.tableList.get(args[1]);
+            System.out.println("using " + args[1]);
         }
     }
 
@@ -170,20 +164,20 @@ public class Interpreter {
         System.out.println(JUnit.currentTable.numberOfElements);
     }
 
-    public static void showtables(final String[] args) throws Exception {
+    public static void showtables(final String[] args) {
         if (args.length >= 2) {
             if (!args[1].equals("tables")) {
-                throw new Exception("Invalid command");
+                throw new IllegalArgumentException("Invalid command");
             }
         }
         if (args.length == 1) {
-            throw new Exception("Invalid command");
+            throw new IllegalArgumentException("Invalid command");
         }
         checkNumOfArgs("show tables", 2, args.length);
         System.out.println("table_name row_count");
-        for (Map.Entry<String, Table> i : JUnit.tableList.entrySet()) {
+        for (Map.Entry<String, BdTable> i : JUnit.tableList.entrySet()) {
             String key = i.getKey();
-            Integer num = ((BdTable)(i.getValue())).numberOfElements;
+            Integer num = (i.getValue()).numberOfElements;
             System.out.println(key + " " + num.toString());
         }
     }
@@ -198,7 +192,7 @@ public class Interpreter {
                                       int testValue) throws IllegalArgumentException {
         if (testValue != correctValue) {
             throw new IllegalArgumentException(operation
-                    + MESSAGE_INVALID_NUMBER_OF_ARGUMENTS);
+                    + ": Invalid number of arguments");
         }
     }
 }

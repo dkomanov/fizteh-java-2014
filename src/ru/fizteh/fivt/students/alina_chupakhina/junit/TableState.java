@@ -11,8 +11,8 @@ public class TableState {
     public int unsavedChangesCounter;
     public int numberOfElements;
 
-    TableState(Map<String, String> map, int u, int n) {
-        fm = new TreeMap<String, String>(map);
+    TableState(Map<String, String> FileMap, int u, int n) {
+        fm = new TreeMap<String, String>(FileMap);
         unsavedChangesCounter = u;
         numberOfElements = n;
     }
