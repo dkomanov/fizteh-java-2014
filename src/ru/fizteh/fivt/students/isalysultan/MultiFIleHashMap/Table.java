@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class Table {
@@ -16,7 +17,9 @@ public class Table {
 
     private FileTable[][] files = new FileTable[16][16];
 
-    private HashMap<Integer, Path> subDirectsMap = new HashMap<Integer, Path>();
+    private Map<Integer, Path> subDirectsMap = new HashMap<Integer, Path>();
+
+    private final int fileNumber = 16;
 
     public Table() {
         // Disable instantiation to this class.
@@ -34,7 +37,7 @@ public class Table {
         nameTable = name;
     }
 
-    void read() throws IOException {
+    void read() throws IOException, IllegalArgumentException {
         String[] subDirects = tableDirectory.toFile().list();
         for (String nameSubDirect : subDirects) {
             Path subDirect = tableDirectory.resolve(nameSubDirect);
@@ -42,14 +45,12 @@ public class Table {
             int numberFile;
             if (!subDirect.toFile().isDirectory()
                     || !nameSubDirect.matches("([0-9]|1[0-5])\\.dir")) {
-                System.err
-                        .println("Error, subdirectory in table is file, but it is wrong.");
-                System.exit(1);
+                throw new IllegalArgumentException(
+                        " Subdirectory in table is file, but it is wrong.");
             }
             String[] filesList = subDirect.toFile().list();
             if (filesList.length == 0) {
-                System.err.println("Direct not delete.");
-                System.exit(2);
+                throw new IllegalArgumentException("Direct not delete.");
             }
             numberDirectory = Integer.parseInt(nameSubDirect.substring(0,
                     nameSubDirect.length() - 4));
@@ -58,12 +59,11 @@ public class Table {
                 Path filePath = subDirect.resolve(fileName);
                 if (!filePath.toFile().isFile()
                         || !fileName.matches("([0-9]|1[0-5])\\.dat")) {
-                    System.err.println("filePath.File() is not file.");
-                    System.exit(3);
+                    throw new IllegalArgumentException(
+                            "filePath.File() is not file.");
                 }
                 numberFile = Integer.parseInt(fileName.substring(0,
                         fileName.length() - 4));
-                // Integer numberFileMap = numberDirectory * 16 + numberFile;
                 FileTable currentFileTable = new FileTable(filePath, this);
                 files[numberDirectory][numberFile] = currentFileTable;
             }
@@ -86,8 +86,7 @@ public class Table {
             subDirectsMap.put(key, null);
         }
         if (!tableDirectory.toFile().isDirectory()) {
-            System.err.println("Directory doesn't exist.");
-            return;
+            throw new IllegalArgumentException("Directory doesn't exist.");
         }
         System.out.println("created");
     }
@@ -135,11 +134,11 @@ public class Table {
 
     public void tableOperationPut(String key, String value) throws IOException {
         byte externalKey = key.getBytes("UTF-8")[0];
-        int ndirectory = (externalKey % 16);
+        int ndirectory = (externalKey % fileNumber);
         if (ndirectory < 0) {
             ndirectory = -ndirectory;
         }
-        int nfile = (externalKey / 16) % 16;
+        int nfile = (externalKey / fileNumber) % fileNumber;
         if (nfile < 0) {
             nfile = -nfile;
         }
@@ -154,36 +153,36 @@ public class Table {
         CommandForMap.put(key, value, currTable, this);
     }
 
-    public void tableOperationGet(String key)
+    public boolean tableOperationGet(String key)
             throws UnsupportedEncodingException {
         byte externalKey = key.getBytes("UTF-8")[0];
-        int ndirectory = externalKey % 16;
-        int nfile = (externalKey / 16) % 16;
+        int ndirectory = externalKey % fileNumber;
+        int nfile = (externalKey / fileNumber) % fileNumber;
         FileTable currTable = files[ndirectory][nfile];
         if (currTable == null) {
-            System.out.println("not found");
-            return;
+            return false;
         }
         CommandForMap.get(key, currTable);
+        return true;
     }
 
-    public void tableOperationRemove(String key)
+    public boolean tableOperationRemove(String key)
             throws UnsupportedEncodingException {
         byte externalKey = key.getBytes("UTF-8")[0];
-        int ndirectory = externalKey % 16;
-        int nfile = (externalKey / 16) % 16;
+        int ndirectory = externalKey % fileNumber;
+        int nfile = (externalKey / fileNumber) % fileNumber;
         FileTable currTable = files[ndirectory][nfile];
         if (currTable == null) {
-            System.out.println("not found");
-            return;
+            return false;
         }
         CommandForMap.remove(key, currTable, this);
+        return true;
     }
 
     public void tableOperationList() {
         // Derive all the keys of the table.
-        for (int i = 0; i < 16; ++i) {
-            for (int j = 0; j < 16; ++j) {
+        for (int i = 0; i < fileNumber; ++i) {
+            for (int j = 0; j < fileNumber; ++j) {
                 if (files[i][j] != null) {
                     CommandForMap.list(files[i][j]);
                 }
@@ -192,11 +191,11 @@ public class Table {
     }
 
     public void write() throws IOException {
-        for (int i = 0; i < 16; ++i) {
+        for (int i = 0; i < fileNumber; ++i) {
             Path subDirect = tableDirectory;
             subDirect = subDirect.resolve((Integer.toString(i) + "." + "dir"));
             boolean directExist = false;
-            for (int j = 0; j < 16; ++j) {
+            for (int j = 0; j < fileNumber; ++j) {
                 if (files[i][j] == null) {
                     continue;
                 } else if (files[i][j].needToDeleteFile()) {
