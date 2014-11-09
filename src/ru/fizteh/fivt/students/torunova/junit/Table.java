@@ -161,13 +161,15 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
     public int commit()  {
         int numberOfChangedEntries = 0;
         Set<Map.Entry<File, FileMap>> entrySet = new HashSet<>(files.entrySet());
+        IOException e = null;
         for (Map.Entry<File, FileMap> entry : entrySet) {
             FileMap fm = entry.getValue();
             File file = entry.getKey();
             try {
                 numberOfChangedEntries += fm.commit();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException e1) {
+                e = e1;
+                continue;
             }
             if (fm.isEmpty()) {
                 File directory = file.getParentFile().getAbsoluteFile();
@@ -178,6 +180,9 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
                 }
                 files.remove(file);
             }
+        }
+        if (e != null) {
+            throw new RuntimeException(e);
         }
         return numberOfChangedEntries;
     }
