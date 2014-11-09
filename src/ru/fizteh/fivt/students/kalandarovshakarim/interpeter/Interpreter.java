@@ -23,7 +23,7 @@ import ru.fizteh.fivt.students.kalandarovshakarim.commands.filesystem.CommandPar
  */
 public class Interpreter {
 
-    private static String PROMPT = "$ ";
+    private static final String PROMPT = "$ ";
 
     private final Map<String, Command> supportedCmds;
     private final String[] args;

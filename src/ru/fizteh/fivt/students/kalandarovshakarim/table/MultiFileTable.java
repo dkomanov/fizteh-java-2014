@@ -10,9 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map.Entry;
-import ru.fizteh.fivt.students.kalandarovshakarim.table.AbstractTable;
-import ru.fizteh.fivt.students.kalandarovshakarim.table.TableReader;
-import ru.fizteh.fivt.students.kalandarovshakarim.table.TableWriter;
 import ru.fizteh.fivt.students.kalandarovshakarim.filesystem.FileSystemUtils;
 
 /**
