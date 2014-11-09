@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.ekaterina_pogodina.filemap;
 
-import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.Table;
+import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.BaseTable;
 import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.TableManager;
 import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.commands.*;
 
@@ -38,7 +38,7 @@ public class Parser {
                     switch (args[0]) {
                         case "exit":
                             if (obj.currentTable != null) {
-                                Table curTable = obj.tables.get(obj.currentTable);
+                                BaseTable curTable = obj.tables.get(obj.currentTable);
                                 for (int i = 0; i < 16; i++) {
                                     for (int j = 0; j < 16; j++) {
                                         if (curTable.tableDateBase[i][j] != null) {
@@ -51,38 +51,50 @@ public class Parser {
                             break;
                         case "drop":
                             Command dropCommand = new Drop();
-                            dropCommand.execute(args, obj);
+                            dropCommand.checkArgs(args, obj);
                             break;
                         case "create":
                             Command createCommand = new Create();
-                            createCommand.execute(args, obj);
+                            createCommand.checkArgs(args, obj);
                             break;
                         case "use":
                             Command command = new Use();
-                            command.execute(args, obj);
+                            command.checkArgs(args, obj);
                             break;
                         case "show":
                             if (!args[1].equals("tables")) {
                                 System.err.println(args[0] + ": no such command");
                             }
                             Command showTables = new ShowTables();
-                            showTables.execute(args, obj);
+                            showTables.checkArgs(args, obj);
                             break;
                         case "put":
                             Command put = new Put();
-                            put.execute(args, obj);
+                            put.checkArgs(args, obj);
                             break;
                         case "get":
                             Command get = new Get();
-                            get.execute(args, obj);
+                            get.checkArgs(args, obj);
                             break;
                         case "remove":
                             Command remove = new Remove();
-                            remove.execute(args, obj);
+                            remove.checkArgs(args, obj);
                             break;
                         case "list":
                             Command list = new List();
-                            list.execute(args, obj);
+                            list.checkArgs(args, obj);
+                            break;
+                        case "size":
+                            Command size = new Size();
+                            size.checkArgs(args, obj);
+                            break;
+                        case "commit":
+                            Command commit = new Commit();
+                            commit.checkArgs(args, obj);
+                            break;
+                        case "rollback":
+                            Command rollback = new Rollback();
+                            rollback.checkArgs(args, obj);
                             break;
                         default:
                             System.err.println(args[0] + ": no such command");
