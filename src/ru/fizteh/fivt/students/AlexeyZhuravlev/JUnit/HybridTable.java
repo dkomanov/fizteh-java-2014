@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * @author AlexeyZhuravlev
  */
 public class HybridTable {
-    Table virginTable;
+    public Table virginTable;
     FancyTable dirtyTable;
     ArrayList<Command> changes;
 

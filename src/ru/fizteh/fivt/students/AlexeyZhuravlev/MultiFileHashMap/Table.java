@@ -12,7 +12,7 @@ import java.nio.file.Files;
 
 public class Table {
     public DataBase[][] databases;
-    File mainDir;
+    public File mainDir;
 
     public Table(File tableDir) throws Exception {
         databases = new DataBase[16][16];
