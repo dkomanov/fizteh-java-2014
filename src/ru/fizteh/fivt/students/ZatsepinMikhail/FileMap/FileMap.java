@@ -5,6 +5,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.CheckTypesValidity;
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.Serializator;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -13,6 +14,7 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.*;
 
 public class FileMap implements Table {
@@ -279,10 +281,12 @@ public class FileMap implements Table {
                             }
 
                             try {
-                               stableData.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+                                stableData.put(new String(key, "UTF-8"), Serializator.deserialize(this, new String(value, "UTF-8")));
                             } catch (UnsupportedEncodingException e) {
                                 System.out.println("unsupported encoding");
                                 return false;
+                            } catch (ParseException e) {
+                                System.out.println("parse exception");
                             }
                         }
                     } catch (NullPointerException e) {
@@ -349,7 +353,7 @@ public class FileMap implements Table {
             for (String oneKey : keySet) {
                 try {
                     byte[] keyByte = oneKey.getBytes("UTF-8");
-                    byte[] valueByte = stableData.get(oneKey).getBytes("UTF-8");
+                    byte[] valueByte = Serializator.serialize(this, stableData.get(oneKey)).getBytes("UTF-8");
                     outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
                     outputStream.write(keyByte);
                     outputStream.write(bufferForSize.putInt(0, valueByte.length).array());

@@ -8,7 +8,8 @@ public class FmCommandRemove extends CommandFileMap {
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
        String value = myFileMap.remove(args[1]);
-        if (value != null) {
+
+        if (myFileMap.) {
             System.out.println("removed");
         } else {
             System.out.println("not found");

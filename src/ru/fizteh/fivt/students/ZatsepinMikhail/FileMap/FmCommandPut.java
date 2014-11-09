@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.FileMap;
 
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.Serializator;
+
 public class FmCommandPut extends CommandFileMap {
     public FmCommandPut() {
         name = "put";
@@ -7,7 +9,7 @@ public class FmCommandPut extends CommandFileMap {
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-        String oldValue = myFileMap.put(args[1], args[2]);
+        //String oldValue = myFileMap.put(args[1], Serializator.serialize(args[2]));
         if (oldValue != null) {
             System.out.println("overwrite\n" + oldValue);
         } else {
