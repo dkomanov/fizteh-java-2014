@@ -4,18 +4,8 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim;
 
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.database.UseCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.database.ShowTablesCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.database.DropCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.database.CreateCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.table.CommitCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.table.RollbackCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.table.ExitCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.table.GetCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.table.PutCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.table.ListCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.table.RemoveCommand;
-import ru.fizteh.fivt.students.kalandarovshakarim.commands.table.SizeCommand;
+import ru.fizteh.fivt.students.kalandarovshakarim.commands.database.*;
+import ru.fizteh.fivt.students.kalandarovshakarim.commands.table.*;
 import ru.fizteh.fivt.students.kalandarovshakarim.database.DataBase;
 import ru.fizteh.fivt.students.kalandarovshakarim.interpeter.Interpreter;
 import ru.fizteh.fivt.students.kalandarovshakarim.commands.Command;
@@ -50,7 +40,8 @@ public class Main {
             new ShowTablesCommand(dataBase)
         };
 
-        Interpreter shell = new Interpreter(commands, args);
-        shell.exec();
+        Interpreter interpreter = new Interpreter(commands);
+        int status = interpreter.exec(args);
+        System.exit(status);
     }
 }

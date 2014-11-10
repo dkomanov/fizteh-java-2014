@@ -26,22 +26,19 @@ public class Interpreter {
     private static final String PROMPT = "$ ";
 
     private final Map<String, Command> supportedCmds;
-    private final String[] args;
     private final InputStream in;
     private final PrintStream out;
     private final PrintStream err;
 
-    public Interpreter(Command[] commands, String[] args) {
-        this(commands, args, System.in, System.out, System.err);
+    public Interpreter(Command[] commands) {
+        this(commands, System.in, System.out, System.err);
     }
 
-    public Interpreter(Command[] commands, String[] args,
-            InputStream in, PrintStream out, PrintStream err) {
+    public Interpreter(Command[] commands, InputStream in, PrintStream out, PrintStream err) {
         this.supportedCmds = new HashMap<>();
         for (Command cmd : commands) {
             this.supportedCmds.put(cmd.getName(), cmd);
         }
-        this.args = args;
         this.in = in;
         this.out = out;
         this.err = err;
@@ -60,7 +57,7 @@ public class Interpreter {
         return 0;
     }
 
-    private int batchMode() {
+    private int batchMode(String[] args) {
         String[] commands = CommandParser.parseArgs(args);
         for (String cmd : commands) {
             if (!processCommand(cmd)) {
@@ -105,11 +102,11 @@ public class Interpreter {
         return true;
     }
 
-    public int exec() {
+    public int exec(String... args) {
         if (args.length == 0) {
             return interactiveMode();
         } else {
-            return batchMode();
+            return batchMode(args);
         }
     }
 }
