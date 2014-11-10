@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.storeable;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,12 +16,17 @@ public class StoreableValue implements Storeable {
 
     protected StoreableValue(List<Class<?>> passedTypes) {
         types = passedTypes;
+        values = new ArrayList<>();
+        for (int i = 0; i < types.size(); i++) {
+            values.add(null);
+        }
     }
 
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (types.get(columnIndex) != value.getClass()) {
-            throw new ColumnFormatException();
+        if (value != null && types.get(columnIndex) != value.getClass()) {
+            throw new ColumnFormatException(value.toString() + " must be a " + types.get(columnIndex).getSimpleName()
+                                             + " found " + value.getClass() + " instead.");
         }
         values.set(columnIndex, value);
     }

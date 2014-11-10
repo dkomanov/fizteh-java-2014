@@ -59,10 +59,11 @@ public class StructuredTableProvider implements TableProvider {
             JUnitDataBaseDir unstructuredDbDir = oldProvider.getJUnitDir();
             mainDirectory = new File(path);
             tables = new HashMap<>();
+            signatures = new HashMap<>();
             for (Map.Entry<String, HybridTable> entry: unstructuredDbDir.tables.entrySet()) {
                 File signature = new File(entry.getValue().virginTable.mainDir, "signature.tsv");
                 if (!signature.exists()) {
-                    throw new IOException("No signature file specified");
+                    throw new IOException("No signature file specified in table " + entry.getKey());
                 }
                 signatures.put(entry.getKey(), signature);
                 String typesInString = readSignature(signature);
@@ -87,6 +88,9 @@ public class StructuredTableProvider implements TableProvider {
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
         if (name == null || columnTypes == null) {
             throw new IllegalArgumentException();
+        }
+        if (tables.containsKey(name)) {
+            return null;
         }
         try {
             oldProvider.createTable(name);
@@ -122,6 +126,8 @@ public class StructuredTableProvider implements TableProvider {
         } catch (Exception e) {
             throw new IOException();
         }
+        tables.remove(name);
+        signatures.remove(name);
     }
 
     @Override
@@ -137,14 +143,26 @@ public class StructuredTableProvider implements TableProvider {
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        try {
-            for (int i = 0; i < table.getColumnsCount(); i++) {
-                if (table.getColumnType(i) != ((StoreableValue) value).getColumnType(i)) {
-                    throw new ColumnFormatException();
-                }
+        int expected = table.getColumnsCount();
+        int found = ((StoreableValue) value).getValues().size();
+        if (expected != found) {
+            throw new ColumnFormatException("Incorrect number of values to serialize for table "
+                    + table.getName() + ": " + expected
+                    + " expected, " + ((StoreableValue) value).getValues().size() + " found");
+        }
+        for (int i = 0; i < table.getColumnsCount(); i++) {
+            Class own = table.getColumnType(i);
+            Class passed = ((StoreableValue) value).getColumnType(i);
+            String representation;
+            if (value.getColumnAt(i) == null) {
+                representation = "null";
+            } else {
+                representation = value.getColumnAt(i).toString();
             }
-        } catch (IndexOutOfBoundsException e) {
-            throw new ColumnFormatException();
+            if (own != passed) {
+                throw new ColumnFormatException("Column format on position " + i + " is "
+                        + own.getSimpleName() + ". " + representation + " is " + passed.getSimpleName());
+            }
         }
         return XmlSerializer.serializeObjectList(((StoreableValue) value).getValues());
     }

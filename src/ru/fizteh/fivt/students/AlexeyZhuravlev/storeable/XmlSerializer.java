@@ -89,7 +89,7 @@ public class XmlSerializer {
             }
             NodeList cols = row.getChildNodes();
             if (cols.getLength() != types.size()) {
-                throw new ParseException("Incorrect number of columns", 0);
+                throw new ParseException("Incorrect number of columns in string for this table", 0);
             }
             List<Object> result = new Vector<>();
             for (int i = 0; i < row.getChildNodes().getLength(); i++) {

@@ -38,7 +38,7 @@ public class StructuredTable implements Table {
             }
             return provider.deserialize(this, old);
         } catch (ParseException e) {
-            throw new ColumnFormatException();
+            throw new ColumnFormatException(e.getMessage());
         }
     }
 

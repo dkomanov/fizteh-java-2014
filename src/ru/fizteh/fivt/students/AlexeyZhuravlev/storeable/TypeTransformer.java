@@ -37,7 +37,7 @@ public class TypeTransformer {
 
     public static Class<?> typeByName(String name) throws IOException {
         if (!TYPES.containsKey(name)) {
-            throw new IOException("Unknown type name");
+            throw new IOException("Unknown type name: " + name);
         }
         return TYPES.get(name);
     }
