@@ -88,4 +88,79 @@ public class StructuredTableTest {
         Storeable value = provider.createFor(anotherTable, Arrays.asList(values));
         table.put("key", value);
     }
+
+    @Test
+    public void testSize() {
+        Storeable value = provider.createFor(table);
+        assertEquals(0, table.size());
+        table.put("1", value);
+        assertEquals(1, table.size());
+        table.put("2", value);
+        table.put("3", value);
+        table.put("2", value);
+        assertEquals(3, table.size());
+    }
+
+    @Test
+    public void testColumnsNumber() {
+        assertEquals(7, table.getColumnsCount());
+    }
+
+    @Test
+    public void testGetColumnType() {
+        for (int i = 0; i < types.size(); i++) {
+            assertEquals(types.get(i), table.getColumnType(i));
+        }
+    }
+
+    @Test
+    public void testRollBack() throws IOException {
+        Storeable value = provider.createFor(table);
+        assertEquals(0, table.rollback());
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
+        table.remove("1");
+        table.put("1", value);
+        assertEquals(3, table.size());
+        assertEquals(5, table.rollback());
+        assertEquals(0, table.size());
+    }
+
+    @Test
+    public void testCommit() throws IOException {
+        Storeable value = provider.createFor(table);
+        assertEquals(0, table.commit());
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
+        table.remove("3");
+        assertEquals(4, table.commit());
+        assertEquals(2, table.size());
+        TableProviderFactory factory = new StructuredTableProviderFactory();
+        TableProvider provider = factory.create(dbDirPath);
+        Table sameTable = provider.getTable("table");
+        assertEquals(2, sameTable.size());
+    }
+
+    @Test
+    public void testCommitAndRollback() throws IOException {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
+        assertEquals(3, table.commit());
+        table.remove("1");
+        table.remove("2");
+        assertNull(table.get("1"));
+        assertNull(table.get("2"));
+        assertEquals(2, table.rollback());
+        table.remove("1");
+        assertEquals(1, table.commit());
+        assertEquals(2, table.size());
+        table.put("1", value);
+        assertEquals(3, table.size());
+        assertEquals(1, table.rollback());
+        assertEquals(2, table.size());
+    }
 }
