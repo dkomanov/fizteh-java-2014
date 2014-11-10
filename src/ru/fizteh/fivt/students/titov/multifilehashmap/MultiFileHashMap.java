@@ -148,8 +148,7 @@ public class MultiFileHashMap {
         return buf.toString();
     }
 
-    private static void writeToFile(final Map<String, String> hashTable,
-            final String path) throws Exception {
+    private static void writeToFile(final Map<String, String> hashTable, final String path) throws Exception {
         DataOutputStream writeToFileStream = new DataOutputStream(new FileOutputStream(path));
 
         Set<String> keySet = hashTable.keySet();
@@ -201,7 +200,14 @@ public class MultiFileHashMap {
     }
 
     static boolean create(final String key) throws Exception {
-
+        
+        String[] reservedCharacters = {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", "%"};
+        for (String character : reservedCharacters) {
+            if (key.contains(character)) {
+                System.err.println("Table name contains invalid characters.");
+                return true;
+            }
+        }
         if (Paths.get(table.toString(), key).toFile().exists()) {
             System.out.println(key + " exists");
             return true;
@@ -307,13 +313,12 @@ public class MultiFileHashMap {
             for (ArrayOfHashMaps[] dirs : arrayOfHashMaps) {
                 for (ArrayOfHashMaps dirs2 : dirs) {
                     Set<String> keySet = dirs2.arrayOfHashMaps.keySet();
-                    Iterator<String> it = keySet.iterator();
-                    while (it.hasNext()) {
-                        bufString.append(it.next() + ",");
+                    for (String key : keySet) {
+                        bufString.append(key + ", ");
                     }
                 }
             }
-            bufString.delete(bufString.length() - 1, bufString.length());
+            if (bufString.length() != 0) bufString.delete(bufString.length() - 2, bufString.length());
             System.out.println(bufString);
         }
         return true;
