@@ -32,6 +32,7 @@ public class TableProviderClass  implements TableProvider{
             return null;
         } else {
             CurrentTable newTable = new CurrentTable(name);
+            newTable.create();
             tables.put(name, newTable);
             return newTable;
         }
