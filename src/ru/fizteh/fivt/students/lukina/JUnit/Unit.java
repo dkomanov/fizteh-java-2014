@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Set;
 
 
 public class Unit {
@@ -104,14 +103,14 @@ public class Unit {
     }
 
     private static void list() {
-    	if(currTable!= null){
-    		currTable.list();  
+        if (currTable != null) {
+            currTable.list();
         }
     }
 
     private static void show() {
-        if (prov != null){
-        	prov.showTables();
+        if (prov != null) {
+            prov.showTables();
         }
     }
 
@@ -236,28 +235,16 @@ public class Unit {
 
 
     private static void doCommit() {
-        if (currTable == null){
-        	return;
+        if (currTable == null) {
+            return;
         }
-    	try {
+        try {
             System.out.println(currTable.commit());
         } catch (IOException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
     }
-    
-    private void doExit() {
-        System.exit(0);
-    }
-
-    private void doRollBack() {
-    	if (currTable != null){
-    		System.out.println(currTable.rollback());
-    	}
-    }
-
-
 
     private static String[] getArgsFromString(String str) {
         String newStr = str.replaceAll("[ ]+", " ");
@@ -286,13 +273,25 @@ public class Unit {
         return arg;
     }
 
-        public String appendArgs(int num, String[] args) {
-        StringBuffer str = new StringBuffer(args[num]);
-        for (int i = num + 1; i < args.length; ++i) {
-            str.append(" ");
-            str.append(args[i]);
+    public static void main(String[] args) {
+        try {
+            Unit data = new Unit();
+            data.exec(args);
+            data.doExit();
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
-        return str.toString();
+    }
+
+    private void doExit() {
+        System.exit(0);
+    }
+
+    private void doRollBack() {
+        if (currTable != null) {
+            System.out.println(currTable.rollback());
+        }
     }
 
     /*
@@ -301,12 +300,21 @@ public class Unit {
      * как нужнои выполняющую программки
      */
 
+    public String appendArgs(int num, String[] args) {
+        StringBuffer str = new StringBuffer(args[num]);
+        for (int i = num + 1; i < args.length; ++i) {
+            str.append(" ");
+            str.append(args[i]);
+        }
+        return str.toString();
+    }
+
     protected void execProc(String[] args) {
         if (args != null && args.length != 0) {
             switch (args[0]) {
                 case "put":
-                	if (args.length > 2) {
-                		put(args[1], appendArgs(2, args));
+                    if (args.length > 2) {
+                        put(args[1], appendArgs(2, args));
                     } else {
                         printError("unknown command format");
                     }
@@ -431,17 +439,6 @@ public class Unit {
                 System.out.print("$ ");
             }
             scanner.close();
-        }
-    }
-    
-    public static void main(String[] args) {
-        try {
-            Unit data = new Unit();
-            data.exec(args);
-            data.doExit();
-        } catch (RuntimeException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
         }
     }
 }

@@ -6,7 +6,6 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
 import javax.xml.stream.*;
-
 import java.io.*;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
     private String rootDir;
     private String oldPath;
     private volatile boolean isClosed = false;
-    
+
     public DBaseProvider(String dir) {
         if (dir == null || dir.isEmpty()) {
             throw new IllegalArgumentException("Empty directory name");
@@ -231,7 +230,7 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
         }
     }
 
-    protected void showTables(){
+    protected void showTables() {
         Set<String> fileKeySet = tableBase.keySet();
         for (String key : fileKeySet) {
             System.out.println(key + " " + tableBase.get(key).size());
@@ -290,11 +289,11 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
         try {
             reader = xmlFactory.createXMLStreamReader(str);
             if (!reader.hasNext()) {
-            	throw new ParseException("Input value is empty", 0);
+                throw new ParseException("Input value is empty", 0);
             }
             reader.nextTag();
             if (!reader.getLocalName().equals("row")) {
-            	throw new ParseException("Incorrect xml format", reader.getLocation().getCharacterOffset());
+                throw new ParseException("Incorrect xml format", reader.getLocation().getCharacterOffset());
             }
             int columnIndex = 0;
             while (reader.hasNext()) {
@@ -305,7 +304,7 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
                 } else {
                     if (!reader.getLocalName().equals("col")) {
                         if (!reader.isEndElement()) {
-                        	throw new ParseException("Incorrect xml format", reader.getLocation().getCharacterOffset());
+                            throw new ParseException("Incorrect xml format", reader.getLocation().getCharacterOffset());
                         }
                         if (reader.isEndElement() && reader.getLocalName().equals("row")) {
                             break;
@@ -317,9 +316,9 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
                 columnIndex++;
             }
         } catch (IOException e) {
-        	throw new RuntimeException("Cannot parse string " + value, e);
+            throw new RuntimeException("Cannot parse string " + value, e);
         } catch (XMLStreamException e) {
-        	throw new RuntimeException("Cannot parse string " + value, e);
+            throw new RuntimeException("Cannot parse string " + value, e);
         } finally {
             try {
                 reader.close();
