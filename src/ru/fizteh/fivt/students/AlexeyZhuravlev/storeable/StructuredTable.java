@@ -7,6 +7,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.HybridTable;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.MyTable;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -27,46 +28,79 @@ public class StructuredTable implements Table {
 
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
-        return null;
+        if (key == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+        try {
+            String old = table.put(key, provider.serialize(this, value));
+            if (old == null) {
+                return null;
+            }
+            return provider.deserialize(this, old);
+        } catch (ParseException e) {
+            throw new ColumnFormatException();
+        }
     }
 
     @Override
     public Storeable remove(String key) {
-        return null;
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        String old = table.remove(key);
+        if (old == null) {
+            return null;
+        }
+        try {
+            return provider.deserialize(this, old);
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     @Override
     public int size() {
-        return 0;
+        return table.size();
     }
 
     @Override
     public int commit() throws IOException {
-        return 0;
+        return table.commit();
     }
 
     @Override
     public int rollback() {
-        return 0;
+        return table.rollback();
     }
 
     @Override
     public int getColumnsCount() {
-        return 0;
+        return types.size();
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        return null;
+        return types.get(columnIndex);
     }
 
     @Override
     public String getName() {
-        return null;
+        return table.getName();
     }
 
     @Override
     public Storeable get(String key) {
-        return null;
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        String old = table.get(key);
+        if (old == null) {
+            return null;
+        }
+        try {
+            return provider.deserialize(this, old);
+        } catch (ParseException e) {
+            return null;
+        }
     }
 }
