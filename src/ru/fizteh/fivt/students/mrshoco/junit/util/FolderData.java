@@ -1,35 +1,33 @@
 package util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 
 public class FolderData extends Data {
 
     private static HashMap<String, String> checkFile(HashMap<String, String> hashMap, 
-                                                    int fileNumber) throws Exception {
+                                                    int fileNumber) throws IllegalArgumentException {
         for (String key : hashMap.keySet()) {
             if (key.hashCode() / 16 % 16 != fileNumber) {
-                throw new Exception("Key was in wrong place !");
+                throw new IllegalArgumentException("Key was in wrong place !");
             }
         }
         return hashMap;
     }
     
     private static HashMap<String, String> checkFolder(HashMap<String, String> hashMap, 
-                                                    int fileNumber) throws Exception {
+                                                    int fileNumber) throws IllegalArgumentException {
         for (String key : hashMap.keySet()) {
             if (key.hashCode() % 16 != fileNumber) {
-                throw new Exception("Key was in wrong place !");
+                throw new IllegalArgumentException("Key was in wrong place !");
             }
         }
         return hashMap;
     }
 
-    public static HashMap<String, String> loadDb(File file) throws Exception {
+    public static HashMap<String, String> loadDb(File file) throws IllegalArgumentException {
         if (!file.isDirectory()) {
-            throw new Exception("Db isn't a directory !");
+            throw new IllegalArgumentException("Db isn't a directory !");
         }
         HashMap<String, String> data = new HashMap<String, String>();
         for (int i = 0; i < 16; i++) {
@@ -38,13 +36,13 @@ public class FolderData extends Data {
         return data;
     }
 
-    private static HashMap<String, String> loadFolder(File file) throws Exception {
+    private static HashMap<String, String> loadFolder(File file) throws IllegalArgumentException {
         HashMap<String, String> dataFromFolder = new HashMap<String, String>();
         if (!file.exists()) {
             return dataFromFolder;
         }
         if (!file.isDirectory()) {
-            throw new Exception("One of .dir files isn't a directory !");
+            throw new IllegalArgumentException("One of .dir files isn't a directory !");
         }
         for (int i = 0; i < 16; i++) {
             dataFromFolder.putAll(checkFile(loadFile(new File(file, i + ".dat")), i));
@@ -52,25 +50,20 @@ public class FolderData extends Data {
         return dataFromFolder;
     }
 
-    private static HashMap<String, String> loadFile(File file) throws Exception {
+    private static HashMap<String, String> loadFile(File file) throws IllegalArgumentException {
         HashMap<String, String> dataFromFile = new HashMap<String, String>();
         if (!file.exists()) {
             return dataFromFile;
         }
         if (!file.isFile()) {
-            throw new Exception("One of .dat files isn't a file");
+            throw new IllegalArgumentException("One of .dat files isn't a file");
         }
-        try {
-            dataFromFile = Data.load(file);
-        } catch (FileNotFoundException e) {
-            throw new Exception("File not found");
-        } catch (IOException e) {
-            throw new Exception("Error while reading file");
-        }
+        dataFromFile = Data.load(file);
+
         return  dataFromFile;
     }
 
-    public static void saveDb(HashMap<String, String> data, File file) throws Exception {
+    public static void saveDb(HashMap<String, String> data, File file) throws IllegalArgumentException {
         @SuppressWarnings("unchecked")
         HashMap<String, String>[][] sortedData = new HashMap[16][16];
         for (int i = 0; i < 16; i++) {
@@ -90,11 +83,11 @@ public class FolderData extends Data {
     }
 
     private static void saveFolder(HashMap<String, String>[] dataToFolder, File file) 
-                                                            throws Exception {
+                                                            throws IllegalArgumentException {
         if (!file.exists()) {
             file.mkdir();
         } else if (!file.isDirectory()) {
-            throw new Exception("Can't create a directory");
+            throw new IllegalArgumentException("Can't create a directory");
         }
         boolean isSomeFiles = false;
         for (int i = 0; i < 16; i++) {
@@ -107,11 +100,15 @@ public class FolderData extends Data {
     }
 
     private static boolean saveFile(HashMap<String, String> dataToFile, File file) 
-                                                            throws Exception {
+                                                            throws IllegalArgumentException {
         if (!file.exists()) {
-            file.createNewFile();
+            try {
+                file.createNewFile();
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Can't create a file");
+            }
         } else if (!file.isFile()) {
-            throw new Exception("Can't create a file");
+            throw new IllegalArgumentException("Can't create a file");
         }
 
         save(file, dataToFile);
