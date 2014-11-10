@@ -50,10 +50,6 @@ public abstract class SomeTable implements MyTable {
         return size;
     }
     
-    public int getChangesCount() {
-        return unsavedChangesCounter;
-    }
-    
     public SomeTable(String dir, String name) {
         this.parentDirectory = dir;
         this.name = name;
