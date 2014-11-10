@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.VasilevKirill.junit.multimap;
 
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.junit.multimap.db.shell.RmCommand;
 import ru.fizteh.fivt.students.VasilevKirill.junit.multimap.db.shell.Status;
 
@@ -11,7 +13,7 @@ import java.util.Map;
 /**
  * Created by Kirill on 19.10.2014.
  */
-public class MultiMap {
+public class MultiMap implements TableProvider {
     private String workingDirectory;
     private String workingTable;
     private Map<String, MultiTable> tables;
@@ -34,6 +36,73 @@ public class MultiMap {
         }
     }
 
+    @Override
+    public Table getTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        return tables.get(name);
+    }
+
+    @Override
+    public Table createTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        try {
+            if (!addTable(name)) {
+                return null;
+            }
+            MultiTable retTable = new MultiTable(new File(workingDirectory + File.separator + name));
+            tables.put(name, retTable);
+            return retTable;
+        } catch (IOException e) {
+            if (e.getMessage().substring(0, 5).equals("Can't")) {
+                throw new IllegalArgumentException();
+            }
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public void removeTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (tables.get(name) == null) {
+            throw new IllegalStateException();
+        }
+        try {
+            oldRemoveTable(name);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void setTable(String name) throws IllegalArgumentException, IllegalStateException {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (tables.get(name) == null) {
+            throw new IllegalStateException();
+        } else {
+            try {
+                setWorkingTable(name);
+                MultiTable currentTable = tables.get(name);
+                if (currentTable == null) {
+                    throw new IOException("Unknown error");
+                }
+                if (currentTable.getNumUnsavedChanges() != 0) {
+                    System.out.println(currentTable.getNumUnsavedChanges());
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    //Old version of method. Saved for compatibility.
     public boolean addTable(String name) throws IOException {
         if (name == null) {
             throw new IOException("Wrong arguments");
@@ -52,7 +121,8 @@ public class MultiMap {
         }
     }
 
-    public boolean removeTable(String name) throws IOException {
+    //Old version of method. Saved for compatibility.
+    public boolean oldRemoveTable(String name) throws IOException {
         if (name == null) {
             throw new IOException("Wrong argument");
         }
@@ -69,6 +139,7 @@ public class MultiMap {
         }
     }
 
+    //Old version of method. Saved for compatibility.
     public boolean setWorkingTable(String name) throws IOException {
         if (name == null) {
             throw new IOException("Wrong argument");
@@ -81,6 +152,7 @@ public class MultiMap {
         }
     }
 
+    //Old version of method. Saved for compatibility.
     public boolean handleTable(String[] args) throws IOException {
         if (workingTable == null) {
             return false;
@@ -89,7 +161,35 @@ public class MultiMap {
         if (multiTable == null) {
             throw new IOException("Unknown error");
         }
-        multiTable.handle(args);
+        String result = "";
+        switch (args[0]) {
+            case "put":
+                result = multiTable.put(args[1], args[2]);
+                if (result == null) {
+                    System.out.println("new");
+                } else {
+                    System.out.println("overwrite\n" + result);
+                }
+                break;
+            case "get":
+                result = multiTable.get(args[1]);
+                if (result == null) {
+                    System.out.println("not found");
+                } else {
+                    System.out.println("found\n" + result);
+                }
+                break;
+            case "remove":
+                result = multiTable.remove(args[1]);
+                if (result == null) {
+                    System.out.println("not found");
+                } else {
+                    System.out.println("removed");
+                }
+                break;
+            default:
+                multiTable.handle(args);
+        }
         return true;
     }
 

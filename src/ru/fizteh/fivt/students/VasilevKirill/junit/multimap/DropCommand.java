@@ -14,11 +14,17 @@ public class DropCommand implements Command {
         if (!checkArgs(args)) {
             throw new IOException("Wrong arguments");
         }
-        if (status.getMultiMap().removeTable(args[1])) {
+        try {
+            status.getMultiMap().removeTable(args[1]);
+            System.out.println("dropped");
+        } catch (IllegalStateException e) {
+            System.out.println(args[1] + " not exists");
+        }
+        /*if (status.getMultiMap().removeTable(args[1])) {
             System.out.println("dropped");
         } else {
             System.out.println(args[1] + " not exists");
-        }
+        }*/
         return 0;
     }
 

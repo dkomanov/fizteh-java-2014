@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.VasilevKirill.junit.multimap;
 
+import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.VasilevKirill.junit.multimap.db.FileMap;
 import ru.fizteh.fivt.students.VasilevKirill.junit.multimap.db.GetCommand;
 import ru.fizteh.fivt.students.VasilevKirill.junit.multimap.db.PutCommand;
@@ -10,17 +11,20 @@ import ru.fizteh.fivt.students.VasilevKirill.junit.multimap.db.shell.Status;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.*;
 
 /**
  * Created by Kirill on 19.10.2014.
  */
-public class MultiTable {
+public class MultiTable implements Table {
     private File tableDirectory;
     private FileMap[][] files;
+    private Map<String, String> data;
+    private Map<String, String> oldData;
+    private Map<String, String> prevCommitData;
+    private int numUnsavedChanges;
 
     public MultiTable(File tableDirectory) throws IOException {
         this.tableDirectory = tableDirectory;
@@ -43,12 +47,151 @@ public class MultiTable {
                 files[numDirectory][numFile] = new FileMap(datIt.getCanonicalPath());
             }
         }
+        data = getData();
+        oldData = getData();
+        prevCommitData = getData();
+        numUnsavedChanges = 0;
+    }
+
+    @Override
+    public String getName() {
+        return tableDirectory.getName();
+    }
+
+    @Override
+    public String get(String key) throws IllegalArgumentException {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        return data.get(key);
+    }
+
+    @Override
+    public String put(String key, String value) throws IllegalArgumentException {
+        if (key == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+        String retValue = data.get(key);
+        data.put(key, value);
+        numUnsavedChanges++;
+        return retValue;
+    }
+
+    @Override
+    public String remove(String key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        String retValue = data.get(key);
+        if (retValue == null) {
+            return null;
+        }
+        data.remove(key);
+        numUnsavedChanges++;
+        return retValue;
+    }
+
+    @Override
+    public int size() {
+        return data.size();
+    }
+
+    @Override
+    public int commit() {
+        int number = 0;
+        try {
+            PrintStream oldOutput = System.out;
+            PrintStream newOutput = new PrintStream(new OutputStream() {
+                @Override
+                public void write(int b) throws IOException {
+                }
+            });
+            System.setOut(newOutput);
+            for (Map.Entry pair : data.entrySet()) {
+                String value = oldData.get(pair.getKey());
+                if (value == null) {
+                    number++;
+                    String[] args = {"put", (String) pair.getKey(), (String) pair.getValue() };
+                    handle(args);
+                }
+            }
+            for (Map.Entry pair : oldData.entrySet()) {
+                String value = data.get(pair.getKey());
+                if (value == null) {
+                    number++;
+                    String[] args = {"remove", (String) pair.getKey()};
+                    handle(args);
+                }
+            }
+            newOutput.close();
+            System.setOut(oldOutput);
+            prevCommitData = new HashMap<>(oldData);
+            oldData = new HashMap<>(data);
+            numUnsavedChanges = 0;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return number;
+    }
+
+    @Override
+    public int rollback() {
+        int numChanges = 0;
+        try {
+            PrintStream oldOutput = System.out;
+            PrintStream newOutput = new PrintStream(new OutputStream() {
+                @Override
+                public void write(int b) throws IOException {
+                }
+            });
+            System.setOut(newOutput);
+            for (Map.Entry pair : prevCommitData.entrySet()) {
+                String value = data.get(pair.getKey());
+                if (value == null) {
+                    numChanges++;
+                    String[] args = {"put", (String) pair.getKey(), (String) pair.getValue() };
+                    handle(args);
+                }
+            }
+            for (Map.Entry pair : data.entrySet()) {
+                String value = prevCommitData.get(pair.getKey());
+                if (value == null) {
+                    numChanges++;
+                    String[] args = {"remove", (String) pair.getKey()};
+                    handle(args);
+                }
+            }
+            newOutput.close();
+            System.setOut(oldOutput);
+            oldData = prevCommitData;
+            data = prevCommitData;
+            numUnsavedChanges = 0;
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return numChanges;
+    }
+
+    @Override
+    public List<String> list() {
+        Map<String, String> keyMap = getData();
+        List<String> retList = new ArrayList<>();
+        for (Map.Entry pair : keyMap.entrySet()) {
+            retList.add(pair.getKey().toString());
+        }
+        return retList;
     }
 
     public File getTableDirectory() {
         return tableDirectory;
     }
 
+    //Old version of method. Saved for compatibility.
     public void handle(String[] args) throws IOException {
         if (args[0].equals("put")) {
             if (args.length != 3) {
@@ -131,6 +274,15 @@ public class MultiTable {
             }
             System.out.println();
         }
+        if (args[0].equals("size")) {
+            System.out.println(size());
+        }
+        if (args[0].equals("commit")) {
+            commit();
+        }
+        if (args[0].equals("rollback")) {
+            rollback();
+        }
     }
 
     public void removeEmptyFiles() throws IOException {
@@ -187,6 +339,10 @@ public class MultiTable {
     }
 
     public String getTableName() {
-        return tableDirectory.getName();
+        return null;
+    }
+
+    public int getNumUnsavedChanges() {
+        return numUnsavedChanges;
     }
 }
