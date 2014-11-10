@@ -1,5 +1,5 @@
 package ru.fizteh.fivt.students.SergeyAksenov.MultiFileHashMap;
-
+//
 public class ExitCommand implements Command {
     public void run(final String[] args, DataBase dataBase)
             throws MultiFileMapException {

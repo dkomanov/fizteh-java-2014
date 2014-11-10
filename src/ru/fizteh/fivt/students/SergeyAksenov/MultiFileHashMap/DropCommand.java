@@ -8,4 +8,4 @@ public class DropCommand implements Command{
         }
         dataBase.drop(args[1]);
     }
-}
+}//
