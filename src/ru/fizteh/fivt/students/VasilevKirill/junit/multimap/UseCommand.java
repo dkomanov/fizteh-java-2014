@@ -14,11 +14,7 @@ public class UseCommand implements Command {
         if (!checkArgs(args)) {
             throw new IOException("Wrong arguments");
         }
-        if (status.getMultiMap().setWorkingTable(args[1])) {
-            System.out.println("using " + args[1]);
-        } else {
-            System.out.println(args[1] + " not exists");
-        }
+        status.getMultiMap().setTable(args[1]);
         return 0;
     }
 

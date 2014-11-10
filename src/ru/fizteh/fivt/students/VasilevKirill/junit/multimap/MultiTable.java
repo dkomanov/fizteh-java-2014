@@ -37,6 +37,9 @@ public class MultiTable implements Table {
             if (!it.isDirectory()) {
                 continue;
             }
+            if (!it.getName().contains(".")) {
+                throw new IOException("Incorrect directory name in table");
+            }
             int numDirectory = Integer.parseInt(it.getName().substring(0, it.getName().indexOf(".")));
             File[] datFiles = it.listFiles();
             if (datFiles == null) {
@@ -336,10 +339,6 @@ public class MultiTable implements Table {
             }
         }
         return data;
-    }
-
-    public String getTableName() {
-        return null;
     }
 
     public int getNumUnsavedChanges() {

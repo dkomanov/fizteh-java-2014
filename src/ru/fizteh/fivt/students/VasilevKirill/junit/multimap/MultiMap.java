@@ -88,14 +88,16 @@ public class MultiMap implements TableProvider {
             throw new IllegalStateException();
         } else {
             try {
+                if (workingTable != null) {
+                    MultiTable currentTable = tables.get(workingTable);
+                    if (currentTable == null) {
+                        throw new IOException("Multimap: current table is null");
+                    }
+                    if (currentTable.getNumUnsavedChanges() != 0) {
+                        System.out.println(currentTable.getNumUnsavedChanges() + " unsaved changes");
+                    }
+                }
                 setWorkingTable(name);
-                MultiTable currentTable = tables.get(name);
-                if (currentTable == null) {
-                    throw new IOException("Unknown error");
-                }
-                if (currentTable.getNumUnsavedChanges() != 0) {
-                    System.out.println(currentTable.getNumUnsavedChanges());
-                }
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -185,6 +187,14 @@ public class MultiMap implements TableProvider {
                     System.out.println("not found");
                 } else {
                     System.out.println("removed");
+                }
+                break;
+            case "use":
+                try {
+                    setTable(args[1]);
+                    System.out.println("using " + args[1]);
+                } catch (IllegalStateException e) {
+                    System.out.println(args[1] + " not exists");
                 }
                 break;
             default:
