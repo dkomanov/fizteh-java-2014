@@ -1,28 +1,29 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
+
 import java.util.AbstractQueue;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BatchGetter implements CommandGetter {
-    AbstractQueue<String> activeCommands;
+    private AbstractQueue<String> commands;
 
-    BatchGetter(String[] args) {
-        activeCommands = new ConcurrentLinkedQueue<>();
+    public BatchGetter(String[] args) {
+        commands = new ConcurrentLinkedQueue<>();
         StringBuilder allCommands = new StringBuilder();
         for (String s: args) {
             allCommands.append(s);
             allCommands.append(' ');
         }
-        activeCommands.addAll(Arrays.asList(allCommands.toString().split(";")));
+        commands.addAll(Arrays.asList(allCommands.toString().split(";\\s*")));
     }
 
     @Override
     public String nextCommand() {
-        if (activeCommands.isEmpty()) {
+        if (commands.isEmpty()) {
             return "exit";
         } else {
-            return activeCommands.remove();
+            return commands.remove();
         }
     }
 }
