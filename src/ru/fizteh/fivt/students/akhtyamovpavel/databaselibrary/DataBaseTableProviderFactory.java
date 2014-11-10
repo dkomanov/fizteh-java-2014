@@ -7,9 +7,16 @@ import ru.fizteh.fivt.storage.strings.TableProviderFactory;
  */
 public class DataBaseTableProviderFactory implements TableProviderFactory {
 
-
-    public DataBaseTableProvider create(String dir) {
-        return new DataBaseTableProvider(dir);
+    @Override
+    public DataBaseTableProvider create(String dir) throws IllegalArgumentException {
+        if (dir == null) {
+            throw new IllegalArgumentException("null pointer");
+        }
+        try {
+            return new DataBaseTableProvider(dir);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Bad database directory");
+        }
     }
 
     public DataBaseTableProvider create(String dir, boolean testMode) throws Exception {

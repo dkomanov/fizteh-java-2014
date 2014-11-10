@@ -41,7 +41,7 @@ public abstract class AbstractTableProvider {
         }
     }
 
-    protected void printException(String exceptionText) {
+    public void printException(String exceptionText) {
         if (isInteractive) {
             System.out.println(exceptionText);
         } else {

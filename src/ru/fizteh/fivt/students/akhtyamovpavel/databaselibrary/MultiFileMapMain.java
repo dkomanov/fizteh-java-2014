@@ -7,11 +7,18 @@ import java.nio.file.Paths;
  */
 public class MultiFileMapMain {
     public static void main(String[] args) {
-        DataBaseTableProviderFactory factory = new DataBaseTableProviderFactory();
-
-        DataBaseTableProvider shell = factory.create(Paths.get(System.getProperty("user.dir"))
-                .resolve(System.getProperty("fizteh.db.dir")).toString());
-
+        DataBaseTableProviderFactory factory = null;
+        DataBaseTableProvider shell = null;
+        try {
+            factory = new DataBaseTableProviderFactory();
+            shell = factory.create(Paths.get(System.getProperty("user.dir"))
+                    .resolve(System.getProperty("fizteh.db.dir")).toString());
+        } catch (Exception e) {
+            if (args.length == 0) {
+                System.err.println(e.getMessage());
+                System.exit(-1);
+            }
+        }
         if (args.length == 0) {
             shell.startInteractiveMode();
         } else {
