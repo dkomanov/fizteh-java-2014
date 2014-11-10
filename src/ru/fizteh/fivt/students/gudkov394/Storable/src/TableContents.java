@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.gudkov394.Storable.src;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -19,7 +21,7 @@ public class TableContents implements Storeable {
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
         goodColumnIndex(columnIndex);
-        if (value.getClass() != fields[columnIndex].getClass()) {
+        if (value.getClass() != fields[columnIndex]) {
             throw new ColumnFormatException("Invalid column format. I expected " + fields[columnIndex].getClass()
                     + "instead" + value.getClass());
         }

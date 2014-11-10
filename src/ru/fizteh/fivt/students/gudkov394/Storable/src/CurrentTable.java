@@ -7,7 +7,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 public class CurrentTable implements Table {
@@ -20,15 +20,19 @@ public class CurrentTable implements Table {
     int alreadyAdded = 0;
     TableProviderClass tableProviderClass = null;
 
+
     public CurrentTable(String nameTmp, ArrayList<Class<?>> signatureTmp) {
         name = nameTmp;
         signature = signatureTmp;
         //   create();
     }
 
-    public CurrentTable(ArrayList<Class<?>> signatureTmp) {
+    public CurrentTable(String nameTmp) {
+        name = nameTmp;
+    }
+
+    public void setSignature(ArrayList<Class<?>> signatureTmp) {
         signature = signatureTmp;
-        name = null;
     }
 
     public String getName() {
@@ -40,6 +44,43 @@ public class CurrentTable implements Table {
     }
 
     private ArrayList<Pair<CurrentTable, File>> currentChanges = new ArrayList<Pair<CurrentTable, File>>();
+
+    public void writeSignature(String s) {
+        if (System.getProperty("db.file") == null) {
+            System.err.println("You forgot directory");
+            System.exit(4);
+        }
+        String newPathDirectory = System.getProperty("db.file") + getName();
+        String newPath = newPathDirectory + File.separator + "signature.tsv";
+        File dir = new File(newPathDirectory);
+        File f = new File(newPath);
+        FileOutputStream output = null;
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                System.err.println("Sorry, I can't create file for signature");
+                System.exit(1);
+            }
+        }
+        try {
+            output = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            System.err.println("We have a problem");
+            System.exit(1);
+        }
+        try {
+            for (int i = 0; i < s.length(); ++i)
+                output.write(s.charAt(i));
+        } catch (IOException e) {
+            System.err.println("We have a problem, I can't write to file");
+            System.exit(1);
+        }
+
+    }
 
     void write() {
         if (System.getProperty("db.file") == null) {
@@ -197,8 +238,10 @@ public class CurrentTable implements Table {
         File f = new File(getHomeDirectory());
         if (f.exists()) {
             File[] files = f.listFiles();
-            for (File tmp : files) {
-                Init z = new Init(currentTable, tmp.toString(), tableProviderClass, this);
+            if (files != null) {
+                for (File tmp : files) {
+                    Init z = new Init(currentTable, tmp.toString(), tableProviderClass, this);
+                }
             }
         }
         number = currentTable.size();

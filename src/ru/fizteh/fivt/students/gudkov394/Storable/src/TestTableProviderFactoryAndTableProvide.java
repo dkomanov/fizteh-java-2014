@@ -1,12 +1,15 @@
-package ru.fizteh.fivt.students.gudkov394.Storable.Test;
+package ru.fizteh.fivt.students.gudkov394.Storable.src;
 
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.gudkov394.Junit.src.Junit;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.students.gudkov394.Storable.src.Junit;
+import ru.fizteh.fivt.students.gudkov394.Storable.src.TableProviderClass;
+import ru.fizteh.fivt.students.gudkov394.Storable.src.Utils;
+
+import java.io.IOException;
 
 
 /**
@@ -14,15 +17,16 @@ import ru.fizteh.fivt.students.gudkov394.Junit.src.Junit;
  * Created by kagudkov on 20.10.14.
  */
 public class TestTableProviderFactoryAndTableProvide {
-    TableProvider provider;
+    TableProviderClass provider;
     TableProviderFactory factory;
-
+    Utils utils = new Utils();
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
         factory = new Junit();
         provider = factory.create("/home/kagudkov/fizteh-java-2014/test1");
-        provider.createTable("table1");
-        provider.createTable("table2");
+        provider = new Junit().create("/home/kagudkov/fizteh-java-2014/test1");
+        provider.createTable("table1", utils.signature("int int"));
+        provider.createTable("table2", utils.signature("int int"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -45,28 +49,28 @@ public class TestTableProviderFactoryAndTableProvide {
     @Test
     public void testCreateTable() throws Exception {
 // non-existing table
-        Assert.assertNotNull(provider.createTable("newTable1"));
+        Assert.assertNotNull(provider.createTable("newTable1", utils.signature("int long")));
         Table table = provider.getTable("newTable1");
-        table.put("1", "2");
+        table.put("1", provider.deserialize(table, "[1,1]"));
         table.commit();
 // existing tables
-        Assert.assertNull(provider.createTable("table1"));
-        Assert.assertNull(provider.createTable("table2"));
+        Assert.assertNull(provider.createTable("table1",  utils.signature("int long")));
+        Assert.assertNull(provider.createTable("table2",  utils.signature("int long")));
 // clean-up
         provider.removeTable("newTable1");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateTableExceptions() {
-        provider.createTable(null);
+    public void testCreateTableExceptions() throws IOException {
+        provider.createTable(null, utils.signature("int long"));
     }
 
     @Test
     public void testRemoveTable() throws Exception {
 //prepare
-        provider.createTable("newTable1");
+        provider.createTable("newTable1",  utils.signature("int long"));
         Table table = provider.getTable("newTable1");
-        table.put("1", "2");
+        table.put("1", provider.deserialize(table, "[1,1]"));
         table.commit();
 // existing tables
         provider.removeTable("newTable1");

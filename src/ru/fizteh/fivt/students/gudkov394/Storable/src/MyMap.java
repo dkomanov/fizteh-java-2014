@@ -3,13 +3,14 @@ package ru.fizteh.fivt.students.gudkov394.Storable.src;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Set;
 
 public class MyMap {
     private ArrayList<Class<?>> signature = new ArrayList<Class<?>>();
-    public CurrentTable ct = new CurrentTable(signature);
+    public CurrentTable ct = null;
     TableProviderClass tableProviderClass = new TableProviderClass();
 
     public Boolean checkName(final String name) {
@@ -28,10 +29,12 @@ public class MyMap {
         String[] s = f.list();
         if (s != null) {
             for (String tmp : s) {
-                CurrentTable ct = new CurrentTable(tmp, signature);
-                ct.init(tableProviderClass); //в number запишем количество аргументов, а дальше поддерживаем его
-                ct.clear();
-                tableProviderClass.put(tmp, ct);
+                if (new File(tmp).isDirectory()) {
+                    CurrentTable ct = new CurrentTable(tmp);
+                    ct.init(tableProviderClass); //в number запишем количество аргументов, а дальше поддерживаем его
+                    ct.clear();
+                    tableProviderClass.put(tmp, ct);
+                }
             }
         }
     }
@@ -51,7 +54,7 @@ public class MyMap {
             }
         } else if ("get".equals(currentArgs[0])) {
             if (obvious()) {
-                Get get = new Get(currentArgs, ct);
+                Get get = new Get(currentArgs, ct, tableProviderClass);
             }
         } else if ("remove".equals(currentArgs[0])) {
             if (obvious()) {
@@ -72,8 +75,16 @@ public class MyMap {
                 System.err.println("wrong number of argument to Create");
                 System.exit(1);
             }
+            String[] array = currentArgs[1].split("\\(");
+            String name = array[0];
+            String forSignature = currentArgs[1].replaceFirst(name + "\\(", "");
+            forSignature = forSignature.trim();
+            forSignature = forSignature.substring(0, forSignature.length() - 1);
+            Utils utils = new Utils();
+            signature = utils.signature(forSignature);
             try {
-                tableProviderClass.createTable(currentArgs[1], signature);
+                tableProviderClass.createTable(name, signature);
+                ((CurrentTable) tableProviderClass.getTable(name)).writeSignature(forSignature);
             } catch (IOException e) {
                 System.err.println("I can't create table");
                 System.exit(1);
@@ -84,7 +95,9 @@ public class MyMap {
                 System.exit(1);
             }
             if (tableProviderClass.tables.containsKey(currentArgs[1])) {
-                ct.clear();
+                if (ct != null) {
+                    ct.clear();
+                }
                 ct = tableProviderClass.tables.get(currentArgs[1]);
                 ct.init(tableProviderClass);
                 System.out.println("using " + ct.getName());
@@ -140,7 +153,6 @@ public class MyMap {
 
     public void interactive() {
         Scanner sc = new Scanner(System.in);
-        CurrentTable currentTable = new CurrentTable(signature);
         initMap();
         while (true) {
 
@@ -159,7 +171,6 @@ public class MyMap {
 
     public void packageMode(final String[] args) {
         Scanner sc = new Scanner(System.in);
-        CurrentTable currentTable = new CurrentTable(signature);
         initMap();
         StringBuilder builder = new StringBuilder();
         for (String s : args) {
@@ -205,8 +216,7 @@ public class MyMap {
     }
 
 
-    public MyMap(final String[] args, ArrayList<Class<?>> signatureTmp) {
-        signature = signatureTmp;
+    public MyMap(final String[] args) {
         if (args.length == 0) {
             interactive();
         } else {

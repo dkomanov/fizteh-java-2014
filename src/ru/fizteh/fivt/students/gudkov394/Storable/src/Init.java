@@ -16,9 +16,14 @@ public class Init {
             System.exit(4);
         }
         File f = new File(property);
+        Utils utils = new Utils();
+        table.setSignature(utils.readSignature(table.getName()));
         File[] files = f.listFiles();
         if (files != null) {
             for (File tmp : files) {
+                if ((tmp.toString()).equals("signature.tsv")) {
+                    break;
+                }
                 DataInputStream input = null;
                 try {
                     input = new DataInputStream(new FileInputStream(tmp));
@@ -58,10 +63,11 @@ public class Init {
                     System.exit(6);
                 }
             }
-        } else {
-            System.err.println("Empty directory");
-            System.exit(2);
         }
+//        else {
+//            System.err.println("Empty directory");
+//            System.exit(2);
+//        }
     }
 
     private static byte[] read(final DataInputStream input, final int length) throws IOException {
