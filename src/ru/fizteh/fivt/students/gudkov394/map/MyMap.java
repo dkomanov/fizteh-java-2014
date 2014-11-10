@@ -7,13 +7,13 @@ import java.util.Scanner;
 
 public class MyMap {
     public Boolean checkName(final String name) {
-        String[] s = {"put", "get", "remove", "list", "exit"};
-        for (int i = 0; i < s.length; ++i) {
-            if (name.equals(s[i])) {
-                return true;
-            }
-        }
-        return false;
+        Map<String, Integer> mapStrign = new HashMap<String, Integer>();
+        mapStrign.put("put", 0);
+        mapStrign.put("get", 1);
+        mapStrign.put("remove", 2);
+        mapStrign.put("list", 3);
+        mapStrign.put("exit", 4);
+        return mapStrign.containsKey(name);
     }
 
     public void run(final String[] currentArgs, final Map ct) {
