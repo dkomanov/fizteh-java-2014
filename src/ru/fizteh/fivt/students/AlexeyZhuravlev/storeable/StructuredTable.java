@@ -103,4 +103,8 @@ public class StructuredTable implements Table {
             return null;
         }
     }
+
+    public List<String> list() {
+        return table.list();
+    }
 }

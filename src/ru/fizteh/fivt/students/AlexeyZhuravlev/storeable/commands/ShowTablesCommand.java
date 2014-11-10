@@ -9,7 +9,9 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTableProvider
 public class ShowTablesCommand extends Command {
     @Override
     public void execute(StructuredTableProvider base) throws Exception {
-
+        for (String name: base.listOfTables()) {
+            System.out.println(name + " " + base.getTable(name).size());
+        }
     }
 
     @Override

@@ -25,11 +25,11 @@ public abstract class Command {
         COMMANDS.put("size", new SizeCommand());
     }
 
-    private static String replaceInnerSpaces(String s) throws Exception {
+    private static String replaceInnerSpaces(String s, char occur) throws Exception {
         boolean flag = false;
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == '(') {
+            if (s.charAt(i) == occur) {
                 flag = true;
             }
             if (flag && s.charAt(i) == ' ') {
@@ -39,7 +39,7 @@ public abstract class Command {
             }
         }
         if (!flag) {
-            throw new Exception("create statement must have types in ()");
+            return null;
         }
         return result.toString();
     }
@@ -49,10 +49,19 @@ public abstract class Command {
             throw new Exception("Empty command");
         }
         if (s.length() > 4 && s.substring(0, 5).equals("show ")) {
-            s = s.replaceFirst(" ", "_");
+            s = s.replaceFirst(" ", "`");
         }
-        if (s.length() > 5 && s.substring(0, 5).equals("create ")) {
-            s = replaceInnerSpaces(s);
+        if (s.length() > 5 && s.substring(0, 6).equals("create ")) {
+            s = replaceInnerSpaces(s, '(');
+            if (s == null) {
+                throw new Exception("wrong type (create statement must have types in ())");
+            }
+        }
+        if (s.length() > 3 && s.substring(0, 4).equals("put ")) {
+            s = replaceInnerSpaces(s, '<');
+            if (s == null) {
+                throw new Exception("wrong type (value must be xml-serialized)");
+            }
         }
         String[] tokens = s.split("\\s+", 0);
         if (COMMANDS.containsKey(tokens[0])) {
@@ -68,7 +77,7 @@ public abstract class Command {
     }
 
     public abstract void execute(StructuredTableProvider base) throws Exception;
-    protected void putArguments(String[] args) {
+    protected void putArguments(String[] args) throws Exception {
     }
     protected abstract int numberOfArguments();
 }

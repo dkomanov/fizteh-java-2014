@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class StructuredTableProvider implements TableProvider {
     HashMap<String, File> signatures;
     MyTableProvider oldProvider;
     File mainDirectory;
+    String using;
 
     private String readSignature(File signature) throws IOException {
         Charset charset = Charset.forName("UTF-8");
@@ -179,5 +181,24 @@ public class StructuredTableProvider implements TableProvider {
             result.setColumnAt(i, values.get(i));
         }
         return result;
+    }
+
+    public List<String> listOfTables() {
+        List<String> res = new ArrayList<String>();
+        res.addAll(tables.keySet());
+        return res;
+    }
+
+    public Table setUsing(String name) {
+        if (!tables.containsKey(name)) {
+            return null;
+        } else {
+            using = name;
+            return tables.get(using);
+        }
+    }
+
+    public Table getUsing() {
+        return getTable(using);
     }
 }
