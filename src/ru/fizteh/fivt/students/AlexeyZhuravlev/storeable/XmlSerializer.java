@@ -22,28 +22,32 @@ import java.util.Vector;
  */
 public class XmlSerializer {
 
-    public static String serializeObjectList(List<Object> objects)
-    throws ParserConfigurationException, TransformerException {
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document document = builder.newDocument();
-        Element row = document.createElement("row");
-        document.appendChild(row);
-        for (Object object : objects) {
-            if (object == null) {
-                Element nullElement = document.createElement("null");
-                row.appendChild(nullElement);
-            } else {
-                Element col = document.createElement("col");
-                Text text = document.createTextNode(object.toString());
-                col.appendChild(text);
-                row.appendChild(col);
+    public static String serializeObjectList(List<Object> objects) {
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = builder.newDocument();
+            Element row = document.createElement("row");
+            document.appendChild(row);
+            for (Object object : objects) {
+                if (object == null) {
+                    Element nullElement = document.createElement("null");
+                    row.appendChild(nullElement);
+                } else {
+                    Element col = document.createElement("col");
+                    Text text = document.createTextNode(object.toString());
+                    col.appendChild(text);
+                    row.appendChild(col);
+                }
             }
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            StringWriter stringWriter = new StringWriter();
+            transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
+            return stringWriter.toString();
+        } catch (ParserConfigurationException | TransformerException e) {
+            System.err.println("Something really bad happened in configuration files");
+            return null;
         }
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        StringWriter stringWriter = new StringWriter();
-        transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
-        return stringWriter.toString();
     }
 
     private static Object parseValue(String value, Class classname) throws ParseException {

@@ -12,7 +12,7 @@ public class MyTableProvider implements TableProvider {
 
     private JUnitDataBaseDir directory;
 
-    protected MyTableProvider(String path) {
+    public MyTableProvider(String path) {
         try {
             directory = new JUnitDataBaseDir(path);
         } catch (Exception e) {
@@ -70,5 +70,9 @@ public class MyTableProvider implements TableProvider {
             throw new IllegalArgumentException();
         }
         System.setOut(out);
+    }
+
+    public JUnitDataBaseDir getJUnitDir() {
+        return directory;
     }
 }
