@@ -24,8 +24,11 @@ public final class FileMap {
         while (true) {
             try {
                 System.out.print(tableLauncher.getCurrentDb() + "$ ");
-                String input = sc.nextLine().trim();
-                tableLauncher.run(input.split(" "));
+                String[] input = sc.nextLine().split(";");
+                for (int i = 0; i < input.length; i++) {
+                    input[i] = input[i].trim();
+                    tableLauncher.run(input[i].split(" "));
+                }
             } catch (ExitException e) {
                 sc.close();
                 System.out.println(e.getMessage());
