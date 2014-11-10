@@ -199,6 +199,9 @@ public class StructuredTableProvider implements TableProvider {
     }
 
     public Table getUsing() {
+        if (using == null) {
+            return null;
+        }
         return getTable(using);
     }
 }

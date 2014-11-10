@@ -33,7 +33,7 @@ public abstract class Command {
                 flag = true;
             }
             if (flag && s.charAt(i) == ' ') {
-                result.append('_');
+                result.append('`');
             } else {
                 result.append(s.charAt(i));
             }
@@ -49,9 +49,9 @@ public abstract class Command {
             throw new Exception("Empty command");
         }
         if (s.length() > 4 && s.substring(0, 5).equals("show ")) {
-            s = s.replaceFirst(" ", "`");
+            s = s.replaceFirst(" ", "_");
         }
-        if (s.length() > 5 && s.substring(0, 6).equals("create ")) {
+        if (s.length() > 6 && s.substring(0, 7).equals("create ")) {
             s = replaceInnerSpaces(s, '(');
             if (s == null) {
                 throw new Exception("wrong type (create statement must have types in ())");

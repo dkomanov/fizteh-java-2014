@@ -37,7 +37,7 @@ public class CreateCommand extends Command {
         if (args[2].charAt(0) != '(' || args[2].charAt(args[2].length() - 1) != ')') {
             throw new Exception("wrong type (second argument of create must be in ())");
         }
-        String s = args[2].substring(1, args[2].length() - 2).replaceAll("`", " ");
+        String s = args[2].substring(1, args[2].length() - 1).replaceAll("`", " ");
         try {
             types = TypeTransformer.typeListFromString(s);
         } catch (IOException e) {

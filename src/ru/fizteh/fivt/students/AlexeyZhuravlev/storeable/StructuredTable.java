@@ -107,4 +107,8 @@ public class StructuredTable implements Table {
     public List<String> list() {
         return table.list();
     }
+
+    public int unsavedChanges() {
+        return table.unsavedChanges();
+    }
 }

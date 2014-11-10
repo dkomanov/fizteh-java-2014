@@ -106,4 +106,8 @@ public class MyTable implements Table {
         }
         return result;
     }
+
+    public int unsavedChanges() {
+        return table.changes.size();
+    }
 }
