@@ -10,6 +10,9 @@ public class MyTableProvider implements TableProvider{
 
     public MyTableProvider(File file) {
         root = file;
+        if (!file.isDirectory()) {
+            throw new IllegalArgumentException("Given property isn't a directory");
+        }
     }
 
     @Override
@@ -60,7 +63,7 @@ public class MyTableProvider implements TableProvider{
         File tableFile = new File(root, name);
         if (!tableFile.isDirectory()) {
             System.out.println("tablename not exist");
-            throw new IllegalArgumentException("Table doesn't exist");
+            throw new IllegalStateException("Table doesn't exist");
         } else {
             try {
                 for (int i = 0; i < 16; i++) {
@@ -78,7 +81,7 @@ public class MyTableProvider implements TableProvider{
                 tableFile.delete();
                 System.out.println("dropped");
             } catch (Exception e) {
-                throw new IllegalStateException("Some of directories is not empty");
+                throw new IllegalArgumentException("Some of directories is not empty");
             }
         }
     }

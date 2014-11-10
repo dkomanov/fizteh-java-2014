@@ -14,9 +14,7 @@ public class MyTableProviderFactory implements TableProviderFactory{
             throw new IllegalArgumentException("Property doesn't given");
         }
         File file = new File(dir);
-        if (!file.isDirectory()) {
-            throw new IllegalArgumentException("Given property isn't a directory");
-        }
+        
         return new MyTableProvider(file);
     }
 }

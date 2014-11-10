@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import strings.*;
+import strings.Table;
 
 public class MyTable implements Table {
     File tableRoot;
@@ -102,14 +101,20 @@ public class MyTable implements Table {
 
     public int diff() {
         HashMap<String, String> oldData = FolderData.loadDb(tableRoot);
-        Set<Entry<String, String>> union = 
-            new HashSet<Entry<String, String>>((data.entrySet()));
-        union.addAll(oldData.entrySet());
-        Set<Entry<String, String>> intersection = 
-            new HashSet<Entry<String, String>>((data.entrySet()));
-        intersection.retainAll(oldData.entrySet());
-        union.removeAll(intersection);
-        return union.size();
+        Set<String> allKeys = new HashSet<String>(oldData.keySet());
+        allKeys.addAll(data.keySet());
+        
+        int size = 0;
+
+        for (String k : allKeys) {
+            if ((data.containsKey(k) && !oldData.containsKey(k))
+                    || (!data.containsKey(k) && oldData.containsKey(k))
+                        || (!data.get(k).equals(oldData.get(k)))) {
+                System.out.println(" " + data.get(k) + " " + oldData.get(k));
+                size++;
+            }
+        }
+        return size;
     }
 
     @Override
