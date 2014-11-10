@@ -5,11 +5,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTableProvider;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTableProviderFactory;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import static org.junit.Assert.*;
 
@@ -152,5 +154,30 @@ public class StructuredTableProviderTest {
         Storeable storeable = provider.createFor(table);
         storeable.setColumnAt(2, 5.2);
         assertEquals(storeable.getDoubleAt(2), (Double) 5.2);
+    }
+
+    @Test
+    public void testSetAndGetUsing() throws IOException {
+        Class<?>[] types = {Integer.class};
+        assertNull(((StructuredTableProvider) provider).getUsing());
+        provider.createTable("table", Arrays.asList(types));
+        assertNull(((StructuredTableProvider) provider).setUsing("toble"));
+        assertNotNull(((StructuredTableProvider) provider).setUsing("table"));
+        assertEquals(((StructuredTableProvider) provider).getUsing().getName(), "table");
+    }
+
+    @Test
+    public void testListOfTables() throws IOException {
+        Class<?>[] types = {Integer.class};
+        provider.createTable("table", Arrays.asList(types));
+        provider.createTable("таблица", Arrays.asList(types));
+        provider.createTable("табличка", Arrays.asList(types));
+        assertTrue(((StructuredTableProvider) provider).listOfTables().containsAll(
+                    new LinkedList<>(Arrays.asList("table", "таблица", "табличка"))));
+        assertEquals(((StructuredTableProvider) provider).listOfTables().size(), 3);
+        provider.removeTable("table");
+        assertEquals(((StructuredTableProvider) provider).listOfTables().size(), 2);
+        assertTrue(((StructuredTableProvider) provider).listOfTables().containsAll(
+                new LinkedList<>(Arrays.asList("таблица", "табличка"))));
     }
 }
