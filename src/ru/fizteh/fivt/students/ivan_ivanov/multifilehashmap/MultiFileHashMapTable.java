@@ -8,11 +8,11 @@ import java.util.Map;
 public class MultiFileHashMapTable {
 
     private Map<String, String> dataBase;
-    public File dataFile;
+    private File dataFile;
 
     public MultiFileHashMapTable(final File currentFile) throws IOException {
 
-        dataBase = new HashMap<String, String>();
+        dataBase = new HashMap<>();
         dataFile = currentFile;
         MultiFileHashMapUtils.read(currentFile, dataBase);
     }

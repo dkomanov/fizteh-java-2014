@@ -23,7 +23,7 @@ public class MultiFileHashMapMain {
             if (!new File(currentProperty).isDirectory()) {
                 throw new IOException("Working directory is not a directory");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
@@ -49,7 +49,7 @@ public class MultiFileHashMapMain {
             } else {
                 mfhm.interactiveState(exec);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }

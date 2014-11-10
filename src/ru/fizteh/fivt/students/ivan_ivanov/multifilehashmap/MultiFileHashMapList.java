@@ -15,6 +15,7 @@ public class MultiFileHashMapList implements Command {
 
     @Override
     public final void executeCmd(final Shell shell, final String[] args) throws IOException {
+
         if (args.length != 0) {
             System.out.println("incorrect number of arguments");
             return;

@@ -16,7 +16,12 @@ public class MultiFileHashMapExit implements Command {
 
     @Override
     public final void executeCmd(final Shell shell, final String[] args) throws IOException {
-        if (!(((MultiFileHashMap) shell).getMFHMState().getCurrentTable()).equals(null)) {
+        if (args.length != 0) {
+            System.out.println("incorrect number of arguments");
+            return;
+        }
+
+        if (((MultiFileHashMap) shell).getMFHMState().getFlag() == 1) {
             File fileForWrite = ((MultiFileHashMapTable)
                     ((MultiFileHashMap) shell).getMFHMState().getCurrentTable()).getDataFile();
             Map<String, String> mapForWrite = ((MultiFileHashMapTable)

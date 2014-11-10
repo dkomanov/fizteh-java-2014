@@ -18,6 +18,7 @@ public class CmdShowTables implements Command {
 
     @Override
     public final void executeCmd(final Shell shell, final String[] args) throws IOException {
+
         if (args.length != 1) {
             throw new IOException("Can't find key");
         }

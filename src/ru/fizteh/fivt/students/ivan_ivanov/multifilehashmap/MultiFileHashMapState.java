@@ -9,14 +9,14 @@ public class MultiFileHashMapState {
 
     private MultiFileHashMapTableProvider provider;
     private MultiFileHashMapTable currentTable;
-    private int flag;
+    private int flag;    //flag = 0 - we`re not working with any table, 1 - we are
 
     public MultiFileHashMapState(final File inFile) throws IOException {
 
         flag = 0;
         currentTable = null;
         MultiFileHashMapTableProviderFactory factory = new MultiFileHashMapTableProviderFactory();
-        provider = (MultiFileHashMapTableProvider) factory.create(inFile.getPath());
+        provider = factory.create(inFile.getPath());
     }
 
     public final int getFlag() {
@@ -51,7 +51,7 @@ public class MultiFileHashMapState {
 
     public final void setCurrentTable(final String name) throws IOException {
 
-        currentTable = (MultiFileHashMapTable) provider.getTable(name);
+        currentTable = provider.getTable(name);
     }
 
     public final void setCurrentTable() throws IOException {

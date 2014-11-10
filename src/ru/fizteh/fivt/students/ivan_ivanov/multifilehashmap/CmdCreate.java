@@ -16,6 +16,11 @@ public class CmdCreate implements Command {
     @Override
     public final void executeCmd(final Shell shell, final String[] args) throws IOException {
 
+        if (args.length != 1) {
+            System.out.println("incorrect number of arguments");
+            return;
+        }
+
         if (((MultiFileHashMap) shell).getMFHMState().createTable(args[0]) != null) {
             System.out.println("created");
         } else {

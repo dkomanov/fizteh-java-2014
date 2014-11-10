@@ -17,7 +17,17 @@ public class CmdDrop implements Command {
     @Override
     public final void executeCmd(final Shell shell, final String[] args) throws IOException {
 
-        if (1 == ((MultiFileHashMap) shell).getMFHMState().getFlag()) {
+        if (args.length != 1) {
+            System.out.println("incorrect number of arguments");
+            return;
+        }
+
+        if (((MultiFileHashMap) shell).getMFHMState().getTable(args[0]) == null) {
+            System.out.println(args[0] + " not exists");
+            return;
+        }
+
+        if (((MultiFileHashMap) shell).getMFHMState().getFlag() == 1) {
             if (((MultiFileHashMap) shell).getMFHMState().getCurrentTable().getName().equals(args[0])) {
                 Set<String> keys = ((MultiFileHashMap) shell).getMFHMState().
                         getDataBaseFromCurrentTable().keySet();
@@ -29,13 +39,8 @@ public class CmdDrop implements Command {
             }
         }
 
+        ((MultiFileHashMap) shell).getMFHMState().deleteTable(args[0]);
+        System.out.println("dropped");
 
-        if (((MultiFileHashMap) shell).getMFHMState().getTable(args[0]) == null) {
-            System.out.println(args[0] + " not exists");
-            return;
-        } else {
-            ((MultiFileHashMap) shell).getMFHMState().deleteTable(args[0]);
-            System.out.println("dropped");
-        }
     }
 }

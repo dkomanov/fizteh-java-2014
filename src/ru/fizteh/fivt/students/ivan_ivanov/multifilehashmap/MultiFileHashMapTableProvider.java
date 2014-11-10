@@ -15,7 +15,7 @@ public class MultiFileHashMapTableProvider {
 
     public MultiFileHashMapTableProvider(final File inDir) throws IOException {
 
-        mapOfTables = new HashMap<String, MultiFileHashMapTable>();
+        mapOfTables = new HashMap<>();
         currentDir = inDir;
         File[] fileMas = currentDir.listFiles();
         if (fileMas.length != 0) {
