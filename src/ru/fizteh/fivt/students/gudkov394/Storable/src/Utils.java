@@ -10,7 +10,7 @@ import java.util.Scanner;
  */
 public class Utils {
 
-     ArrayList<Class<?>> readSignature(String name) {
+    ArrayList<Class<?>> readSignature(String name) {
         ArrayList<Class<?>> signature = new ArrayList<Class<?>>();
         File inputSignature = new File(System.getProperty("db.file") + File.separator + name
                 + File.separator + "signature.tsv");
@@ -49,7 +49,8 @@ public class Utils {
                 case "String":
                     signature.add(String.class);
                     break;
-                default: System.err.println("Wrong name of type");
+                default:
+                    System.err.println("Wrong name of type");
                     System.exit(3);
                     break;
             }

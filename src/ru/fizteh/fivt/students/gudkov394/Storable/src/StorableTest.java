@@ -2,16 +2,11 @@ package ru.fizteh.fivt.students.gudkov394.Storable.src;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import ru.fizteh.fivt.storage.strings.TableProvider;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by kagudkov on 10.11.14.

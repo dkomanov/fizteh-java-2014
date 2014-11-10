@@ -11,9 +11,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.gudkov394.Storable.src.Junit;
-import ru.fizteh.fivt.students.gudkov394.Storable.src.TableProviderClass;
-import ru.fizteh.fivt.students.gudkov394.Storable.src.Utils;
 
 import java.io.File;
 import java.io.IOException;

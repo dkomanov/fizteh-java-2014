@@ -73,8 +73,9 @@ public class CurrentTable implements Table {
             System.exit(1);
         }
         try {
-            for (int i = 0; i < s.length(); ++i)
+            for (int i = 0; i < s.length(); ++i) {
                 output.write(s.charAt(i));
+            }
         } catch (IOException e) {
             System.err.println("We have a problem, I can't write to file");
             System.exit(1);

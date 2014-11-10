@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.gudkov394.Storable.src;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Set;
