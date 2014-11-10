@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure;
+package ru.fizteh.fivt.storage.strings;
 
 import java.util.List;
 

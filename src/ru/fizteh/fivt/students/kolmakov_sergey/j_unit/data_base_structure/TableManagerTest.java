@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.strings.TableProvider;
 
 public class TableManagerTest {
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DataBaseTestDirectory");

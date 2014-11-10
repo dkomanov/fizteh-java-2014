@@ -1,10 +1,9 @@
-package ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure;
+package ru.fizteh.fivt.storage.strings;
 
 /**
- * Представляет интерфейс для создание экземпляров
- * {@link ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure.TableProvider}.
- * Предполагается, что реализация интерфейса
+ * Представляет интерфейс для создание экземпляров {@link TableProvider}. Предполагается, что реализация интерфейса
  * фабрики будет иметь публичный конструктор без параметров.
+ *
  * @author Fedor Lavrentyev
  * @author Dmitriy Komanov
  */
@@ -17,6 +16,5 @@ public interface TableProviderFactory {
      * @return Объект для работы с базой данных.
      * @throws IllegalArgumentException Если значение директории null или имеет недопустимое значение.
      */
-
     TableProvider create(String dir);
 }

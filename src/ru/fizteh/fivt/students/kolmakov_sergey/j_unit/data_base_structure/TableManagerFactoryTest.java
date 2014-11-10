@@ -9,6 +9,8 @@ import java.io.File;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 
 public class TableManagerFactoryTest {
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DataBaseTestDirectory");

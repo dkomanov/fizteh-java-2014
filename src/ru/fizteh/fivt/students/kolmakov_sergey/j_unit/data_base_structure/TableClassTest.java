@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure;
 
 import static org.junit.Assert.*;
 
+import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_exceptions.DatabaseCorruptedException;
 import java.io.DataOutputStream;
 import java.io.File;

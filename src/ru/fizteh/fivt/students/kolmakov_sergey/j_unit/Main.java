@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.kolmakov_sergey.j_unit;
 
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure.*;
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure.TableClass;
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.interpreter.Interpreter;
