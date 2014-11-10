@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.RadimZulkaneev.shell;
+package ru.fizteh.fivt.students.RadimZulkarneev.Shell;
 
 import java.io.*;
 import java.nio.file.Files;

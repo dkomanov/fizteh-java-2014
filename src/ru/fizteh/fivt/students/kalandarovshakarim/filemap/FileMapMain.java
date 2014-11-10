@@ -4,9 +4,11 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.filemap;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kalandarovshakarim.filemap.commands.*;
+import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.OneTableBase;
+import ru.fizteh.fivt.students.kalandarovshakarim.filemap.table.SingleFileTable;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.Shell;
 import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.Command;
 
@@ -17,27 +19,31 @@ import ru.fizteh.fivt.students.kalandarovshakarim.shell.commands.Command;
 public class FileMapMain {
 
     public static void main(String[] args) {
-        FileMapShellState state = null;
+        String fileName = System.getProperty("db.file");
+        OneTableBase base = new OneTableBase();
+        Table fileMap = null;
 
         try {
-            state = new FileMapShellState();
-        } catch (FileNotFoundException ex) {
-            System.err.println("db.file was not found");
+            fileMap = new SingleFileTable(fileName);
+        } catch (NullPointerException e) {
+            System.err.println("db.file is not specified");
             System.exit(1);
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
             System.exit(1);
         }
 
+        base.setActiveTable(fileMap);
+
         Command[] commands = new Command[]{
-            (Command<FileMapShellState>) new ExitCommand(),
-            (Command<FileMapShellState>) new PutCommand(),
-            (Command<FileMapShellState>) new GetCommand(),
-            (Command<FileMapShellState>) new RemoveCommand(),
-            (Command<FileMapShellState>) new ListCommand()
+            new PutCommand(base),
+            new GetCommand(base),
+            new ListCommand(base),
+            new ExitCommand(base),
+            new RemoveCommand(base)
         };
 
-        Shell<FileMapShellState> shell = new Shell<>(state, args, commands);
+        Shell shell = new Shell(commands, args);
         shell.exec();
     }
 }

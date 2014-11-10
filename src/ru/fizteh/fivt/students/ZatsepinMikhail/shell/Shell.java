@@ -77,7 +77,7 @@ public class Shell {
                 continue;
             }
             if (parsedArguments[0].equals("exit")) {
-                return true;
+                return !errorOccuried;
             }
             Command commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {

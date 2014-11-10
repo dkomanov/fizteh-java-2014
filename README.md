@@ -19,6 +19,9 @@ Code Conventions.
 2. [Object, String, исключения](https://yadi.sk/d/MCu6krbtbXrgZ)
 3. [IO Stream, инициализация объектов, enum](https://yadi.sk/d/MinWJhG0bteEr)
 4. [Лямбды, аннотации, обобщения, коллекции](https://yadi.sk/d/hxkoP81rbteTp)
+5. [Reflection, Proxy, JUnit](https://yadi.sk/i/Ku-C6VYOc4icJ)
+6. [Сериализация, XML, JSON](https://yadi.sk/d/8upuEG2ecRknU)
+7. [Многопоточность](https://yadi.sk/i/FsBB-AXVcRkoH)
 
 ## Список литературы
 * Брюс Эккель &mdash; Философия Java  (Thinking in Java)
