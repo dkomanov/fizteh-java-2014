@@ -40,14 +40,10 @@ public class RmCommand implements Command {
             }
             if (file.isDirectory()) {
                 File[] listFiles = file.listFiles();
-                if (listFiles.length == 0) {
-                    file.delete();
-                } else {
-                    for (File f : listFiles) {
-                        String[] newArgs = {"rm", "-r", f.getName()};
-                        if (rmRecursive(newArgs, Shell.currentPath + File.separator + file.getName()) != 0) {
-                            return 1;
-                        }
+                for (File f : listFiles) {
+                    String[] newArgs = {"rm", "-r", f.getName()};
+                    if (rmRecursive(newArgs, Shell.currentPath + File.separator + file.getName()) != 0) {
+                        return 1;
                     }
                 }
                 if (!file.delete()) {

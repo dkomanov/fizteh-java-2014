@@ -4,6 +4,9 @@ import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.junit.MyTableProviderFactory;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -13,7 +16,11 @@ public class TableTest {
     private static TableProvider dataBase;
 
     static {
-        path = "C:\\java\\database";
+        try {
+            path = new File("").getCanonicalPath();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
         dataBase = new MyTableProviderFactory().create(path);
         dataBase.createTable("First");
     }
