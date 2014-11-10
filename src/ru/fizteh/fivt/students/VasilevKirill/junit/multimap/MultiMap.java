@@ -53,32 +53,32 @@ public class MultiMap {
     }
 
     public boolean removeTable(String name) throws IOException {
-        if (name != null) {
-            if (tables.containsKey(name)) {
-                String[] rmArgs = {"rm", "-r", tables.get(name).getTableDirectory().getAbsolutePath()};
-                Status status = null;
-                if (new RmCommand().execute(rmArgs, status) == 1) {
-                    throw new IOException("Can't delete the table");
-                }
-                tables.remove(name);
-                return true;
-            } else {
-                return false;
-            }
+        if (name == null) {
+            throw new IOException("Wrong argument");
         }
-        return false;
+        if (tables.containsKey(name)) {
+            String[] rmArgs = {"rm", "-r", tables.get(name).getTableDirectory().getAbsolutePath()};
+            Status status = null;
+            if (new RmCommand().execute(rmArgs, status) == 1) {
+                throw new IOException("Can't delete the table");
+            }
+            tables.remove(name);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean setWorkingTable(String name) throws IOException {
-        if (name != null) {
-            if (tables.containsKey(name)) {
-                workingTable = name;
-                return true;
-            } else {
-                return false;
-            }
+        if (name == null) {
+            throw new IOException("Wrong argument");
         }
-        return false;
+        if (tables.containsKey(name)) {
+            workingTable = name;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean handleTable(String[] args) throws IOException {
