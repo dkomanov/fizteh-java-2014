@@ -19,8 +19,6 @@ public class TestTableProviderFactoryAndTableProvide {
 
     @Before
     public void beforeTest() throws IOException {
-        factory = new Junit();
-        provider = factory.create("/home/kagudkov/fizteh-java-2014/test1");
         provider = new Junit().create("/home/kagudkov/fizteh-java-2014/test1");
         provider.createTable("table1", utils.signature("int int"));
         provider.createTable("table2", utils.signature("int int"));
@@ -83,5 +81,17 @@ public class TestTableProviderFactoryAndTableProvide {
     public void testRemoveTableIllegalStateException() {
         provider.removeTable("nonExistingTable");
         provider.removeTable("nosuchtable");
+    }
+
+    @Test
+    public void testInitTable() throws Exception {
+// non-existing table
+        Assert.assertNotNull(provider.createTable("newTable2", utils.signature("int long String")));
+        Table table = provider.getTable("newTable2");
+        table.put("1", provider.deserialize(table, "[1,1,\"Harry\"]"));
+        table.commit();
+// existing tables
+        provider.removeTable("NewTable2");
+
     }
 }
