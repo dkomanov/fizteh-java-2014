@@ -24,7 +24,8 @@ import java.util.Map;
  */
 public class StructuredTableProvider implements TableProvider {
 
-    private HashMap<String, Table> tables;
+    HashMap<String, Table> tables;
+    File mainDirectory;
 
     private String readSignature(File signature) throws IOException {
         Charset charset = Charset.forName("UTF-8");
@@ -42,6 +43,7 @@ public class StructuredTableProvider implements TableProvider {
     protected StructuredTableProvider(String path) throws IOException {
         try {
             JUnitDataBaseDir unstructuredDbDir = new JUnitDataBaseDir(path);
+            mainDirectory = new File(path);
             tables = new HashMap<>();
             for (Map.Entry<String, HybridTable> entry: unstructuredDbDir.tables.entrySet()) {
                 File signature = new File(entry.getValue().virginTable.mainDir, "signature.tsv");
@@ -54,7 +56,7 @@ public class StructuredTableProvider implements TableProvider {
                 tables.put(entry.getKey(), table);
             }
         } catch (Exception e) {
-            throw new IOException();
+            throw new IOException("Problems while reading from database directory");
         }
     }
 
