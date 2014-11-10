@@ -12,13 +12,18 @@ public class MyMap {
     public CurrentTable ct = new CurrentTable();
 
     public Boolean checkName(final String name) {
-        String[] s = {"put", "get", "remove", "list", "exit", "create", "use", "drop", "#*#", "size"};
-        for (int i = 0; i < s.length; ++i) {
-            if (name.equals(s[i])) {
-                return true;
-            }
-        }
-        return false;
+        Map<String, Integer> mapStrign = new HashMap<String, Integer>();
+        mapStrign.put("put", 0);
+        mapStrign.put("get", 1);
+        mapStrign.put("remove", 2);
+        mapStrign.put("list", 3);
+        mapStrign.put("exit", 4);
+        mapStrign.put("create", 4);
+        mapStrign.put("use", 4);
+        mapStrign.put("drop", 4);
+        mapStrign.put("size", 4);
+        mapStrign.put("#*#", 4);
+        return mapStrign.containsKey(name);
     }
 
     private void initMap() {
