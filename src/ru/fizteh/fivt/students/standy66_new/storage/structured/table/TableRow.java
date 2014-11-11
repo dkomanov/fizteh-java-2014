@@ -90,7 +90,24 @@ public class TableRow implements Storeable {
             } else {
                 stringBuilder.append(String.valueOf(row[i]));
             }
-            if (i != row.length - 1) {
+            if (i < row.length - 1) {
+                stringBuilder.append(", ");
+            }
+        }
+        stringBuilder.append("]");
+        return stringBuilder.toString();
+    }
+
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("TableRow [");
+        for (int i = 0; i < row.length; i++) {
+            Object element = row[i];
+            if (element == null) {
+                stringBuilder.append("null");
+            } else {
+                stringBuilder.append(element.getClass().toString() + ": " + element.toString());
+            }
+            if (i < row.length - 1) {
                 stringBuilder.append(", ");
             }
         }
