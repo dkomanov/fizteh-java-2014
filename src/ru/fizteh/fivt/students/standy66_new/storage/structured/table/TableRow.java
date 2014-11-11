@@ -79,6 +79,20 @@ public class TableRow implements Storeable {
         return tableRow;
     }
 
+
+    public String serialize() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
+        for (int i = 0; i < row.length; i++) {
+            stringBuilder.append(row[i].toString());
+            if (i != row.length - 1) {
+                stringBuilder.append(", ");
+            }
+        }
+        stringBuilder.append("]");
+        return stringBuilder.toString();
+    }
+
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
         if (value != null) {
