@@ -1,0 +1,55 @@
+package ru.fizteh.fivt.students.YaronskayaLiubov.JUnit;
+
+import static junit.framework.Assert.*;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+
+/**
+ * Created by luba_yaronskaya on 08.11.14.
+ */
+@RunWith(Parameterized.class)
+public class TableProviderFactoryTest {
+    private TableProviderFactory factory;
+
+    @Rule
+    public TemporaryFolder testFolder = new TemporaryFolder();
+
+    public TableProviderFactoryTest(TableProviderFactory factory) {
+        this.factory = factory;
+    }
+
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() throws Exception {
+        return Arrays.asList(new Object[][]{
+                {new JUnitTableProviderFactory()}
+        });
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateProviderNull() throws Exception {
+        factory.create(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateProviderIllegalName() throws Exception {
+        factory.create("");
+    }
+
+    @Test
+    public void testCreateNewProvider() throws Exception {
+        assertNotNull(factory.create(testFolder.newFolder().getCanonicalPath()));
+    }
+}
