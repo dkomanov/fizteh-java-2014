@@ -84,7 +84,12 @@ public class TableRow implements Storeable {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
         for (int i = 0; i < row.length; i++) {
-            stringBuilder.append(row[i].toString());
+            Object element = row[i];
+            if (element != null && element.getClass() == String.class) {
+                stringBuilder.append("\"" + String.valueOf(row[i]) + "\"");
+            } else {
+                stringBuilder.append(String.valueOf(row[i]));
+            }
             if (i != row.length - 1) {
                 stringBuilder.append(", ");
             }
