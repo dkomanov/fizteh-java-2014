@@ -5,7 +5,6 @@
  */
 package ru.fizteh.fivt.students.kalandarovshakarim.interpeter;
 
-import ru.fizteh.fivt.students.kalandarovshakarim.interpeter.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,25 +28,19 @@ public class InterpreterTest {
     private PrintStream out;
     private PrintStream err;
 
-    private final OutputStream baosOut = new ByteArrayOutputStream();
-    private final OutputStream baosErr = new ByteArrayOutputStream();
+    private OutputStream baosOut;
+    private OutputStream baosErr;
 
     @Before
     public void setUp() {
+        baosOut = new ByteArrayOutputStream();
+        baosErr = new ByteArrayOutputStream();
         out = new PrintStream(baosOut);
         err = new PrintStream(baosErr);
-
-        Command fake = new AbstractCommand("fake", 0, null, in, out, err) {
-
-            @Override
-            public void exec(String[] args) throws IOException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        };
     }
 
     public Command newCommand(String name, int argsNum, InputStream input) {
-        return new AbstractCommand("test", argsNum, null, input, out, err) {
+        return new AbstractCommand<Object>("test", argsNum, null, input, out, err) {
 
             @Override
             public void exec(String[] args) throws IOException {
@@ -69,7 +62,7 @@ public class InterpreterTest {
         Command test = newCommand("test", 0, in);
 
         new Interpreter(new Command[]{test}, in, out, err).exec();
-        assertEquals("$ true\n$ \n",baosOut.toString());
+        assertEquals("$ true\n$ \n", baosOut.toString());
     }
 
     /**
@@ -82,7 +75,7 @@ public class InterpreterTest {
 
         Interpreter interpreter = new Interpreter(new Command[]{test}, in, out, err);
         int statusOk = interpreter.exec("test");
-        assertEquals("true\n",baosOut.toString());
+        assertEquals("true\n", baosOut.toString());
         assertEquals(0, statusOk);
     }
 
