@@ -11,7 +11,7 @@ import java.io.IOException;
 public class DataBaseTableProviderFactory implements TableProviderFactory {
 
     @Override
-    public DataBaseTableProvider create(String path) throws IOException{
+    public DataBaseTableProvider create(String path) throws IOException {
         if (path == null) {
             throw new IllegalArgumentException("Null table path");
         }

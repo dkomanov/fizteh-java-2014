@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.commands.Comman
 import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.commands.CommandParser;
 import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.commands.CommandStorage;
 
+import java.text.ParseException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -36,8 +37,12 @@ public abstract class AbstractTableProvider {
 
     public void startPacketMode(String[] arguments) {
         isInteractive = false;
-        for (CommandStorage currentCommand : CommandParser.parseUserRequest(arguments)) {
-            processCommand(currentCommand);
+        try {
+            for (CommandStorage currentCommand : CommandParser.parseUserRequest(arguments)) {
+                processCommand(currentCommand);
+            }
+        } catch (ParseException pe) {
+            printException(pe.getMessage());
         }
     }
 
@@ -68,8 +73,12 @@ public abstract class AbstractTableProvider {
     }
 
     private void processInteractiveRequest(String request) {
-        for (CommandStorage currentCommand : CommandParser.parseUserRequest(request)) {
-            processCommand(currentCommand);
+        try {
+            for (CommandStorage currentCommand : CommandParser.parseUserRequest(request)) {
+                processCommand(currentCommand);
+            }
+        } catch (ParseException pe) {
+            printException(pe.getMessage());
         }
     }
 

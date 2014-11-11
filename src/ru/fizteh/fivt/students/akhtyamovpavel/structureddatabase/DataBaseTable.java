@@ -10,6 +10,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ public class DataBaseTable implements Table {
 
         this.tableName = tableName;
         this.serializer = serializer;
+        readSignature();
         loadMap();
     }
 
@@ -51,13 +53,12 @@ public class DataBaseTable implements Table {
         saveMap();
     }
 
-    private void writeSignature() throws IOException{
+    private void writeSignature() throws IOException {
         PrintWriter out = new PrintWriter(dataBasePath.resolve("signature.tsv").toString());
 
         for (Class<?> type: signature) {
             out.print(TableRowSerializer.classToString(type));
         }
-        out.flush();
         out.close();
     }
 
@@ -115,6 +116,8 @@ public class DataBaseTable implements Table {
                     }
                 } catch (IOException ioe) {
                     throw new IOException("read from database failed");
+                } catch (ParseException pe) {
+                    throw new IOException("deserialization failed");
                 }
             }
         }
@@ -182,10 +185,12 @@ public class DataBaseTable implements Table {
     private void clearGarbage() throws Exception {
         String[] filesList = dataBasePath.toFile().list();
         for (String fileName : filesList) {
-            ArrayList<String> arguments = new ArrayList<>();
-            arguments.add("-r");
-            arguments.add(fileName);
-            new RemoveCommand(dataBasePath).executeCommand(arguments);
+            if (!fileName.equals("signature.tsv")) {
+                ArrayList<String> arguments = new ArrayList<>();
+                arguments.add("-r");
+                arguments.add(fileName);
+                new RemoveCommand(dataBasePath).executeCommand(arguments);
+            }
         }
     }
 
@@ -271,7 +276,6 @@ public class DataBaseTable implements Table {
         return signature.get(columnIndex);
     }
 
-
     public List<String> list() {
         ArrayList<String> nameList = new ArrayList<>();
         for (String currentKey : tempData.keySet()) {
@@ -279,6 +283,9 @@ public class DataBaseTable implements Table {
         }
         return nameList;
     }
+
+
+
 
     public boolean containsKey(String key) {
         return tempData.containsKey(key);

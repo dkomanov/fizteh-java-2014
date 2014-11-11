@@ -25,7 +25,7 @@ public class GetCommand implements Command {
             return "no table";
         }
         if (shell.getOpenedTable().containsKey(arguments.get(0))) {
-            return "found\n" + shell.getOpenedTable().get(arguments.get(0));
+            return "found\n" + shell.serialize(shell.getOpenedTable(), shell.getOpenedTable().get(arguments.get(0)));
         } else {
             return "not found";
         }

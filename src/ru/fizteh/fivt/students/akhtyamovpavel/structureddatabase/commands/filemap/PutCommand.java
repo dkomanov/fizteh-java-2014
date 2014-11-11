@@ -28,11 +28,11 @@ public class PutCommand implements Command {
             shell.putKeyToTable(shell.getOpenedTableName());
             Storeable result = shell.getOpenedTable().put(arguments.get(0),
                     shell.deserialize(shell.getOpenedTable(), arguments.get(1)));
-            return "new\n" + shell.serialize(shell.getOpenedTable(), result);
+            return "new";
         } else {
             Storeable result = shell.getOpenedTable().put(arguments.get(0),
                     shell.deserialize(shell.getOpenedTable(), arguments.get(1)));
-            return "overwrite\n" + result;
+            return "overwrite\n" + shell.serialize(shell.getOpenedTable(), result);
         }
     }
 

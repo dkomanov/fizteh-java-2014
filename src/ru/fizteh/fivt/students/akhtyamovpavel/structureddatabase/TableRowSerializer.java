@@ -4,7 +4,9 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -95,9 +97,35 @@ public class TableRowSerializer {
         return sb.toString();
     }
 
-    public TableRow deserialize(Table table, String value) {
+    public TableRow deserialize(Table table, String value) throws ParseException{
+        value = value.trim();
+        if (value.length() < 3 || value.charAt(0) != '[' || value.charAt(value.length() - 1) != ']'
+                || value.charAt(value.length() - 2) == ',') {
+            throw new ParseException("invalid JSON format", 0);
+        }
+        List<Object> values = new ArrayList<>();
+        String[] tokens = value.substring(1, value.length() - 1).split(";");
+        for (String string: tokens) {
+            if (string.isEmpty()) {
+                throw new ParseException("empty object in JSONArray", 0);
+            }
+        }
+        if (tokens.length != table.getColumnsCount()) {
+            throw new ParseException("invalib number of columns", 0);
+        }
+        for (int i = 0; i < table.getColumnsCount(); ++i) {
+            try {
+                if (tokens[i].trim().toLowerCase().equals("null")) {
+                    values.add(null);
+                } else {
+                    values.add(readMap.get(table.getColumnType(i)).getObject(tokens[i].trim()));
+                }
+            } catch (NumberFormatException nfe) {
+                throw new ParseException("invalid type of value", 0);
+            }
+        }
 
-        return null;
+        return new TableRow(values);
     }
 
 

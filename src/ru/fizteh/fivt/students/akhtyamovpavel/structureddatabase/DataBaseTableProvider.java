@@ -33,6 +33,7 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
     private DataBaseTable fileMap;
     private HashMap<String, Integer> tableSet;
     private TableRowSerializer serializer = new TableRowSerializer();
+    private HashMap<String, DataBaseTable> tables = new HashMap<>();
 
     public DataBaseTableProvider(String dir) {
         try {
@@ -146,6 +147,9 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
             String[] listOfFolders = newPath.toFile().list();
 
             for (String interFolder : listOfFolders) {
+                if (interFolder.equals("signature.tsv")) {
+                    continue;
+                }
                 if (!formats.contains(interFolder)) {
                     throw new Exception("connection: database was broken");
                 }
@@ -166,8 +170,8 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         for (String table : listOfTables) {
             ArrayList<String> argument = new ArrayList<>();
             argument.add(table);
-            new UseCommand(this, true).executeCommand(argument);
-            tableSet.put(table, fileMap.size());
+            tables.put(table, new DataBaseTable(dataBaseDirectory, table, this.serializer));
+            tableSet.put(table, getTable(table).size());
         }
         fileMap = null;
         openedTableName = null;
@@ -236,7 +240,7 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
             if (fileMap != null && fileMap.hasUnsavedChanges()) {
                 throw new IllegalArgumentException(fileMap.getNumberOfChanges() + " unsaved changes");
             }
-            fileMap = new DataBaseTable(getDataBaseDirectory(), name, serializer);
+            fileMap = tables.get(name);
             refreshCommands();
         } catch (IllegalArgumentException iae) {
             throw new IllegalArgumentException(iae.getMessage());
@@ -249,7 +253,7 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        if (name == null) {
+        if (name == null || columnTypes == null || columnTypes.isEmpty()) {
             throw new IllegalArgumentException("null table name");
         }
         ArrayList<String> arguments = new ArrayList<>();
@@ -262,6 +266,7 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
             new MakeDirectoryCommand(this).executeCommand(arguments);
             table = new DataBaseTable(dataBaseDirectory, name, columnTypes, serializer);
             insertTable(name);
+            tables.put(name, table);
         } catch (Exception e) {
             throw new IllegalArgumentException("incorrect name of table");
         }
@@ -300,6 +305,7 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         }
 
         removeTableFile(name);
+        tables.remove(name);
         if (name.equals(getOpenedTableName())) {
             setOpenedTableName(null);
             setFileMap(null);
