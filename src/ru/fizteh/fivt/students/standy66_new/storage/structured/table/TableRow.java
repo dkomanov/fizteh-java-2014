@@ -35,6 +35,7 @@ public class TableRow implements Storeable {
     public static TableRow deserialize(TableSignature signature, String serializedValue) throws ParseException {
         //TODO: test this bullshit
         serializedValue = serializedValue.replaceAll("[\\]\\s]+$|^[\\[\\s]+", "");
+        //TODO: string can contain ","
         List<String> tokens = Stream.of(serializedValue.split(","))
                 .map(s -> s.trim())
                 .collect(Collectors.toList());
