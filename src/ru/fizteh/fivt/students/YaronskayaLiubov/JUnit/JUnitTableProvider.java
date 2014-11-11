@@ -1,12 +1,10 @@
 package ru.fizteh.fivt.students.YaronskayaLiubov.JUnit;
 
-import com.sun.tools.internal.ws.wsdl.document.jaxws.*;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.Exception;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;

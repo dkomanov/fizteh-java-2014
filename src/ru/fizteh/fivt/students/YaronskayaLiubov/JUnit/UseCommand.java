@@ -9,7 +9,7 @@ public class UseCommand extends Command {
         numberOfArguments = 2;
     }
 
-    boolean execute(String[] args) throws UnsavedChangesException {
+    boolean execute(String[] args) throws Exception{
         if (args.length != numberOfArguments) {
             System.err.println(name + ": wrong number of arguements");
             return false;
