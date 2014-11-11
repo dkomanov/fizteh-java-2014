@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.IntStream;
@@ -58,5 +59,20 @@ public class TableSignature {
 
     public int size() {
         return storedObjectClasses.length;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof TableSignature)) {
+            return false;
+        } else {
+            TableSignature other = (TableSignature) obj;
+            return Arrays.equals(storedObjectClasses, other.storedObjectClasses);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return storedObjectClasses.hashCode();
     }
 }

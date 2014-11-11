@@ -7,6 +7,7 @@ import ru.fizteh.fivt.students.standy66_new.utility.ClassUtility;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -170,6 +171,21 @@ public class TableRow implements Storeable {
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         assertClassesEqualityAtIndex(String.class, columnIndex);
         return (String) row[columnIndex];
+    }
+
+    @Override
+    public int hashCode() {
+        return tableSignature.hashCode() ^ row.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof TableRow)) {
+            return false;
+        } else {
+            TableRow other = (TableRow) obj;
+            return tableSignature.equals(other.tableSignature) && Arrays.equals(row, other.row);
+        }
     }
 
     private void assertClassesEqualityAtIndex(Class<?> desired, int columnIndex) throws ColumnFormatException {
