@@ -2,16 +2,13 @@ package ru.fizteh.fivt.students.YaronskayaLiubov.JUnit;
 
 import static junit.framework.Assert.*;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 

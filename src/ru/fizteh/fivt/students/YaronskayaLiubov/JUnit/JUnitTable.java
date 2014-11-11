@@ -1,11 +1,8 @@
 package ru.fizteh.fivt.students.YaronskayaLiubov.JUnit;
 
 import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.YaronskayaLiubov.JUnit.FileMap;
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Created by luba_yaronskaya on 26.10.14.
