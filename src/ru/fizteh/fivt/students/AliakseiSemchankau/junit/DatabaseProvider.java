@@ -114,7 +114,12 @@ public class DatabaseProvider implements TableProvider {
         }
 
         if (referenceToTableInfo.get(name) == null) {
-            throw new IllegalStateException(name + ": there are no such table");
+            throw new IllegalStateException(name + " not exists");
+        }
+
+        if (currentTableName.equals(name)) {
+            currentTable = null;
+            currentTableName = null;
         }
 
         Path pathToRemovingTable = referenceToTableInfo.get(name).pathToTable;

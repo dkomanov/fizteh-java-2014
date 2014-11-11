@@ -31,12 +31,19 @@ public class TableUse implements TableInterface {
             }
         }
 
+        if (dProvider.referenceToTableInfo.get(name) == null) {
+            System.out.println(name + " not exists");
+            return;
+        }
+
         Table dTable = dProvider.getTable(args.elementAt(1));
 
         if (dTable == null) {
-            System.out.println("no such table");
+            System.out.println(name + " not exists");
             return;
         }
+
+        System.out.println("using " + name);
 
     }
 }

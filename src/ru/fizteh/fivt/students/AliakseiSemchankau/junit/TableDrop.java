@@ -14,13 +14,15 @@ public class TableDrop implements TableInterface {
             throw new DatabaseException("incorrect number of arguments for Drop");
         }
 
-        Table dTable = dProvider.getTable(args.elementAt(1));
+        String name = args.elementAt(1);
 
-        if (dTable == null) {
-            System.out.println("no such table");
+        if (dProvider.referenceToTableInfo.get(name) == null) {
+            System.out.println(name + " not exists");
             return;
         }
 
-        dProvider.removeTable(args.elementAt(1));
+        dProvider.removeTable(name);
+        System.out.println("dropped");
+
     }
 }
