@@ -42,6 +42,7 @@ public class Serializator {
         toFindApproriateSer.put(Long.class, value::getLongAt);
         toFindApproriateSer.put(Byte.class, value::getByteAt);
         toFindApproriateSer.put(Float.class, value::getFloatAt);
+        toFindApproriateSer.put(Double.class, value::getDoubleAt);
         toFindApproriateSer.put(Boolean.class, value::getBooleanAt);
         toFindApproriateSer.put(String.class, value::getStringAt);
 
@@ -51,15 +52,15 @@ public class Serializator {
             XMLStreamWriter writer = factory.createXMLStreamWriter(stringWriter);
             writer.writeStartElement("row");
             for (int i = 0; i < table.getColumnsCount(); ++i) {
-                writer.writeStartElement("col");
                 String valueInColumn;
                 if (value.getColumnAt(i) == null) {
-                    valueInColumn = "<null/>";
+                    writer.writeEmptyElement("null");
                 } else {
+                    writer.writeStartElement("col");
                     valueInColumn = toFindApproriateSer.get(table.getColumnType(i)).get(i).toString();
+                    writer.writeCharacters(valueInColumn);
+                    writer.writeEndElement();
                 }
-                writer.writeCharacters(valueInColumn);
-                writer.writeEndElement();
             }
             writer.writeEndElement();
             writer.flush();
@@ -85,14 +86,19 @@ public class Serializator {
                         event = (XMLEvent) reader.next();
                         if (event.isCharacters()) {
                             String newValue = event.asCharacters().getData();
-                            if (newValue.equals("<null/>")) {
-                                result.setColumnAt(count, null);
-                            } else {
+                            try {
                                 result.setColumnAt(count,
                                         toFindApproriateDeser.get(table.getColumnType(count)).get(newValue));
+                            } catch (NumberFormatException e) {
+                                throw new ParseException(e.getMessage(), count);
                             }
                             ++count;
                         }
+                    } else if (element.getName().getLocalPart().equals("null")) {
+                        result.setColumnAt(count, null);
+                        ++count;
+                    } else if (!element.getName().getLocalPart().equals("row")) {
+                        throw new ParseException(element.toString(), count);
                     }
                 }
             }

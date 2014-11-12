@@ -43,7 +43,7 @@ public class Shell<T> {
                     if (commandToExecute != null) {
                         if (commandToExecute.numberOfArguments != parsedArguments.length
                                 & commandToExecute.numberOfArguments != -1) {
-                            System.out.println(commandToExecute.name + " wrong number of arguments");
+                            System.out.println(commandToExecute.name + ": wrong number of arguments");
                             errorOccuried = true;
                         } else if (!commandToExecute.run(objectForShell, parsedArguments)) {
                             errorOccuried = true;

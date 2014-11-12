@@ -33,7 +33,8 @@ public class TypesUtils {
     public static boolean checkNewStorableValue(List<Class<?>> types, Storeable newValue) {
         int counter = 0;
         for (Class<?> oneType : types) {
-            if (!oneType.equals(newValue.getColumnAt(counter).getClass())) {
+            if (newValue.getColumnAt(counter) != null
+                    && !oneType.equals(newValue.getColumnAt(counter).getClass())) {
                 return false;
             }
             ++counter;
@@ -43,8 +44,8 @@ public class TypesUtils {
 
     public static List<Class<?>> toTypeList(String[] types) throws ColumnFormatException {
         List<Class<?>> result = new ArrayList<>();
-        for (int i = 0; i < types.length; ++i) {
-            switch(types[i]) {
+        for (String oneType : types) {
+            switch(oneType) {
                 case "int":
                     result.add(Integer.class);
                     break;
@@ -67,7 +68,7 @@ public class TypesUtils {
                     result.add(String.class);
                     break;
                 default:
-                    throw new ColumnFormatException("wrong type: " + types[i]);
+                    throw new ColumnFormatException("wrong type: " + oneType);
             }
         }
         return result;
@@ -100,7 +101,7 @@ public class TypesUtils {
                     s.append("double");
                     break;
                 case "java.lang.String":
-                    s.append("string");
+                    s.append("String");
                     break;
                 default:
                     return null;

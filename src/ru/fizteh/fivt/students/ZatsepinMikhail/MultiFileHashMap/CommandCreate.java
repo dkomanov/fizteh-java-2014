@@ -38,6 +38,7 @@ public class CommandCreate extends CommandMultiFileHashMap {
         }
         try {
             myMultiDataBase.createTable(args[1], types);
+            System.out.println("created");
         } catch (IOException e) {
             return false;
         } catch (IllegalArgumentException e) {

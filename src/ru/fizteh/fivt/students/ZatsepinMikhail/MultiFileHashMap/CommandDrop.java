@@ -12,6 +12,7 @@ public class CommandDrop extends CommandMultiFileHashMap {
     public boolean run(MFileHashMap myDataBase, String[] args) {
         try {
             myDataBase.removeTable(args[1]);
+            System.out.println("dropped");
         } catch (IOException e) {
             System.err.println("io exception while removing directory");
             return false;

@@ -4,6 +4,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.Serializator;
 
 import java.text.ParseException;
+import java.util.NoSuchElementException;
 
 public class FmCommandPut extends CommandFileMap {
     public FmCommandPut() {
@@ -12,12 +13,19 @@ public class FmCommandPut extends CommandFileMap {
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
+        if (args.length < 3) {
+            System.out.println(name + ": wrong number of arguments");
+            return false;
+        }
         Storeable oldValue = myFileMap.get(args[1]);
         try {
             myFileMap.put(args[1], Serializator.deserialize(myFileMap, args[2]));
         } catch (ParseException e) {
-            System.err.println("error while deserializing: " + args[2]
+            System.out.println("error while deserializing: " + args[2]
                 + "; " + e.getMessage());
+            return false;
+        } catch (NoSuchElementException e) {
+            System.out.println("error: not xml format value");
             return false;
         }
         if (oldValue != null) {

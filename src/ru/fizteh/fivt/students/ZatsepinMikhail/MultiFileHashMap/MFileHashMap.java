@@ -58,8 +58,8 @@ public class MFileHashMap implements TableProvider {
             try {
                 Files.createDirectory(pathOfNewTable);
                 Files.createFile(pathOfNewTableSignatureFile);
-                try (FileWriter fout = new FileWriter(pathOfNewTableSignatureFile.toString())) {
-                    fout.write(TypesUtils.toFileSignature(columnTypes));
+                try (FileWriter fileOut = new FileWriter(pathOfNewTableSignatureFile.toString())) {
+                    fileOut.write(TypesUtils.toFileSignature(columnTypes));
                 }
                 FileMap newTable = new FileMap(pathOfNewTable.toString(), columnTypes, this);
                 tables.put(name, newTable);

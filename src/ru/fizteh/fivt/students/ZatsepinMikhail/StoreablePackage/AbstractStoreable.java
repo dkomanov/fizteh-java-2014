@@ -15,6 +15,10 @@ public class AbstractStoreable implements Storeable {
 
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
+        if (value == null) {
+            values[columnIndex] = value;
+            return;
+        }
         if (!parentTable.getColumnType(columnIndex).equals(value.getClass())) {
             throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
                 + " , but got:" + value.getClass());
