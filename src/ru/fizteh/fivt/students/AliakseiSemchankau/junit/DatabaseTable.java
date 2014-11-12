@@ -190,6 +190,8 @@ public class DatabaseTable implements Table {
             mapDirectoriesFiles.get(nDirectory).get(nFile).
                     add(new Pair<String, String>(entry.getKey(), entry.getValue()));
 
+        }
+
             if (!Files.exists(pathToTable)) {
                 try {
                     Files.createDirectory(pathToTable);
@@ -203,9 +205,10 @@ public class DatabaseTable implements Table {
                 if (i > 0 && i < 10) {
                     directoryName = "0" + directoryName;
                 }
-                writeDirectory(i, directoryName, mapDirectoriesFiles);
+                int curNumber = i;
+                writeDirectory(curNumber, directoryName, mapDirectoriesFiles);
             }
-        }
+
 
     }
 
@@ -236,7 +239,8 @@ public class DatabaseTable implements Table {
             if (i > 0 && i < 10) {
                 fileName = "0" + fileName;
             }
-            writeFile(numberOfDirectory, i, fileName, mapDirectoriesFiles, currentDirectory);
+            int iFile = i;
+            writeFile(numberOfDirectory, iFile, fileName, mapDirectoriesFiles, currentDirectory);
         }
 
       /*  if (keysInDirectory == 0){
@@ -250,6 +254,8 @@ public class DatabaseTable implements Table {
 
     public void writeFile(int numberOfDirectory, int numberOfFile, String arg,
                           Vector<Vector<Vector<Pair<String, String>>>> mapDirectoriesFiles, Path currentDirectory) {
+
+
 
         int keysInFile = 0;
         Path currentFile = Paths.get(currentDirectory.toString()).resolve(arg);
@@ -289,11 +295,12 @@ public class DatabaseTable implements Table {
                 fileToWrite.write(byteKey);
                 fileToWrite.writeInt(byteValue.length);
                 fileToWrite.write(byteValue);
-                try  {
-                    fileToWrite.close();
-                } catch (IOException ioexc) {
-                    throw new DatabaseException("can't close DataOutputStream for" + currentFile.toString());
-                }
+
+            }
+            try  {
+                fileToWrite.close();
+            } catch (IOException ioexc) {
+                throw new DatabaseException("can't close DataOutputStream for" + currentFile.toString());
             }
         } catch (IOException iexc) {
             throw new DatabaseException("something wrong with writing to file");
@@ -353,7 +360,7 @@ public class DatabaseTable implements Table {
        if (localDBMap.containsKey(key)) {
            String value = localDBMap.get(key);
            localDBMap.remove(key);
-           return key;
+           return value;
        }
 
        return null;

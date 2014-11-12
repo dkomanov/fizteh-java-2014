@@ -1,6 +1,5 @@
- package ru.fizteh.fivt.students.AliakseiSemchankau.junit;
+package ru.fizteh.fivt.students.AliakseiSemchankau.junit;
 
-import java.util.HashMap;
 import java.util.Vector;
 
  public interface CommandInterface {

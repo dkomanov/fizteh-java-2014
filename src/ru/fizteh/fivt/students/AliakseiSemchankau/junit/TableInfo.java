@@ -128,7 +128,8 @@ public class TableInfo {
 
     public void writeTable() {
 
-        Vector<Vector<Vector<Pair<String, String>>>> mapDirectoriesFiles = new Vector<Vector<Vector<Pair<String, String>>>>();
+        Vector<Vector<Vector<Pair<String, String>>>> mapDirectoriesFiles =
+                new Vector<Vector<Vector<Pair<String, String>>>>();
 
         for (int i = 0; i < 16; ++i) {
             mapDirectoriesFiles.add(new Vector<Vector<Pair<String, String>>>());
@@ -145,7 +146,7 @@ public class TableInfo {
             }
         }
 
-        DirectoryStream<Path> listOfDirectories;                                           // --------- delete all directories
+        DirectoryStream<Path> listOfDirectories;         // --------- delete all directories
 
         try {
             listOfDirectories = Files.newDirectoryStream(pathToTable);
@@ -169,7 +170,8 @@ public class TableInfo {
             System.out.println(nDirectory);
             System.out.println(nFile);
             System.out.println(pathToTable.toString());*/
-            mapDirectoriesFiles.get(nDirectory).get(nFile).add(new Pair<String, String>(entry.getKey(), entry.getValue()));
+            mapDirectoriesFiles.get(nDirectory).get(nFile).
+                    add(new Pair<String, String>(entry.getKey(), entry.getValue()));
 
             if (!Files.exists(pathToTable)) {
                 try {
@@ -190,7 +192,8 @@ public class TableInfo {
 
     }
 
-    public void writeDirectory(int numberOfDirectory, String arg, Vector<Vector<Vector<Pair<String, String>>>> mapDirectoriesFiles) {
+    public void writeDirectory(int numberOfDirectory, String arg,
+                               Vector<Vector<Vector<Pair<String, String>>>> mapDirectoriesFiles) {
 
         int keysInDirectory = 0;
         Path currentDirectory = Paths.get(pathToTable.toString()).resolve(arg);
@@ -228,7 +231,8 @@ public class TableInfo {
         }*/
     }
 
-    public void writeFile(int numberOfDirectory, int numberOfFile, String arg, Vector<Vector<Vector<Pair<String, String>>>> mapDirectoriesFiles, Path currentDirectory) {
+    public void writeFile(int numberOfDirectory, int numberOfFile, String arg,
+                          Vector<Vector<Vector<Pair<String, String>>>> mapDirectoriesFiles, Path currentDirectory) {
 
         int keysInFile = 0;
         Path currentFile = Paths.get(currentDirectory.toString()).resolve(arg);

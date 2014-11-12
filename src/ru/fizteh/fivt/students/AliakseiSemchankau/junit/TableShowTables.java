@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.AliakseiSemchankau.junit;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 

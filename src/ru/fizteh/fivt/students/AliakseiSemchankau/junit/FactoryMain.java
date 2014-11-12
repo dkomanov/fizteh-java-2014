@@ -33,10 +33,10 @@ public class FactoryMain {
         DatabaseProvider dProvider = factory.create(dir);
 
         if (args.length == 0) {
-            System.out.println("interactive");
+
             interactiveMode(dProvider);
         } else {
-            System.out.println("pocket");
+
             pocketMode(args, dProvider);
         }
 

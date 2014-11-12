@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.AliakseiSemchankau.junit;
 
+
+
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
@@ -67,7 +69,7 @@ public class DatabaseProvider implements TableProvider {
             throw new IllegalArgumentException("name of table cannot be a null");
         }
         if (referenceToTableInfo.get(name) == null) {
-           return null;
+           throw new IllegalArgumentException("this table not exists");
         }
 
         currentTable = referenceToTableInfo.get(name).pathToTable;
@@ -83,7 +85,7 @@ public class DatabaseProvider implements TableProvider {
             throw new IllegalArgumentException("you can't create table without name");
         }
 
-        if (referenceToTableInfo.get(name) != null) {
+        if (referenceToTableInfo.containsKey(name)) {
             return null;
         }
 
@@ -108,16 +110,11 @@ public class DatabaseProvider implements TableProvider {
             throw new IllegalArgumentException("name of removing table can't be a null");
         }
 
-        if (currentTableName == name) {
-            currentTable = null;
-            currentTableName = null;
-        }
-
         if (referenceToTableInfo.get(name) == null) {
             throw new IllegalStateException(name + " not exists");
         }
 
-        if (currentTableName.equals(name)) {
+        if (currentTableName != null && currentTableName.equals(name)) {
             currentTable = null;
             currentTableName = null;
         }

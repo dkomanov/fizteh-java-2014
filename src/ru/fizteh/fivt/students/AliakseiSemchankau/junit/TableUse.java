@@ -2,8 +2,6 @@ package ru.fizteh.fivt.students.AliakseiSemchankau.junit;
 
 import ru.fizteh.fivt.storage.strings.Table;
 
-import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Vector;
 
 /**

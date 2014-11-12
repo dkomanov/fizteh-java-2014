@@ -1,9 +1,7 @@
 package ru.fizteh.fivt.students.AliakseiSemchankau.junit;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 
-import java.nio.file.Files;
 
 /**
  * Created by Aliaksei Semchankau on 09.11.2014.
