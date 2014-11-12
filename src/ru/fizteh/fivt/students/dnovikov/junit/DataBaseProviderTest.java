@@ -1,13 +1,19 @@
 package ru.fizteh.fivt.students.dnovikov.junit;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.TableNotFoundException;
+
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+
 import static org.junit.Assert.*;
 public class DataBaseProviderTest {
 
@@ -21,18 +27,35 @@ public class DataBaseProviderTest {
         provider = factory.create(tmpFolder.newFolder().getAbsolutePath());
     }
 
+    @Test
+    public void initializationNewDirectory() {
+        new DataBaseProvider(tmpFolder.getRoot().toString());
+    }
+
+    @Test(expected = LoadOrSaveException.class)
+    public void initializationExistingDirectoryThrowsException() {
+        new DataBaseProvider(tmpFolder.getRoot().toPath().resolve("test").toString());
+    }
+
+    @Test(expected = LoadOrSaveException.class)
+    public void initializationNotDirectoryThrowsException() throws IOException {
+        File tmpFile = tmpFolder.getRoot().toPath().resolve("test").toFile();
+        tmpFile.createNewFile();
+        new DataBaseProvider(tmpFile.toString());
+    }
+
     @Test(expected = IllegalArgumentException.class)
-    public void getNullTable() {
+    public void getNullTableThrowsException() {
         provider.getTable(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void createNullTable() {
+    public void createNullTableThrowsException() {
         provider.createTable(null);
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void removeNullTable() {
+    public void removeNullTableThrowsException() {
         provider.removeTable(null);
     }
 
@@ -44,7 +67,7 @@ public class DataBaseProviderTest {
     }
 
     @Test (expected = TableNotFoundException.class)
-    public void removeNotExistingTable() {
+    public void removeNotExistingTableThrowsException() {
         provider.removeTable("notExistingTable");
     }
 
@@ -57,10 +80,9 @@ public class DataBaseProviderTest {
     }
 
     @Test
-    public void doubleTableCreation() {
+    public void creationExistingTable() {
         assertNotNull(provider.createTable("newTable"));
         assertNull(provider.createTable("newTable"));
     }
-
 
 }

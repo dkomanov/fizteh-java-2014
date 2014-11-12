@@ -36,7 +36,7 @@ public class MultiFileHashMap {
         }
         TableProviderFactory factory = new DataBaseProviderFactory();
         dbConnector = (DataBaseProvider) factory.create(directoryPath);
-        Interpreter interpreter = new Interpreter(dbConnector, new Command[]{
+        Interpreter interpreter = new Interpreter(dbConnector, System.in, System.out, new Command[]{
                 new Command("get", 1, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
@@ -163,12 +163,29 @@ public class MultiFileHashMap {
                 new Command("use", 1, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        try {
-                            dbConnector.useTable(args[0]);
-                        } catch (IOException e) {
-                            System.err.println(e.getMessage());
-                        } catch (LoadOrSaveException e) {
-                            System.err.println(e.getMessage());
+                        String name = new String(args[0]);
+
+                        if (dbConnector.getCurrentTable() == null) {
+                            if (dbConnector.getTable(name) != null) {
+                                dbConnector.setCurrentTable(dbConnector.getTable(name));
+                                System.out.println("using " + name);
+                            } else {
+                                System.out.println(name + " not exists");
+                            }
+                        } else {
+                            int unsavedChanges = dbConnector.getCurrentTable().getNumberOfChanges();
+                            if (dbConnector.getTable(name) != null) {
+                                if (unsavedChanges > 0) {
+                                    System.out.println(unsavedChanges + " unsaved changes");
+                                } else {
+                                    dbConnector.getCurrentTable().save();
+                                    dbConnector.setCurrentTable(dbConnector.getTable(name));
+                                    System.out.println("using " + name);
+                                }
+                            } else {
+                                System.out.println(name + " not exists");
+
+                            }
                         }
                     }
                 }),
@@ -208,7 +225,9 @@ public class MultiFileHashMap {
                         }
                     }
                 })
-        });
+        }
+
+        );
         interpreter.run(args);
     }
 }

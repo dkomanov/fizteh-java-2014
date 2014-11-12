@@ -36,17 +36,17 @@ public class DataBaseTableTest {
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void putNull() {
+    public void putWithNullArgumentsThrowsException() {
         table.put(null, null);
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void getNull() {
+    public void getWithNullArgumentThrowsException() {
         table.get(null);
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void removeNull() {
+    public void removeWithNullArgumentThrowsException() {
         table.remove(null);
     }
 

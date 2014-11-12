@@ -5,14 +5,24 @@ import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.WrongNumberOfArgumentsException;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 
 public class Interpreter {
 
     private final Map<String, Command> commands;
     private final DataBaseProvider dbConnector;
+    private InputStream in;
+    private PrintStream out;
 
-    public Interpreter(DataBaseProvider dbConnector, Command[] commands) {
+    public Interpreter(DataBaseProvider dbConnector, InputStream in, PrintStream out, Command[] commands) {
+        if (in == null || out == null) {
+            throw new IllegalArgumentException("InputStream or OutputStream is null");
+        }
+        this.in = in;
+        this.out = out;
         this.dbConnector = dbConnector;
         this.commands = new HashMap<>();
         for (Command command : commands) {
@@ -34,7 +44,7 @@ public class Interpreter {
             if (dbConnector.getCurrentTable() != null) {
                 int unsavedChanges = dbConnector.getCurrentTable().getNumberOfChanges();
                 if (unsavedChanges > 0) {
-                    System.out.println(unsavedChanges + " unsaved changes");
+                    out.println(unsavedChanges + " unsaved changes");
                 } else {
                     dbConnector.saveTable();
                 }
@@ -48,7 +58,7 @@ public class Interpreter {
                 if (dbConnector.getCurrentTable() != null) {
                     int unsavedChanges = dbConnector.getCurrentTable().getNumberOfChanges();
                     if (unsavedChanges > 0) {
-                        System.out.println(unsavedChanges + " unsaved changes");
+                        out.println(unsavedChanges + " unsaved changes");
                     } else {
                         dbConnector.saveTable();
                     }
@@ -64,7 +74,7 @@ public class Interpreter {
 
     private void interactiveMode() {
         System.out.print("$ ");
-        try (Scanner scanner = new Scanner(System.in)) {
+        try (Scanner scanner = new Scanner(in)) {
             while (true) {
                 String str = scanner.nextLine();
                 try {

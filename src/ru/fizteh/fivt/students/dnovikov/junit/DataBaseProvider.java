@@ -19,7 +19,7 @@ public class DataBaseProvider implements TableProvider {
     private ArrayList<Table> tables = new ArrayList<>();
     private Map<String, Table> tableNames = new TreeMap<>();
 
-    public DataBaseProvider(String directoryPath)throws LoadOrSaveException {
+    public DataBaseProvider(String directoryPath) throws LoadOrSaveException {
         if (directoryPath == null) {
             throw new IllegalArgumentException("database directory not set");
         } else {
@@ -34,6 +34,9 @@ public class DataBaseProvider implements TableProvider {
 
     public DataBaseTable getCurrentTable() {
         return currentTable;
+    }
+    public void setCurrentTable(Table table) {
+        currentTable = (DataBaseTable) table;
     }
 
     @Override
@@ -96,30 +99,30 @@ public class DataBaseProvider implements TableProvider {
         return result;
     }
 
-    public void useTable(String name) throws IOException, LoadOrSaveException {
-
-        if (currentTable == null) {
-            if (tableNames.get(name) != null) {
-                currentTable = (DataBaseTable) tableNames.get(name);
-                System.out.println("using " + name);
-            } else {
-                System.out.println(name + " not exists");
-            }
-        } else {
-            int unsavedChanges = currentTable.getNumberOfChanges();
-            if (tableNames.get(name) != null) {
-                if (unsavedChanges > 0) {
-                    System.out.println(unsavedChanges + " unsaved changes");
-                } else {
-                    currentTable.save();
-                    currentTable = (DataBaseTable) tableNames.get(name);
-                    System.out.println("using " + name);
-                }
-            } else {
-                System.out.println(name + " not exists");
-            }
-        }
-    }
+//    public void useTable(String name) throws IOException, LoadOrSaveException {
+//
+//        if (currentTable == null) {
+//            if (tableNames.get(name) != null) {
+//                currentTable = (DataBaseTable) tableNames.get(name);
+//                System.out.println("using " + name);
+//            } else {
+//                System.out.println(name + " not exists");
+//            }
+//        } else {
+//            int unsavedChanges = currentTable.getNumberOfChanges();
+//            if (tableNames.get(name) != null) {
+//                if (unsavedChanges > 0) {
+//                    System.out.println(unsavedChanges + " unsaved changes");
+//                } else {
+//                    currentTable.save();
+//                    currentTable = (DataBaseTable) tableNames.get(name);
+//                    System.out.println("using " + name);
+//                }
+//            } else {
+//                System.out.println(name + " not exists");
+//            }
+//        }
+//    }
 
 
     public void loadTables() throws LoadOrSaveException {
