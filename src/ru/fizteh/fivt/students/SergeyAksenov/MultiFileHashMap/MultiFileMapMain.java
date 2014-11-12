@@ -18,7 +18,7 @@ public class MultiFileMapMain {
     }
 
     public static void main(String[] args) {
-        try {//
+        try {
             HashMap<String, Command> commandMap = initHashMap();
             DataBase dataBase = new DataBase();
                Executor.interactiveMode(commandMap, dataBase);

@@ -24,7 +24,7 @@ public class Executor {
         }
         commandMap.get(commands[0]).run(commands, dataBase);
     }
-//
+
     public static void execLine(String line,
                                 final HashMap<String, Command> commandMap,
                                 DataBase dataBase) {

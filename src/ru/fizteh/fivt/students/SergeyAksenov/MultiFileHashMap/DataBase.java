@@ -110,7 +110,7 @@ public final class DataBase {
             System.err.println("Cannot write table to files");
         }
     }
-//
+
     public static HashMap<String, String> getDataBase() {
         return dataBase;
     }

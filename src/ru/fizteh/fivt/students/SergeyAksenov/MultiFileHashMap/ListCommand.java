@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.SergeyAksenov.MultiFileHashMap;
 
 import java.util.Set;
-//
+
 public class ListCommand implements Command {
     public void run(String[] args, DataBase dataBase)
             throws MultiFileMapException {
