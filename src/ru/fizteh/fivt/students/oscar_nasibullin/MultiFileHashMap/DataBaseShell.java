@@ -102,7 +102,9 @@ public final class DataBaseShell {
                         System.exit(1);
                     }
                 }
-                System.out.println(rezultMessage);
+                if (rezultMessage != null) {
+                    System.out.println(rezultMessage);
+                }
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());

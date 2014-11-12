@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.oscar_nasibullin.MultiFileHashMap;
 
 
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +13,25 @@ public class DataBase {
     private static Map<String, Table> tables;
     private static String usingTable;
 
-    public DataBase() {
+    public DataBase() throws FileNotFoundException {
         tables = new TreeMap<>();
         usingTable = "";
 
-        String[] tablesNames = Paths.get(System.getProperty("fizteh.db.dir")).toFile().list();
-        for (String newTableName : tablesNames) {
-            List<String> args = new ArrayList<>();
-            args.add("create");
-            args.add(newTableName);
-            create(args);
+        try {
+            if (!Paths.get(System.getProperty("fizteh.db.dir")).toFile().exists()) {
+                throw new Exception("not found");
+            }
+        } catch (Exception e) {
+            throw new FileNotFoundException("database root directory error: " + e.getMessage());
+        }
+        File[] tableFiles = Paths.get(System.getProperty("fizteh.db.dir")).toFile().listFiles();
+        for (File newTableFile : tableFiles) {
+            if (newTableFile.isDirectory()) {
+                List<String> args = new ArrayList<>();
+                args.add("create");
+                args.add(newTableFile.getName());
+                create(args);
+            }
         }
     }
 
