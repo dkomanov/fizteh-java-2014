@@ -11,8 +11,8 @@ public final class MultiDataBase {
     private String dataBaseDirectory;
     private DataBaseFile[] files;
 
-    public final int directoryCount = 16;
-    public final int filesCount = 16;
+    public static final int DIRECTORY_COUNT = 16;
+    public static final int FILES_COUNT = 16;
 
     public final class DirFile {
         private int nDir;
@@ -45,21 +45,21 @@ public final class MultiDataBase {
     }
 
     private void checkNames(final String[] dirs, final String secondName) {
-        for (int i = 0; i < dirs.length; ++i) {
-            String[] name = dirs[i].split("\\.");
+        for (String dir : dirs) {
+            String[] name = dir.split("\\.");
             if (name.length != 2 || !name[1].equals(secondName)) {
-                throw new MultiDataBaseException(dataBaseDirectory + " wrong file in path " + dirs[i]);
+                throw new MultiDataBaseException(dataBaseDirectory + " wrong file in path " + dir);
             }
 
             int firstName;
             try {
                 firstName = Integer.parseInt(name[0]);
             } catch (NumberFormatException e) {
-                throw new MultiDataBaseException(dataBaseDirectory + " wrong file first name " + dirs[i]);
+                throw new MultiDataBaseException(dataBaseDirectory + " wrong file first name " + dir);
             }
 
             if ((firstName < 0) || firstName > 15) {
-                throw new MultiDataBaseException(dataBaseDirectory + " wrong file first name " + dirs[i]);
+                throw new MultiDataBaseException(dataBaseDirectory + " wrong file first name " + dir);
             }
         }
     }
@@ -71,9 +71,9 @@ public final class MultiDataBase {
         }
         String[] dirs = file.list();
         checkNames(dirs, "dat");
-        for (int i = 0; i < dirs.length; ++i) {
-            if (new File(dirName + File.separator + dirs[i]).isDirectory()) {
-                throw new MultiDataBaseException(dirName + File.separator + dirs[i] + " isn't a file!");
+        for (String dir : dirs) {
+            if (new File(dirName + File.separator + dir).isDirectory()) {
+                throw new MultiDataBaseException(dirName + File.separator + dir + " isn't a file!");
             }
         }
     }
@@ -118,9 +118,9 @@ public final class MultiDataBase {
 
     public void loadFiles() {
         try {
-            for (int i = 0; i < directoryCount; ++i) {
-                for (int j = 0; j < filesCount; ++j) {
-                    DirFile node = new DirFile(i + j * filesCount);
+            for (int i = 0; i < DIRECTORY_COUNT; ++i) {
+                for (int j = 0; j < FILES_COUNT; ++j) {
+                    DirFile node = new DirFile(i + j * FILES_COUNT);
                     MultiDataBaseFile file = new MultiDataBaseFile(getFullName(node), node.nDir, node.nFile);
                     files[node.getHash()] = file;
                 }
@@ -146,13 +146,12 @@ public final class MultiDataBase {
     public boolean remove(final String keyStr) {
         DirFile node = new DirFile(keyStr.getBytes()[0]);
         DataBaseFile file = files[node.getHash()];
-        boolean result = file.remove(keyStr);
-        return result;
+        return file.remove(keyStr);
     }
 
     public void drop() {
-        for (byte i = 0; i < directoryCount; ++i) {
-            for (byte j = 0; j < filesCount; ++j) {
+        for (byte i = 0; i < DIRECTORY_COUNT; ++i) {
+            for (byte j = 0; j < FILES_COUNT; ++j) {
                 File file = new File(getFullName(new DirFile(i + j * 16)));
                 if (file.exists()) {
                     if (!file.delete()) {
@@ -188,11 +187,11 @@ public final class MultiDataBase {
     }
 
     public void save() {
-        for (int i = 0; i < directoryCount; ++i) {
+        for (int i = 0; i < DIRECTORY_COUNT; ++i) {
             tryAddDirectory(Integer.toString(i) + ".dir");
-            for (int j = 0; j < filesCount; ++j) {
-                if (files[new DirFile((i + j * filesCount)).getHash()] != null) {
-                    files[new DirFile((i + j * filesCount)).getHash()].save();
+            for (int j = 0; j < FILES_COUNT; ++j) {
+                if (files[new DirFile((i + j * FILES_COUNT)).getHash()] != null) {
+                    files[new DirFile((i + j * FILES_COUNT)).getHash()].save();
                 }
             }
             tryDeleteDirectory(Integer.toString(i) + ".dir");
