@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 public class MFileHashMapFactory implements TableProviderFactory {
     public MFileHashMapFactory() {}
 
-    public TableProvider create(String dir) throws IllegalArgumentException {
+    public TableProvider create(String dir) throws IOException {
         if (dir == null) {
             throw new IllegalArgumentException();
         }
@@ -23,16 +23,12 @@ public class MFileHashMapFactory implements TableProviderFactory {
                 throw new IllegalArgumentException();
             }
         } else {
-            try {
-                Files.createDirectory(dataBaseDirectory);
-            } catch (IOException e) {
-                throw new IllegalArgumentException();
-            }
+            Files.createDirectory(dataBaseDirectory);
         }
 
         MFileHashMap myMFileHashMap = new MFileHashMap(dataBaseDirectory.toString());
         if (!myMFileHashMap.init()) {
-            throw new IllegalArgumentException();
+            throw new IOException("error while initialization");
         }
         return myMFileHashMap;
     }
