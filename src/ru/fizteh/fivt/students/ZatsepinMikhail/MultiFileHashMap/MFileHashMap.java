@@ -55,6 +55,9 @@ public class MFileHashMap implements TableProvider {
         } else {
             Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
             Path pathOfNewTableSignatureFile = Paths.get(dataBaseDirectory, name, "signature.tsv");
+            if (Files.exists(pathOfNewTable) & Files.isDirectory(pathOfNewTable)) {
+                throw new IllegalArgumentException("this directory already exists");
+            }
             try {
                 Files.createDirectory(pathOfNewTable);
                 Files.createFile(pathOfNewTableSignatureFile);
@@ -165,9 +168,5 @@ public class MFileHashMap implements TableProvider {
             }
         }
         return allRight;
-    }
-
-    public FileMap findTableByName(String requiredFileMapName) {
-        return tables.get(requiredFileMapName);
     }
 }

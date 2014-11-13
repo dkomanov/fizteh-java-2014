@@ -10,7 +10,7 @@ public class CommandUse extends CommandMultiFileHashMap {
 
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
-        FileMap newCurrentTable = myMap.findTableByName(args[1]);
+        FileMap newCurrentTable = (FileMap) myMap.getTable(args[1]);
         if (newCurrentTable != null) {
             FileMap currentTable = myMap.getCurrentTable();
             if (currentTable == null) {
