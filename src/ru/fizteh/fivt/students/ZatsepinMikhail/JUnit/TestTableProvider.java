@@ -5,14 +5,15 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap.MFileHashMapFactory;
+import ru.fizteh.fivt.students.ZatsepinMikhail.StoreablePackage.TypesUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.shell.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +26,18 @@ public class TestTableProvider {
     TableProviderFactory factory;
 
     static List<Class<?>> typeList;
+    static List<Class<?>> wrongTypeList;
 
     @BeforeClass
     public static void setUpBeforeClass() {
         typeList = new ArrayList<>();
         typeList.add(Integer.class);
         typeList.add(String.class);
+
+        wrongTypeList = new ArrayList<>();
+        wrongTypeList.add(Integer.class);
+        wrongTypeList.add(String.class);
+        wrongTypeList.add(Double.class);
     }
 
     @Before
@@ -115,5 +122,95 @@ public class TestTableProvider {
     @Test(expected = IllegalArgumentException.class)
     public void testRemoveTableNull() throws Exception {
         provider.removeTable(null);
+    }
+
+    @Test
+    public void testSerialize() {
+        try {
+            Table newTable;
+            newTable = provider.createTable(tableName, typeList);
+            Storeable value = provider.createFor(newTable);
+            value.setColumnAt(0, 100);
+            value.setColumnAt(1, "example");
+
+            String serValue = "<row><col>100</col><col>example</col></row>";
+            assertTrue(provider.serialize(newTable, value).equals(serValue));
+
+            Table wrongTable;
+            wrongTable = provider.createTable(tableName + 2, wrongTypeList);
+            Storeable wrongValue = provider.createFor(wrongTable);
+            wrongValue.setColumnAt(0, 100);
+            wrongValue.setColumnAt(1, "example");
+            wrongValue.setColumnAt(2, 5.5);
+
+            boolean exceptionWas = false;
+            try {
+                provider.serialize(newTable, wrongValue);
+            } catch (ColumnFormatException e) {
+                exceptionWas = true;
+            }
+            assertTrue(exceptionWas);
+        } catch (IOException e) {
+            //suppress
+        }
+    }
+
+    @Test
+    public void testDeserialize() {
+        try {
+            Table newTable;
+            newTable = provider.createTable(tableName, typeList);
+            String stringForParse = "<row><col>100</col><col>example</col></row>";
+            String stringForParse2 = "<row><col>qwerty</col><col>example</col></row>";
+            try {
+                Storeable deserValue = provider.deserialize(newTable, stringForParse);
+                assertTrue(deserValue.getIntAt(0).equals(100));
+                assertTrue(deserValue.getStringAt(1).equals("example"));
+            } catch (ParseException e) {
+                assertNotNull(null);
+            }
+
+            boolean exceptionWas = false;
+            try {
+                Storeable deserValue = provider.deserialize(newTable, stringForParse + 2);
+            } catch (ParseException e) {
+                exceptionWas = true;
+            }
+            assertTrue(exceptionWas);
+
+            exceptionWas = false;
+            try {
+                Storeable deserValue = provider.deserialize(newTable, stringForParse2);
+            } catch (ParseException e) {
+                exceptionWas = true;
+            }
+            assertTrue(exceptionWas);
+        } catch (IOException e) {
+            //suppress
+        }
+    }
+
+    @Test
+    public void testCreateFor() {
+        try {
+            Table newTable;
+            newTable = provider.createTable(tableName, typeList);
+            Storeable temp = provider.createFor(newTable);
+            assertTrue(TypesUtils.getSizeOfStoreable(temp) == newTable.getColumnsCount());
+        } catch (IOException e) {
+            //suppress
+        }
+    }
+
+    @Test
+    public void testCreateForWithValue() {
+        try {
+            Table newTable;
+            newTable = provider.createTable(tableName, typeList);
+            Storeable temp = provider.createFor(newTable);
+            assertTrue(TypesUtils.getSizeOfStoreable(temp) == newTable.getColumnsCount());
+        } catch (IOException e) {
+            //suppress
+        }
     }
 }

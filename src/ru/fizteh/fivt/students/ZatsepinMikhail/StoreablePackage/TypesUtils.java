@@ -31,11 +31,25 @@ public class TypesUtils {
     }
 
     public static boolean checkNewStorableValue(List<Class<?>> types, Storeable newValue) {
+        if (types.size() != TypesUtils.getSizeOfStoreable(newValue)) {
+            throw new IndexOutOfBoundsException();
+        }
+        List<?> valueList = new ArrayList<>();
+        for (int i = 0; i < types.size(); ++i) {
+            valueList.add(newValue.);
+        }
+
+    }
+
+    public static boolean checkNewStorableValue(List<Class<?>> types, List<?> newValue) {
+        if (types.size() != newValue.size()) {
+            throw new IndexOutOfBoundsException();
+        }
         int counter = 0;
         for (Class<?> oneType : types) {
-            if (newValue.getColumnAt(counter) != null
-                    && !oneType.equals(newValue.getColumnAt(counter).getClass())) {
-                return false;
+            if (newValue.get(counter) != null
+                    && !oneType.equals(newValue.get(counter).getClass())) {
+                throw new ColumnFormatException(newValue.get(counter).getClass().toString());
             }
             ++counter;
         }
@@ -109,5 +123,16 @@ public class TypesUtils {
             ++counter;
         }
         return s.toString();
+    }
+
+
+    public static int getSizeOfStoreable(Storeable obj) {
+        for (int i = 0; ; ++i) {
+            try {
+                obj.getColumnAt(i);
+            } catch (IndexOutOfBoundsException e) {
+                return i;
+            }
+        }
     }
 }

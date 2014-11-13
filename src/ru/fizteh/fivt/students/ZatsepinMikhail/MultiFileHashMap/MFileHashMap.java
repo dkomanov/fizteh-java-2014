@@ -5,10 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.Map.Entry;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
@@ -98,19 +95,22 @@ public class MFileHashMap implements TableProvider {
         if (TypesUtils.canonicalTypes.size() != values.size()) {
             throw new IndexOutOfBoundsException("number of types");
         }
+        List<Class<?>> typeList = new ArrayList<>();
         for (int i = 0; i < table.getColumnsCount(); ++i) {
-            if (!table.getColumnType(i).equals(values.get(i).getClass())) {
-                throw new ColumnFormatException("types mismatch");
-            }
+            typeList.add(table.getColumnType(i));
         }
+        TypesUtils.checkNewStorableValue(typeList, values);
         return new AbstractStoreable(values.toArray(), table);
     }
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        if (table.getColumnsCount() != TypesUtils.getSizeOfStoreable(value)) {
+            throw new ColumnFormatException("wrong size");
+        }
         for (int i = 0; i < table.getColumnsCount(); ++i) {
-            if (!table.getColumnType(i).getClass().equals(value.getColumnAt(i).getClass())) {
-                throw new ColumnFormatException("need: " + table.getColumnType(i).getClass()
+            if (!table.getColumnType(i).equals(value.getColumnAt(i).getClass())) {
+                throw new ColumnFormatException("need: " + table.getColumnType(i)
                     + ", but got:" + value.getColumnAt(i).getClass());
             }
         }

@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 public class Serializator {
     interface GetSmthSer {
@@ -103,7 +104,9 @@ public class Serializator {
                 }
             }
         } catch (XMLStreamException e) {
-            return null;
+            throw new ParseException(e.getMessage(), -1);
+        } catch (NoSuchElementException e) {
+            throw new ParseException(e.getMessage(), -1);
         }
         return result;
     }
