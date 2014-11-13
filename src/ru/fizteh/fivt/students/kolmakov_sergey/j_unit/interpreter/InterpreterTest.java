@@ -19,16 +19,6 @@ public class InterpreterTest {
     private ByteArrayOutputStream outputStream;
     private PrintStream printStream;
 
-    private Callable<Boolean> makeFakeHandler() {  // For tests.
-        Callable<Boolean> exitHandler = new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return true;
-            }
-        };
-        return exitHandler;
-    }
-
     @Before
     public void setUp() {
         System.out.println(newLine);
@@ -50,7 +40,7 @@ public class InterpreterTest {
                     }
                 })}, new ByteArrayInputStream((testCommandName + newLine).getBytes()), printStream);
         interpreter.run(new String[]{"exit"});
-        assertEquals(Interpreter.EXIT_WITHOUT_HANDLER_MSG + newLine, outputStream.toString());
+        assertEquals("", outputStream.toString());
     }
 
     @Test
@@ -62,7 +52,6 @@ public class InterpreterTest {
                         printStream.println(testOutput);
                     }
                 })}, new ByteArrayInputStream((testCommandName + newLine + "exit" + newLine).getBytes()), printStream);
-        interpreter.setExitHandler(makeFakeHandler());
         interpreter.run(new String[] {});
         assertEquals(Interpreter.PROMPT + testOutput + newLine + Interpreter.PROMPT, outputStream.toString());
     }
@@ -76,7 +65,6 @@ public class InterpreterTest {
                         printStream.println(testOutput);
                     }
                 })}, new ByteArrayInputStream(new byte[] {}), printStream);
-        interpreter.setExitHandler(makeFakeHandler());
         interpreter.run(new String[] {testCommandName + Interpreter.STATEMENT_DELIMITER, testCommandName});
         assertEquals(testOutput + newLine + testOutput + newLine, outputStream.toString());
     }
@@ -85,7 +73,6 @@ public class InterpreterTest {
     public void testRunInterpreterInButchModeForUnexpectedCommand() throws Exception {
         Interpreter interpreter = new Interpreter(null, new Command[] {},
                 new ByteArrayInputStream(new byte[] {}), printStream);
-        interpreter.setExitHandler(makeFakeHandler());
         interpreter.run(new String[] {testCommandName + Interpreter.STATEMENT_DELIMITER, testCommandName});
         assertEquals(Interpreter.BAD_COMMAND + testCommandName + newLine, outputStream.toString());
     }
@@ -96,7 +83,6 @@ public class InterpreterTest {
         String testInput = testCommandName + newLine + testCommandName + newLine + "exit";
         Interpreter interpreter = new Interpreter(null, new Command[] {},
                 new ByteArrayInputStream(testInput.getBytes()), printStream);
-        interpreter.setExitHandler(makeFakeHandler());
         interpreter.run(new String[] {});
         String expectedOutput
                 = Interpreter.PROMPT + Interpreter.BAD_COMMAND + testCommandName + newLine
@@ -115,7 +101,6 @@ public class InterpreterTest {
                         printStream.println(testOutput);
                     }
                 })}, new ByteArrayInputStream(new byte[] {}), printStream);
-        interpreter.setExitHandler(makeFakeHandler());
         interpreter.run(new String[] {testCommandName + " unexpected"});
         assertEquals(testCommandName + ": incorrect number of arguments" + newLine, outputStream.toString());
     }

@@ -16,15 +16,10 @@ public final class Main {
     public static void main(String[] args) {
         String rootDirectory = System.getProperty("fizteh.db.dir");
         if (rootDirectory == null) {
-            System.out.println("You must specify fizteh.db.dir via -Ddb.file JVM parameter");
+            System.out.println("You must specify DataBase directory via -Dfizteh.db.dir JVM parameter");
             System.exit(1);
         }
-        try {
-            run(new DataBaseState(new TableManagerFactory().create(rootDirectory)), args);
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage()); // If DB is corrupted.
-            System.exit(-1);
-        }
+        run(new DataBaseState(new TableManagerFactory().create(rootDirectory)), args);
     }
 
     private static void run(DataBaseState state, String[] args) {
@@ -76,8 +71,8 @@ public final class Main {
                         throw new IllegalArgumentException(args[0] + " not exists");
                     }
                     TableClass usedTable = (TableClass) state.getCurrentTable();
-                    if (usedTable != null && (usedTable.numberOfChanges() > 0) && usedTable != newTable) {
-                        throw new IllegalArgumentException(usedTable.numberOfChanges() + " unsaved changes");
+                    if (usedTable != null && (usedTable.getNumberOfChanges() > 0) && usedTable != newTable) {
+                        throw new IllegalArgumentException(usedTable.getNumberOfChanges() + " unsaved changes");
                     } else {
                         state.setCurrentTable(newTable);
                         System.out.println("using " + args[0]);
@@ -189,8 +184,8 @@ public final class Main {
             @Override
             public Boolean call() {
                 TableClass table = (TableClass) state.getCurrentTable();
-                if (table != null && (table.numberOfChanges() > 0)) {
-                    System.out.println(table.numberOfChanges() + " unsaved changes");
+                if (table != null && (table.getNumberOfChanges() > 0)) {
+                    System.out.println(table.getNumberOfChanges() + " unsaved changes");
                     return false;
                 }
                 return true;

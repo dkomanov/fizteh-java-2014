@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.kolmakov_sergey.j_unit.interpreter;
 
-import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_exceptions.StopInterpreterException;
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure.DataBaseState;
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_exceptions.WrongNumberOfArgumentsException;
 

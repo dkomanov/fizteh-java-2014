@@ -11,7 +11,10 @@ import java.nio.file.Paths;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
-public class DataFile { // Interacts with .dat file.
+/**
+ * Object interacts with .dat file.
+ */
+public class DataFile {
     private Map<String, String> fileMap;
     private Path filePath;
     private Coordinates folderFileIndexes;

@@ -195,7 +195,7 @@ public class TableClass implements Table {
         return numberOfRecords;
     }
 
-    public int numberOfChanges() {
+    public int getNumberOfChanges() {
         return difference.size();
     }
 }

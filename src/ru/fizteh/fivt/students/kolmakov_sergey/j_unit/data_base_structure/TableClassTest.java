@@ -196,6 +196,13 @@ public class TableClassTest {
     }
 
     @Test
+    public void testRemoveKeyWhenDatafileDoesNotExist() throws DatabaseCorruptedException {
+        Table test = new TableClass(testDir, tableName);
+        assertEquals(null, test.remove(testKey1));
+        test.commit();
+    }
+
+    @Test
     public void testCommitRemovingCommittedKey() throws DatabaseCorruptedException {
         Table test = new TableClass(testDir, tableName);
         assertEquals(null, test.put(testKey1, testValue));
@@ -275,6 +282,21 @@ public class TableClassTest {
         Path filePath = Paths.get(testDir.toString(), folderName, fileName);
         assertFalse(filePath.toFile().exists());
     }
+
+    @Test
+    public void testGetNameMethod() throws DatabaseCorruptedException {
+        Table test = new TableClass(testDir, tableName);
+        assertEquals(tableName, test.getName());
+    }
+    @Test
+    public void testGetNumberOfChangesMethod() throws DatabaseCorruptedException {
+        TableClass test = new TableClass(testDir, tableName);
+        test.put(testKey1, testValue);
+        assertEquals(1, test.getNumberOfChanges());
+        test.put(testKey2, testValue);
+        assertEquals(2, test.getNumberOfChanges());
+    }
+
 
     @After
     public void tearDown() {

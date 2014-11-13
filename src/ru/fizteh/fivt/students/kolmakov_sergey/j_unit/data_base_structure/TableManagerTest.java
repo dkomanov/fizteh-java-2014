@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -155,6 +157,28 @@ public class TableManagerTest {
         assertEquals(null, testTable.put("key2", "value"));
         testTable.commit();
         test.removeTable(tableName);
+    }
+
+    @Test
+    public void testExcludeFolderNumber() {
+        assertEquals(2, TableManager.excludeFolderNumber("2.dir"));
+        assertEquals(42, TableManager.excludeFolderNumber("42.dir"));
+        assertEquals(442, TableManager.excludeFolderNumber("442.dir"));
+    }
+    @Test
+    public void testExcludeFileNumber() {
+        assertEquals(2, TableManager.excludeDataFileNumber("2.dat"));
+        assertEquals(42, TableManager.excludeDataFileNumber("42.dat"));
+        assertEquals(442, TableManager.excludeDataFileNumber("442.dat"));
+    }
+
+    @Test
+    public void testGetNamesMethod() {
+        TableManager test = new TableManager(directoryPath.toString());
+        test.createTable(tableName);
+        Set<String> expected = new HashSet<>();
+        expected.add(tableName);
+        assertEquals(expected, test.getNames());
     }
 
     @After

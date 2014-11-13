@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.kolmakov_sergey.j_unit.interpreter;
 
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_exceptions.WrongNumberOfArgumentsException;
 import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure.DataBaseState;
-import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_exceptions.StopInterpreterException;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -16,8 +15,7 @@ public final class Interpreter {
     public static final String PROMPT = "$ ";
     public static final  String BAD_COMMAND = "Command not found: ";
     public static final String STATEMENT_DELIMITER = ";";
-    public static final String EXIT_WITHOUT_HANDLER_MSG = "You must set exitHandler before using exit command";
-    private final String paramRegexp = "\\s+";
+    private static final String paramRegexp = "\\s+";
     private InputStream in;
     private PrintStream out;
     private DataBaseState dbState;
@@ -97,11 +95,9 @@ public final class Interpreter {
         if (cmdWithArgs.length > 0 && !cmdWithArgs[0].isEmpty()) {
             String commandName = cmdWithArgs[0];
             if (commandName.equals("exit")) {
-                if (exitHandler == null) {
-                    out.println(EXIT_WITHOUT_HANDLER_MSG);
-                    throw new StopInterpreterException(-1);
-                }
-                if (exitHandler.call()) {
+                if (exitHandler == null){
+                    throw new StopInterpreterException(0);
+                } else if (exitHandler.call()) {
                     throw new StopInterpreterException(0);
                 } else if (batchModeOn) {
                     throw  new StopInterpreterException(-1);

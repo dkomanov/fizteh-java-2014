@@ -33,8 +33,6 @@ public class DataFileTest {
     @Before
     public void setUp() {
         testDir.toFile().mkdir();
-        // FolderIndex = key.getBytes()[0] % 16
-        // FileIndex = (key.getBytes()[0] / 16) % 16.
         correctKey1 = new String(new byte[] {folderIndex + fileIndex * 16, 'k', 'e', 'y', '1'});
         correctKey2 = new String(new byte[] {folderIndex + fileIndex * 16, 'k', 'e', 'y', '2'});
         //Wrong key will contain changed first byte.
@@ -229,6 +227,15 @@ public class DataFileTest {
         test.commit();
         test = new DataFile(testDir, new Coordinates(folderIndex, fileIndex));
         assertTrue(test.list().isEmpty());
+    }
+
+    @Test
+    public void testSizeMethod() throws IOException, DatabaseCorruptedException {
+        DataFile test = new DataFile(testDir, new Coordinates(folderIndex, fileIndex));
+        test.put(correctKey1, testValue);
+        assertEquals(test.size(), 1);
+        test.remove(correctKey1);
+        assertEquals(test.size(), 0);
     }
 
     @After public void tearDown() {

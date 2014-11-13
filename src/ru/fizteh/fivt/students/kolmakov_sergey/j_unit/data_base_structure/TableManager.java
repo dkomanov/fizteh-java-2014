@@ -129,6 +129,10 @@ public class TableManager implements TableProvider {
     }
 }
 
+/**
+ * Each Table stores subdirectories, that have special name "folders" in this project. Each folder stores DataFiles.
+ * Coordinate object holds index of folder and index of file in order to have access to each DataFile in the Table.
+ */
 class Coordinates implements Comparable<Coordinates> {
     protected final int folderIndex;
     protected final int fileIndex;
