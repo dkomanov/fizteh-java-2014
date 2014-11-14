@@ -37,6 +37,9 @@ public class StructuredDatabase implements TableProvider {
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
         StringTable table = (StringTable) backendDatabase.createTable(name);
+        if (table == null) {
+            return null;
+        }
         TableSignature tableSignature = new TableSignature(columnTypes.toArray(new Class<?>[columnTypes.size()]));
         File signatureFile = new File(table.getFile(), "signature.tsv");
         tableSignature.writeToFile(signatureFile);
@@ -78,6 +81,9 @@ public class StructuredDatabase implements TableProvider {
     }
 
     private StructuredTable wrap(ru.fizteh.fivt.storage.strings.Table table) {
+        if (table == null) {
+            return null;
+        }
         return new StructuredTable((StringTable) table, this);
     }
 }
