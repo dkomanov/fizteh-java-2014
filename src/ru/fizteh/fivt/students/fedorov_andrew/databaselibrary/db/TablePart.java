@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptException;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptIOException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 
 import java.io.ByteArrayOutputStream;
@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * This class represents a table part implemented as usual {@link HashMap} and stored in a separate
+ * This class represents a table part implemented as usual {@link java.util.HashMap} and stored in a separate
  * file.
  * @author phoenix
  */
@@ -89,10 +89,10 @@ public class TablePart {
     /**
      * Reads database from file system (all previous data is purged).<br/> If an error occurs the
      * state before this operation is recovered.
-     * @throws DBFileCorruptException
+     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptIOException
      */
     @SuppressWarnings("unchecked")
-    public void readFromFile() throws DBFileCorruptException {
+    public void readFromFile() throws DBFileCorruptIOException {
     /*
      * if an exception occurs and database is cloned, recover if cloned
      * object is null - no recover is performed.
@@ -133,7 +133,7 @@ public class TablePart {
             // reading keys and value shift information
             for (int i = 0; i < bufferSize; ) {
                 if (i == nextValue) {
-                    throw new DBFileCorruptException(
+                    throw new DBFileCorruptIOException(
                             String.format(
                                     "Attempt to read key part from %s to %s, but value should "
                                     + "start here", bufferOffset, i));
@@ -141,7 +141,7 @@ public class TablePart {
                 if (buffer[i] == 0) {
                     String currentKey = new String(buffer, bufferOffset, i - bufferOffset, "UTF-8");
                     if (i + 4 >= bufferSize) {
-                        throw new DBFileCorruptException(
+                        throw new DBFileCorruptIOException(
                                 String.format(
                                         "There is no value offset for key '%s' after byte %s",
                                         currentKey,
@@ -158,7 +158,7 @@ public class TablePart {
                     nextValue = offsets.firstKey();
 
                     if (i > nextValue) {
-                        throw new DBFileCorruptException(
+                        throw new DBFileCorruptIOException(
                                 String.format(
                                         "Value shift for key '%s' is to early: %s; current " + "position: %s",
                                         currentKey,
@@ -204,7 +204,7 @@ public class TablePart {
             if (cloneDBMap != null) {
                 tablePartMap = cloneDBMap;
             }
-            throw new DBFileCorruptException(
+            throw new DBFileCorruptIOException(
                     "Failed to read data from file: " + tablePartFilePath.toString(), exc);
         }
 
@@ -283,13 +283,13 @@ public class TablePart {
         }
     }
 
-    public int commit() throws DatabaseException {
+    public int commit() throws DatabaseIOException {
         int diffsCount = getUncommittedChangesCount();
         lastCommittedMap = new HashMap<>(tablePartMap);
         try {
             writeToFile();
         } catch (IOException exc) {
-            throw new DatabaseException("Failed to persist table", exc);
+            throw new DatabaseIOException("Failed to persist table", exc);
         }
 
         return diffsCount;

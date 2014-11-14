@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support;
 
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 

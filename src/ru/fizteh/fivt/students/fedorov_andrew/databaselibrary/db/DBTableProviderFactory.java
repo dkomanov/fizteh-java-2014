@@ -1,8 +1,8 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptException;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -12,59 +12,46 @@ import java.nio.file.Paths;
 
 public class DBTableProviderFactory implements TableProviderFactory {
 
-    /**
-     * @param databaseRoot
-     * @return
-     */
-    private void checkDatabaseDirectory(final Path databaseRoot) throws DatabaseException {
+    private void checkDatabaseDirectory(final Path databaseRoot) throws DatabaseIOException {
         if (!Files.isDirectory(databaseRoot)) {
-            throw new DBFileCorruptException("Database root must be a directory");
+            throw new DatabaseIOException("Database root must be a directory");
         }
 
         try (DirectoryStream<Path> tableDirs = Files.newDirectoryStream(databaseRoot)) {
             for (Path tableDirectory : tableDirs) {
                 if (!Files.isDirectory(tableDirectory)) {
-                    throw new DBFileCorruptException(
+                    throw new DatabaseIOException(
                             "Non-directory path found in database folder: " + tableDirectory.getFileName());
                 }
             }
         } catch (IOException exc) {
-            throw new DatabaseException(
+            throw new DatabaseIOException(
                     "Failed to scan database directory: " + exc.getMessage(), exc);
         }
     }
 
     @Override
-    public DBTableProvider create(String dir) throws IllegalArgumentException {
+    public DBTableProvider create(String dir) throws IllegalArgumentException, DatabaseIOException {
         if (dir == null) {
-            throw new IllegalArgumentException("Directory must not be null");
+            Utility.checkNotNull(dir, "Directory");
         }
 
         Path databaseRoot = Paths.get(dir).normalize();
         if (!Files.exists(databaseRoot)) {
             if (databaseRoot.getParent() == null || !Files.isDirectory(databaseRoot.getParent())) {
-                throw new IllegalArgumentException(
+                throw new DatabaseIOException(
                         "Database directory parent path does not exist or is not a directory");
             }
 
             try {
                 Files.createDirectory(databaseRoot);
             } catch (IOException exc) {
-                throw new IllegalArgumentException(
-                        "Failed to establish database on path " + dir, exc);
+                throw new DatabaseIOException("Failed to establish database on path " + dir, exc);
             }
         } else {
-            try {
-                checkDatabaseDirectory(databaseRoot);
-            } catch (DatabaseException exc) {
-                throw new IllegalArgumentException(exc.getMessage(), exc);
-            }
+            checkDatabaseDirectory(databaseRoot);
         }
 
-        try {
-            return new DBTableProvider(databaseRoot);
-        } catch (DatabaseException exc) {
-            throw new IllegalArgumentException(exc.getMessage(), exc);
-        }
+        return new DBTableProvider(databaseRoot);
     }
 }

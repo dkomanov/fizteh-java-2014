@@ -1,8 +1,9 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProvider;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.Database;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.TableImpl;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.StoreableTableImpl;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.ExitRequest;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.NoActiveTableException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Log;
@@ -61,7 +62,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
 
     @Override
     public String getGreetingString() {
-        TableImpl table;
+        StoreableTableImpl table;
         try {
             table = activeDatabase.getActiveTable();
         } catch (NoActiveTableException exc) {
@@ -73,7 +74,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
 
     @Override
     public void init(Shell<SingleDatabaseShellState> host)
-            throws IllegalArgumentException, DatabaseException {
+            throws IllegalArgumentException, DatabaseIOException {
         Objects.requireNonNull(host, "Host shell must not be null");
 
         if (this.host != null) {
@@ -91,7 +92,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     }
 
     @Override
-    public void persist() throws DatabaseException {
+    public void persist() throws DatabaseIOException {
         activeDatabase.commit();
     }
 
@@ -109,6 +110,14 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
      */
     public Database getActiveDatabase() {
         return activeDatabase;
+    }
+
+    public DBTableProvider getProvider() {
+        return activeDatabase.getProvider();
+    }
+
+    public StoreableTableImpl getActiveTable() throws NoActiveTableException {
+        return activeDatabase.getActiveTable();
     }
 
     @Override

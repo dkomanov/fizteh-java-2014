@@ -74,7 +74,7 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
 
     /**
      * Removes all files under {@link #DB_ROOT}.
-     * @throws IOException
+     * @throws java.io.IOException
      */
     @After
     public void cleanup() throws IOException {
@@ -125,7 +125,7 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      *         semicolon.
      * @return Exit code.
      */
-    protected int runBatch(boolean reinit, String... commands) {
+    protected int runBatch(boolean reinit, String... commands) throws TerminalException {
         // Clean what has been output before.
         out.reset();
 
@@ -186,11 +186,11 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
         runInteractiveExpectNonZero(false, lines);
     }
 
-    protected void runBatchExpectZero(String... commands) {
+    protected void runBatchExpectZero(String... commands) throws TerminalException {
         runBatchExpectZero(false, commands);
     }
 
-    protected void runBatchExpectNonZero(String... commands) {
+    protected void runBatchExpectNonZero(String... commands) throws TerminalException {
         runBatchExpectNonZero(false, commands);
     }
 
@@ -202,11 +202,11 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
         assertNotEquals("Non-zero exit status expected", 0, runInteractive(reinit, lines));
     }
 
-    protected void runBatchExpectZero(boolean reinit, String... commands) {
+    protected void runBatchExpectZero(boolean reinit, String... commands) throws TerminalException {
         assertEquals("Exit status 0 expected", 0, runBatch(reinit, commands));
     }
 
-    protected void runBatchExpectNonZero(boolean reinit, String... commands) {
+    protected void runBatchExpectNonZero(boolean reinit, String... commands) throws TerminalException {
         assertNotEquals("Non-zero exit status expected", 0, runBatch(reinit, commands));
     }
 
@@ -215,7 +215,6 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      * Recommended to be used to test batch mode.<br/>
      * Each report is considered to be a separate line. Lines are separated using {@link
      * System#lineSeparator()}.
-     * @param reports
      * @return
      */
     protected String makeTerminalExpectedMessage(String... reports) {
