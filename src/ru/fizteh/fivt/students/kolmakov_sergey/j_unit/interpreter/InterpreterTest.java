@@ -6,7 +6,6 @@ import ru.fizteh.fivt.students.kolmakov_sergey.j_unit.data_base_structure.DataBa
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 
 import org.junit.Before;

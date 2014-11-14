@@ -15,7 +15,7 @@ public final class Interpreter {
     public static final String PROMPT = "$ ";
     public static final  String BAD_COMMAND = "Command not found: ";
     public static final String STATEMENT_DELIMITER = ";";
-    private static final String paramRegexp = "\\s+";
+    private static final String PARAM_REGEXP = "\\s+";
     private InputStream in;
     private PrintStream out;
     private DataBaseState dbState;
@@ -78,7 +78,7 @@ public final class Interpreter {
         String[] commands = line.split(STATEMENT_DELIMITER);
         try {
             for (String current : commands) {
-                parse(current.trim().split(paramRegexp), batchModeOn);
+                parse(current.trim().split(PARAM_REGEXP), batchModeOn);
             }
             if (batchModeOn) {
                 parse(new String[]{"exit"}, batchModeOn);
@@ -95,7 +95,7 @@ public final class Interpreter {
         if (cmdWithArgs.length > 0 && !cmdWithArgs[0].isEmpty()) {
             String commandName = cmdWithArgs[0];
             if (commandName.equals("exit")) {
-                if (exitHandler == null){
+                if (exitHandler == null) {
                     throw new StopInterpreterException(0);
                 } else if (exitHandler.call()) {
                     throw new StopInterpreterException(0);
