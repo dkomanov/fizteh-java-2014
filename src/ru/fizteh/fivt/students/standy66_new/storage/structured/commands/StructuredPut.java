@@ -23,12 +23,13 @@ public class StructuredPut extends ExtendedContextualCommand {
             throw new NoTableSelectedException("no table");
         }
         Storeable currentValue = current.get(arguments[1]);
+        Storeable newValue = database.deserialize(current, arguments[2]);
         if (currentValue == null) {
             System.out.println("new");
         } else {
             System.out.println("overwrite");
             System.out.println(database.serialize(current, currentValue));
         }
-        current.put(arguments[1], database.deserialize(current, arguments[2]));
+        current.put(arguments[1], newValue);
     }
 }
