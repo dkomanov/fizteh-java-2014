@@ -141,29 +141,32 @@ public class TableList {
     }
 
     public boolean checkNameCorrection(final String name) {
-        for (int i = 0; i < name.length(); i++) {
-            switch (name.charAt(i)) {
-                case '*':
-                    return false;
-                case '\\':
-                    return false;
-                case '|':
-                    return false;
-                case '/':
-                    return false;
-                case '\"':
-                    return false;
-                case ':':
-                    return false;
-                case '?':
-                    return false;
-                case '>':
-                    return false;
-                case '<':
-                    return false;
-                default:
-                    break;
-            }
+        if (name.contains("*")) {
+            return false;
+        }
+        if (name.contains("\\")) {
+            return false;
+        }
+        if (name.contains("|")) {
+            return false;
+        }
+        if (name.contains("/")) {
+            return false;
+        }
+        if (name.contains("\"")) {
+            return false;
+        }
+        if (name.contains(":")) {
+            return false;
+        }
+        if (name.contains("?")) {
+            return false;
+        }
+        if (name.contains(">")) {
+            return false;
+        }
+        if (name.contains("<")) {
+            return false;
         }
         return true;
     }
