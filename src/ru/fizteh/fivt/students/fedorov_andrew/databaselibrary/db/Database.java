@@ -27,7 +27,6 @@ public class Database {
     /**
      * Establishes a database instance on given folder.<br/> If the folder exists, the old database
      * is used.<br/> If the folder does not exist, a new database is created within the folder.
-     * @param dbDirectory
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException
      */
     private Database(Path dbDirectory) throws DatabaseIOException {
@@ -51,10 +50,7 @@ public class Database {
     }
 
     /**
-     * Creates a new empty table with specified name
-     * @param tableName
-     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
-     *         I/O errors and name duplication errors are here
+     * Creates a new empty table with specified name.
      */
     public boolean createTable(String tableName, List<Class<?>> columnTypes)
             throws IllegalArgumentException, DatabaseIOException {
@@ -64,9 +60,7 @@ public class Database {
     /**
      * Deletes given table from file system.
      * @param tableName
-     *         name of table to drop
-     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
-     *         if tablename does not exist or failed to delete
+     *         Name of table to drop.
      */
     public void dropTable(String tableName) throws IllegalArgumentException, DatabaseIOException {
         String activeTableName = activeTable == null ? null : activeTable.getName();
@@ -120,12 +114,9 @@ public class Database {
     }
 
     /**
-     * Saves all changes to the current table (if not null) and prepares table with the given name
-     * for use.
+     * Saves all changes to the current table (if not null) and prepares table with the given name for use.
      * @param tableName
-     *         name of table to use.
-     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
-     *         if failed to save changes for current table or failed to load new table.
+     *         Name of table to use.
      */
     public void useTable(String tableName) throws DatabaseIOException, IllegalArgumentException {
         if (activeTable != null) {

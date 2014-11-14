@@ -88,11 +88,9 @@ public final class Utility {
 
     /**
      * Removes the whole subtree under given path
-     * @param removePath
-     * @param invoker
-     *         name of the invoker; used in error reports.
+     * @throws java.io.IOException
      */
-    public static void rm(final Path removePath, final String invoker) throws IOException {
+    public static void rm(final Path removePath) throws IOException {
         if (Files.isDirectory(removePath)) {
             Files.walkFileTree(removePath, new Utility.FileTreeRemover());
         } else {
@@ -108,7 +106,8 @@ public final class Utility {
     /**
      * Counts differences between source and target map (count of different values mapped to the same keys +
      * count of keys that are found in one map and are missing in the other and vice versa). Null values are
-     * not supported - when {@link java.util.Map#get(Object)} return null, it is interpreted as missing of the
+     * not supported - when {@link java.util.Map#get(Object)} return null, it is interpreted as missing of
+     * the
      * given key.
      * @param source
      *         Source map. There are no differences between source and target map.
@@ -118,7 +117,6 @@ public final class Utility {
      *         Key type.
      * @param <V>
      *         Value type.
-     * @return
      */
     public static <K, V> int countDifferences(Map<K, V> source, Map<K, V> target) {
         if (target.isEmpty() || source.isEmpty()) {
@@ -154,9 +152,8 @@ public final class Utility {
      *         if name is not correct or null
      */
     public static void checkTableNameIsCorrect(String tableName) throws IllegalArgumentException {
-        if (tableName == null) {
-            checkNotNull(tableName, "Table name");
-        }
+        checkNotNull(tableName, "Table name");
+
         Path tableNamePath = Paths.get(tableName).normalize();
         Path sampleParent = Paths.get("sample");
         if (tableNamePath.getParent() != null || !sampleParent.resolve(tableName).normalize().getFileName()

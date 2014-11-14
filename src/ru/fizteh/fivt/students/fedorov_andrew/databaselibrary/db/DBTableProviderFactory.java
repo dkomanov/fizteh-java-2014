@@ -32,9 +32,7 @@ public class DBTableProviderFactory implements TableProviderFactory {
 
     @Override
     public DBTableProvider create(String dir) throws IllegalArgumentException, DatabaseIOException {
-        if (dir == null) {
-            Utility.checkNotNull(dir, "Directory");
-        }
+        Utility.checkNotNull(dir, "Directory");
 
         Path databaseRoot = Paths.get(dir).normalize();
         if (!Files.exists(databaseRoot)) {

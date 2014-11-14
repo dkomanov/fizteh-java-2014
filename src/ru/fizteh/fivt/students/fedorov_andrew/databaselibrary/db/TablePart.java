@@ -43,8 +43,6 @@ public class TablePart {
      * Initalizes a new filemap object assigned to the specified file.<br/>
      * @param tablePartFilePath
      *         path to database file. If it does not exist, a new empty file is created.
-     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException
-     *         if failed to create database file or {@code dbFileName} is null.
      */
     public TablePart(Path tablePartFilePath) {
         if (tablePartFilePath == null) {

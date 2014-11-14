@@ -106,7 +106,6 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
 
     /**
      * Returns database user works with.
-     * @return
      */
     public Database getActiveDatabase() {
         return activeDatabase;

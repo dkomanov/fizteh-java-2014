@@ -176,29 +176,29 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
                     System.out.println(sb);
                 }
             };
-    public static final Command<SingleDatabaseShellState> PUT =
-            new AbstractCommand("<key> [ {boolean|number|string|null}... ]", "assigns new storeable to the key", 3) {
-                @Override
-                public void executeSafely(SingleDatabaseShellState state, String[] args)
-                        throws DatabaseIOException, NoActiveTableException, ParseException {
-                    String key = args[1];
+    public static final Command<SingleDatabaseShellState> PUT = new AbstractCommand(
+            "<key> [ {boolean|number|string|null}... ]", "assigns new storeable to the key", 3) {
+        @Override
+        public void executeSafely(SingleDatabaseShellState state, String[] args)
+                throws DatabaseIOException, NoActiveTableException, ParseException {
+            String key = args[1];
 
-                    StoreableTableImpl table = state.getActiveTable();
+            StoreableTableImpl table = state.getActiveTable();
 
-                    String valueStr = String.join(" ", Arrays.asList(args).subList(2, args.length));
-                    Storeable value = state.getProvider().deserialize(table, valueStr);
+            String valueStr = String.join(" ", Arrays.asList(args).subList(2, args.length));
+            Storeable value = state.getProvider().deserialize(table, valueStr);
 
-                    Storeable oldValue = state.getActiveTable().put(key, value);
+            Storeable oldValue = state.getActiveTable().put(key, value);
 
-                    if (oldValue == null) {
-                        System.out.println("new");
-                    } else {
-                        String oldValueStr = state.getProvider().serialize(table, oldValue);
-                        System.out.println("overwrite");
-                        System.out.println("old " + oldValueStr);
-                    }
-                }
-            };
+            if (oldValue == null) {
+                System.out.println("new");
+            } else {
+                String oldValueStr = state.getProvider().serialize(table, oldValue);
+                System.out.println("overwrite");
+                System.out.println("old " + oldValueStr);
+            }
+        }
+    };
     public static final Command<SingleDatabaseShellState> REMOVE =
             new AbstractCommand("<key>", "removes value by the key", 2) {
                 @Override

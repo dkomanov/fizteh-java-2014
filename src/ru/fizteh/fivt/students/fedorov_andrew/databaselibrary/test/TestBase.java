@@ -35,7 +35,7 @@ public abstract class TestBase {
     @BeforeClass
     public static void globalPrepareTestBase() throws IOException {
         if (Files.exists(DB_ROOT)) {
-            Utility.rm(DB_ROOT, "JUnit Test: global prepare");
+            Utility.rm(DB_ROOT);
         }
     }
 

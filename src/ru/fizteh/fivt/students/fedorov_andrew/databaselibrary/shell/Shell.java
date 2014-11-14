@@ -58,6 +58,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
     /**
      * Splits command string into commands.
      * @param commandsStr
+     *         Commands split by {@link #COMMAND_END_CHARACTER}.
      * @return List of commands, each command is an array of its parts (space splitters are excluded from
      * everywhere except quoted parts).
      * @throws ParseException
@@ -87,7 +88,6 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
                     throw new ParseException("Cannot find closing quotes", -1);
                 }
                 index++;
-                continue;
             } else if (Character.isSpaceChar(symbol) || symbol == COMMAND_END_CHARACTER) {
                 String part = commandsStr.substring(start, index).trim();
                 if (!part.isEmpty()) {
@@ -156,8 +156,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
     }
 
     /**
-     * Execute commands from input stream. Commands are awaited until the-end-of-stream.
-     * @param stream
+     * Execute commands from input stream. Commands are awaited till the-end-of-stream.
      */
     public int run(InputStream stream) throws TerminalException {
         interactive = true;

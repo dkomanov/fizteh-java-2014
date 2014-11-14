@@ -37,7 +37,7 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
     private static ByteArrayOutputStream out;
 
     @Rule
-    public ExpectedException exception = ExpectedException.none();
+    public final ExpectedException exception = ExpectedException.none();
 
     protected Shell<ShellStateImpl> interpreter;
 
@@ -93,6 +93,8 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      * (greeting)(reports[reports.length - 1])<br/>
      * (greeting)<br/>
      * @param greetingRegex
+     *         Regular expression which greeting prefix must match. Greeting is printed at the beginning and
+     *         after execution of each line.
      * @param reports
      *         An answer of the interpreter between two greetings. If it must be multiline, please
      *         split lines with '$' + {@link System#lineSeparator()} + '^'.
@@ -109,7 +111,6 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
 
     /**
      * Obtains everything that was output by the interpreter.<br/>
-     * @return
      */
     protected String getOutput() {
         return out.toString();
@@ -215,7 +216,6 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      * Recommended to be used to test batch mode.<br/>
      * Each report is considered to be a separate line. Lines are separated using {@link
      * System#lineSeparator()}.
-     * @return
      */
     protected String makeTerminalExpectedMessage(String... reports) {
         StringBuilder sb = new StringBuilder();

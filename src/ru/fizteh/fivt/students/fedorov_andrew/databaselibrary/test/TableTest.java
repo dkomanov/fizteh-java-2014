@@ -27,14 +27,12 @@ import static org.junit.Assert.*;
 @RunWith(JUnit4.class)
 public class TableTest extends TestBase {
     private static final List<Class<?>> DEFAULT_COLUMN_TYPES = Arrays.asList(String.class);
-
+    private static final String TABLE_NAME = "table";
     private static TableProviderFactory factory;
     @Rule
     public ExpectedException exception = ExpectedException.none();
     private Table table;
     private TableProvider provider;
-
-    private static final String tableName = "table";
 
     @BeforeClass
     public static void globalPrepare() {
@@ -44,7 +42,7 @@ public class TableTest extends TestBase {
     @Before
     public void prepare() throws IOException {
         provider = factory.create(DB_ROOT.toString());
-        table = provider.createTable(tableName, DEFAULT_COLUMN_TYPES);
+        table = provider.createTable(TABLE_NAME, DEFAULT_COLUMN_TYPES);
     }
 
     @After
@@ -86,7 +84,8 @@ public class TableTest extends TestBase {
         table.put("key", provider.createFor(table, Arrays.asList("value")));
         table.commit();
 
-        try (PrintWriter writer = new PrintWriter(DB_ROOT.resolve(tableName).resolve("signature.tsv").toString())) {
+        try (PrintWriter writer = new PrintWriter(
+                DB_ROOT.resolve(TABLE_NAME).resolve("signature.tsv").toString())) {
             writer.print("int int int");
         }
 
@@ -95,12 +94,12 @@ public class TableTest extends TestBase {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage(containsString("Value of improper format found"));
 
-        table = provider.getTable(tableName);
+        table = provider.getTable(TABLE_NAME);
     }
 
     @Test
-    public void testPutOneStoreableToAnotherTable () throws IOException {
-        Table table2 = provider.createTable(tableName + "2", DEFAULT_COLUMN_TYPES);
+    public void testPutOneStoreableToAnotherTable() throws IOException {
+        Table table2 = provider.createTable(TABLE_NAME + "2", DEFAULT_COLUMN_TYPES);
         Storeable storeable = provider.createFor(table);
 
         exception.expect(IllegalStateException.class);
@@ -110,14 +109,14 @@ public class TableTest extends TestBase {
     }
 
     @Test
-    public void testGetColumnTypeAtBadIndex () {
+    public void testGetColumnTypeAtBadIndex() {
         exception.expect(IndexOutOfBoundsException.class);
 
         table.getColumnType(table.getColumnsCount());
     }
 
     @Test
-    public void testGetColumnTypeAtBadIndex1 () {
+    public void testGetColumnTypeAtBadIndex1() {
         exception.expect(IndexOutOfBoundsException.class);
 
         table.getColumnType(-1);

@@ -46,7 +46,7 @@ public class TestUtils {
     }
 
     public static void removeFileSubtree(Path removePath) throws IOException {
-        Utility.rm(removePath, "JUnit Test");
+        Utility.rm(removePath);
     }
 
     public static <T> T randElement(Collection<T> set) {

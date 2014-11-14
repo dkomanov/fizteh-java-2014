@@ -61,7 +61,6 @@ public class DBTableProvider implements TableProvider {
 
     /**
      * Constructs a database table provider.
-     * @param databaseRoot
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException
      *         If failed to scan database directory.
      */
@@ -133,7 +132,7 @@ public class DBTableProvider implements TableProvider {
         }
 
         try {
-            Utility.rm(tablePath, "drop");
+            Utility.rm(tablePath);
         } catch (IOException exc) {
             // Mark as corrupt.
             tables.put(name, null);
@@ -176,7 +175,6 @@ public class DBTableProvider implements TableProvider {
                 // Space that does not mean anything.
 
                 index++;
-                continue;
             } else if (LIST_SEPARATOR_CHARACTER == currentChar) {
                 // Next list element.
 
