@@ -25,6 +25,10 @@ public class StructuredDatabase implements TableProvider {
         backendDatabase = new StringDatabase(databaseFile);
     }
 
+    public StringDatabase getBackendDatabase() {
+        return backendDatabase;
+    }
+
     @Override
     public Table getTable(String name) {
         return wrap(backendDatabase.getTable(name));
@@ -52,8 +56,9 @@ public class StructuredDatabase implements TableProvider {
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        //TODO: not implemented
-        return null;
+        TableSignature tableSignature = TableSignature.forTable(table);
+        TableRow row = TableRow.fromStoreable(tableSignature, value);
+        return row.serialize();
     }
 
     @Override

@@ -32,6 +32,10 @@ public class StructuredTable implements Table {
         }
     }
 
+    public StringTable getBackendTable() {
+        return backendTable;
+    }
+
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
         Storeable oldValue;
