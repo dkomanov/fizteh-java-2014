@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.oscar_nasibullin.MultiFileHashMap;
 
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -18,12 +19,17 @@ public final class DataBaseShell {
 
     public static void main(final String[] args) {
         try {
-            if (!Paths.get(System.getProperty("fizteh.db.dir")).toFile().exists()) {
-                throw new Exception("not found");
+            File db_dir = Paths.get(System.getProperty("fizteh.db.dir")).toFile();
+            if (!db_dir.exists()) {
+               if (db_dir.mkdir()) {
+                   System.err.println("created root folder: " + System.getProperty("fizteh.db.dir"));
+               } else {
+                   throw new Exception("folder not exist and cannot be created");
+               }
             }
         } catch (Exception e) {
-            System.err.println("database root directory error: " + e.getMessage());
-            System.exit(1);
+              System.err.println("database root directory error: " + e.getMessage());
+              System.exit(1);
         }
 
         if (args.length > 0) {

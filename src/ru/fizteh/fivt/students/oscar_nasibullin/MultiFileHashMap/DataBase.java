@@ -13,7 +13,7 @@ public class DataBase {
     private static Map<String, Table> tables;
     private static String usingTable;
 
-    public DataBase() throws FileNotFoundException {
+    public DataBase() throws Exception {
         tables = new TreeMap<>();
         usingTable = "";
 
@@ -42,7 +42,7 @@ public class DataBase {
         return tables.get(usingTable);
     }
 
-    public final String create(final List<String> args) {
+    public final String create(final List<String> args) throws Exception {
         if (args.size() != 2) {
             throw new IllegalArgumentException("Illegal arguments for create");
         }
@@ -50,8 +50,8 @@ public class DataBase {
         if (tables.containsKey(args.get(1))) {
             rezultMessage = args.get(1) + " exists";
         } else {
-            rezultMessage = "created";
             tables.put(args.get(1), new Table(args.get(1)));
+            rezultMessage = "created";
         }
 
         return rezultMessage;
@@ -89,6 +89,7 @@ public class DataBase {
         } else {
             rezultMessage = args.get(1) + " not exists";
         }
+
         return rezultMessage;
     }
 
@@ -103,10 +104,17 @@ public class DataBase {
             if (!entry.getValue().name.equals(usingTable)) {
                 entry.getValue().open();
             }
-            rezultMessage += entry.getValue().name +  " " + entry.getValue().size() + "\n";
+            if (!entry.getValue().name.equals("") && entry.getValue().name != null) {
+                rezultMessage += entry.getValue().name + " " + entry.getValue().size() + "\n";
+            }
             if (!entry.getValue().name.equals(usingTable)) {
                 entry.getValue().close();
             }
+        }
+        if (rezultMessage.equals("")) {
+            rezultMessage = "no tables found";
+        } else {
+            rezultMessage = rezultMessage.substring(0, rezultMessage.length()-1);
         }
         return rezultMessage;
     }

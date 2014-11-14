@@ -14,8 +14,16 @@ public class Table  {
     final String name;
 
 
-    public Table(String tableName) {
+    public Table(String tableName) throws Exception {
         name = tableName;
+        try {
+            open();
+            close();
+        } catch (Exception e) {
+            if (e.getMessage().endsWith("is not a directory")) {
+                throw new Exception("Can't create table: " + e.getMessage());
+            }
+        }
     }
 
     public void open() throws Exception {
@@ -25,7 +33,7 @@ public class Table  {
         if (!Paths.get(tablePath).toFile().exists()) {
             Paths.get(tablePath).toFile().mkdir();
         } else if (!Paths.get(tablePath).toFile().isDirectory()) {
-            throw new Exception(tablePath + ": is not a directory");
+            throw new Exception(tablePath + " - is not a directory");
         }
 
         for (int i = 0; i < 16; i++) {
