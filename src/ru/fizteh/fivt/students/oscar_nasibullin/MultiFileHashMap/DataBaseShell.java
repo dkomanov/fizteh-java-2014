@@ -19,9 +19,9 @@ public final class DataBaseShell {
 
     public static void main(final String[] args) {
         try {
-            File db_dir = Paths.get(System.getProperty("fizteh.db.dir")).toFile();
-            if (!db_dir.exists()) {
-               if (db_dir.mkdir()) {
+            File dbDir = Paths.get(System.getProperty("fizteh.db.dir")).toFile();
+            if (!dbDir.exists()) {
+               if (dbDir.mkdir()) {
                    System.err.println("created root folder: " + System.getProperty("fizteh.db.dir"));
                } else {
                    throw new Exception("folder not exist and cannot be created");

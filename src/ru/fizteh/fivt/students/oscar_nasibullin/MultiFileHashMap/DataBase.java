@@ -114,7 +114,7 @@ public class DataBase {
         if (rezultMessage.equals("")) {
             rezultMessage = "no tables found";
         } else {
-            rezultMessage = rezultMessage.substring(0, rezultMessage.length()-1);
+            rezultMessage = rezultMessage.substring(0, rezultMessage.length() - 1);
         }
         return rezultMessage;
     }
