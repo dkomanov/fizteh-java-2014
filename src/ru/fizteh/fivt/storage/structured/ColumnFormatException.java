@@ -1,8 +1,7 @@
 package ru.fizteh.fivt.storage.structured;
 
 /**
- * Бросается при попытке извлечь из колонки {@link ru.fizteh.fivt.storage.structured.Storeable} значение не
- * соответствующего типа,
+ * Бросается при попытке извлечь из колонки {@link Storeable} значение не соответствующего типа,
  * либо подставить в колонку значение несоответствующего типа.
  */
 public class ColumnFormatException extends IllegalArgumentException {
