@@ -96,7 +96,7 @@ public class TableRowSerializer {
         return sb.toString();
     }
 
-    public TableRow deserialize(Table table, String value) throws ParseException{
+    public TableRow deserialize(Table table, String value) throws ParseException {
         value = value.trim();
         if (value.length() < 3 || value.charAt(0) != '[' || value.charAt(value.length() - 1) != ']'
                 || value.charAt(value.length() - 2) == ',') {
