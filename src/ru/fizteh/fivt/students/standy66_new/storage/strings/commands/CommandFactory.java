@@ -10,7 +10,7 @@ import java.util.Map;
  * Created by astepanov on 20.10.14.
  */
 public class CommandFactory {
-    private Context context;
+    protected Context context;
 
     public CommandFactory(TableProvider provider) throws NullPointerException {
         if (provider == null) {
