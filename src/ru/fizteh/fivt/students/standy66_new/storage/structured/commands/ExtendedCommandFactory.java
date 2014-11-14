@@ -1,9 +1,7 @@
 package ru.fizteh.fivt.students.standy66_new.storage.structured.commands;
 
+import ru.fizteh.fivt.students.standy66_new.commands.Command;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.CommandFactory;
-import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.CreateCommand;
-import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.PutCommand;
-import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.UseCommand;
 import ru.fizteh.fivt.students.standy66_new.storage.structured.StructuredDatabase;
 
 /**
@@ -16,17 +14,17 @@ public class ExtendedCommandFactory extends CommandFactory {
     }
 
     @Override
-    public PutCommand putCommand() {
-        return super.putCommand();
+    public Command putCommand() {
+        return new StructuredPut((ExtendedContext) context);
     }
 
     @Override
-    public UseCommand useCommand() {
-        return super.useCommand();
+    public Command useCommand() {
+        return new StructuredUse((ExtendedContext) context);
     }
 
     @Override
-    public CreateCommand createCommand() {
-        return super.createCommand();
+    public Command createCommand() {
+        return new StructuredCreate((ExtendedContext) context);
     }
 }

@@ -38,9 +38,14 @@ public class StructuredTable implements Table {
 
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
+        String strOldValue = backendTable.get(key);
         Storeable oldValue;
         try {
-            oldValue = database.deserialize(this, backendTable.get(key));
+            if (strOldValue != null) {
+                oldValue = database.deserialize(this, strOldValue);
+            } else {
+                oldValue = null;
+            }
         } catch (ParseException e) {
             throw new RuntimeException("ParseException occurred", e);
         }
@@ -51,9 +56,13 @@ public class StructuredTable implements Table {
 
     @Override
     public Storeable remove(String key) {
+        String strValue = backendTable.get(key);
+        if (strValue == null) {
+            return null;
+        }
         Storeable value;
         try {
-            value = database.deserialize(this, backendTable.get(key));
+            value = database.deserialize(this, strValue);
         } catch (ParseException e) {
             throw new RuntimeException("ParseException occurred", e);
         }
@@ -93,8 +102,12 @@ public class StructuredTable implements Table {
 
     @Override
     public Storeable get(String key) {
+        String value = backendTable.get(key);
+        if (value == null) {
+            return null;
+        }
         try {
-            return database.deserialize(this, backendTable.get(key));
+            return database.deserialize(this, value);
         } catch (ParseException e) {
             throw new RuntimeException("ParseException occurred", e);
         }
