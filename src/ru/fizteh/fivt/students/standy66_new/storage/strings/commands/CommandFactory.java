@@ -19,47 +19,47 @@ public class CommandFactory {
         this.context = new Context(provider);
     }
 
-    public PutCommand putCommand() {
+    public Command putCommand() {
         return new PutCommand(context);
     }
 
-    public CreateCommand createCommand() {
+    public Command createCommand() {
         return new CreateCommand(context);
     }
 
-    public DropCommand dropCommand() {
+    public Command dropCommand() {
         return new DropCommand(context);
     }
 
-    public GetCommand getCommand() {
+    public Command getCommand() {
         return new GetCommand(context);
     }
 
-    public ListCommand listCommand() {
+    public Command listCommand() {
         return new ListCommand(context);
     }
 
-    public RemoveCommand removeCommand() {
+    public Command removeCommand() {
         return new RemoveCommand(context);
     }
 
-    public ShowTablesCommand showTablesCommand() {
+    public Command showTablesCommand() {
         return new ShowTablesCommand(context);
     }
 
-    public UseCommand useCommand() {
+    public Command useCommand() {
         return new UseCommand(context);
     }
 
-    public SizeCommand sizeCommand() {
+    public Command sizeCommand() {
         return new SizeCommand(context);
     }
 
-    public CommitCommand commitCommand() {
+    public Command commitCommand() {
         return new CommitCommand(context);
     }
 
-    public RollbackCommand rollbackCommand() {
+    public Command rollbackCommand() {
         return new RollbackCommand(context);
     }
 
