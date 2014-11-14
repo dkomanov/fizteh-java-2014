@@ -58,6 +58,7 @@ public class DataBaseTable implements Table {
 
         for (Class<?> type: signature) {
             out.print(TableRowSerializer.classToString(type));
+            out.print(" ");
         }
         out.close();
     }

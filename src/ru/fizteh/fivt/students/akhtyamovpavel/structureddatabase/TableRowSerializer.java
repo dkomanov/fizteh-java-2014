@@ -88,10 +88,9 @@ public class TableRowSerializer {
             } else {
                 sb.append(writeMap.get(table.getColumnType(i)).getString(value.getColumnAt(i)));
             }
-            sb.append(", ");
+            sb.append(",");
         }
         if (numberOfElements > 0) {
-            sb.deleteCharAt(sb.length() - 2);
             sb.setCharAt(sb.length() - 1, ']');
         }
         return sb.toString();
@@ -104,14 +103,14 @@ public class TableRowSerializer {
             throw new ParseException("invalid JSON format", 0);
         }
         List<Object> values = new ArrayList<>();
-        String[] tokens = value.substring(1, value.length() - 1).split(";");
+        String[] tokens = value.substring(1, value.length() - 1).split(",");
         for (String string: tokens) {
             if (string.isEmpty()) {
                 throw new ParseException("empty object in JSONArray", 0);
             }
         }
         if (tokens.length != table.getColumnsCount()) {
-            throw new ParseException("invalib number of columns", 0);
+            throw new ParseException("invalid number of columns", 0);
         }
         for (int i = 0; i < table.getColumnsCount(); ++i) {
             try {

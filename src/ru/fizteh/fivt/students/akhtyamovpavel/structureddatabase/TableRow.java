@@ -17,6 +17,9 @@ public class TableRow implements Storeable {
     }
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
+        if (value == null) {
+            columnValues[columnIndex] = null;
+        }
         if (value.getClass() != columnValues[columnIndex].getClass()) {
             throw new ColumnFormatException("Invalid column types: expected - "
                     + columnValues[columnIndex].getClass().getName() + ", got - "
