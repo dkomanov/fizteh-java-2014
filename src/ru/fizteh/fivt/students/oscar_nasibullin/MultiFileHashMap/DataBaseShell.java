@@ -83,7 +83,7 @@ public final class DataBaseShell {
                         rezultMessage = dataBase.use(commands.get(i));
                         break;
                     case "show":
-                        if (commands.get(i).get(1).equals("tables")) { // ������� :)
+                        if ((commands.get(i).size() != 1) && (commands.get(i).get(1).equals("tables"))) { // ������� :)
                             rezultMessage = dataBase.showTables(commands.get(i));
                         } else {
                             System.err.println("show: no such command");
