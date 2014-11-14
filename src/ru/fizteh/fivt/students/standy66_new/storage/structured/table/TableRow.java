@@ -72,9 +72,9 @@ public class TableRow implements Storeable {
                             tableRow.setColumnAt(i, expectedClass.cast(m.invoke(null, token)));
                             break;
                         } catch (IllegalAccessException e) {
-                            throw new ParseException("Error parsing", i);
+                            throw new ParseException("Error parsing: " + e.getMessage(), i);
                         } catch (InvocationTargetException e) {
-                            throw new ParseException("Error parsing", i);
+                            throw new ParseException("Error parsing: " + e.getTargetException().getMessage(), i);
                         }
                     }
                 }
