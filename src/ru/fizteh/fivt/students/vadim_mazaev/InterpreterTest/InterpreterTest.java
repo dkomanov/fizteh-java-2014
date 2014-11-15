@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.vadim_mazaev.Interpreter;
+package ru.fizteh.fivt.students.vadim_mazaev.InterpreterTest;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,9 @@ import java.util.function.BiConsumer;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import ru.fizteh.fivt.students.vadim_mazaev.Interpreter.Command;
+import ru.fizteh.fivt.students.vadim_mazaev.Interpreter.Interpreter;
 
 public class InterpreterTest {
     private final String newLine = System.getProperty("line.separator");

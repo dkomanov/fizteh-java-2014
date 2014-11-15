@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.vadim_mazaev.DataBase;
+package ru.fizteh.fivt.students.vadim_mazaev.DataBaseTest;
 
 import static org.junit.Assert.*;
 
@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.vadim_mazaev.DataBase.DbTable;
 
 public class DbTableTest {
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DbTestDir");
