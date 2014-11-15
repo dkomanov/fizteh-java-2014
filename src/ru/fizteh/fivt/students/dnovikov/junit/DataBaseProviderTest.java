@@ -1,32 +1,38 @@
 package ru.fizteh.fivt.students.dnovikov.junit;
 
-import org.junit.After;
+import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.TableNotFoundException;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
+
 public class DataBaseProviderTest {
 
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
-    public TableProvider provider;
+    public DataBaseProvider provider;
 
     @Before
     public void setUp() throws IOException {
         TableProviderFactory factory = new DataBaseProviderFactory();
-        provider = factory.create(tmpFolder.newFolder().getAbsolutePath());
+        provider = (DataBaseProvider) factory.create(tmpFolder.newFolder().getAbsolutePath());
     }
 
+    @Test
+    public void testLoadFromEmptyDirectory() {
+        provider.loadTables();
+        assertEquals(0, provider.showTable().size());
+    }
     @Test
     public void initializationNewDirectory() {
         new DataBaseProvider(tmpFolder.getRoot().toString());
@@ -54,7 +60,7 @@ public class DataBaseProviderTest {
         provider.createTable(null);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void removeNullTableThrowsException() {
         provider.removeTable(null);
     }
@@ -66,10 +72,11 @@ public class DataBaseProviderTest {
         assertNotNull(provider.getTable("newTable"));
     }
 
-    @Test (expected = TableNotFoundException.class)
+    @Test(expected = TableNotFoundException.class)
     public void removeNotExistingTableThrowsException() {
         provider.removeTable("notExistingTable");
     }
+
 
     @Test
     public void createAndRemoveTable() {
@@ -80,9 +87,51 @@ public class DataBaseProviderTest {
     }
 
     @Test
+    public void testCurrentTable() {
+        DataBaseTable table = (DataBaseTable) provider.createTable("table");
+        provider.setCurrentTable(table);
+        assertEquals(table, provider.getCurrentTable());
+    }
+
+    @Test
+    public void removeCurrentTable() {
+        DataBaseTable table = (DataBaseTable) provider.createTable("newTable");
+        provider.setCurrentTable(table);
+        provider.removeTable("newTable");
+        assertNull(provider.getTable("newTable"));
+    }
+
+    @Test
     public void creationExistingTable() {
         assertNotNull(provider.createTable("newTable"));
         assertNull(provider.createTable("newTable"));
     }
 
+    @Test
+    public void testShowTable() {
+        provider.createTable("table1");
+        provider.createTable("table2");
+        provider.setCurrentTable(provider.getTable("table1"));
+        provider.getCurrentTable().put("key", "value");
+        List<Pair<String, Integer>> expected = new ArrayList<>();
+        expected.add(new Pair<>("table1", 1));
+        expected.add(new Pair<>("table2", 0));
+        assertTrue(provider.showTable().containsAll(expected));
+    }
+
+    @Test
+    public void testSaveAndLoad() throws IOException {
+        provider.createTable("table1");
+        provider.createTable("table2");
+        DataBaseTable table1 = (DataBaseTable) provider.getTable("table1");
+        provider.setCurrentTable(table1);
+        table1.put("key", "value");
+        table1.commit();
+        provider.saveTable();
+        provider.loadTables();
+        provider.setCurrentTable(provider.getTable("table1"));
+        assertEquals("value", provider.getCurrentTable().get("key"));
+        provider.setCurrentTable(provider.getTable("table2"));
+        assertEquals(0, provider.getCurrentTable().size());
+    }
 }

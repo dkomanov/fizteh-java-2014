@@ -5,12 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
-
-import java.io.File;
+import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;;
 import java.io.IOException;
-
-import static org.junit.Assert.*;
 
 public class DataBaseProviderFactoryTest {
 
@@ -43,6 +39,4 @@ public class DataBaseProviderFactoryTest {
     public void createWithIllegalArgumentThrowsException() throws IOException {
         factory.create(tmpFolder.newFile().getAbsolutePath());
     }
-
-
 }

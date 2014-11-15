@@ -2,58 +2,54 @@ package ru.fizteh.fivt.students.dnovikov.junit.Interpreter;
 
 import ru.fizteh.fivt.students.dnovikov.junit.DataBaseProvider;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
+import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.StopInterpreterException;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.WrongNumberOfArgumentsException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
 public class Interpreter {
 
     private final Map<String, Command> commands;
     private final DataBaseProvider dbConnector;
-    private InputStream in;
-    private PrintStream out;
+    private final InputStream in;
+    private final PrintStream out;
+    private final PrintStream err;
+    private boolean isBatch;
 
-    public Interpreter(DataBaseProvider dbConnector, InputStream in, PrintStream out, Command[] commands) {
-        if (in == null || out == null) {
+    public Interpreter(DataBaseProvider dbConnector, InputStream in, PrintStream out, PrintStream err, Command[] cmds) {
+        if (in == null || out == null || err == null) {
             throw new IllegalArgumentException("InputStream or OutputStream is null");
         }
         this.in = in;
         this.out = out;
+        this.err = err;
         this.dbConnector = dbConnector;
         this.commands = new HashMap<>();
-        for (Command command : commands) {
+        for (Command command : cmds) {
             this.commands.put(command.getName(), command);
         }
     }
 
     public void run(String[] args) throws IOException, LoadOrSaveException {
-        if (args.length == 0) {
-            interactiveMode();
-        } else {
-            batchMode(args);
+        try {
+            if (args.length == 0) {
+                isBatch = false;
+                interactiveMode();
+            } else {
+                isBatch = true;
+                batchMode(args);
+            }
+        } catch (StopInterpreterException e) {
+            // Stop the interpreter.
         }
     }
 
-    private void batchMode(String[] args) {
+    private void batchMode(String[] args) throws StopInterpreterException {
         try {
             invokeLine(String.join(" ", args));
-            if (dbConnector.getCurrentTable() != null) {
-                int unsavedChanges = dbConnector.getCurrentTable().getNumberOfChanges();
-                if (unsavedChanges > 0) {
-                    out.println(unsavedChanges + " unsaved changes");
-                } else {
-                    dbConnector.saveTable();
-                }
-            } else {
-                dbConnector.saveTable();
-            }
-            dbConnector.saveTable();
-        } catch (IOException | LoadOrSaveException e) {
-            System.err.println(e.getMessage());
+        } catch (IOException | LoadOrSaveException | WrongNumberOfArgumentsException e) {
+            err.println(e.getMessage());
             try {
                 if (dbConnector.getCurrentTable() != null) {
                     int unsavedChanges = dbConnector.getCurrentTable().getNumberOfChanges();
@@ -66,32 +62,33 @@ public class Interpreter {
                     dbConnector.saveTable();
                 }
             } catch (IOException | LoadOrSaveException exception) {
-                System.err.println(exception.getMessage());
+                err.println(exception.getMessage());
             }
             System.exit(1);
         }
     }
 
-    private void interactiveMode() {
-        System.out.print("$ ");
+    private void interactiveMode() throws StopInterpreterException {
+        out.print("$ ");
         try (Scanner scanner = new Scanner(in)) {
             while (true) {
                 String str = scanner.nextLine();
                 try {
                     invokeLine(str);
                 } catch (IOException e) {
-                    System.err.println(e.getMessage());
+                    err.println(e.getMessage());
                 } catch (WrongNumberOfArgumentsException e) {
-                    System.err.println(e.getMessage());
+                    err.println(e.getMessage());
                 } catch (LoadOrSaveException e) {
-                    System.err.println(e.getMessage());
+                    err.println(e.getMessage());
                 }
-                System.out.print("$ ");
+                out.print("$ ");
             }
         }
     }
 
-    private void invokeLine(String line) throws IOException, WrongNumberOfArgumentsException, LoadOrSaveException {
+    private void invokeLine(String line) throws StopInterpreterException,
+            WrongNumberOfArgumentsException, LoadOrSaveException, IOException {
 
         String[] commandsWithArgs = line.trim().split(";");
         for (String command : commandsWithArgs) {
@@ -99,11 +96,19 @@ public class Interpreter {
             String commandName = tokens[0];
             Command cmd = commands.get(commandName);
             if (cmd == null) {
-                throw new IOException(commandName + ": no such command");
+                if (commandName.equals("exit")) {
+                    throw new StopInterpreterException();
+                } else {
+                    throw new IOException(commandName + ": no such command");
+                }
             }
             String[] args = Arrays.copyOfRange(tokens, 1, tokens.length);
             cmd.invoke(dbConnector, args);
         }
 
+    }
+
+    public boolean isBatch() {
+        return isBatch;
     }
 }

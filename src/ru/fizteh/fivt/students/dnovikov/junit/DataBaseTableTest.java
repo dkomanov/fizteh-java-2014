@@ -19,7 +19,7 @@ public class DataBaseTableTest {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-    public Table table;
+    public DataBaseTable table;
     public String dbDirPath;
 
     @Before
@@ -27,7 +27,7 @@ public class DataBaseTableTest {
         TableProviderFactory factory = new DataBaseProviderFactory();
         dbDirPath = tmpFolder.newFolder().getAbsolutePath();
         TableProvider provider = factory.create(dbDirPath);
-        table = provider.createTable("table");
+        table = (DataBaseTable) provider.createTable("table");
     }
 
     @Test
@@ -35,17 +35,17 @@ public class DataBaseTableTest {
         assertEquals("table", table.getName());
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void putWithNullArgumentsThrowsException() {
         table.put(null, null);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void getWithNullArgumentThrowsException() {
         table.get(null);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void removeWithNullArgumentThrowsException() {
         table.remove(null);
     }
@@ -58,6 +58,7 @@ public class DataBaseTableTest {
         assertEquals("3", table.get("1"));
         assertNull(table.get("a"));
     }
+
 
     @Test
     public void testPutAndRemove() {
@@ -148,4 +149,20 @@ public class DataBaseTableTest {
         assertEquals(2, table.size());
     }
 
+    @Test
+    public void testGetUnsavedChanges() {
+        table.put("1", "2");
+        assertEquals(1, table.getNumberOfChanges());
+        table.put("1", "4");
+        assertEquals(1, table.getNumberOfChanges());
+        table.commit();
+        table.put("1", "4");
+        table.put("1", "4");
+        assertEquals(0, table.getNumberOfChanges());
+        table.put("2", "3");
+        assertEquals(1, table.getNumberOfChanges());
+        table.remove("1");
+        table.remove("2");
+        assertEquals(1, table.getNumberOfChanges());
+    }
 }

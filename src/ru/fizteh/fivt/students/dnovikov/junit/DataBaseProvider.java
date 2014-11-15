@@ -92,38 +92,12 @@ public class DataBaseProvider implements TableProvider {
         List<Pair<String, Integer>> result = new ArrayList<>();
         for (int i = 0; i < tables.size(); i++) {
             DataBaseTable table = (DataBaseTable) tables.get(i);
-            String tableName = table.getTableName();
+            String tableName = table.getName();
             int size = table.size();
             result.add(new Pair<>(tableName, size));
         }
         return result;
     }
-
-//    public void useTable(String name) throws IOException, LoadOrSaveException {
-//
-//        if (currentTable == null) {
-//            if (tableNames.get(name) != null) {
-//                currentTable = (DataBaseTable) tableNames.get(name);
-//                System.out.println("using " + name);
-//            } else {
-//                System.out.println(name + " not exists");
-//            }
-//        } else {
-//            int unsavedChanges = currentTable.getNumberOfChanges();
-//            if (tableNames.get(name) != null) {
-//                if (unsavedChanges > 0) {
-//                    System.out.println(unsavedChanges + " unsaved changes");
-//                } else {
-//                    currentTable.save();
-//                    currentTable = (DataBaseTable) tableNames.get(name);
-//                    System.out.println("using " + name);
-//                }
-//            } else {
-//                System.out.println(name + " not exists");
-//            }
-//        }
-//    }
-
 
     public void loadTables() throws LoadOrSaveException {
         if (rootDirectory.toFile().exists() && rootDirectory.toFile().isDirectory()) {

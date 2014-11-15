@@ -11,12 +11,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class MultiFileHashMap {
+public class MultiFileHashMapMain {
 
     private DataBaseProvider dbConnector = null;
 
     public static void main(String[] args) {
-        MultiFileHashMap fileMap = new MultiFileHashMap();
+        MultiFileHashMapMain fileMap = new MultiFileHashMapMain();
         try {
             fileMap.run(args);
         } catch (NullPointerException e) {
@@ -32,15 +32,15 @@ public class MultiFileHashMap {
     public void run(String[] args) throws LoadOrSaveException, NullPointerException, IOException {
         String directoryPath = System.getProperty("fizteh.db.dir");
         if (directoryPath == null) {
+            System.err.println("database directory not set");
             System.exit(1);
         }
         TableProviderFactory factory = new DataBaseProviderFactory();
         dbConnector = (DataBaseProvider) factory.create(directoryPath);
-        Interpreter interpreter = new Interpreter(dbConnector, System.in, System.out, new Command[]{
+        Interpreter interpreter = new Interpreter(dbConnector, System.in, System.out, System.err, new Command[]{
                 new Command("get", 1, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-
                         String key = new String(args[0]);
                         if (dbConnector.getCurrentTable() == null) {
                             System.out.println("no table");
@@ -58,13 +58,10 @@ public class MultiFileHashMap {
                 new Command("put", 2, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        String key = new String(args[0]);
-                        String value = new String(args[1]);
-
                         if (dbConnector.getCurrentTable() == null) {
                             System.out.println("no table");
                         } else {
-                            String result = dbConnector.getCurrentTable().put(key, value);
+                            String result = dbConnector.getCurrentTable().put(args[0], args[1]);
                             if (result == null) {
                                 System.out.println("new");
                             } else {
@@ -88,18 +85,16 @@ public class MultiFileHashMap {
                 new Command("remove", 1, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        String key = new String(args[0]);
                         if (dbConnector.getCurrentTable() == null) {
                             System.out.println("no table");
                         } else {
-                            String result = dbConnector.getCurrentTable().remove(key);
+                            String result = dbConnector.getCurrentTable().remove(args[0]);
                             if (result == null) {
                                 System.out.println("not found");
                             } else {
                                 System.out.println("removed");
                             }
                         }
-
                     }
                 }),
                 new Command("rollback", 0, new BiConsumer<DataBaseProvider, String[]>() {
@@ -141,7 +136,6 @@ public class MultiFileHashMap {
                             } else {
                                 System.out.println("created");
                             }
-
                         } catch (LoadOrSaveException e) {
                             System.err.println(e.getMessage());
                         }
@@ -164,7 +158,6 @@ public class MultiFileHashMap {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
                         String name = new String(args[0]);
-
                         if (dbConnector.getCurrentTable() == null) {
                             if (dbConnector.getTable(name) != null) {
                                 dbConnector.setCurrentTable(dbConnector.getTable(name));
@@ -218,16 +211,22 @@ public class MultiFileHashMap {
                                 dbConnector.saveTable();
                                 System.exit(0);
                             }
-                        } catch (IOException e) {
-                            System.err.println(e.getMessage());
-                        } catch (LoadOrSaveException e) {
+                        } catch (IOException | LoadOrSaveException e) {
                             System.err.println(e.getMessage());
                         }
                     }
                 })
-        }
-
-        );
+        });
         interpreter.run(args);
+        if (interpreter.isBatch()) {
+            if (dbConnector.getCurrentTable() != null) {
+                int unsavedChanges = dbConnector.getCurrentTable().getNumberOfChanges();
+                if (unsavedChanges > 0) {
+                    System.out.println(unsavedChanges + " unsaved changes");
+                } else {
+                    dbConnector.saveTable();
+                }
+            }
+        }
     }
 }

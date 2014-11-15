@@ -112,9 +112,6 @@ public class DataBaseTable implements Table {
             }
         } else {
             oldValue = diffs.remove(key);
-            if (table.get(key) != null && table.get(key).equals(value)) {
-                return oldValue;
-            }
         }
         diffs.put(key, value);
         return oldValue;
@@ -155,26 +152,8 @@ public class DataBaseTable implements Table {
         tableDirectory.delete();
     }
 
-    public String getTableName() {
-        return tableName;
-    }
-
     @Override
     public int size() {
-//        int size = 0;
-//        for (SingleTable part : tableParts) {
-//            size += part.size();
-//        }
-//        for (Entry<String, String> entry : diffs.entrySet()) {
-//            if (entry.getValue() == null) {
-//
-//                --size;
-//            } else {
-//
-//                ++size;
-//
-//            }
-//        }
         return list().size();
     }
 

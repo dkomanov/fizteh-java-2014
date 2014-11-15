@@ -114,7 +114,6 @@ public class SingleTable {
     }
 
     private String readString(DataInputStream inputStream) throws IOException {
-        try {
             int length = inputStream.readInt();
             if (length <= 0) {
                 throw new IOException("cannot read from database");
@@ -122,11 +121,7 @@ public class SingleTable {
             byte[] byteString = new byte[length];
             inputStream.readFully(byteString);
             return new String(byteString, "UTF-8");
-        } catch (EOFException e) {
-            throw new IOException("cannot read from database");
-        } catch (IOException e) {
-            throw new IOException("cannot read from database");
-        }
+
     }
 
     private void writeString(DataOutputStream outputStream, String string) throws IOException {
