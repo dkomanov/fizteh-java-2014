@@ -76,6 +76,10 @@ public final class Interpreter {
                     exitStatus = executeLine(in.nextLine().trim());
                 } catch (NoSuchElementException e) {
                     break;
+                } catch (StopInterpreterException e) {
+                    if (e.getExitStatus() == 0) {
+                        break;
+                    }
                 }
             }
         }
