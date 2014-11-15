@@ -9,3 +9,4 @@ public class ImaginaryOutputStream extends OutputStream {
     public void write(int b) throws IOException {
     }
 }
+

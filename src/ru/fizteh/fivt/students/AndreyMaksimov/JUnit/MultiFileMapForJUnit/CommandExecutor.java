@@ -8,3 +8,5 @@ public class CommandExecutor implements AbstractCommandExecutor {
         command.startNeedInstruction(dbDir);
     }
 }
+
+

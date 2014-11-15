@@ -3,22 +3,22 @@ package ru.fizteh.fivt.students.MaksimovAndrey.JUnit;
 import java.util.HashMap;
 
 public abstract class JUnitCommand {
-    private static final HashMap<String, JUnitCommand> arrayOfCommands;
+    private static final HashMap<String, JUnitCommand> ARRAY_OF_COMMANDS;
 
     static {
-        arrayOfCommands = new HashMap<>();
-        arrayOfCommands.put("create", new JUnitCreate());
-        arrayOfCommands.put("drop", new JUnitDrop());
-        arrayOfCommands.put("use", new JUnitUse());
-        arrayOfCommands.put("show_tables", new JUnitShow());
-        arrayOfCommands.put("put", new JUnitPut());
-        arrayOfCommands.put("get", new JUnitGet());
-        arrayOfCommands.put("remove", new JUnitRemove());
-        arrayOfCommands.put("list", new JUnitList());
-        arrayOfCommands.put("exit", new JUnitExit());
-        arrayOfCommands.put("commit", new Commit());
-        arrayOfCommands.put("rollback", new RollBack());
-        arrayOfCommands.put("size", new Size());
+        ARRAY_OF_COMMANDS = new HashMap<>();
+        ARRAY_OF_COMMANDS.put("create", new JUnitCreate());
+        ARRAY_OF_COMMANDS.put("drop", new JUnitDrop());
+        ARRAY_OF_COMMANDS.put("use", new JUnitUse());
+        ARRAY_OF_COMMANDS.put("show_tables", new JUnitShow());
+        ARRAY_OF_COMMANDS.put("put", new JUnitPut());
+        ARRAY_OF_COMMANDS.put("get", new JUnitGet());
+        ARRAY_OF_COMMANDS.put("remove", new JUnitRemove());
+        ARRAY_OF_COMMANDS.put("list", new JUnitList());
+        ARRAY_OF_COMMANDS.put("exit", new JUnitExit());
+        ARRAY_OF_COMMANDS.put("commit", new Commit());
+        ARRAY_OF_COMMANDS.put("rollback", new RollBack());
+        ARRAY_OF_COMMANDS.put("size", new Size());
     }
 
     public static JUnitCommand fromString(String needString) throws Exception {
@@ -29,8 +29,8 @@ public abstract class JUnitCommand {
             needString = needString.replaceFirst(" ", "_");
         }
         String[] tokens = needString.split("\\s+", 0);
-        if (arrayOfCommands.containsKey(tokens[0])) {
-            JUnitCommand command = arrayOfCommands.get(tokens[0]);
+        if (ARRAY_OF_COMMANDS.containsKey(tokens[0])) {
+            JUnitCommand command = ARRAY_OF_COMMANDS.get(tokens[0]);
             if (tokens.length - 1 != command.numberOfArguments()) {
                 throw new Exception("Unexpected number of arguments: " + command.numberOfArguments() + " required");
             }

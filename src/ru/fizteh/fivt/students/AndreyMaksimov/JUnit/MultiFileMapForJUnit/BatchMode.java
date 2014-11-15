@@ -26,3 +26,4 @@ public class BatchMode implements CommandGetter {
         }
     }
 }
+

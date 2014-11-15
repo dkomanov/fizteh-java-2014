@@ -40,3 +40,4 @@ public class JUnitRemove extends JUnitCommand {
         return 1;
     }
 }
+

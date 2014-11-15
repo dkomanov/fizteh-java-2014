@@ -65,3 +65,4 @@ public class MyTableProviderTest {
         assertNull(provider.createTable("newTable"));
     }
 }
+

@@ -5,23 +5,23 @@ import java.util.HashMap;
 
 public abstract class Command {
 
-    private static final HashMap<String, Command> arrayOfCommands;
+    private static final HashMap<String, Command> ARRAY_OF_COMMANDS;
 
     static {
-        arrayOfCommands = new HashMap<>();
-        arrayOfCommands.put("use", new Use());
-        arrayOfCommands.put("drop", new Drop());
-        arrayOfCommands.put("get", new GetMulti());
-        arrayOfCommands.put("put", new PutMulti());
-        arrayOfCommands.put("create", new Create());
-        arrayOfCommands.put("exit", new ExitMulti());
-        arrayOfCommands.put("list", new ListMulti());
-        arrayOfCommands.put("remove", new RemoveMulti());
-        arrayOfCommands.put("show_tables", new ShowTables());
+        ARRAY_OF_COMMANDS = new HashMap<>();
+        ARRAY_OF_COMMANDS.put("use", new Use());
+        ARRAY_OF_COMMANDS.put("drop", new Drop());
+        ARRAY_OF_COMMANDS.put("get", new GetMulti());
+        ARRAY_OF_COMMANDS.put("put", new PutMulti());
+        ARRAY_OF_COMMANDS.put("create", new Create());
+        ARRAY_OF_COMMANDS.put("exit", new ExitMulti());
+        ARRAY_OF_COMMANDS.put("list", new ListMulti());
+        ARRAY_OF_COMMANDS.put("remove", new RemoveMulti());
+        ARRAY_OF_COMMANDS.put("show_tables", new ShowTables());
     }
 
     public static Command fromString(String needString) throws Exception {
-        return vocabularyGetter(needString, arrayOfCommands);
+        return vocabularyGetter(needString, ArrayOfCommands);
     }
 
     public static Command vocabularyGetter(String needString, HashMap<String, Command> commands) throws Exception {
@@ -52,3 +52,4 @@ public abstract class Command {
     public void executeOnTable(Table table) throws Exception {
     }
 }
+

@@ -21,3 +21,4 @@ public class Commit extends JUnitCommand {
         return 0;
     }
 }
+
