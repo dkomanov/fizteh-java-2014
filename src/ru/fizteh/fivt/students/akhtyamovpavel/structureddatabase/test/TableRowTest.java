@@ -1,14 +1,10 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.test;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
-import ru.fizteh.fivt.storage.structured.Index;
 import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.TableRow;
 
 import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
 
 import static org.junit.Assert.*;
 

@@ -9,44 +9,25 @@ import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.DataBaseTable;
 import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.TableRow;
 import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.TableRowSerializer;
+import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.gen.TableRowGenerator;
 
 import java.io.IOException;
-import java.net.InterfaceAddress;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
 
 import static org.junit.Assert.*;
 
 public class TableRowSerializerTest {
+    static Random random = new Random();
     private static TableRowSerializer serializer;
     private static DataBaseTableProvider provider;
     private DataBaseTable table;
     private ArrayList<Class<?>> signature;
-    private static HashMap<Integer, Class<?>> types;
-    private static HashMap<Class<?>, Generator> randomGenerators = new HashMap<>();
 
-    static Random random = new Random();
-
-
-    Class<?> generateType() {
-        int type = Math.abs(random.nextInt()) % 7;
-        return types.get(type);
-    }
-
-    void generateSignature() {
-        signature = new ArrayList<>();
-        for (int i = 0; i < 50; ++i) {
-            signature.add(generateType());
-        }
-    }
-
-    ArrayList<Object> generateValues(ArrayList<Class<?>> signature) {
-        ArrayList<Object> values = new ArrayList<>();
-        for (int i = 0; i < 50; ++i) {
-            values.add(randomGenerators.get(signature.get(i)).getObject());
-        }
-        return values;
+    @BeforeClass
+    public static void init() {
+        provider = new DataBaseTableProvider("D:\\test\\database3");
+        serializer = new TableRowSerializer();
     }
 
 
@@ -60,44 +41,10 @@ public class TableRowSerializerTest {
         assertEquals(expectedList, actualList);
     }
 
-    interface Generator {
-        Object getObject();
-    }
-
-    @BeforeClass
-    public static void init() {
-        provider = new DataBaseTableProvider("D:\\test\\database3");
-        serializer = new TableRowSerializer();
-        types = new HashMap<>();
-        types.put(0, Integer.class);
-        types.put(1, Long.class);
-        types.put(2, Float.class);
-        types.put(3, Double.class);
-        types.put(4, Byte.class);
-        types.put(5, String.class);
-        types.put(6, Boolean.class);
-
-        randomGenerators.put(Integer.class, random::nextInt);
-        randomGenerators.put(Long.class, random::nextLong);
-        randomGenerators.put(Float.class, random::nextFloat);
-        randomGenerators.put(Double.class, random::nextDouble);
-        randomGenerators.put(String.class, UUID.randomUUID()::toString);
-        randomGenerators.put(Boolean.class, () -> {
-            return random.nextInt() == 1;
-        });
-        randomGenerators.put(Byte.class, () -> {
-            byte[] bytes = new byte[1];
-            random.nextBytes(bytes);
-            return bytes[0];
-        });
-    }
-
-
-
     @Before
     public void generateTable() {
         String tableName = UUID.randomUUID().toString();
-        generateSignature();
+        signature = TableRowGenerator.generateSignature();
         try {
             table = (DataBaseTable) provider.createTable(tableName, signature);
         } catch (Exception e) {
@@ -111,7 +58,7 @@ public class TableRowSerializerTest {
     }
 
     @Test
-    public void testSerialize(){
+    public void testSerialize() {
         try {
             provider.deserialize(table, "[,,]");
             assertTrue(false);
@@ -132,7 +79,7 @@ public class TableRowSerializerTest {
             assertTrue(true);
         }
 
-        ArrayList<Object> values = generateValues(signature);
+        ArrayList<Object> values = TableRowGenerator.generateValues(signature);
         Storeable row = new TableRow(values);
         try {
             assertRows(row, provider.deserialize(table, provider.serialize(table, row)));
@@ -141,12 +88,11 @@ public class TableRowSerializerTest {
         }
     }
 
-
     @Test
     public void testGet() {
         ArrayList<Storeable> values = new ArrayList<>();
         for (int i = 0; i < 100; ++i) {
-            values.add(new TableRow(generateValues(signature)));
+            values.add(provider.createFor(table, TableRowGenerator.generateValues(signature)));
         }
         for (int i = 0; i < 100; ++i) {
             table.put(Integer.toString(i), values.get(i));
@@ -164,19 +110,19 @@ public class TableRowSerializerTest {
     public void testPut() {
         ArrayList<Storeable> values = new ArrayList<>();
         for (int i = 0; i < 100; ++i) {
-            values.add(new TableRow(generateValues(signature)));
+            values.add(provider.createFor(table, TableRowGenerator.generateValues(signature)));
         }
         for (int i = 0; i < 100; ++i) {
             table.put(Integer.toString(i), values.get(i));
         }
 
         for (int i = 0; i < 100; ++i) {
-            assertEquals(table.put(Integer.toString(i), new TableRow(generateValues(signature))),
+            assertEquals(table.put(Integer.toString(i), TableRowGenerator.generateRow(provider, table, signature)),
                     values.get(i));
         }
 
         try {
-            table.put(null, new TableRow(generateValues(signature)));
+            table.put(null, TableRowGenerator.generateRow(provider, table, signature));
             assertFalse(true);
         } catch (IllegalArgumentException iae) {
             assertTrue(true);
@@ -194,7 +140,7 @@ public class TableRowSerializerTest {
     public void testList() {
         ArrayList<String> keyList = new ArrayList<>();
         for (int i = 0; i < 100; ++i) {
-            table.put(Integer.toString(i), new TableRow(generateValues(signature)));
+            table.put(Integer.toString(i), TableRowGenerator.generateRow(provider, table, signature));
             keyList.add(Integer.toString(i));
         }
         ArrayList<String> tableList = new ArrayList<>(table.list());
@@ -218,7 +164,7 @@ public class TableRowSerializerTest {
     public void testRemove() {
         ArrayList<Storeable> values = new ArrayList<>();
         for (int i = 0; i < 100; ++i) {
-            values.add(new TableRow(generateValues(signature)));
+            values.add(TableRowGenerator.generateRow(provider, table, signature));
         }
         for (int i = 0; i < 100; ++i) {
             table.put(Integer.toString(i), values.get(i));
@@ -244,12 +190,12 @@ public class TableRowSerializerTest {
     @Test
     public void testSize() {
         for (int i = 0; i < 100; ++i) {
-            table.put(Integer.toString(i), new TableRow(generateValues(signature)));
+            table.put(Integer.toString(i), TableRowGenerator.generateRow(provider, table, signature));
         }
 
         assertEquals(table.size(), 100);
         for (int i = 50; i < 1000; ++i) {
-            table.put(Integer.toString(i), new TableRow(generateValues(signature)));
+            table.put(Integer.toString(i), TableRowGenerator.generateRow(provider, table, signature));
         }
         assertEquals(table.size(), 1000);
         try {
@@ -257,7 +203,7 @@ public class TableRowSerializerTest {
         } catch (IOException ioe) {
             assertTrue(false);
         }
-        for (int i = 0; i < 500; ++i) {
+        for (int i = 0; i < 500; ++i)    {
             table.remove(Integer.toString(i));
         }
 
@@ -274,7 +220,7 @@ public class TableRowSerializerTest {
         HashMap<String, TableRow> values = new HashMap<>();
         for (int i = 0; i < 100; ++i) {
 
-            values.put(Integer.toString(i), new TableRow(generateValues(signature)));
+            values.put(Integer.toString(i), TableRowGenerator.generateRow(provider, table, signature));
             table.put(Integer.toString(i), values.get(Integer.toString(i)));
         }
         assertEquals(table.size(), 100);
@@ -282,8 +228,7 @@ public class TableRowSerializerTest {
         assertEquals(table.size(), 0);
 
         for (int i = 0; i < 100; ++i) {
-
-            values.put(Integer.toString(i), new TableRow(generateValues(signature)));
+            values.put(Integer.toString(i), TableRowGenerator.generateRow(provider, table, signature));
             table.put(Integer.toString(i), values.get(Integer.toString(i)));
         }
         try {

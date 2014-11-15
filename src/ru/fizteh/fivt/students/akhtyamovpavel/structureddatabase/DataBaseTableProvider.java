@@ -26,9 +26,9 @@ import java.util.TreeSet;
 /**
  * Created by akhtyamovpavel on 07.10.2014.
  */
+
 public class DataBaseTableProvider extends AbstractTableProvider implements AutoCloseable, TableProvider {
     private Path dataBaseDirectory;
-    private boolean isInteractive;
     private String openedTableName;
     private DataBaseTable fileMap;
     private HashMap<String, Integer> tableSet;
@@ -334,6 +334,9 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         List<Object> objectValues = new ArrayList<>(values);
 
         for (int i = 0; i < values.size(); ++i) {
+            if (objectValues.get(i) == null) {
+                continue;
+            }
             if (objectValues.get(i).getClass() != table.getColumnType(i)) {
                 throw new ColumnFormatException("incompatible column types");
             }

@@ -36,7 +36,7 @@ public class CreateTableCommand extends TableCommand implements Command {
                 throw new ParseException("invalid JSON format", 0);
             }
             List<Class<?>> values = new ArrayList<>();
-            String[] tokens = formatJSON.substring(1, formatJSON.length() - 1).split(";");
+            String[] tokens = formatJSON.substring(1, formatJSON.length() - 1).split(",");
             for (String string: tokens) {
                 if (string.isEmpty()) {
                     throw new ParseException("empty object in JSONArray", 0);
