@@ -14,6 +14,7 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
 public final class TableManager implements TableProvider {
+    private static final String ILLEGAL_TABLE_NAME_REGEX = ".*\\.|\\..*|.*(/|\\\\).*";
     private Set<String> tableNames;
     private Path tablesDirPath;
     
@@ -53,8 +54,8 @@ public final class TableManager implements TableProvider {
         }
         try {
             tablesDirPath.resolve(name);
-            if (name.matches(".*[\\\\/\\.]+.*")) {
-                throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
+            if (name.matches(ILLEGAL_TABLE_NAME_REGEX)) {
+                throw new InvalidPathException(name, "contains '\\',  or '/',  or '.'");
             }
             if (tableNames.contains(name)) {
                 return new DbTable(tablesDirPath.resolve(name), name);
@@ -72,8 +73,8 @@ public final class TableManager implements TableProvider {
             throw new IllegalArgumentException("Table name is null");
         }
         try {
-            if (name.matches(".*[\\\\/\\.]+.*")) {
-                throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
+            if (name.matches(ILLEGAL_TABLE_NAME_REGEX)) {
+                throw new InvalidPathException(name, "contains '\\',  or '/',  or '.'");
             }
             if (tableNames.contains(name)) {
                 return null;
@@ -94,11 +95,11 @@ public final class TableManager implements TableProvider {
             throw new IllegalArgumentException("Table name is null");
         }
         try {
-            if (name.matches(".*[\\\\/\\.]+.*")) {
-                throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
+            if (name.matches(ILLEGAL_TABLE_NAME_REGEX)) {
+                throw new InvalidPathException(name, "contains '\\',  or '/',  or '.'");
             }
             Path tableDir = tablesDirPath.resolve(name);
-            if (!tableNames.contains(name)) {
+            if (!tableNames.remove(name)) {
                 throw new IllegalStateException("There is no such table");
             } else {
                 recoursiveDelete(tableDir.toFile());

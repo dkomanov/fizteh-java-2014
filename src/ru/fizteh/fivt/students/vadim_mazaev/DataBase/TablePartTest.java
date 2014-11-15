@@ -20,7 +20,6 @@ public class TablePartTest {
     private final int offsetLength = 4;
     private final int dirNumber = 1;
     private final int fileNumber = 1;
-    private final String encoding = "UTF-8";
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DbTestDir");
     private final Path filePath = Paths.get(testDir.toString(), dirNumber + ".dir",
             fileNumber + ".dat");
@@ -33,10 +32,10 @@ public class TablePartTest {
     public void setUp() {
         testDir.toFile().mkdir();
         //Each key should be placed to directory with number 
-        //key.getBytes()[0] % 16
+        //key.getBytes()[0] % NUMBER_OF_PARTITIONS
         //and file with number
-        //(key.getBytes()[0] / 16) % 16.
-        byte[] b = {dirNumber + fileNumber * 16, 'k', 'e', 'y', '1'};
+        //(key.getBytes()[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS.
+        byte[] b = {dirNumber + fileNumber * TablePart.NUMBER_OF_PARTITIONS, 'k', 'e', 'y', '1'};
         correctKey1 = new String(b);
         b[4] = '2';
         correctKey2 = new String(b);
@@ -64,10 +63,10 @@ public class TablePartTest {
         filePath.getParent().toFile().mkdir();
         try (DataOutputStream file
                 = new DataOutputStream(new FileOutputStream(filePath.toString()))) {
-            file.write(wrongKey.getBytes(encoding));
+            file.write(wrongKey.getBytes(TablePart.CODING));
             file.write('\0');
             file.writeInt(wrongKey.length() + 1 + offsetLength);
-            file.write(testValue.getBytes(encoding));
+            file.write(testValue.getBytes(TablePart.CODING));
         }
         new TablePart(testDir, dirNumber, fileNumber);
     }
@@ -78,7 +77,7 @@ public class TablePartTest {
         filePath.getParent().toFile().mkdir();
         try (DataOutputStream file
                 = new DataOutputStream(new FileOutputStream(filePath.toString()))) {
-            file.write(correctKey1.getBytes(encoding));
+            file.write(correctKey1.getBytes(TablePart.CODING));
             file.write('\0');
             file.writeInt(correctKey1.length() + 1 + offsetLength);
             //Value wasn't writed to the file.
@@ -91,15 +90,15 @@ public class TablePartTest {
         filePath.getParent().toFile().mkdir();
         try (DataOutputStream file
                 = new DataOutputStream(new FileOutputStream(filePath.toString()))) {
-            file.write(correctKey1.getBytes(encoding));
+            file.write(correctKey1.getBytes(TablePart.CODING));
             file.write('\0');
             file.writeInt(correctKey1.length() + correctKey2.length() + 2 + offsetLength * 2);
-            file.write(correctKey2.getBytes(encoding));
+            file.write(correctKey2.getBytes(TablePart.CODING));
             file.write('\0');
             file.writeInt(correctKey2.length() + correctKey2.length() + 2 + offsetLength * 2
                     + testValue.length());
-            file.write(testValue.getBytes(encoding));
-            file.write(testValue.getBytes(encoding));
+            file.write(testValue.getBytes(TablePart.CODING));
+            file.write(testValue.getBytes(TablePart.CODING));
         }
         TablePart test = new TablePart(testDir, dirNumber, fileNumber);
         assertEquals(testValue, test.get(correctKey1));
@@ -205,15 +204,15 @@ public class TablePartTest {
         String[] keyList = {correctKey1, correctKey2};
         try (DataOutputStream file
                 = new DataOutputStream(new FileOutputStream(filePath.toString()))) {
-            file.write(correctKey1.getBytes(encoding));
+            file.write(correctKey1.getBytes(TablePart.CODING));
             file.write('\0');
             file.writeInt(correctKey1.length() + correctKey2.length() + 2 + offsetLength * 2);
-            file.write(correctKey2.getBytes(encoding));
+            file.write(correctKey2.getBytes(TablePart.CODING));
             file.write('\0');
             file.writeInt(correctKey2.length() + correctKey2.length() + 2 + offsetLength * 2
                     + testValue.length());
-            file.write(testValue.getBytes(encoding));
-            file.write(testValue.getBytes(encoding));
+            file.write(testValue.getBytes(TablePart.CODING));
+            file.write(testValue.getBytes(TablePart.CODING));
         }
         TablePart test = new TablePart(testDir, dirNumber, fileNumber);
         assertArrayEquals(keyList, test.list().toArray());

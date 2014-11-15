@@ -12,9 +12,9 @@ import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManager;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManagerFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.Interpreter.Command;
 import ru.fizteh.fivt.students.vadim_mazaev.Interpreter.Interpreter;
+import ru.fizteh.fivt.students.vadim_mazaev.Interpreter.StopLineInterpretationException;
 
 public final class Main {
-
     public static void main(String[] args) {
         String dbDirPath = System.getProperty("fizteh.db.dir");
         if (dbDirPath == null) {
@@ -22,7 +22,14 @@ public final class Main {
             System.exit(1);
         }
         TableProviderFactory factory = new TableManagerFactory();
-        run(new DataBaseState(factory.create(dbDirPath)), args);
+        DataBaseState state = null;
+        try {
+            state = new DataBaseState(factory.create(dbDirPath));
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        run(state, args);
     }
     
     private static void run(DataBaseState state, String[] args) {
@@ -40,7 +47,7 @@ public final class Main {
                                 System.out.println("new");
                             }
                         } else {
-                            System.out.println("no table");
+                            throw new StopLineInterpretationException("no table");
                         }
                     }
                 }),
@@ -57,7 +64,7 @@ public final class Main {
                                 System.out.println("not found");
                             }
                         } else {
-                            System.out.println("no table");
+                            throw new StopLineInterpretationException("no table");
                         }
                     }
                 }),
@@ -73,7 +80,7 @@ public final class Main {
                                 System.out.println("not found");
                             }
                         } else {
-                            System.out.println("no table");
+                            throw new StopLineInterpretationException("no table");
                         }
                     }
                 }),
@@ -84,7 +91,7 @@ public final class Main {
                         if (link != null) {
                             System.out.println(String.join(", ", link.list()));
                         } else {
-                            System.out.println("no table");
+                            throw new StopLineInterpretationException("no table");
                         }
                     }
                 }),
@@ -95,7 +102,7 @@ public final class Main {
                         if (link != null) {
                             System.out.println(link.size());
                         } else {
-                            System.out.println("no table");
+                            throw new StopLineInterpretationException("no table");
                         }
                     }
                 }),
@@ -106,7 +113,7 @@ public final class Main {
                         if (link != null) {
                             System.out.println(link.commit());
                         } else {
-                            System.out.println("no table");
+                            throw new StopLineInterpretationException("no table");
                         }
                     }
                 }),
@@ -117,7 +124,7 @@ public final class Main {
                         if (link != null) {
                             System.out.println(link.rollback());
                         } else {
-                            System.out.println("no table");
+                            throw new StopLineInterpretationException("no table");
                         }
                     }
                 }),
@@ -128,7 +135,7 @@ public final class Main {
                         if (manager.createTable(args[0]) != null) {
                             System.out.println("created");
                         } else {
-                            System.out.println(args[0] + " exists");
+                            throw new StopLineInterpretationException(args[0] + " exists");
                         }
                     }
                 }),
@@ -148,7 +155,7 @@ public final class Main {
                                 System.out.println("using " + args[0]);
                             }
                         } else {
-                            System.out.println(args[0] + " not exists");
+                            throw new StopLineInterpretationException(args[0] + " not exists");
                         }
                     }
                 }),
@@ -165,7 +172,7 @@ public final class Main {
                             manager.removeTable(args[0]);
                             System.out.println("dropped");
                         } catch (IllegalStateException e) {
-                            System.out.println("tablename not exists");
+                            throw new StopLineInterpretationException("tablename not exists");
                         }
                     }
                 }),
@@ -176,13 +183,14 @@ public final class Main {
                             DataBaseState dbState = ((DataBaseState) state);
                             TableManager manager = (TableManager) dbState.getManager();
                             List<String> tableNames = manager.getTablesList();
+                            System.out.println("table_name row_count");
                             for (String name : tableNames) {
                                 Table curTable = manager.getTable(name);
                                 System.out.println(curTable.getName() + " " + curTable.size());
                             }
                         } else {
-                            System.out.println(Interpreter.NO_SUCH_COMMAND_MSG
-                                    + "show " + args[1]);
+                            throw new StopLineInterpretationException(Interpreter.NO_SUCH_COMMAND_MSG
+                                    + "show " + args[0]);
                         }
                     }
                 })
@@ -190,7 +198,7 @@ public final class Main {
         dbInterpreter.setExitHandler(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                DbTable link = (DbTable) ((DataBaseState) state).getUsedTable();
+                DbTable link = (DbTable) state.getUsedTable();
                 if (link != null && (link.getNumberOfChanges() > 0)) {
                     System.out.println(link.getNumberOfChanges()
                             + " unsaved changes");

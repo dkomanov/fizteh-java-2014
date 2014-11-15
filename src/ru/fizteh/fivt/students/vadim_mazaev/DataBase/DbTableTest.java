@@ -31,17 +31,16 @@ public class DbTableTest {
     private final String testKey = "key";
     private final String anotherKey = "key2";
     private final String testValue = "val";
-    private final String encoding = "UTF-8";
     private final int offsetLength = 4;
     
     @Before
     public void setUp() {
         testDir.toFile().mkdir();
         //Each key should be placed to directory with number 
-        //key.getBytes()[0] % 16
+        //key.getBytes()[0] % NUMBER_OF_PARTITIONS
         //and file with number
-        //(key.getBytes()[0] / 16) % 16.
-        byte[] b = {dirNumber + fileNumber * 16, 'k', 'e', 'y'};
+        //(key.getBytes()[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS.
+        byte[] b = {dirNumber + fileNumber * DbTable.NUMBER_OF_PARTITIONS, 'k', 'e', 'y'};
         correctKey = new String(b);
     }
 
@@ -94,10 +93,10 @@ public class DbTableTest {
         Path subfilePath = subdirectoryPath.resolve(requiredSubfileName);
         try (DataOutputStream file
                 = new DataOutputStream(new FileOutputStream(subfilePath.toString()))) {
-            file.write(correctKey.getBytes(encoding));
+            file.write(correctKey.getBytes(DbTable.CODING));
             file.write('\0');
             file.writeInt(correctKey.length() + 1 + offsetLength);
-            file.write(testValue.getBytes(encoding));
+            file.write(testValue.getBytes(DbTable.CODING));
         }
         new DbTable(testDir, tableName);
     }

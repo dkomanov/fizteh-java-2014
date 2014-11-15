@@ -74,7 +74,7 @@ public class TableManagerTest {
     public void testCreateTableThrowsExceptionCalledForWrongTableName() {
         TableProvider test = new TableManager(dirPath.toString());
         //Wrong table name contains '.', '/' or '\'.
-        test.createTable("ab..cd");
+        test.createTable("..");
     }
     
     @Test
@@ -161,6 +161,4 @@ public class TableManagerTest {
         }
         testDir.toFile().delete();
     }
-
-
 }

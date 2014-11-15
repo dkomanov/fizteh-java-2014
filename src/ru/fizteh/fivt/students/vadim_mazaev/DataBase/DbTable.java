@@ -19,6 +19,10 @@ import ru.fizteh.fivt.storage.strings.Table;
  * @author Vadim Mazaev
  */
 public final class DbTable implements Table {
+    public static final int NUMBER_OF_PARTITIONS = 16;
+    public static final String CODING = "UTF-8";
+    private static final String FILE_NAME_REGEX = "([0-9]|1[0-5])\\.dat";
+    private static final String DIR_NAME_REGEX = "([0-9]|1[0-5])\\.dir"; 
     private String name;
     private Path tableDirPath;
     private Map<Integer, TablePart> parts;
@@ -59,17 +63,19 @@ public final class DbTable implements Table {
                     part.remove(pair.getKey());
                 } else {
                     if (part == null) {
-                        int dirNumber = Math.abs(pair.getKey().getBytes("UTF-8")[0] % 16);
-                        int fileNumber = Math.abs((pair.getKey().getBytes("UTF-8")[0] / 16) % 16);
+                        int dirNumber = Math.abs(pair.getKey().getBytes(CODING)[0]
+                                % NUMBER_OF_PARTITIONS);
+                        int fileNumber = Math.abs((pair.getKey().getBytes(CODING)[0]
+                                / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS);
                         part = new TablePart(tableDirPath, dirNumber, fileNumber);
-                        parts.put(dirNumber * 100 + fileNumber, part);
+                        parts.put(getDirFileCode(pair.getKey()), part);
                     }
                     part.put(pair.getKey(), pair.getValue());
                 }
             }
             diff.clear();
             writeTableToDir();
-        } catch (IOException | DataBaseIOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error writing table '" + getName()
                     + "' to its directory: " + e.getMessage(), e);
         }
@@ -101,15 +107,17 @@ public final class DbTable implements Table {
      * @return Integer code of file number and its directory number in such format: ddff.
      */
     private int getDirFileCode(String key) {
-        int dirNumber = 0;
-        int fileNumber = 0;
+        int dirNumber;
+        int fileNumber;
         try {
-            dirNumber = Math.abs(key.getBytes("UTF-8")[0] % 16);
-            fileNumber = Math.abs((key.getBytes("UTF-8")[0] / 16) % 16);
+            dirNumber = Math.abs(key.getBytes(CODING)[0] % NUMBER_OF_PARTITIONS);
+            fileNumber = Math.abs((key.getBytes(CODING)[0] / NUMBER_OF_PARTITIONS)
+                % NUMBER_OF_PARTITIONS);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException("Unable to encode key to UTF-8", e);
         }
-        return dirNumber * 100 + fileNumber;
+        int factor = (int) Math.pow(10, (NUMBER_OF_PARTITIONS + "").length());
+        return dirNumber * factor + fileNumber;
     }
     
     /**
@@ -265,10 +273,11 @@ public final class DbTable implements Table {
         String[] dirList = tableDirPath.toFile().list();
         for (String dir : dirList) {
             Path curDir = tableDirPath.resolve(dir);
-            if (!dir.matches("([0-9]|1[0-5])\\.dir")
+            if (!dir.matches(DIR_NAME_REGEX)
                     || !curDir.toFile().isDirectory()) {
                 throw new DataBaseIOException("File '" + dir
-                        + "' is not a directory or doesn't match required name '[0-15].dir'", null);
+                        + "' is not a directory or doesn't match required name '[0-"
+                        + (NUMBER_OF_PARTITIONS - 1) + "].dir'", null);
             }
             String[] fileList = curDir.toFile().list();
             if (fileList.length == 0) {
@@ -276,10 +285,11 @@ public final class DbTable implements Table {
             }
             for (String file : fileList) {
                 Path filePath = curDir.resolve(file);
-                if (!file.matches("([0-9]|1[0-5])\\.dat")
+                if (!file.matches(FILE_NAME_REGEX)
                         || !filePath.toFile().isFile()) {
                     throw new DataBaseIOException("File '" + file + "' in directory '" + dir
-                            + "' is not a file or doesn't match required name '[0-15].dat'", null);
+                            + "' is not a file or doesn't match required name '[0-"
+                            + (NUMBER_OF_PARTITIONS - 1) + "].dir'", null);
                 }
                 int dirNumber = Integer.parseInt(dir.substring(0, dir.length() - 4));
                 int fileNumber = Integer.parseInt(file.substring(0, file.length() - 4));

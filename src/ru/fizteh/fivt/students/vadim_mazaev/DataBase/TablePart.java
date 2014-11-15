@@ -19,12 +19,13 @@ import java.util.Set;
  * Class represents a single file of type *.dir/*.dat.
  * @author Vadim Mazaev
  */
-public final class TablePart {
+final class TablePart {
     private Map<String, String> data;
     private Path tablePartDirPath;
     private int fileNumber;
     private int dirNumber;
-    static final String CODING = "UTF-8";
+    public static final String CODING = "UTF-8";
+    public static final int NUMBER_OF_PARTITIONS = 16;
     
     /**
      * Constructs a TablePart. Read data from file if it exists.
@@ -140,8 +141,8 @@ public final class TablePart {
     private void readFile() throws IOException {
         try (RandomAccessFile file = new RandomAccessFile(tablePartDirPath.toString(), "r")) {
             ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
-            List<Integer> offsets = new LinkedList<Integer>();
-            List<String> keys = new LinkedList<String>();
+            List<Integer> offsets = new LinkedList<>();
+            List<String> keys = new LinkedList<>();
             int bytesCounter = 0;
             byte b;
             //Reading keys and offsets until reaching
@@ -198,8 +199,9 @@ public final class TablePart {
      */
     private boolean keyIsValidForFile(String key)
             throws UnsupportedEncodingException {
-        int expectedDirNumber = Math.abs(key.getBytes(CODING)[0] % 16);
-        int expectedFileNumber = Math.abs((key.getBytes(CODING)[0] / 16) % 16);
+        int expectedDirNumber = Math.abs(key.getBytes(CODING)[0] % NUMBER_OF_PARTITIONS);
+        int expectedFileNumber = Math.abs((key.getBytes(CODING)[0] / NUMBER_OF_PARTITIONS)
+                % NUMBER_OF_PARTITIONS);
         return (dirNumber == expectedDirNumber && fileNumber == expectedFileNumber);
     }
     
@@ -212,14 +214,14 @@ public final class TablePart {
         try (RandomAccessFile file = new RandomAccessFile(tablePartDirPath.toString(), "rw")) {
             file.setLength(0);
             Set<String> keys = data.keySet();
-            List<Integer> offsetsPos = new LinkedList<Integer>();
+            List<Integer> offsetsPos = new LinkedList<>();
             for (String currentKey : keys) {
                 file.write(currentKey.getBytes(CODING));
                 file.write('\0');
                 offsetsPos.add((int) file.getFilePointer());
                 file.writeInt(0);
             }
-            List<Integer> offsets = new LinkedList<Integer>();
+            List<Integer> offsets = new LinkedList<>();
             for (String currentKey : keys) {
                 offsets.add((int) file.getFilePointer());
                 file.write(data.get(currentKey).getBytes(CODING));
