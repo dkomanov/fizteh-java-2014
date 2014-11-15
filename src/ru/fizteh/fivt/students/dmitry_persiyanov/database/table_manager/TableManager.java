@@ -4,7 +4,6 @@ import ru.fizteh.fivt.storage.strings.Table;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.NotDirectoryException;
 import java.util.*;
 
 public final class TableManager implements Table {

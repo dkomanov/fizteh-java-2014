@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.nio.file.NotDirectoryException;
 import java.util.*;
 
 import static org.junit.Assert.*;

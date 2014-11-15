@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.interpreter;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Scanner;
 

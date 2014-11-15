@@ -1,16 +1,18 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.interpreter;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.After;
 import ru.fizteh.fivt.students.dmitry_persiyanov.interpreter.exceptions.WrongCommandException;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 class GreetingCommandForTest implements InterpreterCommand {
     @Override

@@ -1,6 +1,9 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.interpreter;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Scanner;
 
 public final class Interpreter {

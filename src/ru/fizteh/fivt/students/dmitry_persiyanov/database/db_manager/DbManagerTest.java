@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager;
 
-import javafx.scene.control.Tab;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,8 +9,6 @@ import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 
 import static org.junit.Assert.*;
 

@@ -2,10 +2,11 @@ package ru.fizteh.fivt.students.dmitry_persiyanov;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager.DbManager;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.parser.DbCommandsParser;
-import ru.fizteh.fivt.students.dmitry_persiyanov.database.table_manager.TableManager;
 import ru.fizteh.fivt.students.dmitry_persiyanov.interpreter.Interpreter;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
 
 public final class DbInterpreter {
     public static final String PROMPT = "$ ";

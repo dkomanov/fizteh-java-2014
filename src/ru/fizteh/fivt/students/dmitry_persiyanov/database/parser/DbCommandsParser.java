@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.parser;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.DatabaseCommand;
-import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager.commands.ExitCommand;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager.DbManager;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager.commands.*;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.table_manager.commands.*;

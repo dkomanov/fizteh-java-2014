@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager.commands;
 
-import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager.DbManager;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.DatabaseCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager.DbManager;
 
 import java.io.IOException;
 import java.io.PrintStream;

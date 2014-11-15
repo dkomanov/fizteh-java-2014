@@ -4,7 +4,7 @@ import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableIsNotC
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.table_manager.TableManager;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.List;
 
 public class ListCommand extends TableManagerCommand {
     public ListCommand(final String[] args, final TableManager relatedTable) {

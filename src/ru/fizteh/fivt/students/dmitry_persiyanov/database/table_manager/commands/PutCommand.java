@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.table_manager.commands;
 
-import ru.fizteh.fivt.students.dmitry_persiyanov.database.table_manager.TableManager;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableIsNotChosenException;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.table_manager.TableManager;
 
 import java.io.PrintStream;
 
