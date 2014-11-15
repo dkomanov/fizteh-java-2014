@@ -18,7 +18,7 @@ public final class Main {
     public static void main(String[] args) {
         String dbDirPath = System.getProperty("fizteh.db.dir");
         if (dbDirPath == null) {
-            System.err.println("You must specify fizteh.db.dir via -Ddb.file JVM parameter");
+            System.err.println("You must specify fizteh.db.dir via -Dfizteh.db.dir JVM parameter");
             System.exit(1);
         }
         TableProviderFactory factory = new TableManagerFactory();
@@ -200,8 +200,9 @@ public final class Main {
             }
             
         });
+        
         try {
-            dbInterpreter.run(args);
+            System.exit(dbInterpreter.run(args));
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 System.err.println(e.getMessage());

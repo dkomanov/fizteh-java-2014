@@ -36,76 +36,88 @@ public final class Interpreter {
         this(connector, commands, System.in, System.out);
     }
     
-    public void run(String[] args) throws Exception {
+    public int run(String[] args) throws Exception {
+        int exitStatus = 0;
         try {
             if (args.length == 0) {
-                interactiveMode();
+                exitStatus = interactiveMode();
             } else {
-                batchMode(args);
+                exitStatus = batchMode(args);
             }
         } catch (StopInterpreterException e) {
-            //Just stop the interpreter.
+            exitStatus = e.getExitStatus();
         }
+        return exitStatus;
     }
     
     public void setExitHandler(Callable<Boolean> callable) {
         exitHandler = callable;
     }
     
-    private void batchMode(String[] args) throws Exception {
+    private int batchMode(String[] args) throws Exception {
         StringBuilder builder = new StringBuilder();
         for (String current : args) {
             builder.append(current);
             builder.append(" ");
         }
-        executeLine(builder.toString());
+        int exitStatus = executeLine(builder.toString());
         if (exitHandler != null) {
             exitHandler.call();
         }
+        return exitStatus;
     }
 
-    private void interactiveMode() throws Exception {
+    private int interactiveMode() throws Exception {
+        int exitStatus = 0;
         try (Scanner in = new Scanner(this.in)) {
             while (true) {
                 out.print(PROMPT);
                 try {
-                    executeLine(in.nextLine().trim());
+                    exitStatus = executeLine(in.nextLine().trim());
                 } catch (NoSuchElementException e) {
                     break;
                 }
             }
         }
+        return exitStatus;
     }
     
-    private void executeLine(String line) throws Exception {
+    private int executeLine(String line) throws Exception {
         String[] cmds = line.split(COMMAND_SEPARATOR);
         try {
             for (String current : cmds) {
-                    parse(current.trim().split("\\s+"), false);
+                    parse(current.trim().split("\\s+"));
             }
+            return 0;
         } catch (StopLineInterpretationException e) {
             out.println(e.getMessage());
+            return 1;
         }
     }
     
-    private void parse(String[] cmdWithArgs, boolean stopOnError) throws Exception {
+    private void parse(String[] cmdWithArgs) throws Exception {
         if (cmdWithArgs.length > 0 && !cmdWithArgs[0].isEmpty()) {
             String commandName = cmdWithArgs[0];
             if (commandName.equals("exit")) {
                 if (exitHandler == null) {
-                    throw new StopInterpreterException();
+                    throw new StopInterpreterException(0);
                 }
                 if (exitHandler.call()) {
-                    throw new StopInterpreterException();
+                    throw new StopInterpreterException(0);
+                } else {
+                    throw new StopInterpreterException(1);
                 }
-                return;
             }
             Command command = commands.get(commandName);
             if (command == null) {
                 throw new StopLineInterpretationException(NO_SUCH_COMMAND_MSG + commandName);
             } else {
                 String[] args = Arrays.copyOfRange(cmdWithArgs, 1, cmdWithArgs.length);
-                command.execute(connector, args);
+                try {
+                    command.execute(connector, args);
+                } catch (RuntimeException e) {
+                    throw new StopLineInterpretationException(e.getMessage());
+                }
             }
         }
     }
