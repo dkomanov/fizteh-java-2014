@@ -23,6 +23,14 @@ public class DataBaseTableProviderFactory implements TableProviderFactory {
     }
 
     public DataBaseTableProvider create(String dir, boolean testMode) throws Exception {
-        return new DataBaseTableProvider(dir, testMode);
+        if (dir == null) {
+            throw new IllegalArgumentException("Null table path");
+        }
+        try {
+            return new DataBaseTableProvider(dir, testMode);
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 }

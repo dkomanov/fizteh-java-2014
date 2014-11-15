@@ -120,7 +120,7 @@ public class DataBaseTableProviderTest {
         }
         try {
             DataBaseTableProvider database1 = factory.create("D:\\test\\lol.dir", true);
-            assertTrue(false);
+            assertNull(database1);
         } catch (Exception e) {
             assertTrue(true);
         }
