@@ -21,7 +21,7 @@ public abstract class Command {
     }
 
     public static Command fromString(String needString) throws Exception {
-        return vocabularyGetter(needString, ArrayOfCommands);
+        return vocabularyGetter(needString, ARRAY_OF_COMMANDS);
     }
 
     public static Command vocabularyGetter(String needString, HashMap<String, Command> commands) throws Exception {
