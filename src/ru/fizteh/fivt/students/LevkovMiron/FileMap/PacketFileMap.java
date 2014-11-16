@@ -1,21 +1,25 @@
-package ru.fizteh.fivt.students.LevkovMiron.shell;
+package ru.fizteh.fivt.students.LevkovMiron.FileMap;
 
 /**
  * Created by Мирон on 22.09.2014 ru.fizteh.fivt.students.LevkovMiron.shell.
  */
-class PacketShell extends Shell {
+
+class PacketFileMap extends FileMap {
+    PacketFileMap() {
+        super(System.err);
+    }
     public void readCommands(final String[] args) {
         String argumentString = "";
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (String s : args) {
-            stringBuilder.append(s + " ");
+            builder.append(s + " ");
         }
-        argumentString = stringBuilder.toString();
-        argumentString.trim();
+        argumentString = builder.toString();
+        argumentString = argumentString.trim();
         String[] commands = argumentString.split(";");
         for (String cmd : commands) {
             runCommand(cmd, System.err);
         }
-        exit();
+        System.exit(1);
     }
 }
