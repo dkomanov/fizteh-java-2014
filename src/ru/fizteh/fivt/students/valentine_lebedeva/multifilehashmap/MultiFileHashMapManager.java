@@ -27,8 +27,7 @@ public final class MultiFileHashMapManager {
         tables = new HashMap<>();
         File dir = new File(System.getProperty("fizteh.db.dir"));
         if (!dir.isDirectory()) {
-            throw new IllegalArgumentException(dir.getName() + " "
-                    + "is not directory");
+            throw new IllegalArgumentException(dir.getName() + " " + "is not directory");
         }
         if (!dir.exists()) {
             throw new FileNotFoundException(dir.getName() + " " + "not exists");
@@ -53,8 +52,7 @@ public final class MultiFileHashMapManager {
         commands.put("exit", new MultiFileHashMapExitCommand());
     }
 
-    public void parse(final String cmdArgs, final Boolean cmdMode)
-            throws Exception {
+    public void parse(final String cmdArgs, final Boolean cmdMode) throws Exception {
         try {
             String[] parseArgs = cmdArgs.split(" ");
             if (commands.get(parseArgs[0]) != null) {
@@ -82,7 +80,8 @@ public final class MultiFileHashMapManager {
         tables.put(key, value);
     }
 
-    public void removeTable(final String key) {
+    public void removeTable(final String key) throws IOException {
+        tables.get(key).removeTable();
         tables.remove(key);
     }
 

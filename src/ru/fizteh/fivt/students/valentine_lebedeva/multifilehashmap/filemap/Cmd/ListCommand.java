@@ -7,6 +7,7 @@ import java.util.Set;
 import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHashMapManager;
 
 public final class ListCommand extends FileMapCommand {
+    @Override
     public void execute(final String[] args, MultiFileHashMapManager parser) {
         if (checkWorkTable(parser.getWorkTable())) {
             checkArgs(1, args);

@@ -17,19 +17,19 @@ public abstract class Table {
 
     public abstract void close() throws IOException;
 
-    public Map<String, String> getBase() {
+    public final Map<String, String> getBase() {
         return base;
     }
 
-    public void putBase(final String key, final String value) {
+    public final void putBase(final String key, final String value) {
         base.put(key, value);
     }
 
-    public void removeBase(final String key) {
+    public final void removeBase(final String key) {
         base.remove(key);
     }
 
-    public void setBase(Map<String, String> newBase) {
+    public final void setBase(Map<String, String> newBase) {
         base = newBase;
     }
 }
