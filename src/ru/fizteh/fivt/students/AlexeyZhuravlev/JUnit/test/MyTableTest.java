@@ -108,7 +108,7 @@ public class MyTableTest {
         table.remove("1");
         table.put("1", "5");
         assertEquals(3, table.size());
-        assertEquals(5, table.rollback());
+        assertEquals(3, table.rollback());
         assertEquals(0, table.size());
     }
 
@@ -119,7 +119,7 @@ public class MyTableTest {
         table.put("2", "3");
         table.put("3", "4");
         table.remove("3");
-        assertEquals(4, table.commit());
+        assertEquals(2, table.commit());
         assertEquals(2, table.size());
         TableProviderFactory factory = new MyTableProviderFactory();
         TableProvider provider = factory.create(dbDirPath);
