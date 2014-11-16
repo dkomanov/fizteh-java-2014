@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.MultiFileMap;
+package ru.fizteh.fivt.students.ilivanov.Storeable;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,16 +12,15 @@ public class Main {
             System.exit(-1);
         }
 
-        ShellBigBoss database = null;
+        Shell shell = new Shell(System.out);
         try {
-            database = new ShellBigBoss(root);
-        } catch (RuntimeException e) {
+            FileMapProvider provider = new FileMapProviderFactory().create(root);
+            ShellBigBoss database = new ShellBigBoss(provider);
+            database.integrate(shell);
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             System.exit(-1);
         }
-
-        Shell shell = new Shell();
-        database.integrate(shell);
 
         int exitCode;
         if (args.length != 0) {
