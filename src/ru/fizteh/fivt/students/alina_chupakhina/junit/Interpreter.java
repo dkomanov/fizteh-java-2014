@@ -70,9 +70,7 @@ public class Interpreter {
             }
         } else if (args[0].equals("exit")) {
             exit(args);
-        } else if (args[0].equals("")) {
-            //Nothing
-        } else {
+        } else if (!args[0].equals("")) {
             throw new IllegalArgumentException(args[0] + MESSAGE_INVALID_COMMAND);
         }
     }

@@ -87,6 +87,8 @@ public class PvTable implements TableProvider {
             System.err.println(e.getMessage());
             System.exit(-1);
         }
+        TableState ts = new TableState(t.fm, 0, t.numberOfElements);
+        t.tableStates.put(0, ts);
         return t;
     }
 
@@ -107,7 +109,9 @@ public class PvTable implements TableProvider {
             return null;
         } else {
             Table t = new BdTable(name, path);
-            table.mkdir();
+            if(!table.mkdir()) {
+                System.err.println("Unable to create a table");
+            }
             return t;
         }
     }
