@@ -52,10 +52,8 @@ public class JUnitTableProvider implements TableProvider {
         JUnitTable newTable = new JUnitTable(dbDir + File.separator + name);
         if (tables.get(name) == null) {
             tables.put(name, newTable);
-            System.out.println("created");
             return newTable;
         }
-        System.out.println(name + " exists");
         return null;
     }
 
@@ -63,10 +61,10 @@ public class JUnitTableProvider implements TableProvider {
     public void removeTable(String name) throws IllegalArgumentException, IllegalStateException {
         CheckParameters.checkTableName(name);
         if (tables.remove(name) == null) {
-            throw new IllegalStateException("table with name " + name + " does not exist");
+            throw new IllegalStateException("table '" + name + "' does not exist");
         }
         try {
-            FileMap.fileDelete(new File(Paths.get(MultiFileHashMap.dbDir).resolve(name).toString()));
+            FileMap.fileDelete(new File(Paths.get(dbDir).resolve(name).toString()));
         } catch (NullPointerException e) {
             //do something?
         }
