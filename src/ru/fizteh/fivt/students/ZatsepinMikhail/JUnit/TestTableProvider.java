@@ -172,7 +172,7 @@ public class TestTableProvider {
 
             boolean exceptionWas = false;
             try {
-                Storeable deserValue = provider.deserialize(newTable, stringForParse + 2);
+                provider.deserialize(newTable, stringForParse + 2);
             } catch (ParseException e) {
                 exceptionWas = true;
             }
@@ -180,7 +180,7 @@ public class TestTableProvider {
 
             exceptionWas = false;
             try {
-                Storeable deserValue = provider.deserialize(newTable, stringForParse2);
+                provider.deserialize(newTable, stringForParse2);
             } catch (ParseException e) {
                 exceptionWas = true;
             }

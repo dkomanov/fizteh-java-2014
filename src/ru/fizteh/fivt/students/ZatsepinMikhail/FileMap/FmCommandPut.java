@@ -21,8 +21,7 @@ public class FmCommandPut extends CommandFileMap {
         try {
             myFileMap.put(args[1], Serializator.deserialize(myFileMap, args[2]));
         } catch (ParseException e) {
-            System.out.println("error while deserializing: " + args[2]
-                + "; " + e.getMessage());
+            System.out.println("wrong type (" + e.getMessage() + ")");
             return false;
         } catch (NoSuchElementException e) {
             System.out.println("error: not xml format value");

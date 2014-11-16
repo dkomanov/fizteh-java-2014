@@ -24,7 +24,7 @@ public class CommandCreate extends CommandMultiFileHashMap {
         String concatArgs = simpleBuilder.toString();
         if (concatArgs.lastIndexOf("(") != 0
                 || concatArgs.indexOf(")") != concatArgs.length() - 1) {
-            System.out.println("types should be in format: \"(type1 type2 ... typeN)\"");
+            System.out.println("types should be in format: \"<name> (type1 type2 ... typeN)\"");
             return false;
         }
 

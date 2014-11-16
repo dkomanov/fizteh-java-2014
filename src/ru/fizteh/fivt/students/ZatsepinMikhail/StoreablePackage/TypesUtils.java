@@ -24,14 +24,14 @@ public class TypesUtils {
     public static boolean checkTypes(List<Class<?>> types) {
         for (Class<?> oneClass : types) {
             if (!canonicalTypes.contains(oneClass)) {
-                return false;
+                throw new IllegalArgumentException("wrong type (" + oneClass.getTypeName() + ")");
             }
         }
         return true;
     }
 
     public static boolean checkNewStorableValue(List<Class<?>> types, Storeable newValue)
-    throws IndexOutOfBoundsException, IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
         if (types.size() != TypesUtils.getSizeOfStoreable(newValue)) {
             throw new IndexOutOfBoundsException();
         }
@@ -82,7 +82,7 @@ public class TypesUtils {
                     result.add(String.class);
                     break;
                 default:
-                    throw new ColumnFormatException("wrong type: " + oneType);
+                    throw new ColumnFormatException("wrong type (" + oneType + ")");
             }
         }
         return result;

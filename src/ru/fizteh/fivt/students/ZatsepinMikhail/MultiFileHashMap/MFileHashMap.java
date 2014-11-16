@@ -8,7 +8,6 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
 
-import com.sun.jmx.remote.internal.ArrayQueue;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
@@ -45,9 +44,7 @@ public class MFileHashMap implements TableProvider {
         if (name == null || columnTypes == null) {
             throw new IllegalArgumentException("null argument");
         }
-        if (!TypesUtils.checkTypes(columnTypes)) {
-            throw new IllegalArgumentException("wrong type columns");
-        }
+        TypesUtils.checkTypes(columnTypes);
         if (tables.containsKey(name)) {
             return null;
         } else {
