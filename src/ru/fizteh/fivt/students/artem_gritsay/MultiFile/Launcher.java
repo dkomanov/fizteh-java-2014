@@ -223,6 +223,10 @@ public class Launcher {
         if (tableNames != null && tableNames.containsKey(arguments[1])) {
             printStream.println(arguments[1] + " exists");
         }
+        if (!checkNameCorrection(arguments[1])) {
+            System.err.println("Incorrect name: " + arguments[1]);
+            return false;
+        }
         File table = new File(parentDir + File.separator + arguments[1]);
         if (!table.mkdir()) {
             return false;
@@ -342,6 +346,36 @@ public class Launcher {
             return false;
         }
         exitFlag = true;
+        return true;
+    }
+    public boolean checkNameCorrection(final String name) {
+        if (name.contains("*")) {
+            return false;
+        }
+        if (name.contains("\\")) {
+            return false;
+        }
+        if (name.contains("|")) {
+            return false;
+        }
+        if (name.contains("/")) {
+            return false;
+        }
+        if (name.contains("\"")) {
+            return false;
+        }
+        if (name.contains(":")) {
+            return false;
+        }
+        if (name.contains("?")) {
+            return false;
+        }
+        if (name.contains(">")) {
+            return false;
+        }
+        if (name.contains("<")) {
+            return false;
+        }
         return true;
     }
 

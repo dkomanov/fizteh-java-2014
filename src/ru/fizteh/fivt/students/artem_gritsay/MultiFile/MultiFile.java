@@ -12,6 +12,7 @@ public class MultiFile {
         try {
             Launcher launcher = new Launcher(multiFileHashMap.tableNames, multiFileHashMap.fileMapPath);
             if (!launcher.launch(args)) {
+                System.out.println("Incorrect arguments");
                 System.exit(1);
             }
         } catch (IOException e) {
@@ -19,6 +20,7 @@ public class MultiFile {
             System.exit(1);
         }
     }
+
     private boolean checkTable(String name) {
         File dircheck = new File(fileMapPath + File.separator + name);
         if (!dircheck.exists() || !dircheck.isDirectory()) {
@@ -69,5 +71,4 @@ public class MultiFile {
         }
         initBase();
     }
-
 }

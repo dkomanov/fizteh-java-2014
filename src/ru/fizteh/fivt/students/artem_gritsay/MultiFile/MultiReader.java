@@ -8,7 +8,6 @@ public class MultiReader {
     private String fileMapPath;
 
     public MultiReader(String path) {
-
         fileMapPath = path;
     }
 
@@ -36,9 +35,11 @@ public class MultiReader {
             throw new IOException(e.getMessage());
         }
         int length = ByteBuffer.wrap(bytes).getInt();
+
         if (length < 0) {
             throw new IOException("Something goes wrong");
         }
+
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         for (int i = 0; i < length; i++) {
             try {
