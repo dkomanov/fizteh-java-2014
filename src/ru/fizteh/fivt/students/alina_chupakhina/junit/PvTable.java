@@ -109,7 +109,7 @@ public class PvTable implements TableProvider {
             return null;
         } else {
             Table t = new BdTable(name, path);
-            if(!table.mkdir()) {
+            if (!table.mkdir()) {
                 System.err.println("Unable to create a table");
             }
             return t;
