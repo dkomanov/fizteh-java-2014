@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -17,6 +18,7 @@ import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProvider
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.StringTableImpl;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -180,6 +182,72 @@ public class TableProviderTest extends TestBase {
     private void expectTableNameIsNotCorrect() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Table name is not correct");
+    }
+
+    private void expectTableCorruptAndAllOf(String tableName, Matcher<String>... matchers) {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage(allOf(containsString("Table " + tableName + " is corrupt"), allOf(matchers)));
+    }
+
+    @Test
+    public void testObtainTableWithInvalidSignatureFile() throws IOException {
+        String tableName = "table";
+        Table table = provider.createTable(tableName, DEFAULT_COLUMN_TYPES);
+
+        table.put("key", provider.createFor(table, Arrays.asList("value")));
+        table.commit();
+
+        try (PrintWriter writer = new PrintWriter(
+                DB_ROOT.resolve(tableName).resolve("signature.tsv").toString())) {
+            writer.print("Integer Integer");
+        }
+
+        prepareProvider();
+
+        expectTableCorruptAndAllOf(
+                tableName,
+                containsString("wrong type (Invalid type description file for table"));
+
+        provider.getTable(tableName);
+    }
+
+    @Test
+    public void testObtainTableWithExtraFile() throws IOException {
+        String tableName = "table";
+
+        Files.createDirectories(DB_ROOT.resolve(tableName).resolve("1.dir"));
+        Files.createFile(DB_ROOT.resolve(tableName).resolve("1.dir").resolve("file.txt"));
+
+        prepareProvider();
+        expectTableCorruptAndAllOf(tableName, containsString("Invalid database element format"));
+
+        provider.getTable(tableName);
+    }
+
+    @Test
+    public void testObtainTableWithMissingSignatureFile() throws IOException {
+        String tableName = "table";
+
+        Files.createDirectory(DB_ROOT.resolve(tableName));
+
+        prepareProvider();
+
+        expectTableCorruptAndAllOf(tableName, containsString("Failed to open types description file"));
+
+        provider.getTable(tableName);
+    }
+
+    @Test
+    public void testObtainTableWithBadIDOfPartFile() throws IOException {
+        String tableName = "table";
+
+        Files.createDirectories(DB_ROOT.resolve(tableName).resolve("1.dir"));
+        Files.createFile(DB_ROOT.resolve(tableName).resolve("1.dir").resolve("10000.dat"));
+
+        prepareProvider();
+        expectTableCorruptAndAllOf(tableName, containsString("Invalid database element id"));
+
+        provider.getTable(tableName);
     }
 
     @Test

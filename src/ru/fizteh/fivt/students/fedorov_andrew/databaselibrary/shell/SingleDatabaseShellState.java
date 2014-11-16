@@ -45,7 +45,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     @Override
     public void cleanup() {
         // Delete empty files and directories inside tables' directories
-        Path dbDirectory = (activeDatabase == null ? null : activeDatabase.getDbDirectory());
+        Path dbDirectory = (getActiveDatabase() == null ? null : getActiveDatabase().getDbDirectory());
 
         if (dbDirectory != null) {
             try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dbDirectory)) {
@@ -64,12 +64,14 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     public String getGreetingString() {
         StoreableTableImpl table;
         try {
-            table = activeDatabase.getActiveTable();
+            table = getActiveDatabase().getActiveTable();
         } catch (NoActiveTableException exc) {
             table = null;
         }
         return String.format(
-                "%s%s $ ", (table == null ? "" : (table.getName() + '@')), activeDatabase.getDbDirectory());
+                "%s%s $ ",
+                (table == null ? "" : (table.getName() + '@')),
+                getActiveDatabase().getDbDirectory());
     }
 
     @Override
@@ -88,12 +90,12 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
             throw new IllegalArgumentException("Please mention database directory");
         }
 
-        activeDatabase = Database.establishDatabase(Paths.get(dbDirPath));
+        activeDatabase = new Database(Paths.get(dbDirPath));
     }
 
     @Override
     public void persist() throws DatabaseIOException {
-        activeDatabase.commit();
+        getActiveDatabase().commit();
     }
 
     @Override
@@ -112,11 +114,11 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     }
 
     public DBTableProvider getProvider() {
-        return activeDatabase.getProvider();
+        return getActiveDatabase().getProvider();
     }
 
     public StoreableTableImpl getActiveTable() throws NoActiveTableException {
-        return activeDatabase.getActiveTable();
+        return getActiveDatabase().getActiveTable();
     }
 
     @Override

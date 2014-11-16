@@ -190,6 +190,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
         } catch (IOException | ParseException exc) {
             exitRequested = true;
             Utility.handleError("Error in input stream: " + exc.getMessage(), exc, true);
+            // No need to cleanup - work has not been started.
         } catch (ExitRequest request) {
             exitRequested = true;
             return request.getCode();

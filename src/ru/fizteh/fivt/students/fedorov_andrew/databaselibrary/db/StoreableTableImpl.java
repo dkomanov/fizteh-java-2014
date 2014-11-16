@@ -35,7 +35,8 @@ public class StoreableTableImpl implements Table {
                                                                 .putNext(Boolean.class, "boolean")
                                                                 .putNext(String.class, "String");
 
-    private static final Map<String, Class<?>> NAMES_TO_CLASSES_MAP = Utility.inverseMap(CLASSES_TO_NAMES_MAP);
+    private static final Map<String, Class<?>> NAMES_TO_CLASSES_MAP =
+            Utility.inverseMap(CLASSES_TO_NAMES_MAP);
 
     private static final String COLUMNS_FORMAT_FILENAME = "signature.tsv";
 
@@ -61,8 +62,7 @@ public class StoreableTableImpl implements Table {
 
         // Filling signature file.
         try (PrintWriter writer = new PrintWriter(tablePath.resolve(COLUMNS_FORMAT_FILENAME).toString())) {
-            String[] types = columnTypes.stream().map(CLASSES_TO_NAMES_MAP::get).toArray(
-                    String[]::new);
+            String[] types = columnTypes.stream().map(CLASSES_TO_NAMES_MAP::get).toArray(String[]::new);
             writer.print(String.join(" ", types));
         } catch (IOException exc) {
             try {
@@ -72,7 +72,7 @@ public class StoreableTableImpl implements Table {
             }
 
             throw new DatabaseIOException(
-                    "Failed to create table types description type: " + exc.toString(), exc);
+                    "Failed to create table types description file: " + exc.toString(), exc);
         }
 
         return new StoreableTableImpl(provider, store, columnTypes);
@@ -121,7 +121,7 @@ public class StoreableTableImpl implements Table {
                 String msg = exc.getMessage();
                 String descriptionPart = msg.substring(msg.indexOf('('), msg.lastIndexOf(')'));
                 throw new DatabaseIOException(
-                        "wrong type(Invalid type description file for table " + store.getName() + ": "
+                        "wrong type (Invalid type description file for table " + store.getName() + ": "
                         + descriptionPart + ")");
             } else {
                 throw new TableCorruptIOException(

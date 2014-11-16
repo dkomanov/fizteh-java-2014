@@ -204,7 +204,7 @@ public final class Utility {
      *         Key type in the source map.
      * @param <V>
      *         Value type in the source map.
-     * @return An inversed map.
+     * @return An inversed map. It is not guaranteed that it is instance of the same class as source map has.
      * @throws java.lang.IllegalArgumentException
      *         If there are two keys having the same values.
      * @see Object#equals(Object)

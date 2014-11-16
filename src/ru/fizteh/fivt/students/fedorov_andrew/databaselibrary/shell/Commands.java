@@ -46,7 +46,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
     public static final Command<SingleDatabaseShellState> CREATE = new AbstractCommand(
             "<tablename> (type0 type1 ... typeN)",
             "creates a new table with the given name and column types (must be specified inside round "
-            + "brackets)",
+            + "brackets); type can be one of the following: int, long, byte, float, double, boolean, String;",
             3,
             Integer.MAX_VALUE) {
         @Override
@@ -97,6 +97,9 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
                     } finally {
                         state.prepareToExit(exitCode);
                     }
+
+                    // If all contracts are honoured, this line should not be reached.
+                    throw new AssertionError("Exit request not thrown");
                 }
 
                 @Override
@@ -177,7 +180,10 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
                 }
             };
     public static final Command<SingleDatabaseShellState> PUT = new AbstractCommand(
-            "<key> [ {boolean|number|string|null}... ]", "assigns new storeable to the key", 3) {
+            "<key> [ {boolean|number|string|null}... ]",
+            "assigns new storeable to the key",
+            3,
+            Integer.MAX_VALUE) {
         @Override
         public void executeSafely(SingleDatabaseShellState state, String[] args)
                 throws DatabaseIOException, NoActiveTableException, ParseException {

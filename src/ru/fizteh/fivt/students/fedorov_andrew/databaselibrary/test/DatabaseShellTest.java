@@ -8,6 +8,7 @@ import org.junit.runners.JUnit4;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.Shell;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.SingleDatabaseShellState;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.MutatedSDSS;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,6 +36,34 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         runBatchExpectZero(String.format("create %1$s (String); use %1$s", table));
         assertEquals(
                 "Creating and using table", String.format("created%nusing %1$s%n", table), getOutput());
+    }
+
+    @Test
+    public void testFailPersistOnExit() throws TerminalException {
+        MutatedSDSS state = new MutatedSDSS(0);
+        interpreter = new Shell<>(state);
+
+        runBatchExpectNonZero("exit");
+        assertEquals(
+                "Failing on persist() call",
+                makeTerminalExpectedMessage("Fail on commit [test mode]"),
+                getOutput());
+    }
+
+    @Test
+    public void testPutCompositeStoreable() throws TerminalException {
+        runBatchExpectZero("create t1 (String  int boolean)", "use t1");
+        runBatchExpectZero("put key [ \"hello\", 2, null ]");
+
+        assertEquals("Output after put", makeTerminalExpectedMessage("new"), getOutput());
+
+        runBatchExpectZero(true, "use t1");
+        runBatchExpectZero("get key");
+
+        assertEquals(
+                "Output after get",
+                makeTerminalExpectedMessage("found", "[\"hello\",2,null]"),
+                getOutput());
     }
 
     @Test
@@ -108,6 +137,16 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         runBatchExpectZero(command);
 
         assertEquals("Changes count test in commit", expectedReply, getOutput());
+    }
+
+    @Test
+    public void testCommitFail() throws TerminalException {
+        interpreter = new Shell<>(new MutatedSDSS(0));
+
+        runBatchExpectNonZero("create t1 (String)", "use t1", "put a [\"b\"]");
+        runBatchExpectNonZero("commit");
+
+        assertEquals(makeTerminalExpectedMessage("Fail on commit [test mode]"), getOutput());
     }
 
     @Test
@@ -379,7 +418,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
 
     @Test
     public void testWithWrongArgumentsNumber() throws TerminalException {
-        String command = "put 1 2 3 4";
+        String command = "get 1 2 3 4";
         runBatchExpectNonZero(command);
         assertThat(
                 "Wrong arguments error must be raised", getOutput(), startsWith("Wrong arguments number"));

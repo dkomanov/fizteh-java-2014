@@ -13,7 +13,7 @@ import java.util.Set;
  * @author phoenix
  */
 public class Database {
-    private final DBTableProvider provider;
+    protected final DBTableProvider provider;
     /**
      * Root directory of all database files
      */
@@ -29,14 +29,10 @@ public class Database {
      * is used.<br/> If the folder does not exist, a new database is created within the folder.
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException
      */
-    private Database(Path dbDirectory) throws DatabaseIOException {
+    public Database(Path dbDirectory) throws DatabaseIOException {
         this.dbDirectory = dbDirectory;
         DBTableProviderFactory factory = new DBTableProviderFactory();
         this.provider = factory.create(dbDirectory.toString());
-    }
-
-    public static Database establishDatabase(Path dbDirectory) throws DatabaseIOException {
-        return new Database(dbDirectory);
     }
 
     public DBTableProvider getProvider() {

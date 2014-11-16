@@ -80,6 +80,22 @@ public class TableTest extends TestBase {
     }
 
     @Test
+    public void testPutWithNullKey() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Key must not be null");
+
+        table.put(null, provider.createFor(table));
+    }
+
+    @Test
+    public void testPutWithNullValue() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Value must not be null");
+
+        table.put("key", null);
+    }
+
+    @Test
     public void testOpenTableWithValuesNotMatchingTypes() throws IOException {
         table.put("key", provider.createFor(table, Arrays.asList("value")));
         table.commit();

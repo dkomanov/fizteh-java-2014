@@ -20,10 +20,11 @@ import java.util.function.Predicate;
 
 /**
  * This class represents table stored in file system and parted into directories and files.<br/>
- * Each part of data is read on require.
+ * Each part of data is read on require.<br/>
+ * Null keys/values are not permitted.
  * @author phoenix
  */
-public class StringTableImpl {
+public final class StringTableImpl {
     private static final int DIRECTORIES_COUNT = 16;
     private static final int FILES_COUNT = 16;
 
@@ -268,6 +269,7 @@ public class StringTableImpl {
     }
 
     public String put(String key, String value) {
+        Utility.checkNotNull(value, "Value");
         return obtainTablePart(key).put(key, value);
     }
 
@@ -333,14 +335,8 @@ public class StringTableImpl {
      *         key that is hold by desired table.
      */
     private TablePart obtainTablePart(String key) {
-        checkKeyValidity(key);
+        Utility.checkNotNull(key, "Key");
         return tableParts.get(getHash(key));
-    }
-
-    private void checkKeyValidity(String key) throws IllegalArgumentException {
-        if (key == null) {
-            throw new IllegalArgumentException("Key must not be null");
-        }
     }
 
     public int getUncommittedChangesCount() {

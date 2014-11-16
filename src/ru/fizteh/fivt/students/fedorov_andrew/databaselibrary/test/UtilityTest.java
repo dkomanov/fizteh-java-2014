@@ -8,10 +8,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProvider;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.Shell;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.ConvenientMap;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -136,6 +139,40 @@ public class UtilityTest {
         exception.expectMessage(CoreMatchers.containsString("Unexpected escaped symbol"));
 
         Utility.findClosingQuotes("/e \"", 0, 4, '\"', '/');
+    }
+
+    @Test
+    public void testUnquoteStringWithoutQuotes() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("String must be in quotes");
+
+        Utility.unquoteString("no quotes", "\"", "/");
+    }
+
+    @Test
+    public void testInverseMapWithTwoDuplicateValues() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Source map contains at least two duplicate values");
+
+        Utility.inverseMap(
+                new ConvenientMap<Integer, Integer>(new HashMap<Integer, Integer>()).putNext(1, 2).putNext(
+                        2, 2));
+    }
+
+    @Test
+    public void testInverseMap() {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        map.put(1, 2);
+        map.put(2, 3);
+        map.put(3, 1);
+
+        Map<Integer, Integer> inversedMap = Utility.inverseMap(map);
+
+        assertEquals(map.size(), inversedMap.size());
+        assertEquals((Integer) 3, inversedMap.get(1));
+        assertEquals((Integer) 2, inversedMap.get(3));
+        assertEquals((Integer) 1, inversedMap.get(2));
     }
 
     @Test

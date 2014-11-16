@@ -283,11 +283,14 @@ public class TablePart {
 
     public int commit() throws DatabaseIOException {
         int diffsCount = getUncommittedChangesCount();
-        lastCommittedMap = new HashMap<>(tablePartMap);
-        try {
-            writeToFile();
-        } catch (IOException exc) {
-            throw new DatabaseIOException("Failed to persist table", exc);
+
+        if (diffsCount > 0) {
+            lastCommittedMap = new HashMap<>(tablePartMap);
+            try {
+                writeToFile();
+            } catch (IOException exc) {
+                throw new DatabaseIOException("Failed to persist table", exc);
+            }
         }
 
         return diffsCount;
