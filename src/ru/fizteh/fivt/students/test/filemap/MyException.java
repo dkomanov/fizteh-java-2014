@@ -1,7 +1,7 @@
-package ru.fizteh.fivt.students.deserg.shell;
+package ru.fizteh.fivt.students.deserg.filemap;
 
 /**
- * Created by deserg on 22.09.14.
+ * Created by deserg on 04.10.14.
  */
 public class MyException extends RuntimeException{
 
@@ -10,3 +10,4 @@ public class MyException extends RuntimeException{
     }
 
 }
+
