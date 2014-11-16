@@ -14,6 +14,9 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
 public final class TableManager implements TableProvider {
+    private static final String NULL_TABLE_NAME_MSG = "Table name is null";
+    private static final String ILLEGAL_TABLE_NAME_MSG = "Illegal table name: ";
+    private static final String ILLEGAL_CHAR_IN_TABLE_NAME_MSG = "contains '\\',  or '/',  or '.'";
     private static final String ILLEGAL_TABLE_NAME_REGEX = ".*\\.|\\..*|.*(/|\\\\).*";
     private Set<String> tableNames;
     private Path tablesDirPath;
@@ -50,12 +53,12 @@ public final class TableManager implements TableProvider {
     @Override
     public Table getTable(String name) {
         if (name == null) {
-            throw new IllegalArgumentException("Table name is null");
+            throw new IllegalArgumentException(NULL_TABLE_NAME_MSG);
         }
         try {
             tablesDirPath.resolve(name);
             if (name.matches(ILLEGAL_TABLE_NAME_REGEX)) {
-                throw new InvalidPathException(name, "contains '\\',  or '/',  or '.'");
+                throw new InvalidPathException(name, ILLEGAL_CHAR_IN_TABLE_NAME_MSG);
             }
             if (tableNames.contains(name)) {
                 return new DbTable(tablesDirPath.resolve(name), name);
@@ -63,18 +66,18 @@ public final class TableManager implements TableProvider {
                 return null;
             }
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException("Illegal table name: " + e.getMessage(), e);
+            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + e.getMessage(), e);
         }
     }
 
     @Override
     public Table createTable(String name) {
         if (name == null) {
-            throw new IllegalArgumentException("Table name is null");
+            throw new IllegalArgumentException(NULL_TABLE_NAME_MSG);
         }
         try {
             if (name.matches(ILLEGAL_TABLE_NAME_REGEX)) {
-                throw new InvalidPathException(name, "contains '\\',  or '/',  or '.'");
+                throw new InvalidPathException(name, ILLEGAL_CHAR_IN_TABLE_NAME_MSG);
             }
             if (tableNames.contains(name)) {
                 return null;
@@ -85,18 +88,18 @@ public final class TableManager implements TableProvider {
             tableNames.add(name);
             return newTable;
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException("Illegal table name: " + e.getMessage(), e);
+            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + e.getMessage(), e);
         }
     }
 
     @Override
     public void removeTable(String name) {
         if (name == null) {
-            throw new IllegalArgumentException("Table name is null");
+            throw new IllegalArgumentException(NULL_TABLE_NAME_MSG);
         }
         try {
             if (name.matches(ILLEGAL_TABLE_NAME_REGEX)) {
-                throw new InvalidPathException(name, "contains '\\',  or '/',  or '.'");
+                throw new InvalidPathException(name, ILLEGAL_CHAR_IN_TABLE_NAME_MSG);
             }
             Path tableDir = tablesDirPath.resolve(name);
             if (!tableNames.remove(name)) {
@@ -105,7 +108,7 @@ public final class TableManager implements TableProvider {
                 recoursiveDelete(tableDir.toFile());
             }
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException("Illegal table name: " + e.getMessage(), e);
+            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + e.getMessage(), e);
         } catch (IOException e) {
             throw new RuntimeException("Table can't be removed from disk: "
                 + e.getMessage(), e);

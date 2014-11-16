@@ -114,10 +114,9 @@ public final class DbTable implements Table {
             fileNumber = Math.abs((key.getBytes(CODING)[0] / NUMBER_OF_PARTITIONS)
                 % NUMBER_OF_PARTITIONS);
         } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unable to encode key to UTF-8", e);
+            throw new IllegalArgumentException("Unable to encode key to " + CODING, e);
         }
-        int factor = (int) Math.pow(10, (NUMBER_OF_PARTITIONS + "").length());
-        return dirNumber * factor + fileNumber;
+        return dirNumber * NUMBER_OF_PARTITIONS + fileNumber;
     }
     
     /**
@@ -130,7 +129,7 @@ public final class DbTable implements Table {
     @Override
     public String get(String key) {
         if (key == null) {
-            throw new IllegalArgumentException("Key is a null-string");
+            throw new IllegalArgumentException("Key is null");
         }
         String value;
         if (diff.containsKey(key)) {
@@ -192,7 +191,7 @@ public final class DbTable implements Table {
     @Override
     public String remove(String key) {
         if (key == null) {
-            throw new IllegalArgumentException("Key is a null-string");
+            throw new IllegalArgumentException("Key is null");
         }
         String removedValue;
         if (!diff.containsKey(key)) {
@@ -289,7 +288,7 @@ public final class DbTable implements Table {
                         || !filePath.toFile().isFile()) {
                     throw new DataBaseIOException("File '" + file + "' in directory '" + dir
                             + "' is not a file or doesn't match required name '[0-"
-                            + (NUMBER_OF_PARTITIONS - 1) + "].dir'", null);
+                            + (NUMBER_OF_PARTITIONS - 1) + "].dat'", null);
                 }
                 int dirNumber = Integer.parseInt(dir.substring(0, dir.length() - 4));
                 int fileNumber = Integer.parseInt(file.substring(0, file.length() - 4));
