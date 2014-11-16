@@ -1,4 +1,5 @@
 package ru.fizteh.fivt.students.SurkovaEkaterina.shell;
+
 import java.io.IOException;
 
 public interface Command<FilesOperations> {
@@ -9,5 +10,4 @@ public interface Command<FilesOperations> {
 
     void executeCommand(String parameters, FilesOperations operations)
             throws IOException;
-
 }
