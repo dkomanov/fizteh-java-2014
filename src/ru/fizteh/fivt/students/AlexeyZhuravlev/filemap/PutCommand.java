@@ -1,0 +1,31 @@
+package ru.fizteh.fivt.students.AlexeyZhuravlev.filemap;
+
+/**
+ * @author AlexeyZhuravlev
+ */
+public class PutCommand extends Command {
+    private String key;
+    private String value;
+
+    public void putArguments(String[] args) {
+        key = args[1];
+        value = args[2];
+    }
+
+    public int numberOfArguments() {
+        return 2;
+    }
+
+    @Override
+    public void execute(DataBase base) throws Exception {
+        String baseValue = base.data.get(key);
+        if (baseValue != null) {
+            System.out.println("overwrite");
+            System.out.println(baseValue);
+        } else {
+            System.out.println("new");
+        }
+        base.data.put(key, value);
+        base.sync();
+    }
+}
