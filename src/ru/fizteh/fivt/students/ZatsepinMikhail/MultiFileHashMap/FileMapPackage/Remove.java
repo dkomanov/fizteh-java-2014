@@ -1,7 +1,4 @@
-package ru.fizteh.fivt.students.ZatsepinMikhail.MP.FileMapPackage;
-
-import ru.fizteh.fivt.students.ZatsepinMikhail.MP.FileMapPackage.CommandFileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.MP.FileMapPackage.FileMap;
+package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap.FileMapPackage;
 
 public class Remove extends CommandFileMap {
     public Remove() {
