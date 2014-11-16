@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TablePFTest {
     private final Path testDirectory
-            = Paths.get(System.getProperty("fizteh.db.dir"));
+            = Paths.get("C:\\Ololo\\Tests");
 
     @Before
     public final void setUp()

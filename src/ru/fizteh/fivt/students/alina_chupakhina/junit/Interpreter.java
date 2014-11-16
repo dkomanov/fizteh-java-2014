@@ -25,7 +25,7 @@ public class Interpreter {
         } else if (args[0].equals("use")) {
             use(args);
         } else if (args[0].equals("show")) {
-            showtables(args);
+            showTables(args);
         } else if (args[0].equals("put")) {
             if (JUnit.currentTable == null) {
                 out.println("no table");
@@ -166,11 +166,11 @@ public class Interpreter {
     }
 
     public static void size(String[] args) throws Exception {
-        checkNumOfArgs("rollback", 1, args.length);
+        checkNumOfArgs("size", 1, args.length);
         System.out.println(JUnit.currentTable.numberOfElements);
     }
 
-    public static void showtables(final String[] args) throws Exception {
+    public static void showTables(final String[] args) throws Exception {
         if (args.length >= 2) {
             if (!args[1].equals("tables")) {
                 throw new Exception("Invalid command");
@@ -183,8 +183,8 @@ public class Interpreter {
         System.out.println("table_name row_count");
         for (Map.Entry<String, Table> i : JUnit.tableList.entrySet()) {
             String key = i.getKey();
-            Integer num = ((BdTable) (i.getValue())).numberOfElements;
-            System.out.println(key + " " + num.toString());
+            int num = ((BdTable) (i.getValue())).numberOfElements;
+            System.out.println(key + " " + num);
         }
     }
 

@@ -12,7 +12,9 @@ public class BdTable implements Table {
     public Map<Integer, TableState> tableStates;
     public Map<String, String> fm;
     public int numberOfElements;
-    private static final int NUMBER_OF_PARTITIONS = 16;
+    private static final int NUMBER_OF_DIR = 16;
+    private static final int NUMBER_OF_FILE = 16;
+    private static final String ENCODING = "UTF-8";
     public int unsavedChangesCounter;
     public int numOfState;
 
@@ -126,8 +128,8 @@ public class BdTable implements Table {
             for (Map.Entry<String, String> i : fm.entrySet()) {
                 key = i.getKey();
                 value = i.getValue();
-                Integer ndirectory = Math.abs(key.getBytes("UTF-8")[0] % NUMBER_OF_PARTITIONS);
-                Integer nfile = Math.abs((key.getBytes("UTF-8")[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS);
+                Integer ndirectory = Math.abs(key.getBytes(ENCODING)[0] % NUMBER_OF_DIR);
+                Integer nfile = Math.abs((key.getBytes(ENCODING)[0] / NUMBER_OF_FILE) % NUMBER_OF_FILE);
                 String pathToDir = path + File.separator + ndirectory.toString()
                         + ".dir";
                 //System.out.println(pathToDir);
@@ -144,11 +146,11 @@ public class BdTable implements Table {
                 }
                 DataOutputStream outStream = new DataOutputStream(
                         new FileOutputStream(pathToFile, true));
-                byte[] byteWord = key.getBytes("UTF-8");
+                byte[] byteWord = key.getBytes(ENCODING);
                 outStream.writeInt(byteWord.length);
                 outStream.write(byteWord);
                 outStream.flush();
-                byteWord = value.getBytes("UTF-8");
+                byteWord = value.getBytes(ENCODING);
                 outStream.writeInt(byteWord.length);
                 outStream.write(byteWord);
                 outStream.flush();
@@ -171,13 +173,9 @@ public class BdTable implements Table {
         if (dirs != null) {
             for (File dir : dirs) {
                 if (!dir.isDirectory()) {
-                    try {
-                        throw new Exception(dir.getName()
-                                + " is not directory");
-                    } catch (Exception e) {
-                        System.err.println(e.getMessage());
-                        System.exit(-1);
-                    }
+                    System.err.println(dir.getName()
+                            + " is not directory");
+                    System.exit(-1);
                 }
                 File[] dats = dir.listFiles();
                 if (dats.length == 0) {
@@ -207,7 +205,7 @@ public class BdTable implements Table {
     @Override
     public int rollback() {
         TableState ts = tableStates.get(numOfState);
-        fm = ts.fm;
+        fm = new HashMap<>(ts.fm);
         numberOfElements = ts.numberOfElements;
         int n = unsavedChangesCounter;
         unsavedChangesCounter = ts.unsavedChangesCounter;
@@ -222,7 +220,7 @@ public class BdTable implements Table {
     @Override
     public List<String> list() {
         Set<String> keySet = fm.keySet();
-        List<String> list = new LinkedList<String>();
+        List<String> list = new LinkedList();
         for (String current : keySet) {
             list.add(current);
         }

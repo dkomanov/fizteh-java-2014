@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNull;
 
 public class PvTableTest {
     private final Path testDirectory
-            = Paths.get(System.getProperty("fizteh.db.dir"));
+            = Paths.get("C:\\Ololo\\Tests");
     private final String testTableName = "testTable";
     private final String fileInTableDirectory = "unnecessaryFiles";
 

@@ -7,11 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-/**
- * Created by opa on 29.10.2014.
- */
 public class PvTable implements TableProvider {
-    private static final int NUMBER_OF_PARTITIONS = 16;
+    private static final int NUMBER_OF_FILE = 16;
+    private static final int NUMBER_OF_DIR = 16;
+    private static final String ENCODING = "UTF-8";
     public static String path;
 
     public PvTable(String p) {
@@ -40,13 +39,9 @@ public class PvTable implements TableProvider {
             File[] dirs = t.table.listFiles();
             for (File dir : dirs) {
                 if (!dir.isDirectory()) {
-                    try {
-                        throw new Exception(dir.getName()
-                                + " is not directory");
-                    } catch (Exception e) {
-                        System.err.println(e.getMessage());
-                        System.exit(-1);
-                    }
+                    System.err.println(dir.getName()
+                            + " is not directory");
+                    System.exit(-1);
                 }
                 File[] dats = dir.listFiles();
                 if (dats.length == 0) {
@@ -68,16 +63,16 @@ public class PvTable implements TableProvider {
                             int length = file.readInt();
                             byte[] bytes = new byte[length];
                             file.readFully(bytes);
-                            key = new String(bytes, "UTF-8");
+                            key = new String(bytes, ENCODING);
                             length = file.readInt();
                             bytes = new byte[length];
                             file.readFully(bytes);
-                            value = new String(bytes, "UTF-8");
+                            value = new String(bytes, ENCODING);
                             t.numberOfElements++;
                             t.fm.put(key, value);
-                            if (!(nDirectory == Math.abs(key.getBytes("UTF-8")[0] % NUMBER_OF_PARTITIONS))
-                                    || !(nFile == Math.abs((key.getBytes("UTF-8")[0]
-                                    / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS))) {
+                            if (!(nDirectory == Math.abs(key.getBytes(ENCODING)[0] % NUMBER_OF_DIR))
+                                    || !(nFile == Math.abs((key.getBytes(ENCODING)[0]
+                                    / NUMBER_OF_FILE) % NUMBER_OF_FILE))) {
                                 System.err.println("Error while reading table " + t.tableName);
                                 System.exit(-1);
                             }
