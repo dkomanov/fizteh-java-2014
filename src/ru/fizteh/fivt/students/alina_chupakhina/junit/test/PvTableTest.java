@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNull;
 
 public class PvTableTest {
     private final Path testDirectory
-            = Paths.get("C:\\Ololo\\Tests");
+            = Paths.get(System.getProperty("java.io.tmpdir"));
     private final String testTableName = "testTable";
     private final String fileInTableDirectory = "unnecessaryFiles";
 

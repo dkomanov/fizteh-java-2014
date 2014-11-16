@@ -15,7 +15,7 @@ public class JUnit {
 
     public static void main(final String[] args) {
         try {
-            path = "C:\\Ololo";
+            path = System.getProperty("db.file");
             TablePF pf = new TablePF();
             pv = pf.create(path);
             if (path == null) {
