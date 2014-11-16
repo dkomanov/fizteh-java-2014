@@ -23,7 +23,7 @@ public final class DbManager implements TableProvider {
         } else {
             this.rootDir = rootDir;
             try {
-                loadTableNames();
+                loadTables();
             } catch (IOException e) {
                 throw new RuntimeException("can't load table names from: " + rootDir.getPath()
                         + ", [" + e.getMessage() + "]");
@@ -32,7 +32,7 @@ public final class DbManager implements TableProvider {
     }
     private File rootDir;
     private TableManager currentTable;
-    private Map<String, Integer> tableNames = new HashMap<>();
+    private Map<String, TableManager> tables = new HashMap<>();
 
     public TableManager getCurrentTable() {
         return currentTable;
@@ -45,21 +45,25 @@ public final class DbManager implements TableProvider {
     }
 
     public boolean containsTable(final String tableName) {
-        return tableNames.containsKey(tableName);
+        return tables.containsKey(tableName);
     }
 
     @Override
     public TableManager getTable(final String tableName) {
         if (!SyntaxCheckers.checkCorrectnessOfTableName(tableName)) {
             throw new WrongTableNameException(tableName);
-        } else if (!tableNames.containsKey(tableName)) {
+        } else if (!tables.containsKey(tableName)) {
             return null;
         } else {
-            try {
-                return new TableManager(getTablePath(tableName).toFile());
-            } catch (IOException e) {
-                throw new RuntimeException("can't get table: " + e.getMessage());
+            TableManager table = tables.get(tableName);
+            if (table == null) {
+                try {
+                    tables.put(tableName, new TableManager(getTablePath(tableName).toFile()));
+                } catch (IOException e) {
+                    throw new RuntimeException("can't get table: " + e.getMessage());
+                }
             }
+            return tables.get(tableName);
         }
     }
 
@@ -70,9 +74,11 @@ public final class DbManager implements TableProvider {
         } else {
             try {
                 if (!containsTable(tableName)) {
-                    Files.createDirectory(getTablePath(tableName));
-                    tableNames.put(tableName, 0);
-                    return new TableManager(getTablePath(tableName).toFile());
+                    Path tablePath = getTablePath(tableName);
+                    Files.createDirectory(tablePath);
+                    TableManager table = new TableManager(tablePath.toFile());
+                    tables.put(tableName, table);
+                    return table;
                 } else {
                     return null;
                 }
@@ -92,7 +98,7 @@ public final class DbManager implements TableProvider {
             if (currentTable != null && currentTable.getName().equals(tableName)) {
                 forgetCurrentTable();
             }
-            tableNames.remove(tableName);
+            tables.remove(tableName);
             try {
                 purgeTable(getTablePath(tableName));
             } catch (IOException e) {
@@ -126,7 +132,7 @@ public final class DbManager implements TableProvider {
     public int useTable(final String tableName) {
         if (!SyntaxCheckers.checkCorrectnessOfTableName(tableName)) {
             throw new WrongTableNameException(tableName);
-        } else if (!tableNames.containsKey(tableName)) {
+        } else if (!tables.containsKey(tableName)) {
             throw new IllegalArgumentException(tableName + " doesn't exist");
         } else {
             try {
@@ -156,7 +162,7 @@ public final class DbManager implements TableProvider {
     public Map<String, Integer> showTables() {
         updateCurrentTableInTableNames();
         Map<String, Integer> res = new HashMap<>();
-        res.putAll(tableNames);
+        res.putAll(tables);
         return res;
     }
 
@@ -166,7 +172,7 @@ public final class DbManager implements TableProvider {
 
     private void updateCurrentTableInTableNames() {
         if (currentTable != null) {
-            tableNames.put(currentTable.getName(), currentTable.size());
+            tables.put(currentTable.getName(), currentTable.size());
         }
     }
 
@@ -174,11 +180,11 @@ public final class DbManager implements TableProvider {
         return Paths.get(rootDir.getCanonicalPath(), tableName).normalize();
     }
 
-    private void loadTableNames() throws IOException {
+    private void loadTables() throws IOException {
         String[] tables = rootDir.list();
-        tableNames.clear();
+        tables.clear();
         for (String tableName : tables) {
-            tableNames.put(tableName, TableLoaderDumper.countKeys(Paths.get(rootDir.toString(), tableName)));
+            tables.put(tableName, TableLoaderDumper.countKeys(Paths.get(rootDir.toString(), tableName)));
         }
     }
 }
