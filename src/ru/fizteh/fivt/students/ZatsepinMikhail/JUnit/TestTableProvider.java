@@ -207,8 +207,33 @@ public class TestTableProvider {
         try {
             Table newTable;
             newTable = provider.createTable(tableName, typeList);
-            Storeable temp = provider.createFor(newTable);
+            List<Object> value = new ArrayList<>();
+            value.add(100);
+            value.add("new");
+            Storeable temp = provider.createFor(newTable, value);
             assertTrue(TypesUtils.getSizeOfStoreable(temp) == newTable.getColumnsCount());
+            boolean exceptionWas = false;
+
+            try {
+                value = new ArrayList<>();
+                value.add("new");
+                value.add(100);
+                provider.createFor(newTable, value);
+            } catch (ColumnFormatException e) {
+                exceptionWas = true;
+            }
+            assertTrue(exceptionWas);
+
+            exceptionWas = false;
+            try {
+                value = new ArrayList<>();
+                value.add("new2");
+                provider.createFor(newTable, value);
+            } catch (IndexOutOfBoundsException e) {
+                exceptionWas = true;
+            }
+            assertTrue(exceptionWas);
+
         } catch (IOException e) {
             //suppress
         }

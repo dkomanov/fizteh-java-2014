@@ -20,7 +20,7 @@ public class AbstractStoreable implements Storeable {
             return;
         }
         if (!parentTable.getColumnType(columnIndex).equals(value.getClass())) {
-            throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
+            throw new ColumnFormatException("expected:" + parentTable.getColumnType(columnIndex)
                 + " , but got:" + value.getClass());
         } else {
             values[columnIndex] = value;
@@ -35,7 +35,7 @@ public class AbstractStoreable implements Storeable {
     @Override
     public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         if (!values[columnIndex].getClass().equals(Integer.class)) {
-            throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
+            throw new ColumnFormatException("expected:" + parentTable.getColumnType(columnIndex)
                     + " , but got:" + Integer.class);
         }
         return (Integer) values[columnIndex];
@@ -44,7 +44,7 @@ public class AbstractStoreable implements Storeable {
     @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         if (!values[columnIndex].getClass().equals(Long.class)) {
-            throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
+            throw new ColumnFormatException("expected:" + parentTable.getColumnType(columnIndex)
                     + " , but got:" + Long.class);
         }
         return (Long) values[columnIndex];
@@ -53,7 +53,7 @@ public class AbstractStoreable implements Storeable {
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         if (!values[columnIndex].getClass().equals(Byte.class)) {
-            throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
+            throw new ColumnFormatException("expected:" + parentTable.getColumnType(columnIndex)
                     + " , but got:" + Byte.class);
         }
         return (Byte) values[columnIndex];
@@ -62,7 +62,7 @@ public class AbstractStoreable implements Storeable {
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         if (!values[columnIndex].getClass().equals(Float.class)) {
-            throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
+            throw new ColumnFormatException("expected:" + parentTable.getColumnType(columnIndex)
                     + " , but got:" + Float.class);
         }
         return (Float) values[columnIndex];
@@ -71,7 +71,7 @@ public class AbstractStoreable implements Storeable {
     @Override
     public Double getDoubleAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         if (!values[columnIndex].getClass().equals(Double.class)) {
-            throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
+            throw new ColumnFormatException("expected:" + parentTable.getColumnType(columnIndex)
                     + " , but got:" + Double.class);
         }
         return (Double) values[columnIndex];
@@ -80,7 +80,7 @@ public class AbstractStoreable implements Storeable {
     @Override
     public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         if (!values[columnIndex].getClass().equals(Boolean.class)) {
-            throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
+            throw new ColumnFormatException("expected:" + parentTable.getColumnType(columnIndex)
                     + " , but got:" + Boolean.class);
         }
         return (Boolean) values[columnIndex];
@@ -89,7 +89,7 @@ public class AbstractStoreable implements Storeable {
     @Override
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         if (!values[columnIndex].getClass().equals(String.class)) {
-            throw new ColumnFormatException("expected:" + values[columnIndex].getClass()
+            throw new ColumnFormatException("expected:" + parentTable.getColumnType(columnIndex)
                     + " , but got:" + String.class);
         }
         return (String) values[columnIndex];

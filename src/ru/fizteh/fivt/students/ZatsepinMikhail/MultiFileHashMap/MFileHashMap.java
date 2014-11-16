@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
 
+import com.sun.jmx.remote.internal.ArrayQueue;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
@@ -92,15 +93,19 @@ public class MFileHashMap implements TableProvider {
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (TypesUtils.canonicalTypes.size() != values.size()) {
+        if (table.getColumnsCount() != values.size()) {
             throw new IndexOutOfBoundsException("number of types");
         }
+        List<Object> objValues = new ArrayList<>(values);
         List<Class<?>> typeList = new ArrayList<>();
         for (int i = 0; i < table.getColumnsCount(); ++i) {
+            if (objValues.get(i).getClass() != (table.getColumnType(i))) {
+                throw new ColumnFormatException("mismatch column type");
+            }
             typeList.add(table.getColumnType(i));
         }
-        TypesUtils.checkNewStorableValue(typeList, values);
-        return new AbstractStoreable(values.toArray(), table);
+        TypesUtils.checkNewStorableValue(typeList, objValues);
+        return new AbstractStoreable(objValues.toArray(), table);
     }
 
     @Override

@@ -1,45 +1,56 @@
-//package ru.fizteh.fivt.students.ZatsepinMikhail.JUnit;
-//
-//import org.junit.After;
-//import org.junit.Before;
-//import org.junit.Test;
-//import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-//import ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap.MFileHashMapFactory;
-//import ru.fizteh.fivt.students.ZatsepinMikhail.shell.FileUtils;
-//
-//import java.nio.file.Paths;
-//
-//import static org.junit.Assert.*;
-//
-//public class TestTableProviderFactory {
-//    String dir;
-//    TableProviderFactory testFactory;
-//
-//    @Before
-//    public void setUp() {
-//        dir = Paths.get("").resolve("factory").toString();
-//        testFactory = new MFileHashMapFactory();
-//    }
-//
-//    @After
-//    public void tearDown() {
-//        FileUtils.rmdir(Paths.get(dir));
-//        FileUtils.mkdir(Paths.get(dir));
-//    }
-//
-//    @Test
-//    public void testCreateDirExists() throws Exception {
-//        FileUtils.mkdir(Paths.get(dir));
-//        assertNotNull(testFactory.create(dir));
-//    }
-//
-//    @Test
-//    public void testCreateDirNotExists() throws Exception {
-//        assertNotNull(testFactory.create(dir));
-//    }
-//
-//    @Test (expected = IllegalArgumentException.class)
-//    public void testCreateNull() throws Exception {
-//        testFactory.create(null);
-//    }
-//}
+package ru.fizteh.fivt.students.ZatsepinMikhail.JUnit;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap.MFileHashMapFactory;
+import ru.fizteh.fivt.students.ZatsepinMikhail.shell.FileUtils;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+
+import static org.junit.Assert.*;
+
+public class TestTableProviderFactory {
+    String dir;
+    TableProviderFactory testFactory;
+
+    @Before
+    public void setUp() {
+        dir = Paths.get("").resolve("factory").toString();
+        testFactory = new MFileHashMapFactory();
+    }
+
+    @After
+    public void tearDown() {
+        try {
+            FileUtils.rmdir(Paths.get(dir));
+            FileUtils.mkdir(Paths.get(dir));
+        } catch (IOException e) {
+            //suppress
+        }
+    }
+
+    @Test
+    public void testCreateDirExists() throws Exception {
+        FileUtils.mkdir(Paths.get(dir));
+        try {
+            assertNotNull(testFactory.create(dir));
+        } catch (IOException e) {
+            assertTrue(false);
+        }
+    }
+
+
+    @Test
+    public void testCreateDirNotExists() throws Exception {
+        assertNotNull(testFactory.create(dir));
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void testCreateNull() throws Exception {
+        testFactory.create(null);
+    }
+}

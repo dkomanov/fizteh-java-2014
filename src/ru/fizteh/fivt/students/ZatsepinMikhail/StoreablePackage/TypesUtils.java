@@ -30,28 +30,28 @@ public class TypesUtils {
         return true;
     }
 
-    public static boolean checkNewStorableValue(List<Class<?>> types, Storeable newValue) {
+    public static boolean checkNewStorableValue(List<Class<?>> types, Storeable newValue)
+    throws IndexOutOfBoundsException, IndexOutOfBoundsException {
         if (types.size() != TypesUtils.getSizeOfStoreable(newValue)) {
             throw new IndexOutOfBoundsException();
         }
-        List<?> valueList = new ArrayList<>();
+        List<Object> valueList = new ArrayList<>();
         for (int i = 0; i < types.size(); ++i) {
-            valueList.add(newValue.);
+            valueList.add(newValue.getColumnAt(i));
         }
-
+        return checkNewStorableValue(types, valueList);
     }
 
-    public static boolean checkNewStorableValue(List<Class<?>> types, List<?> newValue) {
+    public static boolean checkNewStorableValue(List<Class<?>> types, List<Object> newValue)
+    throws ColumnFormatException, IndexOutOfBoundsException {
         if (types.size() != newValue.size()) {
             throw new IndexOutOfBoundsException();
         }
-        int counter = 0;
-        for (Class<?> oneType : types) {
-            if (newValue.get(counter) != null
-                    && !oneType.equals(newValue.get(counter).getClass())) {
-                throw new ColumnFormatException(newValue.get(counter).getClass().toString());
+        for (int i = 0; i < types.size(); ++i) {
+            if (newValue.get(i) != null
+                    && !newValue.get(i).getClass().equals(types.get(i))) {
+                throw new ColumnFormatException(newValue.get(i).getClass().toString());
             }
-            ++counter;
         }
         return true;
     }
