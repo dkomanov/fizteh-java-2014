@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.moskupols.junit;
 
-import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.moskupols.multifilehashmap.MultiFileMap;
 import ru.fizteh.fivt.students.moskupols.multifilehashmap.MultiFileMapProvider;
@@ -22,8 +21,15 @@ public class MultiFileMapTableProvider implements TableProvider {
         }
     }
 
+    private void checkNotNull(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Table name should not be null");
+        }
+    }
+
     @Override
-    public Table getTable(String name) {
+    public KnownDiffTable getTable(String name) {
+        checkNotNull(name);
         MultiFileMap t;
         try {
             t = delegatedProvider.getTable(name);
@@ -34,7 +40,8 @@ public class MultiFileMapTableProvider implements TableProvider {
     }
 
     @Override
-    public Table createTable(String name) {
+    public KnownDiffTable createTable(String name) {
+        checkNotNull(name);
         MultiFileMap t;
         try {
             t = delegatedProvider.createTable(name);
@@ -46,6 +53,7 @@ public class MultiFileMapTableProvider implements TableProvider {
 
     @Override
     public void removeTable(String name) {
+        checkNotNull(name);
         try {
             delegatedProvider.removeTable(name);
         } catch (IOException e) {
