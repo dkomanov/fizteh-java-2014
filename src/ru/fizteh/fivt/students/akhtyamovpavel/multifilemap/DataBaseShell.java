@@ -9,6 +9,7 @@ import ru.fizteh.fivt.students.akhtyamovpavel.multifilemap.commands.table.ShowTa
 import ru.fizteh.fivt.students.akhtyamovpavel.multifilemap.commands.table.UseCommand;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,7 +50,11 @@ public class DataBaseShell extends AbstractShell implements AutoCloseable {
     }
 
     public DataBaseShell() {
-        initDataBaseDirectory();
+        try {
+            initDataBaseDirectory();
+        } catch (Exception e) {
+            printException("database path doesn't defined");
+        }
         try {
             onLoadCheck();
         } catch (Exception e) {
@@ -82,7 +87,13 @@ public class DataBaseShell extends AbstractShell implements AutoCloseable {
 
     private void onLoadCheck() throws Exception {
         if (!Files.exists(dataBaseDirectory)) {
-            throw new Exception("connect: no such database");
+            try {
+                Files.createDirectory(dataBaseDirectory);
+            } catch (SecurityException se) {
+                throw new Exception("connect: permission to database file denied correctly");
+            } catch (IOException ioe) {
+                throw new Exception("connect: input/output error");
+            }
         }
         if (!Files.isDirectory(dataBaseDirectory)) {
             throw new Exception("connect: path isn't a directory");
@@ -138,7 +149,6 @@ public class DataBaseShell extends AbstractShell implements AutoCloseable {
             new UseCommand(this, true).executeCommand(argument);
             tableSet.put(table, fileMap.size());
         }
-        fileMap.clear();
         fileMap = null;
     }
 
