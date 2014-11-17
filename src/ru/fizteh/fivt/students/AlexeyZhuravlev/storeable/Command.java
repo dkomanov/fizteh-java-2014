@@ -46,7 +46,7 @@ public abstract class Command {
 
     public static Command fromString(String s) throws Exception {
         if (s.length() < 1) {
-            throw new Exception("Empty command");
+            throw new Exception("");
         }
         if (s.length() > 4 && s.substring(0, 5).equals("show ")) {
             s = s.replaceFirst(" ", "_");
