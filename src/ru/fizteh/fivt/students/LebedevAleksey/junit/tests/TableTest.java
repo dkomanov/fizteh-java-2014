@@ -11,7 +11,9 @@ import ru.fizteh.fivt.students.LebedevAleksey.junit.Database;
 import ru.fizteh.fivt.students.LebedevAleksey.junit.Table;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class TableTest {
@@ -393,5 +395,55 @@ public class TableTest {
         Assert.assertEquals("c", table.get("c"));
         Assert.assertEquals(3, table.count());
         AdditionalAssert.assertStringArrayContainsSameItemsAsList(new String[]{"a", "c", "b"}, table.list());
+    }
+
+    @Test(expected = LoadOrSaveException.class)
+    public void testLoadThrowsExceptionWhenLoadCorruptedFile() throws IOException, TableNotFoundException,
+            DatabaseFileStructureException, LoadOrSaveException {
+        Path path = dbPath.toPath().resolve(TEST_TABLE_NAME);
+        Path folderA = path.resolve("0.dir");
+        Files.createDirectory(folderA);
+        Path file = folderA.resolve("0.dat");
+        try (FileOutputStream stream = new FileOutputStream(file.toString())) {
+            stream.write(new byte[]{6, 7, 2, 3, 4, 5, 6});
+            stream.flush();
+        }
+        table = (Table) database.getTable(TEST_TABLE_NAME);
+        table.list();
+    }
+
+    @Test
+    public void testLoadThrowsExceptionWhenFileIsDirectory() throws IOException, TableNotFoundException,
+            DatabaseFileStructureException, LoadOrSaveException {
+        Path path = dbPath.toPath().resolve(TEST_TABLE_NAME);
+        Path folderA = path.resolve("0.dir");
+        Files.createDirectory(folderA);
+        Path file = folderA.resolve("0.dat");
+        Files.createDirectory(file);
+        table = (Table) database.getTable(TEST_TABLE_NAME);
+        try {
+            table.list();
+            Assert.fail("Should be exception when file is directory.");
+        } catch (DatabaseFileStructureException e) {
+            // ok
+        }
+        file.toFile().delete();
+        folderA.toFile().delete();
+    }
+
+    @Test
+    public void testLoadThrowsExceptionWhenDirectoryIsFile() throws IOException, TableNotFoundException,
+            DatabaseFileStructureException, LoadOrSaveException {
+        Path path = dbPath.toPath().resolve(TEST_TABLE_NAME);
+        Path folderA = path.resolve("0.dir");
+        Files.createFile(folderA);
+        table = (Table) database.getTable(TEST_TABLE_NAME);
+        try {
+            table.list();
+            Assert.fail("Should be exception when directory is file.");
+        } catch (DatabaseFileStructureException e) {
+            // ok
+        }
+        folderA.toFile().delete();
     }
 }
