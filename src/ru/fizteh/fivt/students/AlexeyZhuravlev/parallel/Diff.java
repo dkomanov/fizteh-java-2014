@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author AlexeyZhuravlev
@@ -18,9 +19,11 @@ public class Diff {
     HashSet<String> deletions;
     HashMap<String, String> overwrites;
     StructuredTable origin;
+    ReentrantReadWriteLock lock;
 
-    public Diff(StructuredTable passedTable) {
+    public Diff(StructuredTable passedTable, ReentrantReadWriteLock passedLock) {
         origin = passedTable;
+        lock = passedLock;
         creations = new HashMap<>();
         deletions = new HashSet<>();
         overwrites = new HashMap<>();
@@ -36,15 +39,18 @@ public class Diff {
             overwrites.put(key, value);
             return null;
         } else {
-            // *** обращение к базе
-            Storeable originResult = origin.get(key);
-            // обращение к базе ***
-            if (originResult == null) {
-                creations.put(key, value);
-                return null;
-            } else {
-                overwrites.put(key, value);
-                return origin.getProvider().serialize(origin, originResult);
+            lock.readLock().lock();
+            try {
+                Storeable originResult = origin.get(key);
+                if (originResult == null) {
+                    creations.put(key, value);
+                    return null;
+                } else {
+                    overwrites.put(key, value);
+                    return origin.getProvider().serialize(origin, originResult);
+                }
+            } finally {
+                lock.readLock().unlock();
             }
         }
     }
@@ -57,14 +63,17 @@ public class Diff {
         } else if (deletions.contains(key)) {
             return null;
         } else {
-            // *** обращение к базе
-            Storeable originResult = origin.get(key);
-            // обращение к базе ***
-            if (originResult != null) {
-                deletions.add(key);
-                return origin.getProvider().serialize(origin, originResult);
-            } else {
-                return null;
+            lock.readLock().lock();
+            try {
+                Storeable originResult = origin.get(key);
+                if (originResult != null) {
+                    deletions.add(key);
+                    return origin.getProvider().serialize(origin, originResult);
+                } else {
+                    return null;
+                }
+            } finally {
+                lock.readLock().unlock();
             }
         }
     }
@@ -77,10 +86,13 @@ public class Diff {
         } else if (deletions.contains(key)) {
             return null;
         } else {
-            // *** обращение к базе
-            Storeable originResult = origin.get(key);
-            // обращение к базе ***
-            return origin.getProvider().serialize(origin, originResult);
+            lock.readLock().lock();
+            try {
+                Storeable originResult = origin.get(key);
+                return origin.getProvider().serialize(origin, originResult);
+            } finally {
+                lock.readLock().unlock();
+            }
         }
     }
 
@@ -99,7 +111,7 @@ public class Diff {
     }
 
     public void commit() throws IOException {
-        // *** обращение к базе
+        lock.writeLock().lock();
         try {
             deletions.forEach(origin::remove);
             for (Map.Entry<String, String> entry : creations.entrySet()) {
@@ -111,7 +123,8 @@ public class Diff {
             origin.commit();
         } catch (ParseException e) {
             throw new IOException(e.getMessage());
+        } finally {
+            lock.writeLock().unlock();
         }
-        // ***
     }
 }
