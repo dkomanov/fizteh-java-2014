@@ -21,10 +21,6 @@ public final class Main {
             System.exit(1);
         } else {
             rootDir = new File(dbdir);
-            if (!rootDir.exists() || !rootDir.isDirectory()) {
-                System.err.println("fizteh.db.dir isn't a directory");
-                System.exit(1);
-            }
         }
         try {
             dbManager = new DbManager(rootDir);

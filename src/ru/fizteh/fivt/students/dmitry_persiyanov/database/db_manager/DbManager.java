@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager.utils.SyntaxCheckers;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
-import ru.fizteh.fivt.students.dmitry_persiyanov.database.table_manager.TableLoaderDumper;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.table_manager.TableManager;
 
 import java.io.File;
@@ -18,16 +17,19 @@ public final class DbManager implements TableProvider {
     public DbManager(final File rootDir) {
         if (rootDir == null) {
             throw new NullPointerException();
-        } else if (!rootDir.isDirectory()) {
-            throw new IllegalArgumentException("is not a directory: " + rootDir.getPath());
-        } else {
-            this.rootDir = rootDir;
-            try {
-                loadTables();
-            } catch (IOException e) {
-                throw new RuntimeException("can't load table names from: " + rootDir.getPath()
-                        + ", [" + e.getMessage() + "]");
+        } else if (!rootDir.exists()) {
+            if (!rootDir.mkdirs()) {
+                throw new RuntimeException("can't create directory: " + rootDir.getAbsolutePath());
             }
+        } else if (!rootDir.isDirectory()) {
+            throw new IllegalArgumentException(rootDir.getAbsolutePath() + " isn't a directory");
+        }
+        this.rootDir = rootDir;
+        try {
+            loadTables();
+        } catch (IOException e) {
+            throw new RuntimeException("can't load table names from: " + rootDir.getPath()
+                    + ", [" + e.getMessage() + "]");
         }
     }
     private File rootDir;
@@ -57,11 +59,7 @@ public final class DbManager implements TableProvider {
         } else {
             TableManager table = tables.get(tableName);
             if (table == null) {
-                try {
-                    tables.put(tableName, new TableManager(getTablePath(tableName).toFile()));
-                } catch (IOException e) {
-                    throw new RuntimeException("can't get table: " + e.getMessage());
-                }
+                tables.put(tableName, new TableManager(getTablePath(tableName).toFile()));
             }
             return tables.get(tableName);
         }
@@ -135,34 +133,33 @@ public final class DbManager implements TableProvider {
         } else if (!tables.containsKey(tableName)) {
             throw new IllegalArgumentException(tableName + " doesn't exist");
         } else {
-            try {
-                if (currentTable == null) {
-                    currentTable = new TableManager(getTablePath(tableName).toFile());
-                    return 0;
-                } else {
-                    boolean currentAndNewTablesAreDistinct = !currentTable.getName().equals(tableName);
-                    if (currentAndNewTablesAreDistinct) {
-                        if (currentTable.uncommittedChanges() == 0) {
-                            updateCurrentTableInTableNames();
-                            currentTable = new TableManager(getTablePath(tableName).toFile());
-                            return 0;
-                        } else {
-                            return currentTable.uncommittedChanges();
-                        }
-                    } else {
+            if (currentTable == null) {
+                currentTable = new TableManager(getTablePath(tableName).toFile());
+                return 0;
+            } else {
+                boolean currentAndNewTablesAreDistinct = !currentTable.getName().equals(tableName);
+                if (currentAndNewTablesAreDistinct) {
+                    if (currentTable.uncommittedChanges() == 0) {
+                        currentTable = new TableManager(getTablePath(tableName).toFile());
                         return 0;
+                    } else {
+                        return currentTable.uncommittedChanges();
                     }
+                } else {
+                    return 0;
                 }
-            } catch (IOException e) {
-                throw new RuntimeException("can't use table: " + e.getMessage());
             }
         }
     }
 
     public Map<String, Integer> showTables() {
-        updateCurrentTableInTableNames();
         Map<String, Integer> res = new HashMap<>();
-        res.putAll(tables);
+        for (String tableName : tables.keySet()) {
+            if (tables.get(tableName) == null) {
+                tables.put(tableName, new TableManager(getTablePath(tableName).toFile()));
+            }
+            res.put(tableName, tables.get(tableName).size());
+        }
         return res;
     }
 
@@ -170,21 +167,15 @@ public final class DbManager implements TableProvider {
         currentTable = null;
     }
 
-    private void updateCurrentTableInTableNames() {
-        if (currentTable != null) {
-            tables.put(currentTable.getName(), currentTable.size());
-        }
-    }
-
-    private Path getTablePath(final String tableName) throws IOException {
-        return Paths.get(rootDir.getCanonicalPath(), tableName).normalize();
+    private Path getTablePath(final String tableName) {
+        return Paths.get(rootDir.getAbsolutePath(), tableName).normalize();
     }
 
     private void loadTables() throws IOException {
-        String[] tables = rootDir.list();
+        String[] tableNames = rootDir.list();
         tables.clear();
-        for (String tableName : tables) {
-            tables.put(tableName, TableLoaderDumper.countKeys(Paths.get(rootDir.toString(), tableName)));
+        for (String name : tableNames) {
+            tables.put(name, null);
         }
     }
 }

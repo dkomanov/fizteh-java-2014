@@ -20,7 +20,7 @@ public class ListCommand extends TableManagerCommand {
             if (allKeys.size() != 0) {
                 out.println(String.join(", ", allKeys));
             } else {
-                out.println("");
+                out.print("");
             }
         }
     }

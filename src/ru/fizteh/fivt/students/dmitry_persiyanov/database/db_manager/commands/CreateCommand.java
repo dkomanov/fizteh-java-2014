@@ -7,7 +7,7 @@ import java.io.PrintStream;
 
 public class CreateCommand extends DbManagerCommand {
     public CreateCommand(final String[] args, final DbManager relatedDb) {
-        super("list", 0, args, relatedDb);
+        super("create", 1, args, relatedDb);
     }
 
     @Override

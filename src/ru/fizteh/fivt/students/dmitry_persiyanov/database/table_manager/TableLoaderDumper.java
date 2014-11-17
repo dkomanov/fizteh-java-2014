@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public final class TableLoaderDumper {
+final class TableLoaderDumper {
     public static final String DIRS_EXTENSION = ".dir";
     public static final String FILES_EXTENSION = ".dat";
     public static final String ENCODING = "UTF-8";

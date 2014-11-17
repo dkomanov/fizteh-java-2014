@@ -15,9 +15,7 @@ public class ShowTablesCommand extends DbManagerCommand {
     protected void execute(final PrintStream out) {
         StringBuilder msgBuilder = new StringBuilder();
         Map<String, Integer> tableNames = relatedDb.showTables();
-        if (tableNames.size() == 0) {
-            out.println("");
-        } else {
+        if (tableNames.size() != 0) {
             for (Map.Entry<String, Integer> entry : tableNames.entrySet()) {
                 msgBuilder.append(entry.getKey() + " " + entry.getValue());
                 msgBuilder.append(System.lineSeparator());

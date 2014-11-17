@@ -47,8 +47,10 @@ public abstract class DatabaseCommand implements InterpreterCommand {
         if (checkArgs()) {
             try {
                 execute(out);
-            } catch (IOException | TableIsNotChosenException e) {
+            } catch (IOException e) {
                 err.println(e.getMessage());
+            } catch (TableIsNotChosenException e) {
+                out.println(e.getMessage());
             }
         } else {
             err.println(new IllegalNumberOfArgumentsException(name).getMessage());
