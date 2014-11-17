@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.interpreter;
 
+import ru.fizteh.fivt.students.dmitry_persiyanov.interpreter.exceptions.WrongCommandException;
+
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -35,9 +37,13 @@ public final class Interpreter {
             if (mode == ExecutionMode.INTERACTIVE) {
                 InterpreterCommand currentCmd;
                 while (true) {
-                    out.print(DEFAULT_PROMPT);
-                    currentCmd = commandsParser.parseOneCommand(inputScanner);
-                    currentCmd.exec(out, err);
+                    try {
+                        out.print(DEFAULT_PROMPT);
+                        currentCmd = commandsParser.parseOneCommand(inputScanner);
+                        currentCmd.exec(out, err);
+                    } catch (WrongCommandException e) {
+                        out.println(e.getMessage());
+                    }
                 }
             } else {
                 for (InterpreterCommand currentCmd : commandsParser.parseAllInput(inputScanner)) {

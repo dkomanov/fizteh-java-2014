@@ -9,6 +9,6 @@ public class WrongTableNameException extends IllegalArgumentException {
     }
 
     public WrongTableNameException(final String msg) {
-        super("wrong tableName argument: " + msg);
+        super("name \"" + msg + "\" is illegal");
     }
 }

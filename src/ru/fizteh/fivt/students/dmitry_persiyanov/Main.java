@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov;
 
-import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_manager.DbManager;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.commands_parser.DbCommandsParser;
 import ru.fizteh.fivt.students.dmitry_persiyanov.interpreter.Interpreter;
 
@@ -9,9 +9,8 @@ import java.io.File;
 import java.io.InputStream;
 
 public final class Main {
-    public static final String PROMPT = "$ ";
     private static File rootDir;
-    private static DbManager dbManager;
+    private static DbTableProvider dbTableProvider;
     private static DbCommandsParser dbParser;
 
     public static void main(final String[] args) {
@@ -23,8 +22,8 @@ public final class Main {
             rootDir = new File(dbdir);
         }
         try {
-            dbManager = new DbManager(rootDir);
-            dbParser = new DbCommandsParser(dbManager);
+            dbTableProvider = new DbTableProvider(rootDir);
+            dbParser = new DbCommandsParser(dbTableProvider);
             Interpreter interpreter = new Interpreter(dbParser);
             if (args.length == 0) {
                 interpreter.run();
