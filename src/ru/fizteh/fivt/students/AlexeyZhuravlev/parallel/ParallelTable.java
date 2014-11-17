@@ -19,10 +19,11 @@ public class ParallelTable implements Table {
     ParallelTableProvider provider;
     ReentrantReadWriteLock lock;
 
-    public ParallelTable(StructuredTable origin, ParallelTableProvider passedProvider) {
+    public ParallelTable(StructuredTable origin, ParallelTableProvider passedProvider,
+                         ReentrantReadWriteLock passedLock) {
         originalTable = origin;
         provider = passedProvider;
-        lock = new ReentrantReadWriteLock(true);
+        lock = passedLock;
         diff = new ThreadLocal<Diff>() {
             @Override
             protected Diff initialValue() {

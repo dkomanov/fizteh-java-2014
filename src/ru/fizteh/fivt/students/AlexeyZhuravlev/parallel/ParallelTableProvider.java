@@ -10,6 +10,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTableProvider
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -20,9 +21,11 @@ public class ParallelTableProvider implements TableProvider {
 
     StructuredTableProvider oldProvider;
     ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+    HashMap<String, ReentrantReadWriteLock> tableLocks;
 
     protected ParallelTableProvider(String path) throws IOException {
         StructuredTableProviderFactory factory = new StructuredTableProviderFactory();
+        tableLocks = new HashMap<>();
         oldProvider = (StructuredTableProvider) factory.create(path);
     }
 
@@ -34,7 +37,10 @@ public class ParallelTableProvider implements TableProvider {
             if (origin == null) {
                 return null;
             } else {
-                return new ParallelTable(origin, this);
+                if (!tableLocks.containsKey(name)) {
+                    tableLocks.put(name, new ReentrantReadWriteLock(true));
+                }
+                return new ParallelTable(origin, this, tableLocks.get(name));
             }
         } finally {
             lock.readLock().unlock();
@@ -49,7 +55,10 @@ public class ParallelTableProvider implements TableProvider {
             if (origin == null) {
                 return null;
             } else {
-                return new ParallelTable(origin, this);
+                if (!tableLocks.containsKey(name)) {
+                    tableLocks.put(name, new ReentrantReadWriteLock(true));
+                }
+                return new ParallelTable(origin, this, tableLocks.get(name));
             }
         } finally {
             lock.writeLock().unlock();
