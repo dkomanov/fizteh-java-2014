@@ -11,6 +11,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTableProvider
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author AlexeyZhuravlev
@@ -18,6 +19,7 @@ import java.util.List;
 public class ParallelTableProvider implements TableProvider {
 
     StructuredTableProvider oldProvider;
+    ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected ParallelTableProvider(String path) throws IOException {
         StructuredTableProviderFactory factory = new StructuredTableProviderFactory();
@@ -26,27 +28,42 @@ public class ParallelTableProvider implements TableProvider {
 
     @Override
     public Table getTable(String name) {
-        StructuredTable origin = (StructuredTable) oldProvider.getTable(name);
-        if (origin == null) {
-            return null;
-        } else {
-            return new ParallelTable((StructuredTable) oldProvider.getTable(name), this);
+        lock.readLock().lock();
+        try {
+            StructuredTable origin = (StructuredTable) oldProvider.getTable(name);
+            if (origin == null) {
+                return null;
+            } else {
+                return new ParallelTable(origin, this);
+            }
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        StructuredTable origin = (StructuredTable) oldProvider.createTable(name, columnTypes);
-        if (origin == null) {
-            return null;
-        } else {
-            return new ParallelTable(origin, this);
+        lock.writeLock().lock();
+        try {
+            StructuredTable origin = (StructuredTable) oldProvider.createTable(name, columnTypes);
+            if (origin == null) {
+                return null;
+            } else {
+                return new ParallelTable(origin, this);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public void removeTable(String name) throws IOException {
-        oldProvider.removeTable(name);
+        lock.writeLock().lock();
+        try {
+            oldProvider.removeTable(name);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
