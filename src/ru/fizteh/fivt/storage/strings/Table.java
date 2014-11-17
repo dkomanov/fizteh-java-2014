@@ -1,8 +1,5 @@
 package ru.fizteh.fivt.storage.strings;
 
-import ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap.DatabaseFileStructureException;
-import ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap.LoadOrSaveException;
-
 import java.util.List;
 /**
  * @author Fedor Lavrentyev
@@ -24,6 +21,7 @@ public interface Table {
      * @throws IllegalArgumentException Если значение параметра key является null.
      */
     String get(String key);
+
     /**
      * Устанавливает значение по указанному ключу.
      *
