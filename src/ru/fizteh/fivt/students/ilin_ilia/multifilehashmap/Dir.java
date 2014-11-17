@@ -31,11 +31,11 @@ public class Dir {
             name.delete();
         }
     }
+    
     /**
      *  @param n means nfile.
      *  I've changed it for checkstyle.
      */
-
     public void put(final int n, final String key, final String value)
             throws IOException {
         if (maps.containsKey(n)) {
@@ -67,13 +67,8 @@ public class Dir {
     }
 
     public String list() {
-        String [] l = new String [maps.size()];
-        int count = 0;
-        for (int key: maps.keySet()) {
-            l[count] = maps.get(key).list();
-            count++;
-        }
-        return String.join(", ", l);
+        String[] keyList = maps.keySet().toArray(new String[maps.keySet().size()]);
+        return String.join(", ", keyList);
     }
 
     public void save() throws IOException {
