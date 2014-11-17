@@ -10,6 +10,7 @@ import java.util.Map;
 public class Table {
     private File tableName;
     private Map<Integer, Dir> data;
+    private int maxDirsAndFilesAmount = 16;
     
     Table(final String name) throws IOException {
         tableName  = new File(name);
@@ -50,8 +51,8 @@ public class Table {
             System.out.println("Can't uncode key to UTF-8");
             System.exit(-1);
         }
-        int ndir = byt % 16;
-        int nfile = (byt / 16) % 16;
+        int ndir = byt % maxDirsAndFilesAmount;
+        int nfile = (byt / maxDirsAndFilesAmount) % maxDirsAndFilesAmount;
         if (data.containsKey(ndir)) {
             data.get(ndir).put(nfile, key, value);
         } else {
@@ -69,8 +70,8 @@ public class Table {
             System.out.println("Can't uncode key to UTF-8");
             System.exit(-1);
         }
-        int ndirectory = byt % 16;
-        int nfile = (byt / 16) % 16;
+        int ndirectory = byt % maxDirsAndFilesAmount;
+        int nfile = (byt / maxDirsAndFilesAmount) % maxDirsAndFilesAmount;
         if (data.containsKey(ndirectory)) {
             data.get(ndirectory).get(nfile, key);
         } else {
@@ -94,8 +95,8 @@ public class Table {
             System.out.println("Can't uncode key to UTF-8");
             System.exit(-1);
         }
-        int ndirectory = byt % 16;
-        int nfile = (byt / 16) % 16;
+        int ndirectory = byt % maxDirsAndFilesAmount;
+        int nfile = (byt / maxDirsAndFilesAmount) % maxDirsAndFilesAmount;
         if (data.containsKey(ndirectory)) {
             data.get(ndirectory).remove(nfile, key);
         } else {
