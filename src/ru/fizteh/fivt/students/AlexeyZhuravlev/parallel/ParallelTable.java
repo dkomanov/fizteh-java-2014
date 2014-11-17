@@ -7,6 +7,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author AlexeyZhuravlev
@@ -16,14 +17,16 @@ public class ParallelTable implements Table {
     StructuredTable originalTable;
     ThreadLocal<Diff> diff;
     ParallelTableProvider provider;
+    ReentrantReadWriteLock lock;
 
     public ParallelTable(StructuredTable origin, ParallelTableProvider passedProvider) {
         originalTable = origin;
         provider = passedProvider;
+        lock = new ReentrantReadWriteLock();
         diff = new ThreadLocal<Diff>() {
             @Override
             protected Diff initialValue() {
-                return new Diff(originalTable);
+                return new Diff(originalTable, lock);
             }
         };
     }
@@ -61,10 +64,13 @@ public class ParallelTable implements Table {
 
     @Override
     public int size() {
-        // *** обращение к таблице
-        int originalSize = originalTable.size();
-        // ***
-        return originalSize + diff.get().deltaSize();
+        lock.readLock().lock();
+        try {
+            int originalSize = originalTable.size();
+            return originalSize + diff.get().deltaSize();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
