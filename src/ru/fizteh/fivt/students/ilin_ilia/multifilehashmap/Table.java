@@ -10,7 +10,7 @@ import java.util.Map;
 public class Table {
     private File tableName;
     private Map<Integer, Dir> data;
-    public static int MAX_DIRS_AND_FILES_AMOUNT = 16;
+    private static final int MAX_DIRS_AND_FILES_AMOUNT = 16;
     
     Table(final String name) throws IOException {
         tableName  = new File(name);
