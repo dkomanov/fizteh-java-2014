@@ -25,9 +25,9 @@ public class Interpreter {
     }
 
     /**
-     * @param modeFlag : if true - batch mode, else interactive
+     * @param isBatchMode : if true - batch mode, else interactive
      */
-    public static boolean batchMode(final String[] args, TableList tableList, final boolean modeFlag)
+    public static boolean batchMode(final String[] args, TableList tableList, final boolean isBatchMode)
                                         throws NumberFormatException, IOException {
         String arg = "";
         String [] arg1 = null;
@@ -35,7 +35,7 @@ public class Interpreter {
         for (int i = 0; i < args.length; i++) {
             arg += (args[i] + " ");
         }
-        if (modeFlag) {
+        if (isBatchMode) {
             arg += ";exit";
         }
         String ss = arg.trim();
@@ -48,7 +48,7 @@ public class Interpreter {
                     if (checkCommandCorrection("put", 1, 2, arg2)) {
                         tableList.put(arg2[1], arg2[2]);
                     } else {
-                        if (modeFlag) {
+                        if (isBatchMode) {
                             tableList.exit();
                             System.exit(-1);
                         }
@@ -58,7 +58,7 @@ public class Interpreter {
                     if (checkCommandCorrection("remove", 1, 1, arg2)) {
                         tableList.remove(arg2[1]);
                     } else {
-                        if (modeFlag) {
+                        if (isBatchMode) {
                             tableList.exit();
                             System.exit(-1);
                         }
@@ -68,7 +68,7 @@ public class Interpreter {
                     if (checkCommandCorrection("get", 1, 1, arg2)) {
                         tableList.get(arg2[1]);
                     } else {
-                        if (modeFlag) {
+                        if (isBatchMode) {
                             tableList.exit();
                             System.exit(-1);
                         }
@@ -78,7 +78,7 @@ public class Interpreter {
                     if (checkCommandCorrection("get", 1, 0, arg2)) {
                         tableList.list();
                     } else {
-                        if (modeFlag) {
+                        if (isBatchMode) {
                             tableList.exit();
                             System.exit(-1);
                         }
@@ -90,13 +90,13 @@ public class Interpreter {
                             tableList.create(arg2[1]);
                         } else {
                             System.err.println("Unacceptable name for the table: " + arg2[1]);
-                            if (modeFlag) {
+                            if (isBatchMode) {
                                 tableList.exit();
                                 System.exit(-1);
                             }
                         }
                     } else {
-                        if (modeFlag) {
+                        if (isBatchMode) {
                             tableList.exit();
                             System.exit(-1);
                         }
@@ -106,7 +106,7 @@ public class Interpreter {
                     if (checkCommandCorrection("drop", 1, 1, arg2)) {
                         tableList.drop(arg2[1]);
                     } else {
-                        if (modeFlag) {
+                        if (isBatchMode) {
                             tableList.exit();
                             System.exit(-1);
                         }
@@ -116,7 +116,7 @@ public class Interpreter {
                     if (checkCommandCorrection("use", 1, 1, arg2)) {
                         tableList.use(arg2[1]);
                     } else {
-                        if (modeFlag) {
+                        if (isBatchMode) {
                             tableList.exit();
                             System.exit(-1);
                         }
@@ -127,21 +127,21 @@ public class Interpreter {
                         if (checkCommandCorrection("show tables", 2, 0, arg2)) {
                             tableList.showTables();
                         } else {
-                            if (modeFlag) {
+                            if (isBatchMode) {
                                 tableList.exit();
                                 System.exit(-1);
                             }
                         }
                     } else {
                         System.err.println("Unknown command: " + String.join(" ", arg2));
-                        if (modeFlag) {
+                        if (isBatchMode) {
                             tableList.exit();
                             System.exit(-1);
                         }
                     }
                     break;
                 case "exit":
-                    if (modeFlag) {
+                    if (isBatchMode) {
                         tableList.exit();
                     } else {
                         return true;
@@ -149,7 +149,7 @@ public class Interpreter {
                     break;
                 default:
                     System.err.println("Unknown command: " + String.join(" ", arg2));
-                    if (modeFlag) {
+                    if (isBatchMode) {
                         tableList.exit();
                         System.exit(-1);
                     }
