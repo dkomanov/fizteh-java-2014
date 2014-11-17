@@ -155,7 +155,8 @@ public class Interpreter {
         return false;
     }
     
-    public static boolean checkCommandCorrection(final String command, int commandLength,  int numberOfArgs, final String [] args) {
+    public static boolean checkCommandCorrection(final String command, final int commandLength,
+                                                final int numberOfArgs, final String [] args) {
         if ((numberOfArgs + commandLength) != args.length) {
              System.err.println(command + ": Incorrect number of arguments: "
              + numberOfArgs + " expected, but " + (args.length - commandLength) + " found.");
