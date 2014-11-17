@@ -4,6 +4,7 @@ import java.io.*;
 
 public class ListSortMain {
     public static void main(String[] args) {
+        // Нужно ровно 2 аргумента: входной файл и выходной
         if (args.length != 2) {
             System.err.println("2 args are needed");
             System.exit(1);
@@ -14,12 +15,15 @@ public class ListSortMain {
             System.exit(1);
         }
         File fout = new File(args[1]);
-        File dirTmp = new File(System.getProperty("user.dir") + System.getProperty("file.separator") + "tmp");
+        // Создадим папку, в которую будем сохранять промежуточные результаты
+        File dirTmp = new File(System.getProperty("user.dir"), "tmp");
         dirTmp.mkdir();
-        ListSort lr = new ListSort(fin, fout, dirTmp);
-        lr.go();
-        for (File c : dirTmp.listFiles()) {
-            c.delete();
+
+        ListSort list = new ListSort(fin, fout, dirTmp);
+        list.go();
+        // Удаляем за собой
+        for (File f : dirTmp.listFiles()) {
+            f.delete();
         }
         dirTmp.delete();
     }
