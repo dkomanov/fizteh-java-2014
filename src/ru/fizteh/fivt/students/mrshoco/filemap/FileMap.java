@@ -9,7 +9,7 @@ import java.util.Scanner;
 public final class FileMap {
 
     public static void main(final String[] args) {
-        File fl = new File("db.dat"/*System.getProperty("db.file")*/);
+        File fl = new File(System.getProperty("db.file"));
         HashMap<String, String> hm;
         try {
             hm = Data.load(fl);
@@ -23,7 +23,19 @@ public final class FileMap {
         Launcher lnch = new Launcher(hm);
         if (args.length != 0) {
             try {
-                lnch.run(args);
+                String s = "";
+                for (String arg : args) {
+                    s += arg + " ";
+                }
+                int i = 0;
+                String[] cmds = s.split(";");
+                for (i = 0; i < cmds.length; i++) {
+                    cmds[i] = cmds[i].trim();
+                    if (cmds[i].length() == 0) {
+                        continue;
+                    }
+                    lnch.run(cmds[i].split(" "));
+                }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -31,9 +43,12 @@ public final class FileMap {
             Scanner sc = new Scanner(System.in);
             while (true) {
                 try {
-                        System.out.print("$ ");
-                        String input = sc.nextLine().trim();
-                        lnch.run(input.split(" "));
+                    System.out.print("$ ");
+                    String[] input = sc.nextLine().split(";");
+                    for (int i = 0; i < input.length; i++) {
+                        input[i] = input[i].trim();
+                        lnch.run(input[i].split(" "));
+                    }
                 } catch (IndexOutOfBoundsException e) {
                     System.out.println(e.getMessage());
                 } catch (Exception e) {

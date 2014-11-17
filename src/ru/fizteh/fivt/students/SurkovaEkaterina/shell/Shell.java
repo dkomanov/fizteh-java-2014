@@ -1,14 +1,15 @@
 package ru.fizteh.fivt.students.SurkovaEkaterina.shell;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class Shell {
+public class Shell<FilesOperations> {
     private HashMap<String, Command>
             shellCommands = new HashMap<String, Command>();
     private static String invitation = "$ ";
     private String[] arguments;
-    private FilesOperations shellOperations = new FilesOperations();
+    private FilesOperations shellOperations;
 
     public final void setArguments(final String[] args) {
         this.arguments = args;
@@ -20,8 +21,12 @@ public class Shell {
         }
     }
 
+    public final void setShellOperations(final FilesOperations operations) {
+        this.shellOperations = operations;
+    }
+
     public final void beginExecuting() {
-        if (arguments.length == 0) {
+        if ((arguments == null) || (arguments.length == 0)) {
             interactiveMode();
         } else {
             packageMode();
@@ -68,7 +73,8 @@ public class Shell {
         String commandName = CommandsParser.getCommandName(currentCommand);
         String parameters = CommandsParser.getCommandParameters(currentCommand);
         if (commandName.isEmpty()) {
-            return true;
+            System.out.println("Empty command name!");
+            return false;
         }
         if (!shellCommands.containsKey(commandName)) {
             System.out.println("Unknown command: \'" + commandName + "\'");
@@ -88,3 +94,4 @@ public class Shell {
         return result;
     }
 }
+

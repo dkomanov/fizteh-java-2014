@@ -20,7 +20,6 @@ public class DataBaseFile {
         fileName = newFileName;
         file = new File(fileName);
         data = new HashMap<String, String>();
-        open();
         load();
     }
 
@@ -67,6 +66,9 @@ public class DataBaseFile {
 
     private void load() {
         try {
+            if (!file.exists()) {
+                return;
+            }
             RandomAccessFile inputFile = new RandomAccessFile(fileName, "rw");
             if (inputFile.length() == 0) {
                 inputFile.close();
@@ -105,6 +107,9 @@ public class DataBaseFile {
         try {
             if (data.size() == 0) {
                 try {
+                    if (Files.notExists(file.toPath())) {
+                        return;
+                    }
                     if (!Files.deleteIfExists(file.toPath())) {
                         throw new DataBaseException("Cannot delete a file!");
                     }
@@ -112,6 +117,7 @@ public class DataBaseFile {
                     throw new DataBaseException(e.getMessage());
                 }
             } else {
+                open();
                 RandomAccessFile outputFile = new RandomAccessFile(fileName, "rw");
                 try {
                     int t = 0;
@@ -151,6 +157,10 @@ public class DataBaseFile {
 
     public boolean remove(final String keyStr) {
         return (data.remove(keyStr) != null);
+    }
+
+    public int getKeyCount() {
+        return data.size();
     }
 
     public String getKeyList() {
