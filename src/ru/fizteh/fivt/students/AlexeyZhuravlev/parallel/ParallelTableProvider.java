@@ -27,6 +27,9 @@ public class ParallelTableProvider implements TableProvider {
         StructuredTableProviderFactory factory = new StructuredTableProviderFactory();
         tableLocks = new HashMap<>();
         oldProvider = (StructuredTableProvider) factory.create(path);
+        for (String name: oldProvider.listOfTables()) {
+            tableLocks.put(name, new ReentrantReadWriteLock(true));
+        }
     }
 
     @Override
@@ -37,9 +40,6 @@ public class ParallelTableProvider implements TableProvider {
             if (origin == null) {
                 return null;
             } else {
-                if (!tableLocks.containsKey(name)) {
-                    tableLocks.put(name, new ReentrantReadWriteLock(true));
-                }
                 return new ParallelTable(origin, this, tableLocks.get(name));
             }
         } finally {
@@ -55,9 +55,7 @@ public class ParallelTableProvider implements TableProvider {
             if (origin == null) {
                 return null;
             } else {
-                if (!tableLocks.containsKey(name)) {
-                    tableLocks.put(name, new ReentrantReadWriteLock(true));
-                }
+                tableLocks.put(name, new ReentrantReadWriteLock(true));
                 return new ParallelTable(origin, this, tableLocks.get(name));
             }
         } finally {
@@ -70,6 +68,7 @@ public class ParallelTableProvider implements TableProvider {
         lock.writeLock().lock();
         try {
             oldProvider.removeTable(name);
+            tableLocks.remove(name);
         } finally {
             lock.writeLock().unlock();
         }
