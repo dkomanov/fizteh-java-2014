@@ -42,7 +42,7 @@ public class Interpreter {
             arg2 = ss.split(" ");
             switch (arg2[0]) {
                 case "put":
-                    if (checkCommandCorrection("put", arg2)) {
+                    if (checkCommandCorrection("put", 1, 2, arg2)) {
                         tL.put(arg2[1], arg2[2]);
                     } else {
                         if (flag) {
@@ -52,7 +52,7 @@ public class Interpreter {
                     }
                     break;
                 case "remove":
-                    if (checkCommandCorrection("remove", arg2)) {
+                    if (checkCommandCorrection("remove", 1, 1, arg2)) {
                         tL.remove(arg2[1]);
                     } else {
                         if (flag) {
@@ -62,7 +62,7 @@ public class Interpreter {
                     }
                     break;
                 case "get":
-                    if (checkCommandCorrection("get", arg2)) {
+                    if (checkCommandCorrection("get", 1, 1, arg2)) {
                         tL.get(arg2[1]);
                     } else {
                         if (flag) {
@@ -72,7 +72,7 @@ public class Interpreter {
                     }
                     break;
                 case "list":
-                    if (checkCommandCorrection("get", arg2)) {
+                    if (checkCommandCorrection("get", 1, 0, arg2)) {
                         tL.list();
                     } else {
                         if (flag) {
@@ -82,7 +82,7 @@ public class Interpreter {
                     }
                     break;
                 case "create":
-                    if (checkCommandCorrection("create", arg2)) {
+                    if (checkCommandCorrection("create", 1, 1, arg2)) {
                         if (tL.checkNameCorrection(arg2[1])) {
                             tL.create(arg2[1]);
                         } else {
@@ -100,7 +100,7 @@ public class Interpreter {
                     }
                     break;
                 case "drop":
-                    if (checkCommandCorrection("drop", arg2)) {
+                    if (checkCommandCorrection("drop", 1, 1, arg2)) {
                         tL.drop(arg2[1]);
                     } else {
                         if (flag) {
@@ -110,7 +110,7 @@ public class Interpreter {
                     }
                     break;
                 case "use":
-                    if (checkCommandCorrection("use", arg2)) {
+                    if (checkCommandCorrection("use", 1, 1, arg2)) {
                         tL.use(arg2[1]);
                     } else {
                         if (flag) {
@@ -120,9 +120,17 @@ public class Interpreter {
                     }
                     break;
                 case "show":
-                    if (checkCommandCorrection("show", arg2)) {
-                        tL.showTables();
+                    if (arg2.length > 1 && arg2[1].equals("tables")) {
+                        if (checkCommandCorrection("show tables", 2, 0, arg2)) {
+                            tL.showTables();
+                        } else {
+                            if (flag) {
+                                tL.exit();
+                                System.exit(-1);
+                            }
+                        }
                     } else {
+                        System.err.println("Unknown command: " + String.join(" ", arg2));
                         if (flag) {
                             tL.exit();
                             System.exit(-1);
@@ -147,85 +155,12 @@ public class Interpreter {
         return false;
     }
     
-    public static boolean checkCommandCorrection(final String command, final String [] args) {
-        switch(command) {
-            case "put":
-                if (args.length == 1 || args.length == 2) {
-                    System.err.println("\"put\" doesn't enough have arguments");
-                } else if (args.length > 3) {
-                    if (args.length == 4) {
-                        System.err.println("\"put\" has surplus argument");
-                    }
-                    if (args.length > 4) {
-                        System.err.println("\"put\" has surplus arguments");
-                    }
-                    return false;
-                }
-                return true;
-            case "list":
-                if (args.length == 2) {
-                    System.err.println("\"" + command + "\" has surplus argument");
-                    return false;
-                } else if (args.length  > 3) {
-                    System.err.println("\"" + command + "\" has surplus arguments");
-                    return false;
-                }
-                return true;
-            case "create": case "get": case "drop": case "remove": case "use":
-                if (args.length == 1) {
-                    System.err.println("\"" + command + "\" doesn't have arguments");
-                    return false;
-                } else if (args.length > 2) {
-                    if (args.length == 3) {
-                        System.err.println("\"" + command + "\" has surplus argument");
-                    }
-                    if (args.length > 3) {
-                        System.err.println("\"" + command + "\" has surplus arguments");
-                    }
-                    return false;
-                }
-                return true;
-            case "show":
-                if (args.length == 1) {
-                    System.err.println("Unknown command: \"show\"");
-                    return false;
-                } else {
-                    if (args.length == 2) {
-                        if (args[1].equals("tables")) {
-                            return true;
-                        } else {
-                            System.err.println("Unknown command: \"" + args[0] + " " + args[1] + "\"");
-                            return false;
-                        }
-                    } else {
-                        if (args.length == 3) {
-                            if (args[1].equals("tables")) {
-                                System.err.println("\"show tables\" has surplus argument");
-                            } else {
-                                System.err.print("Unknown command: \"");
-                                for (String s: args) {
-                                    System.err.print(s + " ");
-                                }
-                                System.err.println("\"");
-                            }
-                        }
-                        if (args.length > 3) {
-                            if (args[1].equals("tables")) {
-                                System.err.println("\"show tables\" has surplus argument");
-                            } else {
-                                System.err.print("Unknown command: \"");
-                                for (String s: args) {
-                                    System.err.print(s + " ");
-                                }
-                                System.err.println("\"");
-                            }
-                        }
-                        return false;
-                    }
-                }
-        default:
-                // This situation can not be.
-                return false;
+    public static boolean checkCommandCorrection(final String command, int commandLength,  int numberOfArgs, final String [] args) {
+        if ((numberOfArgs + commandLength) != args.length) {
+             System.err.println(command + ": Incorrect number of arguments: "
+             + numberOfArgs + " expected, but " + (args.length - commandLength) + " found.");
+             return false;
         }
+        return true;
     }
 }
