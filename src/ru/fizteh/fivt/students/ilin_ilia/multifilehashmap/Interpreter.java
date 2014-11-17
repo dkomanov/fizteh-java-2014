@@ -6,15 +6,15 @@ import java.util.Scanner;
 
 public class Interpreter {
     
-    public static void interactiveMode(TableList tL) throws IOException {
+    public static void interactiveMode(TableList tableList) throws IOException {
             while (true) {
                 Scanner scan = new Scanner(System.in);
                 System.out.print("$ ");
                 String[] str = new String[1];
                 try {
                     str[0] = scan.nextLine();
-                    if (batchMode(str, tL, false)) {
-                        tL.exit();
+                    if (batchMode(str, tableList, false)) {
+                        tableList.exit();
                     }
                 } catch (NoSuchElementException e) {
                     System.err.println("There isn't input command");
@@ -24,7 +24,10 @@ public class Interpreter {
             }
     }
 
-    public static boolean batchMode(final String[] args, TableList tL, final boolean flag)
+    /**
+     * @param modeFlag : if true - batch mode, else interactive
+     */
+    public static boolean batchMode(final String[] args, TableList tableList, final boolean modeFlag)
                                         throws NumberFormatException, IOException {
         String arg = "";
         String [] arg1 = null;
@@ -32,7 +35,7 @@ public class Interpreter {
         for (int i = 0; i < args.length; i++) {
             arg += (args[i] + " ");
         }
-        if (flag) {
+        if (modeFlag) {
             arg += ";exit";
         }
         String ss = arg.trim();
@@ -43,78 +46,78 @@ public class Interpreter {
             switch (arg2[0]) {
                 case "put":
                     if (checkCommandCorrection("put", 1, 2, arg2)) {
-                        tL.put(arg2[1], arg2[2]);
+                        tableList.put(arg2[1], arg2[2]);
                     } else {
-                        if (flag) {
-                            tL.exit();
+                        if (modeFlag) {
+                            tableList.exit();
                             System.exit(-1);
                         }
                     }
                     break;
                 case "remove":
                     if (checkCommandCorrection("remove", 1, 1, arg2)) {
-                        tL.remove(arg2[1]);
+                        tableList.remove(arg2[1]);
                     } else {
-                        if (flag) {
-                            tL.exit();
+                        if (modeFlag) {
+                            tableList.exit();
                             System.exit(-1);
                         }
                     }
                     break;
                 case "get":
                     if (checkCommandCorrection("get", 1, 1, arg2)) {
-                        tL.get(arg2[1]);
+                        tableList.get(arg2[1]);
                     } else {
-                        if (flag) {
-                            tL.exit();
+                        if (modeFlag) {
+                            tableList.exit();
                             System.exit(-1);
                         }
                     }
                     break;
                 case "list":
                     if (checkCommandCorrection("get", 1, 0, arg2)) {
-                        tL.list();
+                        tableList.list();
                     } else {
-                        if (flag) {
-                            tL.exit();
+                        if (modeFlag) {
+                            tableList.exit();
                             System.exit(-1);
                         }
                     }
                     break;
                 case "create":
                     if (checkCommandCorrection("create", 1, 1, arg2)) {
-                        if (tL.checkNameCorrection(arg2[1])) {
-                            tL.create(arg2[1]);
+                        if (tableList.checkNameCorrection(arg2[1])) {
+                            tableList.create(arg2[1]);
                         } else {
                             System.err.println("Unacceptable name for the table: " + arg2[1]);
-                            if (flag) {
-                                tL.exit();
+                            if (modeFlag) {
+                                tableList.exit();
                                 System.exit(-1);
                             }
                         }
                     } else {
-                        if (flag) {
-                            tL.exit();
+                        if (modeFlag) {
+                            tableList.exit();
                             System.exit(-1);
                         }
                     }
                     break;
                 case "drop":
                     if (checkCommandCorrection("drop", 1, 1, arg2)) {
-                        tL.drop(arg2[1]);
+                        tableList.drop(arg2[1]);
                     } else {
-                        if (flag) {
-                            tL.exit();
+                        if (modeFlag) {
+                            tableList.exit();
                             System.exit(-1);
                         }
                     }
                     break;
                 case "use":
                     if (checkCommandCorrection("use", 1, 1, arg2)) {
-                        tL.use(arg2[1]);
+                        tableList.use(arg2[1]);
                     } else {
-                        if (flag) {
-                            tL.exit();
+                        if (modeFlag) {
+                            tableList.exit();
                             System.exit(-1);
                         }
                     }
@@ -122,32 +125,32 @@ public class Interpreter {
                 case "show":
                     if (arg2.length > 1 && arg2[1].equals("tables")) {
                         if (checkCommandCorrection("show tables", 2, 0, arg2)) {
-                            tL.showTables();
+                            tableList.showTables();
                         } else {
-                            if (flag) {
-                                tL.exit();
+                            if (modeFlag) {
+                                tableList.exit();
                                 System.exit(-1);
                             }
                         }
                     } else {
                         System.err.println("Unknown command: " + String.join(" ", arg2));
-                        if (flag) {
-                            tL.exit();
+                        if (modeFlag) {
+                            tableList.exit();
                             System.exit(-1);
                         }
                     }
                     break;
                 case "exit":
-                    if (flag) {
-                        tL.exit();
+                    if (modeFlag) {
+                        tableList.exit();
                     } else {
                         return true;
                     }
                     break;
                 default:
                     System.err.println("Unknown command: " + String.join(" ", arg2));
-                    if (flag) {
-                        tL.exit();
+                    if (modeFlag) {
+                        tableList.exit();
                         System.exit(-1);
                     }
             }
