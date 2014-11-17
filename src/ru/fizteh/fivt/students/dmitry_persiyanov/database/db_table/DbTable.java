@@ -1,13 +1,16 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 public final class DbTable implements Table {
-    public final File tableDir;
+    private final File tableDir;
+    private final List<Class<?>> columnTypes;
     private static final int MAX_DIRS_FOR_TABLE = 16;
     private static final int MAX_FILES_FOR_DIR = 16;
     private int size;
@@ -18,10 +21,12 @@ public final class DbTable implements Table {
     private Set<String> uncommittedDeletionsSet;
 
 
-    public DbTable(final File tableDir) {
+    public DbTable(final File tableDir, final List<Class<?>> columnTypes) {
         if (!tableDir.isDirectory()) {
             throw new IllegalArgumentException("is not a directory: " + tableDir.getPath());
         } else {
+            this.columnTypes = new ArrayList<>();
+            this.columnTypes.addAll(columnTypes);
             this.tableDir = tableDir;
             initHashMaps();
             try {
@@ -55,9 +60,11 @@ public final class DbTable implements Table {
     }
 
     @Override
-    public String put(final String key, final String value) {
+    public TableRow put(final String key, final Storeable value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
+        } else if (!checkStoreableValueValidity(value)) {
+            throw new ColumnFormatException();
         }
         int dir = getDirNumByKey(key);
         int file = getFileNumByKey(key);
@@ -187,6 +194,8 @@ public final class DbTable implements Table {
         }
     }
 
+
+
     private void calculateTableSize() {
         for (List<Map<String, String>> list : lastCommitTableMap) {
             for (Map<String, String> map : list) {
@@ -195,7 +204,20 @@ public final class DbTable implements Table {
         }
     }
 
-    public void dump() throws IOException {
+    private boolean checkStoreableValueValidity(final Storeable value) {
+        for (int i = 0; i < columnTypes.size(); ++i) {
+            try {
+                if (!columnTypes.get(i).equals(value.getColumnAt(i).getClass())) {
+                    return false;
+                }
+            } catch (IndexOutOfBoundsException e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void dump() throws IOException {
         TableLoaderDumper.dumpTable(tableDir, lastCommitTableMap);
     }
 
