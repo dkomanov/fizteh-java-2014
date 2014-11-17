@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.parallel;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 
 import java.io.IOException;
 
@@ -11,18 +12,26 @@ import java.io.IOException;
  */
 public class ParallelTable implements Table {
 
+    StructuredTable originalTable;
+    ThreadLocal<Diff> diff;
+    ParallelTableProvider provider;
+
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
-        return null;
+        provider.serialize(originalTable, value);
+        return diff.get().put(key, value);
     }
 
     @Override
     public Storeable remove(String key) {
-        return null;
+        return diff.get().remove(key);
     }
 
     @Override
     public int size() {
-        return 0;
+        // *** обращение к таблице
+        int originalSize = originalTable.size();
+        // ***
+        return originalSize + diff.get().deltaSize();
     }
 
     @Override
@@ -37,21 +46,21 @@ public class ParallelTable implements Table {
 
     @Override
     public int getColumnsCount() {
-        return 0;
+        return originalTable.getColumnsCount();
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        return null;
+        return originalTable.getColumnType(columnIndex);
     }
 
     @Override
     public String getName() {
-        return null;
+        return originalTable.getName();
     }
 
     @Override
     public Storeable get(String key) {
-        return null;
+        return diff.get().get(key);
     }
 }
