@@ -6,6 +6,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * @author AlexeyZhuravlev
@@ -16,14 +17,46 @@ public class ParallelTable implements Table {
     ThreadLocal<Diff> diff;
     ParallelTableProvider provider;
 
+    public ParallelTable(StructuredTable origin, ParallelTableProvider passedProvider) {
+        originalTable = origin;
+        provider = passedProvider;
+        diff = new ThreadLocal<Diff>() {
+            @Override
+            protected Diff initialValue() {
+                return new Diff(originalTable);
+            }
+        };
+    }
+
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
-        provider.serialize(originalTable, value);
-        return diff.get().put(key, value);
+        if (key == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+        try {
+            String old = diff.get().put(key, provider.serialize(this, value));
+            if (old == null) {
+                return null;
+            }
+            return provider.deserialize(this, old);
+        } catch (ParseException e) {
+            throw new ColumnFormatException(e.getMessage());
+        }
     }
 
     @Override
     public Storeable remove(String key) {
-        return diff.get().remove(key);
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        String old = diff.get().remove(key);
+        if (old == null) {
+            return null;
+        }
+        try {
+            return provider.deserialize(this, old);
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     @Override
@@ -36,12 +69,17 @@ public class ParallelTable implements Table {
 
     @Override
     public int commit() throws IOException {
-        return 0;
+        int result = diff.get().changesCount();
+        diff.get().commit();
+        diff.get().clear();
+        return result;
     }
 
     @Override
     public int rollback() {
-        return 0;
+        int result = diff.get().changesCount();
+        diff.get().clear();
+        return result;
     }
 
     @Override
@@ -61,6 +99,22 @@ public class ParallelTable implements Table {
 
     @Override
     public Storeable get(String key) {
-        return diff.get().get(key);
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        String old = diff.get().get(key);
+        if (old == null) {
+            return null;
+        }
+        try {
+            return provider.deserialize(this, old);
+        } catch (ParseException e) {
+            return null;
+        }
     }
+
+    public Table getStructuredTable() {
+        return originalTable;
+    }
+
 }

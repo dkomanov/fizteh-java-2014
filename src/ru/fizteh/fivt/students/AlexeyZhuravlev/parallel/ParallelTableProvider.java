@@ -4,7 +4,9 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTableProvider;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTableProviderFactory;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -13,44 +15,57 @@ import java.util.List;
 /**
  * @author AlexeyZhuravlev
  */
-public class ParallelTableProvider extends StructuredTableProvider {
+public class ParallelTableProvider implements TableProvider {
+
+    StructuredTableProvider oldProvider;
 
     protected ParallelTableProvider(String path) throws IOException {
-        super(path);
+        StructuredTableProviderFactory factory = new StructuredTableProviderFactory();
+        oldProvider = (StructuredTableProvider) factory.create(path);
     }
 
     @Override
     public Table getTable(String name) {
-        return null;
+        StructuredTable origin = (StructuredTable) oldProvider.getTable(name);
+        if (origin == null) {
+            return null;
+        } else {
+            return new ParallelTable((StructuredTable) oldProvider.getTable(name), this);
+        }
     }
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        return null;
+        StructuredTable origin = (StructuredTable) oldProvider.createTable(name, columnTypes);
+        if (origin == null) {
+            return null;
+        } else {
+            return new ParallelTable(origin, this);
+        }
     }
 
     @Override
     public void removeTable(String name) throws IOException {
-
-    }
-
-    @Override
-    public Storeable deserialize(Table table, String value) throws ParseException {
-        return null;
-    }
-
-    @Override
-    public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        return null;
+        oldProvider.removeTable(name);
     }
 
     @Override
     public Storeable createFor(Table table) {
-        return null;
+        return oldProvider.createFor(((ParallelTable) table).getStructuredTable());
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-        return null;
+        return oldProvider.createFor(((ParallelTable) table).getStructuredTable(), values);
+    }
+
+    @Override
+    public Storeable deserialize(Table table, String value) throws ParseException {
+        return oldProvider.deserialize(((ParallelTable) table).getStructuredTable(), value);
+    }
+
+    @Override
+    public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        return oldProvider.serialize(((ParallelTable) table).getStructuredTable(), value);
     }
 }

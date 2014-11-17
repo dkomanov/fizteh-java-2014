@@ -11,6 +11,10 @@ import java.io.IOException;
 public class ParallelTableProviderFactory implements TableProviderFactory {
     @Override
     public TableProvider create(String path) throws IOException {
-        return null;
+        if (path == null) {
+            throw new IllegalArgumentException();
+        } else {
+            return new ParallelTableProvider(path);
+        }
     }
 }
