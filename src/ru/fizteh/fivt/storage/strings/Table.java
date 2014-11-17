@@ -69,7 +69,5 @@ public interface Table {
      * @return Список ключей.
      */
     List<String> list();
-
-
 }
 
