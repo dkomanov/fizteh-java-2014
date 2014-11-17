@@ -13,11 +13,8 @@ public class JUnit {
             TableProvider tables = tfp.create(dir);
             Table table = tables.createTable("1");
 
-            if (args.length == 0) {
-                InteractiveMode.interactive(tables, table);
-            } else {
-                BatchMode.batch(args, tables, table);
-            }
+            Interpretator interpretator = new Interpretator();
+            interpretator.run((args.length == 0) ? null : args, tables, table);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             System.exit(ReturnCodes.ERROR);
