@@ -21,7 +21,7 @@ import ru.fizteh.fivt.storage.strings.Table;
 public class MyTable implements Table {
 
     private String dbPath;
-    private DataBase dbData;
+    private FileMap dbData;
 
     //---
     class HelpMap {
@@ -31,7 +31,7 @@ public class MyTable implements Table {
         }
     }
     
-    public class DataBase implements Map<String, String>, AutoCloseable {
+    public class FileMap implements Map<String, String>, AutoCloseable {
 
         private static final int FOLDERS = 16;
         private static final int FILES = 16;
@@ -44,7 +44,7 @@ public class MyTable implements Table {
         private Map<String, String> diff;
         private boolean commit;
 
-        public DataBase(final String dbPath) throws Exception {
+        public FileMap(final String dbPath) throws Exception {
             commit = false;
             databasePath = dbPath;
             database = new HashMap<String, String>();
@@ -339,7 +339,7 @@ public class MyTable implements Table {
     
     MyTable(final String path) throws Exception {
         dbPath = Paths.get(path).toAbsolutePath().normalize().toString();
-        dbData = new DataBase(dbPath);
+        dbData = new FileMap(dbPath);
     }
 
     @Override
