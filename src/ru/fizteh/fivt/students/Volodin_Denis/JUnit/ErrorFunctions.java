@@ -1,17 +1,13 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit;
 
 public class ErrorFunctions {
-    
-    public static void wrongQuantity(final String commandName) throws Exception {
-        throw new Exception(commandName + ": wrong quantity of arguments.");
+
+    public static void errorRead(final String commandName) throws Exception {
+        throw new Exception(commandName + " : error reading from file");
     }
 
-    public static void wrongInput(final String commandName) throws Exception {
-        throw new Exception(commandName + ": wrong input.");
-    }
-    
-    public static void tableNameIsFile(final String commandName, final String arg) throws IllegalArgumentException {
-        throw new IllegalArgumentException(commandName + ": [" + arg + "] is file");
+    public static void errorWrite(final String commandName) throws Exception {
+        throw new Exception(commandName + " : error writing to file");
     }
     
     public static void invalidName(final String commandName, final String arg) throws Exception {
@@ -26,12 +22,12 @@ public class ErrorFunctions {
         throw new IllegalStateException(commandName + ": [" + arg + "] is not a directory.");
     }
 
-    public static void notMkdir(final String commandName, final String arg) throws IllegalArgumentException {
-        throw new IllegalArgumentException(commandName + ": failed to create a directory [" + arg + "].");
-    }
-
     public static void notExists(final String commandName, final String arg) throws IllegalStateException {
         throw new IllegalStateException(commandName + ": [" + arg + "] does not exists.");
+    }
+
+    public static void notMkdir(final String commandName, final String arg) throws IllegalArgumentException {
+        throw new IllegalArgumentException(commandName + ": failed to create a directory [" + arg + "].");
     }
 
     public static void security(final String commandName, final String arg) throws Exception {
@@ -46,11 +42,15 @@ public class ErrorFunctions {
         throw new Exception(commandName + " :" + message);
     }
 
-    public static void errorRead(final String commandName) throws Exception {
-        throw new Exception(commandName + " : error reading from file");
+    public static void tableNameIsFile(final String commandName, final String arg) throws IllegalArgumentException {
+        throw new IllegalArgumentException(commandName + ": [" + arg + "] is file");
     }
 
-    public static void errorWrite(final String commandName) throws Exception {
-        throw new Exception(commandName + " : error writing to file");
+    public static void wrongInput(final String commandName) throws Exception {
+        throw new Exception(commandName + ": wrong input.");
+    }
+
+    public static void wrongQuantity(final String commandName) throws Exception {
+        throw new Exception(commandName + ": wrong quantity of arguments.");
     }
 }

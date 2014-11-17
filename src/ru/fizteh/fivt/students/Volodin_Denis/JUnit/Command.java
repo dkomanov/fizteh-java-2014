@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit;
 
+import java.util.List;
+
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
@@ -65,7 +67,16 @@ public class Command {
             return;
         }
         
-        table.list();
+        List<String> list = table.list();
+        int i = list.size();
+        for (String key : list) {
+            System.out.print(key);
+            --i;
+            if (i > 0) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println();
     }
 
     public static void put(final String[] args, Table table) throws Exception {

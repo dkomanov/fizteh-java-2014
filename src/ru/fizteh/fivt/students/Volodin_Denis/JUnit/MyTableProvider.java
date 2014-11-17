@@ -16,6 +16,9 @@ public class MyTableProvider implements TableProvider {
     
     MyTableProvider(String dir) throws Exception {
         dbPath = Paths.get(dir).toAbsolutePath().toString();   
+        if (!Paths.get(dbPath).toFile().exists()) {
+            Files.createDirectory(Paths.get(dbPath));
+        }
         tables = readOldTables(Paths.get(dbPath));
     }
     

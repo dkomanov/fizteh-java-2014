@@ -232,21 +232,23 @@ public class DataBase implements Map<String, String>, AutoCloseable {
 
     @Override
     public Set<String> keySet() {
+
+        Set<String> keysList = new HashSet<String>();
         if (isEmpty()) {
-            Set<String> keysList = new HashSet<String>();
             return keysList;
         }
 
-        Set<String> keysList = database.keySet();
         for (String key : database.keySet()) {
             if (diff.containsKey(key)) {
-                if (diff.get(key) == null) {
-                    keysList.remove(key);
+                if (diff.get(key) != null) {
+                    keysList.add(key);
                 }
+            } else {
+                keysList.add(key);
             }
         }
         for (String key : diff.keySet()) {
-            if (!database.containsKey(key)) {
+            if (!keysList.contains(key)) {
                 keysList.add(key);
             }
         }
