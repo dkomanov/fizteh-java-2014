@@ -15,7 +15,7 @@ public class Command {
         table.commit();
     }
 
-    public static void create(final String[] args, TableProvider tables) throws Exception {
+    public static void create(final String[] args, TableProvider tableProvider) throws Exception {
         if (args.length != 2) {
             ErrorFunctions.wrongQuantityOfArguments("create");
         }
@@ -23,17 +23,17 @@ public class Command {
             ErrorFunctions.wrongInput("create");
         }
         
-        tables.createTable(args[1]);
+        tableProvider.createTable(args[1]);
     }
 
-    public static void drop(final String[] args, TableProvider tables) throws Exception {
+    public static void drop(final String[] args, TableProvider tableProvider) throws Exception {
         if (args.length != 2) {
             ErrorFunctions.wrongQuantityOfArguments("drop");
         }
         if (args[1].isEmpty()) {
             ErrorFunctions.wrongInput("drop");
         }
-        tables.removeTable(args[1]);
+        tableProvider.removeTable(args[1]);
     }
 
     public static void exit(final String[] args) throws Exception {
@@ -126,16 +126,16 @@ public class Command {
     
     public static void showTables(final String[] args, TableProvider table)throws Exception {
         if (args.length != 2) {
-            ErrorFunctions.wrongInput("show tables");
+            ErrorFunctions.wrongInput("show tableProvider");
         }
-        if (!args[1].equals("tables")) {
-            ErrorFunctions.wrongInput("show tables");
+        if (!args[1].equals("tableProvider")) {
+            ErrorFunctions.wrongInput("show tableProvider");
         }
         
         table.showTables();
     }
     
-    public static void use(final String[] args, TableProvider tables, Table table) throws Exception {
+    public static void use(final String[] args, TableProvider tableProvider, Table table) throws Exception {
         if (args.length != 2) {
             ErrorFunctions.wrongQuantityOfArguments("use");
         }
@@ -143,6 +143,6 @@ public class Command {
             ErrorFunctions.wrongInput("use");
         }
         
-        table = tables.getTable(args[1]);
+        table = tableProvider.getTable(args[1]);
     }
 }

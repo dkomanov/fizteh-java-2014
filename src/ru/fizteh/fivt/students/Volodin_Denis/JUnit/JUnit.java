@@ -8,13 +8,13 @@ public class JUnit {
     
     public static void main(final String[] args) {
         try {
-            TableProviderFactory tpf = new MyTableProviderFactory();
+            TableProviderFactory tpf = new TableProviderFactoryByVolodden();
             String dir = System.getProperty("fizteh.db.dir");
-            TableProvider tables = tpf.create(dir);
-            Table table = tables.createTable("1");
+            TableProvider tableProvider = tpf.create(dir);
+            Table table = tableProvider.createTable("1");
 
             Interpretator interpretator = new Interpretator();
-            interpretator.run((args.length == 0) ? null : args, tables, table);
+            interpretator.run((args.length == 0) ? null : args, tableProvider, table);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             System.exit(ReturnCodes.ERROR);

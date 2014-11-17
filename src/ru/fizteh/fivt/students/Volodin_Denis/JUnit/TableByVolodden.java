@@ -18,7 +18,7 @@ import java.util.Set;
 
 import ru.fizteh.fivt.storage.strings.Table;
 
-public class MyTable implements Table {
+public class TableByVolodden implements Table {
 
     private String dbPath;
     private FileMap dbData;
@@ -337,7 +337,7 @@ public class MyTable implements Table {
     
     //---
     
-    MyTable(final String path) throws Exception {
+    TableByVolodden(final String path) throws Exception {
         dbPath = Paths.get(path).toAbsolutePath().normalize().toString();
         dbData = new FileMap(dbPath);
     }

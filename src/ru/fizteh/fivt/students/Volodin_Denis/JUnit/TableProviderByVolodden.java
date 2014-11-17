@@ -9,12 +9,12 @@ import java.util.Set;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
-public class MyTableProvider implements TableProvider {
+public class TableProviderByVolodden implements TableProvider {
 
     private String dbPath;
     private Set<String> tables;
     
-    MyTableProvider(String dir) throws Exception {
+    TableProviderByVolodden(String dir) throws Exception {
         dbPath = Paths.get(dir).toAbsolutePath().toString();   
         if (!Paths.get(dbPath).toFile().exists()) {
             Files.createDirectory(Paths.get(dbPath));
@@ -33,7 +33,7 @@ public class MyTableProvider implements TableProvider {
         }
         Table dbTable;
         try {
-            dbTable = new MyTable(Paths.get(dbPath, name).normalize().toString());
+            dbTable = new TableByVolodden(Paths.get(dbPath, name).normalize().toString());
         } catch (Exception exception) {
             exception.printStackTrace();
             return null;
@@ -51,7 +51,7 @@ public class MyTableProvider implements TableProvider {
             if (Paths.get(dbPath, name).normalize().toFile().isDirectory()) {
                 System.out.println(name + " exists");
                 try {
-                    dbTable =  new MyTable(name);
+                    dbTable =  new TableByVolodden(name);
                     return dbTable;
                 } catch (Exception exception) {
                     return null;
@@ -67,7 +67,7 @@ public class MyTableProvider implements TableProvider {
             }
         }
         try {
-            dbTable = new MyTable(name);
+            dbTable = new TableByVolodden(name);
         } catch (Exception exception) {
             exception.printStackTrace();
             return null;
@@ -152,7 +152,7 @@ public class MyTableProvider implements TableProvider {
             for (String name : names) {
                 if (Paths.get(path.toString(), name).toAbsolutePath().toFile().isDirectory()) {
                     try {
-                        Table temp = new MyTable(name);
+                        Table temp = new TableByVolodden(name);
                         temp.size();
                         setOfNames.add(name);
                     } catch (Exception exception) {
