@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.storage.strings;
 /**
- * Представляет интерфейс для создание экземпляров {@link ru.fizteh.fivt.storage.strings.TableProvider}. Предполагается, что реализация интерфейса
+ * Представляет интерфейс для создание экземпляров {@link TableProvider}. Предполагается, что реализация интерфейса
  * фабрики будет иметь публичный конструктор без параметров.
  *
  * @author Fedor Lavrentyev
