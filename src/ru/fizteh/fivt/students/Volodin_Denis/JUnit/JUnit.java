@@ -8,9 +8,9 @@ public class JUnit {
     
     public static void main(final String[] args) {
         try {
-            TableProviderFactory tfp = new MyTableProviderFactory();
+            TableProviderFactory tpf = new MyTableProviderFactory();
             String dir = System.getProperty("fizteh.db.dir");
-            TableProvider tables = tfp.create(dir);
+            TableProvider tables = tpf.create(dir);
             Table table = tables.createTable("1");
 
             Interpretator interpretator = new Interpretator();
