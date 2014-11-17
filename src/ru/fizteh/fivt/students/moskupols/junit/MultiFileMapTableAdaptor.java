@@ -108,7 +108,6 @@ public class MultiFileMapTableAdaptor implements KnownDiffTable {
 
     @Override
     public int commit() {
-        int ret = diff();
         try {
             for (Map.Entry<String, String> entry : putProxy.entrySet()) {
                 delegate.put(entry.getKey(), entry.getValue());
@@ -120,7 +119,7 @@ public class MultiFileMapTableAdaptor implements KnownDiffTable {
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
-        return ret;
+        return rollback();
     }
 
     @Override
