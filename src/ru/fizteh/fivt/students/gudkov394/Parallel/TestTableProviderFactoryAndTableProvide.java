@@ -1,10 +1,11 @@
-package ru.fizteh.fivt.students.gudkov394.Storable.src;
+package ru.fizteh.fivt.students.gudkov394.Parallel;
 
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.students.gudkov394.Storable.src.Junit;
+import ru.fizteh.fivt.students.gudkov394.Storable.src.Utils;
 
 import java.io.IOException;
 
@@ -13,13 +14,14 @@ import java.io.IOException;
  * Created by kagudkov on 20.10.14.
  */
 public class TestTableProviderFactoryAndTableProvide {
-    TableProviderClass provider;
-    TableProviderFactory factory;
+    ParallelTableProvider provider;
+    ParallelTableProviderFactory factory;
     Utils utils = new Utils();
 
     @Before
     public void beforeTest() throws IOException {
-        provider = new Junit().create("/home/kagudkov/fizteh-java-2014/test1");
+        provider = (ParallelTableProvider)
+                new ParallelTableProviderFactory().create("/home/kagudkov/fizteh-java-2014/test1");
         provider.createTable("table1", utils.signature("int int"));
         provider.createTable("table2", utils.signature("int int"));
     }
@@ -38,8 +40,6 @@ public class TestTableProviderFactoryAndTableProvide {
 // existing tables
         Assert.assertNotNull(provider.getTable("table1"));
         Assert.assertNotNull(provider.getTable("table2"));
-        Table table1 = provider.getTable("table1");
-        Assert.assertEquals(table1, provider.getTable("table1"));
     }
 
     @Test
@@ -73,12 +73,12 @@ public class TestTableProviderFactoryAndTableProvide {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRemoveTableIllegalArgumentException() {
+    public void testRemoveTableIllegalArgumentException() throws IOException {
         provider.removeTable(null);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testRemoveTableIllegalStateException() {
+    public void testRemoveTableIllegalStateException() throws IOException {
         provider.removeTable("nonExistingTable");
         provider.removeTable("nosuchtable");
     }
@@ -87,11 +87,11 @@ public class TestTableProviderFactoryAndTableProvide {
     public void testInitTable() throws Exception {
 // non-existing table
         Assert.assertNotNull(provider.createTable("newTable2", utils.signature("int long String")));
-        Table table = provider.getTable("newTable2");
+        ParallelTable table = (ParallelTable) provider.getTable("newTable2");
         table.put("1", provider.deserialize(table, "[1,1,\"Harry\"]"));
         table.commit();
 // existing tables
-        provider.removeTable("NewTable2");
+        provider.removeTable("newTable2");
 
     }
 }
