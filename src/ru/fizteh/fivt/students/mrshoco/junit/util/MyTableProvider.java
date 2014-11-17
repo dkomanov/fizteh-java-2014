@@ -44,7 +44,7 @@ public class MyTableProvider implements TableProvider{
 
         File tableFile = new File(root, name);
         if (tableFile.exists()) {
-            System.out.print("tablename exists");
+            System.out.println("tablename exists");
             return null;
         } else {
             tableFile.mkdir();

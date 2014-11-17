@@ -14,6 +14,7 @@ public class MyTableProviderFactory implements TableProviderFactory{
             throw new IllegalArgumentException("Property doesn't given");
         }
         File file = new File(dir);
+        file.mkdir();
         
         return new MyTableProvider(file);
     }
