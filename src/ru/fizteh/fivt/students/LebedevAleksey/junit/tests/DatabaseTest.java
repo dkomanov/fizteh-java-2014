@@ -133,12 +133,23 @@ public class DatabaseTest {
             database.createTable("t" + i);
         }
         for (int i = 0; i < 10; i++) {
-            Assert.assertEquals("t" + i, database.getTable("t" + i).getTableName());
+            assertCanGetTableTNum(i);
         }
         database = new Database(dbPath.getPath());
         for (int i = 0; i < 10; i++) {
             database.removeTable("t" + i);
+            for (int j = 0; j <= i; j++) {
+                assertTableNotExsist("t" + j);
+            }
+            for (int j = i + 1; j < 10; j++) {
+                assertCanGetTableTNum(j);
+            }
+            Assert.assertEquals(9 - i, database.listTables().size());
         }
+    }
+
+    private void assertCanGetTableTNum(int i) throws TableNotFoundException {
+        Assert.assertEquals("t" + i, database.getTable("t" + i).getTableName());
     }
 
     @Test
