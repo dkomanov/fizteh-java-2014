@@ -12,6 +12,12 @@ public class Table {
     private Database database;
 
     public Table(String name, Database databaseParent) {
+        initParts();
+        tableName = name;
+        database = databaseParent;
+    }
+
+    protected void initParts() {
         structuredParts = new TablePart[SUBDIRECTORIES_COUNT][];
         for (int i = 0; i < SUBDIRECTORIES_COUNT; ++i) {
             structuredParts[i] = new TablePart[FILES_COUNT];
@@ -19,8 +25,6 @@ public class Table {
                 structuredParts[i][j] = new TablePart(this, i, j);
             }
         }
-        tableName = name;
-        database = databaseParent;
     }
 
     protected TablePart selectPartForKey(String key)
