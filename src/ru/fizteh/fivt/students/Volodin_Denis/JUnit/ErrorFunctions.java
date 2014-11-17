@@ -2,12 +2,12 @@ package ru.fizteh.fivt.students.Volodin_Denis.JUnit;
 
 public class ErrorFunctions {
 
-    public static void errorRead(final String commandName) throws Exception {
-        throw new Exception(commandName + " : error reading from file");
+    public static void errorRead() throws Exception {
+        throw new Exception("error reading from file");
     }
 
-    public static void errorWrite(final String commandName) throws Exception {
-        throw new Exception(commandName + " : error writing to file");
+    public static void errorWrite() throws Exception {
+        throw new Exception("error writing to file");
     }
     
     public static void invalidName(final String commandName, final String arg) throws Exception {
@@ -50,7 +50,7 @@ public class ErrorFunctions {
         throw new Exception(commandName + ": wrong input.");
     }
 
-    public static void wrongQuantity(final String commandName) throws Exception {
+    public static void wrongQuantityOfArguments(final String commandName) throws Exception {
         throw new Exception(commandName + ": wrong quantity of arguments.");
     }
 }

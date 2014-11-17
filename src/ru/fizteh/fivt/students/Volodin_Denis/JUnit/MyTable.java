@@ -82,7 +82,7 @@ public class MyTable implements Table {
                                 }
                             }
                         } catch (Exception e) {
-                            ErrorFunctions.errorRead("read");
+                            ErrorFunctions.errorRead();
                         }
                     }
                 }
@@ -141,7 +141,7 @@ public class MyTable implements Table {
                                 writeOneWordOnDisk(database.get(key), output);
                             }
                         } catch (Exception e) {
-                            ErrorFunctions.errorWrite("write");
+                            ErrorFunctions.errorWrite();
                         }
                     }
                 }

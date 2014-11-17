@@ -9,7 +9,7 @@ public class Command {
 
     public static void commit(final String[] args, Table table) throws Exception {
         if (args.length != 1) {
-            ErrorFunctions.wrongQuantity("commit");
+            ErrorFunctions.wrongQuantityOfArguments("commit");
         }
         
         table.commit();
@@ -17,7 +17,7 @@ public class Command {
 
     public static void create(final String[] args, TableProvider tables) throws Exception {
         if (args.length != 2) {
-            ErrorFunctions.wrongQuantity("create");
+            ErrorFunctions.wrongQuantityOfArguments("create");
         }
         if (args[1].isEmpty()) {
             ErrorFunctions.wrongInput("create");
@@ -28,7 +28,7 @@ public class Command {
 
     public static void drop(final String[] args, TableProvider tables) throws Exception {
         if (args.length != 2) {
-            ErrorFunctions.wrongQuantity("drop");
+            ErrorFunctions.wrongQuantityOfArguments("drop");
         }
         if (args[1].isEmpty()) {
             ErrorFunctions.wrongInput("drop");
@@ -38,14 +38,14 @@ public class Command {
 
     public static void exit(final String[] args) throws Exception {
         if (args.length != 1) {
-            ErrorFunctions.wrongQuantity("exit");
+            ErrorFunctions.wrongQuantityOfArguments("exit");
         }
         System.exit(ReturnCodes.SUCCESS);
     }
 
     public static void get(final String[] args, Table table) throws Exception {
         if (args.length != 2) {
-            ErrorFunctions.wrongQuantity("get");
+            ErrorFunctions.wrongQuantityOfArguments("get");
         }
         if (args[1].isEmpty()) {
             ErrorFunctions.wrongInput("get");
@@ -60,7 +60,7 @@ public class Command {
 
     public static void list(final String[] args, Table table) throws Exception {
         if (args.length != 1) {
-            ErrorFunctions.wrongQuantity("list");
+            ErrorFunctions.wrongQuantityOfArguments("list");
         }
         if (table == null) {
             System.out.println("no table");
@@ -81,7 +81,7 @@ public class Command {
 
     public static void put(final String[] args, Table table) throws Exception {
         if (args.length != 3) {
-            ErrorFunctions.wrongQuantity("put");
+            ErrorFunctions.wrongQuantityOfArguments("put");
         }
         if ((args[1].isEmpty()) || (args[2].isEmpty())) {
             ErrorFunctions.wrongInput("put");
@@ -96,7 +96,7 @@ public class Command {
 
     public static void remove(final String[] args, Table table) throws Exception {
         if (args.length != 2) {
-            ErrorFunctions.wrongQuantity("remove");
+            ErrorFunctions.wrongQuantityOfArguments("remove");
         }
         if (args[1].isEmpty()) {
             ErrorFunctions.wrongInput("remove");
@@ -110,7 +110,7 @@ public class Command {
 
     public static void rollback(final String[] args, Table table) throws Exception {
         if (args.length != 1) {
-            ErrorFunctions.wrongQuantity("rollback");
+            ErrorFunctions.wrongQuantityOfArguments("rollback");
         }
         
         table.rollback();
@@ -137,7 +137,7 @@ public class Command {
     
     public static void use(final String[] args, TableProvider tables, Table table) throws Exception {
         if (args.length != 2) {
-            ErrorFunctions.wrongQuantity("use");
+            ErrorFunctions.wrongQuantityOfArguments("use");
         }
         if (args[1].isEmpty()) {
             ErrorFunctions.wrongInput("use");
