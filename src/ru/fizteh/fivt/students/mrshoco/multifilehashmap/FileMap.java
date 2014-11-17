@@ -9,6 +9,7 @@ public final class FileMap {
         File file = null;
         try {
             file = new File(System.getProperty("fizteh.db.dir"));
+            file.mkdir();
         } catch (Exception e) {
             System.err.println("Directory doesnt exist");
             System.exit(1);
