@@ -1,9 +1,9 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.parallel;
 
+import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 
 import java.io.IOException;
 import java.text.ParseException;
