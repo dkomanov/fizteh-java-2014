@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.alina_chupakhina.junit;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.alina_chupakhina.junit.Exceptions.IncorrectNumberOfArgumentsException;
+import ru.fizteh.fivt.students.alina_chupakhina.junit.Exceptions.UnknownCommandException;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -71,7 +73,7 @@ public class Interpreter {
         } else if (args[0].equals("exit")) {
             exit(args);
         } else if (!args[0].equals("")) {
-            throw new IllegalArgumentException(args[0] + MESSAGE_INVALID_COMMAND);
+            throw new UnknownCommandException(args[0] + MESSAGE_INVALID_COMMAND);
         }
     }
 
@@ -193,9 +195,9 @@ public class Interpreter {
 
     public static void checkNumOfArgs(String operation,
                                       int correctValue,
-                                      int testValue) throws IllegalArgumentException {
+                                      int testValue) throws IncorrectNumberOfArgumentsException {
         if (testValue != correctValue) {
-            throw new IllegalArgumentException(operation
+            throw new IncorrectNumberOfArgumentsException(operation
                     + MESSAGE_INVALID_NUMBER_OF_ARGUMENTS);
         }
     }
