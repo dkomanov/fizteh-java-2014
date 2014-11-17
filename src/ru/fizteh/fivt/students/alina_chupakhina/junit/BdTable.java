@@ -24,8 +24,6 @@ public class BdTable implements Table {
         path = pathname + File.separator + name;
         table = new File(path);
         tableName = name;
-        unsavedChangesCounter = 0;
-        numOfState = 0;
         TableState ts = new TableState(fm, unsavedChangesCounter, numberOfElements);
         tableStates.put(numOfState, ts);
     }
@@ -49,11 +47,7 @@ public class BdTable implements Table {
             throw new IllegalArgumentException("Key is a null-string");
         }
         String s = fm.get(key);
-        if (s != null) {
-            return s;
-        } else {
-            return null;
-        }
+        return s;
     }
 
     /**
@@ -121,11 +115,11 @@ public class BdTable implements Table {
      */
     @Override
     public int commit() {
-        String key;
-        String value;
         rm();
         try {
             for (Map.Entry<String, String> i : fm.entrySet()) {
+                String key;
+                String value;
                 key = i.getKey();
                 value = i.getValue();
                 Integer ndirectory = Math.abs(key.getBytes(ENCODING)[0] % NUMBER_OF_DIR);
@@ -146,14 +140,8 @@ public class BdTable implements Table {
                 }
                 DataOutputStream outStream = new DataOutputStream(
                         new FileOutputStream(pathToFile, true));
-                byte[] byteWord = key.getBytes(ENCODING);
-                outStream.writeInt(byteWord.length);
-                outStream.write(byteWord);
-                outStream.flush();
-                byteWord = value.getBytes(ENCODING);
-                outStream.writeInt(byteWord.length);
-                outStream.write(byteWord);
-                outStream.flush();
+                writeValue(outStream, key);
+                writeValue(outStream, value);
                 outStream.close();
             }
         } catch (IOException e) {
@@ -165,6 +153,12 @@ public class BdTable implements Table {
         int n = unsavedChangesCounter;
         unsavedChangesCounter = 0;
         return n;
+    }
+    private void writeValue(DataOutputStream outStream, String key) throws IOException {
+        byte[] byteWord = key.getBytes(ENCODING);
+        outStream.writeInt(byteWord.length);
+        outStream.write(byteWord);
+        outStream.flush();
     }
 
     public void rm() {
