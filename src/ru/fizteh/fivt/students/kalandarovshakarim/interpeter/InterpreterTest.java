@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.NoSuchFileException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,8 +103,64 @@ public class InterpreterTest {
         Command test = newCommand("test", 0, in);
 
         Interpreter interpreter = new Interpreter(new Command[]{test}, in, out, err);
-        int statusfail = interpreter.exec("test", "");
+        int statusfail = interpreter.exec("test", "arg1");
         assertEquals(1, statusfail);
     }
 
+    /**
+     * Test of exec method, of class Interpreter.
+     */
+    @Test
+    public void testNoSuchFileException() {
+        in = new ByteArrayInputStream("".getBytes());
+        Command test = new AbstractCommand<Object>("test", 0, out) {
+
+            @Override
+            public void exec(String[] args) throws IOException {
+                throw new NoSuchFileException(null);
+            }
+        };
+
+        Interpreter interpreter = new Interpreter(new Command[]{test}, in, out, err);
+        int statusfail = interpreter.exec("test");
+        assertEquals(1, statusfail);
+    }
+
+    /**
+     * Test of exec method, of class Interpreter.
+     */
+    @Test
+    public void testAccessDeniedException() {
+        in = new ByteArrayInputStream("".getBytes());
+        Command test = new AbstractCommand<Object>("test", 0, out) {
+
+            @Override
+            public void exec(String[] args) throws IOException {
+                throw new AccessDeniedException(null);
+            }
+        };
+
+        Interpreter interpreter = new Interpreter(new Command[]{test}, in, out, err);
+        int statusfail = interpreter.exec("test");
+        assertEquals(1, statusfail);
+    }
+
+    /**
+     * Test of exec method, of class Interpreter.
+     */
+    @Test
+    public void testEmptyCommand() {
+        in = new ByteArrayInputStream("".getBytes());
+        Command test = new AbstractCommand<Object>("test", 0, out) {
+
+            @Override
+            public void exec(String[] args) throws IOException {
+                throw new AccessDeniedException(null);
+            }
+        };
+
+        Interpreter interpreter = new Interpreter(new Command[]{test}, in, out, err);
+        int statusfail = interpreter.exec("");
+        assertEquals(0, statusfail);
+    }
 }
