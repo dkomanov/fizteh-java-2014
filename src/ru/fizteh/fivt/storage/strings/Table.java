@@ -4,7 +4,6 @@ import ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap.DatabaseFileStru
 import ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap.LoadOrSaveException;
 
 import java.util.List;
-
 /**
  * @author Fedor Lavrentyev
  * @author Dmitriy Komanov
@@ -53,7 +52,6 @@ public interface Table {
      * @return Количество ключей в таблице.
      */
     int size();
-
     /**
      * Выполняет фиксацию изменений.
      *
@@ -67,7 +65,6 @@ public interface Table {
      * @return Количество отменённых ключей.
      */
     int rollback();
-
     /**
      * Выводит список ключей таблицы
      *
@@ -77,3 +74,4 @@ public interface Table {
 
 
 }
+
