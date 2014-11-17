@@ -36,7 +36,7 @@ public class MultiFileTable implements Table {
     public MultiFileTable(Path databaseDirectory, String tableName) throws IOException {
         name = tableName;
         if (!Files.exists(databaseDirectory)) {
-            throw new RuntimeException(databaseDirectory.toString() + ": database doesn't exist.");
+            throw new RuntimeException(databaseDirectory.toString() + ": database doesn't exist");
         }
         directory = databaseDirectory.resolve(tableName);
         content = new MultiFileMap[FOLDERS * FILES];
@@ -174,7 +174,7 @@ public class MultiFileTable implements Table {
         return list;
     }
 
-    private void load() throws IOException, IllegalArgumentException {
+    private void load() throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
             for (Path entry : stream) {
                 if (!Files.isDirectory(entry)) {
@@ -218,8 +218,8 @@ public class MultiFileTable implements Table {
             while (true) {
                 String key = readWord(stream);
                 String value = readWord(stream);
-                int hashcode = Math.abs(key.hashCode());
-                if (hashcode % FOLDERS != dirNum || hashcode / FOLDERS % FILES != fileNum) {
+                int hashCode = Math.abs(key.hashCode());
+                if (hashCode % FOLDERS != dirNum || hashCode / FOLDERS % FILES != fileNum) {
                     throw new ContainsWrongFilesException(directory.toString());
                 }
 
@@ -280,8 +280,8 @@ public class MultiFileTable implements Table {
     }
 
     private int getPlace(String key) {
-        int hashcode = Math.abs(key.hashCode());
-        return hashcode % FOLDERS * FILES + hashcode / FOLDERS % FILES;
+        int hashCode = Math.abs(key.hashCode());
+        return hashCode % FOLDERS * FILES + hashCode / FOLDERS % FILES;
     }
 
     private Path getDirectoryPath(int fileNumber) {

@@ -31,7 +31,7 @@ public class Interpreter {
 
     public Interpreter(Command[] commands, InputStream in, PrintStream out, PrintStream err) {
         if (in == null || out == null || err == null) {
-            throw new IllegalArgumentException("One of the iostreams is not initialized.");
+            throw new IllegalArgumentException("One of the iostreams is not initialized");
         }
 
         this.in = in;
@@ -103,10 +103,10 @@ public class Interpreter {
                     throw new InputMistakeException("No such command: " + commandName);
                 }
                 if (command.getArgsNum() < params.length) {
-                    throw new InputMistakeException(commandName + ": too many arguments.");
+                    throw new InputMistakeException(commandName + ": too many arguments");
                 }
                 if (command.getArgsNum() > params.length) {
-                    throw new InputMistakeException(commandName + ": not enough arguments.");
+                    throw new InputMistakeException(commandName + ": not enough arguments");
                 }
 
                 command.exec(params, out);

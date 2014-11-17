@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class Database implements TableProvider {
     private Map<String, Table> tables;
-    private String activeTable = null;
+    private String activeTable;
     private Path databasePath;
 
     public Database(String dbPath) throws IllegalArgumentException {
@@ -123,10 +123,6 @@ public class Database implements TableProvider {
                 return false;
             }
         }
-        if (name.matches(".*\\.|\\..*|.*(/|\\\\).*")) {
-            return false;
-        }
-
-        return true;
+        return !(name.matches(".*\\.|\\..*|.*(/|\\\\).*"));
     }
 }
