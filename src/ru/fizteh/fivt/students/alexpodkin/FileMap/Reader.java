@@ -1,9 +1,7 @@
 package ru.fizteh.fivt.students.alexpodkin.FileMap;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public class Reader {
@@ -15,12 +13,26 @@ public class Reader {
     }
 
     private String readWord(DataInputStream dataInputStream) throws IOException {
-        int length = dataInputStream.readInt();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            stringBuilder.append(dataInputStream.readChar());
+        byte[] bytes = new byte[4];
+        bytes[0] = dataInputStream.readByte();
+        try {
+            dataInputStream.readFully(bytes, 1, 3);
+        } catch (EOFException e) {
+            throw new IOException("Something goes wrong");
         }
-        return stringBuilder.toString();
+        int length = ByteBuffer.wrap(bytes).getInt();
+        if (length < 0) {
+            throw new IOException("Something goes wrong");
+        }
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        for (int i = 0; i < length; i++) {
+            try {
+                byteArrayOutputStream.write(dataInputStream.readByte());
+            } catch (EOFException e) {
+                throw new IOException("Something goes wrong");
+            }
+        }
+        return new String(byteArrayOutputStream.toByteArray(), "UTF-8");
     }
 
     public HashMap<String, String> readDataFromFile() throws IOException {
