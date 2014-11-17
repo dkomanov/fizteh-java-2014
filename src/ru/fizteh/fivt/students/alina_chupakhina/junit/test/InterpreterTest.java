@@ -3,9 +3,9 @@ package ru.fizteh.fivt.students.alina_chupakhina.junit.test;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.alina_chupakhina.junit.Exceptions.IncorrectNumberOfArgumentsException;
+import ru.fizteh.fivt.students.alina_chupakhina.junit.IncorrectNumberOfArgumentsException;
 import ru.fizteh.fivt.students.alina_chupakhina.junit.Interpreter;
-import ru.fizteh.fivt.students.alina_chupakhina.junit.Exceptions.UnknownCommandException;
+import ru.fizteh.fivt.students.alina_chupakhina.junit.UnknownCommandException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

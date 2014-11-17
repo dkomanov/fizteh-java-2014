@@ -49,7 +49,6 @@ public class BdTable implements Table {
         String s = fm.get(key);
         return s;
     }
-
     /**
      * Устанавливает значение по указанному ключу.
      *

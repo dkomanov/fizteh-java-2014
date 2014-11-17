@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.alina_chupakhina.junit.Exceptions;
+package ru.fizteh.fivt.students.alina_chupakhina.junit;
 
 public class UnknownCommandException extends IllegalArgumentException {
 

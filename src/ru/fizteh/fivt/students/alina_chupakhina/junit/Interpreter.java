@@ -2,8 +2,6 @@ package ru.fizteh.fivt.students.alina_chupakhina.junit;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.students.alina_chupakhina.junit.Exceptions.IncorrectNumberOfArgumentsException;
-import ru.fizteh.fivt.students.alina_chupakhina.junit.Exceptions.UnknownCommandException;
 
 import java.io.PrintStream;
 import java.util.List;
