@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.moskupols.junit;
 
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.moskupols.cliutils.*;
 
 import java.util.LinkedList;
@@ -11,10 +13,10 @@ import java.util.StringJoiner;
  */
 public class JUnitCommandFactory implements CommandFactory {
 
-    private final MultiFileMapTableProvider provider;
+    private final TableProvider provider;
     private KnownDiffTable currentTable;
 
-    JUnitCommandFactory(MultiFileMapTableProvider provider) {
+    JUnitCommandFactory(TableProvider provider) {
         this.provider = provider;
         currentTable = null;
     }
@@ -106,8 +108,7 @@ public class JUnitCommandFactory implements CommandFactory {
         @Override
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 2, argv.length);
-            final KnownDiffTable newTable;
-            newTable = provider.createTable(argv[1]);
+            final Table newTable = provider.createTable(argv[1]);
             if (newTable == null) {
                 System.out.println(String.format("%s exists", argv[1]));
             } else {
@@ -146,18 +147,17 @@ public class JUnitCommandFactory implements CommandFactory {
         @Override
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 2, argv.length);
-            final KnownDiffTable newTable;
             if (currentTable != null) {
                 if (currentTable.diff() != 0) {
                     System.out.printf("%d uncommitted changes\n", currentTable.diff());
                 }
             }
-            newTable = provider.getTable(argv[1]);
+            Table newTable = provider.getTable(argv[1]);
             if (newTable == null) {
                 System.out.println(String.format("%s not exists", argv[1]));
             } else {
                 System.out.println(String.format("using %s", argv[1]));
-                currentTable = newTable;
+                currentTable = (KnownDiffTable) newTable;
             }
         }
     }
@@ -171,8 +171,8 @@ public class JUnitCommandFactory implements CommandFactory {
         public void execute() throws CommandExecutionException, StopProcessingException {
             checkArgumentNumber(this, 2, argv.length);
             List<String> lines = new LinkedList<>();
-            for (String name : provider.listNames()) {
-                final KnownDiffTable table =
+            for (String name : ((MultiFileMapTableProvider) provider).listNames()) {
+                final Table table =
                         currentTable != null && name.equals(currentTable.getName())
                                 ? currentTable
                                 : provider.getTable(name);
