@@ -59,6 +59,13 @@ public interface Table extends Index {
     int rollback();
 
     /**
+     * Возвращает количество изменений, ожидающих фиксации.
+     *
+     * @return Количество изменений, ожидающих фиксации.
+     */
+    int getNumberOfUncommittedChanges();
+
+    /**
      * Возвращает количество колонок в таблице.
      *
      * @return Количество колонок в таблице.

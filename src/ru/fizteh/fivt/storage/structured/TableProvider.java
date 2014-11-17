@@ -96,4 +96,11 @@ public interface TableProvider {
      * @throws IndexOutOfBoundsException При несоответствии числа переданных значений и числа колонок.
      */
     Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException;
+
+    /**
+     * Возвращает имена существующих таблиц, которые могут быть получены с помощью {@link #getTable(String)}.
+     *
+     * @return Массив строк: имена существующих таблиц.
+     */
+    String[] getTableNames();
 }
