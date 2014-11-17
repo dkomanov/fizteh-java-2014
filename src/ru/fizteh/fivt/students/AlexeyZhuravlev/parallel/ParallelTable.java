@@ -22,7 +22,7 @@ public class ParallelTable implements Table {
     public ParallelTable(StructuredTable origin, ParallelTableProvider passedProvider) {
         originalTable = origin;
         provider = passedProvider;
-        lock = new ReentrantReadWriteLock();
+        lock = new ReentrantReadWriteLock(true);
         diff = new ThreadLocal<Diff>() {
             @Override
             protected Diff initialValue() {

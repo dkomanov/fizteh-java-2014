@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ParallelTableProvider implements TableProvider {
 
     StructuredTableProvider oldProvider;
-    ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     protected ParallelTableProvider(String path) throws IOException {
         StructuredTableProviderFactory factory = new StructuredTableProviderFactory();
