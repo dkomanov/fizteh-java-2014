@@ -6,6 +6,7 @@ import ru.fizteh.fivt.students.moskupols.multifilehashmap.MultiFileMapProvider;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Created by moskupols on 17.11.14.
@@ -59,5 +60,9 @@ public class MultiFileMapTableProvider implements TableProvider {
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    public List<String> listNames() {
+        return delegatedProvider.listNames();
     }
 }
