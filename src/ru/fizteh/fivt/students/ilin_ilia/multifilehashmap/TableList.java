@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TableList {
     
@@ -39,12 +41,6 @@ public class TableList {
         }
     }
     
-    /**
-    * Function drop has two different realization.
-    * I don't want to remove one of them.
-    * So one will be commented.
-    **/
-    
     public void drop(final String name) {
         if (dB.containsKey(name)) {
             dB.get(name).drop();
@@ -53,7 +49,6 @@ public class TableList {
                     curTable = null;
                 }
             }
-            //rm(name);
             dB.remove(name);
             System.out.println("dropped");
         } else {
@@ -122,52 +117,10 @@ public class TableList {
             t.saveTable();
         }
     }
-    
-    public void rm(final String name) {
-        File fileName = new File(name);
-        if (fileName.isFile()) {
-            fileName.delete();
-        }
-        if (fileName.isDirectory()) {
-            if (fileName.list().length == 0) {
-                fileName.delete();
-            } else {
-                for (String s: fileName.list()) {
-                    rm(Paths.get(fileName.getAbsolutePath()).resolve(s).toString());
-                }
-                fileName.delete();
-            }
-        }
-    }
 
     public boolean checkNameCorrection(final String name) {
-        if (name.contains("*")) {
-            return false;
-        }
-        if (name.contains("\\")) {
-            return false;
-        }
-        if (name.contains("|")) {
-            return false;
-        }
-        if (name.contains("/")) {
-            return false;
-        }
-        if (name.contains("\"")) {
-            return false;
-        }
-        if (name.contains(":")) {
-            return false;
-        }
-        if (name.contains("?")) {
-            return false;
-        }
-        if (name.contains(">")) {
-            return false;
-        }
-        if (name.contains("<")) {
-            return false;
-        }
-        return true;
+        Pattern pattern = Pattern.compile("[~#@*+%{}<>\\[\\]|\"\\_^]|?/:*");
+        Matcher matcher = pattern.matcher(name);
+        return !matcher.find();
     }
 }
