@@ -18,31 +18,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by akhtyamovpavel on 07.10.2014.
  */
 
 public class DataBaseTableProvider implements AutoCloseable, TableProvider {
-    private Path dataBaseDirectory;
-    private String openedTableName;
-    private DataBaseTable fileMap;
-    private HashMap<String, Integer> tableSet;
-    private TableRowSerializer serializer = new TableRowSerializer();
-    private HashMap<String, DataBaseTable> tables = new HashMap<>();
+    Path dataBaseDirectory;
+    String openedTableName;
+    DataBaseTable fileMap;
+    HashMap<String, Integer> tableSet;
+    TableRowSerializer serializer = new TableRowSerializer();
+    HashMap<String, DataBaseTable> tables = new HashMap<>();
+
+    /*
+        Multi-threading locks
+     */
+    ReentrantReadWriteLock providerLock = new ReentrantReadWriteLock(true);
+    HashMap<String, ReentrantReadWriteLock> tableLocks = new HashMap<>();
 
     public DataBaseTableProvider(String dir) throws Exception {
-
         initDataBaseDirectory(dir);
         onLoadCheck();
-        initTableSizes();
+        initTableData();
     }
 
     public DataBaseTableProvider(String dir, boolean testMode) throws Exception {
         if (testMode) {
             initDataBaseDirectory(dir);
             onLoadCheck();
-            initTableSizes();
+            initTableData();
         }
     }
 
@@ -140,12 +146,13 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
 
     }
 
-    private void initTableSizes() throws Exception {
+    private void initTableData() throws Exception {
         String[] listOfTables = dataBaseDirectory.toFile().list();
         for (String table : listOfTables) {
-            ArrayList<String> argument = new ArrayList<>();
-            argument.add(table);
-            tables.put(table, new DataBaseTable(dataBaseDirectory, table, this.serializer));
+            ReentrantReadWriteLock currentLock = new ReentrantReadWriteLock(true);
+            tables.put(table, new DataBaseTable(dataBaseDirectory, table, this.serializer,
+                    currentLock));
+            tableLocks.put(table, currentLock);
             tableSet.put(table, getTable(table).size());
         }
         fileMap = null;
@@ -155,7 +162,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
     @Override
     public void close() throws Exception {
         if (fileMap != null) {
-            fileMap.saveMap();
+            fileMap.rollback();
         }
     }
 
@@ -192,18 +199,23 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
         if (onExistCheck(name, true) != null) {
             return null;
         }
+        providerLock.readLock().lock();
         try {
-            if (fileMap != null && fileMap.hasUnsavedChanges()) {
-                throw new IllegalArgumentException(fileMap.getNumberOfChanges() + " unsaved changes");
+            try {
+                if (fileMap != null && fileMap.hasUnsavedChanges()) {
+                    throw new IllegalArgumentException(fileMap.getNumberOfChanges() + " unsaved changes");
+                }
+                fileMap = tables.get(name);
+            } catch (IllegalArgumentException iae) {
+                throw new IllegalArgumentException(iae.getMessage());
+            } catch (Exception e) {
+                throw new IllegalArgumentException("connection error");
             }
-            fileMap = tables.get(name);
-        } catch (IllegalArgumentException iae) {
-            throw new IllegalArgumentException(iae.getMessage());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("connection error");
+            openedTableName = name;
+            return fileMap;
+        } finally {
+            providerLock.readLock().unlock();
         }
-        openedTableName = name;
-        return fileMap;
     }
 
     @Override
@@ -211,21 +223,28 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
         if (name == null || columnTypes == null || columnTypes.isEmpty()) {
             throw new IllegalArgumentException("null table name");
         }
-        ArrayList<String> arguments = new ArrayList<>();
-        arguments.add(name);
-        DataBaseTable table = null;
-        if (onExistCheck(name, false) != null) {
-            return null;
-        }
+        providerLock.writeLock().lock();
         try {
-            new MakeDirectoryCommand(this).executeCommand(arguments);
-            table = new DataBaseTable(dataBaseDirectory, name, columnTypes, serializer);
-            insertTable(name);
-            tables.put(name, table);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("incorrect name of table");
+            ArrayList<String> arguments = new ArrayList<>();
+            arguments.add(name);
+            DataBaseTable table = null;
+            if (onExistCheck(name, false) != null) {
+                return null;
+            }
+            try {
+                new MakeDirectoryCommand(this).executeCommand(arguments);
+                ReentrantReadWriteLock currentLock = new ReentrantReadWriteLock(true);
+                table = new DataBaseTable(dataBaseDirectory, name, columnTypes, serializer, currentLock);
+                tableLocks.put(name, currentLock);
+                insertTable(name);
+                tables.put(name, table);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("incorrect name of table");
+            }
+            return table;
+        } finally {
+            providerLock.writeLock().unlock();
         }
-        return table;
     }
 
     public String onExistCheck(String name, boolean existMode) {
@@ -246,24 +265,29 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null table name");
         }
-
         if (!tableSet.containsKey(name)) {
             throw new IllegalStateException(name + " not exists");
         }
-        ArrayList<String> argumentsForRemove = new ArrayList<String>();
-        argumentsForRemove.add("-r");
-        argumentsForRemove.add(name);
-        try {
-            new RemoveCommand(getDataBaseDirectory()).executeCommand(argumentsForRemove);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("wrong state");
-        }
 
-        removeTableFile(name);
-        tables.remove(name);
-        if (name.equals(getOpenedTableName())) {
-            setOpenedTableName(null);
-            setFileMap(null);
+        providerLock.writeLock().lock();
+        try {
+            ArrayList<String> argumentsForRemove = new ArrayList<String>();
+            argumentsForRemove.add("-r");
+            argumentsForRemove.add(name);
+            try {
+                new RemoveCommand(getDataBaseDirectory()).executeCommand(argumentsForRemove);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("wrong state");
+            }
+
+            removeTableFile(name);
+            tables.remove(name);
+            if (name.equals(getOpenedTableName())) {
+                setOpenedTableName(null);
+                setFileMap(null);
+            }
+        } finally {
+            providerLock.writeLock().lock();
         }
 
     }

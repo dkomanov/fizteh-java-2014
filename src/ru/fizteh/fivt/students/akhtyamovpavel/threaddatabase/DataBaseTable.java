@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by user1 on 30.09.2014.
@@ -21,36 +22,77 @@ import java.util.List;
 public class DataBaseTable implements Table {
     public static final int NUMBER_OF_FILES = 16;
     public static final int NUMBER_OF_DIRECTORIES = 16;
+
     Path dataBasePath;
     String tableName;
     HashMap<String, Storeable> tableData = new HashMap<>();
     HashMap<String, Storeable> tempData = new HashMap<>();
+
 
     private TableRowSerializer serializer;
     private ArrayList<Class<?>> signature = new ArrayList<>();
 
     int unsavedSize = 0;
 
+    ReentrantReadWriteLock lock;
+    ThreadLocal<DataBaseTableDiff> diff;
 
 
-    public DataBaseTable(Path path, String tableName, TableRowSerializer serializer) throws Exception {
+
+    public DataBaseTable(Path path,
+                         String tableName,
+                         TableRowSerializer serializer,
+                         ReentrantReadWriteLock lock) throws Exception {
         dataBasePath = Paths.get(path.toString(), tableName);
 
         this.tableName = tableName;
         this.serializer = serializer;
-        readSignature();
-        loadMap();
+        this.lock = lock;
+        this.lock.readLock().lock();
+        try {
+            readSignature();
+            loadMap();
+            diff = new ThreadLocal<DataBaseTableDiff>() {
+                @Override
+                protected DataBaseTableDiff initialValue() {
+                    return new DataBaseTableDiff(DataBaseTable.this, lock);
+                }
+            };
+        } finally {
+            this.lock.readLock().unlock();
+        }
     }
 
-    public DataBaseTable(Path path, String tableName, List<Class<?>> signature,
-                         TableRowSerializer serializer) throws Exception {
+    public DataBaseTable(Path path,
+                         String tableName,
+                         List<Class<?>> signature,
+                         TableRowSerializer serializer,
+                         ReentrantReadWriteLock lock) throws Exception {
         dataBasePath = Paths.get(path.toString(), tableName);
 
         this.tableName = tableName;
         this.serializer = serializer;
         this.signature = new ArrayList<>(signature);
-        writeSignature();
-        saveMap();
+        this.lock = lock;
+        this.lock.writeLock().lock();
+        diff = new ThreadLocal<DataBaseTableDiff>() {
+            @Override
+            protected DataBaseTableDiff initialValue() {
+                return new DataBaseTableDiff(DataBaseTable.this, lock);
+            }
+        };
+        try {
+            writeSignature();
+            saveMap();
+            diff = new ThreadLocal<DataBaseTableDiff>() {
+                @Override
+                protected DataBaseTableDiff initialValue() {
+                    return new DataBaseTableDiff(DataBaseTable.this, lock);
+                }
+            };
+        } finally {
+            this.lock.writeLock().unlock();
+        }
     }
 
     private void writeSignature() throws IOException {
@@ -65,7 +107,6 @@ public class DataBaseTable implements Table {
 
     private void readSignature() throws IOException {
         signature.clear();
-
         try (BufferedReader br = Files.newBufferedReader(dataBasePath.resolve("signature.tsv"))) {
             String line = br.readLine();
             for (String type: line.split(" ")) {
