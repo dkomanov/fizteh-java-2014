@@ -44,12 +44,27 @@ public class AdaptedMultiFileMapTableTest {
         assertEquals("c", table.get("2"));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetNull() throws Exception {
+        table.get(null);
+    }
+
     @Test
     public void testPut() throws Exception {
         assertNull(table.put("0", "a"));
         assertNull(table.put("1", "b"));
         assertEquals("b", table.put("1", "b2"));
         assertEquals("b2", table.put("1", "b3"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPutNullKey() throws Exception {
+        table.put(null, "a");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPutNullValue() throws Exception {
+        table.put("0", null);
     }
 
     @Test
@@ -63,6 +78,11 @@ public class AdaptedMultiFileMapTableTest {
 
         assertNull(table.get("0"));
         assertNull(table.remove("3"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRemoveNull() throws Exception {
+        table.remove(null);
     }
 
     @Test
