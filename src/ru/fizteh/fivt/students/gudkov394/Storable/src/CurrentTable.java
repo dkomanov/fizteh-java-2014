@@ -247,4 +247,7 @@ public class CurrentTable implements Table {
         }
         number = currentTable.size();
     }
+    public TableProviderClass getTableProviderClass(){
+        return tableProviderClass;
+    }
 }
