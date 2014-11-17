@@ -63,10 +63,10 @@ public class TableByVolodden implements Table {
         private void readFromDisk() throws Exception {
             for (int i = 0; i < FOLDERS; ++i) {
                 for (int j = 0; j < FILES; ++j) {
-                    Path helpPath =  Paths.get(databasePath, Integer.toString(i) + dir, Integer.toString(j)
+                    Path somePath =  Paths.get(databasePath, Integer.toString(i) + dir, Integer.toString(j)
                                                                                  + dat).normalize();
-                    if (helpPath.toFile().exists()) {
-                        try (DataInputStream input = new DataInputStream(new FileInputStream(helpPath.toString()))) {
+                    if (somePath.toFile().exists()) {
+                        try (DataInputStream input = new DataInputStream(new FileInputStream(somePath.toString()))) {
                             while (true) {
                                 try {
                                     String key = readOneWordFromDisk(input);
@@ -109,17 +109,17 @@ public class TableByVolodden implements Table {
             }
             for (int i = 0; i < FOLDERS; ++i) {
                 for (int j = 0; j < FILES; ++j) {
-                    Path helpPath =  Paths.get(databasePath, Integer.toString(i) + dir, Integer.toString(j)
+                    Path somePath =  Paths.get(databasePath, Integer.toString(i) + dir, Integer.toString(j)
                                                                                  + dat).normalize();
-                    if (helpPath.toFile().exists()) {
-                        if (!helpPath.toFile().delete()) {
+                    if (somePath.toFile().exists()) {
+                        if (!somePath.toFile().delete()) {
                             ErrorFunctions.smthWrong("write", "file is not deleted");
                         }
                     }
                 }
-                Path helpPath =  Paths.get(databasePath, Integer.toString(i) + dir).normalize();
-                if (helpPath.toFile().exists()) {
-                    if (!helpPath.toFile().delete()) {
+                Path somePath =  Paths.get(databasePath, Integer.toString(i) + dir).normalize();
+                if (somePath.toFile().exists()) {
+                    if (!somePath.toFile().delete()) {
                         ErrorFunctions.smthWrong("write", "folder is not deleted");
                     }
                 }
@@ -128,14 +128,14 @@ public class TableByVolodden implements Table {
                 for (int j = 0; j < FILES; ++j) {
                     Set<String> keyList = helpMap[i][j].map.keySet();
                     if (!keyList.isEmpty()) {
-                        Path helpPath =  Paths.get(databasePath, Integer.toString(i) + dir).normalize();
-                        if (!helpPath.toFile().exists()) {
-                            Files.createDirectory(helpPath);
+                        Path somePath =  Paths.get(databasePath, Integer.toString(i) + dir).normalize();
+                        if (!somePath.toFile().exists()) {
+                            Files.createDirectory(somePath);
                         }
-                        helpPath =  Paths.get(helpPath.toString(), j + dat).normalize();
-                        Files.createFile(helpPath);
+                        somePath =  Paths.get(somePath.toString(), j + dat).normalize();
+                        Files.createFile(somePath);
                         
-                        try (FileOutputStream output = new FileOutputStream(helpPath.toString())) {
+                        try (FileOutputStream output = new FileOutputStream(somePath.toString())) {
                             for (String key : keyList) {
                                 writeOneWordOnDisk(key, output);
                                 writeOneWordOnDisk(database.get(key), output);
