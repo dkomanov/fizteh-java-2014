@@ -21,7 +21,7 @@ import ru.fizteh.fivt.storage.strings.Table;
 public class TableByVolodden implements Table {
 
     private String dbPath;
-    private FileMap dbData;
+    private FileMap fileMap;
 
     //---
     class HelpMap {
@@ -339,7 +339,7 @@ public class TableByVolodden implements Table {
     
     TableByVolodden(final String path) throws Exception {
         dbPath = Paths.get(path).toAbsolutePath().normalize().toString();
-        dbData = new FileMap(dbPath);
+        fileMap = new FileMap(dbPath);
     }
 
     @Override
@@ -349,7 +349,7 @@ public class TableByVolodden implements Table {
 
     @Override
     public String get(final String key) {
-        String value = dbData.get(key);
+        String value = fileMap.get(key);
         if (value == null) {
             System.out.println("not found");
         } else {
@@ -361,7 +361,7 @@ public class TableByVolodden implements Table {
 
     @Override
     public String put(String key, String value) {
-        String oldValue = dbData.put(key, value);
+        String oldValue = fileMap.put(key, value);
         if (oldValue == null) {
             System.out.println("new");
         } else {
@@ -373,7 +373,7 @@ public class TableByVolodden implements Table {
 
     @Override
     public String remove(String key) {
-        String value = dbData.remove(key);
+        String value = fileMap.remove(key);
         if (value == null) {
             System.out.println("not found");
         } else {
@@ -384,24 +384,24 @@ public class TableByVolodden implements Table {
 
     @Override
     public int size() {
-       return dbData.size();
+       return fileMap.size();
     }
 
     @Override
     public int numUncommitedChanges() {
-        return dbData.numUncommitedChanges();
+        return fileMap.numUncommitedChanges();
     }
     
     @Override
     public int commit() {
         int changes = 0;
-        if (dbData == null) {
+        if (fileMap == null) {
             System.out.println("no table");
             return 0;
         }
         System.out.println(changes);
         try {
-            dbData.upgrade();
+            fileMap.upgrade();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -410,13 +410,13 @@ public class TableByVolodden implements Table {
 
     @Override
     public int rollback() {
-        if (dbData == null) {
+        if (fileMap == null) {
             System.out.println("no table");
             return 0;
         }
-        int changes = dbData.numUncommitedChanges();
+        int changes = fileMap.numUncommitedChanges();
         System.out.println(changes);
-        dbData.downgrade();
+        fileMap.downgrade();
         return changes;
     }
 
@@ -424,7 +424,7 @@ public class TableByVolodden implements Table {
     public List<String> list() {
 
         List<String> keys = new ArrayList<String>();
-        for (String key : dbData.keySet()) {
+        for (String key : fileMap.keySet()) {
             keys.add(key);
         }
         return keys;
