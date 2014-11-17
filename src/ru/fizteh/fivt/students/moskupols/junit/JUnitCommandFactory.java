@@ -56,6 +56,15 @@ public class JUnitCommandFactory implements CommandFactory {
                 }
                 return new ShowTables(argv);
 
+            case "commit":
+                return new Commit(argv);
+
+            case "rollback":
+                return new Rollback(argv);
+
+            case "size":
+                return new Size(argv);
+
             default:
                 throw new UnknownCommandException(argv[0]);
         }
@@ -89,7 +98,7 @@ public class JUnitCommandFactory implements CommandFactory {
         }
     }
 
-    public class Create extends JUnitCommand {
+    protected class Create extends JUnitCommand {
         protected Create(String[] argv) {
             super("create", argv);
         }
@@ -107,7 +116,7 @@ public class JUnitCommandFactory implements CommandFactory {
         }
     }
 
-    public class Drop extends JUnitCommand {
+    protected class Drop extends JUnitCommand {
         protected Drop(String[] argv) {
             super("drop", argv);
         }
@@ -129,7 +138,7 @@ public class JUnitCommandFactory implements CommandFactory {
         }
     }
 
-    private class Use extends JUnitCommand {
+    protected class Use extends JUnitCommand {
         protected Use(String[] argv) {
             super("use", argv);
         }
@@ -173,7 +182,7 @@ public class JUnitCommandFactory implements CommandFactory {
         }
     }
 
-    private class Exit extends JUnitCommand {
+    protected class Exit extends JUnitCommand {
         protected Exit(String[] argv) {
             super("exit", argv);
         }
@@ -189,7 +198,7 @@ public class JUnitCommandFactory implements CommandFactory {
         }
     }
 
-    private class ListCmd extends JUnitCommand {
+    protected class ListCmd extends JUnitCommand {
         protected ListCmd(String[] argv) {
             super("list", argv);
         }
@@ -205,7 +214,7 @@ public class JUnitCommandFactory implements CommandFactory {
         }
     }
 
-    private class Remove extends JUnitCommand {
+    protected class Remove extends JUnitCommand {
         protected Remove(String[] argv) {
             super("remove", argv);
         }
@@ -219,7 +228,7 @@ public class JUnitCommandFactory implements CommandFactory {
         }
     }
 
-    private class Get extends JUnitCommand {
+    protected class Get extends JUnitCommand {
         protected Get(String[] argv) {
             super("get", argv);
         }
@@ -234,7 +243,7 @@ public class JUnitCommandFactory implements CommandFactory {
         }
     }
 
-    private class Put extends JUnitCommand {
+    protected class Put extends JUnitCommand {
         protected Put(String[] argv) {
             super("put", argv);
         }
@@ -251,6 +260,48 @@ public class JUnitCommandFactory implements CommandFactory {
                     System.out.println("overwrite");
                     System.out.println(old);
                 }
+            }
+        }
+    }
+
+    protected class Commit extends JUnitCommand {
+        protected Commit(String[] argv) {
+            super("commit", argv);
+        }
+
+        @Override
+        public void execute() throws CommandExecutionException {
+            checkArgumentNumber(this, 1, argv.length);
+            if (checkTableNotNull(currentTable)) {
+                System.out.println(currentTable.commit());
+            }
+        }
+    }
+
+    protected class Rollback extends JUnitCommand {
+        protected Rollback(String[] argv) {
+            super("rollback", argv);
+        }
+
+        @Override
+        public void execute() throws CommandExecutionException {
+            checkArgumentNumber(this, 1, argv.length);
+            if (checkTableNotNull(currentTable)) {
+                System.out.println(currentTable.rollback());
+            }
+        }
+    }
+
+    protected class Size extends JUnitCommand {
+        protected Size(String[] argv) {
+            super("size", argv);
+        }
+
+        @Override
+        public void execute() throws CommandExecutionException {
+            checkArgumentNumber(this, 1, argv.length);
+            if (checkTableNotNull(currentTable)) {
+                System.out.println(currentTable.size());
             }
         }
     }
