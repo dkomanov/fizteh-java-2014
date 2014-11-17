@@ -27,38 +27,53 @@ public class BdTableTest {
     private final String testValue2 = "значение2";
     private static final int DIR_AMOUNT = 16;
     private static final int FILES_AMOUNT = 16;
-    private Table test;
 
     @Before
     public void setUp() {
         File dir = new File(testDir);
         dir.mkdir();
+        //Each key should be placed to directory with number
+        //key.getBytes()[0] % 16
+        //and file with number
+        //(key.getBytes()[0] / 16) % 16.
         byte[] b = {dirNumber + fileNumber * 16, 'k', 'e', 'y'};
         correctKey = new String(b);
-        String tableDirectoryPath = testDir + File.separator + tableName;
-        File tableDir = new File(tableDirectoryPath);
-        tableDir.mkdir();
-        test = new BdTable(tableName, testDir);
     }
 
     @Test
     public final void testGetReturnsNullIfKeyIsNotFound() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test  = new BdTable(testDir, tableName);
         assertNull(test.get(testKey1));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public final void testGetThrowsIllegalArgumentExceptionCalledForNullKey() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test  = new BdTable(testDir, tableName);
         test.get(null);
     }
 
     @Test
     public final void testGetCalledForNonComittedKey() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(testDir, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.get(testKey1));
     }
 
     @Test
     public final void testGetCalledForComittedKey() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
         assertEquals(testValue1, test.get(testKey1));
@@ -66,6 +81,10 @@ public class BdTableTest {
 
     @Test
     public final void testGetCalledForDeletedKeyBeforeCommit() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.remove(testKey1));
         assertNull(test.get(testKey1));
@@ -73,38 +92,65 @@ public class BdTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public final void testPutThrowsIllegalArgumentExceptionCalledForNullKey() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
         Table test = new BdTable(tableName, testDir);
         test.put(null, testValue1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public final void testPutThrowsExceptionCalledForNullValue() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         test.put(testKey1, null);
     }
 
     @Test
     public final void testPutReturnsNullIfKeyHasNotBeenWrittenYet() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
     }
 
     @Test
     public final void testPutReturnsOldValueIfKeyExists() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         test.put(testKey1, testValue1);
         assertEquals(testValue1, test.put(testKey1, testValue2));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public final void testRemoveThrowsExceptionCalledForNullKey() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         test.remove(null);
     }
 
     @Test
     public final void testRemoveReturnsNullIfKeyIsNotFound() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.remove(testKey1));
     }
 
     @Test
     public final void testRemoveCalledForDeletedKeyBeforeCommit() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.remove(testKey1));
         assertNull(test.remove(testKey1));
@@ -112,6 +158,10 @@ public class BdTableTest {
 
     @Test
     public final void testRemoveCalledForDeletedKeyAfterCommit() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.remove(testKey1));
         test.commit();
@@ -121,6 +171,10 @@ public class BdTableTest {
     @Test
     public final void testCommitCreatesRealFileOnTheDisk()
             throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
         String subdirectoryName = Math.abs(testKey1.getBytes("UTF-8")[0]
@@ -136,12 +190,20 @@ public class BdTableTest {
 
     @Test
     public final void testCommitReturnsNonZeroChangesPuttingNewRecord() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(1, test.commit());
     }
 
     @Test
     public final void testCommitReturnsNotZeroChangesRewriting() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.put(testKey1, testValue2));
         assertEquals(1, test.commit());
@@ -149,6 +211,10 @@ public class BdTableTest {
 
     @Test
     public final void testCommitNoChanges() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(1, test.commit());
         assertEquals(0, test.commit());
@@ -157,6 +223,10 @@ public class BdTableTest {
     //RollbackTests.
     @Test
     public final void testRollbackAfterPuttingNewKey() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertEquals(0, test.size());
         assertNull(test.put(testKey1, testValue1));
         assertEquals(1, test.size());
@@ -167,6 +237,10 @@ public class BdTableTest {
 
     @Test
     public final void testRollbackNoChanges() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         test.rollback();
         assertEquals(0, test.size());
@@ -175,11 +249,19 @@ public class BdTableTest {
 
     @Test
     public final void testListCalledForEmptyTable() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertTrue(test.list().isEmpty());
     }
 
     @Test
     public final void testListCalledForNonEmptyNewTable() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
         Set<String> expectedKeySet = new HashSet<>();
@@ -192,6 +274,10 @@ public class BdTableTest {
 
     @Test
     public final void testListCalledForNonEmptyCommitedTable() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
         test.commit();
@@ -205,7 +291,11 @@ public class BdTableTest {
 
     //Size tests.
     @Test
-    public final void testGetReturnsLatestValueForUncommittedKey() throws Exception {
+    public final void testSizeCalledForNonEmptyNonCommitedTable() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
         assertEquals(testValue2, test.remove(testKey2));
@@ -214,6 +304,10 @@ public class BdTableTest {
 
     @Test
     public final void testSizeCalledForNonEmptyCommitedTable() throws Exception {
+        String tableDirectoryPath = testDir + File.separator + tableName;
+        File tableDir = new File(tableDirectoryPath);
+        tableDir.mkdir();
+        Table test = new BdTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
         test.commit();

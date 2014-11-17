@@ -3,9 +3,7 @@ package ru.fizteh.fivt.students.alina_chupakhina.junit.test;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.alina_chupakhina.junit.Exceptions.IncorrectNumberOfArgumentsException;
 import ru.fizteh.fivt.students.alina_chupakhina.junit.Interpreter;
-import ru.fizteh.fivt.students.alina_chupakhina.junit.Exceptions.UnknownCommandException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,7 +22,7 @@ public class InterpreterTest {
         printStream = new PrintStream(outputStream);
     }
 
-    @Test(expected = UnknownCommandException.class)
+    @Test(expected = IllegalArgumentException.class)
     public final void testWithInvalidCommandAtTheInvalidCommand() throws Exception {
         Interpreter interpreter = new Interpreter(printStream);
         interpreter.doCommand("command");
@@ -37,7 +35,7 @@ public class InterpreterTest {
         assertEquals("no table" + newLine, outputStream.toString());
     }
 
-    @Test(expected = IncorrectNumberOfArgumentsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public final void testWithWrongNumberOfArguments() throws Exception {
         Interpreter interpreter = new Interpreter(printStream);
         interpreter.doCommand("exit 1");
@@ -50,7 +48,7 @@ public class InterpreterTest {
         assertEquals("", outputStream.toString());
     }
 
-    @Test(expected = IncorrectNumberOfArgumentsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public final void testWithWrongNumberOfArgumentsInShowTables() throws Exception {
         Interpreter interpreter = new Interpreter(printStream);
         interpreter.doCommand("show tables 1");

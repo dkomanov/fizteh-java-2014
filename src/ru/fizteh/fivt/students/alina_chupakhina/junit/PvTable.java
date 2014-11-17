@@ -60,8 +60,14 @@ public class PvTable implements TableProvider {
                     boolean end = false;
                     while (!end) {
                         try {
-                            key = readValue(file);
-                            value = readValue(file);
+                            int length = file.readInt();
+                            byte[] bytes = new byte[length];
+                            file.readFully(bytes);
+                            key = new String(bytes, ENCODING);
+                            length = file.readInt();
+                            bytes = new byte[length];
+                            file.readFully(bytes);
+                            value = new String(bytes, ENCODING);
                             t.numberOfElements++;
                             t.fm.put(key, value);
                             if (!(nDirectory == Math.abs(key.getBytes(ENCODING)[0] % NUMBER_OF_DIR))
@@ -84,14 +90,6 @@ public class PvTable implements TableProvider {
         TableState ts = new TableState(t.fm, 0, t.numberOfElements);
         t.tableStates.put(0, ts);
         return t;
-    }
-
-    private String readValue(RandomAccessFile file) throws IOException {
-        int length = file.readInt();
-        byte[] bytes = new byte[length];
-        file.readFully(bytes);
-        String value = new String(bytes, "UTF-8");
-        return value;
     }
 
     /**
