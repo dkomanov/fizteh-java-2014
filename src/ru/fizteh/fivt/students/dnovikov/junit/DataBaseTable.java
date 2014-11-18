@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 
-
 public class DataBaseTable implements Table {
     private static final int FILES_CNT = 16;
     private static final int FOLDERS_CNT = 16;
