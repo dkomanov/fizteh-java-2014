@@ -13,7 +13,7 @@ public class JUnit {
             TableProvider tableProvider = tpf.create(dir);
             Table table = tableProvider.createTable("1");
 
-            Interpretator interpretator = new Interpretator();
+            Interpreter interpretator = new Interpreter();
             interpretator.run((args.length == 0) ? null : args, tableProvider, table);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());

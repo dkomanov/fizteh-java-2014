@@ -5,7 +5,7 @@ import java.util.Scanner;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
-public class Interpretator {
+public class Interpreter {
     
     private boolean isInteractive;
     
