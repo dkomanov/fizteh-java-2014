@@ -7,17 +7,17 @@ public class ParserMultiFileMap {
     ParserMultiFileMap() {
     }
     
-    public static void parser(final String[] args, TableProvider tables, Table table)
+    public static void parser(final String[] args, TableProvider tableProvider, Table table)
             throws Exception {
         switch (args[0]) {
             case "commit":
                 Command.commit(args, table);
                 break;
             case "create":
-                Command.create(args, tables);
+                Command.create(args, tableProvider);
                 break;
             case "drop":
-                Command.drop(args, tables);
+                Command.drop(args, tableProvider);
                 break;
             case "exit":
                 Command.exit(args);
@@ -41,10 +41,10 @@ public class ParserMultiFileMap {
                 Command.size(args, table);
                 break;
             case "show":
-                Command.showTables(args, tables);
+                Command.showTables(args, tableProvider);
                 break;
             case "use":
-                Command.use(args, tables, table);
+                Command.use(args, tableProvider, table);
                 break;
             default:
                 System.err.println("Command does not exist: [" + args[0] + "]");

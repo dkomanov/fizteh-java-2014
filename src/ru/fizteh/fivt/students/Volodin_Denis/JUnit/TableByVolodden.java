@@ -49,15 +49,15 @@ public class TableByVolodden implements Table {
             databasePath = dbPath;
             database = new HashMap<String, String>();
             diff = new HashMap<String, String>();
-            if (Paths.get(databasePath).toFile().exists()) {
+            if (WorkWithFile.exists(databasePath)) {
                 readFromDisk();
             } else {
-                Files.createDirectory(Paths.get(databasePath).getFileName());
+                WorkWithFile.createDirectory(databasePath);
             }
         }
 
         public String getPath() throws Exception {
-            return Paths.get(databasePath).getFileName().toString();
+            return WorkWithFile.getFileName(databasePath);
         }
 
         private void readFromDisk() throws Exception {
@@ -338,13 +338,13 @@ public class TableByVolodden implements Table {
     //---
     
     TableByVolodden(final String path) throws Exception {
-        dbPath = Paths.get(path).toAbsolutePath().normalize().toString();
+        dbPath = WorkWithFile.toAbsolutePath(path);
         fileMap = new FileMap(dbPath);
     }
 
     @Override
     public String getName() {
-        return Paths.get(dbPath).getFileName().toString();
+        return WorkWithFile.getFileName(dbPath);
     }
 
     @Override

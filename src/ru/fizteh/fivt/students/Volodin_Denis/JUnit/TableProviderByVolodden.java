@@ -15,25 +15,24 @@ public class TableProviderByVolodden implements TableProvider {
     private Set<String> tables;
     
     TableProviderByVolodden(String dir) throws Exception {
-        dbPath = Paths.get(dir).toAbsolutePath().toString();   
-        if (!Paths.get(dbPath).toFile().exists()) {
-            Files.createDirectory(Paths.get(dbPath));
+        dbPath = WorkWithFile.toAbsolutePath(dir);   
+        if (!WorkWithFile.exists(dbPath)) {
+            WorkWithFile.createDirectory(dbPath);
         }
         tables = readOldTables(Paths.get(dbPath));
     }
     
     @Override
     public Table getTable(String name) throws IllegalArgumentException {
-        if (!Paths.get(dbPath, name).normalize().toFile().exists()) {
+        if (!WorkWithFile.exists(dbPath, name)) {
             ErrorFunctions.notExists("get table", name);
         }
-        if (!Paths.get(dbPath, name).getParent().getFileName().toString().equals(
-                Paths.get(dbPath).getFileName().toString())) {
+        if (!WorkWithFile.getFileName(dbPath, name).equals(WorkWithFile.getFileName(dbPath))) {
             ErrorFunctions.notExists("get table", name);
         }
         Table dbTable;
         try {
-            dbTable = new TableByVolodden(Paths.get(dbPath, name).normalize().toString());
+            dbTable = new TableByVolodden(WorkWithFile.get(dbPath, name));
         } catch (Exception exception) {
             exception.printStackTrace();
             return null;
@@ -47,8 +46,8 @@ public class TableProviderByVolodden implements TableProvider {
             ErrorFunctions.nameIsNull("create", name);
         }
         Table dbTable;
-        if (Paths.get(dbPath, name).normalize().toFile().exists()) {
-            if (Paths.get(dbPath, name).normalize().toFile().isDirectory()) {
+        if (WorkWithFile.exists(dbPath, name)) {
+            if (WorkWithFile.isDirectory(dbPath, name)) {
                 System.out.println(name + " exists");
                 try {
                     dbTable =  new TableByVolodden(name);
@@ -60,7 +59,7 @@ public class TableProviderByVolodden implements TableProvider {
                 ErrorFunctions.tableNameIsFile("create", name);
             }
         } else {
-            if (Paths.get(dbPath, name).normalize().toFile().mkdir()) {
+            if (WorkWithFile.mkdir(dbPath, name)) {
                 System.out.println("created");
             } else {
                 ErrorFunctions.notMkdir("create", name);
@@ -127,10 +126,10 @@ public class TableProviderByVolodden implements TableProvider {
                 String[] names = pathToFile.toFile().list();
                 if (names.length != 0) {
                     for (String name : names) {
-                        if (Paths.get(pathToFile.toString(), name).normalize().toFile().isDirectory()) {
+                        if (WorkWithFile.isDirectory(pathToFile.toString(), name)) {
                             recursiveDrop(Paths.get(pathToFile.toString(), name).normalize());
                         } else {
-                            if (!Paths.get(pathToFile.toString(), name).normalize().toFile().delete()) {
+                            if (!WorkWithFile.delete(pathToFile.toString(), name)) {
                                 ErrorFunctions.smthWrong("drop");
                             }
                         }
@@ -150,7 +149,7 @@ public class TableProviderByVolodden implements TableProvider {
         String[] names = path.toFile().list();
         try {
             for (String name : names) {
-                if (Paths.get(path.toString(), name).toAbsolutePath().toFile().isDirectory()) {
+                if (WorkWithFile.isDirectory(path.toString(), name)) {
                     try {
                         Table temp = new TableByVolodden(name);
                         temp.size();
@@ -167,5 +166,4 @@ public class TableProviderByVolodden implements TableProvider {
             return null;
         }
     }
-
 }

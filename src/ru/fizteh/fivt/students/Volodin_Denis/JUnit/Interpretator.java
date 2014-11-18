@@ -9,7 +9,7 @@ public class Interpretator {
     
     private boolean isInteractive;
     
-    public void run(final String[] args, TableProvider tables, Table table) {
+    public void run(final String[] args, TableProvider tableProvider, Table table) {
         isInteractive = (args == null);
         try (Scanner scanner = new Scanner(System.in)) {
             do {
@@ -28,7 +28,7 @@ public class Interpretator {
                     if (input[i].length() > 0) {
                         String[] buffer = input[i].trim().split("\\s+");
                         try {
-                            ParserMultiFileMap.parser(buffer, tables, table);
+                            ParserMultiFileMap.parser(buffer, tableProvider, table);
                         } catch (Exception exception) {
                             System.err.println(exception.getMessage());
                         }
