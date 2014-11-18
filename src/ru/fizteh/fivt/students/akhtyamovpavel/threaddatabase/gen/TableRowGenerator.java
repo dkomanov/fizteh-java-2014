@@ -17,35 +17,6 @@ public class TableRowGenerator {
     private static HashMap<Integer, Class<?>> types;
     private static HashMap<Class<?>, Generator> randomGenerators = new HashMap<>();
 
-    interface Generator {
-        Object getObject();
-    }
-
-    static {
-        types = new HashMap<>();
-        types.put(0, Integer.class);
-        types.put(1, Long.class);
-        types.put(2, Float.class);
-        types.put(3, Double.class);
-        types.put(4, Byte.class);
-        types.put(5, String.class);
-        types.put(6, Boolean.class);
-
-        randomGenerators.put(Integer.class, random::nextInt);
-        randomGenerators.put(Long.class, random::nextLong);
-        randomGenerators.put(Float.class, random::nextFloat);
-        randomGenerators.put(Double.class, random::nextDouble);
-        randomGenerators.put(String.class, UUID.randomUUID()::toString);
-        randomGenerators.put(Boolean.class, () -> {
-            return random.nextInt() == 1;
-        });
-        randomGenerators.put(Byte.class, () -> {
-            byte[] bytes = new byte[1];
-            random.nextBytes(bytes);
-            return bytes[0];
-        });
-    }
-
     public static Class<?> generateType() {
         int type = Math.abs(random.nextInt()) % 7;
         return types.get(type);
@@ -69,9 +40,37 @@ public class TableRowGenerator {
     }
 
     public static TableRow generateRow(DataBaseTableProvider provider,
-                                        DataBaseTable table,
-                                        ArrayList<Class<?>> signature
-                                        ) {
+                                       DataBaseTable table,
+                                       ArrayList<Class<?>> signature
+    ) {
         return (TableRow) provider.createFor(table, generateValues(signature));
+    }
+
+    interface Generator {
+        Object getObject();
+    }
+    static {
+        types = new HashMap<>();
+        types.put(0, Integer.class);
+        types.put(1, Long.class);
+        types.put(2, Float.class);
+        types.put(3, Double.class);
+        types.put(4, Byte.class);
+        types.put(5, String.class);
+        types.put(6, Boolean.class);
+
+        randomGenerators.put(Integer.class, random::nextInt);
+        randomGenerators.put(Long.class, random::nextLong);
+        randomGenerators.put(Float.class, random::nextFloat);
+        randomGenerators.put(Double.class, random::nextDouble);
+        randomGenerators.put(String.class, UUID.randomUUID()::toString);
+        randomGenerators.put(Boolean.class, () -> {
+            return random.nextInt() == 1;
+        });
+        randomGenerators.put(Byte.class, () -> {
+            byte[] bytes = new byte[1];
+            random.nextBytes(bytes);
+            return bytes[0];
+        });
     }
 }

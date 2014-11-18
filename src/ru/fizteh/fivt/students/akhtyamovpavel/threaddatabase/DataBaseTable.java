@@ -25,18 +25,11 @@ public class DataBaseTable implements Table {
 
     Path dataBasePath;
     String tableName;
-    HashMap<String, Storeable> tableData = new HashMap<>();
     HashMap<String, Storeable> tempData = new HashMap<>();
-
-
-    private TableRowSerializer serializer;
-    private ArrayList<Class<?>> signature = new ArrayList<>();
-
-    int unsavedSize = 0;
-
     ReentrantReadWriteLock lock;
     ThreadLocal<DataBaseTableDiff> diff;
-
+    private TableRowSerializer serializer;
+    private ArrayList<Class<?>> signature = new ArrayList<>();
 
 
     public DataBaseTable(Path path,
@@ -98,7 +91,7 @@ public class DataBaseTable implements Table {
     private void writeSignature() throws IOException {
         PrintWriter out = new PrintWriter(dataBasePath.resolve("signature.tsv").toString());
 
-        for (Class<?> type: signature) {
+        for (Class<?> type : signature) {
             out.print(TableRowSerializer.classToString(type));
             out.print(" ");
         }
@@ -109,7 +102,7 @@ public class DataBaseTable implements Table {
         signature.clear();
         try (BufferedReader br = Files.newBufferedReader(dataBasePath.resolve("signature.tsv"))) {
             String line = br.readLine();
-            for (String type: line.split(" ")) {
+            for (String type : line.split(" ")) {
                 signature.add(TableRowSerializer.stringToClass(type));
             }
         }
@@ -154,7 +147,7 @@ public class DataBaseTable implements Table {
                             throw new IOException("read from database failed");
                         }
                         TableRow currentValue = serializer.deserialize(this, new String(valueByteFormat, "UTF-8"));
-                        tableData.put(new String(keyByteFormat, "UTF-8"), currentValue);
+                        tempData.put(new String(keyByteFormat, "UTF-8"), currentValue);
                     }
                 } catch (IOException ioe) {
                     throw new IOException("read from database failed");
@@ -163,7 +156,6 @@ public class DataBaseTable implements Table {
                 }
             }
         }
-        tempData = new HashMap<>(tableData);
     }
 
     public void saveMap() throws Exception {
@@ -177,7 +169,7 @@ public class DataBaseTable implements Table {
                 listOfValues.get(i).add(new ArrayList<>());
             }
         }
-        for (HashMap.Entry<String, Storeable> entry : tableData.entrySet()) {
+        for (HashMap.Entry<String, Storeable> entry : tempData.entrySet()) {
             int hashCode = entry.getKey().hashCode();
             int directoryNumber = hashCode % 16;
             int fileNumber = hashCode / 16 % 16;
@@ -207,7 +199,7 @@ public class DataBaseTable implements Table {
                     try (DataOutputStream outputStream = new DataOutputStream(Files.newOutputStream(filePath))) {
                         for (int index = 0; index < listOfKeys.get(directoryIndex).get(fileIndex).size(); ++index) {
                             byte[] key = listOfKeys.get(directoryIndex).get(fileIndex).get(index).getBytes("UTF-8");
-                            String serialized  = serializer.serialize(this,
+                            String serialized = serializer.serialize(this,
                                     listOfValues.get(directoryIndex).get(fileIndex).get(index));
                             byte[] value = serialized.getBytes("UTF-8");
                             outputStream.writeInt(key.length);
@@ -246,16 +238,7 @@ public class DataBaseTable implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null key or value");
         }
-        if (tempData.containsKey(key)) {
-            Storeable oldValue = tempData.get(key);
-            tempData.put(key, value);
-            unsavedSize++;
-            return oldValue;
-        } else {
-            tempData.put(key, value);
-            unsavedSize++;
-            return null;
-        }
+        return diff.get().put(key, value);
     }
 
     @Override
@@ -263,9 +246,8 @@ public class DataBaseTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null key");
         }
-        return tempData.get(key);
+        return diff.get().get(key);
     }
-
 
 
     @Override
@@ -273,39 +255,27 @@ public class DataBaseTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null key");
         }
-        if (tempData.containsKey(key)) {
-            unsavedSize++;
-            return tempData.remove(key);
-        } else {
-            return null;
-        }
+        return diff.get().remove(key);
     }
 
     @Override
     public int size() {
-        return tempData.size();
+        return tempData.size() + diff.get().addMap.size() - diff.get().deleteMap.size();
     }
 
     @Override
     public int commit() throws IOException {
-        int commitSize = unsavedSize;
-        tableData = new HashMap<>(tempData);
-        try {
-            saveMap();
-        } catch (Exception e) {
-            throw new IOException("i/o error in writing to database");
-        }
-        int size = unsavedSize;
-        unsavedSize = 0;
-        return size;
+        int changes = diff.get().changesSize();
+        diff.get().commit();
+        diff.get().clearDiff();
+        return changes;
     }
 
     @Override
     public int rollback() {
-        tempData = new HashMap<>(tableData);
-        int resultSize = unsavedSize;
-        unsavedSize = 0;
-        return resultSize;
+        int changes = diff.get().changesSize();
+        diff.get().clearDiff();
+        return changes;
     }
 
     @Override
@@ -327,18 +297,28 @@ public class DataBaseTable implements Table {
     }
 
 
-
-
     public boolean containsKey(String key) {
         return tempData.containsKey(key);
     }
 
     public boolean hasUnsavedChanges() {
-        return unsavedSize > 0;
+        return diff.get().changesSize() > 0;
     }
 
 
     public int getNumberOfChanges() {
-        return unsavedSize;
+        return diff.get().changesSize();
+    }
+
+    public Storeable originGet(String key) {
+        return tempData.get(key);
+    }
+
+    public Storeable originRemove(String key) {
+        return tempData.remove(key);
+    }
+
+    public Storeable originPut(String key, Storeable value) {
+        return tempData.put(key, value);
     }
 }

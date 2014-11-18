@@ -26,7 +26,6 @@ public class RemoveCommand implements Command {
         }
         if (shell.getOpenedTable().containsKey(arguments.get(0))) {
             shell.getOpenedTable().remove(arguments.get(0));
-            shell.removeKeyFromTable(arguments.get(0));
             return "removed";
         } else {
             return "not found";

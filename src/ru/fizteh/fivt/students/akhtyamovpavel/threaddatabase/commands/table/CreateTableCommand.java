@@ -37,13 +37,13 @@ public class CreateTableCommand extends TableCommand implements Command {
             }
             List<Class<?>> values = new ArrayList<>();
             String[] tokens = formatJSON.substring(1, formatJSON.length() - 1).split(",");
-            for (String string: tokens) {
+            for (String string : tokens) {
                 if (string.isEmpty()) {
                     throw new ParseException("empty object in JSONArray", 0);
                 }
             }
 
-            for (String token: tokens) {
+            for (String token : tokens) {
                 Class<?> currentClass = TableRowSerializer.stringToClass(token.trim());
 
                 if (currentClass == null) {

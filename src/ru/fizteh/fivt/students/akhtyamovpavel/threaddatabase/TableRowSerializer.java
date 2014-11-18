@@ -14,12 +14,8 @@ import java.util.Map;
  */
 public class TableRowSerializer {
 
-    private HashMap<Class, RowSerializer> writeMap = new HashMap<>();
-    private HashMap<Class, RowDeserializer> readMap = new HashMap<>();
-
     private static Map<Class<?>, String> classStringMap = new HashMap<>();
     private static Map<String, Class<?>> stringClassMap = new HashMap<>();
-
     static {
         classStringMap.put(Integer.class, "int");
         classStringMap.put(Long.class, "long");
@@ -38,14 +34,8 @@ public class TableRowSerializer {
         stringClassMap.put("String", String.class);
 
     }
-
-    public static String classToString(Class<?> type) {
-        return classStringMap.get(type);
-    }
-
-    public static Class<?> stringToClass(String string) {
-        return stringClassMap.get(string);
-    }
+    private HashMap<Class, RowSerializer> writeMap = new HashMap<>();
+    private HashMap<Class, RowDeserializer> readMap = new HashMap<>();
 
     public TableRowSerializer() {
         writeMap.put(Long.class, Object::toString);
@@ -79,6 +69,14 @@ public class TableRowSerializer {
 
     }
 
+    public static String classToString(Class<?> type) {
+        return classStringMap.get(type);
+    }
+
+    public static Class<?> stringToClass(String string) {
+        return stringClassMap.get(string);
+    }
+
     public String serialize(Table table, Storeable value) {
         int numberOfElements = table.getColumnsCount();
         StringBuilder sb = new StringBuilder("[");
@@ -104,7 +102,7 @@ public class TableRowSerializer {
         }
         List<Object> values = new ArrayList<>();
         String[] tokens = value.substring(1, value.length() - 1).split(",");
-        for (String string: tokens) {
+        for (String string : tokens) {
             if (string.isEmpty()) {
                 throw new ParseException("empty object in JSONArray", 0);
             }

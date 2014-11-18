@@ -11,7 +11,7 @@ public class CommandParser {
     private static ArrayList<CommandStorage> parseRequestString(final String request) throws ParseException {
         String[] requestLists = request.split(";");
         ArrayList<String> parsedLists = new ArrayList<>();
-        for (String string: requestLists)  {
+        for (String string : requestLists) {
 
             boolean isBrace = false;
             int lastIndex = 0;

@@ -22,7 +22,7 @@ public class ShowTablesCommand extends TableCommand implements Command {
         if (!"tables".equals(arguments.get(0))) {
             throw new Exception("usage: show tables");
         }
-        for (Map.Entry<String, Integer> entry : shell.getTableSet().entrySet()) {
+        for (Map.Entry<String, Integer> entry : shell.getTableList().entrySet()) {
             System.out.println(entry.getKey() + " " + entry.getValue());
         }
         return null;

@@ -24,14 +24,11 @@ public class PutCommand implements Command {
         if (shell.getOpenedTable() == null) {
             return "no table";
         }
-        if (!shell.getOpenedTable().containsKey(arguments.get(0))) {
-            shell.putKeyToTable(shell.getOpenedTableName());
-            Storeable result = shell.getOpenedTable().put(arguments.get(0),
-                    shell.deserialize(shell.getOpenedTable(), arguments.get(1)));
+        Storeable result = shell.getOpenedTable().put(arguments.get(0),
+                shell.deserialize(shell.getOpenedTable(), arguments.get(1)));
+        if (result == null) {
             return "new";
         } else {
-            Storeable result = shell.getOpenedTable().put(arguments.get(0),
-                    shell.deserialize(shell.getOpenedTable(), arguments.get(1)));
             return "overwrite\n" + shell.serialize(shell.getOpenedTable(), result);
         }
     }

@@ -5,9 +5,7 @@ import ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.DataBaseTableProvid
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DataBaseTableProviderFactoryTest {
 

@@ -28,18 +28,23 @@ public class DataBaseTableDiff {
 
     public Storeable put(String key, Storeable value) {
         if (addMap.containsKey(key)) {
-            return addMap.put(key, value);
+            Storeable result = addMap.get(key);
+            addMap.put(key, value);
+            return result;
         }
         if (rewriteMap.containsKey(key)) {
-            return rewriteMap.put(key, value);
+            Storeable result = addMap.get(key);
+            rewriteMap.put(key, value);
+            return result;
         }
         if (deleteMap.containsKey(key)) {
             deleteMap.remove(key);
-            return rewriteMap.put(key, value);
+            rewriteMap.put(key, value);
+            return null;
         }
         lock.readLock().tryLock();
         try {
-            Storeable result = table.get(key);
+            Storeable result = table.originGet(key);
             if (result == null) {
                 addMap.put(key, value);
                 return null;
@@ -52,7 +57,7 @@ public class DataBaseTableDiff {
         }
     }
 
-    public Storeable get(String key, Storeable value) {
+    public Storeable get(String key) {
         if (addMap.containsKey(key)) {
             return addMap.get(key);
         }
@@ -61,15 +66,12 @@ public class DataBaseTableDiff {
         }
         lock.readLock().lock();
         try {
-            return table.get(key);
+            return table.originGet(key);
         } finally {
             lock.readLock().unlock();
         }
     }
 
-    public int differenceSize() {
-        return addMap.size() - deleteMap.size();
-    }
 
     public int changesSize() {
         return addMap.size() + deleteMap.size() + rewriteMap.size();
@@ -87,7 +89,7 @@ public class DataBaseTableDiff {
         }
         try {
             lock.readLock().lock();
-            Storeable result = table.remove(key);
+            Storeable result = table.originRemove(key);
             if (result != null) {
                 deleteMap.put(key, result);
                 return result;
@@ -101,21 +103,24 @@ public class DataBaseTableDiff {
     public void commit() throws IOException {
         lock.writeLock().lock();
         try {
-            for (String key: deleteMap.keySet()) {
+            for (String key : deleteMap.keySet()) {
                 table.remove(key);
             }
-            for (Map.Entry<String, Storeable> entry: addMap.entrySet()) {
-                table.put(entry.getKey(), entry.getValue());
+            for (Map.Entry<String, Storeable> entry : addMap.entrySet()) {
+                table.originPut(entry.getKey(), entry.getValue());
             }
-            for (Map.Entry<String, Storeable> entry: rewriteMap.entrySet()) {
-                table.put(entry.getKey(), entry.getValue());
+            for (Map.Entry<String, Storeable> entry : rewriteMap.entrySet()) {
+                table.originPut(entry.getKey(), entry.getValue());
             }
+            table.saveMap();
+        } catch (Exception e) {
+            throw new IOException("input/output error writing database");
         } finally {
             lock.writeLock().unlock();
         }
     }
 
-    public void rollback() {
+    public void clearDiff() {
         rewriteMap.clear();
         addMap.clear();
         deleteMap.clear();

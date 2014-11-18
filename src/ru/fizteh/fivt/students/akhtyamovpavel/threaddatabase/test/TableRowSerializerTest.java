@@ -14,6 +14,7 @@ import ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.gen.TableRowGenerat
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static org.junit.Assert.*;
 
@@ -207,7 +208,7 @@ public class TableRowSerializerTest {
         } catch (IOException ioe) {
             assertTrue(false);
         }
-        for (int i = 0; i < 500; ++i)    {
+        for (int i = 0; i < 500; ++i) {
             table.remove(Integer.toString(i));
         }
 
@@ -244,7 +245,7 @@ public class TableRowSerializerTest {
         DataBaseTable loadedTable = null;
         try {
             loadedTable = new DataBaseTable(provider.getDataBaseDirectory(), table.getName(),
-                    serializer);
+                    serializer, new ReentrantReadWriteLock(true));
         } catch (Exception e) {
             assertTrue(false);
         }

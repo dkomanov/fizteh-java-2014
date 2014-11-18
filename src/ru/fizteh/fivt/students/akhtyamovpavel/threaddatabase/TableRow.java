@@ -15,6 +15,7 @@ public class TableRow implements Storeable {
     public TableRow(List<Object> values) {
         columnValues = values.toArray();
     }
+
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
         if (value == null) {

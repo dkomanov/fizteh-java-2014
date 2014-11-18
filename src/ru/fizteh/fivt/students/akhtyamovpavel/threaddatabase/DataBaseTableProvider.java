@@ -14,10 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -259,7 +256,6 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
     }
 
 
-
     @Override
     public void removeTable(String name) throws IllegalArgumentException, IllegalStateException {
         if (name == null) {
@@ -321,5 +317,13 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
             }
         }
         return new TableRow(objectValues);
+    }
+
+    public HashMap<String, Integer> getTableList() {
+        HashMap<String, Integer> tableList = new HashMap<>();
+        for (Map.Entry<String, DataBaseTable> entry : tables.entrySet()) {
+            tableList.put(entry.getKey(), entry.getValue().size());
+        }
+        return tableList;
     }
 }
