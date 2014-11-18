@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.storage.structured;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Представляет интерфейс для работы с таблицей, содержащей ключи-значения. Ключи должны быть уникальными.
@@ -43,6 +44,13 @@ public interface Table extends Index {
     int size();
 
     /**
+     * Выводит список ключей таблицы, с учётом незафиксированных изменений.
+     *
+     * @return Список ключей.
+     */
+    List<String> list();
+
+    /**
      * Выполняет фиксацию изменений.
      *
      * @return Число записанных изменений.
@@ -57,6 +65,13 @@ public interface Table extends Index {
      * @return Число откаченных изменений.
      */
     int rollback();
+
+    /**
+     * Возвращает количество изменений, ожидающих фиксации.
+     *
+     * @return Количество изменений, ожидающих фиксации.
+     */
+    int getNumberOfUncommittedChanges();
 
     /**
      * Возвращает количество колонок в таблице.
