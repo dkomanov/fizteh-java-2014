@@ -8,16 +8,18 @@ import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHash
 import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileTable;
 
 public final class CreateCommand extends MultiFileHashMapCommand {
+    protected static final int MAX_NUMBER_OF_TABLES = 16;
+
     @Override
-    public void execute(final String[] args, MultiFileHashMapManager parser) throws IOException {
+    public void execute(final String[] args, MultiFileHashMapManager manager) throws IOException {
         checkArgs(2, args);
-        if (!parser.getTables().isEmpty() && parser.getTables().size() == MAX_NUMBER_OF_TABLES) {
+        if (!manager.getTables().isEmpty() && manager.getTables().size() == MAX_NUMBER_OF_TABLES) {
             throw new IllegalArgumentException("Too many tables");
         }
         if (Paths.get(args[1]).toString().contains(File.separator)) {
             throw new IllegalArgumentException("Table name contains separators");
         }
-        if (parser.getTables().containsKey(args[1])) {
+        if (manager.getTables().containsKey(args[1])) {
             System.out.println(args[1] + " exists");
         } else {
             File path = new File(System.getProperty("fizteh.db.dir"), args[1]);
@@ -25,7 +27,7 @@ public final class CreateCommand extends MultiFileHashMapCommand {
                 throw new IOException("Creation is failed");
             }
             MultiFileTable tmp = new MultiFileTable(path.getAbsolutePath());
-            parser.putTable(args[1], tmp);
+            manager.putTable(args[1], tmp);
             System.out.println("created");
         }
     }

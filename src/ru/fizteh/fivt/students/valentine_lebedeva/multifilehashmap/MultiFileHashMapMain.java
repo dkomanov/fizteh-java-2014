@@ -5,7 +5,7 @@ public final class MultiFileHashMapMain {
         if (args.length == 0) {
             MultiFileHashMapModes.interactive();
         } else {
-            MultiFileHashMapModes.bath(args);
+            MultiFileHashMapModes.batch(args);
         }
     }
 }

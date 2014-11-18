@@ -9,8 +9,7 @@ import ru.fizteh.fivt.students.valentine_lebedeva.shell.Cmd.Rm;
 
 public final class MultiFileHashMapExitCommand extends MultiFileHashMapCommand {
     @Override
-    public void execute(final String[] args, MultiFileHashMapManager parser)
-            throws IOException {
+    public void execute(final String[] args, MultiFileHashMapManager manager) throws IOException {
         File rmDir = new File(System.getProperty("fizteh.db.dir"));
         for (File file : rmDir.listFiles()) {
             if (file.list().length == 0) {
@@ -20,7 +19,7 @@ public final class MultiFileHashMapExitCommand extends MultiFileHashMapCommand {
             }
             file.mkdir();
         }
-        for (MultiFileTable table : parser.getTables().values()) {
+        for (MultiFileTable table : manager.getTables().values()) {
             table.close();
         }
         System.exit(0);

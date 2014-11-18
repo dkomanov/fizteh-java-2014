@@ -8,16 +8,13 @@ import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileTabl
 
 public final class ShowCommand extends MultiFileHashMapCommand {
     @Override
-    public void execute(final String[] args,
-            final MultiFileHashMapManager parser) throws IOException {
+    public void execute(final String[] args, final MultiFileHashMapManager manager) throws IOException {
         checkArgs(2, args);
         if (!args[1].equals("tables")) {
             throw new IllegalArgumentException("Wrong arguments");
         }
-        for (Entry<String, MultiFileTable> entry : parser.getTables()
-                .entrySet()) {
-            System.out.println(entry.getKey() + " "
-                    + entry.getValue().getBase().size());
+        for (Entry<String, MultiFileTable> entry : manager.getTables().entrySet()) {
+            System.out.println(entry.getKey() + " " + entry.getValue().getBase().size());
         }
     }
 

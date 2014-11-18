@@ -21,7 +21,7 @@ public final class MultiFileHashMapModes {
         }
     }
 
-    public static void bath(final String[] args) throws Exception {
+    public static void batch(final String[] args) throws Exception {
         String cmd;
         String[] cmdargs;
         StringBuilder builder = new StringBuilder();
@@ -36,7 +36,7 @@ public final class MultiFileHashMapModes {
             parserCmd.parse(cmdargs[i], true);
         }
         MultiFileHashMapExitCommand exit = new MultiFileHashMapExitCommand();
-        String[] tmp = {"exit"};
+        String[] tmp = { "exit" };
         exit.execute(tmp, parserCmd);
     }
 

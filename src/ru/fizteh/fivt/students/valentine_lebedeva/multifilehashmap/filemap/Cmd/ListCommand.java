@@ -8,12 +8,11 @@ import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHash
 
 public final class ListCommand extends FileMapCommand {
     @Override
-    public void execute(final String[] args, MultiFileHashMapManager parser) {
-        if (checkWorkTable(parser.getWorkTable())) {
+    public void execute(final String[] args, MultiFileHashMapManager manager) {
+        if (checkWorkTable(manager.getWorkTable())) {
             checkArgs(1, args);
-            List<String> out = new ArrayList<>(parser.getWorkTable().getBase()
-                    .size());
-            Set<String> keys = parser.getWorkTable().getBase().keySet();
+            List<String> out = new ArrayList<>(manager.getWorkTable().getBase().size());
+            Set<String> keys = manager.getWorkTable().getBase().keySet();
             for (String key : keys) {
                 out.add(key);
             }

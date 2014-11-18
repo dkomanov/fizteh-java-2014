@@ -39,7 +39,6 @@ public final class MultiFileHashMapManager {
             MultiFileTable table = new MultiFileTable(file.getAbsolutePath());
             tables.put(file.getName(), table);
         }
-        workTable = null;
         commands = new HashMap<>();
         commands.put("create", new CreateCommand());
         commands.put("drop", new DropCommand());

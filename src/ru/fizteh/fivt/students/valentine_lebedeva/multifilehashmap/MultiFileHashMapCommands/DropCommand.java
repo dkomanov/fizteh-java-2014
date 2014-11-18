@@ -6,12 +6,12 @@ import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHash
 
 public final class DropCommand extends MultiFileHashMapCommand {
     @Override
-    public void execute(final String[] args, MultiFileHashMapManager parser) throws IOException {
+    public void execute(final String[] args, MultiFileHashMapManager manager) throws IOException {
         checkArgs(2, args);
-        if (parser.getTables().containsKey(args[1])) {
-            parser.removeTable(args[1]);
-            if (parser.getWorkTable().getName().equals(args[1])) {
-                parser.setWorkTable(null);
+        if (manager.getTables().containsKey(args[1])) {
+            manager.removeTable(args[1]);
+            if (manager.getWorkTable().getName().equals(args[1])) {
+                manager.setWorkTable(null);
             }
             System.out.println("dropped");
         } else {

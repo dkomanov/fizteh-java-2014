@@ -4,16 +4,16 @@ import ru.fizteh.fivt.students.valentine_lebedeva.multifilehashmap.MultiFileHash
 
 public final class PutCommand extends FileMapCommand {
     @Override
-    public void execute(final String[] args, MultiFileHashMapManager parser) {
-        if (checkWorkTable(parser.getWorkTable())) {
+    public void execute(final String[] args, MultiFileHashMapManager manager) {
+        if (checkWorkTable(manager.getWorkTable())) {
             checkArgs(3, args);
-            if (parser.getWorkTable().getBase().containsKey(args[1])) {
+            if (manager.getWorkTable().getBase().containsKey(args[1])) {
                 System.out.println("overwrite");
                 System.out.println(args[2]);
             } else {
                 System.out.println("new");
             }
-            parser.getWorkTable().putBase(args[1], args[2]);
+            manager.getWorkTable().putBase(args[1], args[2]);
         }
     }
 }
