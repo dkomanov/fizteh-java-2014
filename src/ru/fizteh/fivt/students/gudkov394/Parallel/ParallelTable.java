@@ -16,14 +16,14 @@ public class ParallelTable implements Table {
     CurrentTable table;
     ReentrantReadWriteLock lock;
     ParallelTableProvider provider;
-    ThreadLocal<listDiff> diff;
+    ThreadLocal<ListDiff> diff;
 
     public ParallelTable(Table newTable, ReentrantReadWriteLock lockTmp, ParallelTableProvider parallelTableProvider) {
         table = (CurrentTable) newTable;
         lock = lockTmp;
         provider = parallelTableProvider;
-        diff = new ThreadLocal<listDiff>();
-        diff.set(new listDiff(table, lock));
+        diff = new ThreadLocal<ListDiff>();
+        diff.set(new ListDiff(table, lock));
     }
 
     @Override
