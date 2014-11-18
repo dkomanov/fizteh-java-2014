@@ -17,7 +17,7 @@ public class Remove extends CommandFileMap {
         } else {
             System.out.println("not found");
         }
-        myFileMap.load(args[1], false);
+        myFileMap.load(null);
         return true;
     }
 }
