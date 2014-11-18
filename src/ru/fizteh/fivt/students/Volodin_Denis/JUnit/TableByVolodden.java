@@ -22,6 +22,11 @@ public class TableByVolodden implements Table {
 
     private String dbPath;
     private FileMap fileMap;
+    
+    TableByVolodden(final String path) throws Exception {
+        dbPath = WorkWithFile.toAbsolutePath(path);
+        fileMap = new FileMap(dbPath);
+    }
 
     //---
     class HelpMap {
@@ -31,7 +36,7 @@ public class TableByVolodden implements Table {
         }
     }
     
-    public class FileMap implements Map<String, String>, AutoCloseable {
+    class FileMap implements Map<String, String>, AutoCloseable {
 
         private static final int FOLDERS = 16;
         private static final int FILES = 16;
@@ -336,11 +341,6 @@ public class TableByVolodden implements Table {
     }
     
     //---
-    
-    TableByVolodden(final String path) throws Exception {
-        dbPath = WorkWithFile.toAbsolutePath(path);
-        fileMap = new FileMap(dbPath);
-    }
 
     @Override
     public String getName() {
