@@ -1,6 +1,10 @@
 package ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.VasilevKirill.Storeable.JsonParser;
+import ru.fizteh.fivt.students.VasilevKirill.Storeable.MyStorable;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.FileMap;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.GetCommand;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.PutCommand;
@@ -21,12 +25,15 @@ import java.util.*;
 public class MultiTable implements Table {
     private File tableDirectory;
     private FileMap[][] files;
-    private Map<String, String> data;
-    private Map<String, String> oldData;
-    private Map<String, String> prevCommitData;
+    private Map<String, Storeable> data;
+    private Map<String, Storeable> oldData;
+    private Map<String, Storeable> prevCommitData;
     private int numUnsavedChanges;
+    private MultiMap multiMap;
+    private Class[] typeList;
 
-    public MultiTable(File tableDirectory) throws IOException {
+    public MultiTable(File tableDirectory, MultiMap multiMap) throws IOException {
+        this.multiMap = multiMap;
         this.tableDirectory = tableDirectory;
         files = new FileMap[16][16];
         File[] directories = tableDirectory.listFiles();
@@ -62,7 +69,7 @@ public class MultiTable implements Table {
     }
 
     @Override
-    public String get(String key) throws IllegalArgumentException {
+    public Storeable get(String key) throws IllegalArgumentException {
         if (key == null) {
             throw new IllegalArgumentException();
         }
@@ -70,22 +77,22 @@ public class MultiTable implements Table {
     }
 
     @Override
-    public String put(String key, String value) throws IllegalArgumentException {
+    public Storeable put(String key, Storeable value) throws ColumnFormatException {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         }
-        String retValue = data.get(key);
+        Storeable retValue = data.get(key);
         data.put(key, value);
         numUnsavedChanges++;
         return retValue;
     }
 
     @Override
-    public String remove(String key) {
+    public Storeable remove(String key) {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        String retValue = data.get(key);
+        Storeable retValue = data.get(key);
         if (retValue == null) {
             return null;
         }
@@ -111,15 +118,16 @@ public class MultiTable implements Table {
             });
             System.setOut(newOutput);
             for (Map.Entry pair : data.entrySet()) {
-                String value = oldData.get(pair.getKey());
+                Storeable value = oldData.get(pair.getKey());
                 if (value == null) {
                     number++;
+
                     String[] args = {"put", (String) pair.getKey(), (String) pair.getValue() };
                     handle(args);
                 }
             }
             for (Map.Entry pair : oldData.entrySet()) {
-                String value = data.get(pair.getKey());
+                Storeable value = data.get(pair.getKey());
                 if (value == null) {
                     number++;
                     String[] args = {"remove", (String) pair.getKey()};
@@ -151,15 +159,17 @@ public class MultiTable implements Table {
             });
             System.setOut(newOutput);
             for (Map.Entry pair : prevCommitData.entrySet()) {
-                String value = data.get(pair.getKey());
+                Storeable value = data.get(pair.getKey());
                 if (value == null) {
                     numChanges++;
-                    String[] args = {"put", (String) pair.getKey(), (String) pair.getValue() };
+                    List<Object> currentStoreableData = ((MyStorable) pair.getValue()).dataToList();
+                    String inputValue = JsonParser.dataToJsonString((String) pair.getKey(), currentStoreableData);
+                    String[] args = {"put", (String) pair.getKey(), inputValue };
                     handle(args);
                 }
             }
             for (Map.Entry pair : data.entrySet()) {
-                String value = prevCommitData.get(pair.getKey());
+                Storeable value = prevCommitData.get(pair.getKey());
                 if (value == null) {
                     numChanges++;
                     String[] args = {"remove", (String) pair.getKey()};
@@ -181,8 +191,20 @@ public class MultiTable implements Table {
     }
 
     @Override
+    public int getColumnsCount() {
+        return typeList.length;
+    }
+
+    @Override
+    public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        if (columnIndex < 0 || columnIndex >= typeList.length) {
+            throw new IndexOutOfBoundsException("MultiTable: incorrect index");
+        }
+        return typeList[columnIndex];
+    }
+
     public List<String> list() {
-        Map<String, String> keyMap = getData();
+        Map<String, Storeable> keyMap = getData();
         List<String> retList = new ArrayList<>();
         for (Map.Entry pair : keyMap.entrySet()) {
             retList.add(pair.getKey().toString());
@@ -325,8 +347,8 @@ public class MultiTable implements Table {
         return numKeys;
     }
 
-    public Map<String, String> getData() {
-        Map<String, String> data = new HashMap<>();
+    public Map<String, Storeable> getData() {
+        Map<String, Storeable> data = new HashMap<>();
         for (FileMap[] it : files) {
             for (FileMap it2 : it) {
                 if (it2 == null) {
@@ -334,7 +356,7 @@ public class MultiTable implements Table {
                 }
                 Map<String, String> currentFileData = it2.getMap();
                 for (Map.Entry pair : currentFileData.entrySet()) {
-                    data.put((String) pair.getKey(), (String) pair.getValue());
+                    data.put((String) pair.getKey(), JsonParser.stringToStoreable((String) pair.getValue(), typeList));
                 }
             }
         }

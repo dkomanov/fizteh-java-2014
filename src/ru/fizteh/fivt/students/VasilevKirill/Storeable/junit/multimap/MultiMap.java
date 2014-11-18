@@ -32,7 +32,7 @@ public class MultiMap implements TableProvider {
         tables = new HashMap<String, MultiTable>();
         File[] tableDirectories = new File(workingDirectory).listFiles();
         for (File it : tableDirectories) {
-            tables.put(it.getName(), new MultiTable(it));
+            tables.put(it.getName(), new MultiTable(it, this));
         }
     }
 
@@ -53,7 +53,7 @@ public class MultiMap implements TableProvider {
             if (!addTable(name)) {
                 return null;
             }
-            MultiTable retTable = new MultiTable(new File(workingDirectory + File.separator + name));
+            MultiTable retTable = new MultiTable(new File(workingDirectory + File.separator + name), this);
             tables.put(name, retTable);
             return retTable;
         } catch (IOException e) {
@@ -116,7 +116,7 @@ public class MultiMap implements TableProvider {
                     throw new IOException("Can't create the directory: " + newDir.getName());
                 }
             }
-            tables.put(name, new MultiTable(newDir));
+            tables.put(name, new MultiTable(newDir, this));
             return true;
         } else {
             return false;
