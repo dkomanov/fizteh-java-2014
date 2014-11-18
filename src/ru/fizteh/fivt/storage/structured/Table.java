@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.storage.structured;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Представляет интерфейс для работы с таблицей, содержащей ключи-значения. Ключи должны быть уникальными.
