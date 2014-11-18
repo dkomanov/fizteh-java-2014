@@ -222,7 +222,7 @@ public final class DbTable implements Table {
 
 
     private void calculateTableSize() {
-        for (List<> list : lastCommitTableMap) {
+        for (List<Map<String, String>> list : lastCommitTableMap) {
             for (Map<String, String> map : list) {
                 size += map.size();
             }
