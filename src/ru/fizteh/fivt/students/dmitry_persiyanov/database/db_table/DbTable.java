@@ -1,18 +1,20 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table;
 
-import ru.fizteh.fivt.storage.structured.ColumnFormatException;
-import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 public final class DbTable implements Table {
     private final File tableDir;
     private final List<Class<?>> columnTypes;
+    private final TableProvider tableProvider;
+
     private static final int MAX_DIRS_FOR_TABLE = 16;
     private static final int MAX_FILES_FOR_DIR = 16;
+
     private int size;
     private List<List<Map<String, String>>> lastCommitTableMap;
     private int lastCommitTableMapSize;
@@ -20,11 +22,11 @@ public final class DbTable implements Table {
     private Map<String, String> uncommittedChangesMap;
     private Set<String> uncommittedDeletionsSet;
 
-
-    public DbTable(final File tableDir, final List<Class<?>> columnTypes) {
+    public DbTable(final File tableDir, final List<Class<?>> columnTypes, final TableProvider tableProvider) {
         if (!tableDir.isDirectory()) {
             throw new IllegalArgumentException("is not a directory: " + tableDir.getPath());
         } else {
+            this.tableProvider = tableProvider;
             this.columnTypes = new ArrayList<>();
             this.columnTypes.addAll(columnTypes);
             this.tableDir = tableDir;
@@ -41,26 +43,37 @@ public final class DbTable implements Table {
     }
 
     @Override
-    public String get(final String key) {
+    public int getColumnsCount() {
+        return columnTypes.size();
+    }
+
+    @Override
+    public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        if (columnIndex < 0 || columnIndex >= columnTypes.size()) {
+            throw new IndexOutOfBoundsException();
+        } else {
+            return columnTypes.get(columnIndex);
+        }
+    }
+
+    @Override
+    public Storeable get(final String key) {
         if (key == null) {
             throw new IllegalArgumentException();
         }
         if (uncommittedDeletionsSet.contains(key)) {
             return null;
+        } else if (uncommittedChangesMap.containsKey(key)) {
+            return deserializeWrapper(uncommittedChangesMap.get(key));
         } else {
-            String uncommitedValue = uncommittedChangesMap.get(key);
-            if (uncommitedValue == null) {
-                int dir = getDirNumByKey(key);
-                int file = getFileNumByKey(key);
-                return lastCommitTableMap.get(dir).get(file).get(key);
-            } else {
-                return uncommitedValue;
-            }
+            int dir = getDirNumByKey(key);
+            int file = getFileNumByKey(key);
+            return deserializeWrapper(lastCommitTableMap.get(dir).get(file).get(key));
         }
     }
 
     @Override
-    public TableRow put(final String key, final Storeable value) {
+    public Storeable put(final String key, final Storeable value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         } else if (!checkStoreableValueValidity(value)) {
@@ -70,27 +83,26 @@ public final class DbTable implements Table {
         int file = getFileNumByKey(key);
         if (uncommittedChangesMap.containsKey(key)) {   // Was changed/added in current commit.
             String uncommitedValue = uncommittedChangesMap.get(key);
-            uncommittedChangesMap.put(key, value);
-            return uncommitedValue;
+            uncommittedChangesMap.put(key, serializeWrapper(value));
+            return deserializeWrapper(uncommitedValue);
         } else if (uncommittedDeletionsSet.contains(key)) { // Was deleted in current commit.
             uncommittedDeletionsSet.remove(key);
-            uncommittedChangesMap.put(key, value);
+            uncommittedChangesMap.put(key, serializeWrapper(value));
             size++;
             return null;
         } else {    // It hasn't been deleted or changed yet. We change/add this key-value pair now.
-            String oldValue = lastCommitTableMap.get(dir).get(file).get(key);
+            Storeable oldValue = deserializeWrapper(lastCommitTableMap.get(dir).get(file).get(key));
             if (oldValue != null) { // Changing.
-                uncommittedChangesMap.put(key, value);
+                uncommittedChangesMap.put(key, serializeWrapper(value));
                 return oldValue;
             } else {    // Adding.
-                uncommittedChangesMap.put(key, value);
+                uncommittedChangesMap.put(key, serializeWrapper(value));
                 size++;
                 return null;
             }
         }
     }
 
-    @Override
     public List<String> list() {
         // Append old/changed keys (and not deleted) to list.
         List<String> keysList = new LinkedList<>();
@@ -115,13 +127,13 @@ public final class DbTable implements Table {
     }
 
     @Override
-    public String remove(final String key) {
+    public Storeable remove(final String key) {
         if (key == null) {
             throw new IllegalArgumentException();
         }
         int dir = getDirNumByKey(key);
         int file = getFileNumByKey(key);
-        String prevCommitValue = lastCommitTableMap.get(dir).get(file).get(key);
+        Storeable prevCommitValue = deserializeWrapper(lastCommitTableMap.get(dir).get(file).get(key));
         // This pair was deleted in this commit or hasn't been changed in this commit and was absent in previous commit.
         if ((prevCommitValue == null && !uncommittedChangesMap.containsKey(key))
                 || uncommittedDeletionsSet.contains(key)) {
@@ -132,7 +144,7 @@ public final class DbTable implements Table {
             if (!uncommittedChangesMap.containsKey(key)) {   // Then prevCommitValue != null.
                 return prevCommitValue;
             } else {
-                String oldValue = uncommittedChangesMap.get(key);
+                Storeable oldValue = deserializeWrapper(uncommittedChangesMap.get(key));
                 uncommittedChangesMap.remove(key);
                 return oldValue;
             }
@@ -183,6 +195,19 @@ public final class DbTable implements Table {
         return uncommittedChangesMap.size() + uncommittedDeletionsSet.size();
     }
 
+    private String serializeWrapper(final Storeable value) {
+        return tableProvider.serialize(this, value);
+    }
+
+    private Storeable deserializeWrapper(final String value) {
+        try {
+            return tableProvider.deserialize(this, value);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("error while deserializing value \""
+                    + value + "\": " + e.getMessage());
+        }
+    }
+
     private void commitChangesToTableMap() {
         for (Map.Entry<String, String> pair : uncommittedChangesMap.entrySet()) {
             int dir = getDirNumByKey(pair.getKey());
@@ -197,7 +222,7 @@ public final class DbTable implements Table {
 
 
     private void calculateTableSize() {
-        for (List<Map<String, String>> list : lastCommitTableMap) {
+        for (List<> list : lastCommitTableMap) {
             for (Map<String, String> map : list) {
                 size += map.size();
             }

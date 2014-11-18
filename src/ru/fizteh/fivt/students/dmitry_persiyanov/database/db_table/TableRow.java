@@ -84,7 +84,7 @@ public class TableRow implements Storeable {
     }
 
     private void checkIndex(int columnIndex) {
-        if (columnIndex < 0 || columnIndex > values.size()) {
+        if (columnIndex < 0 || columnIndex >= values.size()) {
             throw new IndexOutOfBoundsException();
         }
     }

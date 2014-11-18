@@ -1,6 +1,9 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.SyntaxCheckers;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.DbTable;
@@ -10,7 +13,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class DbTableProvider implements TableProvider {
@@ -59,7 +64,7 @@ public final class DbTableProvider implements TableProvider {
         } else {
             DbTable table = tables.get(tableName);
             if (table == null) {
-                tables.put(tableName, new DbTable(getTablePath(tableName).toFile()));
+                tables.put(tableName, new DbTable(getTablePath(tableName).toFile(), ));
             }
             return tables.get(tableName);
         }
@@ -103,6 +108,31 @@ public final class DbTableProvider implements TableProvider {
                 throw new RuntimeException("can't remove table: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
+        return null;
+    }
+
+    @Override
+    public Storeable deserialize(Table table, String value) throws ParseException {
+        return null;
+    }
+
+    @Override
+    public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        return null;
+    }
+
+    @Override
+    public Storeable createFor(Table table) {
+        return null;
+    }
+
+    @Override
+    public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+        return null;
     }
 
     private void purgeTable(final Path tablePath) throws IOException {
