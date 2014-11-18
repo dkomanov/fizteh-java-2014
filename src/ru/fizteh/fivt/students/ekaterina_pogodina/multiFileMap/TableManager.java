@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap;
 
 import ru.fizteh.fivt.students.ekaterina_pogodina.JUnit.DBaseTable;
-import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.MyException;
+import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.errorMessageException;
 import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.Table;
 import ru.fizteh.fivt.students.ekaterina_pogodina.filemap.DataBase;
 import ru.fizteh.fivt.students.ekaterina_pogodina.shell.Rm;
@@ -28,7 +28,7 @@ public class TableManager {
                 path.toFile().mkdir();
             }
             if (!path.toFile().isDirectory()) {
-                MyException.exception("path is incorrect");
+                errorMessageException.exception("path is incorrect");
             }
         } catch (Exception e) {
             throw new Exception("path is incorrect", e);
@@ -42,16 +42,14 @@ public class TableManager {
                 tables.put(curDir, new BaseTable(curDir, path));
                 basicTables.put(curDir, new DBaseTable(tables.get(curDir)));
             } else {
-                MyException.exception("root directory contains non-directory files");
+                errorMessageException.exception("root directory contains non-directory files");
             }
             String s;
             Path p;
             usingTable = new BaseTable();
             for (int i = 0; i <  usingTable.SIZEDIR; i++) {
                 for (int j = 0; j < usingTable.SIZEDAT; j++) {
-                    s = String.valueOf(i);
-                    s = s.concat(".dir");
-                    p = tables.get(curDir).path.resolve(s);
+                    p = tables.get(curDir).path.resolve(i + "dir");
                     s = String.valueOf(j);
                     s = s.concat(".dat");
                     p = p.resolve(s);
@@ -66,7 +64,7 @@ public class TableManager {
 
     public boolean drop(String name) throws Exception {
         if (name == null) {
-            MyException.exception("Table name is null");
+            errorMessageException.exception("Table name is null");
         }
         boolean tableContainsKey = tables.containsKey(name);
         if (!tableContainsKey) {
@@ -83,7 +81,7 @@ public class TableManager {
 
     public void create(String name) throws Exception {
         if (name == null) {
-            MyException.exception("Table name is null");
+            errorMessageException.exception("Table name is null");
         }
         try {
             boolean flag = tables.containsKey(name);
@@ -108,14 +106,14 @@ public class TableManager {
 
     public void use(String name) throws Exception {
         if (name == null) {
-            MyException.exception("Table name is null");
+            errorMessageException.exception("Table name is null");
         }
         if (currentTable != null) {
             if (usingTable.puted.size() != 0 || usingTable.removed.size() != 0) {
-                MyException.exception("unsaved changes");
+                errorMessageException.exception("unsaved changes");
             }
             if (currentTable.equals(name)) {
-                MyException.exception(name + " is already using");
+                errorMessageException.exception(name + " is already using");
             }
         }
         try {

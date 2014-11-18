@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBaseTable implements Table {
-
+    static final int SIZE = 16;
     private BaseTable table;
     public int savedKeys = 0;
 
@@ -68,8 +68,8 @@ public class DBaseTable implements Table {
         int nFile;
         for (Entry<String, String> pair : table.puted.entrySet()) {
             b = pair.getKey().getBytes()[0];
-            nDirectory = b % 16;
-            nFile = b / 16 % 16;
+            nDirectory = b % SIZE;
+            nFile = b / SIZE % SIZE;
 
             if (table.tableDateBase[nDirectory][nFile] == null) {
                 String s;
@@ -116,14 +116,14 @@ public class DBaseTable implements Table {
         table.puted.clear();
         for (String key : table.removed) {
             b = key.getBytes()[0];
-            nDirectory = b % 16;
-            nFile = b / 16 % 16;
+            nDirectory = b % SIZE;
+            nFile = b / SIZE % SIZE;
             table.tableDateBase[nDirectory][nFile].remove(key);
             table.keys.remove(key);
         }
         table.removed.clear();
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 if (table.tableDateBase[i][j] != null) {
                     table.tableDateBase[i][j].close();
                 }

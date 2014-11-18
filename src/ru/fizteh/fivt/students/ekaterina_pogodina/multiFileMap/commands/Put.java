@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.commands;
 
-//import ru.fizteh.fivt.students.ekaterina_pogodina.filemap.DataBase;
-import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.MyException;
+import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.errorMessageException;
 import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.TableManager;
 
 import java.nio.file.Path;
@@ -14,7 +13,7 @@ public class Put extends Command {
     public void execute(String[] args, TableManager table) throws Exception {
         String tableName = table.currentTable;
         if (table.currentTable == null) {
-            MyException.exception("no table");
+            errorMessageException.exception("no table");
         }
         Path path = table.path;
         String key = args[1];

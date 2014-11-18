@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.commands;
 
-import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.MyException;
+import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.errorMessageException;
 import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.TableManager;
 
 public class Remove extends Command {
@@ -10,7 +10,7 @@ public class Remove extends Command {
     @Override
     public void execute(String[] args, TableManager table) throws Exception {
         if (table.currentTable == null) {
-            MyException.exception("no table");
+            errorMessageException.exception("no table");
         }
         String key = args[1];
         if (table.usingTable.keys.containsKey(key)) {

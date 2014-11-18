@@ -80,10 +80,8 @@ public class DataBase {
             System.out.println(dBase.get(key));
             dBase.remove(key);
             dBase.put(key, value);
-            //System.out.println("removed");
         } else {
             dBase.put(key, value);
-            //System.out.println("new");
         }
     }
 
