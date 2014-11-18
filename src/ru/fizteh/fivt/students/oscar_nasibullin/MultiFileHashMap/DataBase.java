@@ -16,15 +16,16 @@ public class DataBase {
     public DataBase() throws Exception {
         tables = new TreeMap<>();
         usingTable = "";
+        String dbDir = System.getProperty("fizteh.db.dir");
 
         try {
-            if (!Paths.get(System.getProperty("fizteh.db.dir")).toFile().exists()) {
+            if (!Paths.get(dbDir).toFile().exists()) {
                 throw new Exception("not found");
             }
         } catch (Exception e) {
             throw new FileNotFoundException("database root directory error: " + e.getMessage());
         }
-        File[] tableFiles = Paths.get(System.getProperty("fizteh.db.dir")).toFile().listFiles();
+        File[] tableFiles = Paths.get(dbDir).toFile().listFiles();
         for (File newTableFile : tableFiles) {
             if (newTableFile.isDirectory()) {
                 List<String> args = new ArrayList<>();
@@ -46,15 +47,15 @@ public class DataBase {
         if (args.size() != 2) {
             throw new IllegalArgumentException("Illegal arguments for create");
         }
-        String rezultMessage = "";
+        String resultMessage;
         if (tables.containsKey(args.get(1))) {
-            rezultMessage = args.get(1) + " exists";
+            resultMessage = args.get(1) + " exists";
         } else {
             tables.put(args.get(1), new Table(args.get(1)));
-            rezultMessage = "created";
+            resultMessage = "created";
         }
 
-        return rezultMessage;
+        return resultMessage;
     }
 
     public final String drop(final List<String> args)
@@ -62,15 +63,15 @@ public class DataBase {
         if (args.size() != 2) {
             throw new IllegalArgumentException("Illegal arguments for drop");
         }
-        String rezultMessage = "";
+        String resultMessage;
         if (!tables.containsKey(args.get(1))) {
-            rezultMessage = args.get(1) + " not exists";
+            resultMessage = args.get(1) + " not exists";
         } else {
             tables.get(args.get(1)).clear();
             tables.remove(args.get(1));
-            rezultMessage = "dropped";
+            resultMessage = "dropped";
         }
-        return rezultMessage;
+        return resultMessage;
     }
 
     public final String use(final List<String> args)
@@ -78,19 +79,19 @@ public class DataBase {
         if (args.size() != 2) {
             throw new IllegalArgumentException("Illegal arguments for use");
         }
-        String rezultMessage = "";
+        String resultMessage;
         if (tables.containsKey(args.get(1))) {
             if (tables.containsKey(usingTable)) {
                 tables.get(usingTable).close();
             }
             usingTable = args.get(1);
             tables.get(usingTable).open();
-            rezultMessage = "using " + usingTable;
+            resultMessage = "using " + usingTable;
         } else {
-            rezultMessage = args.get(1) + " not exists";
+            resultMessage = args.get(1) + " not exists";
         }
 
-        return rezultMessage;
+        return resultMessage;
     }
 
     public final String showTables(final List<String> args)
@@ -99,24 +100,24 @@ public class DataBase {
             throw new IllegalArgumentException(
                     "Illegal arguments for show tables");
         }
-        String rezultMessage = "";
+        String resultMessage = "";
         for (Map.Entry<String, Table> entry : tables.entrySet()) {
             if (!entry.getValue().name.equals(usingTable)) {
                 entry.getValue().open();
             }
             if (!entry.getValue().name.equals("") && entry.getValue().name != null) {
-                rezultMessage += entry.getValue().name + " " + entry.getValue().size() + "\n";
+                resultMessage += entry.getValue().name + " " + entry.getValue().size() + "\n";
             }
             if (!entry.getValue().name.equals(usingTable)) {
                 entry.getValue().close();
             }
         }
-        if (rezultMessage.equals("")) {
-            rezultMessage = "no tables found";
+        if (resultMessage.equals("")) {
+            resultMessage = "no tables found";
         } else {
-            rezultMessage = rezultMessage.substring(0, rezultMessage.length() - 1);
+            resultMessage = resultMessage.substring(0, resultMessage.length() - 1);
         }
-        return rezultMessage;
+        return resultMessage;
     }
 
 

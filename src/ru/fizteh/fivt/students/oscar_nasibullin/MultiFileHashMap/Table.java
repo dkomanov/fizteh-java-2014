@@ -13,6 +13,9 @@ public class Table  {
     private static Map<DataFileHasher, DataFile> datFiles;
     final String name;
 
+    static final int NUMBER_DIRECTORIES = 16;
+    static final int NUMBER_FILES_IN_DIRECTORY = 16;
+
 
     public Table(String tableName) throws Exception {
         name = tableName;
@@ -36,8 +39,8 @@ public class Table  {
             throw new Exception(tablePath + " - is not a directory");
         }
 
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        for (int i = 0; i < NUMBER_DIRECTORIES; i++) {
+            for (int j = 0; j < NUMBER_FILES_IN_DIRECTORY; j++) {
                 DataFileHasher hasher = new DataFileHasher(i, j);
                 DataFile newDataFile = new DataFile(tablePath, hasher);
                 datFiles.put(hasher, newDataFile);

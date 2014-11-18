@@ -1,23 +1,26 @@
 package ru.fizteh.fivt.students.oscar_nasibullin.MultiFileHashMap;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class DataFile implements Map<String, String> , AutoCloseable{
     private final Map<String, String> getCache;
     private final Map<String, String> putCache;
-    private final DataFileHasher datHash ;
+    private final DataFileHasher dataFileHasher ;
     private final File datFile;
     //boolean loaded = true;
 
 
 
-    public DataFile(String tablePath, DataFileHasher hash) throws Exception {
+    public DataFile(String tablePath, DataFileHasher dataFileHasherObject) throws Exception {
 
-        datHash = hash;
-        datFile = new File(
-                tablePath + "/" + datHash.getDirNum().toString() + ".dir" + "/"
-                        + datHash.getFileNum().toString() + ".dat");
+        dataFileHasher = dataFileHasherObject;
+        Path datFilePath = Paths.get(tablePath).
+                resolve(dataFileHasher.getDirNum().toString() + ".dir").
+                resolve(dataFileHasher.getFileNum().toString() + ".dat");
+        datFile = datFilePath.toFile();
         getCache = new TreeMap<String, String>();
         putCache = new TreeMap<String, String>();
         importData();
@@ -56,7 +59,7 @@ public class DataFile implements Map<String, String> , AutoCloseable{
                 b = datRAFile.readByte();
                 bytesCounter++;
                 bytesBuffer.write(b);
-                if (!datHash.contains(b)) {
+                if (!dataFileHasher.contains(b)) {
                     throw new Exception(datFile.getName() + " corrupted.");
                 }
 
