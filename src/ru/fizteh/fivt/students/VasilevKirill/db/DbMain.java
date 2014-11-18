@@ -21,8 +21,14 @@ public class DbMain {
         commands.put(new PutCommand().toString(), new PutCommand());
         commands.put(new ListCommand().toString(), new ListCommand());
         commands.put(new GetCommand().toString(), new GetCommand());
+        commands.put(new RemoveCommand().toString(), new RemoveCommand());
         int retValue = 0;
-        try (FileMap fileMap = new FileMap(System.getProperty("db.file"))) {
+        String dbFile = System.getProperty("db.file");
+        if (dbFile == null) {
+            System.err.println("Path is incorrect");
+            System.exit(-1);
+        }
+        try (FileMap fileMap = new FileMap(dbFile)) {
             Status newStatus = new Status(fileMap);
             if (args.length == 0) {
                 new Shell(commands, newStatus).handle(System.in);
@@ -35,7 +41,7 @@ public class DbMain {
             System.err.println(e.getMessage());
             System.exit(-1);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println(e);
             System.exit(-1);
         }
         System.exit(0);

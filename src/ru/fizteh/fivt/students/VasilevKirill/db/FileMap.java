@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Created by Kirill on 11.10.2014.
  */
-public class FileMap implements Closeable{
+public class FileMap implements AutoCloseable{
     private String fileMapName;
     private Map<String, String> fileMap;
 
