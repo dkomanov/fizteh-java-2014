@@ -89,7 +89,7 @@ public class Interpreter {
     }
 
     private void invokeLine(String line) throws StopInterpreterException,
-            WrongNumberOfArgumentsException, LoadOrSaveException, IOException {
+            WrongNumberOfArgumentsException, IOException {
 
         String[] commandsWithArgs = line.trim().split(";");
         for (String command : commandsWithArgs) {

@@ -15,7 +15,7 @@ public class SingleTable {
     private int folderNumber;
     private int fileNumber;
 
-    public SingleTable(int folderNum, int fileNum, DataBaseTable parent) throws LoadOrSaveException {
+    public SingleTable(int folderNum, int fileNum, DataBaseTable parent) {
         dataBase = new TreeMap<>();
         parentTable = parent;
         folderNumber = folderNum;

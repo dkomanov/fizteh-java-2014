@@ -49,7 +49,7 @@ public class DataBaseProvider implements TableProvider {
     }
 
     @Override
-    public Table createTable(String name) throws LoadOrSaveException {
+    public Table createTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("cannot create table");
         }
