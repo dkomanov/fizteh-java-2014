@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.dnovikov.junit;
 
 import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
 
 import java.io.File;
 import java.nio.file.Path;

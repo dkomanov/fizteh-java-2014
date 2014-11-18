@@ -43,7 +43,7 @@ public class SingleTable {
         return dataBase.remove(key);
     }
 
-    public void save() throws LoadOrSaveException {
+    public void save() {
         if (singleTablePath.toFile().isDirectory()) {
             throw new LoadOrSaveException("cannot load table: '" + singleTablePath.getFileName() + "' is directory");
         } else {
@@ -91,11 +91,13 @@ public class SingleTable {
     }
 
     private void load() {
+        if (getFolder().toFile().isFile()) {
+            throw new LoadOrSaveException("cannot load table: '"+ getFolder().toAbsolutePath() + "' is not directory");
+        }
         if (singleTablePath.toFile().isDirectory()) {
             throw new LoadOrSaveException("cannot load table: '" + singleTablePath.toFile().toString()
                     + "' is directory");
         } else if (singleTablePath.toFile().exists()) {
-
             try (DataInputStream inputStream = new DataInputStream(Files.newInputStream(singleTablePath))) {
                 dataBase.clear();
                 while (inputStream.available() > 0) {
@@ -107,18 +109,20 @@ public class SingleTable {
                 } catch (IOException | SecurityException exception) {
                     throw new LoadOrSaveException("cannot create file with database");
                 }
+            } catch (OutOfMemoryError e) {
+                throw new LoadOrSaveException("cannot read from database");
             }
         }
     }
 
     private String readString(DataInputStream inputStream) throws IOException {
-            int length = inputStream.readInt();
-            if (length <= 0) {
-                throw new IOException("cannot read from database");
-            }
-            byte[] byteString = new byte[length];
-            inputStream.readFully(byteString);
-            return new String(byteString, "UTF-8");
+        int length = inputStream.readInt();
+        if (length <= 0) {
+            throw new IOException("cannot read from database");
+        }
+        byte[] byteString = new byte[length];
+        inputStream.readFully(byteString);
+        return new String(byteString, "UTF-8");
 
     }
 

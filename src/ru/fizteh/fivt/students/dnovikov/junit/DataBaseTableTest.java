@@ -113,7 +113,7 @@ public class DataBaseTableTest {
     }
 
     @Test
-    public void testCommit() {
+    public void testCommit() throws IOException {
         assertEquals(0, table.commit());
         table.put("1", "2");
         table.put("2", "3");

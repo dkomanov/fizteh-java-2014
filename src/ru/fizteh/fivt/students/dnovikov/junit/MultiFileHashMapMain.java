@@ -7,6 +7,7 @@ import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.TableNotFoundException;
 import ru.fizteh.fivt.students.dnovikov.junit.Interpreter.Command;
 import ru.fizteh.fivt.students.dnovikov.junit.Interpreter.Interpreter;
 
+import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -21,10 +22,13 @@ public class MultiFileHashMapMain {
             fileMap.run(args);
         } catch (LoadOrSaveException e) {
             System.err.println(e.getMessage());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 
-    private void run(String[] args) {
+    private void run(String[] args) throws IOException {
         String directoryPath = System.getProperty("fizteh.db.dir");
         if (directoryPath == null) {
             System.err.println("database directory not set");

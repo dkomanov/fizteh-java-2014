@@ -31,7 +31,7 @@ public class DataBaseProviderFactoryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void createWithNullArgumentThrowsException() {
+    public void createWithNullArgumentThrowsException() throws IOException {
         factory.create(null);
     }
 

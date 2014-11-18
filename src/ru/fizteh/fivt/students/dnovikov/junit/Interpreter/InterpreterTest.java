@@ -29,7 +29,7 @@ public class InterpreterTest {
     private PrintStream printStreamError;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         provider = new DataBaseProvider(tmpFolder.getRoot().getPath());
         outputStream = new ByteArrayOutputStream();
         outputStreamError = new ByteArrayOutputStream();

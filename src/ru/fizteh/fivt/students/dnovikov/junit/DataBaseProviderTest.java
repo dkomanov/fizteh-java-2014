@@ -29,17 +29,17 @@ public class DataBaseProviderTest {
     }
 
     @Test
-    public void testLoadFromEmptyDirectory() {
+    public void testLoadFromEmptyDirectory() throws IOException {
         provider.loadTables();
         assertEquals(0, provider.showTable().size());
     }
     @Test
-    public void initializationNewDirectory() {
+    public void initializationNewDirectory() throws IOException {
         new DataBaseProvider(tmpFolder.getRoot().toString());
     }
 
     @Test(expected = LoadOrSaveException.class)
-    public void initializationExistingDirectoryThrowsException() {
+    public void initializationExistingDirectoryThrowsException() throws IOException {
         new DataBaseProvider(tmpFolder.getRoot().toPath().resolve("test").toString());
     }
 
@@ -56,7 +56,7 @@ public class DataBaseProviderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void createNullTableThrowsException() {
+    public void createNullTableThrowsException() throws IOException {
         provider.createTable(null);
     }
 
@@ -66,7 +66,7 @@ public class DataBaseProviderTest {
     }
 
     @Test
-    public void createAndGetTable() {
+    public void createAndGetTable() throws IOException {
         provider.createTable("newTable");
         assertNull(provider.getTable("notExistingTable"));
         assertNotNull(provider.getTable("newTable"));
@@ -79,7 +79,7 @@ public class DataBaseProviderTest {
 
 
     @Test
-    public void createAndRemoveTable() {
+    public void createAndRemoveTable() throws IOException {
         assertNotNull(provider.createTable("newTable"));
         assertNotNull(provider.getTable("newTable"));
         provider.removeTable("newTable");
@@ -87,14 +87,14 @@ public class DataBaseProviderTest {
     }
 
     @Test
-    public void testCurrentTable() {
+    public void testCurrentTable() throws IOException {
         DataBaseTable table = (DataBaseTable) provider.createTable("table");
         provider.setCurrentTable(table);
         assertEquals(table, provider.getCurrentTable());
     }
 
     @Test
-    public void removeCurrentTable() {
+    public void removeCurrentTable() throws IOException {
         DataBaseTable table = (DataBaseTable) provider.createTable("newTable");
         provider.setCurrentTable(table);
         provider.removeTable("newTable");
@@ -102,13 +102,13 @@ public class DataBaseProviderTest {
     }
 
     @Test
-    public void creationExistingTable() {
+    public void creationExistingTable() throws IOException {
         assertNotNull(provider.createTable("newTable"));
         assertNull(provider.createTable("newTable"));
     }
 
     @Test
-    public void testShowTable() {
+    public void testShowTable() throws IOException {
         provider.createTable("table1");
         provider.createTable("table2");
         provider.setCurrentTable(provider.getTable("table1"));

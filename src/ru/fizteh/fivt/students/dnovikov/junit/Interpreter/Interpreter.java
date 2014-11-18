@@ -31,6 +31,22 @@ public class Interpreter {
         }
     }
 
+    private static String[] toArray(List<String> list) {
+        String[] result = new String[list.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = list.get(i);
+        }
+        return result;
+    }
+
+    private static String[][] toArray2D(List<String[]> list) {
+        String[][] result = new String[list.size()][];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = list.get(i);
+        }
+        return result;
+    }
+
     public void run(String[] args) {
         try {
             if (args.length == 0) {
@@ -47,7 +63,24 @@ public class Interpreter {
 
     private void batchMode(String[] args) throws StopInterpreterException {
         try {
-            invokeLine(String.join(" ", args));
+            List<String> currentCommand = new ArrayList<>();
+            List<String[]> commands = new ArrayList<>();
+            for (int i = 0; i < args.length; i++) {
+                String[] tokens = args[i].split(";", -1);
+                for (int j = 0; j < tokens.length; j++) {
+                    if (j > 0) {
+                        commands.add(toArray(currentCommand));
+                        currentCommand = new ArrayList<>();
+                    }
+                    if (!tokens[j].equals("")) {
+                        currentCommand.add(tokens[j]);
+                    }
+                }
+            }
+            if (currentCommand.size() > 0) {
+                commands.add(toArray(currentCommand));
+            }
+            invokeCommands(toArray2D(commands));
         } catch (IOException | LoadOrSaveException | WrongNumberOfArgumentsException e) {
             err.println(e.getMessage());
             try {
@@ -74,7 +107,7 @@ public class Interpreter {
             while (true) {
                 try {
                     String str = scanner.nextLine();
-                    invokeLine(str);
+                    parseInvokeInteractiveLine(str);
                 } catch (IOException e) {
                     err.println(e.getMessage());
                 } catch (LoadOrSaveException | WrongNumberOfArgumentsException e) {
@@ -88,15 +121,21 @@ public class Interpreter {
         }
     }
 
-    private void invokeLine(String line) throws StopInterpreterException,
+    private void parseInvokeInteractiveLine(String line) throws StopInterpreterException,
             WrongNumberOfArgumentsException, IOException {
-
         String[] commandsWithArgs = line.trim().split(";");
-        for (String command : commandsWithArgs) {
-            String[] tokens = command.trim().split("\\s+");
-            String commandName = tokens[0];
+        String[][] parsedCommands = new String[commandsWithArgs.length][];
+        for (int i = 0; i < commandsWithArgs.length; i++) {
+            parsedCommands[i] = commandsWithArgs[i].trim().split("\\s+");
+        }
+        invokeCommands(parsedCommands);
+    }
+
+    private void invokeCommands(String[][] parsedCommands) throws StopInterpreterException, IOException {
+        for (String[] arguments : parsedCommands) {
+            String commandName = arguments[0];
             if (commandName.equals("") || commandName.equals(";")) {
-                continue;
+                return;
             }
             Command cmd = commands.get(commandName);
             if (cmd == null) {
@@ -106,10 +145,9 @@ public class Interpreter {
                     throw new IOException(commandName + ": no such command");
                 }
             }
-            String[] args = Arrays.copyOfRange(tokens, 1, tokens.length);
+            String[] args = Arrays.copyOfRange(arguments, 1, arguments.length);
             cmd.invoke(dbConnector, args);
         }
-
     }
 
     public boolean isBatch() {
