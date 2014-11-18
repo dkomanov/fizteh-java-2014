@@ -12,7 +12,6 @@ public class Exit implements Command {
 
     @Override
     public final void executeCmd(final Shell shell, final String[] args) throws IOException {
-
         System.exit(0);
     }
 }
