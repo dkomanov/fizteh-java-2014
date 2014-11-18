@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap;
 
-import ru.fizteh.fivt.storage.strings.Table;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.FileAlreadyExistsException;

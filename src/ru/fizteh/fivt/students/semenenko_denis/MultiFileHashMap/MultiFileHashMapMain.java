@@ -1,12 +1,9 @@
 package ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap;
 
 import javafx.util.Pair;
-import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap.Interpreter.*;
 
-
-import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -20,8 +17,7 @@ public class MultiFileHashMapMain {
                 new Command("put", 2, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
+                        Database database = getDatabase(interpreterState);
                         String key = arguments[0];
                         String value = arguments[1];
 
@@ -45,9 +41,7 @@ public class MultiFileHashMapMain {
                 new Command("list", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state
-                                = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
+                        Database database = getDatabase(interpreterState);
                         if (database.getUsingTable() == null) {
                             System.out.println("no table");
                         } else {
@@ -60,8 +54,7 @@ public class MultiFileHashMapMain {
                 new Command("get", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
+                        Database database = getDatabase(interpreterState);
                         String key = arguments[0];
 
                         if (database.getUsingTable() == null) {
@@ -84,9 +77,7 @@ public class MultiFileHashMapMain {
                 new Command("remove", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
-
+                        Database database = getDatabase(interpreterState);
                         if (database.getUsingTable() == null) {
                             System.out.println("no table");
                         } else {
@@ -107,9 +98,7 @@ public class MultiFileHashMapMain {
                 new Command("use", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
-
+                        Database database = getDatabase(interpreterState);
                         String name = arguments[0];
                         try {
                             database.useTable(name);
@@ -127,9 +116,7 @@ public class MultiFileHashMapMain {
                 new Command("drop", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
-
+                        Database database = getDatabase(interpreterState);
                         String name = arguments[0];
                         try {
                             database.removeTable(name);
@@ -144,9 +131,7 @@ public class MultiFileHashMapMain {
                 new Command("create", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
-
+                        Database database = getDatabase(interpreterState);
                         String name = arguments[0];
                         try {
                             database.createTable(name);
@@ -161,9 +146,7 @@ public class MultiFileHashMapMain {
                 new Command("show", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
-
+                        Database database = getDatabase(interpreterState);
                         if (arguments[0].equals("tables")) {
                             try {
                                 List<Pair<String, Integer>> tables = database.listTables();
@@ -182,9 +165,7 @@ public class MultiFileHashMapMain {
                 new Command("commit", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
-
+                        Database database = getDatabase(interpreterState);
                         if (database.getUsingTable() != null) {
                             int changes = database.getUsingTable().commit();
                             System.out.println("commited " + changes + " changes");
@@ -196,9 +177,7 @@ public class MultiFileHashMapMain {
                 new Command("rollback", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
-
+                        Database database = getDatabase(interpreterState);
                         if (database.getUsingTable() != null) {
                             int changes = database.getUsingTable().rollback();
                             System.out.println("rollback " + changes + " changes");
@@ -210,9 +189,7 @@ public class MultiFileHashMapMain {
                 new Command("size", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
-                        Database database = state.getDatabase();
-
+                        Database database = getDatabase(interpreterState);
                         if (database.getUsingTable() != null) {
                             int changes = database.getUsingTable().size();
                             System.out.println(changes);
@@ -231,5 +208,12 @@ public class MultiFileHashMapMain {
                 })
         }).run(args);
     }
+
+    private static Database getDatabase(InterpreterState interpreterState) {
+        DatabaseInterpreterState state = (DatabaseInterpreterState) interpreterState;
+        Database database = state.getDatabase();
+        return database;
+    }
+
 }
 

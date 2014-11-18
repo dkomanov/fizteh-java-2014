@@ -3,9 +3,9 @@ package ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap.Interpreter;
 import java.util.*;
 
 public class Interpreter {
-    private final String PROMPT = "$ ";
-    private final String STATEMENT_DELIMITER = ";";
-    private final String PARAM_REGEXP = "\\S+";
+    private static final String PROMPT = "$ ";
+    private static final String STATEMENT_DELIMITER = ";";
+    private static final String PARAM_REGEXP = "\\S+";
 
     private final Map<String, Command> commands;
     private final InterpreterState interpreterState;

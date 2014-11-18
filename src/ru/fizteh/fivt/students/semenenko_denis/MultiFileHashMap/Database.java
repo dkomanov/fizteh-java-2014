@@ -24,7 +24,7 @@ public class Database implements TableProvider {
     private List<TableHash> tables = new ArrayList<>();
     private Map<String, Table> tableNames = new TreeMap<>();
 
-    public Database(String path) throws DatabaseFileStructureException, LoadOrSaveException {
+    public Database(String path) {
         setRootDirectoryPath(path);
         load();
     }
@@ -53,7 +53,7 @@ public class Database implements TableProvider {
         return tableNames.containsKey(name);
     }
 
-    protected void load() throws LoadOrSaveException, DatabaseFileStructureException {
+    protected void load() {
         File root = getRootDirectory();
         try {
             if (root.exists() && root.isDirectory()) {
@@ -72,7 +72,7 @@ public class Database implements TableProvider {
         }
     }
 
-    protected File[] getTablesFromRoot(File root) throws DatabaseFileStructureException {
+    protected File[] getTablesFromRoot(File root) {
         File[] subfolders = root.listFiles();
         for (File folder : subfolders) {
             if (!folder.isDirectory()) {
@@ -82,11 +82,12 @@ public class Database implements TableProvider {
         return subfolders;
     }
 
-    private File[] whatToDoWithFiles(File folder) throws DatabaseFileStructureException {
-        throw new DatabaseFileStructureException("There is files in root folder. File'" + folder.getName() + "'");
+    private File[] whatToDoWithFiles(File folder){
+        throw new DatabaseFileStructureException("There is files in root folder. File'" +
+                folder.getName() + "");
     }
 
-    public List<Pair<String, Integer>> listTables() throws LoadOrSaveException, DatabaseFileStructureException {
+    public List<Pair<String, Integer>> listTables() {
         int size = tables.size();
         List<Pair<String, Integer>> result = new ArrayList<>(size);
         for (TableHash table : tables) {
@@ -95,8 +96,7 @@ public class Database implements TableProvider {
         return result;
     }
 
-    public void useTable(String name) throws TableNotFoundException, LoadOrSaveException,
-            DatabaseFileStructureException {
+    public void useTable(String name) {
         if (usingTable != null) {
             ((TableHash) usingTable).save();
         }
@@ -145,7 +145,7 @@ public class Database implements TableProvider {
 
     @Override
     public void removeTable(String name) {
-        TableHash table = (TableHash)getTable(name);
+        TableHash table = (TableHash) getTable(name);
         if (table == usingTable) {
             usingTable = null;
         }

@@ -73,8 +73,7 @@ public class TableHash implements Table {
         String returnedValue = getDATFileForKey(key).put(key, value);
         if  (returnedValue == null) {
             uncommited.put(key, value);
-        }
-        else {
+        } else {
             uncommited.put(key, value);
             removed.put(key, returnedValue);
         }

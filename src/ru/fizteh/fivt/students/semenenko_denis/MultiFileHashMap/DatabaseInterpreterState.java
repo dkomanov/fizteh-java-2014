@@ -2,8 +2,6 @@ package ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap;
 
 import ru.fizteh.fivt.students.semenenko_denis.MultiFileHashMap.Interpreter.InterpreterState;
 
-import java.io.IOException;
-
 public class DatabaseInterpreterState extends InterpreterState{
     Database database;
 
