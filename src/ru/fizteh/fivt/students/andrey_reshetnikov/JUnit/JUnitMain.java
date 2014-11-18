@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.andrey_reshetnikov.JUnit;
 import ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.NoSuchElementException;
 
 public class JUnitMain {
     public static void main(String[] args) {
@@ -33,6 +34,9 @@ public class JUnitMain {
                     command.execute(jUnitDbDir);
                 } catch (ExitCommandException e) {
                     exitStatus = true;
+                } catch (NoSuchElementException e) {
+                    System.err.println("No such element");
+                    System.err.flush();
                 } catch (Exception e) {
                     if (interactive) {
                         System.err.println(e.getMessage());
