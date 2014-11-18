@@ -212,7 +212,6 @@ public class TableRowSerializerTest {
             table.remove(Integer.toString(i));
         }
 
-
         assertEquals(table.size(), 500);
 
         table.rollback();

@@ -89,7 +89,7 @@ public class DataBaseTableDiff {
         }
         try {
             lock.readLock().lock();
-            Storeable result = table.originRemove(key);
+            Storeable result = table.originGet(key);
             if (result != null) {
                 deleteMap.put(key, result);
                 return result;
@@ -104,7 +104,7 @@ public class DataBaseTableDiff {
         lock.writeLock().lock();
         try {
             for (String key : deleteMap.keySet()) {
-                table.remove(key);
+                table.originRemove(key);
             }
             for (Map.Entry<String, Storeable> entry : addMap.entrySet()) {
                 table.originPut(entry.getKey(), entry.getValue());

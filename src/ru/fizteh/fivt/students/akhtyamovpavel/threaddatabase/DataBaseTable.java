@@ -293,7 +293,15 @@ public class DataBaseTable implements Table {
         for (String currentKey : tempData.keySet()) {
             nameList.add(currentKey);
         }
+        for (String currentKey: diff.get().addMap.keySet()) {
+            nameList.add(currentKey);
+        }
+
+        for (String currentKey: diff.get().deleteMap.keySet()) {
+            nameList.remove(currentKey);
+        }
         return nameList;
+
     }
 
 
