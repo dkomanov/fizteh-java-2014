@@ -43,19 +43,21 @@ public class Shell {
 
     public void handle(InputStream stream) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            Status newStatus = null;
             String command = "";
             while (!command.equals("exit")) {
                 System.out.print("$ ");
                 command = reader.readLine();
                 String[] cmds = command.split("\\s+");
-                Command currentCommand;
+                /*Command currentCommand;
                 if ((currentCommand = commandMap.get(cmds[0])) != null) {
                     try {
                         currentCommand.execute(cmds, status);
                     } catch (IOException e) {
                         System.err.println(e.getMessage());
                     }
-                }
+                }*/
+                new Shell(commandMap, status).handle(cmds);
             }
         } catch (Exception e) {
             System.err.println(e);

@@ -21,6 +21,7 @@ public class DbMain {
         commands.put(new PutCommand().toString(), new PutCommand());
         commands.put(new ListCommand().toString(), new ListCommand());
         commands.put(new GetCommand().toString(), new GetCommand());
+        commands.put(new RemoveCommand().toString(), new RemoveCommand());
         int retValue = 0;
         String dbFile = System.getProperty("db.file");
         if (dbFile == null) {
