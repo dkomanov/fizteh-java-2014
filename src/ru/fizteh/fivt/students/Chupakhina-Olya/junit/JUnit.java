@@ -203,7 +203,7 @@ public class JUnit {
             if (JUnit.currentTable != null && JUnit.currentTable.unsavedChanges > 0) {
                 System.out.println(JUnit.currentTable.unsavedChanges + " unsaved changes");
             } else {
-                JUnit.currentTable = (oTable) JUnit.tableList.get(args[1]);
+                JUnit.currentTable = (OTable) JUnit.tableList.get(args[1]);
                 System.out.println("using " + args[1]);
             }
         }
@@ -236,7 +236,7 @@ public class JUnit {
         checkArgs("show tables", 2, args.length);
         System.out.println("table_name row_count");
         for (Map.Entry<String, Table> table : JUnit.tableList.entrySet()) {
-            Integer num = ((oTable)(table.getValue())).numberOfElements;
+            Integer num = ((OTable)(table.getValue())).numberOfElements;
             System.out.println(table.getKey() + " " + num.toString());
         }
     }
