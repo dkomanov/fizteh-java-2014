@@ -122,7 +122,7 @@ public class InterpreterTest {
                 printStream, printStream);
 
         interpreter.run(new String[]{});
-        assertEquals(PROMPT + commandName + ": too many arguments." + newLine + PROMPT, outputStream.toString());
+        assertEquals(PROMPT + commandName + ": too many arguments" + newLine + PROMPT, outputStream.toString());
     }
 
     @Test
@@ -132,7 +132,7 @@ public class InterpreterTest {
                 printStream, printStream);
 
         interpreter.run(new String[]{});
-        assertEquals(PROMPT + commandName + ": not enough arguments." + newLine + PROMPT, outputStream.toString());
+        assertEquals(PROMPT + commandName + ": not enough arguments" + newLine + PROMPT, outputStream.toString());
     }
 
     @Test

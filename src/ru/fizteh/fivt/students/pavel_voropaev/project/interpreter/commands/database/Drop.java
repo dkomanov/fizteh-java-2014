@@ -18,6 +18,7 @@ public class Drop extends AbstractCommand<TableProvider> {
             context.removeTable(param[0]);
         } catch (TableDoesNotExistException e) {
             out.println(param[0] + " not exists");
+            return;
         }
 
         out.println("dropped");

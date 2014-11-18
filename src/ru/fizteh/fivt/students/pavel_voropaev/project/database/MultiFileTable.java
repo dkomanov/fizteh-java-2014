@@ -72,16 +72,23 @@ public class MultiFileTable implements Table {
         if (key == null || value == null) {
             throw new NullArgumentException("put");
         }
+
+        String oldValue;
         if (!diff.containsKey(key) && content[getPlace(key)].map.containsKey(key)) {
+            oldValue = content[getPlace(key)].map.get(key);
+            if (oldValue.equals(value)) {
+                return oldValue;
+            }
             diff.put(key, value);
-            return content[getPlace(key)].map.get(key);
+            return oldValue;
         }
 
-        String retVal = diff.put(key, value);
-        if (retVal == null) {
+        oldValue = diff.put(key, value);
+        if (oldValue == null) {
             ++size;
         }
-        return retVal;
+        return oldValue;
+
     }
 
     @Override
@@ -89,17 +96,27 @@ public class MultiFileTable implements Table {
         if (key == null) {
             throw new NullArgumentException("remove");
         }
-        if (!diff.containsKey(key) && content[getPlace(key)].map.containsKey(key)) {
-            diff.put(key, null);
-            --size;
-            return content[getPlace(key)].map.get(key);
+
+        String oldValue;
+        if (!diff.containsKey(key)) {
+            if (!content[getPlace(key)].map.containsKey(key)) { // No such key.
+                return null;
+            } else { // Key is saved on disk.
+                oldValue = content[getPlace(key)].map.get(key);
+                diff.put(key, null);
+            }
+        } else { // Some unsaved changes with this key.
+            if (!content[getPlace(key)].map.containsKey(key)) {
+                oldValue = diff.remove(key);
+            } else {
+                oldValue = diff.put(key, null);
+            }
         }
 
-        String retVal = diff.put(key, null);
-        if (retVal != null) {
+        if (oldValue != null) {
             --size;
         }
-        return retVal;
+        return oldValue;
     }
 
     @Override
@@ -200,7 +217,8 @@ public class MultiFileTable implements Table {
             for (Path path : stream) {
                 boolean correctFile = false;
                 for (int i = 0; i < FILES; ++i) {
-                    if (path.endsWith(Integer.toString(i) + ".dat")) {
+                    if (path.endsWith(Integer.toString(i) + ".dat")
+                            && Files.isRegularFile(path)) {
                         readFile(path.toString(), dirNum, i);
                         correctFile = true;
                         break;
@@ -233,9 +251,13 @@ public class MultiFileTable implements Table {
 
     private String readWord(DataInputStream stream) throws IOException {
         int length = stream.readInt();
-        byte[] word = new byte[length];
-        stream.readFully(word);
-        return new String(word, ENCODING);
+        try {
+            byte[] word = new byte[length];
+            stream.readFully(word);
+            return new String(word, ENCODING);
+        } catch (OutOfMemoryError e) {
+            throw new ContainsWrongFilesException(directory.toString());
+        }
     }
 
     private void save() throws IOException {

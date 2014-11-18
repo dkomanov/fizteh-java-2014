@@ -133,6 +133,16 @@ public class MultiFileTableTest {
     }
 
     @Test
+    public void putTheSameKey() throws IOException {
+        Table test = new MultiFileTable(databasePath, tableName);
+        test.put(key, value);
+        test.commit();
+        test.put(key, value2);
+        assertEquals(value2, test.get(key));
+        assertEquals(1, test.size());
+    }
+
+    @Test
     public void putForExistingInDiffKey() throws IOException {
         Table test = new MultiFileTable(databasePath, tableName);
         test.put(key, value);
@@ -152,6 +162,13 @@ public class MultiFileTableTest {
     }
 
     @Test
+    public void removeForNotExistingKey() throws IOException {
+        Table test = new MultiFileTable(databasePath, tableName);
+        assertEquals(null, test.remove(key));
+        assertEquals(0, test.size());
+    }
+
+    @Test
     public void removeForWrittenOnDiskKey() throws IOException {
         Table test = new MultiFileTable(databasePath, tableName);
         test.put(key, value);
@@ -161,10 +178,20 @@ public class MultiFileTableTest {
     }
 
     @Test
-    public void removeForExistingInDiffKey() throws IOException {
+    public void removeForExistingInDiffButNotOnDiskKey() throws IOException {
         Table test = new MultiFileTable(databasePath, tableName);
         test.put(key, value);
         assertEquals(value, test.remove(key));
+        assertEquals(0, test.size());
+    }
+
+    @Test
+    public void removeForExistingInDiffAndOnDiskKey() throws IOException {
+        Table test = new MultiFileTable(databasePath, tableName);
+        test.put(key, value);
+        test.commit();
+        test.put(key, value2);
+        assertEquals(value2, test.remove(key));
         assertEquals(0, test.size());
     }
 
