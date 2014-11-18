@@ -25,13 +25,13 @@ import ru.fizteh.fivt.storage.strings.TableProvider;
 public class DataBaseProviderTest {
 
     private TableProvider instance;
-    private final String testDirestory = System.getProperty("java.io.tmpdir");
+    private static final String TEST_DIRECTORY = System.getProperty("java.io.tmpdir");
     private final int tableCount = 25;
     private Path dbPath;
 
     @Before
     public void setUp() throws IOException {
-        dbPath = Paths.get(testDirestory, "test.db.dir");
+        dbPath = Paths.get(TEST_DIRECTORY, "test.db.dir");
         if (!Files.exists(dbPath)) {
             Files.createDirectory(dbPath);
         }
@@ -50,12 +50,8 @@ public class DataBaseProviderTest {
         Files.delete(dbPath);
     }
 
-    /**
-     * Test of getTable method, of class DataBaseProvider.
-     */
     @Test
     public void testGetTable() {
-        System.out.println("getTable");
         for (int order = 0; order < tableCount; order++) {
             String name = "table" + order;
             Table result = instance.getTable(name);
@@ -63,21 +59,13 @@ public class DataBaseProviderTest {
         }
     }
 
-    /**
-     * Test of getTable method, of class DataBaseProvider.
-     */
     @Test(expected = IllegalArgumentException.class)
     public void testGetTableWithInvalidName() {
-        System.out.println("getTable with invalid name");
-        instance.getTable("123////\\?");
+        instance.getTable("new/table");
     }
 
-    /**
-     * Test of getTable method, of class DataBaseProvider.
-     */
     @Test
     public void testGetTableIfNotExists() {
-        System.out.println("getTable if table not exists");
         for (int order = 0; order < tableCount; order++) {
             String name = "таблица" + order;
             Table result = instance.getTable(name);
@@ -85,21 +73,13 @@ public class DataBaseProviderTest {
         }
     }
 
-    /**
-     * Test of getTable method, of class DataBaseProvider.
-     */
     @Test(expected = IllegalArgumentException.class)
     public void testGetTableIfNameIsNull() {
-        System.out.println("getTable if name null");
         instance.getTable(null);
     }
 
-    /**
-     * Test of createTable method, of class DataBaseProvider.
-     */
     @Test
     public void testCreateTable() {
-        System.out.println("createTable if not exists");
         for (int order = 0; order < tableCount; order++) {
             String name = "таблица" + order;
             Table result = instance.createTable(name);
@@ -107,63 +87,41 @@ public class DataBaseProviderTest {
         }
     }
 
-    /**
-     * Test of createTable method, of class DataBaseProvider.
-     */
     @Test
     public void testCreateTableIfExists() {
-        System.out.println("createTable if exists");
         String name = "table" + 0;
         Table result = instance.createTable(name);
         assertNull(result);
     }
 
-    /**
-     * Test of createTable method, of class DataBaseProvider.
-     */
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateNull() {
-        System.out.println("createTable null");
+    public void testCreateCalledWithNullArgument() {
         instance.createTable(null);
     }
 
-    /**
-     * Test of removeTable method, of class DataBaseProvider.
-     */
     @Test
     public void testRemoveTable() {
-        System.out.println("removeTable if exists");
         for (int order = 0; order < tableCount; order++) {
             String name = "table" + order;
+            assertNotNull(instance.getTable(name));
             instance.removeTable(name);
+            assertNull(instance.getTable(name));
         }
     }
 
-    /**
-     * Test of removeTable method, of class DataBaseProvider.
-     */
     @Test(expected = IllegalArgumentException.class)
-    public void testRemoveNull() {
-        System.out.println("removeTable null");
+    public void testRemoveCalledWithNullArgument() {
         instance.removeTable(null);
     }
 
-    /**
-     * Test of removeTable method, of class DataBaseProvider.
-     */
     @Test(expected = IllegalStateException.class)
     public void testRemoveTableIfNotExists() {
-        System.out.println("removeTable if not exists");
         String name = "таблица";
         instance.removeTable(name);
     }
 
-    /**
-     * Test of listTables method, of class DataBaseProvider.
-     */
     @Test
     public void testListTables() {
-        System.out.println("listTables");
         List<String> expResult = new ArrayList<>();
         List<String> result = ((DataBaseProvider) instance).listTables();
 
@@ -185,7 +143,6 @@ public class DataBaseProviderTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testContsructor() {
-        System.out.println("test load");
         try {
             Files.createFile(dbPath.resolve("nondirectory.dat"));
         } catch (IOException e) {

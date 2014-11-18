@@ -22,15 +22,6 @@ public abstract class AbstractCommand<Type> implements Command {
     protected final PrintStream out;
     protected final PrintStream err;
 
-    public AbstractCommand() {
-        this.name = null;
-        this.argNum = 0;
-        this.context = null;
-        this.in = null;
-        this.out = null;
-        this.err = null;
-    }
-
     public AbstractCommand(String name, int argNum, Type context) {
         this(name, argNum, context, System.in, System.out, System.err);
     }

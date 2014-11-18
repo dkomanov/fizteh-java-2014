@@ -21,7 +21,7 @@ import ru.fizteh.fivt.students.kalandarovshakarim.database.DataBaseProviderFacto
  */
 public class MultiFileTableTest {
 
-    private final String tableName = "TestTable";
+    private static final String TABLE_NAME = "TestTable";
     private final int size = 30;
     private TableProviderFactory factory;
     private TableProvider provider;
@@ -33,7 +33,7 @@ public class MultiFileTableTest {
         testDirectory = Paths.get(System.getProperty("java.io.tmpdir"), "db.dir").toString();
         factory = new DataBaseProviderFactory();
         provider = factory.create(testDirectory);
-        instance = provider.createTable(tableName);
+        instance = provider.createTable(TABLE_NAME);
 
         for (int order = 0; order < size; ++order) {
             String key = getKey(order);
@@ -44,26 +44,17 @@ public class MultiFileTableTest {
 
     @After
     public void tearDown() {
-        provider.removeTable(tableName);
+        provider.removeTable(TABLE_NAME);
     }
 
-    /**
-     * Test of getName method, of class MultiFileTable.
-     */
     @Test
     public void testGetName() {
-        System.out.println("getName");
         String result = instance.getName();
-        assertEquals(tableName, result);
+        assertEquals(TABLE_NAME, result);
     }
 
-    /**
-     * Test of get method, of class MultiFileTable.
-     */
     @Test
     public void testGet() {
-        System.out.println("get");
-
         for (int order = 0; order < size; ++order) {
             String key = getKey(order);
             String keyNotExists = getKey(order + size);
@@ -75,12 +66,8 @@ public class MultiFileTableTest {
         }
     }
 
-    /**
-     * Test of put method, of class MultiFileTable.
-     */
     @Test
     public void testPut() {
-        System.out.println("put");
         for (int order = 0; order < size; ++order) {
             // Tests overwrite.
             String key = getKey(order);
@@ -95,12 +82,8 @@ public class MultiFileTableTest {
         }
     }
 
-    /**
-     * Test of remove method, of class MultiFileTable.
-     */
     @Test
     public void testRemove() {
-        System.out.println("remove");
         for (int order = 0; order < size; ++order) {
             // Tests removed.
             String key = getKey(order);
@@ -114,22 +97,14 @@ public class MultiFileTableTest {
         }
     }
 
-    /**
-     * Test of size method, of class MultiFileTable.
-     */
     @Test
     public void testSize() {
-        System.out.println("size");
         int result = instance.size();
         assertEquals(size, result);
     }
 
-    /**
-     * Test of commit method, of class MultiFileTable.
-     */
     @Test
     public void testCommit() {
-        System.out.println("commit");
         int expResult = size;
         int result = instance.commit();
         assertEquals(expResult, result);
@@ -154,23 +129,17 @@ public class MultiFileTableTest {
         assertEquals(expResult, result);
     }
 
-    /**
-     * Test of rollback method, of class MultiFileTable.
-     */
     @Test
     public void testRollback() {
-        System.out.println("rollback");
         int expResult = size;
+        assertNotNull(instance.get(getKey(0)));
         int result = instance.rollback();
         assertEquals(expResult, result);
+        assertNull(instance.get(getKey(0)));
     }
 
-    /**
-     * Test of list method, of class MultiFileTable.
-     */
     @Test
     public void testList() {
-        System.out.println("list");
         List<String> expResult = new ArrayList<>();
         for (int key = 0; key < size; ++key) {
             expResult.add(String.format("key%d", key));
@@ -183,19 +152,16 @@ public class MultiFileTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetNull() {
-        System.out.println("get null");
         instance.get(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testPutNull() {
-        System.out.println("put null");
         instance.put(null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testRemoveNull() {
-        System.out.println("remove null");
         instance.remove(null);
     }
 

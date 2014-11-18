@@ -23,7 +23,7 @@ import ru.fizteh.fivt.students.kalandarovshakarim.filesystem.FileSystemUtils;
 public class DataBaseProviderFactoryTest {
 
     private TableProviderFactory instance;
-    private final String testDirectory = System.getProperty("java.io.tmpdir");
+    private static final String TEST_DIRECTORY = System.getProperty("java.io.tmpdir");
     private String existsDirectory;
     private String invalidDirectory;
     private String withoutParentDirectory;
@@ -34,18 +34,18 @@ public class DataBaseProviderFactoryTest {
     @Before
     public void setUp() throws IOException {
         instance = new DataBaseProviderFactory();
-        txtFile = Paths.get(testDirectory, "notDirectory.txt");
+        txtFile = Paths.get(TEST_DIRECTORY, "notDirectory.txt");
         if (!Files.exists(txtFile)) {
             Files.createFile(txtFile);
         }
-        existsDirectory = Paths.get(testDirectory, "test.db.dir").toString();
-        invalidDirectory = Paths.get(testDirectory, "notDirectory.txt", "db.dir").toString();
-        withoutParentDirectory = Paths.get(testDirectory, "dirNotExists", "db.dir").toString();
-        withParentDirectory = Paths.get(testDirectory, "dirNotExists").toString();
-        notDirectory = Paths.get(testDirectory, "notDirectory.txt").toString();
+        existsDirectory = Paths.get(TEST_DIRECTORY, "test.db.dir").toString();
+        invalidDirectory = Paths.get(TEST_DIRECTORY, "notDirectory.txt", "db.dir").toString();
+        withoutParentDirectory = Paths.get(TEST_DIRECTORY, "dirNotExists", "db.dir").toString();
+        withParentDirectory = Paths.get(TEST_DIRECTORY, "dirNotExists").toString();
+        notDirectory = Paths.get(TEST_DIRECTORY, "notDirectory.txt").toString();
     }
 
-    void rmTry(String filePath) {
+    private void rmTry(String filePath) {
         FileSystemUtils utils = new FileSystemUtils();
         try {
             utils.rm(filePath, true);
@@ -64,58 +64,34 @@ public class DataBaseProviderFactoryTest {
         rmTry(txtFile.toString());
     }
 
-    /**
-     * Test of create method, of class DataBaseProviderFactory.
-     */
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateNull() {
-        System.out.println("create database in non-existing directory");
+    public void testCreateCalledWithNullArgument() {
         instance.create(null);
     }
 
-    /**
-     * Test of create method, of class DataBaseProviderFactory.
-     */
     @Test(expected = IllegalArgumentException.class)
     public void testCreateInDirectoryWithoutParent() {
-        System.out.println("create database in directory without parent");
         instance.create(withoutParentDirectory);
     }
 
-    /**
-     * Test of create method, of class DataBaseProviderFactory.
-     */
     @Test(expected = IllegalArgumentException.class)
     public void testCreateOnNondirectoryPath() {
-        System.out.println("create database on non-directory path");
         instance.create(notDirectory);
     }
 
-    /**
-     * Test of create method, of class DataBaseProviderFactory.
-     */
     @Test(expected = IllegalArgumentException.class)
     public void testCreateOnInvalidPath() {
-        System.out.println("create database on invalid path");
         instance.create(invalidDirectory);
     }
 
-    /**
-     * Test of create method, of class DataBaseProviderFactory.
-     */
     @Test
     public void testCreateNonexistingDirectory() {
-        System.out.println("create database in directory which not exists but has parent");
         TableProvider result = instance.create(withParentDirectory);
         assertNotNull(result);
     }
 
-    /**
-     * Test of create method, of class DataBaseProviderFactory.
-     */
     @Test
     public void testCreateInExistingDirectory() {
-        System.out.println("create database in existing directory");
         TableProvider result = instance.create(existsDirectory);
         assertNotNull(result);
     }

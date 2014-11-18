@@ -41,7 +41,7 @@ public class InterpreterTest {
         err = new PrintStream(baosErr);
     }
 
-    public Command newCommand(String name, int argsNum, InputStream input) {
+    private Command newCommand(String name, int argsNum, InputStream input) {
         return new AbstractCommand<Object>("test", argsNum, null, input, out, err) {
 
             @Override
@@ -55,9 +55,6 @@ public class InterpreterTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of exec method, of class Interpreter.
-     */
     @Test
     public void testInteractive() {
         in = new ByteArrayInputStream("test".getBytes());
@@ -67,11 +64,8 @@ public class InterpreterTest {
         assertEquals("$ true\n$ \n", baosOut.toString());
     }
 
-    /**
-     * Test of exec method, of class Interpreter.
-     */
     @Test
-    public void testBatchSatus0() {
+    public void testBatchModeReturnsStatusZeroWhenCalledOnNonexistentCommand() {
         in = new ByteArrayInputStream("".getBytes());
         Command test = newCommand("test", 0, in);
 
@@ -81,11 +75,8 @@ public class InterpreterTest {
         assertEquals(0, statusOk);
     }
 
-    /**
-     * Test of exec method, of class Interpreter.
-     */
     @Test
-    public void testBatchSatus1() {
+    public void testBatchModeReturnsStatusOneWhenCalledOnNonexistentCommand() {
         in = new ByteArrayInputStream("".getBytes());
         Command test = newCommand("test", 0, in);
 
@@ -94,11 +85,8 @@ public class InterpreterTest {
         assertEquals(1, statusfail);
     }
 
-    /**
-     * Test of exec method, of class Interpreter.
-     */
     @Test
-    public void testProcessCommandInvalidArgsNum() {
+    public void testBatchModeReturnsStatusOneWhenCalledWithInvalidNumberOfArguments() {
         in = new ByteArrayInputStream("".getBytes());
         Command test = newCommand("test", 0, in);
 
@@ -107,11 +95,8 @@ public class InterpreterTest {
         assertEquals(1, statusfail);
     }
 
-    /**
-     * Test of exec method, of class Interpreter.
-     */
     @Test
-    public void testNoSuchFileException() {
+    public void testBatchModeReturnsStatusOneWhenCommandThrowsNoSuchFileException() {
         in = new ByteArrayInputStream("".getBytes());
         Command test = new AbstractCommand<Object>("test", 0, out) {
 
@@ -126,11 +111,8 @@ public class InterpreterTest {
         assertEquals(1, statusfail);
     }
 
-    /**
-     * Test of exec method, of class Interpreter.
-     */
     @Test
-    public void testAccessDeniedException() {
+    public void testBatchModeReturnsStatusOneWhenCommandThrowsAccessDeniedException() {
         in = new ByteArrayInputStream("".getBytes());
         Command test = new AbstractCommand<Object>("test", 0, out) {
 
@@ -145,11 +127,8 @@ public class InterpreterTest {
         assertEquals(1, statusfail);
     }
 
-    /**
-     * Test of exec method, of class Interpreter.
-     */
     @Test
-    public void testEmptyCommand() {
+    public void testBatchModeReturnsStatusZeroWhenCalledOnEmptyCommand() {
         in = new ByteArrayInputStream("".getBytes());
         Command test = new AbstractCommand<Object>("test", 0, out) {
 
