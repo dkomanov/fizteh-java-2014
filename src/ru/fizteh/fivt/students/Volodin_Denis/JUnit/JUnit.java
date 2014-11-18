@@ -14,7 +14,7 @@ public class JUnit {
             Table table = tableProvider.createTable("1");
 
             Interpreter interpretator = new Interpreter();
-            interpretator.run((args.length == 0) ? null : args, tableProvider, table);
+            interpretator.run(args, tableProvider, table);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             System.exit(ReturnCodes.ERROR);
