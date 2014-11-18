@@ -11,7 +11,10 @@ import java.io.IOException;
 public class PutCommand implements Command {
     @Override
     public int execute(String[] args, Status status) throws IOException {
-        if (status.getFileMap().getMap() == null || !(checkArgs(args))) {
+        if (status.getFileMap().getMap() == null) {
+            throw new IOException(this.toString() + ": Filemap wasn't initialized");
+        }
+        if (!(checkArgs(args))) {
             throw new IOException(this.toString() + ": Arguments are invalid");
         }
         String oldValue = status.getFileMap().getMap().get(args[1]);
