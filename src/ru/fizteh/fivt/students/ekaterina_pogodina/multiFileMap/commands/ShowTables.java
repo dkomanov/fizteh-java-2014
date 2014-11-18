@@ -7,15 +7,4 @@ public class ShowTables extends Command {
     public void execute(String[] args, TableManager table) throws Exception {
         table.showTables(args);
     }
-
-    @Override
-    public void checkArgs(String[] args, TableManager table) throws Exception {
-        if (args.length > 2) {
-            table.manyArgs("show tables");
-        }
-        if (args.length < 2) {
-            table.missingOperand("show tables");
-        }
-        execute(args, table);
-    }
 }

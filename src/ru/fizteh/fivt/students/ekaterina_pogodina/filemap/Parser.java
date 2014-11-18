@@ -51,50 +51,50 @@ public class Parser {
                             break;
                         case "drop":
                             Command dropCommand = new Drop();
-                            dropCommand.checkArgs(args, obj);
+                            dropCommand.checkArgs(args, obj, 2);
                             break;
                         case "create":
                             Command createCommand = new Create();
-                            createCommand.checkArgs(args, obj);
+                            createCommand.checkArgs(args, obj, 2);
                             break;
                         case "use":
                             Command command = new Use();
-                            command.checkArgs(args, obj);
+                            command.checkArgs(args, obj, 2);
                             break;
                         case "show":
                             if (!args[1].equals("tables")) {
                                 System.err.println(args[0] + ": no such command");
                             }
                             Command showTables = new ShowTables();
-                            showTables.checkArgs(args, obj);
+                            showTables.checkArgs(args, obj, 2);
                             break;
                         case "put":
                             Command put = new Put();
-                            put.checkArgs(args, obj);
+                            put.checkArgs(args, obj, 3);
                             break;
                         case "get":
                             Command get = new Get();
-                            get.checkArgs(args, obj);
+                            get.checkArgs(args, obj, 2);
                             break;
                         case "remove":
                             Command remove = new Remove();
-                            remove.checkArgs(args, obj);
+                            remove.checkArgs(args, obj, 2);
                             break;
                         case "list":
                             Command list = new List();
-                            list.checkArgs(args, obj);
+                            list.checkArgs(args, obj, 1);
                             break;
                         case "size":
                             Command size = new Size();
-                            size.checkArgs(args, obj);
+                            size.checkArgs(args, obj, 1);
                             break;
                         case "commit":
                             Command commit = new Commit();
-                            commit.checkArgs(args, obj);
+                            commit.checkArgs(args, obj, 1);
                             break;
                         case "rollback":
                             Command rollback = new Rollback();
-                            rollback.checkArgs(args, obj);
+                            rollback.checkArgs(args, obj, 1);
                             break;
                         default:
                             System.err.println(args[0] + ": no such command");

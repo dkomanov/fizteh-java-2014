@@ -7,15 +7,4 @@ public class Drop extends Command {
     public void execute(String[] args, TableManager table) throws Exception {
         boolean tableDrop = table.drop(args[1]);
     }
-
-    @Override
-    public void checkArgs(String[] args, TableManager table) throws Exception {
-        if (args.length < 2) {
-            table.missingOperand(args[0]);
-        }
-        if (args.length > 2) {
-            table.manyArgs(args[0]);
-        }
-        execute(args, table);
-    }
 }

@@ -12,15 +12,4 @@ public class Use extends Command {
                 table.use(args[1]);
         }
     }
-
-    @Override
-    public void checkArgs(String[] args, TableManager table) throws Exception {
-        if (args.length < 2) {
-            table.missingOperand(args[0]);
-        }
-        if (args.length > 3) {
-            table.manyArgs(args[0]);
-        }
-        execute(args, table);
-    }
 }
