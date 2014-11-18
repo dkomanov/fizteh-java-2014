@@ -90,7 +90,7 @@ public class PvTable implements TableProvider {
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
      */
     public Table createTable(String name) {
-        if (name == null){
+        if (name == null) {
             throw new IllegalArgumentException("Directory name is null");
             }
         String pathToTable = JUnit.path + File.separator + name;
