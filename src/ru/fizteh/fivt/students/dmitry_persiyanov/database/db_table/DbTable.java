@@ -103,6 +103,7 @@ public final class DbTable implements Table {
         }
     }
 
+    @Override
     public List<String> list() {
         // Append old/changed keys (and not deleted) to list.
         List<String> keysList = new LinkedList<>();
@@ -179,6 +180,11 @@ public final class DbTable implements Table {
         uncommittedChangesMap.clear();
         size = lastCommitTableMapSize;
         return cancelledChanges;
+    }
+
+    @Override
+    public int getNumberOfUncommittedChanges() {
+        return 0;
     }
 
     @Override

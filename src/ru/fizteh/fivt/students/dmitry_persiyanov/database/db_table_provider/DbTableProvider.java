@@ -135,6 +135,11 @@ public final class DbTableProvider implements TableProvider {
         return null;
     }
 
+    @Override
+    public List<String> getTableNames() {
+        return null;
+    }
+
     private void purgeTable(final Path tablePath) throws IOException {
         File[] dirs = new File(tablePath.toString()).listFiles();
         for (File dir : dirs) {
