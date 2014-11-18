@@ -22,8 +22,8 @@ public class PvTable implements TableProvider {
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение.
      */
     //@Override
-    public oTable getTable(String name) {
-        oTable t = new oTable(name, JUnit.path);
+    public OTable getTable(String name) {
+        OTable t = new OTable(name, JUnit.path);
         try {
             File[] dirs = t.table.listFiles();
             for (File dir : dirs) {
@@ -98,7 +98,7 @@ public class PvTable implements TableProvider {
         if (table.exists() && table.isDirectory()) {
             return null;
         } else {
-            Table tab = new oTable(name, path);
+            Table tab = new OTable(name, path);
             table.mkdir();
             return tab;
         }
@@ -126,7 +126,7 @@ public class PvTable implements TableProvider {
                 }
             }
             JUnit.tableList.remove(name);
-            oTable t = new oTable(name, JUnit.path);
+            OTable t = new OTable(name, JUnit.path);
             t.rm();
             table.delete();
         }
