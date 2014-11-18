@@ -5,7 +5,7 @@ import ru.fizteh.fivt.storage.strings.Table;
 import java.io.*;
 import java.util.*;
 
-public class oTable implements Table {
+public class OTable implements Table {
     public String tableName;
     public String path;
     public File table;
@@ -16,7 +16,7 @@ public class oTable implements Table {
     public int unsavedChanges;
     public int numberOfState;
 
-    public oTable(String name, String pathname) {
+    public OTable(String name, String pathname) {
         map = new TreeMap<String, String>();
         tableStates = new TreeMap<Integer, TableState>();
         File dir = new File(pathname);
@@ -25,7 +25,7 @@ public class oTable implements Table {
         tableName = name;
         unsavedChanges = 0;
         numberOfState = 0;
-        TableState ts = new TableState (map, unsavedChanges, numberOfElements);
+        TableState ts = new TableState(map, unsavedChanges, numberOfElements);
         tableStates.put(numberOfState, ts);
     }
 
@@ -78,7 +78,7 @@ public class oTable implements Table {
     }
 
     @Override
-    public int size(){
+    public int size() {
         return numberOfElements;
     }
 
@@ -121,7 +121,7 @@ public class oTable implements Table {
             System.err.println(e.getMessage());
             System.exit(-1);
         }
-        TableState ts = new TableState (map, unsavedChanges, numberOfElements);
+        TableState ts = new TableState(map, unsavedChanges, numberOfElements);
         tableStates.put(++numberOfState, ts);
         int n = unsavedChanges;
         unsavedChanges = 0;
