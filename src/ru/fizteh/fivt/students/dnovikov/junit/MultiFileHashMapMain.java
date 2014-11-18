@@ -7,7 +7,7 @@ import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.TableNotFoundException;
 import ru.fizteh.fivt.students.dnovikov.junit.Interpreter.Command;
 import ru.fizteh.fivt.students.dnovikov.junit.Interpreter.Interpreter;
 
-import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -19,17 +19,12 @@ public class MultiFileHashMapMain {
         MultiFileHashMapMain fileMap = new MultiFileHashMapMain();
         try {
             fileMap.run(args);
-        } catch (NullPointerException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
         } catch (LoadOrSaveException e) {
-            System.err.println(e.getMessage());
-        } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    public void run(String[] args) throws LoadOrSaveException, NullPointerException, IOException {
+    private void run(String[] args) {
         String directoryPath = System.getProperty("fizteh.db.dir");
         if (directoryPath == null) {
             System.err.println("database directory not set");
@@ -41,7 +36,7 @@ public class MultiFileHashMapMain {
                 new Command("get", 1, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        String key = new String(args[0]);
+                        String key = args[0];
                         if (dbConnector.getCurrentTable() == null) {
                             System.out.println("no table");
                         } else {
@@ -136,7 +131,7 @@ public class MultiFileHashMapMain {
                             } else {
                                 System.out.println("created");
                             }
-                        } catch (LoadOrSaveException e) {
+                        } catch (LoadOrSaveException | InvalidPathException e) {
                             System.err.println(e.getMessage());
                         }
                     }
@@ -211,7 +206,7 @@ public class MultiFileHashMapMain {
                                 dbConnector.saveTable();
                                 System.exit(0);
                             }
-                        } catch (IOException | LoadOrSaveException e) {
+                        } catch (LoadOrSaveException e) {
                             System.err.println(e.getMessage());
                         }
                     }

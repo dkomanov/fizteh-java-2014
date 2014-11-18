@@ -90,7 +90,7 @@ public class SingleTable {
         return getFolder().resolve(fileNumber + ".dat");
     }
 
-    private void load() throws LoadOrSaveException {
+    private void load() {
         if (singleTablePath.toFile().isDirectory()) {
             throw new LoadOrSaveException("cannot load table: '" + singleTablePath.toFile().toString()
                     + "' is directory");
@@ -104,9 +104,7 @@ public class SingleTable {
             } catch (IOException e) {
                 try (DataOutputStream outputStream = new DataOutputStream(Files.newOutputStream(singleTablePath))) {
                     outputStream.flush();
-                } catch (IOException exception) {
-                    throw new LoadOrSaveException("cannot create file with database");
-                } catch (SecurityException exception) {
+                } catch (IOException | SecurityException exception) {
                     throw new LoadOrSaveException("cannot create file with database");
                 }
             }
@@ -134,7 +132,7 @@ public class SingleTable {
         }
     }
 
-    public void drop() throws LoadOrSaveException {
+    public void drop() {
         dataBase.clear();
         save();
     }

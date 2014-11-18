@@ -31,7 +31,7 @@ public class Interpreter {
         }
     }
 
-    public void run(String[] args) throws IOException, LoadOrSaveException {
+    public void run(String[] args) {
         try {
             if (args.length == 0) {
                 isBatch = false;
@@ -61,7 +61,7 @@ public class Interpreter {
                 } else {
                     dbConnector.saveTable();
                 }
-            } catch (IOException | LoadOrSaveException exception) {
+            } catch (LoadOrSaveException exception) {
                 err.println(exception.getMessage());
             }
             System.exit(1);
@@ -72,15 +72,16 @@ public class Interpreter {
         out.print("$ ");
         try (Scanner scanner = new Scanner(in)) {
             while (true) {
-                String str = scanner.nextLine();
                 try {
+                    String str = scanner.nextLine();
                     invokeLine(str);
                 } catch (IOException e) {
                     err.println(e.getMessage());
-                } catch (WrongNumberOfArgumentsException e) {
+                } catch (LoadOrSaveException | WrongNumberOfArgumentsException e) {
                     err.println(e.getMessage());
-                } catch (LoadOrSaveException e) {
+                } catch (NoSuchElementException e) {
                     err.println(e.getMessage());
+                    break;
                 }
                 out.print("$ ");
             }
@@ -94,6 +95,9 @@ public class Interpreter {
         for (String command : commandsWithArgs) {
             String[] tokens = command.trim().split("\\s+");
             String commandName = tokens[0];
+            if (commandName.equals("") || commandName.equals(";")) {
+                continue;
+            }
             Command cmd = commands.get(commandName);
             if (cmd == null) {
                 if (commandName.equals("exit")) {

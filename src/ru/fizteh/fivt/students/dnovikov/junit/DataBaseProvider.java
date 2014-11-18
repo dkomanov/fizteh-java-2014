@@ -9,17 +9,18 @@ import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.TableNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.*;
 
 public class DataBaseProvider implements TableProvider {
-    private DataBaseTable currentTable = null;
+    private DataBaseTable currentTable;
     private Path rootDirectory;
 
     private ArrayList<Table> tables = new ArrayList<>();
     private Map<String, Table> tableNames = new TreeMap<>();
 
-    public DataBaseProvider(String directoryPath) throws LoadOrSaveException {
+    public DataBaseProvider(String directoryPath) {
         if (directoryPath == null) {
             throw new IllegalArgumentException("database directory not set");
         } else {
@@ -55,11 +56,13 @@ public class DataBaseProvider implements TableProvider {
         if (tableNames.get(name) != null) {
             return null;
         } else {
-            Path newDir = new File(rootDirectory + File.separator + name).toPath();
             try {
+                Path newDir = rootDirectory.resolve(name);
                 Files.createDirectory(newDir);
             } catch (IOException e) {
-                throw new LoadOrSaveException("can't create directory :" + newDir.toAbsolutePath());
+                throw new LoadOrSaveException("can't create directory: " + rootDirectory + File.separator + name);
+            } catch (InvalidPathException e) {
+                System.out.println("invalid path");
             }
             DataBaseTable table = new DataBaseTable(name, this);
             tableNames.put(name, table);
@@ -70,7 +73,7 @@ public class DataBaseProvider implements TableProvider {
     }
 
     @Override
-    public void removeTable(String name) throws LoadOrSaveException, TableNotFoundException {
+    public void removeTable(String name) throws TableNotFoundException {
         if (name == null) {
             throw new IllegalArgumentException("cannot remove table: null");
         }
@@ -90,8 +93,7 @@ public class DataBaseProvider implements TableProvider {
     public List<Pair<String, Integer>> showTable() {
 
         List<Pair<String, Integer>> result = new ArrayList<>();
-        for (int i = 0; i < tables.size(); i++) {
-            DataBaseTable table = (DataBaseTable) tables.get(i);
+        for (Table table : tables) {
             String tableName = table.getName();
             int size = table.size();
             result.add(new Pair<>(tableName, size));
@@ -99,7 +101,7 @@ public class DataBaseProvider implements TableProvider {
         return result;
     }
 
-    public void loadTables() throws LoadOrSaveException {
+    public void loadTables() {
         if (rootDirectory.toFile().exists() && rootDirectory.toFile().isDirectory()) {
             File[] foldersInRoot = rootDirectory.toFile().listFiles();
             for (File folder : foldersInRoot) {
@@ -119,7 +121,7 @@ public class DataBaseProvider implements TableProvider {
         }
     }
 
-    public void saveTable() throws IOException, LoadOrSaveException {
+    public void saveTable() {
         if (currentTable != null) {
             currentTable.save();
         }

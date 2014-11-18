@@ -6,7 +6,7 @@ import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
 
 public class DataBaseProviderFactory implements TableProviderFactory{
     @Override
-    public TableProvider create(String dir) throws LoadOrSaveException {
+    public TableProvider create(String dir) {
         return new DataBaseProvider(dir);
     }
 }

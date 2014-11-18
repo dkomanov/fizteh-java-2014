@@ -18,7 +18,7 @@ public class DataBaseTable implements Table {
     private DataBaseProvider databaseConnector;
     private Map<String, String> diffs;
 
-    public DataBaseTable(String name, DataBaseProvider dbConnector) throws LoadOrSaveException {
+    public DataBaseTable(String name, DataBaseProvider dbConnector) {
         diffs = new HashMap<>();
         tableName = new String(name);
         tableParts = new ArrayList<>();
@@ -36,16 +36,16 @@ public class DataBaseTable implements Table {
     }
 
     private SingleTable selectSingleTable(String key) {
-        int hashcode = key.hashCode();
-        int ndirectory = hashcode % FOLDERS_CNT;
-        int nfile = hashcode / FOLDERS_CNT % FILES_CNT;
-        if (ndirectory < 0) {
-            ndirectory += FOLDERS_CNT;
+        int hashCode = key.hashCode();
+        int directoryNumber = hashCode % FOLDERS_CNT;
+        int fileNumber = hashCode / FOLDERS_CNT % FILES_CNT;
+        if (directoryNumber < 0) {
+            directoryNumber += FOLDERS_CNT;
         }
-        if (nfile < 0) {
-            nfile += FILES_CNT;
+        if (fileNumber < 0) {
+            fileNumber += FILES_CNT;
         }
-        return parts[ndirectory][nfile];
+        return parts[directoryNumber][fileNumber];
     }
 
     @Override
@@ -142,7 +142,7 @@ public class DataBaseTable implements Table {
         return deleted;
     }
 
-    public void drop() throws LoadOrSaveException {
+    public void drop() {
         File tableDirectory = getTableDirectory().toFile();
         for (SingleTable[] directory : parts) {
             for (SingleTable singleTableFile : directory) {
@@ -180,7 +180,7 @@ public class DataBaseTable implements Table {
         return changesCount;
     }
 
-    public void save() throws LoadOrSaveException {
+    public void save() {
         for (SingleTable singleTable : tableParts) {
             singleTable.save();
         }
