@@ -12,10 +12,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
 
 /**
- * Represents a data table.
+ * Represents the data table containing pairs key-value. The keys must be unique.
+ * Transactionality: changes are committed or rolled back using the methods {link #commit ()} or {link #rollback ()}.
+ * It is assumed that among calls of these methods there aren't any I/O operations.
+ * This interface is not thread safe.
  * @author Vadim Mazaev
  */
 public final class DbTable implements Table {
@@ -29,13 +33,11 @@ public final class DbTable implements Table {
     private Map<String, String> diff;
     
     /**
-     * Constructs a Table which represents a table directory on disk.
-     * @see {@link DbTable#readTableDir readTableDir} to know about reading and checking data.
-     * @param tableDirPath Path to table directory. Method doesn't check it.
-     * @param name Table name. Doesn't check for equality of table name and directory name. 
-     * @throws RuntimeException If table directory is corrupted.
+     * @param tableDirPath Path to table directory.
+     * @param name Table name. Method doesn't check for equality of table name and directory name. 
+     * @throws DataBaseIOException If table directory is corrupted.
      */
-    public DbTable(Path tableDirPath, String name) {
+    public DbTable(Path tableDirPath, String name) throws DataBaseIOException {
         parts = new HashMap<>();
         diff = new HashMap<>();
         this.tableDirPath = tableDirPath;
@@ -43,18 +45,18 @@ public final class DbTable implements Table {
         try {
             readTableDir();
         } catch (DataBaseIOException e) {
-            throw new RuntimeException("Error reading table '" + getName()
+            throw new DataBaseIOException("Error reading table '" + getName()
                     + "': " + e.getMessage(), e);
         }
     }
     
     /**
-     * Writes all data from {@link TablePart}s to table directory
-     * @return Number of saved changes.
-     * @throws RuntimeException If cannot write data to files.
+     * Commit the changes.
+     * @return Number of committed changes.
+     * @throws IOException If an I/O error occurred. The integrity of the table can not be guaranteed.
      */
     @Override
-    public int commit() {
+    public int commit() throws IOException {
         int savedChangesCounter = diff.size();
         try {
             for (Entry<String, String> pair : diff.entrySet()) {
@@ -63,6 +65,7 @@ public final class DbTable implements Table {
                     part.remove(pair.getKey());
                 } else {
                     if (part == null) {
+                        //TODO вынести в отдельный метод
                         int dirNumber = Math.abs(pair.getKey().getBytes(CODING)[0]
                                 % NUMBER_OF_PARTITIONS);
                         int fileNumber = Math.abs((pair.getKey().getBytes(CODING)[0]
@@ -76,14 +79,14 @@ public final class DbTable implements Table {
             diff.clear();
             writeTableToDir();
         } catch (IOException e) {
-            throw new RuntimeException("Error writing table '" + getName()
+            throw new IOException("Error writing table '" + getName()
                     + "' to its directory: " + e.getMessage(), e);
         }
         return savedChangesCounter;
     }
     
     /** 
-     * Rolls back the changes to the last commit, reading the disk.
+     * Rolls back the changes since the last commit.
      * @return Number of rolled back changes.
      */
     @Override
@@ -107,6 +110,7 @@ public final class DbTable implements Table {
      * @return Integer code of file number and its directory number in such format: ddff.
      */
     private int getDirFileCode(String key) {
+        //TODO переписать!
         int dirNumber;
         int fileNumber;
         try {
@@ -121,13 +125,17 @@ public final class DbTable implements Table {
     
     /**
      * Gets the value of the specified key.
-     * @param key Key.
-     * @return Value, if key contains in this table, otherwise null.
+     * @param key The key is for searching the value. Can not be null.
+     *            For indexes on non-string fields parameter is a serialized column value.
+     *            It is required to parse.
+     * @return Value. If not found, returns null.
+     * @throws IllegalArgumentException If the parameter key is null.
      * @throws RuntimeException If {@link TablePart#get(String) TablePart.get()}
      * method fails.
      */
     @Override
-    public String get(String key) {
+    //TODO переделать!
+    public Storeable get(String key) {
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
@@ -290,10 +298,11 @@ public final class DbTable implements Table {
                             + "' is not a file or doesn't match required name '[0-"
                             + (NUMBER_OF_PARTITIONS - 1) + "].dat'", null);
                 }
+                //TODO вынести нахрен
                 int dirNumber = Integer.parseInt(dir.substring(0, dir.length() - 4));
                 int fileNumber = Integer.parseInt(file.substring(0, file.length() - 4));
                 TablePart part = new TablePart(tableDirPath, dirNumber, fileNumber);
-                parts.put(dirNumber * 100 + fileNumber, part);
+                parts.put(dirNumber * NUMBER_OF_PARTITIONS + fileNumber, part);
             }
         }
     }
