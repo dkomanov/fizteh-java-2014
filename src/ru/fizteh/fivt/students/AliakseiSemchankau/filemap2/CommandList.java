@@ -10,6 +10,7 @@ public class CommandList implements CommandInterface {
     @Override
     public void makeCommand(Vector<String> args, DatabaseTable dTable) {
 
+
         if (args.size() != 1) {
             throw new DatabaseException("too many arguments for list");
         }
