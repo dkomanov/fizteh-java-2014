@@ -100,7 +100,7 @@ public interface TableProvider {
     /**
      * Возвращает имена существующих таблиц, которые могут быть получены с помощью {@link #getTable(String)}.
      *
-     * @return Массив строк: имена существующих таблиц.
+     * @return Имена существующих таблиц.
      */
-    String[] getTableNames();
+    List<String> getTableNames();
 }
