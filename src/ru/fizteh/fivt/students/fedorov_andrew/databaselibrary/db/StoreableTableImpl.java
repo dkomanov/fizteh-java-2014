@@ -208,14 +208,6 @@ public class StoreableTableImpl implements Table {
     }
 
     /**
-     * Counts uncommitted changes - diff between last committed (or read) version and current version.
-     */
-    public int getUncommittedChangesCount() {
-        checkValidity();
-        return store.getUncommittedChangesCount();
-    }
-
-    /**
      * Mark this table as invalidated (all further operations throw {@link java.lang.IllegalStateException}).
      */
     void invalidate() {
@@ -257,6 +249,14 @@ public class StoreableTableImpl implements Table {
         return store.size();
     }
 
+    /**
+     * Collects all keys from all table parts assigned to this table.
+     */
+    public List<String> list() {
+        checkValidity();
+        return store.list();
+    }
+
     @Override
     public int commit() throws DatabaseIOException {
         checkValidity();
@@ -267,6 +267,15 @@ public class StoreableTableImpl implements Table {
     public int rollback() {
         checkValidity();
         return store.rollback();
+    }
+
+    /**
+     * Counts uncommitted changes - diff between last committed (or read) version and current version.
+     */
+    @Override
+    public int getNumberOfUncommittedChanges() {
+        checkValidity();
+        return store.getNumberOfUncommittedChanges();
     }
 
     @Override
@@ -283,14 +292,6 @@ public class StoreableTableImpl implements Table {
                     "columnIndex must be between zero (inclusive) and columnsCount (exclusive)");
         }
         return columnTypes.get(columnIndex);
-    }
-
-    /**
-     * Collects all keys from all table parts assigned to this table.
-     */
-    public List<String> list() {
-        checkValidity();
-        return store.list();
     }
 
     @Override

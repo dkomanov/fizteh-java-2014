@@ -339,7 +339,7 @@ public final class StringTableImpl {
         return tableParts.get(getHash(key));
     }
 
-    public int getUncommittedChangesCount() {
+    public int getNumberOfUncommittedChanges() {
         int diffsCount = 0;
         for (TablePart part : tableParts.values()) {
             diffsCount += part.getUncommittedChangesCount();

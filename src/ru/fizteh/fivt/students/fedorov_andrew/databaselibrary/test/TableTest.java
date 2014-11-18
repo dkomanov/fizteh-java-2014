@@ -96,8 +96,8 @@ public class TableTest extends TestBase {
     }
 
     @Test
-    public void testOpenTableWithValuesNotMatchingTypes() throws IOException {
-        table.put("key", provider.createFor(table, Arrays.asList("value")));
+    public void testOpenTableWithValuesNotMatchingTypes() throws IOException, ParseException {
+        put("key", "value");
         table.commit();
 
         try (PrintWriter writer = new PrintWriter(
@@ -111,6 +111,59 @@ public class TableTest extends TestBase {
         exception.expectMessage(containsString("Value of improper format found"));
 
         table = provider.getTable(TABLE_NAME);
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges() throws ParseException {
+        put("key", "value");
+        put("key2", "value2");
+
+        assertEquals(2, table.getNumberOfUncommittedChanges());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges1() throws ParseException {
+        put("key", "value");
+        put("key", "value2");
+
+        assertEquals(1, table.getNumberOfUncommittedChanges());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges2() throws ParseException {
+        put("key", "value");
+        remove("key");
+
+        assertEquals(0, table.getNumberOfUncommittedChanges());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges3() throws ParseException, IOException {
+        put("key", "value");
+        table.commit();
+        remove("key");
+
+        assertEquals(1, table.getNumberOfUncommittedChanges());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges4() throws ParseException, IOException {
+        put("key", "value");
+        table.commit();
+        remove("key");
+        put("key", "value");
+
+        assertEquals(0, table.getNumberOfUncommittedChanges());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges5() throws ParseException, IOException {
+        put("key", "value");
+        table.commit();
+        remove("key");
+        put("key", "value2");
+
+        assertEquals(1, table.getNumberOfUncommittedChanges());
     }
 
     @Test

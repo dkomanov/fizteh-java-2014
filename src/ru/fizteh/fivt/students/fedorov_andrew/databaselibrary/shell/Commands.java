@@ -1,13 +1,15 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProvider;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.StoreableTableImpl;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.InvocationException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.NoActiveTableException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +21,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             new AbstractCommand(null, "saves all changes made from the last commit", 1) {
                 @Override
                 public void executeSafely(SingleDatabaseShellState state, String[] args)
-                        throws DatabaseIOException, IllegalArgumentException {
+                        throws IOException, IllegalArgumentException {
                     int changes = state.getActiveDatabase().commit();
                     System.out.println(changes);
                 }
@@ -51,7 +53,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             Integer.MAX_VALUE) {
         @Override
         public void executeSafely(SingleDatabaseShellState state, String[] args)
-                throws DatabaseIOException, InvocationException {
+                throws IOException, InvocationException {
             if (!args[2].startsWith("(") || !args[args.length - 1].endsWith(")")) {
                 throw new InvocationException(
                         this, args[0], "Round brackets must exist and contain types list inside them");
@@ -77,8 +79,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
     public static final Command<SingleDatabaseShellState> DROP = new AbstractCommand(
             "<tablename>", "deletes table with the given name from file system", 2) {
         @Override
-        public void executeSafely(SingleDatabaseShellState state, final String[] args)
-                throws DatabaseIOException {
+        public void executeSafely(SingleDatabaseShellState state, final String[] args) throws IOException {
             state.getActiveDatabase().dropTable(args[1]);
             System.out.println("dropped");
         }
@@ -112,16 +113,16 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             new AbstractCommand("<key>", "obtains value by the key", 2) {
                 @Override
                 public void executeSafely(SingleDatabaseShellState state, final String[] args)
-                        throws DatabaseIOException, NoActiveTableException {
+                        throws NoActiveTableException {
                     String key = args[1];
 
-                    StoreableTableImpl table = state.getActiveTable();
-                    DBTableProvider provider = state.getProvider();
+                    Table table = state.getActiveTable();
+                    TableProvider provider = state.getProvider();
 
                     Storeable value = table.get(key);
 
                     if (value == null) {
-                        throw new DatabaseIOException("not found");
+                        throw new IllegalArgumentException("not found");
                     } else {
                         System.out.println("found");
                         System.out.println(provider.serialize(table, value));
@@ -165,7 +166,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             new AbstractCommand(null, "prints all keys stored in the map", 1) {
                 @Override
                 public void executeSafely(SingleDatabaseShellState state, String[] args)
-                        throws DatabaseIOException, NoActiveTableException {
+                        throws NoActiveTableException {
                     List<String> keySet = state.getActiveTable().list();
                     StringBuilder sb = new StringBuilder();
 
@@ -186,10 +187,10 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             Integer.MAX_VALUE) {
         @Override
         public void executeSafely(SingleDatabaseShellState state, String[] args)
-                throws DatabaseIOException, NoActiveTableException, ParseException {
+                throws NoActiveTableException, ParseException {
             String key = args[1];
 
-            StoreableTableImpl table = state.getActiveTable();
+            Table table = state.getActiveTable();
 
             String valueStr = String.join(" ", Arrays.asList(args).subList(2, args.length));
             Storeable value = state.getProvider().deserialize(table, valueStr);
@@ -225,7 +226,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             "tables", "prints info on all tables assigned to the working database", 2) {
         @Override
         public void executeSafely(SingleDatabaseShellState state, String[] args)
-                throws DatabaseIOException, IllegalArgumentException {
+                throws IllegalArgumentException {
             switch (args[1]) {
             case "tables": {
                 state.getActiveDatabase().showTables();
@@ -244,7 +245,7 @@ public class Commands extends SimpleCommandContainer<SingleDatabaseShellState> {
             2) {
         @Override
         public void executeSafely(final SingleDatabaseShellState state, final String[] args)
-                throws DatabaseIOException {
+                throws IOException {
             state.getActiveDatabase().useTable(args[1]);
             System.out.println("using " + args[1]);
         }

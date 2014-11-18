@@ -1,19 +1,20 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.NoActiveTableException;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Database class responsible for a set of tables assigned to it.
  * @author phoenix
  */
 public class Database {
-    protected final DBTableProvider provider;
+    protected final TableProvider provider;
     /**
      * Root directory of all database files
      */
@@ -22,7 +23,7 @@ public class Database {
      * Table in use.<br/> All operations (like {@code put}, {@code get}, etc.) are performed with
      * this table.
      */
-    private StoreableTableImpl activeTable;
+    private Table activeTable;
 
     /**
      * Establishes a database instance on given folder.<br/> If the folder exists, the old database
@@ -35,7 +36,7 @@ public class Database {
         this.provider = factory.create(dbDirectory.toString());
     }
 
-    public DBTableProvider getProvider() {
+    public TableProvider getProvider() {
         return provider;
     }
 
@@ -49,7 +50,7 @@ public class Database {
      * Creates a new empty table with specified name.
      */
     public boolean createTable(String tableName, List<Class<?>> columnTypes)
-            throws IllegalArgumentException, DatabaseIOException {
+            throws IllegalArgumentException, IOException {
         return provider.createTable(tableName, columnTypes) != null;
     }
 
@@ -58,7 +59,7 @@ public class Database {
      * @param tableName
      *         Name of table to drop.
      */
-    public void dropTable(String tableName) throws IllegalArgumentException, DatabaseIOException {
+    public void dropTable(String tableName) throws IllegalArgumentException, IOException {
         String activeTableName = activeTable == null ? null : activeTable.getName();
 
         provider.removeTable(tableName);
@@ -68,7 +69,7 @@ public class Database {
         }
     }
 
-    public StoreableTableImpl getActiveTable() throws NoActiveTableException {
+    public Table getActiveTable() throws NoActiveTableException {
         checkCurrentTableIsOpen();
         return activeTable;
     }
@@ -80,7 +81,7 @@ public class Database {
     /**
      * Writes all changes in the database to file system.
      */
-    public int commit() throws DatabaseIOException {
+    public int commit() throws IOException {
         // actually we have to persist the active table.
         if (activeTable != null) {
             return activeTable.commit();
@@ -99,13 +100,21 @@ public class Database {
 
     public void showTables() {
         System.out.println("table_name row_count");
-        Set<Entry<String, StoreableTableImpl>> tables = provider.listTables();
-        for (Entry<String, StoreableTableImpl> table : tables) {
-            if (table.getValue() == null) {
-                System.out.println(table.getKey() + " corrupt");
-            } else {
-                System.out.println(table.getKey() + ' ' + table.getValue().size());
+        List<String> tableNames = provider.getTableNames();
+
+        for (String tableName : tableNames) {
+            boolean valid;
+            int changesCount = 0;
+
+            try {
+                Table table = provider.getTable(tableName);
+                changesCount = table.size();
+                valid = true;
+            } catch (Exception exc) {
+                valid = false;
             }
+
+            System.out.println(String.format("%s %s", tableName, valid ? changesCount : "corrupt"));
         }
     }
 
@@ -114,19 +123,19 @@ public class Database {
      * @param tableName
      *         Name of table to use.
      */
-    public void useTable(String tableName) throws DatabaseIOException, IllegalArgumentException {
+    public void useTable(String tableName) throws IOException, IllegalArgumentException {
         if (activeTable != null) {
             if (tableName.equals(activeTable.getName())) {
                 return;
             }
 
-            int uncommitted = activeTable.getUncommittedChangesCount();
+            int uncommitted = activeTable.getNumberOfUncommittedChanges();
             if (uncommitted != 0) {
                 throw new DatabaseIOException(String.format("%d unsaved changes", uncommitted));
             }
         }
 
-        StoreableTableImpl oldActiveTable = activeTable;
+        Table oldActiveTable = activeTable;
 
         try {
             activeTable = provider.getTable(tableName);

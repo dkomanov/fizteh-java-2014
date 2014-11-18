@@ -205,8 +205,7 @@ public class TableProviderTest extends TestBase {
         prepareProvider();
 
         expectTableCorruptAndAllOf(
-                tableName,
-                containsString("wrong type (Invalid type description file for table"));
+                tableName, containsString("wrong type (Invalid type description file for table"));
 
         provider.getTable(tableName);
     }

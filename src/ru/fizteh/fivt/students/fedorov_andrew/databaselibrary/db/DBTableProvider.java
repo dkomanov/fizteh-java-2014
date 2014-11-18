@@ -18,10 +18,9 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Function;
 
 public class DBTableProvider implements TableProvider {
@@ -299,6 +298,11 @@ public class DBTableProvider implements TableProvider {
         return storeable;
     }
 
+    @Override
+    public List<String> getTableNames() {
+        return new LinkedList<>(tables.keySet());
+    }
+
     /**
      * Scans database directory and reads all tables from it.
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException
@@ -326,14 +330,6 @@ public class DBTableProvider implements TableProvider {
         } catch (IOException exc) {
             throw new DatabaseIOException("Failed to scan database directory", exc);
         }
-    }
-
-    /**
-     * Returns mapping (table name, table).<br/>
-     * {@code Null} is used if a table is corrupt.
-     */
-    public Set<Entry<String, StoreableTableImpl>> listTables() {
-        return tables.entrySet();
     }
 
 }

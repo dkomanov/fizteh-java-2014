@@ -1,12 +1,12 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.InvocationException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.NoActiveTableException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.WrongArgsNumberException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.AccurateExceptionHandler;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 import static ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility.*;
@@ -26,11 +26,11 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
     protected static final AccurateExceptionHandler<SingleDatabaseShellState> DATABASE_ERROR_HANDLER =
             (Exception exc, SingleDatabaseShellState shell) -> {
                 boolean found = false;
-                Class<?> excClass = exc.getClass();
+                Class<?> actualType = exc.getClass();
 
-                for (Class<?> exceptionType : EXECUTE_SAFELY_THROWN_EXCEPTIONS) {
+                for (Class<?> expectedType : EXECUTE_SAFELY_THROWN_EXCEPTIONS) {
                     try {
-                        exceptionType.asSubclass(excClass);
+                        actualType.asSubclass(expectedType);
                         found = true;
                         break;
                     } catch (ClassCastException cce) {
@@ -105,12 +105,12 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
     }
 
     public abstract void executeSafely(SingleDatabaseShellState shell, String[] args) throws
-                                                                                      DatabaseIOException,
                                                                                       IllegalArgumentException,
                                                                                       NoActiveTableException,
                                                                                       IllegalStateException,
                                                                                       InvocationException,
-                                                                                      ParseException;
+                                                                                      ParseException,
+                                                                                      IOException;
 
     protected void checkArgsNumber(String[] args, int minimal, int maximal) throws TerminalException {
         if (args.length < minimal || args.length > maximal) {

@@ -1,8 +1,8 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProvider;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.Database;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.StoreableTableImpl;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.ExitRequest;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.NoActiveTableException;
@@ -62,7 +62,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
 
     @Override
     public String getGreetingString() {
-        StoreableTableImpl table;
+        Table table;
         try {
             table = getActiveDatabase().getActiveTable();
         } catch (NoActiveTableException exc) {
@@ -94,7 +94,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     }
 
     @Override
-    public void persist() throws DatabaseIOException {
+    public void persist() throws IOException {
         getActiveDatabase().commit();
     }
 
@@ -113,11 +113,11 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
         return activeDatabase;
     }
 
-    public DBTableProvider getProvider() {
+    public TableProvider getProvider() {
         return getActiveDatabase().getProvider();
     }
 
-    public StoreableTableImpl getActiveTable() throws NoActiveTableException {
+    public Table getActiveTable() throws NoActiveTableException {
         return getActiveDatabase().getActiveTable();
     }
 

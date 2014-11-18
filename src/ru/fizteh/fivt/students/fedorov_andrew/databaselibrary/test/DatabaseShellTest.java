@@ -61,9 +61,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         runBatchExpectZero("get key");
 
         assertEquals(
-                "Output after get",
-                makeTerminalExpectedMessage("found", "[\"hello\",2,null]"),
-                getOutput());
+                "Output after get", makeTerminalExpectedMessage("found", "[\"hello\",2,null]"), getOutput());
     }
 
     @Test
