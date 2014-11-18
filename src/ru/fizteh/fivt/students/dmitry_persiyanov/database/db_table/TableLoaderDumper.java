@@ -8,20 +8,52 @@ import java.nio.file.Paths;
 import java.util.*;
 
 final class TableLoaderDumper {
-    public static final String DIRS_EXTENSION = ".dir";
-    public static final String FILES_EXTENSION = ".dat";
-    public static final String ENCODING = "UTF-8";
+    private static final String TABLE_SIGNATURE_FILENAME = "signature.tsv";
+    private static final String DIRS_EXTENSION = ".dir";
+    private static final String FILES_EXTENSION = ".dat";
+    private static final String ENCODING = "UTF-8";
 
-    // Table loading methods.
-    public static void loadTable(final File tableFile,
-                                 List<List<Map<String, String>>> tableHashMap) throws IOException {
-        File[] tableDirectories = tableFile.listFiles();
+    public static void createTable(final File tableDir, final List<Class<?>> columnTypes) throws IOException {
+        dumpSignatureFile(tableDir, columnTypes);
+    }
+
+    public static void loadTable(final File tableDir,
+                                 List<List<Map<String, String>>> tableHashMap,
+                                 List<Class<?>> columnTypes) throws IOException {
+        columnTypes = readSignatureFile(tableDir);
+        File[] tableDirectories = tableDir.listFiles();
         if (tableDirectories == null) {
-            throw new NotDirectoryException(tableFile.getName());
+            throw new NotDirectoryException(tableDir.getName());
         }
         for (int i = 0; i < tableDirectories.length; ++i) {
             int indexOfDir = parseNum(tableDirectories[i].toPath());
             loadDirectory(tableDirectories[i], tableHashMap.get(indexOfDir));
+        }
+    }
+
+    private static List<Class<?>> readSignatureFile(final File tableDir) throws IOException {
+        File signatureFile = new File(tableDir, TABLE_SIGNATURE_FILENAME);
+            try (BufferedReader bufReader
+                         = new BufferedReader(new InputStreamReader(new FileInputStream(signatureFile), ENCODING))) {
+                List<Class<?>> res = new ArrayList<>();
+                String[] types = bufReader.readLine().split("\\s+");
+                for (String type : types) {
+                    res.add(DbTable.getTypeByStringName(type));
+                }
+                return res;
+            } catch (FileNotFoundException e) {
+                return null;
+            }
+    }
+
+    private static void dumpSignatureFile(final File tableDir, final List<Class<?>> columnTypes) throws IOException {
+        File signatureFIle = new File(tableDir, TABLE_SIGNATURE_FILENAME);
+        try (BufferedWriter bufWriter
+                     = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(signatureFIle), ENCODING))) {
+            for (Class<?> type : columnTypes) {
+                bufWriter.write(DbTable.getStringNameByType(type));
+                bufWriter.write("\t");
+            }
         }
     }
 
@@ -92,7 +124,6 @@ final class TableLoaderDumper {
         return currentSeek;
     }
 
-    // Table dumping methods.
     public static void dumpTable(final File tableDir,
                                   List<List<Map<String, String>>> tableHashMap) throws IOException {
         for (int i = 0; i < tableHashMap.size(); ++i) {

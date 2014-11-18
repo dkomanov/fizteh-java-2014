@@ -22,17 +22,55 @@ public final class DbTable implements Table {
     private Map<String, String> uncommittedChangesMap;
     private Set<String> uncommittedDeletionsSet;
 
-    public DbTable(final File tableDir, final List<Class<?>> columnTypes, final TableProvider tableProvider) {
+    /**
+     * Creates empty table. tableDir must be empty directory.
+     * @param tableDir
+     * @param columnTypes
+     * @param tableProvider
+     * @return Empty table.
+     */
+    public static DbTable createDbTable(final File tableDir,
+                                        final List<Class<?>> columnTypes,
+                                        final TableProvider tableProvider) {
+        return new DbTable(tableDir, columnTypes, tableProvider);
+    }
+
+    public static DbTable loadExistingDbTable(final File tableDir, final TableProvider tableProvider) {
+        return new DbTable(tableDir, tableProvider);
+    }
+
+    // This ctor CREATES unexisted table.
+    private DbTable(final File tableDir, final List<Class<?>> columnTypes, final TableProvider tableProvider) {
         if (!tableDir.isDirectory()) {
             throw new IllegalArgumentException("is not a directory: " + tableDir.getPath());
         } else {
             this.tableProvider = tableProvider;
             this.columnTypes = new ArrayList<>();
-            this.columnTypes.addAll(columnTypes);
+            columnTypes.addAll(columnTypes);
             this.tableDir = tableDir;
             initHashMaps();
             try {
-                TableLoaderDumper.loadTable(this.tableDir, lastCommitTableMap);
+                TableLoaderDumper.createTable(this.tableDir, columnTypes);
+            } catch (IOException e) {
+                throw new RuntimeException("can't create table from \'" + tableDir.getPath() + "\'"
+                        + ", [" + e.getMessage() + "]");
+            }
+            size = 0;
+            lastCommitTableMapSize = size;
+        }
+    }
+
+    // This ctor LOADS existed table.
+    private DbTable(final File tableDir, final TableProvider tableProvider) {
+        if (!tableDir.isDirectory()) {
+            throw new IllegalArgumentException("is not a directory: " + tableDir.getPath());
+        } else {
+            this.tableProvider = tableProvider;
+            this.columnTypes = new ArrayList<>();
+            this.tableDir = tableDir;
+            initHashMaps();
+            try {
+                TableLoaderDumper.loadTable(this.tableDir, lastCommitTableMap, columnTypes);
             } catch (IOException e) {
                 throw new RuntimeException("can't load table from \'" + tableDir.getPath() + "\'"
                         + ", [" + e.getMessage() + "]");
@@ -182,10 +220,6 @@ public final class DbTable implements Table {
         return cancelledChanges;
     }
 
-    @Override
-    public int getNumberOfUncommittedChanges() {
-        return 0;
-    }
 
     @Override
     public String getName() {
@@ -197,8 +231,50 @@ public final class DbTable implements Table {
         return size;
     }
 
-    public int numOfUncommittedChanges() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         return uncommittedChangesMap.size() + uncommittedDeletionsSet.size();
+    }
+
+    public static Class<?> getTypeByStringName(final String stringName) {
+        switch (stringName.trim()) {
+            case "int":
+                return Integer.class;
+            case "long":
+                return Long.class;
+            case "byte":
+                return Byte.class;
+            case "float":
+                return Float.class;
+            case "double":
+                return Double.class;
+            case "boolean":
+                return Boolean.class;
+            case "String":
+                return String.class;
+            default:
+                return null;
+        }
+    }
+
+    public static String getStringNameByType(final Class<?> type) {
+        if (type.equals(Integer.class)) {
+            return "int";
+        } else if (type.equals(Long.class)) {
+            return "long";
+        } else if (type.equals(Byte.class)) {
+            return "byte";
+        } else if (type.equals(Float.class)) {
+            return "float";
+        } else if (type.equals(Double.class)) {
+            return "double";
+        } else if (type.equals(Boolean.class)) {
+            return "boolean";
+        } else if (type.equals(String.class)) {
+            return "String";
+        } else {
+            return null;
+        }
     }
 
     private String serializeWrapper(final Storeable value) {
