@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 public class MultiFileHashMapMain {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         TableProviderFactory databaseFactory = new DatabaseFactory();
         Database db = (Database) databaseFactory.create("fizteh.db.dir");
         DatabaseInterpreterState databaseInterpreterState

@@ -82,9 +82,9 @@ public class Database implements TableProvider {
         return subfolders;
     }
 
-    private File[] whatToDoWithFiles(File folder){
-        throw new DatabaseFileStructureException("There is files in root folder. File'" +
-                folder.getName() + "");
+    private File[] whatToDoWithFiles(File folder) {
+        throw new DatabaseFileStructureException("There is files in root folder. File'"
+                + folder.getName() + "");
     }
 
     public List<Pair<String, Integer>> listTables() {
