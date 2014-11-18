@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.olga_chupakhina.junit.oTable;
+import ru.fizteh.fivt.students.olga_chupakhina.junit.OTable;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-public class oTableTest {
+public class OTableTest {
     private final String testDir = System.getProperty("java.io.tmpdir") + File.separator + "DbTestDir";
     private final String tableName = "table1";
     private final String testFile = "Тестовый файл.txt";
@@ -41,7 +41,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test  = new oTable(testDir, tableName);
+        Table test  = new OTable(testDir, tableName);
         assertNull(test.get(testKey1));
     }
 
@@ -50,7 +50,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test  = new oTable(testDir, tableName);
+        Table test  = new OTable(testDir, tableName);
         test.get(null);
     }
 
@@ -59,7 +59,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(testDir, tableName);
+        Table test = new OTable(testDir, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.get(testKey1));
     }
@@ -69,7 +69,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
         assertEquals(testValue1, test.get(testKey1));
@@ -80,7 +80,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.remove(testKey1));
         assertNull(test.get(testKey1));
@@ -91,7 +91,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         test.put(null, testValue1);
     }
 
@@ -100,7 +100,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         test.put(testKey1, null);
     }
 
@@ -109,7 +109,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
     }
 
@@ -118,7 +118,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         test.put(testKey1, testValue1);
         assertEquals(testValue1, test.put(testKey1, testValue2));
     }
@@ -128,7 +128,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         test.remove(null);
     }
 
@@ -137,7 +137,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.remove(testKey1));
     }
 
@@ -146,7 +146,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.remove(testKey1));
         assertNull(test.remove(testKey1));
@@ -157,7 +157,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.remove(testKey1));
         test.commit();
@@ -170,7 +170,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
         String subdirectoryName = Math.abs(testKey1.getBytes("UTF-8")[0]
@@ -189,7 +189,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(1, test.commit());
     }
@@ -199,7 +199,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.put(testKey1, testValue2));
         assertEquals(1, test.commit());
@@ -210,7 +210,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(1, test.commit());
         assertEquals(0, test.commit());
@@ -222,7 +222,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertEquals(0, test.size());
         assertNull(test.put(testKey1, testValue1));
         assertEquals(1, test.size());
@@ -236,7 +236,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         test.rollback();
         assertEquals(0, test.size());
@@ -248,7 +248,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertTrue(test.list().isEmpty());
     }
 
@@ -257,7 +257,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
         Set<String> expectedKeySet = new HashSet<String>();
@@ -273,7 +273,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
         test.commit();
@@ -291,7 +291,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
         assertEquals(testValue2, test.remove(testKey2));
@@ -303,7 +303,7 @@ public class oTableTest {
         String tableDirectoryPath = testDir + File.separator + tableName;
         File tableDir = new File(tableDirectoryPath);
         tableDir.mkdir();
-        Table test = new oTable(tableName, testDir);
+        Table test = new OTable(tableName, testDir);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
         test.commit();
