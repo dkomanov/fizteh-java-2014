@@ -40,7 +40,7 @@ public class DbMain {
             System.err.println(e.getMessage());
             System.exit(-1);
         } catch (Exception e) {
-            System.err.println(e.toString());
+            System.err.println(e);
             System.exit(-1);
         }
         System.exit(0);

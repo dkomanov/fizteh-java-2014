@@ -19,7 +19,7 @@ public class Shell {
     public static void main(String[] args) {
         Status newStatus = null;
         int returnValue = 0;
-        Map<String, Command> commands = new HashMap<>();
+        Map<String, Command> commands = new HashMap<String, Command>();
         commands.put(new CdCommand().toString(), new CdCommand());
         commands.put(new MkdirCommand().toString(), new MkdirCommand());
         commands.put(new PwdCommand().toString(), new PwdCommand());
@@ -58,37 +58,37 @@ public class Shell {
                 }
             }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println(e);
         }
     }
 
     public int handle(String[] args) {
-        if (args.length == 0) {
-            return 0;
-        }
-        String[] currentArgs = new String[4];
-        int argIterator = 0;
-        StringBuilder commandBuilder = new StringBuilder();
-        for (int i = 0; i < args.length; ++i) {
-            //commandBuilder.append(args[i]);
-            for (int j = 0; j < args[i].length(); ++j) {
-                if (args[i].charAt(j) != '\"') {
-                    commandBuilder.append(args[i].charAt(j));
+        try {
+            if (args.length == 0) {
+                return 0;
+            }
+            String[] currentArgs = new String[4];
+            int argIterator = 0;
+            StringBuilder commandBuilder = new StringBuilder();
+            for (int i = 0; i < args.length; ++i) {
+                //commandBuilder.append(args[i]);
+                for (int j = 0; j < args[i].length(); ++j) {
+                    if (args[i].charAt(j) != '\"') {
+                        commandBuilder.append(args[i].charAt(j));
+                    }
+                }
+                if (i != args.length - 1) {
+                    commandBuilder.append(" ");
                 }
             }
-            if (i != args.length - 1) {
-                commandBuilder.append(" ");
+            String[] cmdsBySemicolon = commandBuilder.toString().split("\\s*;\\s*");
+            String[][] newArgs = new String[cmdsBySemicolon.length][5];
+            int arrayIterator = 0;
+            for (int i = 0; i < cmdsBySemicolon.length; ++i) {
+                if (!cmdsBySemicolon[i].equals("")) {
+                    newArgs[arrayIterator++] = cmdsBySemicolon[i].split("\\s+");
+                }
             }
-        }
-        String[] cmdsBySemicolon = commandBuilder.toString().split("\\s*;\\s*");
-        String[][] newArgs = new String[cmdsBySemicolon.length][5];
-        int arrayIterator = 0;
-        for (int i = 0; i < cmdsBySemicolon.length; ++i) {
-            if (!cmdsBySemicolon[i].equals("")) {
-                newArgs[arrayIterator++] = cmdsBySemicolon[i].split("\\s+");
-            }
-        }
-        try {
             Command currentCommand;
             for (String[] it : newArgs) {
                 if (it[0] == null || it[0].equals("exit")) {
@@ -105,7 +105,7 @@ public class Shell {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println(e);
         }
         return 0;
     }
