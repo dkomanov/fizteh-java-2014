@@ -46,7 +46,7 @@ public class JUnit {
         }
     }
 
-    public static void interactive() throws Exception {
+    public static void interactive() throws Exception{
         Scanner sc = new Scanner(System.in);
         try {
             while (true) {
@@ -236,7 +236,7 @@ public class JUnit {
         checkArgs("show tables", 2, args.length);
         System.out.println("table_name row_count");
         for (Map.Entry<String, Table> table : JUnit.tableList.entrySet()) {
-            Integer num = ((OTable)(table.getValue())).numberOfElements;
+            Integer num = ((OTable) (table.getValue())).numberOfElements;
             System.out.println(table.getKey() + " " + num.toString());
         }
     }
