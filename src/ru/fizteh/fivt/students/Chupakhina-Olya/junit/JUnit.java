@@ -13,7 +13,7 @@ public class JUnit {
     public static boolean mode;
     public static String path;
     public static Map<String, Table> tableList;
-    public static oTable currentTable;
+    public static OTable currentTable;
     public static TableProvider pv;
 
     public static void main(final String[] args) {
