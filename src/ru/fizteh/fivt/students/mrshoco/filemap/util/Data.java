@@ -18,16 +18,16 @@ public class Data {
 
         while (dis.available() > 0) {
             int keyLen = dis.readInt();
-            String key = "";
+            byte[] key = new byte[keyLen];
             for (int i = 0; i < keyLen; i++) {
-                key += dis.readChar();
+                key[i] = dis.readByte();
             }
             int valLen = dis.readInt();
-            String val = "";
+            byte[] val = new byte[valLen];
             for (int i = 0; i < valLen; i++) {
-                val += dis.readChar();
+                val[i] = dis.readByte();
             }
-            hm.put(key, val);
+            hm.put(new String(key, "UTF-8"), new String(val, "UTF-8"));
         }
         dis.close();
         return hm;
@@ -37,10 +37,16 @@ public class Data {
                                         IOException, FileNotFoundException {
         DataOutputStream dos = new DataOutputStream(new FileOutputStream(fl));
         for (Map.Entry<String, String> element : hm.entrySet()) {
-            dos.writeInt(element.getKey().length());
-            dos.writeChars(element.getKey());
-            dos.writeInt(element.getValue().length());
-            dos.writeChars(element.getValue());
+            byte[] b = element.getKey().getBytes("UTF-8");
+            dos.writeInt(b.length);
+            for (int i = 0; i < b.length; i++) {
+                dos.writeByte(b[i]);
+            }
+            b = element.getValue().getBytes("UTF-8");
+            dos.writeInt(b.length);
+            for (int i = 0; i < b.length; i++) {
+                dos.writeByte(b[i]);
+            }
         }
         dos.close();
     }
