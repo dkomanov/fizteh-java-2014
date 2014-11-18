@@ -57,7 +57,10 @@ public class Shell {
                         System.err.println(e.getMessage());
                     }
                 }*/
-                new Shell(commandMap, status).handle(cmds);
+                int result = new Shell(commandMap, status).handle(cmds);
+                if (result == 2) {
+                    break;
+                }
             }
         } catch (Exception e) {
             System.err.println(e);
@@ -93,8 +96,11 @@ public class Shell {
             }
             Command currentCommand;
             for (String[] it : newArgs) {
-                if (it[0] == null || it[0].equals("exit")) {
+                if (it[0] == null) {
                     continue;
+                }
+                if (it[0].equals("exit")) {
+                    return 2;
                 }
                 if ((currentCommand = commandMap.get(it[0])) != null) {
                     if (currentCommand.execute(it, status) == 1) {
