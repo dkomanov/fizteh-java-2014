@@ -324,12 +324,10 @@ public class MultiFileTable implements Table {
     }
 
     private Path getDirectoryPath(int fileNumber) {
-        String directoryName = new StringBuilder().append(fileNumber / FOLDERS).append(".dir").toString();
-        return directory.resolve(directoryName);
+        return directory.resolve(String.valueOf(fileNumber / FOLDERS) + ".dir");
     }
 
     private Path getFilePath(int fileNumber) {
-        String fileName = new StringBuilder().append(fileNumber % FOLDERS).append(".dat").toString();
-        return getDirectoryPath(fileNumber).resolve(fileName);
+        return getDirectoryPath(fileNumber).resolve(String.valueOf(fileNumber % FOLDERS) + ".dat");
     }
 }

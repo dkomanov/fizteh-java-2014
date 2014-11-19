@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project;
 
-import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.database.DatabaseFactory;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Command;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Interpreter;

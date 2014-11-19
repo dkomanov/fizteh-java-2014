@@ -112,9 +112,6 @@ public class Database implements TableProvider {
     }
 
     private boolean isNameCorrect(String name) {
-        if (name == null) {
-            return false;
-        }
-        return !(name.matches(".*[</\"*%|\\\\:?>].*|.*\\."));
+        return (name != null) && !(name.matches(".*[</\"*%|\\\\:?>].*|.*\\."));
     }
 }
