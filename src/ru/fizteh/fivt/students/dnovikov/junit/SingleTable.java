@@ -92,7 +92,7 @@ public class SingleTable {
 
     private void load() {
         if (getFolder().toFile().isFile()) {
-            throw new LoadOrSaveException("cannot load table: '"+ getFolder().toAbsolutePath() + "' is not directory");
+            throw new LoadOrSaveException("cannot load table: '" + getFolder().toAbsolutePath() + "' is not directory");
         }
         if (singleTablePath.toFile().isDirectory()) {
             throw new LoadOrSaveException("cannot load table: '" + singleTablePath.toFile().toString()
