@@ -13,8 +13,8 @@ public class Table  {
     private static Map<DataFileHasher, DataFile> datFiles;
     final String name;
 
-    static final int NUMBER_DIRECTORIES = 16;
-    static final int NUMBER_FILES_IN_DIRECTORY = 16;
+    static final int NUMBER_DIRECTORIES = DataFileHasher.HASH_NUMBER;
+    static final int NUMBER_FILES_IN_DIRECTORY = DataFileHasher.HASH_NUMBER;
 
 
     public Table(String tableName) throws Exception {
