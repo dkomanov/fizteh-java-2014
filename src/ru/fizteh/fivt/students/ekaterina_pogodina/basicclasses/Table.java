@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface Table {
