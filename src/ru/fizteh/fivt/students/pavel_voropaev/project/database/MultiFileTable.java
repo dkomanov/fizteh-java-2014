@@ -255,14 +255,19 @@ public class MultiFileTable implements Table {
             byte[] word = new byte[length];
             stream.readFully(word);
             return new String(word, ENCODING);
-        } catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError | NegativeArraySizeException e) {
             throw new ContainsWrongFilesException(directory.toString());
         }
     }
 
     private void save() throws IOException {
-        Utils.rm(directory);
-        Files.createDirectory(directory);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+            for (Path entry : stream) {
+                Utils.rm(entry);
+            }
+        } catch (Exception e) {
+            throw new IOException("Cannot save files", e);
+        }
         for (int i = 0; i < FOLDERS * FILES; ++i) {
             if (content[i].map.size() > 0) {
                 Path dir = getDirectoryPath(i);
