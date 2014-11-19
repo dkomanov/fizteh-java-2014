@@ -155,7 +155,9 @@ public class CpCommand implements Commands {
             copyRecursive(args[2], args[3]);
         } else if (args.length == 3) {
             copyNonrecursive(args[1], args[2]);
-        } else { throw new MyException("cp: invalid arguments"); }
+        } else {
+            throw new MyException("cp: invalid arguments");
+        }
     }
 
     public String getName() {
