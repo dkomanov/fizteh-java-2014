@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.multifilehashmap;
+package ru.fizteh.fivt.students.SibgatullinDamir.multifilehashmap;
 
 /**
  * Created by Lenovo on 02.10.2014.
