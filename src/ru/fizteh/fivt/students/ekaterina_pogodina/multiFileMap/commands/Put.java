@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.commands;
 
-import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.FactoryException;
+import ru.fizteh.fivt.students.ekaterina_pogodina.basicclasses.TableNullNameException;
 import ru.fizteh.fivt.students.ekaterina_pogodina.multiFileMap.TableManager;
 
 import java.nio.file.Path;
@@ -13,7 +13,7 @@ public class Put extends Command {
     public void execute(String[] args, TableManager table) throws Exception {
         String tableName = table.currentTable;
         if (table.currentTable == null) {
-            FactoryException.throwNullArgumentException("no table");
+            throw new TableNullNameException();
         }
         Path path = table.path;
         String key = args[1];
