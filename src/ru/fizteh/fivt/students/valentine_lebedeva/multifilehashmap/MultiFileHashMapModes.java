@@ -36,8 +36,7 @@ public final class MultiFileHashMapModes {
             parserCmd.parse(cmdargs[i], true);
         }
         MultiFileHashMapExitCommand exit = new MultiFileHashMapExitCommand();
-        String[] tmp = { "exit" };
+        String[] tmp = {"exit"};
         exit.execute(tmp, parserCmd);
     }
-
 }
