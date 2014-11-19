@@ -1,27 +1,26 @@
-package ru.fizteh.fivt.students.Volodin_Denis.JUnit;
+package ru.fizteh.fivt.students.Volodin_Denis.JUnit.main;
 
 import org.junit.Test;
-import sun.reflect.annotation.ExceptionProxy;
-
-import static org.junit.Assert.*;
 
 public class ErrorFunctionsTest {
 
     final static String name = "name";
     final static String string = "string";
 
+    @SuppressWarnings("static-access")
     @Test(expected = Exception.class)
     public void testErrorFunctionsClass() throws Exception {
         ErrorFunctions error = new ErrorFunctions();
-        error.errorWrite(name); }
+        error.nameIsNull(name, string);
+    }
 
     @Test(expected = Exception.class)
     public void testErrorRead() throws Exception {
-        ErrorFunctions.errorRead(name); }
+        ErrorFunctions.errorRead(); }
 
     @Test(expected = Exception.class)
     public void testErrorWrite() throws Exception {
-        ErrorFunctions.errorWrite(name); }
+        ErrorFunctions.errorWrite(); }
 
     @Test(expected = Exception.class)
     public void testInvalidName() throws Exception {
@@ -65,5 +64,5 @@ public class ErrorFunctionsTest {
 
     @Test(expected = Exception.class)
     public void testWrongQuantity() throws Exception {
-        ErrorFunctions.wrongQuantity(name); }
+        ErrorFunctions.wrongQuantityOfArguments(name); }
 }

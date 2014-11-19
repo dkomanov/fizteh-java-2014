@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Volodin_Denis.JUnit;
+package ru.fizteh.fivt.students.Volodin_Denis.JUnit.database;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
 
 public class TableByVolodden implements Table {
 
@@ -47,10 +48,8 @@ public class TableByVolodden implements Table {
         private String databasePath;
         private Map<String, String> database;
         private Map<String, String> diff;
-        private boolean commit;
 
         public FileMap(final String dbPath) throws Exception {
-            commit = false;
             databasePath = dbPath;
             database = new HashMap<String, String>();
             diff = new HashMap<String, String>();
@@ -178,12 +177,9 @@ public class TableByVolodden implements Table {
         
         @Override
         public void close() throws Exception {
-            if (commit) {
-                writeOnDisk();
-                commit = false;
-            }
         }
 
+        //Not used.
         @Override
         public void clear() {
             database.clear();
@@ -349,37 +345,17 @@ public class TableByVolodden implements Table {
 
     @Override
     public String get(final String key) {
-        String value = fileMap.get(key);
-        if (value == null) {
-            System.out.println("not found");
-        } else {
-            System.out.println("found");
-            System.out.println(value);
-        }
-        return value;
+        return fileMap.get(key);
     }
 
     @Override
     public String put(String key, String value) {
-        String oldValue = fileMap.put(key, value);
-        if (oldValue == null) {
-            System.out.println("new");
-        } else {
-            System.out.println("overwrite");
-            System.out.println(oldValue);
-        }
-        return oldValue;
+        return fileMap.put(key, value);
     }
 
     @Override
     public String remove(String key) {
-        String value = fileMap.remove(key);
-        if (value == null) {
-            System.out.println("not found");
-        } else {
-            System.out.println("removed");
-        }
-        return value;
+        return fileMap.remove(key);
     }
 
     @Override
@@ -395,11 +371,6 @@ public class TableByVolodden implements Table {
     @Override
     public int commit() {
         int changes = 0;
-        if (fileMap == null) {
-            System.out.println("no table");
-            return 0;
-        }
-        System.out.println(changes);
         try {
             fileMap.upgrade();
         } catch (Exception exception) {
@@ -410,12 +381,7 @@ public class TableByVolodden implements Table {
 
     @Override
     public int rollback() {
-        if (fileMap == null) {
-            System.out.println("no table");
-            return 0;
-        }
         int changes = fileMap.numUncommitedChanges();
-        System.out.println(changes);
         fileMap.downgrade();
         return changes;
     }

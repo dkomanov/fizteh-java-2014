@@ -1,7 +1,8 @@
-package ru.fizteh.fivt.students.Volodin_Denis.JUnit;
+package ru.fizteh.fivt.students.Volodin_Denis.JUnit.database;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class WorkWithFile {
@@ -22,16 +23,28 @@ public class WorkWithFile {
         return Paths.get(path, secondPath).normalize().toFile().exists();
     }
     
-    public static String get(final String path, final String secondPath) {
-        return Paths.get(path, secondPath).normalize().toString();
+    public static Path get(final String path) {
+        return Paths.get(path).toAbsolutePath().normalize();
+    }
+    
+    public static Path get(final String path, final String secondPath) {
+        return Paths.get(path, secondPath).toAbsolutePath().normalize();
     }
     
     public static String getFileName(final String path) {
-        return Paths.get(path).normalize().getFileName().toString();
+        return Paths.get(path).toAbsolutePath().normalize().getFileName().toString();
+    }
+    
+    public static String getParentName(final String path) {
+        return Paths.get(path).normalize().getParent().getFileName().toString();
     }
     
     public static String getFileName(final String path, final String secondPath) {
         return Paths.get(path, secondPath).normalize().getFileName().toString();
+    }
+    
+    public static boolean isDirectory(final String path) {
+        return Paths.get(path).toAbsolutePath().normalize().toFile().isDirectory();
     }
     
     public static boolean isDirectory(final String path, final String secondPath) {

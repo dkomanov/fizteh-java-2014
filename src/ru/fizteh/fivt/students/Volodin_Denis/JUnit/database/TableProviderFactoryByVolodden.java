@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Volodin_Denis.JUnit;
+package ru.fizteh.fivt.students.Volodin_Denis.JUnit.database;
 
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 

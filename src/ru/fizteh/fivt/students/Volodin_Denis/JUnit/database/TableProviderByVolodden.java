@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Volodin_Denis.JUnit;
+package ru.fizteh.fivt.students.Volodin_Denis.JUnit.database;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,6 +8,7 @@ import java.util.Set;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
 
 public class TableProviderByVolodden implements TableProvider {
 
@@ -32,7 +33,7 @@ public class TableProviderByVolodden implements TableProvider {
         }
         Table dbTable;
         try {
-            dbTable = new TableByVolodden(WorkWithFile.get(dbPath, name));
+            dbTable = new TableByVolodden(WorkWithFile.get(dbPath, name).toString());
         } catch (Exception exception) {
             exception.printStackTrace();
             return null;
@@ -45,57 +46,44 @@ public class TableProviderByVolodden implements TableProvider {
         if (name == null) {
             ErrorFunctions.nameIsNull("create", name);
         }
-        Table dbTable;
+        Table dbTable = null;
         if (WorkWithFile.exists(dbPath, name)) {
-            if (WorkWithFile.isDirectory(dbPath, name)) {
-                System.out.println(name + " exists");
-                try {
-                    dbTable =  new TableByVolodden(name);
-                    return dbTable;
-                } catch (Exception exception) {
-                    return null;
-                }
-            } else {
+            if (!WorkWithFile.isDirectory(dbPath, name)) {
                 ErrorFunctions.tableNameIsFile("create", name);
             }
         } else {
             if (WorkWithFile.mkdir(dbPath, name)) {
-                System.out.println("created");
+                try {
+                    dbTable = new TableByVolodden(name);
+                    tables.add(name);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
             } else {
                 ErrorFunctions.notMkdir("create", name);
             }
         }
-        try {
-            dbTable = new TableByVolodden(name);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return null;
-        }
-        tables.add(name);
         return dbTable;
     }
 
     @Override
     public void removeTable(String name) throws IllegalArgumentException, IllegalStateException {
-        Path pathToFile = Paths.get(dbPath, name).normalize();
-        if (!pathToFile.toFile().exists()) {
+        if (!WorkWithFile.exists(dbPath)) {
             throw new IllegalStateException("[" + name + "] not exists");
         }
-        if (!pathToFile.getParent().getFileName().toString().equals(
-                Paths.get(dbPath).getFileName().toString())) {
+        if (!WorkWithFile.getParentName(dbPath).equals(WorkWithFile.getFileName(dbPath))) {
             ErrorFunctions.notExists("drop", name);
         }
-        if (!pathToFile.toFile().isDirectory()) {
+        if (!WorkWithFile.isDirectory(dbPath)) {
             ErrorFunctions.notDirectory("drop", name);
         }
         
         try {
-            recursiveDrop(pathToFile);
+            recursiveDrop(WorkWithFile.get(dbPath));
+            tables.remove(name);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
         }
-        tables.remove(name);
-        System.out.println("dropped");
     }
 
     @Override
