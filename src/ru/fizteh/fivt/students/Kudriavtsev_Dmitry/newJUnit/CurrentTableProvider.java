@@ -38,7 +38,7 @@ public class CurrentTableProvider implements  TableProvider{
         }
         try {
             Files.createDirectory(tableDirectory.toPath());
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.err.println("Can't create directory: " + directory);
             return null;
         }

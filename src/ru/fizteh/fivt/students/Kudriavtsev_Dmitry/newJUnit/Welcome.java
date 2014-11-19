@@ -50,8 +50,8 @@ public class Welcome {
                         continue;
                     }
                     if (arguments[j].equals("exit")) {
-                        if (!dbConnector.activeTable.newKey.isEmpty() ||
-                                !dbConnector.activeTable.removed.isEmpty() ) {
+                        if (!dbConnector.activeTable.newKey.isEmpty()
+                            || !dbConnector.activeTable.removed.isEmpty()) {
                             if (exitWarning()) {
                                 break;
                             }
@@ -124,8 +124,8 @@ public class Welcome {
                     if (dbConnector.activeTable == null) {
                         break;
                     }
-                    if (!dbConnector.activeTable.newKey.isEmpty() ||
-                            !dbConnector.activeTable.removed.isEmpty() ) {
+                    if (!dbConnector.activeTable.newKey.isEmpty()
+                        || !dbConnector.activeTable.removed.isEmpty()) {
                         if (exitWarning()) {
                             break;
                         }
