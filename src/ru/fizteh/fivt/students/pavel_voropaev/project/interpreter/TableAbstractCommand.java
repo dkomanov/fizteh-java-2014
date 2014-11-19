@@ -10,7 +10,7 @@ public abstract class TableAbstractCommand extends AbstractCommand<TableProvider
         super(name, argNum, context);
     }
 
-    protected Table getActiveTable() throws InputMistakeException {
+    protected Table getActiveTable() {
         Table retVal = context.getActiveTable();
         if (retVal == null) {
             throw new InputMistakeException("no table");

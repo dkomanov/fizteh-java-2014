@@ -38,7 +38,7 @@ public class Main {
         Interpreter interpreter = new Interpreter(commands);
         try {
             interpreter.run(args);
-        } catch (InputMistakeException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             System.exit(-1);
         }

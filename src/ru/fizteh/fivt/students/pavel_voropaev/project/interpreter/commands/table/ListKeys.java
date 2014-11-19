@@ -14,7 +14,7 @@ public class ListKeys extends TableAbstractCommand {
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) throws InputMistakeException {
+    public void exec(String[] param, PrintStream out) {
         List<String> retVal = super.getActiveTable().list();
         String joined = String.join(", ", retVal);
         out.println(joined);

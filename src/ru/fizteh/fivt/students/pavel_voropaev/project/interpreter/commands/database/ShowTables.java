@@ -14,7 +14,7 @@ public class ShowTables extends AbstractCommand<TableProvider> {
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) throws InputMistakeException {
+    public void exec(String[] param, PrintStream out) {
         if (!param[0].equals("tables")) {
             throw new InputMistakeException("No such command: show " + param[0]);
         }

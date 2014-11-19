@@ -50,7 +50,7 @@ public class Interpreter {
         this(commands, System.in, System.out, System.err);
     }
 
-    public void run(String[] args) throws InputMistakeException {
+    public void run(String[] args) {
         if (args.length == 0) {
             try {
                 runInteractiveMode();
@@ -62,7 +62,7 @@ public class Interpreter {
         }
     }
 
-    private void runBatchMode(String[] args) throws InputMistakeException {
+    private void runBatchMode(String[] args) {
         try {
             executeLine(String.join(" ", args));
             err.println("Exit without saving!");
@@ -88,8 +88,7 @@ public class Interpreter {
         scan.close();
     }
 
-    private void executeLine(String line) throws StopInterpretationException,
-            InputMistakeException {
+    private void executeLine(String line) throws StopInterpretationException {
         String[] statements = line.split(STATEMENT_DELIMITER);
         for (String statement : statements) {
             String[] chunks = Utils.findAll(PARAM_REGEXP, statement);

@@ -103,7 +103,7 @@ public class DatabaseTest {
     }
 
     @Test
-    public void removeTableForExistingTable() {
+    public void removeTableForExistingTable() throws IOException {
         TableProvider test = new Database(databasePath.toString());
         test.createTable(tableName);
         Table testTable = test.getTable(tableName);

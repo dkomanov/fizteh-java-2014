@@ -47,7 +47,7 @@ public class InterpreterTest {
         }
 
         @Override
-        public void exec(String[] param, PrintStream out) throws InputMistakeException {
+        public void exec(String[] param, PrintStream out) {
             throw new InputMistakeException("exception");
         }
 
@@ -64,7 +64,7 @@ public class InterpreterTest {
     }
 
     @Test
-    public void interpreterBatchModeCorrectCommandNoSaving() throws InputMistakeException {
+    public void interpreterBatchModeCorrectCommandNoSaving() {
         Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
                 new ByteArrayInputStream(new byte[]{}), printStream, printStream);
         interpreter.run(new String[]{commandName + STATEMENT_DELIMITER + commandName});
@@ -72,7 +72,7 @@ public class InterpreterTest {
     }
 
     @Test
-    public void interpreterBatchModeCorrectCommandAndSaving() throws InputMistakeException {
+    public void interpreterBatchModeCorrectCommandAndSaving() {
         Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
                 new ByteArrayInputStream(new byte[]{}), printStream, printStream);
         interpreter.run(new String[]{commandName + STATEMENT_DELIMITER + "exit"});
@@ -80,14 +80,14 @@ public class InterpreterTest {
     }
 
     @Test(expected = InputMistakeException.class)
-    public void interpreterBatchModeWrongCommand() throws InputMistakeException {
+    public void interpreterBatchModeWrongCommand() {
         Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
                 new ByteArrayInputStream(new byte[]{}), printStream, printStream);
         interpreter.run(new String[]{"wrong command"});
     }
 
     @Test
-    public void interpreterInteractiveModeWithEOT() throws InputMistakeException {
+    public void interpreterInteractiveModeWithEOT() {
         Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
                 new ByteArrayInputStream(new byte[]{}), printStream, printStream);
 
@@ -96,7 +96,7 @@ public class InterpreterTest {
     }
 
     @Test
-    public void interpreterInteractiveModeWithExit() throws InputMistakeException {
+    public void interpreterInteractiveModeWithExit() {
         Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
                 new ByteArrayInputStream((commandName + newLine + "exit" + newLine).getBytes()),
                 printStream, printStream);
@@ -106,7 +106,7 @@ public class InterpreterTest {
     }
 
     @Test
-    public void interpreterInteractiveModeNoSuchCommand() throws InputMistakeException {
+    public void interpreterInteractiveModeNoSuchCommand() {
         Interpreter interpreter = new Interpreter(new Command[]{},
                 new ByteArrayInputStream((commandName + newLine + "exit" + newLine).getBytes()),
                 printStream, printStream);
@@ -116,7 +116,7 @@ public class InterpreterTest {
     }
 
     @Test
-    public void interpreterInteractiveModeTooManyArguments() throws InputMistakeException {
+    public void interpreterInteractiveModeTooManyArguments() {
         Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
                 new ByteArrayInputStream((commandName + " abcd" + newLine + "exit" + newLine).getBytes()),
                 printStream, printStream);
@@ -126,7 +126,7 @@ public class InterpreterTest {
     }
 
     @Test
-    public void interpreterInteractiveModeNotEnoughArguments() throws InputMistakeException {
+    public void interpreterInteractiveModeNotEnoughArguments()  {
         Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 1)},
                 new ByteArrayInputStream((commandName + newLine + "exit" + newLine).getBytes()),
                 printStream, printStream);
@@ -136,7 +136,7 @@ public class InterpreterTest {
     }
 
     @Test
-    public void interpreterInteractiveModeLaunchCommandWithMistake() throws InputMistakeException {
+    public void interpreterInteractiveModeLaunchCommandWithMistake()  {
         Interpreter interpreter = new Interpreter(new Command[]{new TestTableCommandWithException(new Object())},
                 new ByteArrayInputStream((command2Name + newLine + "exit" + newLine).getBytes()),
                 printStream, printStream);

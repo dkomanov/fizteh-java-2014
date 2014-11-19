@@ -13,7 +13,7 @@ public class Rollback extends TableAbstractCommand {
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) throws InputMistakeException {
+    public void exec(String[] param, PrintStream out) {
         out.println(super.getActiveTable().rollback());
     }
 }

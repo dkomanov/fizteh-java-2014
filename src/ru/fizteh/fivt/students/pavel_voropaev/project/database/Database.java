@@ -21,7 +21,7 @@ public class Database implements TableProvider {
     private String activeTable;
     private Path databasePath;
 
-    public Database(String dbPath) throws IllegalArgumentException {
+    public Database(String dbPath) {
         try {
             databasePath = Paths.get(dbPath);
             if (!Files.exists(databasePath)) {
@@ -31,8 +31,7 @@ public class Database implements TableProvider {
                 throw new IllegalArgumentException();
             }
         } catch (IllegalArgumentException | IOException e) {
-            throw new IllegalArgumentException(
-                    "Illegal database directory name: " + databasePath.toString(), e);
+            throw new IllegalArgumentException("Illegal database directory name: " + databasePath.toString(), e);
         }
         tables = new HashMap<>();
 
@@ -42,8 +41,8 @@ public class Database implements TableProvider {
                     throw new IllegalArgumentException("Database directory contains illegal files");
                 }
 
-                Table curTable = new MultiFileTable(databasePath, entry.getFileName().toString());
-                tables.put(entry.getFileName().toString(), curTable);
+                Table currentTable = new MultiFileTable(databasePath, entry.getFileName().toString());
+                tables.put(entry.getFileName().toString(), currentTable);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -93,8 +92,7 @@ public class Database implements TableProvider {
         try {
             Utils.rm(databasePath.resolve(name));
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Cannot remove directory (" + name + ") from disk: " + e.getMessage(), e);
+            throw new RuntimeException("Cannot remove directory (" + name + ") from disk: " + e.getMessage(), e);
         }
     }
 
@@ -117,12 +115,6 @@ public class Database implements TableProvider {
         if (name == null) {
             return false;
         }
-        String[] reservedCharacters = {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", "%"};
-        for (String character : reservedCharacters) {
-            if (name.contains(character)) {
-                return false;
-            }
-        }
-        return !(name.matches(".*\\.|\\..*|.*(/|\\\\).*"));
+        return !(name.matches(".*[</\"*%|\\\\:?>].*|.*\\."));
     }
 }

@@ -13,7 +13,7 @@ public class Size extends TableAbstractCommand {
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) throws InputMistakeException {
+    public void exec(String[] param, PrintStream out) {
         out.println(super.getActiveTable().size());
     }
 }

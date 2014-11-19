@@ -13,7 +13,7 @@ public class Put extends TableAbstractCommand {
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) throws InputMistakeException {
+    public void exec(String[] param, PrintStream out) {
         String retVal = super.getActiveTable().put(param[0], param[1]);
         if (retVal == null) {
             out.println("new");

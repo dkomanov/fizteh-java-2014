@@ -9,5 +9,5 @@ public interface Command {
 
     int getArgsNum();
 
-    void exec(String[] args, PrintStream out) throws InputMistakeException;
+    void exec(String[] args, PrintStream out);
 }

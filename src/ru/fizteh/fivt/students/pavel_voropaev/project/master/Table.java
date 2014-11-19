@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.master;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -52,9 +53,11 @@ public interface Table {
     /**
      * Выполняет фиксацию изменений.
      *
-     * @return Количество сохранённых ключей.
+     * @return Число записанных изменений.
+     *
+     * @throws java.io.IOException если произошла ошибка ввода/вывода. Целостность таблицы не гарантируется.
      */
-    int commit();
+    int commit() throws IOException;
 
     /**
      * Выполняет откат изменений с момента последней фиксации.
@@ -71,7 +74,9 @@ public interface Table {
     List<String> list();
 
     /**
-     * @return List of changed keys.
+     * Возвращает количество изменений, ожидающих фиксации.
+     *
+     * @return Количество изменений, ожидающих фиксации.
      */
-    List<String> getDiff();
+    int getNumberOfUncommittedChanges();
 }
