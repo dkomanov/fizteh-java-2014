@@ -102,7 +102,7 @@ public class DataBaseEditor {
     }
 
 
-    public final  String put(final List<String> args) {
+    public final  String put(final List<String> args) throws Exception {
        if (args.size() != 3) {
            return null;
        }
