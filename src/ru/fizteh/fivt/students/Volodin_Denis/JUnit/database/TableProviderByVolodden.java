@@ -85,20 +85,6 @@ public class TableProviderByVolodden implements TableProvider {
             System.err.println(exception.getMessage());
         }
     }
-
-    @Override
-    public String[] showTables() {
-        try {
-            String[] keys = new String[tables.size()];
-            int i = -1;
-            for (String key : tables) {
-                keys[++i] = key;
-            }
-            return keys;
-        } catch (Exception exception) {
-            return null;
-        }
-    }
     
     private static void recursiveDrop(final Path pathToFile) throws Exception {
         if (!pathToFile.toFile().exists()) {

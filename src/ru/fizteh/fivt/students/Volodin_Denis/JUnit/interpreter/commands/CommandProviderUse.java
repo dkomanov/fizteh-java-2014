@@ -27,7 +27,7 @@ public class CommandProviderUse extends Command {
                             System.out.println("[" + args[0] + "] already used");
                             return;
                         }
-                        int changes = table.numUncommitedChanges();
+                        int changes = table.getNumberOfUncommittedChanges();
                         if (changes != 0) {
                             System.out.println(changes + " unsaved changes");
                             return;

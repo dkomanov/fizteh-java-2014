@@ -364,7 +364,7 @@ public class TableByVolodden implements Table {
     }
 
     @Override
-    public int numUncommitedChanges() {
+    public int getNumberOfUncommittedChanges() {
         return fileMap.numUncommitedChanges();
     }
     
