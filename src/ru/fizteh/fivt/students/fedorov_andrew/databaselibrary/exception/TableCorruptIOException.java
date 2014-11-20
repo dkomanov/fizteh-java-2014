@@ -6,7 +6,6 @@ import java.io.IOException;
  * Exception that indicates that some table is corrupt and cannot be used.
  */
 public class TableCorruptIOException extends DatabaseIOException {
-    private static final long serialVersionUID = -2485134551091027284L;
 
     public TableCorruptIOException(String tableName, IOException cause) {
         this(tableName, null, cause);

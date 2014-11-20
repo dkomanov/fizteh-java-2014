@@ -142,9 +142,9 @@ public class Database {
             if (activeTable == null) {
                 throw new IllegalArgumentException(tableName + " not exists");
             }
-        } catch (Throwable thr) {
+        } catch (Exception exc) {
             activeTable = oldActiveTable;
-            throw thr;
+            throw exc;
         }
     }
 }

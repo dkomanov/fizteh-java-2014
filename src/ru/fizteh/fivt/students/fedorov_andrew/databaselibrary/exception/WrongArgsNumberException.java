@@ -5,8 +5,6 @@ import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.ShellState;
 
 public class WrongArgsNumberException extends InvocationException {
 
-    private static final long serialVersionUID = 3047879410299126653L;
-
     /**
      * Constructs a new instance of this.
      * @param command

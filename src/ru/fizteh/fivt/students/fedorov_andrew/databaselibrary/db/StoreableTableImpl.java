@@ -4,6 +4,7 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptIOException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.ImproperStoreableException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TableCorruptIOException;
@@ -67,8 +68,8 @@ public class StoreableTableImpl implements Table {
         } catch (IOException exc) {
             try {
                 Utility.rm(store.getTableRoot());
-            } catch (Throwable thr) {
-                Log.log(StoreableTableImpl.class, exc, "Failed to cleanup after table creation failure");
+            } catch (Exception rmExc) {
+                Log.log(StoreableTableImpl.class, rmExc, "Failed to cleanup after table creation failure");
             }
 
             throw new DatabaseIOException(
@@ -110,9 +111,15 @@ public class StoreableTableImpl implements Table {
 
         // Reading column types from signature file.
         try (Scanner scanner = new Scanner(store.getTableRoot().resolve(COLUMNS_FORMAT_FILENAME))) {
+            if (!scanner.hasNextLine()) {
+                throw new DBFileCorruptIOException("Empty column types description file");
+            }
+
             String typesString = scanner.nextLine();
 
             columnTypes = parseColumnTypes(typesString);
+        } catch (DatabaseIOException exc) {
+            throw exc;
         } catch (IOException exc) {
             throw new TableCorruptIOException(store.getName(), "Failed to open types description file", exc);
         } catch (IllegalArgumentException exc) {
@@ -136,7 +143,7 @@ public class StoreableTableImpl implements Table {
 
         for (String key : keys) {
             try {
-                table.get0(key);
+                table.getWithoutChecks(key);
             } catch (ImproperStoreableException exc) {
                 throw new TableCorruptIOException(
                         store.getName(), "Value of improper format found: " + store.get(key));
@@ -227,7 +234,7 @@ public class StoreableTableImpl implements Table {
         Utility.checkNotNull(value, "Value");
         checkStoreableAppropriate(this, value);
 
-        Storeable previousValue = get0(key);
+        Storeable previousValue = getWithoutChecks(key);
         String serialized = provider.serialize(this, value);
         store.put(key, serialized);
         return previousValue;
@@ -238,7 +245,7 @@ public class StoreableTableImpl implements Table {
         checkValidity();
         Utility.checkNotNull(key, "Key");
 
-        Storeable previousValue = get0(key);
+        Storeable previousValue = getWithoutChecks(key);
         store.remove(key);
         return previousValue;
     }
@@ -304,13 +311,13 @@ public class StoreableTableImpl implements Table {
     public Storeable get(String key) {
         checkValidity();
         Utility.checkNotNull(key, "Key");
-        return get0(key);
+        return getWithoutChecks(key);
     }
 
     /**
      * Get Storeable value by key. All checks are supposed to have been performed.
      */
-    private Storeable get0(String key) throws ImproperStoreableException {
+    private Storeable getWithoutChecks(String key) throws ImproperStoreableException {
         String valueStr = store.get(key);
         if (valueStr == null) {
             return null;

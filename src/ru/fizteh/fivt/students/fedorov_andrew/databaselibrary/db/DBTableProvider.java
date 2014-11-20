@@ -40,8 +40,15 @@ public class DBTableProvider implements TableProvider {
     private static final Map<Class<?>, Function<String, Object>> PARSERS =
             new ConvenientMap<>(new HashMap<Class<?>, Function<String, Object>>())
                     .putNext(Integer.class, Integer::parseInt).putNext(Long.class, Long::parseLong)
-                    .putNext(Byte.class, Byte::parseByte).putNext(Boolean.class, Boolean::parseBoolean)
-                    .putNext(Double.class, Double::parseDouble).putNext(Float.class, Float::parseFloat)
+                    .putNext(Byte.class, Byte::parseByte).putNext(
+                    Boolean.class, str -> {
+                        Utility.checkNotNull(str, "String to parse");
+                        if (str.matches("(?i)true|false")) {
+                            return Boolean.parseBoolean(str);
+                        } else {
+                            throw new ColumnFormatException("Expected 'true' or 'false' as boolean");
+                        }
+                    }).putNext(Double.class, Double::parseDouble).putNext(Float.class, Float::parseFloat)
                     .putNext(
                             String.class,
                             s -> Utility.unquoteString(s, QUOTE_CHARACTER + "", ESCAPE_CHARACTER + ""));
@@ -60,7 +67,8 @@ public class DBTableProvider implements TableProvider {
 
     /**
      * Constructs a database table provider.
-     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException
+     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception
+     *         .DatabaseIOException
      *         If failed to scan database directory.
      */
     DBTableProvider(Path databaseRoot) throws DatabaseIOException {
@@ -77,7 +85,8 @@ public class DBTableProvider implements TableProvider {
             StoreableTableImpl table = tables.get(name);
             if (table == null) {
                 DatabaseIOException corruptionReason = corruptTables.get(name);
-                throw new IllegalArgumentException(corruptionReason.getMessage(), corruptionReason);
+                throw new IllegalArgumentException(
+                        corruptionReason.getMessage(), corruptionReason);
             }
             return table;
         } else {
@@ -154,7 +163,8 @@ public class DBTableProvider implements TableProvider {
         String regex = "^\\s*\\[" + partRegex + "(," + partRegex + ")*" + "\\]\\s*$";
 
         if (!value.matches(regex)) {
-            throw new ParseException("wrong type (Does not match JSON simple list regular expression)", -1);
+            throw new ParseException(
+                    "wrong type (Does not match JSON simple list regular expression)", -1);
         }
 
         int leftBound = value.indexOf('[');
@@ -191,8 +201,10 @@ public class DBTableProvider implements TableProvider {
                 int elementEnd;
 
                 if (QUOTE_CHARACTER == currentChar) {
-                    // As soon as the given value matches JSON format, closing quotes are guaranteed to
-                    // have been found and no exception can be thrown here -> so format 'wrong type(..
+                    // As soon as the given value matches JSON format, closing quotes
+                    // are guaranteed to
+                    // have been found and no exception can be thrown here -> so format
+                    // 'wrong type(..
                     // .)' support is not necessary here.
 
                     elementEnd = Utility.findClosingQuotes(
@@ -215,7 +227,8 @@ public class DBTableProvider implements TableProvider {
                     try {
                         elementObj = PARSERS.get(elementClass).apply(elementStr);
                     } catch (RuntimeException exc) {
-                        throw new ParseException("wrong type (" + exc.getMessage() + ")", index);
+                        throw new ParseException(
+                                "wrong type (" + exc.getMessage() + ")", index);
                     }
                 }
 
@@ -307,6 +320,7 @@ public class DBTableProvider implements TableProvider {
      * Scans database directory and reads all tables from it.
      * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException
      */
+
     private void reloadTables() throws DatabaseIOException {
         tables.clear();
 

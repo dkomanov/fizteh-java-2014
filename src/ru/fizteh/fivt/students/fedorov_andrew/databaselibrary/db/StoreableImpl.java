@@ -124,13 +124,13 @@ public class StoreableImpl implements Storeable {
             return false;
         }
 
-        for (int col = 0, colsCount = host.getColumnsCount(); col < colsCount; col++) {
+        for (int col = 0; col < host.getColumnsCount(); col++) {
             if (!host.getColumnType(col).equals(storeable.host.getColumnType(col))) {
                 return false;
             }
         }
 
-        for (int col = 0, colsCount = host.getColumnsCount(); col < colsCount; col++) {
+        for (int col = 0; col < host.getColumnsCount(); col++) {
             if (!Objects.equals(values[col], storeable.values[col])) {
                 return false;
             }

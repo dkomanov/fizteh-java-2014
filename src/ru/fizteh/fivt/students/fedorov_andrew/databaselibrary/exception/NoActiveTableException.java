@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception;
 
 public class NoActiveTableException extends Exception {
-    private static final long serialVersionUID = 7115979649947958701L;
-
     public NoActiveTableException() {
         super("no table");
     }

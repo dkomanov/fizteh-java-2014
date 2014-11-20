@@ -356,6 +356,52 @@ public class TableProviderTest extends TestBase {
     }
 
     @Test
+    public void testDeserializeImplicitBoolean() throws IOException, ParseException {
+        Table table = provider.createTable("table", Arrays.asList(Boolean.class));
+
+        exception.expect(ParseException.class);
+        exception.expectMessage(
+                wrongTypeMatcherAndAllOf(
+                        containsString(
+                                "Expected 'true' or 'false' as " + "boolean")));
+        provider.deserialize(table, "[\"true\"]");
+    }
+
+    @Test
+    public void testDeserializeStringsWithCommas() throws IOException, ParseException {
+        Table table = provider.createTable("table", Arrays.asList(String.class, String.class));
+
+        Storeable storeable = provider.deserialize(table, "[\"One, two\", \"three, four\"]");
+
+        assertEquals("One, two", storeable.getStringAt(0));
+        assertEquals("three, four", storeable.getStringAt(1));
+    }
+
+    @Test
+    public void testObtainTableWithEmptySignatureFile() throws IOException {
+        String tableName = "table";
+
+        Files.createDirectory(DB_ROOT.resolve(tableName));
+        Files.createFile(DB_ROOT.resolve(tableName).resolve("signature.tsv"));
+
+        prepareProvider();
+
+        expectTableCorruptAndAllOf(tableName, containsString("Empty column types description file"));
+
+        provider.getTable(tableName);
+    }
+
+    @Test
+    public void testDeserializeStringsWithCommas1() throws IOException, ParseException {
+        Table table = provider.createTable("table", Arrays.asList(String.class, String.class));
+
+        Storeable storeable = provider.deserialize(table, "[\"1, 2\", \"3, 4\"]");
+
+        assertEquals("1, 2", storeable.getStringAt(0));
+        assertEquals("3, 4", storeable.getStringAt(1));
+    }
+
+    @Test
     public void testPutOneStoreableToAnotherTable2() throws IOException {
         String nameA = "tableA";
         String nameB = "tableB";

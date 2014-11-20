@@ -130,7 +130,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
             } catch (TerminalException | ExitRequest exc) {
                 // If it is TerminalException, error report is already written.
                 throw exc;
-            } catch (Throwable exc) {
+            } catch (Exception exc) {
                 Utility.handleError(args[0] + ": Method execution error", exc, true);
             }
         }

@@ -114,8 +114,8 @@ public final class StringTableImpl {
         } catch (DatabaseIOException exc) {
             try {
                 Utility.rm(tableRoot);
-            } catch (Throwable thr) {
-                Log.log(StringTableImpl.class, thr, "Failed to cleanup after table creation failure");
+            } catch (Exception rmExc) {
+                Log.log(StringTableImpl.class, rmExc, "Failed to cleanup after table creation failure");
             }
             throw exc;
         }
@@ -240,9 +240,9 @@ public final class StringTableImpl {
                     tableParts.put(partHash, fmap);
                 }
             }
-        } catch (Throwable thr) {
+        } catch (Exception exc) {
             this.tableParts = thisClone.tableParts;
-            throw thr;
+            throw exc;
         }
     }
 
