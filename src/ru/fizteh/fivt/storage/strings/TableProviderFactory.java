@@ -1,5 +1,4 @@
 package ru.fizteh.fivt.storage.strings;
-
 /**
  * Представляет интерфейс для создание экземпляров {@link TableProvider}. Предполагается, что реализация интерфейса
  * фабрики будет иметь публичный конструктор без параметров.
@@ -8,7 +7,7 @@ package ru.fizteh.fivt.storage.strings;
  * @author Dmitriy Komanov
  */
 public interface TableProviderFactory {
-
+    
     /**
      * Возвращает объект для работы с базой данных.
      *

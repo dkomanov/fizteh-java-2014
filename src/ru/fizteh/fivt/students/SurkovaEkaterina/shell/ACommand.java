@@ -22,5 +22,4 @@ public abstract class ACommand<FilesOperations>
     public final String getCommandParameters() {
         return commandParameters;
     }
-
 }
