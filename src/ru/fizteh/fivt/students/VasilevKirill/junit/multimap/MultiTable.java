@@ -281,10 +281,10 @@ public class MultiTable implements Table {
             System.out.println(size());
         }
         if (args[0].equals("commit")) {
-            commit();
+            System.out.println(commit());
         }
         if (args[0].equals("rollback")) {
-            rollback();
+            System.out.println(rollback());
         }
     }
 
