@@ -189,14 +189,6 @@ public class MultiMap implements TableProvider {
                     System.out.println("removed");
                 }
                 break;
-            case "use":
-                try {
-                    setTable(args[1]);
-                    System.out.println("using " + args[1]);
-                } catch (IllegalStateException e) {
-                    System.out.println(args[1] + " not exists");
-                }
-                break;
             default:
                 multiTable.handle(args);
         }
