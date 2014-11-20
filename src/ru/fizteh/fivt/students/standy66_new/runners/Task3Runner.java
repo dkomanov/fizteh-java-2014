@@ -17,7 +17,6 @@ import java.util.stream.Stream;
  */
 public class Task3Runner {
     public static void main(String[] args) {
-        System.setProperty("warn_unsaved", "true");
         String dbDir = System.getProperty("fizteh.db.dir");
         if (dbDir == null) {
             System.err.println("No dir specified, use -Dfizteh.db.dir=...");
