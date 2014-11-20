@@ -1,13 +1,22 @@
 package ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import org.json.JSONArray;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.VasilevKirill.Storeable.MyStorable;
+import ru.fizteh.fivt.students.VasilevKirill.Storeable.StoreableParser;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.shell.RmCommand;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.shell.Status;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,7 +41,12 @@ public class MultiMap implements TableProvider {
         tables = new HashMap<String, MultiTable>();
         File[] tableDirectories = new File(workingDirectory).listFiles();
         for (File it : tableDirectories) {
-            tables.put(it.getName(), new MultiTable(it, this));
+            File signatures = new File(it.getCanonicalPath() + File.separator + "signature.tsv");
+            if (!signatures.exists()) {
+                throw new IOException("No signature file for table " + it.getName());
+            }
+            Class[] sig = readSignatures(signatures);
+            tables.put(it.getName(), new MultiTable(it, this, sig));
         }
     }
 
@@ -45,15 +59,19 @@ public class MultiMap implements TableProvider {
     }
 
     @Override
-    public Table createTable(String name) {
-        if (name == null) {
+    public Table createTable(String name, List<Class<?>> columnTypes) {
+        if (name == null || columnTypes == null) {
             throw new IllegalArgumentException();
         }
+        Class[] typeList = new Class[columnTypes.size()];
+        for (int i = 0; i < columnTypes.size(); ++i) {
+            typeList[i] = columnTypes.get(i);
+        }
         try {
-            if (!addTable(name)) {
+            if (!addTable(name, typeList)) {
                 return null;
             }
-            MultiTable retTable = new MultiTable(new File(workingDirectory + File.separator + name), this);
+            MultiTable retTable = new MultiTable(new File(workingDirectory + File.separator + name), this, typeList);
             tables.put(name, retTable);
             return retTable;
         } catch (IOException e) {
@@ -104,8 +122,54 @@ public class MultiMap implements TableProvider {
         }
     }
 
+    @Override
+    public Storeable deserialize(Table table, String value) throws ParseException {
+        Class[] typeList = new Class[table.getColumnsCount()];
+        for (int i = 0; i < typeList.length; ++i) {
+            typeList[i] = table.getColumnType(i);
+        }
+        return StoreableParser.stringToStoreable(value, typeList);
+    }
+
+    @Override
+    public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        List<Object> data = new ArrayList<>();
+        int columnsCount = table.getColumnsCount();
+        value.getColumnAt(columnsCount - 1); //for checking columns number
+        for (int i = 0; i < columnsCount; ++i) {
+            data.add(value.getColumnAt(i));
+        }
+        JSONArray arr = new JSONArray(data);
+        return arr.toString();
+    }
+
+    @Override
+    public Storeable createFor(Table table) {
+        Class[] typeList = new Class[table.getColumnsCount()];
+        for (int i = 0; i < typeList.length; ++i) {
+            typeList[i] = table.getColumnType(i);
+        }
+        return new MyStorable(typeList);
+    }
+
+    @Override
+    public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+        Class[] typeList = new Class[table.getColumnsCount()];
+        for (int i = 0; i < typeList.length; ++i) {
+            typeList[i] = table.getColumnType(i);
+        }
+        Storeable result = new MyStorable(typeList);
+        if (typeList.length != values.size()) {
+            throw new IndexOutOfBoundsException();
+        }
+        for (int i = 0; i < values.size(); ++i) {
+            result.setColumnAt(i, values.get(i));
+        }
+        return result;
+    }
+
     //Old version of method. Saved for compatibility.
-    public boolean addTable(String name) throws IOException {
+    public boolean addTable(String name, Class[] typeList) throws IOException {
         if (name == null) {
             throw new IOException("Wrong arguments");
         }
@@ -116,7 +180,7 @@ public class MultiMap implements TableProvider {
                     throw new IOException("Can't create the directory: " + newDir.getName());
                 }
             }
-            tables.put(name, new MultiTable(newDir, this));
+            tables.put(name, new MultiTable(newDir, this, typeList));
             return true;
         } else {
             return false;
@@ -163,14 +227,20 @@ public class MultiMap implements TableProvider {
         if (multiTable == null) {
             throw new IOException("Unknown error");
         }
-        String result = "";
+        Class[] typeList = multiTable.getTypeList();
+        Storeable result = null;
         switch (args[0]) {
             case "put":
-                result = multiTable.put(args[1], args[2]);
-                if (result == null) {
-                    System.out.println("new");
-                } else {
-                    System.out.println("overwrite\n" + result);
+                try {
+                    Storeable input = StoreableParser.stringToStoreable(args[2], typeList);
+                    result = multiTable.put(args[1], input);
+                    if (result == null) {
+                        System.out.println("new");
+                    } else {
+                        System.out.println("overwrite\n" + result);
+                    }
+                } catch (ParseException e) {
+                    throw new IOException(e.getMessage());
                 }
                 break;
             case "get":
@@ -187,14 +257,6 @@ public class MultiMap implements TableProvider {
                     System.out.println("not found");
                 } else {
                     System.out.println("removed");
-                }
-                break;
-            case "use":
-                try {
-                    setTable(args[1]);
-                    System.out.println("using " + args[1]);
-                } catch (IllegalStateException e) {
-                    System.out.println(args[1] + " not exists");
                 }
                 break;
             default:
@@ -218,5 +280,27 @@ public class MultiMap implements TableProvider {
 
     public MultiTable getMultiTable(String name) {
         return tables.get(name);
+    }
+
+    private Class[] readSignatures(File file) throws IOException {
+        if (!file.exists()) {
+            throw new IOException("MultiMap: can't find the file with signatures");
+        }
+        FileReader reader = new FileReader(file);
+        StringBuilder buffer = new StringBuilder("");
+        while (reader.ready()) {
+            buffer.append((char) reader.read());
+        }
+        String types = new String(buffer);
+        String[] typeList = types.split("\\s+");
+        Class[] result = new Class[typeList.length];
+        try {
+            for (int i = 0; i < result.length; ++i) {
+                result[i] = Class.forName("java.lang." + typeList[i]);
+            }
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Failed to read signatures");
+        }
+        return result;
     }
 }

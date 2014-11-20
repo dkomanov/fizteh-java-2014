@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.VasilevKirill.Storeable.junit;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.*;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.shell.Command;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.shell.Shell;

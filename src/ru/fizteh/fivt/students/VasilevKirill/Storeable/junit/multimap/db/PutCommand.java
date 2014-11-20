@@ -34,9 +34,6 @@ public class PutCommand implements Command {
 
     @Override
     public boolean checkArgs(String[] args) {
-        if (args == null) {
-            return false;
-        }
-        return args.length == 3;
+        return args != null;
     }
 }

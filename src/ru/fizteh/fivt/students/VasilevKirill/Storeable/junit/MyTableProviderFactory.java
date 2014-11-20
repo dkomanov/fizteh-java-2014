@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.VasilevKirill.Storeable.junit;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.MultiMap;
 
 import java.io.IOException;

@@ -1,10 +1,12 @@
 package ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap;
 
+import org.json.JSONArray;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.VasilevKirill.Storeable.JsonParser;
+//import ru.fizteh.fivt.students.VasilevKirill.Storeable.JsonParser;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.MyStorable;
+import ru.fizteh.fivt.students.VasilevKirill.Storeable.StoreableParser;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.FileMap;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.GetCommand;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.PutCommand;
@@ -13,10 +15,8 @@ import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.shell.C
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.shell.Shell;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.shell.Status;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -32,9 +32,10 @@ public class MultiTable implements Table {
     private MultiMap multiMap;
     private Class[] typeList;
 
-    public MultiTable(File tableDirectory, MultiMap multiMap) throws IOException {
+    public MultiTable(File tableDirectory, MultiMap multiMap, Class[] typeList) throws IOException {
         this.multiMap = multiMap;
         this.tableDirectory = tableDirectory;
+        this.typeList = typeList;
         files = new FileMap[16][16];
         File[] directories = tableDirectory.listFiles();
         if (directories == null) {
@@ -54,13 +55,14 @@ public class MultiTable implements Table {
             }
             for (File datIt : datFiles) {
                 int numFile = Integer.parseInt(datIt.getName().substring(0, datIt.getName().indexOf(".")));
-                files[numDirectory][numFile] = new FileMap(datIt.getCanonicalPath());
+                files[numDirectory][numFile] = new FileMap(datIt.getCanonicalPath(), typeList);
             }
         }
         data = getData();
         oldData = getData();
         prevCommitData = getData();
         numUnsavedChanges = 0;
+        writeSignatures();
     }
 
     @Override
@@ -121,8 +123,8 @@ public class MultiTable implements Table {
                 Storeable value = oldData.get(pair.getKey());
                 if (value == null) {
                     number++;
-
-                    String[] args = {"put", (String) pair.getKey(), (String) pair.getValue() };
+                    JSONArray inputValue = new JSONArray(((MyStorable) pair.getValue()).dataToList());
+                    String[] args = {"put", (String) pair.getKey(),  inputValue.toString() };
                     handle(args);
                 }
             }
@@ -142,7 +144,11 @@ public class MultiTable implements Table {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
-            System.out.println(e);
+            if (e.getMessage().equals("")) {
+                System.out.println(e);
+            } else {
+                System.out.println(e.getMessage());
+            }
         }
         return number;
     }
@@ -162,9 +168,11 @@ public class MultiTable implements Table {
                 Storeable value = data.get(pair.getKey());
                 if (value == null) {
                     numChanges++;
-                    List<Object> currentStoreableData = ((MyStorable) pair.getValue()).dataToList();
-                    String inputValue = JsonParser.dataToJsonString((String) pair.getKey(), currentStoreableData);
-                    String[] args = {"put", (String) pair.getKey(), inputValue };
+                    //List<Object> currentStoreableData = ((MyStorable) pair.getValue()).dataToList();
+                    //String inputValueStoreableParser.dataToJsonString((String) pair.getKey(), currentStoreableData);
+                    //String[] args = {"put", (String) pair.getKey(),  inputValue };
+                    JSONArray inputValue = new JSONArray(((MyStorable) pair.getValue()).dataToList());
+                    String[] args = {"put", (String) pair.getKey(),  inputValue.toString() };
                     handle(args);
                 }
             }
@@ -185,7 +193,11 @@ public class MultiTable implements Table {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
-            System.out.println(e);
+            if (e.getMessage().equals("")) {
+                System.out.println(e);
+            } else {
+                System.out.println(e.getMessage());
+            }
         }
         return numChanges;
     }
@@ -203,7 +215,7 @@ public class MultiTable implements Table {
         return typeList[columnIndex];
     }
 
-    public List<String> list() {
+    public List<String> list() throws IOException {
         Map<String, Storeable> keyMap = getData();
         List<String> retList = new ArrayList<>();
         for (Map.Entry pair : keyMap.entrySet()) {
@@ -237,11 +249,9 @@ public class MultiTable implements Table {
                     throw new IOException("Can't create " + currentFile.getName());
                 }
             }
-            files[numDirectory][numFile] = new FileMap(currentFile.getCanonicalPath());
+            files[numDirectory][numFile] = new FileMap(currentFile.getCanonicalPath(), typeList);
             Status status = new Status(files[numDirectory][numFile]);
-            Map<String, Command> cmds = new HashMap<String, Command>();
-            cmds.put(new PutCommand().toString(), new PutCommand());
-            new Shell(cmds, status).handle(args);
+            new PutCommand().execute(args, status);
             files[numDirectory][numFile].close();
         }
         if (args[0].equals("get") || args[0].equals("remove")) {
@@ -261,7 +271,7 @@ public class MultiTable implements Table {
                 System.out.println("not found");
                 return;
             }
-            files[numDirectory][numFile] = new FileMap(currentFile.getCanonicalPath());
+            files[numDirectory][numFile] = new FileMap(currentFile.getCanonicalPath(), typeList);
             Status status = new Status(files[numDirectory][numFile]);
             Map<String, Command> cmds = new HashMap<String, Command>();
             cmds.put(new GetCommand().toString(), new GetCommand());
@@ -277,6 +287,9 @@ public class MultiTable implements Table {
             Set<String> keys = new HashSet<String>();
             File[] directories = tableDirectory.listFiles();
             for (File it : directories) {
+                if (!it.isDirectory()) {
+                    continue;
+                }
                 int numDirectory = Integer.parseInt(it.getName().substring(0, it.getName().indexOf(".")));
                 if (numDirectory < 0 || numDirectory > 15) {
                     continue;
@@ -287,7 +300,7 @@ public class MultiTable implements Table {
                     if (numFile < 0 || numFile > 15) {
                         continue;
                     }
-                    files[numDirectory][numFile] = new FileMap(datIt.getCanonicalPath());
+                    files[numDirectory][numFile] = new FileMap(datIt.getCanonicalPath(), typeList);
                     Set<String> currentFileKeySet = files[numDirectory][numFile].getKeys();
                     for (String keyIt : currentFileKeySet) {
                         keys.add(keyIt);
@@ -303,10 +316,10 @@ public class MultiTable implements Table {
             System.out.println(size());
         }
         if (args[0].equals("commit")) {
-            commit();
+            System.out.println(commit());
         }
         if (args[0].equals("rollback")) {
-            rollback();
+            System.out.println(rollback());
         }
     }
 
@@ -347,7 +360,7 @@ public class MultiTable implements Table {
         return numKeys;
     }
 
-    public Map<String, Storeable> getData() {
+    public Map<String, Storeable> getData() throws IOException {
         Map<String, Storeable> data = new HashMap<>();
         for (FileMap[] it : files) {
             for (FileMap it2 : it) {
@@ -355,8 +368,14 @@ public class MultiTable implements Table {
                     continue;
                 }
                 Map<String, String> currentFileData = it2.getMap();
-                for (Map.Entry pair : currentFileData.entrySet()) {
-                    data.put((String) pair.getKey(), JsonParser.stringToStoreable((String) pair.getValue(), typeList));
+                try {
+                    for (Map.Entry pair : currentFileData.entrySet()) {
+                        Storeable inputValue = StoreableParser.stringToStoreable((String) pair.getValue(), typeList);
+                        data.put((String) pair.getKey(), inputValue);
+                        //data.put((String) pair.getKey(), (String) pair.getValue());
+                    }
+                } catch (ParseException e) {
+                    throw new IOException("MultiTable: can't parse the data");
                 }
             }
         }
@@ -365,5 +384,24 @@ public class MultiTable implements Table {
 
     public int getNumUnsavedChanges() {
         return numUnsavedChanges;
+    }
+
+    public Class[] getTypeList() {
+        return typeList;
+    }
+
+    private void writeSignatures() throws IOException {
+        File sigFile = new File(tableDirectory.getCanonicalPath() + File.separator + "signature.tsv");
+        if (!sigFile.exists()) {
+            if (!sigFile.createNewFile()) {
+                throw new IOException("MultiTable: unable to create signatures file");
+            }
+        }
+        FileWriter writer = new FileWriter(sigFile);
+        for (int i = 0; i < typeList.length; ++i) {
+            String value = typeList[i].getSimpleName();
+            writer.write(typeList[i].getSimpleName() + " ");
+        }
+        writer.close();
     }
 }

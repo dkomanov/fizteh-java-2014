@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.VasilevKirill.Storeable;
 
+import org.json.JSONArray;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
@@ -174,5 +175,11 @@ public class MyStorable implements Storeable {
             result.add(it);
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        JSONArray arr = new JSONArray(dataList);
+        return arr.toString();
     }
 }
