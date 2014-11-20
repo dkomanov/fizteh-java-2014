@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 /**
  * Created by andrew on 14.11.14.
  */
-public class StoreableMain {
+public class Task5Runner {
     public static void main(String[] args) {
         System.setProperty("warn_unsaved", "true");
         String dbDir = System.getProperty("fizteh.db.dir");
