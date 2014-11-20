@@ -1,8 +1,9 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.Database;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.TableImpl;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.ExitRequest;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.NoActiveTableException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Log;
@@ -44,7 +45,7 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     @Override
     public void cleanup() {
         // Delete empty files and directories inside tables' directories
-        Path dbDirectory = (activeDatabase == null ? null : activeDatabase.getDbDirectory());
+        Path dbDirectory = (getActiveDatabase() == null ? null : getActiveDatabase().getDbDirectory());
 
         if (dbDirectory != null) {
             try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dbDirectory)) {
@@ -61,19 +62,21 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
 
     @Override
     public String getGreetingString() {
-        TableImpl table;
+        Table table;
         try {
-            table = activeDatabase.getActiveTable();
+            table = getActiveDatabase().getActiveTable();
         } catch (NoActiveTableException exc) {
             table = null;
         }
         return String.format(
-                "%s%s $ ", (table == null ? "" : (table.getName() + '@')), activeDatabase.getDbDirectory());
+                "%s%s $ ",
+                (table == null ? "" : (table.getName() + '@')),
+                getActiveDatabase().getDbDirectory());
     }
 
     @Override
     public void init(Shell<SingleDatabaseShellState> host)
-            throws IllegalArgumentException, DatabaseException {
+            throws IllegalArgumentException, DatabaseIOException {
         Objects.requireNonNull(host, "Host shell must not be null");
 
         if (this.host != null) {
@@ -87,12 +90,12 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
             throw new IllegalArgumentException("Please mention database directory");
         }
 
-        activeDatabase = Database.establishDatabase(Paths.get(dbDirPath));
+        activeDatabase = new Database(Paths.get(dbDirPath));
     }
 
     @Override
-    public void persist() throws DatabaseException {
-        activeDatabase.commit();
+    public void persist() throws IOException {
+        getActiveDatabase().commit();
     }
 
     @Override
@@ -105,10 +108,17 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
 
     /**
      * Returns database user works with.
-     * @return
      */
     public Database getActiveDatabase() {
         return activeDatabase;
+    }
+
+    public TableProvider getProvider() {
+        return getActiveDatabase().getProvider();
+    }
+
+    public Table getActiveTable() throws NoActiveTableException {
+        return getActiveDatabase().getActiveTable();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support;
 
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 
@@ -46,7 +46,7 @@ public class TestUtils {
     }
 
     public static void removeFileSubtree(Path removePath) throws IOException {
-        Utility.rm(removePath, "JUnit Test");
+        Utility.rm(removePath);
     }
 
     public static <T> T randElement(Collection<T> set) {

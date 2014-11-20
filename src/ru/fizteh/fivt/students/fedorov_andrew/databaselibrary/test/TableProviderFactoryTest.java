@@ -6,9 +6,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
 
 import java.io.IOException;
@@ -38,30 +37,30 @@ public class TableProviderFactoryTest extends TestBase {
     }
 
     @Test
-    public void testCreateProviderNull() throws DatabaseException {
+    public void testCreateProviderNull() throws IOException {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Directory must not be null");
         factory.create(null);
     }
 
     @Test
-    public void testCreateProviderBadString() throws DatabaseException {
-        exception.expect(IllegalArgumentException.class);
+    public void testCreateProviderBadString() throws IOException {
+        exception.expect(IOException.class);
         exception.expectMessage(
-                "Database directory parent path does not exist or is not a " + "directory");
+                "Database directory parent path does not exist or is not a directory");
         factory.create("bad string");
     }
 
     @Test
-    public void testCreateProviderSystemRoot() throws DatabaseException {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage(startsWith("DB file is corrupt"));
+    public void testCreateProviderSystemRoot() throws IOException {
+        exception.expect(IOException.class);
+        exception.expectMessage(allOf(startsWith("Failed to scan database directory")));
         factory.create("/");
     }
 
     @Test
-    public void testCreateProviderFarNotExistingPath() throws DatabaseException {
-        exception.expect(IllegalArgumentException.class);
+    public void testCreateProviderFarNotExistingPath() throws IOException {
+        exception.expect(IOException.class);
         exception.expectMessage(
                 "Database directory parent path does not exist or is not a " + "directory");
 
@@ -69,7 +68,7 @@ public class TableProviderFactoryTest extends TestBase {
     }
 
     @Test
-    public void testCreateProviderNormal() throws DatabaseException {
+    public void testCreateProviderNormal() throws IOException {
         factory.create(DB_ROOT.toString());
     }
 
@@ -77,7 +76,7 @@ public class TableProviderFactoryTest extends TestBase {
     public void testCreateProviderWithFileAsRoot() throws IOException {
         Files.createFile(DB_ROOT);
 
-        exception.expect(IllegalArgumentException.class);
+        exception.expect(IOException.class);
         exception.expectMessage("Database root must be a directory");
 
         factory.create(DB_ROOT.toString());
@@ -88,10 +87,10 @@ public class TableProviderFactoryTest extends TestBase {
         Files.createDirectory(DB_ROOT);
         Files.createFile(DB_ROOT.resolve("some file"));
 
-        exception.expect(IllegalArgumentException.class);
+        exception.expect(IOException.class);
         exception.expectMessage(
                 allOf(
-                        startsWith("DB file is corrupt"),
+                        startsWith("Failed to scan database directory"),
                         containsString("Non-directory path found in database folder")));
         factory.create(DB_ROOT.toString());
     }

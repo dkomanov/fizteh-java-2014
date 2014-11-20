@@ -1,8 +1,10 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptException;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseException;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TableCorruptException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DBFileCorruptIOException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TableCorruptIOException;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Log;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -14,14 +16,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.function.Predicate;
 
 /**
  * This class represents table stored in file system and parted into directories and files.<br/>
- * Each part of data is read on require.
+ * Each part of data is read on require.<br/>
+ * Null keys/values are not permitted.
  * @author phoenix
  */
-public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
+public final class StringTableImpl {
     private static final int DIRECTORIES_COUNT = 16;
     private static final int FILES_COUNT = 16;
 
@@ -37,10 +40,9 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
     private HashMap<Integer, TablePart> tableParts;
 
     /**
-     * Constructor for cloning and safe table creation/obtaining
-     * @param tableRoot
+     * Constructor for cloning and safe table creation/obtaining.
      */
-    private TableImpl(Path tableRoot) {
+    private StringTableImpl(Path tableRoot) {
         this.tableName = tableRoot.getFileName().toString();
         this.tableRoot = tableRoot;
         this.tableParts = new HashMap<>();
@@ -49,10 +51,9 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
     /**
      * Builds table part relative filename hashcode;
      * @param directory
-     *         not limited due to hashing algorithm.
+     *         Not limited due to hashing algorithm.
      * @param file
-     *         must be strictly less than {@link #FILES_COUNT}
-     * @return
+     *         Must be strictly less than {@link #FILES_COUNT}.
      */
     private static int buildHash(int directory, int file) {
         return directory * FILES_COUNT + file;
@@ -60,8 +61,6 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
 
     /**
      * Extracts directory hashcode from relative filename hashcode
-     * @param hash
-     * @return
      */
     private static int getDirectoryFromHash(int hash) {
         return hash / FILES_COUNT;
@@ -69,8 +68,6 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
 
     /**
      * Extracts filename hashcode from relative filename hashcode.
-     * @param hash
-     * @return
      */
     private static int getFileFromHash(int hash) {
         return hash % FILES_COUNT;
@@ -96,83 +93,128 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
      * Constructs a new clear table.
      * @param tableRoot
      *         Path to table root directory.
-     * @return
      */
-    public static TableImpl createTable(Path tableRoot) throws DatabaseException {
+    public static StringTableImpl createTable(Path tableRoot) throws DatabaseIOException {
         try {
-            Files.createDirectory(tableRoot);
-        } catch (IOException exc) {
-            throw new DatabaseException(
-                    "Failed to create table directory: " + tableRoot.getFileName(), exc);
-        }
-
-        TableImpl table = new TableImpl(tableRoot);
-        for (int dir = 0; dir < DIRECTORIES_COUNT; dir++) {
-            for (int file = 0; file < FILES_COUNT; file++) {
-                int hash = buildHash(dir, file);
-                table.tableParts.put(hash, new TablePart(table.makeTablePartFilePath(hash)));
+            try {
+                Files.createDirectory(tableRoot);
+            } catch (IOException exc) {
+                throw new DatabaseIOException(
+                        "Failed to create table directory: " + tableRoot.getFileName(), exc);
             }
+
+            StringTableImpl table = new StringTableImpl(tableRoot);
+            for (int dir = 0; dir < DIRECTORIES_COUNT; dir++) {
+                for (int file = 0; file < FILES_COUNT; file++) {
+                    int hash = buildHash(dir, file);
+                    table.tableParts.put(hash, new TablePart(table.makeTablePartFilePath(hash)));
+                }
+            }
+            return table;
+        } catch (DatabaseIOException exc) {
+            try {
+                Utility.rm(tableRoot);
+            } catch (Exception rmExc) {
+                Log.log(StringTableImpl.class, rmExc, "Failed to cleanup after table creation failure");
+            }
+            throw exc;
         }
-        return table;
     }
 
     /**
      * Constructs table by reading its data from file system.
      * @param tableRoot
-     * @return
-     * @throws DatabaseException
+     *         Path to the root directory of the table.
+     * @param extraFilesFilter
+     *         Filter that returns true if this extra file's existence can be ignored. Path is given relative
+     *         to the table root directory.
+     * @throws DatabaseIOException
      */
-    public static TableImpl getTable(Path tableRoot) throws DatabaseException {
-        TableImpl table = new TableImpl(tableRoot);
-        table.checkFileSystem();
+    public static StringTableImpl getTable(Path tableRoot, Predicate<Path> extraFilesFilter)
+            throws DatabaseIOException {
+        StringTableImpl table = new StringTableImpl(tableRoot);
+        table.checkFileSystem(extraFilesFilter);
         table.readFromFileSystem();
         return table;
     }
 
+    public Path getTableRoot() {
+        return tableRoot;
+    }
+
     private void checkNameFormat(String name, String extensionRegex, int minID, int maxID)
-            throws DBFileCorruptException {
+            throws DBFileCorruptIOException {
         if (!name.matches("(0|([1-9][0-9]*))\\." + extensionRegex)) {
-            throw new DBFileCorruptException("Invalid database element format: " + name);
+            throw new DBFileCorruptIOException("Invalid database element format: " + name);
         }
         int dotIndex = name.indexOf('.');
         int id = Integer.parseInt(name.substring(0, dotIndex));
         if (id < minID || id > maxID) {
-            throw new DBFileCorruptException("Invalid database element id: " + name);
+            throw new DBFileCorruptIOException("Invalid database element id: " + name);
         }
     }
 
-    private void checkFileSystem() throws DBFileCorruptException, TableCorruptException {
+    /**
+     * Scans this directory and its subdirectories related to this table and finds extra files that must not
+     * exist.
+     * @param filter
+     *         Filter that returns true if this extra file's existence can be ignored. Path is given relative
+     *         to the table root directory.
+     */
+    private void checkFileSystem(Predicate<Path> filter) throws DatabaseIOException {
         try (DirectoryStream<Path> partsDirs = Files.newDirectoryStream(tableRoot)) {
             // Checking table part directories.
             for (Path partDirectory : partsDirs) {
+                Path relativePath = tableRoot.relativize(partDirectory);
+
                 if (Files.isDirectory(partDirectory)) {
-                    checkNameFormat(
-                            partDirectory.getFileName().toString(),
-                            DIRECTORY_EXTENSION,
-                            0,
-                            DIRECTORIES_COUNT);
+                    try {
+                        checkNameFormat(
+                                partDirectory.getFileName().toString(),
+                                DIRECTORY_EXTENSION,
+                                0,
+                                DIRECTORIES_COUNT);
+                    } catch (DBFileCorruptIOException exc) {
+                        if (filter.test(relativePath)) {
+                            continue;
+                        } else {
+                            throw exc;
+                        }
+                    }
                 } else {
-                    throw new DBFileCorruptException(
-                            "Database element must be a directory: " + partDirectory.getFileName());
+                    if (filter.test(relativePath)) {
+                        continue;
+                    } else {
+                        throw new DBFileCorruptIOException(
+                                "Database element must be a directory: " + partDirectory.getFileName());
+                    }
                 }
 
                 // Checking files inside table part directory.
                 try (DirectoryStream<Path> partFiles = Files.newDirectoryStream(partDirectory)) {
                     for (Path partFile : partFiles) {
-                        checkNameFormat(
-                                partFile.getFileName().toString(), FILE_EXTENSION, 0, FILES_COUNT);
+                        relativePath = tableRoot.relativize(partFile);
+                        try {
+                            checkNameFormat(
+                                    partFile.getFileName().toString(), FILE_EXTENSION, 0, FILES_COUNT);
+                        } catch (DBFileCorruptIOException exc) {
+                            if (!filter.test(relativePath)) {
+                                throw exc;
+                            }
+                        }
                     }
-                    // Further checks will be performed during an attempt to read data from the
-                    // file.
+                    // Further checks will be performed during an attempt to read data from the file.
                 }
             }
+        } catch (DatabaseIOException exc) {
+            throw exc;
         } catch (IOException exc) {
-            throw new TableCorruptException(tableName, "Cannot scan table directory", exc);
+            throw new TableCorruptIOException(tableName, "Cannot scan table directory", exc);
         }
     }
 
-    public void readFromFileSystem() throws DBFileCorruptException, TableCorruptException {
-        TableImpl thisClone = clone();
+    public void readFromFileSystem() throws DBFileCorruptIOException, TableCorruptIOException {
+        StringTableImpl thisClone = clone();
         tableParts.clear();
 
         try {
@@ -190,7 +232,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
                     for (String key : keySet) {
                         int keyHash = getHash(key);
                         if (keyHash != partHash) {
-                            throw new TableCorruptException(
+                            throw new TableCorruptIOException(
                                     tableName, "Some keys are stored in improper places");
                         }
                     }
@@ -198,9 +240,9 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
                     tableParts.put(partHash, fmap);
                 }
             }
-        } catch (Throwable thr) {
+        } catch (Exception exc) {
             this.tableParts = thisClone.tableParts;
-            throw thr;
+            throw exc;
         }
     }
 
@@ -208,8 +250,8 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
      * Clones the whole table
      */
     @Override
-    protected TableImpl clone() {
-        TableImpl cloneTable = new TableImpl(tableRoot);
+    protected StringTableImpl clone() {
+        StringTableImpl cloneTable = new StringTableImpl(tableRoot);
 
         for (Entry<Integer, TablePart> entry : tableParts.entrySet()) {
             cloneTable.tableParts.put(entry.getKey(), entry.getValue().clone());
@@ -218,33 +260,26 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
         return cloneTable;
     }
 
-    @Override
     public String getName() {
         return tableName;
     }
 
-    @Override
     public String get(String key) {
         return obtainTablePart(key).get(key);
     }
 
-    @Override
     public String put(String key, String value) {
+        Utility.checkNotNull(value, "Value");
         return obtainTablePart(key).put(key, value);
     }
 
-    @Override
     public String remove(String key) {
         return obtainTablePart(key).remove(key);
     }
 
     /**
      * Counts the number of the records stored in all table parts assigned to this table.
-     * @return
-     * @throws IOException
-     * @throws DBFileCorruptException
      */
-    @Override
     public int size() {
         int rowsNumber = 0;
 
@@ -255,20 +290,14 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
         return rowsNumber;
     }
 
-    @Override
-    public int commit() {
-        try {
-            int diffsCount = 0;
-            for (TablePart part : tableParts.values()) {
-                diffsCount += part.commit();
-            }
-            return diffsCount;
-        } catch (DatabaseException exc) {
-            throw new IllegalStateException(exc.getMessage(), exc);
+    public int commit() throws DatabaseIOException {
+        int diffsCount = 0;
+        for (TablePart part : tableParts.values()) {
+            diffsCount += part.commit();
         }
+        return diffsCount;
     }
 
-    @Override
     public int rollback() {
         int diffsCount = 0;
         for (TablePart part : tableParts.values()) {
@@ -279,12 +308,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
 
     /**
      * Collects all keys from all table parts assigned to this table.
-     * @return actually an instance of {@link TreeSet} is returned with standard alphabetic sort
-     * order.
-     * @throws IOException
-     * @throws DBFileCorruptException
      */
-    @Override
     public List<String> list() {
         List<String> keySet = new LinkedList<>();
 
@@ -297,8 +321,6 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
 
     /**
      * Builds table file path from its hash that describes directory and file name.
-     * @param hash
-     * @return
      */
     private Path makeTablePartFilePath(int hash) {
         return tableRoot.resolve(
@@ -310,23 +332,14 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table {
     /**
      * Gets {@link TablePart} instance assigned to this {@code hash} from memory
      * @param key
-     *         key that is driven by desired table
-     * @return
-     * @throws IOException
-     * @throws DBFileCorruptException
+     *         key that is hold by desired table.
      */
     private TablePart obtainTablePart(String key) {
-        checkKeyValidity(key);
+        Utility.checkNotNull(key, "Key");
         return tableParts.get(getHash(key));
     }
 
-    private void checkKeyValidity(String key) throws IllegalArgumentException {
-        if (key == null) {
-            throw new IllegalArgumentException("Key must not be null");
-        }
-    }
-
-    public int getUncommittedChangesCount() {
+    public int getNumberOfUncommittedChanges() {
         int diffsCount = 0;
         for (TablePart part : tableParts.values()) {
             diffsCount += part.getUncommittedChangesCount();

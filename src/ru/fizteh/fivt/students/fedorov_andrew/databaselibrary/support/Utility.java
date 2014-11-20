@@ -11,23 +11,29 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public final class Utility {
+
     // not for constructing :)
     private Utility() {
 
     }
 
-    /**
-     * Handles an occurred exception.<br/> Equivalent to handleError(null, message, true);
-     * @param message
-     *         message that can be reported to user and is written to log.
-     */
-    public static void handleError(String message) throws TerminalException {
-        handleError(message, null, true);
+    public static void checkAllTypesAreSupported(Collection<Class<?>> checkTypes,
+                                                 Collection<Class<?>> supportedTypes)
+            throws IllegalArgumentException {
+        for (Class<?> type : checkTypes) {
+            if (!supportedTypes.contains(type)) {
+                throw new IllegalArgumentException(
+                        "wrong type (" + type.getSimpleName() + " is not supported)");
+            }
+        }
     }
 
     /**
@@ -49,7 +55,7 @@ public final class Utility {
         if (cause == null) {
             throw new TerminalException(message);
         } else {
-            throw new TerminalException(cause);
+            throw new TerminalException(message, cause);
         }
     }
 
@@ -82,11 +88,9 @@ public final class Utility {
 
     /**
      * Removes the whole subtree under given path
-     * @param removePath
-     * @param invoker
-     *         name of the invoker; used in error reports.
+     * @throws java.io.IOException
      */
-    public static void rm(final Path removePath, final String invoker) throws IOException {
+    public static void rm(final Path removePath) throws IOException {
         if (Files.isDirectory(removePath)) {
             Files.walkFileTree(removePath, new Utility.FileTreeRemover());
         } else {
@@ -94,18 +98,26 @@ public final class Utility {
         }
     }
 
-    public static String simplifyClassName(String name) {
-        name = name.substring(name.lastIndexOf('.') + 1);
-        name = name.substring(name.lastIndexOf('$') + 1);
-        name = name.toLowerCase();
-        return name;
-    }
-
     public static String simplifyFieldName(String name) {
         name = name.toLowerCase();
         return name;
     }
 
+    /**
+     * Counts differences between source and target map (count of different values mapped to the same keys +
+     * count of keys that are found in one map and are missing in the other and vice versa). Null values are
+     * not supported - when {@link java.util.Map#get(Object)} return null, it is interpreted as missing of
+     * the
+     * given key.
+     * @param source
+     *         Source map. There are no differences between source and target map.
+     * @param target
+     *         Target map.
+     * @param <K>
+     *         Key type.
+     * @param <V>
+     *         Value type.
+     */
     public static <K, V> int countDifferences(Map<K, V> source, Map<K, V> target) {
         if (target.isEmpty() || source.isEmpty()) {
             return Math.max(target.size(), source.size());
@@ -140,9 +152,8 @@ public final class Utility {
      *         if name is not correct or null
      */
     public static void checkTableNameIsCorrect(String tableName) throws IllegalArgumentException {
-        if (tableName == null) {
-            throw new IllegalArgumentException("Table name must not be null");
-        }
+        checkNotNull(tableName, "Table name");
+
         Path tableNamePath = Paths.get(tableName).normalize();
         Path sampleParent = Paths.get("sample");
         if (tableNamePath.getParent() != null || !sampleParent.resolve(tableName).normalize().getFileName()
@@ -168,6 +179,139 @@ public final class Utility {
         } catch (Exception exc) {
             handler.handleException(exc, additionalData);
         }
+    }
+
+    /**
+     * Checks whether the given variable is null.
+     * @param variable
+     *         Variable to check against null value.
+     * @param name
+     *         Name of the variable to include into message.
+     * @throws IllegalArgumentException
+     *         If variable is null. Message: "(name) must no be null".
+     */
+    public static void checkNotNull(Object variable, String name) throws IllegalArgumentException {
+        if (variable == null) {
+            throw new IllegalArgumentException(name + " must not be null");
+        }
+    }
+
+    /**
+     * Inverses key-value mapping to value-key mapping.
+     * @param map
+     *         Source map.
+     * @param <K>
+     *         Key type in the source map.
+     * @param <V>
+     *         Value type in the source map.
+     * @return An inversed map. It is not guaranteed that it is instance of the same class as source map has.
+     * @throws java.lang.IllegalArgumentException
+     *         If there are two keys having the same values.
+     * @see Object#equals(Object)
+     */
+    public static <K, V> Map<V, K> inverseMap(Map<K, V> map) throws IllegalArgumentException {
+        Map<V, K> inversed = new HashMap<>(map.size());
+
+        for (Entry<K, V> e : map.entrySet()) {
+            if (inversed.containsKey(e.getValue())) {
+                throw new IllegalArgumentException("Source map contains at least two duplicate values");
+            }
+            inversed.put(e.getValue(), e.getKey());
+        }
+
+        return inversed;
+    }
+
+    /**
+     * Forms a regular expression for a string inside quotes.
+     * @param quotes
+     *         Sequence of symbols that plays role of quotes.
+     * @param escapeSequence
+     *         Inside quotes escapeSequence and quotes must occur only after escapeSequence.
+     */
+    public static String getQuotedStringRegex(String quotes, String escapeSequence) {
+        // Regex: "((plain text)|(escaped symbols))*"
+
+        return quotes + "([^" + quotes + escapeSequence + "]|(" + escapeSequence + escapeSequence + ")|("
+               + escapeSequence + quotes + "))*" + quotes;
+    }
+
+    /**
+     * Returns string between two quotes. All quote and escape sequences inside the string are escaped by
+     * escape sequence.
+     * @param s
+     *         String to quote.
+     * @param quoteSequence
+     *         Quotes.
+     * @param escapeSequence
+     *         Escape sequence. Quotes and this sequence occurrences will be prepended by escape sequence.
+     * @return Endcoded string inside quotes. Returns null for null string.
+     * @see Utility#unquoteString(String, String, String)
+     */
+    public static String quoteString(String s, String quoteSequence, String escapeSequence) {
+        if (s == null) {
+            return null;
+        }
+        s = s.replaceAll(
+                escapeSequence, escapeSequence + escapeSequence);
+        s = s.replaceAll(
+                quoteSequence, escapeSequence + quoteSequence);
+        return quoteSequence + s + quoteSequence;
+    }
+
+    /**
+     * Decodes a quoted via {@link Utility#quoteString(String, String, String)} method string.
+     * @param s
+     *         Quoted string (must start and end with quote sequence).
+     * @param quoteSequence
+     *         Quotes.
+     * @param escapeSequence
+     *         Escape sequence to escape quotes and itself.
+     * @return Decoded string.
+     */
+    public static String unquoteString(String s, String quoteSequence, String escapeSequence)
+            throws IllegalArgumentException {
+        if (!s.startsWith(quoteSequence) || !s.endsWith(quoteSequence)) {
+            throw new IllegalArgumentException("String must be in quotes");
+        }
+
+        s = s.substring(1, s.length() - 1);
+
+        s = s.replaceAll(
+                escapeSequence + "" + quoteSequence, quoteSequence);
+        s = s.replaceAll(
+                escapeSequence + escapeSequence, escapeSequence);
+        return s;
+    }
+
+    public static int findClosingQuotes(String string,
+                                        int begin,
+                                        int end,
+                                        char quoteCharacter,
+                                        char escapeCharacter) throws ParseException {
+        // Indicates that the symbol at current (index) position is escaped by previous symbol.
+        boolean escaped = false;
+
+        for (int index = begin; index < end; index++) {
+            char c = string.charAt(index);
+
+            if (c == quoteCharacter) {
+                if (!escaped) {
+                    return index;
+                }
+                escaped = false;
+            } else if (c == escapeCharacter) {
+                escaped = !escaped;
+            } else {
+                if (escaped) {
+                    throw new ParseException(
+                            "Unexpected escaped symbol at position " + index + ": '" + c + "'", index);
+                }
+            }
+
+        }
+
+        return -1;
     }
 
     /**
@@ -246,12 +390,13 @@ public final class Utility {
     }
 
     /**
-     * Partial implementation of {@link FileVisitor}, that has the following piculiarities:<br/>
+     * Partial implementation of {@link java.nio.file.FileVisitor}, that has the following
+     * piculiarities:<br/>
      * <ul> <li>If an exception occurs, file tree traverse is stopped</li> <li>Nothing is done
-     * before and after directory visit</li> <li>{@link FileVisitor#visitFile(Object,
-     * BasicFileAttributes)} is not implemented. </ul>
+     * before and after directory visit</li> <li>{@link java.nio.file.FileVisitor#visitFile(Object,
+     * java.nio.file.attribute.BasicFileAttributes)} is not implemented. </ul>
      * @author phoenix
-     * @see FileVisitor
+     * @see java.nio.file.FileVisitor
      */
     public abstract static class MyTreeWalker<T> implements FileVisitor<T> {
         @Override

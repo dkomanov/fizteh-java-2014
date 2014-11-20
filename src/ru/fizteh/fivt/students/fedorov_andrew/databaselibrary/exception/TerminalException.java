@@ -5,7 +5,6 @@ package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception;
  * @author phoenix
  */
 public class TerminalException extends Exception {
-    private static final long serialVersionUID = 1707144664039960789L;
 
     public TerminalException(String message) {
         super(message);
