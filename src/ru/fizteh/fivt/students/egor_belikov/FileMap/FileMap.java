@@ -57,10 +57,10 @@ public class FileMap {
         try  {
             while (true) {
                     System.out.print("$ ");
-                    String Commands;
-                    Commands = scanner.nextLine();
+                    String commands;
+                    commands = scanner.nextLine();
                     try {
-                        String[] splittedCommands = Commands.trim().split(";");
+                        String[] splittedCommands = commands.trim().split(";");
                         for (String s: splittedCommands) {
                             execute(s);
                         }
