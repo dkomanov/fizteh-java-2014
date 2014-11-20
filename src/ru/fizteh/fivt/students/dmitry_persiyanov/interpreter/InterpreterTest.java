@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.interpreter;
 
-import org.junit.Test;
 import org.junit.After;
+import org.junit.Test;
 import ru.fizteh.fivt.students.dmitry_persiyanov.interpreter.exceptions.WrongCommandException;
 
 import java.io.ByteArrayInputStream;

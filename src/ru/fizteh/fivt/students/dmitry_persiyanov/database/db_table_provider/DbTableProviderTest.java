@@ -4,11 +4,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -17,11 +21,15 @@ public class DbTableProviderTest {
     private File dbDir;
     private File tempFile;
 
+    private List<Class<?>> signature;
+
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
+        signature = new LinkedList<>();
+        signature.add(String.class);
         dbDir = tempFolder.newFolder();
         dbm = new DbTableProvider(dbDir);
         tempFile = tempFolder.newFile();
@@ -38,35 +46,43 @@ public class DbTableProviderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void creatingTableWithWrongName() {
-        dbm.createTable(null);
+    public void creatingTableWithWrongName() throws IOException {
+        dbm.createTable(null, signature);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void creatingTableWithWrongSignature() throws IOException {
+        List<Class<?>> newSignature = new LinkedList<>();
+        newSignature.add(String.class);
+        newSignature.add(int[].class);  // unsupported type
+        dbm.createTable("tableyeah", newSignature);
     }
 
     @Test
-    public void checkingTableReturnedByCreatedForNonNull() {
-        Table createdTable = dbm.createTable("table1");
+    public void testCorrectTableCreateForValidName() throws IOException {
+        Table createdTable = dbm.createTable("table1", signature);
         assertFalse(createdTable == null);
     }
 
     @Test
-    public void checkingEqualityOfReturningTablesByCreateAndGet() {
-        Table createdTable = dbm.createTable("table1");
+    public void checkingEqualityOfReturningTablesByCreateAndGet() throws IOException {
+        Table createdTable = dbm.createTable("table1", signature);
         Table gettedTable = dbm.getTable("table1");
         assertEquals(createdTable.getName(), gettedTable.getName());
-        assertEquals("table1", createdTable.getName());
+        assertEquals(createdTable, gettedTable);
     }
 
     @Test
-    public void creatingRemovingAndGettingItMustReturnNull() {
-        Table createdTable = dbm.createTable("table1");
+    public void creatingRemovingAndGettingItMustReturnNull() throws IOException {
+        Table createdTable = dbm.createTable("table1", signature);
         dbm.removeTable("table1");
         assertTrue(dbm.getTable("table1") == null);
     }
 
     @Test
-    public void createMustReturnNullWhenTheTableHasAlreadyExists() {
-        dbm.createTable("table1");
-        assertTrue(dbm.createTable("table1") == null);
+    public void createMustReturnNullWhenTheTableHasAlreadyExists() throws IOException {
+        dbm.createTable("table1", signature);
+        assertTrue(dbm.createTable("table1", signature) == null);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -75,9 +91,9 @@ public class DbTableProviderTest {
     }
 
     @Test
-    public void testingRightTableDeleting() {
-        Table t = dbm.createTable("table1");
-        t.put("key", "value");
+    public void testingRightTableDeleting() throws IOException, ParseException {
+        Table t = dbm.createTable("table1", signature);
+        t.put("key", dbm.deserialize(t, "value"));
         t.commit();
         dbm.removeTable("table1");
         TableProvider tableProvider = new DbTableProvider(dbDir);
@@ -85,48 +101,13 @@ public class DbTableProviderTest {
     }
 
     @Test(expected = WrongTableNameException.class)
-    public void createTableWithWrongName1() {
-        dbm.createTable(null);
+    public void createTableWithWrongName1() throws IOException {
+        dbm.createTable(null, signature);
     }
 
     @Test(expected = WrongTableNameException.class)
-    public void createTableWithWrongName2() {
-        dbm.createTable(".d23d2d3;.1'.");
+    public void createTableWithWrongName2() throws IOException {
+        dbm.createTable(".d23d2d3;.1'.", signature);
     }
 
-    @Test(expected = WrongTableNameException.class)
-    public void useTableWithWrongName() {
-        dbm.useTable(".");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void useUnexistedTable() {
-        dbm.useTable("unexisted");
-    }
-
-    @Test
-    public void useTableFirstTime() {
-        Table table = dbm.createTable("table");
-        dbm.useTable("table");
-        assertEquals("table", dbm.getCurrentTable().getName());
-    }
-
-    @Test
-    public void useWithUncommittedCurrentTable() {
-        dbm.createTable("table1");
-        dbm.createTable("table2");
-        dbm.useTable("table1");
-        dbm.getCurrentTable().put("heeey", "yoooo");
-        assertFalse(dbm.useTable("table2") == 0);
-    }
-
-    @Test
-    public void useWithCommittedCurrentTable() {
-        dbm.createTable("table1");
-        dbm.createTable("table2");
-        dbm.useTable("table1");
-        dbm.getCurrentTable().put("heeyey", "yoo");
-        dbm.getCurrentTable().commit();
-        assertTrue(dbm.useTable("table2") == 0);
-    }
 }

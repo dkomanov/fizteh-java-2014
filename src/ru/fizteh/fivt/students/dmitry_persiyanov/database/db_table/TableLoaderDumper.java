@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table;
 
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.TypeStringTranslator;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
@@ -38,7 +40,7 @@ final class TableLoaderDumper {
                 List<Class<?>> res = new ArrayList<>();
                 String[] types = bufReader.readLine().split("\\s+");
                 for (String type : types) {
-                    res.add(DbTable.getTypeByStringName(type));
+                    res.add(TypeStringTranslator.getTypeByStringName(type));
                 }
                 return res;
             } catch (FileNotFoundException e) {
@@ -51,7 +53,7 @@ final class TableLoaderDumper {
         try (BufferedWriter bufWriter
                      = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(signatureFIle), ENCODING))) {
             for (Class<?> type : columnTypes) {
-                bufWriter.write(DbTable.getStringNameByType(type));
+                bufWriter.write(TypeStringTranslator.getStringNameByType(type));
                 bufWriter.write("\t");
             }
         }

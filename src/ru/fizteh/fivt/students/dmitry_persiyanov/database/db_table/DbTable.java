@@ -1,6 +1,10 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table;
 
-import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.TypeStringTranslator;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,9 +118,8 @@ public final class DbTable implements Table {
     public Storeable put(final String key, final Storeable value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
-        } else if (!checkStoreableValueValidity(value)) {
-            throw new ColumnFormatException();
         }
+        checkStoreableValueValidity(value);
         int dir = getDirNumByKey(key);
         int file = getFileNumByKey(key);
         if (uncommittedChangesMap.containsKey(key)) {   // Was changed/added in current commit.
@@ -236,47 +239,6 @@ public final class DbTable implements Table {
         return uncommittedChangesMap.size() + uncommittedDeletionsSet.size();
     }
 
-    public static Class<?> getTypeByStringName(final String stringName) {
-        switch (stringName.trim()) {
-            case "int":
-                return Integer.class;
-            case "long":
-                return Long.class;
-            case "byte":
-                return Byte.class;
-            case "float":
-                return Float.class;
-            case "double":
-                return Double.class;
-            case "boolean":
-                return Boolean.class;
-            case "String":
-                return String.class;
-            default:
-                return null;
-        }
-    }
-
-    public static String getStringNameByType(final Class<?> type) {
-        if (type.equals(Integer.class)) {
-            return "int";
-        } else if (type.equals(Long.class)) {
-            return "long";
-        } else if (type.equals(Byte.class)) {
-            return "byte";
-        } else if (type.equals(Float.class)) {
-            return "float";
-        } else if (type.equals(Double.class)) {
-            return "double";
-        } else if (type.equals(Boolean.class)) {
-            return "boolean";
-        } else if (type.equals(String.class)) {
-            return "String";
-        } else {
-            return null;
-        }
-    }
-
     private String serializeWrapper(final Storeable value) {
         return tableProvider.serialize(this, value);
     }
@@ -313,12 +275,10 @@ public final class DbTable implements Table {
 
     private boolean checkStoreableValueValidity(final Storeable value) {
         for (int i = 0; i < columnTypes.size(); ++i) {
-            try {
-                if (!columnTypes.get(i).equals(value.getColumnAt(i).getClass())) {
-                    return false;
-                }
-            } catch (IndexOutOfBoundsException e) {
-                return false;
+            if (!columnTypes.get(i).equals(value.getColumnAt(i).getClass())) {
+                throw new ColumnFormatException("types incompatibility: column index " + i
+                        + ", table type: " + TypeStringTranslator.getStringNameByType(columnTypes.get(i))
+                        + ", passed type: " + TypeStringTranslator.getStringNameByType(value.getColumnAt(i).getClass()));
             }
         }
         return true;

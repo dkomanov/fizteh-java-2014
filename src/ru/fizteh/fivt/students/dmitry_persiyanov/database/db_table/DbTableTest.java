@@ -4,8 +4,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -15,19 +20,30 @@ public class DbTableTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
-    private File tableDir;
+    private File dbDir;
     private File tempFile;
 
-    private DbTable tm;
+    private List<Class<?>> signature;
+    private TableProvider db;
+    private Table tm;
+
+    private void addKeysToTable(Table tm) throws ParseException {
+        tm.put("key", db.deserialize(tm, testKeysValues.get("key")));
+        tm.put("mazafakka", db.deserialize(tm, testKeysValues.get("mazafakka")));
+        tm.put("12345", db.deserialize(tm, testKeysValues.get("12345")));
+    }
 
     @Before
     public void setUp() throws Exception {
-        testKeysValues.put("key", "value");
-        testKeysValues.put("mazafakka", "yo");
-        testKeysValues.put("12345", "!)@J D! =!_@O  as \"|}");
+        testKeysValues.put("key", "[\"value\"]");
+        testKeysValues.put("mazafakka", "[\"yo\"]");
+        testKeysValues.put("12345", "[\"!)@J D! =!_@O  as \"|}\"");
         tempFile = tempFolder.newFile();
-        tableDir = tempFolder.newFolder();
-        tm = new DbTable(tableDir);
+        dbDir = tempFolder.newFolder();
+        db = new DbTableProvider(dbDir);
+        signature = new LinkedList<>();
+        signature.add(String.class);
+        tm = db.createTable("table", signature);
     }
 
     @Test
@@ -37,9 +53,8 @@ public class DbTableTest {
     }
 
     @Test
-    public void listAfterPutCorrectness() {
-        tm.put("key", testKeysValues.get("key"));
-        tm.put("12345", testKeysValues.get("12345"));
+    public void listAfterPutCorrectness() throws ParseException {
+        addKeysToTable(tm);
         List<String> actual = tm.list();
         Set<String> actualSet = new HashSet<>();
         actualSet.addAll(actual);
@@ -49,27 +64,18 @@ public class DbTableTest {
         assertEquals(expected, actualSet);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void createTableWithWrongTableFile() {
-        new DbTable(tempFile);
-    }
-
     @Test
-    public void putCommitAndCheckReturnedValueByCommit() {
-        tm.put("key", testKeysValues.get("key"));
-        tm.put("mazafakka", testKeysValues.get("mazafakka"));
-        tm.put("12345", testKeysValues.get("12345"));
+    public void putCommitAndCheckReturnedValueByCommit() throws ParseException, IOException {
+        addKeysToTable(tm);
         int actual = tm.commit();
         assertEquals(3, actual);
     }
 
     @Test
-    public void putCommitLoadTableAgainAndCheckValues() {
-        tm.put("key", testKeysValues.get("key"));
-        tm.put("mazafakka", testKeysValues.get("mazafakka"));
-        tm.put("12345", testKeysValues.get("12345"));
+    public void putCommitLoadTableAgainAndCheckValues() throws ParseException, IOException {
+        addKeysToTable(tm);
         tm.commit();
-        DbTable newTm = new DbTable(tableDir);
+        Table newTm = new DbTableProvider(dbDir).getTable("table");
         List<String> actualList = newTm.list();
         Set<String> actualSet = new HashSet<>();
         actualSet.addAll(actualList);
@@ -81,37 +87,31 @@ public class DbTableTest {
     }
 
     @Test
-    public void secondCommitMustReturnZero() {
-        tm.put("key", testKeysValues.get("key"));
-        tm.put("mazafakka", testKeysValues.get("mazafakka"));
-        tm.put("12345", testKeysValues.get("12345"));
+    public void secondCommitMustReturnZero() throws ParseException, IOException {
+        addKeysToTable(tm);
         tm.commit();
         int actual = tm.commit();
         assertTrue(actual == 0);
     }
 
     @Test
-    public void doublePutWithDifferentValues() {
-        tm.put("key", testKeysValues.get("key"));
-        tm.put("key", "NEW VALUE");
-        assertEquals("NEW VALUE", tm.get("key"));
+    public void doublePutWithDifferentValues() throws ParseException {
+        tm.put("key", db.deserialize(tm, testKeysValues.get("key")));
+        tm.put("key", db.deserialize(tm, "NEW VALUE"));
+        assertEquals("NEW VALUE", db.serialize(tm, tm.get("key")));
     }
 
     @Test
-    public void putRemoveAndPutAgainTheSameKey() {
-        tm.put("key", testKeysValues.get("key"));
-        tm.put("mazafakka", testKeysValues.get("mazafakka"));
-        tm.put("12345", testKeysValues.get("12345"));
+    public void putRemoveAndPutAgainTheSameKey() throws ParseException {
+        addKeysToTable(tm);
         tm.remove("mazafakka");
-        tm.put("mazafakka", "mazafakka?");
-        assertEquals("mazafakka?", tm.get("mazafakka"));
+        tm.put("mazafakka", db.deserialize(tm, "mazafakka?"));
+        assertEquals("mazafakka?", db.serialize(tm, tm.get("mazafakka")));
     }
 
     @Test
-    public void fillingEmptyTableAndRollbackMustCleansTable() {
-        tm.put("key", testKeysValues.get("key"));
-        tm.put("mazafakka", testKeysValues.get("mazafakka"));
-        tm.put("12345", testKeysValues.get("12345"));
+    public void fillingEmptyTableAndRollbackMustCleansTable() throws ParseException {
+        addKeysToTable(tm);
         tm.rollback();
         List<String> actualList = tm.list();
         assertTrue(actualList.size() == 0);
@@ -119,28 +119,26 @@ public class DbTableTest {
     }
 
     @Test
-    public void testingSizeInvariantAfterSomeOperations() {
-        tm.put("key", testKeysValues.get("key"));
-        tm.put("mazafakka", testKeysValues.get("mazafakka"));
-        tm.put("12345", testKeysValues.get("12345"));
+    public void testingSizeInvariantAfterSomeOperations() throws ParseException, IOException {
+        addKeysToTable(tm);
         assertTrue(tm.size() == 3);
         tm.remove("12345");
         assertTrue(tm.size() == 2);
         tm.commit();
         assertTrue(tm.size() == 2);
-        assertTrue(new DbTable(tableDir).size() == 2);
+        assertTrue(new DbTableProvider(dbDir).getTable("table").size() == 2);
     }
 
     @Test
-    public void sizeMustIncrementAfterPut() {
+    public void sizeMustIncrementAfterPut() throws ParseException {
         assertTrue(tm.size() == 0);
-        tm.put("key", testKeysValues.get("key"));
+        tm.put("key", db.deserialize(tm, testKeysValues.get("key")));
         assertTrue(tm.size() == 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void putInvalidKey() {
-        tm.put(null, "m??");
+    public void putInvalidKey() throws ParseException {
+        tm.put(null, db.deserialize(tm, "m?"));
     }
 
     @Test(expected = IllegalArgumentException.class)

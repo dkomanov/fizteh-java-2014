@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov;
 
-import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.commands_parser.DbCommandsParser;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.interpreter.Interpreter;
 
 import java.io.ByteArrayInputStream;
@@ -10,7 +10,7 @@ import java.io.InputStream;
 
 public final class Main {
     private static File rootDir;
-    private static DbTableProvider dbTableProvider;
+    private static DbTableProvider tableProvider;
     private static DbCommandsParser dbParser;
 
     public static void main(final String[] args) {
@@ -22,8 +22,8 @@ public final class Main {
             rootDir = new File(dbdir);
         }
         try {
-            dbTableProvider = new DbTableProvider(rootDir);
-            dbParser = new DbCommandsParser(dbTableProvider);
+            tableProvider = new DbTableProvider(rootDir);
+            dbParser = new DbCommandsParser(tableProvider);
             Interpreter interpreter = new Interpreter(dbParser);
             if (args.length == 0) {
                 interpreter.run();

@@ -4,10 +4,11 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.DbTable;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.TableRow;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.SyntaxCheckers;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.TypeStringTranslator;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
-import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.DbTable;
 
 import java.io.File;
 import java.io.IOException;
@@ -134,7 +135,7 @@ public final class DbTableProvider implements TableProvider {
 
     private Object parseColumn(final Class<?> tableColumnType, String column) throws ParseException {
         try {
-            switch (DbTable.getStringNameByType(tableColumnType)) {
+            switch (TypeStringTranslator.getStringNameByType(tableColumnType)) {
                 case "int":
                     return new Integer(column);
                 case "long":
@@ -205,36 +206,36 @@ public final class DbTableProvider implements TableProvider {
         return res;
     }
 
-    /**
-     * @param tableName
-     * @return  0 if succeed, otherwise returns number of uncommitted changes in currentTable
-     * If number of uncommitted changes isn't zero then table isn't changing.
-     * @throws IOException if it is impossible to dump current table.
-     */
-    public int useTable(final String tableName) {
-        if (!SyntaxCheckers.checkCorrectnessOfTableName(tableName)) {
-            throw new WrongTableNameException(tableName);
-        } else if (!tables.containsKey(tableName)) {
-            throw new IllegalArgumentException(tableName + " doesn't exist");
-        } else {
-            if (currentTable == null) {
-                currentTable = tables.get(tableName);
-                return 0;
-            } else {
-                boolean currentAndNewTablesAreDistinct = !currentTable.getName().equals(tableName);
-                if (currentAndNewTablesAreDistinct) {
-                    if (currentTable.getNumberOfUncommittedChanges() == 0) {
-                        currentTable = tables.get(tableName);
-                        return 0;
-                    } else {
-                        return currentTable.getNumberOfUncommittedChanges();
-                    }
-                } else {
-                    return 0;
-                }
-            }
-        }
-    }
+//    /**
+//     * @param tableName
+//     * @return  0 if succeed, otherwise returns number of uncommitted changes in currentTable
+//     * If number of uncommitted changes isn't zero then table isn't changing.
+//     * @throws IOException if it is impossible to dump current table.
+//     */
+//    public int useTable(final String tableName) {
+//        if (!SyntaxCheckers.checkCorrectnessOfTableName(tableName)) {
+//            throw new WrongTableNameException(tableName);
+//        } else if (!tables.containsKey(tableName)) {
+//            throw new IllegalArgumentException(tableName + " doesn't exist");
+//        } else {
+//            if (currentTable == null) {
+//                currentTable = tables.get(tableName);
+//                return 0;
+//            } else {
+//                boolean currentAndNewTablesAreDistinct = !currentTable.getName().equals(tableName);
+//                if (currentAndNewTablesAreDistinct) {
+//                    if (currentTable.getNumberOfUncommittedChanges() == 0) {
+//                        currentTable = tables.get(tableName);
+//                        return 0;
+//                    } else {
+//                        return currentTable.getNumberOfUncommittedChanges();
+//                    }
+//                } else {
+//                    return 0;
+//                }
+//            }
+//        }
+//    }
 
     public Map<String, Integer> showTables() {
         Map<String, Integer> res = new HashMap<>();

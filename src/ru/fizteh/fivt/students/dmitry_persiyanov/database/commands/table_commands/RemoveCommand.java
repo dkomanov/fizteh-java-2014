@@ -1,0 +1,30 @@
+package ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.table_commands;
+
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.DbCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableIsNotChosenException;
+
+import java.io.PrintStream;
+
+public class RemoveCommand extends DbCommand {
+    public RemoveCommand(final String[] args, final TableProvider tableProvider, final Table table) {
+        super("remove", 1, args, tableProvider, table);
+    }
+
+    @Override
+    protected void execute(final PrintStream out) throws TableIsNotChosenException {
+        if (currentTable == null) {
+            throw new TableIsNotChosenException();
+        } else {
+            String key = args[0];
+            Storeable oldValue = currentTable.remove(key);
+            if (oldValue == null) {
+                out.println("not found");
+            } else {
+                out.println("removed");
+            }
+        }
+    }
+}
