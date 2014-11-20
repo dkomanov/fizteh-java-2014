@@ -42,8 +42,8 @@ public class FileMap {
             String[] splittedCommands = commands.toString().trim().split(";");
             try {
                 for (String s: splittedCommands) {
-                execute(s);
-            }
+                    execute(s);
+                }
             } catch (Exception exception) {
                 System.exit(0);
             }
