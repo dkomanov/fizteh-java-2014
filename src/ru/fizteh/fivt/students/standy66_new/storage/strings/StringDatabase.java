@@ -24,16 +24,16 @@ public class StringDatabase implements TableProvider, AutoCloseable {
         if (directory == null) {
             throw new IllegalArgumentException("directory is null");
         }
+        if (!directory.exists()) {
+            if (!directory.mkdirs()) {
+                throw new IllegalArgumentException("directory wasn't created");
+            }
+        }
         if (!directory.canRead()) {
             throw new IllegalStateException("dir cannot be read");
         }
         if (directory.isFile()) {
             throw new IllegalArgumentException("directory is a regular file");
-        }
-        if (!directory.exists()) {
-            if (!directory.mkdirs()) {
-                throw new IllegalArgumentException("directory wasn't created");
-            }
         }
         lockFile = new File(directory, "db.lock");
         if (directory.canWrite()) {
