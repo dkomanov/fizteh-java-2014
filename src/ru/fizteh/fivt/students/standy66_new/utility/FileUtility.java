@@ -5,7 +5,10 @@ import java.io.File;
 /**
  * Created by andrew on 01.11.14.
  */
-public class FileUtility {
+public final class FileUtility {
+    private FileUtility() {
+    }
+
     public static boolean deleteRecursively(File f) {
         if (f == null) {
             return false;

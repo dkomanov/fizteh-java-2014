@@ -15,7 +15,10 @@ import java.util.stream.Stream;
 /**
  * Created by astepanov on 20.10.14.
  */
-public class Task3Runner {
+public final class Task3Runner {
+    private Task3Runner() {
+    }
+
     public static void main(String[] args) {
         String dbDir = System.getProperty("fizteh.db.dir");
         if (dbDir == null) {

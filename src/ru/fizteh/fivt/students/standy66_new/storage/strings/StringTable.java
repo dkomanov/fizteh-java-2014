@@ -89,12 +89,12 @@ public class StringTable implements Table {
     }
 
     public int unsavedChangesCount() {
-        return openedFiles.values().stream().collect(Collectors.summingInt(fileMap -> fileMap.unsavedChangesCount()));
+        return openedFiles.values().stream().collect(Collectors.summingInt(FileMap::unsavedChangesCount));
     }
 
     @Override
     public int size() {
-        return openedFiles.values().stream().collect(Collectors.summingInt(fileMap -> fileMap.size()));
+        return openedFiles.values().stream().collect(Collectors.summingInt(FileMap::size));
     }
 
     @Override
@@ -131,7 +131,7 @@ public class StringTable implements Table {
 
     @Override
     public List<String> list() {
-        return new ArrayList<>(openedFiles.values().stream().map(fileMap -> fileMap.keySet())
+        return new ArrayList<>(openedFiles.values().stream().map(FileMap::keySet)
                 .reduce(new HashSet<>(), (accumulator, s) -> {
                     accumulator.addAll(s);
                     return accumulator;
