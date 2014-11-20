@@ -101,7 +101,7 @@ public class FileMap implements Map<String, String>, AutoCloseable {
     public int commit() throws IOException {
         int keyChangedCount = changed.size();
         changed.clear();
-        if (cache.size() == 0) {
+        if (cache.isEmpty()) {
             if (mapFile.exists()) {
                 mapFile.delete();
             }
@@ -169,9 +169,7 @@ public class FileMap implements Map<String, String>, AutoCloseable {
                     buffer.get(value);
                     cache.put(new String(key, charsetName), new String(value, charsetName));
                 }
-            } catch (BufferUnderflowException e) {
-                throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
-            } catch (NegativeArraySizeException e) {
+            } catch (BufferUnderflowException | NegativeArraySizeException e) {
                 throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
             }
         }
