@@ -11,7 +11,7 @@ import java.io.File;
 public class StringDatabaseFactory implements TableProviderFactory {
     @Override
     public TableProvider create(String dir) {
-        if (dir == null || dir.isEmpty()) {
+        if ((dir == null) || dir.isEmpty()) {
             throw new IllegalArgumentException("dir is null or empty");
         }
         File f = new File(dir).getAbsoluteFile();

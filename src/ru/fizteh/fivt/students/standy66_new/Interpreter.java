@@ -9,7 +9,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-/**
+/** Simple command interpreter.
+ * @author astepanov
  * Created by astepanov on 20.10.14.
  */
 public class Interpreter {

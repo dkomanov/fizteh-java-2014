@@ -87,7 +87,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     public Collection<String> listTableNames() {
         return tableInstances.values().stream()
-                .map(table -> table.getName()).collect(Collectors.toList());
+                .map(Table::getName).collect(Collectors.toList());
     }
 
     @Override
@@ -103,11 +103,11 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     }
 
     public void commit() {
-        tableInstances.values().forEach(t -> t.commit());
+        tableInstances.values().forEach(Table::commit);
     }
 
     public void rollback() {
-        tableInstances.values().forEach(t -> t.rollback());
+        tableInstances.values().forEach(Table::rollback);
     }
 
     @Override
