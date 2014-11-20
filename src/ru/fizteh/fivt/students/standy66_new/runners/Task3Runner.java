@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.standy66_new.runners;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.standy66_new.Interpreter;
 import ru.fizteh.fivt.students.standy66_new.commands.Command;
 import ru.fizteh.fivt.students.standy66_new.commands.ExitCommand;
@@ -17,16 +15,21 @@ import java.util.stream.Stream;
 /**
  * Created by astepanov on 20.10.14.
  */
-public class MultiFileHashMapMain {
+public class Task3Runner {
     public static void main(String[] args) {
-        System.setProperty("warn_unsaved", "true");
         String dbDir = System.getProperty("fizteh.db.dir");
         if (dbDir == null) {
             System.err.println("No dir specified, use -Dfizteh.db.dir=...");
             System.exit(1);
         }
-        TableProviderFactory tableProviderFactory = new StringDatabaseFactory();
-        TableProvider provider = tableProviderFactory.create(dbDir);
+        StringDatabaseFactory tableProviderFactory = new StringDatabaseFactory();
+        StringDatabase provider = null;
+        try {
+            provider = (StringDatabase) tableProviderFactory.create(dbDir);
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
         CommandFactory commandFactory = new CommandFactory(provider);
         Map<String, Command> availableCommands = commandFactory.getCommandsMap("en-US");
         availableCommands.put("exit", new ExitCommand());
@@ -38,8 +41,8 @@ public class MultiFileHashMapMain {
             interpreter = new Interpreter(new ByteArrayInputStream(params.getBytes()), availableCommands, false);
         }
         if (interpreter.run()) {
-            ((StringDatabase) provider).commit();
-            ((StringDatabase) provider).close();
+            provider.commit();
+            provider.close();
         }
     }
 }
