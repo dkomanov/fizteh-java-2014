@@ -1,14 +1,14 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.tableprovider_commands;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.DbCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 
 import java.io.PrintStream;
 import java.util.List;
 
 
 public class ShowTablesCommand extends DbCommand {
-    public ShowTablesCommand(final String[] args, final TableProvider tableProvider) {
+    public ShowTablesCommand(final String[] args, final DbTableProvider tableProvider) {
         super("show tables", 0, args, tableProvider);
     }
 
@@ -22,8 +22,7 @@ public class ShowTablesCommand extends DbCommand {
                 msgBuilder.append(tableName + " " + tableSize);
                 msgBuilder.append(System.lineSeparator());
             }
-            msgBuilder.deleteCharAt(msgBuilder.lastIndexOf(System.lineSeparator()));
-            // msgBuilder.delete(msgBuilder.length() - 1, msgBuilder.length());
+            msgBuilder.delete(msgBuilder.length() - 1, msgBuilder.length());
             out.println(msgBuilder.toString());
         }
     }

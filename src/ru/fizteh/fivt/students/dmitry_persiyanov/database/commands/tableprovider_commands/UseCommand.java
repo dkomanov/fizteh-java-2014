@@ -1,14 +1,14 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.tableprovider_commands;
 
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.DbCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 
 import java.io.IOException;
 import java.io.PrintStream;
 
 public class UseCommand extends DbCommand {
-    public UseCommand(final String[] args, final TableProvider tableProvider) {
+    public UseCommand(final String[] args, final DbTableProvider tableProvider) {
         super("use", 1, args, tableProvider);
     }
 
@@ -21,7 +21,7 @@ public class UseCommand extends DbCommand {
         } else {
             int unsavedChanges = newTable.getNumberOfUncommittedChanges();
             if (unsavedChanges == 0) {
-                currentTable = newTable;
+                tableProvider.useTable(tableToUse);
                 out.println("using " + tableToUse);
             } else {
                 out.println(unsavedChanges + " unsaved changes");

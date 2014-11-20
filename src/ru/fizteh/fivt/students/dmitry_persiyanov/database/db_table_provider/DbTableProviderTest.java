@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
@@ -93,7 +94,7 @@ public class DbTableProviderTest {
     @Test
     public void testingRightTableDeleting() throws IOException, ParseException {
         Table t = dbm.createTable("table1", signature);
-        t.put("key", dbm.deserialize(t, "value"));
+        t.put("key", dbm.deserialize(t, "[\"value\"]"));
         t.commit();
         dbm.removeTable("table1");
         TableProvider tableProvider = new DbTableProvider(dbDir);
@@ -108,6 +109,92 @@ public class DbTableProviderTest {
     @Test(expected = WrongTableNameException.class)
     public void createTableWithWrongName2() throws IOException {
         dbm.createTable(".d23d2d3;.1'.", signature);
+    }
+
+    @Test(expected = WrongTableNameException.class)
+    public void useTableWithWrongName() {
+        dbm.useTable(".");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void useUnexistedTable() {
+        dbm.useTable("unexisted");
+    }
+
+    @Test
+    public void useTableFirstTime() throws IOException {
+        Table table = dbm.createTable("table", signature);
+        dbm.useTable("table");
+        assertEquals("table", dbm.getCurrentTable().getName());
+    }
+
+    @Test
+    public void useWithUncommittedCurrentTable() throws IOException, ParseException {
+        dbm.createTable("table1", signature);
+        dbm.createTable("table2", signature);
+        dbm.useTable("table1");
+        dbm.getCurrentTable().put("heeey", dbm.deserialize(dbm.getCurrentTable(), "[\"yoooo\"]"));
+        assertFalse(dbm.useTable("table2") == 0);
+    }
+
+    @Test
+    public void useWithCommittedCurrentTable() throws IOException, ParseException {
+        dbm.createTable("table1", signature);
+        dbm.createTable("table2", signature);
+        dbm.useTable("table1");
+        dbm.getCurrentTable().put("heeyey", dbm.deserialize(dbm.getCurrentTable(), "[\"yoo\"]"));
+        dbm.getCurrentTable().commit();
+        assertTrue(dbm.useTable("table2") == 0);
+    }
+
+    // Serialize tests.
+    @Test
+    public void correctSerialize() throws IOException {
+        List<Class<?>> tableSignature = new LinkedList<>();
+        tableSignature.add(String.class);   // Name
+        tableSignature.add(String.class);   // Surname
+        tableSignature.add(Integer.class);  // Age
+        Table t = dbm.createTable("names", tableSignature);
+        List<Object> values = new LinkedList<>();
+        values.add("Dmitry");
+        values.add("Persiyanov");
+        values.add(19);
+        Storeable value = dbm.createFor(t, values);
+        assertEquals("[\"Dmitry\", \"Persiyanov\", 19]", dbm.serialize(t, value));
+    }
+
+    @Test
+    public void correctSerializeWithNull() throws IOException {
+        List<Class<?>> tableSignature = new LinkedList<>();
+        tableSignature.add(String.class);   // Name
+        tableSignature.add(String.class);   // Surname
+        tableSignature.add(Integer.class);  // Age
+        Table t = dbm.createTable("names", tableSignature);
+        List<Object> values = new LinkedList<>();
+        values.add("Dmitry");
+        values.add(null);
+        values.add(19);
+        Storeable value = dbm.createFor(t, values);
+        assertEquals("[\"Dmitry\", null, 19]", dbm.serialize(t, value));
+    }
+
+    // Deserialize
+    @Test
+    public void correctDeserialize() throws IOException, ParseException {
+        List<Class<?>> tableSignature = new LinkedList<>();
+        tableSignature.add(String.class);   // Name
+        tableSignature.add(String.class);   // Surname
+        tableSignature.add(Integer.class);  // Age
+        Table t = dbm.createTable("names", tableSignature);
+        List<Object> values = new LinkedList<>();
+        values.add("Dmitry");
+        values.add("Persiyanov");
+        values.add(19);
+        Storeable expected = dbm.createFor(t, values);
+        Storeable actual = dbm.deserialize(t, "[\"Dmitry\", \"Persiyanov\", 19]");
+        assertEquals(expected.getColumnAt(0), actual.getColumnAt(0));
+        assertEquals(expected.getColumnAt(2), actual.getColumnAt(2));
+        assertEquals(expected.getColumnAt(2), actual.getColumnAt(2));
     }
 
 }

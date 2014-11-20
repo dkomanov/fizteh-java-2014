@@ -58,7 +58,10 @@ public final class DbCommandsParser implements InterpreterCommandsParser {
         switch (cmdChunks[0]) {
             // TableManagerCommands.
             case "put":
-                return new PutCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
+                String[] args = new String[2];
+                args[0] = commandArgs[0];
+                args[1] = String.join("", Arrays.copyOfRange(commandArgs, 1, commandArgs.length));
+                return new PutCommand(args, tableProvider, tableProvider.getCurrentTable());
             case "get":
                 return new GetCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
             case "remove":
@@ -75,7 +78,10 @@ public final class DbCommandsParser implements InterpreterCommandsParser {
                 return new ExitCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
             // DatabaseManagerCommands.
             case "create":
-                return new CreateCommand(commandArgs, tableProvider);
+                String[] cmdArgs = new String[2];
+                cmdArgs[0] = commandArgs[0];
+                cmdArgs[1] = String.join("", Arrays.copyOfRange(commandArgs, 1, commandArgs.length));
+                return new CreateCommand(cmdArgs, tableProvider);
             case "drop":
                 return new DropCommand(commandArgs, tableProvider);
             case "use":

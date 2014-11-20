@@ -55,7 +55,7 @@ public final class DbTableProvider implements TableProvider {
         }
     }
 
-    public boolean containsTable(final String tableName) {
+    private boolean containsTable(final String tableName) {
         return tables.containsKey(tableName);
     }
 
@@ -118,14 +118,13 @@ public final class DbTableProvider implements TableProvider {
         if (str.charAt(0) != '[' || str.charAt(str.length() - 1) != ']') {
             throw new ParseException("invalid borders", 0);
         } else {
-            str = str.replace("[", "");
-            str = str.replace("]", "");
+            str = str.replace("[", "").replace("]", "");
             String[] columns = str.split(",");
             if (columns.length != table.getColumnsCount()) {
                 throw new ParseException("sizes of table and value don't correspond", 0);
             }
             List<Object> values = new LinkedList<>();
-            for (int i = 0; i < values.size(); ++i) {
+            for (int i = 0; i < columns.length; ++i) {
                 columns[i] = columns[i].trim();
                 values.add(parseColumn(table.getColumnType(i), columns[i]));
             }
@@ -149,7 +148,7 @@ public final class DbTableProvider implements TableProvider {
                 case "boolean":
                     return new Boolean(column);
                 case "String":
-                    return column;
+                    return column.replace("\"", "");
                 default:
                     return null;
             }
@@ -160,20 +159,30 @@ public final class DbTableProvider implements TableProvider {
 
     @Override
     public String serialize(final Table table, final Storeable value) throws ColumnFormatException {
-        List<String> strColumns = new LinkedList<>();
-        for (int i = 0; i < table.getColumnsCount(); ++i) {
-            Class<?> tableColumnType = table.getColumnType(i);
-            Class<?> valueColumnType = value.getColumnAt(i).getClass();
-            if (!tableColumnType.equals(valueColumnType)) {
-                throw new ColumnFormatException();
-            } else {
-                strColumns.add(value.getColumnAt(i).toString());
+        if (value == null) {
+            return null;
+        } else {
+            List<String> strColumns = new LinkedList<>();
+            for (int i = 0; i < table.getColumnsCount(); ++i) {
+                if (value.getColumnAt(i) == null) {
+                    strColumns.add(null);
+                } else {
+                    Class<?> tableColumnType = table.getColumnType(i);
+                    Class<?> valueColumnType = value.getColumnAt(i).getClass();
+                    if (!tableColumnType.equals(valueColumnType)) {
+                        throw new ColumnFormatException();
+                    } else if (valueColumnType.equals(String.class)) {
+                        strColumns.add("\"" + value.getColumnAt(i).toString() + "\"");
+                    } else {
+                        strColumns.add(value.getColumnAt(i).toString());
+                    }
+                }
             }
+            StringBuilder b = new StringBuilder(String.join(", ", strColumns));
+            b.insert(0, "[");
+            b.append("]");
+            return b.toString();
         }
-        StringBuilder b = new StringBuilder(String.join(", ", strColumns));
-        b.insert(0, "[");
-        b.append("]");
-        return b.toString();
     }
 
     @Override
@@ -190,10 +199,10 @@ public final class DbTableProvider implements TableProvider {
             IndexOutOfBoundsException {
         List<Object> storeableValues = new LinkedList<>();
         for (int i = 0; i < values.size(); ++i) {
-            if (!table.getColumnType(i).equals(values.get(i).getClass())) {
+            if (values.get(i) != null && !table.getColumnType(i).equals(values.get(i).getClass())) {
                 throw new ColumnFormatException();
             } else {
-                storeableValues.add(table.getColumnType(i));
+                storeableValues.add(values.get(i));
             }
         }
         return new TableRow(storeableValues);
@@ -206,36 +215,42 @@ public final class DbTableProvider implements TableProvider {
         return res;
     }
 
-//    /**
-//     * @param tableName
-//     * @return  0 if succeed, otherwise returns number of uncommitted changes in currentTable
-//     * If number of uncommitted changes isn't zero then table isn't changing.
-//     * @throws IOException if it is impossible to dump current table.
-//     */
-//    public int useTable(final String tableName) {
-//        if (!SyntaxCheckers.checkCorrectnessOfTableName(tableName)) {
-//            throw new WrongTableNameException(tableName);
-//        } else if (!tables.containsKey(tableName)) {
-//            throw new IllegalArgumentException(tableName + " doesn't exist");
-//        } else {
-//            if (currentTable == null) {
-//                currentTable = tables.get(tableName);
-//                return 0;
-//            } else {
-//                boolean currentAndNewTablesAreDistinct = !currentTable.getName().equals(tableName);
-//                if (currentAndNewTablesAreDistinct) {
-//                    if (currentTable.getNumberOfUncommittedChanges() == 0) {
-//                        currentTable = tables.get(tableName);
-//                        return 0;
-//                    } else {
-//                        return currentTable.getNumberOfUncommittedChanges();
-//                    }
-//                } else {
-//                    return 0;
-//                }
-//            }
-//        }
-//    }
+    /**
+     * @param tableName
+     * @return  0 if succeed, otherwise returns number of uncommitted changes in currentTable
+     * If number of uncommitted changes isn't zero then table isn't changing.
+     * @throws IOException if it is impossible to dump current table.
+     */
+    public int useTable(final String tableName) {
+        if (!SyntaxCheckers.checkCorrectnessOfTableName(tableName)) {
+            throw new WrongTableNameException(tableName);
+        } else if (!tables.containsKey(tableName)) {
+            throw new IllegalArgumentException(tableName + " doesn't exist");
+        } else {
+            if (currentTable == null) {
+                if (tables.get(tableName) == null) {
+                    tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName).toFile(), this));
+                }
+                currentTable = tables.get(tableName);
+                return 0;
+            } else {
+                boolean currentAndNewTablesAreDistinct = !currentTable.getName().equals(tableName);
+                if (currentAndNewTablesAreDistinct) {
+                    if (currentTable.getNumberOfUncommittedChanges() == 0) {
+                        if (tables.get(tableName) == null) {
+                            tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName).toFile(), this));
+                        }
+                        currentTable = tables.get(tableName);
+                        return 0;
+                    } else {
+                        return currentTable.getNumberOfUncommittedChanges();
+                    }
+                } else {
+                    return 0;
+                }
+            }
+        }
+    }
 
     public Map<String, Integer> showTables() {
         Map<String, Integer> res = new HashMap<>();

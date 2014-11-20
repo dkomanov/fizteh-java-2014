@@ -50,7 +50,7 @@ public final class DbTable implements Table {
         } else {
             this.tableProvider = tableProvider;
             this.columnTypes = new ArrayList<>();
-            columnTypes.addAll(columnTypes);
+            this.columnTypes.addAll(columnTypes);
             this.tableDir = tableDir;
             initHashMaps();
             try {
@@ -244,11 +244,15 @@ public final class DbTable implements Table {
     }
 
     private Storeable deserializeWrapper(final String value) {
-        try {
-            return tableProvider.deserialize(this, value);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("error while deserializing value \""
-                    + value + "\": " + e.getMessage());
+        if (value == null) {
+            return null;
+        } else {
+            try {
+                return tableProvider.deserialize(this, value);
+            } catch (ParseException e) {
+                throw new IllegalArgumentException("error while deserializing value \""
+                        + value + "\": " + e.getMessage());
+            }
         }
     }
 
@@ -278,7 +282,8 @@ public final class DbTable implements Table {
             if (!columnTypes.get(i).equals(value.getColumnAt(i).getClass())) {
                 throw new ColumnFormatException("types incompatibility: column index " + i
                         + ", table type: " + TypeStringTranslator.getStringNameByType(columnTypes.get(i))
-                        + ", passed type: " + TypeStringTranslator.getStringNameByType(value.getColumnAt(i).getClass()));
+                        + ", passed type: "
+                        + TypeStringTranslator.getStringNameByType(value.getColumnAt(i).getClass()));
             }
         }
         return true;

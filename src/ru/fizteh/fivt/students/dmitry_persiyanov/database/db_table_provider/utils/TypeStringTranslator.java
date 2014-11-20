@@ -41,7 +41,7 @@ public class TypeStringTranslator {
         } else if (type.equals(String.class)) {
             return "String";
         } else {
-            return null;
+            throw new IllegalArgumentException("unsupported type: " + type.getName());
         }
     }
 }

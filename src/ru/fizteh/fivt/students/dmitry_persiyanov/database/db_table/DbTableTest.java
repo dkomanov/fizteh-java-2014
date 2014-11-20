@@ -37,7 +37,7 @@ public class DbTableTest {
     public void setUp() throws Exception {
         testKeysValues.put("key", "[\"value\"]");
         testKeysValues.put("mazafakka", "[\"yo\"]");
-        testKeysValues.put("12345", "[\"!)@J D! =!_@O  as \"|}\"");
+        testKeysValues.put("12345", "[\"!)@J D! =!_@O  as \"|}\"]");
         tempFile = tempFolder.newFile();
         dbDir = tempFolder.newFolder();
         db = new DbTableProvider(dbDir);
@@ -61,7 +61,14 @@ public class DbTableTest {
         Set<String> expected = new HashSet<>();
         expected.add("key");
         expected.add("12345");
+        expected.add("mazafakka");
         assertEquals(expected, actualSet);
+    }
+
+    @Test
+    public void checkTableColumnTypesCorrectnessAfterCreate() {
+        assertTrue(tm.getColumnsCount() == 1);
+        assertEquals(tm.getColumnType(0), String.class);
     }
 
     @Test
@@ -97,16 +104,16 @@ public class DbTableTest {
     @Test
     public void doublePutWithDifferentValues() throws ParseException {
         tm.put("key", db.deserialize(tm, testKeysValues.get("key")));
-        tm.put("key", db.deserialize(tm, "NEW VALUE"));
-        assertEquals("NEW VALUE", db.serialize(tm, tm.get("key")));
+        tm.put("key", db.deserialize(tm, "[\"NEW VALUE\"]"));
+        assertEquals("[\"NEW VALUE\"]", db.serialize(tm, tm.get("key")));
     }
 
     @Test
     public void putRemoveAndPutAgainTheSameKey() throws ParseException {
         addKeysToTable(tm);
         tm.remove("mazafakka");
-        tm.put("mazafakka", db.deserialize(tm, "mazafakka?"));
-        assertEquals("mazafakka?", db.serialize(tm, tm.get("mazafakka")));
+        tm.put("mazafakka", db.deserialize(tm, "[\"mazafakka?\"]"));
+        assertEquals("[\"mazafakka?\"]", db.serialize(tm, tm.get("mazafakka")));
     }
 
     @Test
@@ -138,7 +145,7 @@ public class DbTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void putInvalidKey() throws ParseException {
-        tm.put(null, db.deserialize(tm, "m?"));
+        tm.put(null, db.deserialize(tm, "[]"));
     }
 
     @Test(expected = IllegalArgumentException.class)

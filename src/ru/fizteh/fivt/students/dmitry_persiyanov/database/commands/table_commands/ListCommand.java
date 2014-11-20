@@ -1,15 +1,15 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.table_commands;
 
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.DbCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableIsNotChosenException;
 
 import java.io.PrintStream;
 import java.util.List;
 
 public class ListCommand extends DbCommand {
-    public ListCommand(final String[] args, final TableProvider tableProvider, final Table table) {
+    public ListCommand(final String[] args, final DbTableProvider tableProvider, final Table table) {
         super("list", 0, args, tableProvider, table);
     }
 

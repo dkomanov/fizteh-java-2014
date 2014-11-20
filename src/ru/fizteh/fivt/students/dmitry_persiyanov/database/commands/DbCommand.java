@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.commands;
 
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.IllegalNumberOfArgumentsException;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableIsNotChosenException;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
@@ -14,7 +14,7 @@ public abstract class DbCommand implements InterpreterCommand {
     protected static int numOfArgs;
     protected String[] args;
     protected String name;
-    protected TableProvider tableProvider;
+    protected DbTableProvider tableProvider;
     protected Table currentTable;
 
     /**
@@ -23,7 +23,7 @@ public abstract class DbCommand implements InterpreterCommand {
      * @param numOfArgs Valid number of arguments that command accepts.
      * @param args  Argument values.
      */
-    public DbCommand(final String name, int numOfArgs, final String[] args, final TableProvider tableProvider) {
+    public DbCommand(final String name, int numOfArgs, final String[] args, final DbTableProvider tableProvider) {
         this.numOfArgs = numOfArgs;
         this.args = args;
         this.name = name;
@@ -31,7 +31,7 @@ public abstract class DbCommand implements InterpreterCommand {
         this.currentTable = null;
     }
 
-    public DbCommand(final String name, int numOfArgs, final String[] args, final TableProvider tableProvider,
+    public DbCommand(final String name, int numOfArgs, final String[] args, final DbTableProvider tableProvider,
                      Table currentTable) {
         this(name, numOfArgs, args, tableProvider);
         this.currentTable = currentTable;

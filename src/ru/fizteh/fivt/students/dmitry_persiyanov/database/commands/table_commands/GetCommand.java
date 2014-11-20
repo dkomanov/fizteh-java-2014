@@ -2,14 +2,14 @@ package ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.table_comman
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.DbCommand;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableIsNotChosenException;
 
 import java.io.PrintStream;
 
 public class GetCommand extends DbCommand {
-    public GetCommand(final String[] args, final TableProvider tableProvider, final Table table) {
+    public GetCommand(final String[] args, final DbTableProvider tableProvider, final Table table) {
         super("get", 1, args, tableProvider, table);
     }
 

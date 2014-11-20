@@ -28,8 +28,10 @@ final class TableLoaderDumper {
             throw new NotDirectoryException(tableDir.getName());
         }
         for (int i = 0; i < tableDirectories.length; ++i) {
-            int indexOfDir = parseNum(tableDirectories[i].toPath());
-            loadDirectory(tableDirectories[i], tableHashMap.get(indexOfDir));
+            if (!tableDirectories[i].getName().equals(TABLE_SIGNATURE_FILENAME)) {
+                int indexOfDir = parseNum(tableDirectories[i].toPath());
+                loadDirectory(tableDirectories[i], tableHashMap.get(indexOfDir));
+            }
         }
     }
 
