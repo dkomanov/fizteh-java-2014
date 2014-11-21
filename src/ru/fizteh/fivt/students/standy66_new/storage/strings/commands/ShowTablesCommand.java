@@ -15,13 +15,14 @@ public class ShowTablesCommand extends ContextualCommand {
     @Override
     public void run(String[] arguments) throws Exception {
         super.run(arguments);
+        //noinspection CallToStringEquals
         if (!arguments[1].equals("tables")) {
             throw new WrongNumberOfArgumentsException("show must be followed by tables");
         }
         StringDatabase db = (StringDatabase) (getContext().getProvider());
         System.out.println("table_name      row_count");
         for (String name : db.listTableNames()) {
-            System.out.printf("%s       %s\n", name, db.getTable(name).size());
+            System.out.printf("%s       %s%n", name, db.getTable(name).size());
         }
 
     }

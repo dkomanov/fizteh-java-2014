@@ -64,6 +64,7 @@ public class CommandFactory {
     }
 
     public Map<String, Command> getCommandsMap(String locale) {
+        //noinspection CollectionWithoutInitialCapacity
         Map<String, Command> map = new HashMap<>();
         map.put("put", putCommand());
         map.put("get", getCommand());

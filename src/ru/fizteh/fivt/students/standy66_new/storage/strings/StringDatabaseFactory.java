@@ -14,7 +14,7 @@ public class StringDatabaseFactory implements TableProviderFactory {
         if ((dir == null) || dir.isEmpty()) {
             throw new IllegalArgumentException("dir is null or empty");
         }
-        File f = new File(dir).getAbsoluteFile();
-        return new StringDatabase(f);
+        File file = new File(dir).getAbsoluteFile();
+        return new StringDatabase(file);
     }
 }

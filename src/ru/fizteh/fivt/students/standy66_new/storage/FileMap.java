@@ -15,7 +15,7 @@ import java.util.*;
  * Created by astepanov on 26.09.14.
  */
 public class FileMap implements Map<String, String>, AutoCloseable {
-    private final String charsetName = "UTF-8";
+    private static final String CHARSET_NAME = "UTF-8";
     private File mapFile;
     private Map<String, String> cache;
     private Set<String> changed;
@@ -25,7 +25,9 @@ public class FileMap implements Map<String, String>, AutoCloseable {
             throw new IllegalArgumentException("mapFile must not be null");
         }
         this.mapFile = mapFile.getAbsoluteFile();
+        //noinspection CollectionWithoutInitialCapacity
         cache = new HashMap<>();
+        //noinspection CollectionWithoutInitialCapacity
         changed = new HashSet<>();
         reload();
     }
@@ -51,9 +53,9 @@ public class FileMap implements Map<String, String>, AutoCloseable {
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends String> m) {
-        cache.putAll(m);
-        changed.addAll(m.keySet());
+    public void putAll(Map<? extends String, ? extends String> map) {
+        cache.putAll(map);
+        changed.addAll(map.keySet());
     }
 
     @Override
@@ -103,24 +105,28 @@ public class FileMap implements Map<String, String>, AutoCloseable {
         changed.clear();
         if (cache.isEmpty()) {
             if (mapFile.exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 mapFile.delete();
             }
             return keyChangedCount;
         }
         if (!mapFile.getParentFile().exists()) {
-            mapFile.getParentFile().mkdirs();
+            if (!mapFile.getParentFile().mkdirs()) {
+                throw new IOException("Cannot create  " + mapFile.getParent());
+            }
         }
         if (!mapFile.exists()) {
+            //noinspection ResultOfMethodCallIgnored
             mapFile.createNewFile();
         }
         try (FileOutputStream fos = new FileOutputStream(mapFile, false)) {
             ByteBuffer lengthBuffer = ByteBuffer.allocate(4);
-            for (String key : cache.keySet()) {
-                String value = cache.get(key);
-                byte[] keyEncoded = key.getBytes(charsetName);
+            for (Entry<String, String> stringStringEntry : cache.entrySet()) {
+                String value = stringStringEntry.getValue();
+                byte[] keyEncoded = stringStringEntry.getKey().getBytes(CHARSET_NAME);
                 fos.write(lengthBuffer.putInt(0, keyEncoded.length).array());
                 fos.write(keyEncoded);
-                byte[] valueEncoded = value.getBytes(charsetName);
+                byte[] valueEncoded = value.getBytes(CHARSET_NAME);
                 fos.write(lengthBuffer.putInt(0, valueEncoded.length).array());
                 fos.write(valueEncoded);
             }
@@ -149,29 +155,28 @@ public class FileMap implements Map<String, String>, AutoCloseable {
         if (!mapFile.exists()) {
             return;
         }
-
-        try (FileChannel channel = new FileInputStream(mapFile).getChannel()) {
+        try (FileInputStream fis = new FileInputStream(mapFile);
+             FileChannel channel = fis.getChannel()) {
             ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-            try {
 
-                while (buffer.remaining() > 0) {
-                    int keySize = buffer.getInt();
-                    if (keySize > channel.size()) {
-                        throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
-                    }
-                    byte[] key = new byte[keySize];
-                    buffer.get(key);
-                    int valueSize = buffer.getInt();
-                    if (valueSize > channel.size()) {
-                        throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
-                    }
-                    byte[] value = new byte[valueSize];
-                    buffer.get(value);
-                    cache.put(new String(key, charsetName), new String(value, charsetName));
+            while (buffer.remaining() > 0) {
+                int keySize = buffer.getInt();
+                if (keySize > channel.size()) {
+                    throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
                 }
-            } catch (BufferUnderflowException | NegativeArraySizeException e) {
-                throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+                byte[] key = new byte[keySize];
+                buffer.get(key);
+                int valueSize = buffer.getInt();
+                if (valueSize > channel.size()) {
+                    throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+                }
+                byte[] value = new byte[valueSize];
+                buffer.get(value);
+                //noinspection ObjectAllocationInLoop,ObjectAllocationInLoop
+                cache.put(new String(key, CHARSET_NAME), new String(value, CHARSET_NAME));
             }
+        } catch (BufferUnderflowException | NegativeArraySizeException e) {
+            throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
         }
     }
 }

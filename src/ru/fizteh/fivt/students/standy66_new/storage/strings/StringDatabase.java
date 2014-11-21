@@ -41,13 +41,16 @@ public class StringDatabase implements TableProvider, AutoCloseable {
                 throw new IllegalStateException("Database locked");
             }
             try {
+                //noinspection ResultOfMethodCallIgnored
                 lockFile.createNewFile();
             } catch (IOException e) {
                 throw new RuntimeException("IOException occurred", e);
             }
         }
         dbDirectory = directory;
+        //noinspection CollectionWithoutInitialCapacity
         tableInstances = new HashMap<>();
+        //noinspection ConstantConditions
         for (File tableFile : directory.listFiles()) {
             if (tableFile.isDirectory()) {
                 String tableName = tableFile.getName();
@@ -56,8 +59,25 @@ public class StringDatabase implements TableProvider, AutoCloseable {
                 } catch (Exception e) {
                     throw new RuntimeException("Database contains incorrect table name: " + e.getMessage(), e);
                 }
+                //noinspection ObjectAllocationInLoop
                 tableInstances.put(tableName, new StringTable(tableFile));
             }
+        }
+    }
+
+    private static void checkTableName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("table name should not be null");
+        }
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("table name should not be empty");
+        }
+        if (name.contains(File.pathSeparator)) {
+            throw new IllegalArgumentException("table name should not contain file separator");
+        }
+        //noinspection CallToStringEquals,CallToStringEquals
+        if (name.equals("..") || name.equals(".")) {
+            throw new IllegalArgumentException("table name should not be . or ..");
         }
     }
 
@@ -76,6 +96,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
         checkTableName(name);
         File tableDirectory = new File(dbDirectory, name);
         if (tableInstances.get(name) != null) {
+            //noinspection ReturnOfNull
             return null;
         }
         if (!tableDirectory.mkdirs()) {
@@ -112,21 +133,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     @Override
     public void close() {
+        //noinspection ResultOfMethodCallIgnored
         lockFile.delete();
-    }
-
-    private void checkTableName(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("table name should not be null");
-        }
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("table name should not be empty");
-        }
-        if (name.contains(File.pathSeparator)) {
-            throw new IllegalArgumentException("table name should not contain file separator");
-        }
-        if (name.equals("..") || name.equals(".")) {
-            throw new IllegalArgumentException("table name should not be . or ..");
-        }
     }
 }

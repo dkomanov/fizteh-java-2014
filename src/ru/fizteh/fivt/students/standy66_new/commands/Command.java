@@ -8,7 +8,7 @@ import java.util.function.IntPredicate;
  * Created by astepanov on 20.10.14.
  */
 public class Command {
-    IntPredicate isValidNumberOfArgumentsPredicate;
+    private IntPredicate isValidNumberOfArgumentsPredicate;
 
     protected Command(IntPredicate isValidNumberOfArgumentsPredicate) {
         this.isValidNumberOfArgumentsPredicate = isValidNumberOfArgumentsPredicate;

@@ -60,7 +60,7 @@ public class Interpreter {
                 } catch (InterpreterInterruptionException e) {
                     return isInteractive;
                 } catch (Exception e) {
-                    System.err.printf("%s: %s\n", commandName, e.getMessage());
+                    System.err.printf("%s: %s%n", commandName, e.getMessage());
                     if (!isInteractive) {
                         return false;
                     }

@@ -25,6 +25,7 @@ public class StringTable implements Table {
             throw new IllegalArgumentException("table directory should not point to a regular file");
         }
         this.tableDirectory = tableDirectory;
+        //noinspection CollectionWithoutInitialCapacity
         openedFiles = new HashMap<>();
 
         for (int i = 0; i < MAX_DIR_CHUNK; i++) {
@@ -32,6 +33,7 @@ public class StringTable implements Table {
             for (int j = 0; j < MAX_FILE_CHUNK; j++) {
                 File file = new File(dir, j + ".dat");
                 try {
+                    //noinspection resource,ObjectAllocationInLoop
                     openedFiles.put(file, new FileMap(file));
                 } catch (IOException e) {
                     throw new RuntimeException("IOException occurred", e);
@@ -54,8 +56,10 @@ public class StringTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("key should not be null");
         }
+        //noinspection resource
         FileMap fm = getFileMapByKey(key);
         if (fm == null) {
+            //noinspection ReturnOfNull
             return null;
         } else {
             return fm.get(key);
@@ -67,8 +71,10 @@ public class StringTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("key should not be null");
         }
+        //noinspection resource
         FileMap fm = getFileMapByKey(key);
         if (fm == null) {
+            //noinspection ReturnOfNull
             return null;
         } else {
             return fm.put(key, value);
@@ -80,8 +86,10 @@ public class StringTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
         }
+        //noinspection resource
         FileMap fm = getFileMapByKey(key);
         if (fm == null) {
+            //noinspection ReturnOfNull
             return null;
         } else {
             return fm.remove(key);
@@ -109,7 +117,9 @@ public class StringTable implements Table {
         }
         for (int i = 0; i < 16; i++) {
             File dir = new File(tableDirectory, String.format("%d.dir", i));
+            //noinspection ConstantConditions
             if (dir.exists() && dir.listFiles().length == 0) {
+                //noinspection ResultOfMethodCallIgnored
                 dir.delete();
             }
         }
@@ -131,9 +141,10 @@ public class StringTable implements Table {
 
     @Override
     public List<String> list() {
+        //noinspection CollectionWithoutInitialCapacity
         return new ArrayList<>(openedFiles.values().stream().map(FileMap::keySet)
-                .reduce(new HashSet<>(), (accumulator, s) -> {
-                    accumulator.addAll(s);
+                .reduce(new HashSet<>(), (accumulator, set) -> {
+                    accumulator.addAll(set);
                     return accumulator;
                 }));
     }
