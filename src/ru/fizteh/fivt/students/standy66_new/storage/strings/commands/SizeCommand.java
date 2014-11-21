@@ -20,6 +20,6 @@ public class SizeCommand extends ContextualCommand {
         if (currentTable == null) {
             throw new NoTableSelectedException();
         }
-        out.println(currentTable.size());
+        getOutputWriter().println(currentTable.size());
     }
 }

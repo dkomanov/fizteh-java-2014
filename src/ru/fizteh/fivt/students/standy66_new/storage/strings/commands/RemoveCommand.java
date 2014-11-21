@@ -24,8 +24,7 @@ public class RemoveCommand extends ContextualCommand {
         if (current.get(arguments[1]) == null) {
             throw new RowNotFoundException();
         }
-        out.println("removed");
+        getOutputWriter().println("removed");
         current.remove(arguments[1]);
-
     }
 }

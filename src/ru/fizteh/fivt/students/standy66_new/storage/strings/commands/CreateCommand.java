@@ -17,7 +17,7 @@ public class CreateCommand extends ContextualCommand {
     public void execute(String... arguments) throws Exception {
         super.execute(arguments);
         if (getContext().getProvider().createTable(arguments[1]) != null) {
-            out.println("created");
+            getOutputWriter().println("created");
         } else {
             throw new TableExistsException(String.format("%s exists", arguments[1]));
         }
