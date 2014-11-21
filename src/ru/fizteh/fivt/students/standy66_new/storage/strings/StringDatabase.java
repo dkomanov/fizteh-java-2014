@@ -19,7 +19,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     private static final boolean FILE_BASED_LOCK_MECHANISM = (System.getProperty("use_locks") != null);
     private File dbDirectory;
     private File lockFile;
-    private Map<String, Table> tableInstances;
+    private Map<String, StringTable> tableInstances;
 
     StringDatabase(File directory) {
         if (directory == null) {
@@ -76,13 +76,13 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     }
 
     @Override
-    public Table getTable(String name) {
+    public StringTable getTable(String name) {
         throwIfIncorrectTableName(name);
         return tableInstances.get(name);
     }
 
     @Override
-    public Table createTable(String name) {
+    public StringTable createTable(String name) {
         throwIfIncorrectTableName(name);
         File tableDirectory = new File(dbDirectory, name);
         if (tableInstances.get(name) != null) {

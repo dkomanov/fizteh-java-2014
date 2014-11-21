@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.standy66_new.storage.strings;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 
 import java.io.File;
@@ -10,11 +9,15 @@ import java.io.File;
  */
 public class StringDatabaseFactory implements TableProviderFactory {
     @Override
-    public TableProvider create(String dir) {
+    public StringDatabase create(String dir) {
         if ((dir == null) || dir.isEmpty()) {
             throw new IllegalArgumentException("dir is null or empty");
         }
         File file = new File(dir).getAbsoluteFile();
         return new StringDatabase(file);
+    }
+
+    public StringDatabase create(File file) {
+        return create(file.getAbsolutePath());
     }
 }
