@@ -9,15 +9,15 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Interpreter {
-    private final String PROMPT = "$ ";
-    private final String STATEMENT_DELIMITER = ";";
-    private final String PARAM_REGEXP = "\\S+";
+    private static final String PROMPT = "$ ";
+    private static final String STATEMENT_DELIMITER = ";";
+    private static final String PARAM_REGEXP = "\\S+";
     private InputStream inputStream;
     private PrintStream printStream;
     private InterpreterState interpreterState;
     private final Map<String, Command> commands;
 
-    public Interpreter (InterpreterState dbState, Command[] commands, InputStream in, PrintStream out) {
+    public Interpreter(InterpreterState dbState, Command[] commands, InputStream in, PrintStream out) {
         this.commands = new HashMap<>();
         if (commands == null || in == null || out == null) {
             throw new IllegalArgumentException("argument is null");

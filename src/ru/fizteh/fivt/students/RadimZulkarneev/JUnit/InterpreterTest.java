@@ -17,11 +17,11 @@ import ru.fizteh.fivt.students.RadimZulkarneev.Interpreter.InterpreterState;
 public class InterpreterTest {
     private ByteArrayOutputStream outputStream;
     private PrintStream printStream;
-    private final String PROMPT = "$ ";
-    private final String COMMAND_SEPARATOR = ";";
-    private final String testCommand = "test";
-    private final String testOutput = "TEST";
-    private final String newLine = System.getProperty("line.separator");
+    private static final String PROMPT = "$ ";
+    private static final String COMMAND_SEPARATOR = ";";
+    private static final String testCommand = "test";
+    private static final String testOutput = "TEST";
+    private static final String newLine = System.getProperty("line.separator");
 
     @Before
     public void setUp() {

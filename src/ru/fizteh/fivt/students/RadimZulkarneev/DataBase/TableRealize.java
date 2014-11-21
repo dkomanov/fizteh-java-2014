@@ -20,11 +20,11 @@ public class TableRealize implements Table {
     private Path tablePath;
     private Map<String, FileMap> data;
     private Map<String, String> diff;
-    private final String DIRNAME = "(0[0-9]|1[0-5])\\.dir";
-    private final String FILENAME = "(0[0-9]|1[0-5])\\.dat";
-    private final int SIXTEEN = 16;
-    private final int TEN = 10;
-    private final int FOUR = 4;
+    private static final String DIRNAME = "(0[0-9]|1[0-5])\\.dir";
+    private static final String FILENAME = "(0[0-9]|1[0-5])\\.dat";
+    private static final int SIXTEEN = 16;
+    private static final int TEN = 10;
+    private static final int FOUR = 4;
 
     public TableRealize(Path tablePath) throws Exception {
         this.tablePath = tablePath;
@@ -99,12 +99,12 @@ public class TableRealize implements Table {
         int nDir = hashcode % SIXTEEN;
         int nFile = hashcode / SIXTEEN % SIXTEEN;
         String retVal = "";
-        if (nDir < SIXTEEN) {
+        if (nDir < TEN) {
             retVal += ("0" + nDir);
         } else {
             retVal += nDir;
         }
-        if (nFile < SIXTEEN) {
+        if (nFile < TEN) {
             retVal += ("0" + nFile);
         } else {
             retVal += nFile;
@@ -118,9 +118,7 @@ public class TableRealize implements Table {
         nameIsNullAssertion(key);
         nameIsNullAssertion(value);
         if (diff.containsKey(key)) {
-            //String currentValue = diff.remove(key);
             return diff.put(key, value);
-            //return currentValue;
         } else {
             String keyFileMap = keyDestination(key);
             FileMap fileMap = data.get(keyFileMap);
@@ -137,7 +135,6 @@ public class TableRealize implements Table {
 
     @Override
     public String remove(String key) {
-        // TODO Auto-generated method stub
         nameIsNullAssertion(key);
         if (diff.containsKey(key)) {
             return diff.remove(key);
@@ -171,7 +168,6 @@ public class TableRealize implements Table {
 
     @Override
     public int commit() {
-        // TODO Auto-generated method stub
         int savedKeyCount = diff.size();
         for (Entry<String, String> entry : diff.entrySet()) {
             String currentKeyDestination = keyDestination(entry.getKey());
@@ -185,7 +181,8 @@ public class TableRealize implements Table {
                             Files.createDirectory(tablePath.resolve(getDirName(currentKeyDestination)));
                         }
                         fileMap = new FileMap(Paths.get(tablePath.resolve(
-                                getDirName(currentKeyDestination)).resolve(getFileName(currentKeyDestination)).toString()));
+                                getDirName(currentKeyDestination)).resolve(
+                                        getFileName(currentKeyDestination)).toString()));
                     } catch (IOException ex) {
                         // It's abnormally.
                     }
@@ -218,7 +215,6 @@ public class TableRealize implements Table {
         Iterator<Entry<String, FileMap>> iterator = data.entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<String, FileMap> fileMap = iterator.next();
-            // commit
             fileMap.getValue().close();
             if (fileMap.getValue().size() == 0) {
                 Files.deleteIfExists(fileMap.getValue().getPath());
@@ -228,7 +224,6 @@ public class TableRealize implements Table {
 
     @Override
     public int rollback() {
-        // TODO Auto-generated method stub
         int retValue = diff.size();
         diff.clear();
         return retValue;
@@ -236,7 +231,6 @@ public class TableRealize implements Table {
 
     @Override
     public List<String> list() {
-        // TODO Auto-generated method stub
         Set<String> set = new HashSet<>();
         for (Entry<String, FileMap> entry : data.entrySet()) {
             set.addAll(entry.getValue().keySet());

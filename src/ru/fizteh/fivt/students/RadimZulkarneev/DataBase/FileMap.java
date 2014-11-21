@@ -10,11 +10,11 @@ import java.util.Set;
 public class FileMap implements Map<String, String>, AutoCloseable {
     private final Path pathName;
     private Map<String, String> map;
-    private final String CODING = "UTF-8";
-    private final String NUMBER = "[0-9]";
-    private final int SIXTEEN = 16;
-    private final int TEN = 10;
-    private final int FOUR = 4;
+    private static final String CODING = "UTF-8";
+    private static final String NUMBER = "[0-9]";
+    private static final int SIXTEEN = 16;
+    private static final int TEN = 10;
+    private static final int FOUR = 4;
 
     public FileMap(Path pathName) throws IOException {
         this.pathName = pathName;

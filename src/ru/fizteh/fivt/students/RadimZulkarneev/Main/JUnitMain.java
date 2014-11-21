@@ -105,8 +105,8 @@ public class JUnitMain {
                     public void accept(InterpreterState interpreterState, String[] arguments) {
                         DataBaseInterpreterState dataBaseInterpreterState = (DataBaseInterpreterState) interpreterState;
                         TableProvider tableProvider = dataBaseInterpreterState.getTableProvider();
-                        if (dataBaseInterpreterState.getUsedTable() != null &&
-                                dataBaseInterpreterState.getUsedTable().getName().equals(arguments[0])) {
+                        if (dataBaseInterpreterState.getUsedTable() != null
+                                && dataBaseInterpreterState.getUsedTable().getName().equals(arguments[0])) {
                             dataBaseInterpreterState.setUsedTable(null);
                         }
                         try {
