@@ -16,17 +16,17 @@ public class ExtendedCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command putCommand() {
+    protected Command putCommand() {
         return new StructuredPut(writer, (ExtendedContext) context);
     }
 
     @Override
-    public Command useCommand() {
+    protected Command useCommand() {
         return new StructuredUse(writer, (ExtendedContext) context);
     }
 
     @Override
-    public Command createCommand() {
+    protected Command createCommand() {
         return new StructuredCreate(writer, (ExtendedContext) context);
     }
 }
