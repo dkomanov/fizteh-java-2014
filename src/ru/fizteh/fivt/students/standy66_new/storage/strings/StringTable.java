@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.standy66_new.storage.strings;
 
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.standy66_new.exceptions.CheckedExceptionCaughtException;
 import ru.fizteh.fivt.students.standy66_new.storage.FileMap;
 
 import java.io.File;
@@ -25,6 +26,7 @@ public class StringTable implements Table {
             throw new IllegalArgumentException("table directory should not point to a regular file");
         }
         this.tableDirectory = tableDirectory;
+
         openedFiles = new HashMap<>();
 
         for (int i = 0; i < MAX_DIR_CHUNK; i++) {
@@ -32,9 +34,10 @@ public class StringTable implements Table {
             for (int j = 0; j < MAX_FILE_CHUNK; j++) {
                 File file = new File(dir, j + ".dat");
                 try {
+
                     openedFiles.put(file, new FileMap(file));
                 } catch (IOException e) {
-                    throw new RuntimeException("IOException occurred", e);
+                    throw new CheckedExceptionCaughtException("IOException occurred", e);
                 }
             }
         }
@@ -54,12 +57,9 @@ public class StringTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("key should not be null");
         }
+
         FileMap fm = getFileMapByKey(key);
-        if (fm == null) {
-            return null;
-        } else {
-            return fm.get(key);
-        }
+        return (fm == null) ? null : fm.get(key);
     }
 
     @Override
@@ -67,12 +67,9 @@ public class StringTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("key should not be null");
         }
+
         FileMap fm = getFileMapByKey(key);
-        if (fm == null) {
-            return null;
-        } else {
-            return fm.put(key, value);
-        }
+        return (fm == null) ? null : fm.put(key, value);
     }
 
     @Override
@@ -80,12 +77,9 @@ public class StringTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
         }
+
         FileMap fm = getFileMapByKey(key);
-        if (fm == null) {
-            return null;
-        } else {
-            return fm.remove(key);
-        }
+        return (fm == null) ? null : fm.remove(key);
     }
 
     public int unsavedChangesCount() {
@@ -104,12 +98,14 @@ public class StringTable implements Table {
             try {
                 keyChangedCount += fm.commit();
             } catch (IOException e) {
-                throw new RuntimeException("IOException occurred", e);
+                throw new CheckedExceptionCaughtException("IOException occurred", e);
             }
         }
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < MAX_DIR_CHUNK; i++) {
             File dir = new File(tableDirectory, String.format("%d.dir", i));
-            if (dir.exists() && dir.listFiles().length == 0) {
+
+            if (dir.exists() && (dir.listFiles() != null) && (dir.listFiles().length == 0)) {
+
                 dir.delete();
             }
         }
@@ -123,7 +119,7 @@ public class StringTable implements Table {
             try {
                 keyChangedCount += fm.rollback();
             } catch (IOException e) {
-                throw new RuntimeException("IOException occurred", e);
+                throw new CheckedExceptionCaughtException("IOException occurred", e);
             }
         }
         return keyChangedCount;
@@ -131,9 +127,10 @@ public class StringTable implements Table {
 
     @Override
     public List<String> list() {
+
         return new ArrayList<>(openedFiles.values().stream().map(FileMap::keySet)
-                .reduce(new HashSet<>(), (accumulator, s) -> {
-                    accumulator.addAll(s);
+                .reduce(new HashSet<>(), (accumulator, set) -> {
+                    accumulator.addAll(set);
                     return accumulator;
                 }));
     }

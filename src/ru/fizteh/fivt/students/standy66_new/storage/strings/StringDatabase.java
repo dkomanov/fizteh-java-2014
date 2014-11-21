@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.standy66_new.storage.strings;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.standy66_new.exceptions.CheckedExceptionCaughtException;
 import ru.fizteh.fivt.students.standy66_new.utility.FileUtility;
 
 import java.io.File;
@@ -41,23 +42,32 @@ public class StringDatabase implements TableProvider, AutoCloseable {
                 throw new IllegalStateException("Database locked");
             }
             try {
+
                 lockFile.createNewFile();
             } catch (IOException e) {
-                throw new RuntimeException("IOException occurred", e);
+                throw new CheckedExceptionCaughtException("IOException occurred", e);
             }
         }
         dbDirectory = directory;
+
         tableInstances = new HashMap<>();
-        for (File tableFile : directory.listFiles()) {
-            if (tableFile.isDirectory()) {
-                String tableName = tableFile.getName();
-                try {
-                    checkTableName(tableName);
-                } catch (Exception e) {
-                    throw new RuntimeException("Database contains incorrect table name: " + e.getMessage(), e);
-                }
-                tableInstances.put(tableName, new StringTable(tableFile));
-            }
+
+        initTableInstances(directory);
+    }
+
+    private static void throwIfIncorrectTableName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("table name should not be null");
+        }
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("table name should not be empty");
+        }
+        if (name.contains(File.pathSeparator)) {
+            throw new IllegalArgumentException("table name should not contain file separator");
+        }
+
+        if ("..".equals(name) || ".".equals(name)) {
+            throw new IllegalArgumentException("table name should not be . or ..");
         }
     }
 
@@ -67,15 +77,16 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     @Override
     public Table getTable(String name) {
-        checkTableName(name);
+        throwIfIncorrectTableName(name);
         return tableInstances.get(name);
     }
 
     @Override
     public Table createTable(String name) {
-        checkTableName(name);
+        throwIfIncorrectTableName(name);
         File tableDirectory = new File(dbDirectory, name);
         if (tableInstances.get(name) != null) {
+
             return null;
         }
         if (!tableDirectory.mkdirs()) {
@@ -92,13 +103,13 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     @Override
     public void removeTable(String name) {
-        checkTableName(name);
+        throwIfIncorrectTableName(name);
         if (tableInstances.get(name) == null) {
             throw new IllegalStateException("table doesn't exist");
         }
         tableInstances.remove(name);
         if (!FileUtility.deleteRecursively(new File(dbDirectory, name))) {
-            throw new RuntimeException("failed to remove table");
+            throw new IllegalArgumentException("failed to remove table");
         }
     }
 
@@ -112,21 +123,27 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     @Override
     public void close() {
+
         lockFile.delete();
     }
 
-    private void checkTableName(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("table name should not be null");
-        }
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("table name should not be empty");
-        }
-        if (name.contains(File.pathSeparator)) {
-            throw new IllegalArgumentException("table name should not contain file separator");
-        }
-        if (name.equals("..") || name.equals(".")) {
-            throw new IllegalArgumentException("table name should not be . or ..");
+    private void initTableInstances(File directory) {
+        if (directory.listFiles() != null) {
+            for (File tableFile : directory.listFiles()) {
+                if (tableFile.isDirectory()) {
+                    String tableName = tableFile.getName();
+                    try {
+                        throwIfIncorrectTableName(tableName);
+                    } catch (RuntimeException e) {
+                        throw new CheckedExceptionCaughtException("Database contains incorrect table name: "
+                                + e.getMessage(), e);
+                    }
+
+                    tableInstances.put(tableName, new StringTable(tableFile));
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("illegal arg");
         }
     }
 }

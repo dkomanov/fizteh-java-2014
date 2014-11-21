@@ -22,8 +22,8 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class TableProviderTest {
     @Rule
-    public TemporaryFolder temp = new TemporaryFolder();
-    private TableProviderFactory factory;
+    public final TemporaryFolder temp = new TemporaryFolder();
+    private final TableProviderFactory factory;
 
     public TableProviderTest(TableProviderFactory factory) {
         this.factory = factory;

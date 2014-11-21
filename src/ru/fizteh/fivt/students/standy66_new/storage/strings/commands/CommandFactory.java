@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.standy66_new.storage.strings.commands;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.standy66_new.commands.Command;
 
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,59 +12,62 @@ import java.util.Map;
  */
 public class CommandFactory {
     protected Context context;
+    private PrintWriter writer;
 
-    public CommandFactory(TableProvider provider) throws NullPointerException {
+    public CommandFactory(PrintWriter writer, TableProvider provider) throws IllegalArgumentException {
         if (provider == null) {
-            throw new NullPointerException("database must not be null");
+            throw new IllegalArgumentException("database must not be null");
         }
         this.context = new Context(provider);
+        this.writer = writer;
     }
 
     public Command putCommand() {
-        return new PutCommand(context);
+        return new PutCommand(writer, context);
     }
 
     public Command createCommand() {
-        return new CreateCommand(context);
+        return new CreateCommand(writer, context);
     }
 
     public Command dropCommand() {
-        return new DropCommand(context);
+        return new DropCommand(writer, context);
     }
 
     public Command getCommand() {
-        return new GetCommand(context);
+        return new GetCommand(writer, context);
     }
 
     public Command listCommand() {
-        return new ListCommand(context);
+        return new ListCommand(writer, context);
     }
 
     public Command removeCommand() {
-        return new RemoveCommand(context);
+        return new RemoveCommand(writer, context);
     }
 
     public Command showTablesCommand() {
-        return new ShowTablesCommand(context);
+        return new ShowTablesCommand(writer, context);
     }
 
     public Command useCommand() {
-        return new UseCommand(context);
+        return new UseCommand(writer, context);
     }
 
     public Command sizeCommand() {
-        return new SizeCommand(context);
+        return new SizeCommand(writer, context);
     }
 
     public Command commitCommand() {
-        return new CommitCommand(context);
+        return new CommitCommand(writer, context);
     }
 
     public Command rollbackCommand() {
-        return new RollbackCommand(context);
+        return new RollbackCommand(writer, context);
     }
 
-    public Map<String, Command> getCommandsMap(String locale) {
+    public Map<String, Command> getCommandsMap() {
+        
         Map<String, Command> map = new HashMap<>();
         map.put("put", putCommand());
         map.put("get", getCommand());
