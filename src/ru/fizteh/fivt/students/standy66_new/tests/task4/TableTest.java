@@ -7,7 +7,7 @@ import org.junit.runners.Parameterized;
  * Some JUnit tests on Table interface.
  * Created by andrew on 01.11.14.
  */
-@RunWith(value = Parameterized.class)
+@RunWith(Parameterized.class)
 public class TableTest {
     //TODO: add some tests
 }

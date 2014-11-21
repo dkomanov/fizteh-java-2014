@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  */
 public class FileMapTest {
     @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    public final TemporaryFolder tempFolder = new TemporaryFolder();
     private FileMap fileMap;
     private File fileMapFile;
 
