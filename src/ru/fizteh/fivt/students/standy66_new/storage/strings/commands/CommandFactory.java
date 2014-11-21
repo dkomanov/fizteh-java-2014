@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class CommandFactory {
     protected Context context;
-    private PrintWriter writer;
+    protected PrintWriter writer;
 
     public CommandFactory(PrintWriter writer, TableProvider provider) throws IllegalArgumentException {
         if (provider == null) {

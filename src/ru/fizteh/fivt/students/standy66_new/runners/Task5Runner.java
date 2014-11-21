@@ -10,6 +10,7 @@ import ru.fizteh.fivt.students.standy66_new.storage.structured.commands.Extended
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,9 +34,10 @@ public class Task5Runner {
             System.err.println("Couldn't create TableProvider");
             System.exit(-1);
         }
-        CommandFactory commandFactory = new ExtendedCommandFactory(provider);
-        Map<String, Command> availableCommands = commandFactory.getCommandsMap("en-US");
-        availableCommands.put("exit", new ExitCommand());
+        PrintWriter systemOutWriter = new PrintWriter(System.out);
+        CommandFactory commandFactory = new ExtendedCommandFactory(systemOutWriter, provider);
+        Map<String, Command> availableCommands = commandFactory.getCommandsMap();
+        availableCommands.put("exit", new ExitCommand(systemOutWriter));
         Interpreter interpreter;
         if (args.length == 0) {
             interpreter = new Interpreter(System.in, availableCommands, true);
@@ -43,7 +45,7 @@ public class Task5Runner {
             String params = Stream.of(args).collect(Collectors.joining(" "));
             interpreter = new Interpreter(new ByteArrayInputStream(params.getBytes()), availableCommands, false);
         }
-        if (interpreter.run()) {
+        if (interpreter.execute()) {
             provider.getBackendDatabase().commit();
             provider.getBackendDatabase().close();
         }

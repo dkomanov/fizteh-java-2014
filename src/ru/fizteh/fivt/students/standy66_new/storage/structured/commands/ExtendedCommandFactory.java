@@ -4,27 +4,29 @@ import ru.fizteh.fivt.students.standy66_new.commands.Command;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.CommandFactory;
 import ru.fizteh.fivt.students.standy66_new.storage.structured.StructuredDatabase;
 
+import java.io.PrintWriter;
+
 /**
  * Created by andrew on 14.11.14.
  */
 public class ExtendedCommandFactory extends CommandFactory {
-    public ExtendedCommandFactory(StructuredDatabase database) {
-        super(database.getBackendDatabase());
+    public ExtendedCommandFactory(PrintWriter writer, StructuredDatabase database) {
+        super(writer, database.getBackendDatabase());
         context = new ExtendedContext(database);
     }
 
     @Override
     public Command putCommand() {
-        return new StructuredPut((ExtendedContext) context);
+        return new StructuredPut(writer, (ExtendedContext) context);
     }
 
     @Override
     public Command useCommand() {
-        return new StructuredUse((ExtendedContext) context);
+        return new StructuredUse(writer, (ExtendedContext) context);
     }
 
     @Override
     public Command createCommand() {
-        return new StructuredCreate((ExtendedContext) context);
+        return new StructuredCreate(writer, (ExtendedContext) context);
     }
 }

@@ -4,6 +4,8 @@ import ru.fizteh.fivt.students.standy66_new.exceptions.TableNotExistsException;
 import ru.fizteh.fivt.students.standy66_new.exceptions.UncommitedChangesException;
 import ru.fizteh.fivt.students.standy66_new.storage.structured.table.StructuredTable;
 
+import java.io.PrintWriter;
+
 /**
  * Created by andrew on 14.11.14.
  */
@@ -11,13 +13,13 @@ public class StructuredUse extends ExtendedContextualCommand {
 
     public static final boolean WARN_OF_UNSAVED_CHANGES = System.getProperty("warn_unsaved") != null;
 
-    protected StructuredUse(ExtendedContext context) {
-        super((x -> x == 2), context);
+    protected StructuredUse(PrintWriter writer, ExtendedContext context) {
+        super(writer, (x -> x == 2), context);
     }
 
     @Override
-    public void run(String[] arguments) throws Exception {
-        super.run(arguments);
+    public void execute(String... arguments) throws Exception {
+        super.execute(arguments);
         StructuredTable newTable = (StructuredTable) getExtendedContext()
                 .getStructuredDatabase().getTable(arguments[1]);
         StructuredTable currentTable = getExtendedContext().getCurrentStructuredTable();
@@ -32,7 +34,7 @@ public class StructuredUse extends ExtendedContextualCommand {
                 }
             }
             getExtendedContext().setCurrentStructuredTable(newTable);
-            System.out.printf("using %s\n", arguments[1]);
+            out.printf("using %s\n", arguments[1]);
         }
     }
 }
