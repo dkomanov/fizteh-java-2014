@@ -19,18 +19,18 @@ public class StructuredPut extends ExtendedContextualCommand {
     public void execute(String... arguments) throws Exception {
         super.execute(arguments);
 
-        StructuredTable current = getExtendedContext().getCurrentStructuredTable();
-        StructuredDatabase database = getExtendedContext().getStructuredDatabase();
+        StructuredTable current = getContext().getCurrentStructuredTable();
+        StructuredDatabase database = getContext().getStructuredDatabase();
         if (current == null) {
             throw new NoTableSelectedException();
         }
         Storeable currentValue = current.get(arguments[1]);
         Storeable newValue = database.deserialize(current, arguments[2]);
         if (currentValue == null) {
-            out.println("new");
+            getOutputWriter().println("new");
         } else {
-            out.println("overwrite");
-            out.println(database.serialize(current, currentValue));
+            getOutputWriter().println("overwrite");
+            getOutputWriter().println(database.serialize(current, currentValue));
         }
         current.put(arguments[1], newValue);
     }

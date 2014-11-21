@@ -20,9 +20,9 @@ public class StructuredUse extends ExtendedContextualCommand {
     @Override
     public void execute(String... arguments) throws Exception {
         super.execute(arguments);
-        StructuredTable newTable = (StructuredTable) getExtendedContext()
+        StructuredTable newTable = getContext()
                 .getStructuredDatabase().getTable(arguments[1]);
-        StructuredTable currentTable = getExtendedContext().getCurrentStructuredTable();
+        StructuredTable currentTable = getContext().getCurrentStructuredTable();
 
         if (newTable == null) {
             throw new TableNotExistsException(String.format("%s not exists", arguments[1]));
@@ -33,8 +33,8 @@ public class StructuredUse extends ExtendedContextualCommand {
                             currentTable.getBackendTable().unsavedChangesCount()));
                 }
             }
-            getExtendedContext().setCurrentStructuredTable(newTable);
-            out.printf("using %s\n", arguments[1]);
+            getContext().setCurrentStructuredTable(newTable);
+            getOutputWriter().printf("using %s\n", arguments[1]);
         }
     }
 }

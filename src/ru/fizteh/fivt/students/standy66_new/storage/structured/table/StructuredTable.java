@@ -37,9 +37,9 @@ public class StructuredTable implements Table {
     }
 
     @Override
-    public Storeable put(String key, Storeable value) throws ColumnFormatException {
+    public TableRow put(String key, Storeable value) throws ColumnFormatException {
         String strOldValue = backendTable.get(key);
-        Storeable oldValue;
+        TableRow oldValue;
         try {
             if (strOldValue != null) {
                 oldValue = database.deserialize(this, strOldValue);
@@ -55,12 +55,12 @@ public class StructuredTable implements Table {
     }
 
     @Override
-    public Storeable remove(String key) {
+    public TableRow remove(String key) {
         String strValue = backendTable.get(key);
         if (strValue == null) {
             return null;
         }
-        Storeable value;
+        TableRow value;
         try {
             value = database.deserialize(this, strValue);
         } catch (ParseException e) {
@@ -101,7 +101,7 @@ public class StructuredTable implements Table {
     }
 
     @Override
-    public Storeable get(String key) {
+    public TableRow get(String key) {
         String value = backendTable.get(key);
         if (value == null) {
             return null;

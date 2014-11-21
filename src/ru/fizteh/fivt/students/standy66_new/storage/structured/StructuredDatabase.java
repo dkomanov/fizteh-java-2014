@@ -5,6 +5,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.StringDatabase;
+import ru.fizteh.fivt.students.standy66_new.storage.strings.StringDatabaseFactory;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.StringTable;
 import ru.fizteh.fivt.students.standy66_new.storage.structured.table.StructuredTable;
 import ru.fizteh.fivt.students.standy66_new.storage.structured.table.TableRow;
@@ -22,7 +23,8 @@ public class StructuredDatabase implements TableProvider {
     private StringDatabase backendDatabase;
 
     public StructuredDatabase(File databaseFile) {
-        backendDatabase = new StringDatabase(databaseFile);
+        StringDatabaseFactory stringDatabaseFactory = new StringDatabaseFactory();
+        backendDatabase = stringDatabaseFactory.create(databaseFile);
     }
 
     public StringDatabase getBackendDatabase() {
@@ -30,13 +32,13 @@ public class StructuredDatabase implements TableProvider {
     }
 
     @Override
-    public Table getTable(String name) {
+    public StructuredTable getTable(String name) {
         return wrap(backendDatabase.getTable(name));
     }
 
     @Override
-    public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        StringTable table = (StringTable) backendDatabase.createTable(name);
+    public StructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
+        StringTable table = backendDatabase.createTable(name);
         if (table == null) {
             return null;
         }
@@ -52,7 +54,7 @@ public class StructuredDatabase implements TableProvider {
     }
 
     @Override
-    public Storeable deserialize(Table table, String value) throws ParseException {
+    public TableRow deserialize(Table table, String value) throws ParseException {
         TableSignature tableSignature = TableSignature.forTable(table);
         return TableRow.deserialize(tableSignature, value);
     }
@@ -65,15 +67,15 @@ public class StructuredDatabase implements TableProvider {
     }
 
     @Override
-    public Storeable createFor(Table table) {
+    public TableRow createFor(Table table) {
         TableSignature tableSignature = TableSignature.forTable(table);
         return new TableRow(tableSignature);
     }
 
     @Override
-    public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+    public TableRow createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
         TableSignature tableSignature = TableSignature.forTable(table);
-        Storeable storeable = new TableRow(tableSignature);
+        TableRow storeable = new TableRow(tableSignature);
         for (int i = 0; i < values.size(); i++) {
             storeable.setColumnAt(i, values.get(i));
         }

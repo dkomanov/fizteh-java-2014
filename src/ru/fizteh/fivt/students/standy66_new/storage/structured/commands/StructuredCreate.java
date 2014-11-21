@@ -22,8 +22,8 @@ public class StructuredCreate extends ExtendedContextualCommand {
         for (int i = 2; i < arguments.length; i++) {
             columnClasses.add(ClassUtility.forName(arguments[i]));
         }
-        if (getExtendedContext().getStructuredDatabase().createTable(arguments[1], columnClasses) != null) {
-            out.println("created");
+        if (getContext().getStructuredDatabase().createTable(arguments[1], columnClasses) != null) {
+            getOutputWriter().println("created");
         } else {
             throw new TableExistsException(String.format("%s exists", arguments[1]));
         }

@@ -14,7 +14,8 @@ public class ExtendedContextualCommand extends ContextualCommand {
         super(writer, isValidNumberOfArguments, context);
     }
 
-    public ExtendedContext getExtendedContext() {
+    @Override
+    public ExtendedContext getContext() {
         return (ExtendedContext) super.getContext();
     }
 }
