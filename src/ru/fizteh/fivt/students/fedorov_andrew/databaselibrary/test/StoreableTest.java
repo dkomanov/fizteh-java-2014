@@ -17,6 +17,7 @@ import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProvider
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -24,6 +25,8 @@ import static org.junit.Assert.*;
 @RunWith(JUnit4.class)
 public class StoreableTest extends TestBase {
     private static final String TABLE_NAME = "table";
+    private static final List<Class<?>> TABLE_COLUMN_TYPES = Arrays.asList(
+            String.class, Integer.class, Double.class, Float.class, Boolean.class, Byte.class, Long.class);
     private static TableProviderFactory factory;
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -39,15 +42,7 @@ public class StoreableTest extends TestBase {
     @Before
     public void prepare() throws IOException {
         provider = factory.create(DB_ROOT.toString());
-        table = provider.createTable(
-                TABLE_NAME, Arrays.asList(
-                        String.class,
-                        Integer.class,
-                        Double.class,
-                        Float.class,
-                        Boolean.class,
-                        Byte.class,
-                        Long.class));
+        table = provider.createTable(TABLE_NAME, TABLE_COLUMN_TYPES);
         storeable = provider.createFor(table);
     }
 
@@ -56,6 +51,22 @@ public class StoreableTest extends TestBase {
         cleanDBRoot();
         provider = null;
         table = null;
+    }
+
+    @Test
+    public void testStoreableEquals() throws IOException {
+        Table table2 = provider.createTable(TABLE_NAME + "2", TABLE_COLUMN_TYPES);
+        assertNotEquals(storeable, provider.createFor(table2));
+    }
+
+    @Test
+    public void testStoreableEquals1() throws IOException {
+        Storeable storeable2 = provider.createFor(table);
+
+        storeable.setColumnAt(0, "string1");
+        storeable2.setColumnAt(0, "string2");
+
+        assertNotEquals(storeable, storeable2);
     }
 
     @Test

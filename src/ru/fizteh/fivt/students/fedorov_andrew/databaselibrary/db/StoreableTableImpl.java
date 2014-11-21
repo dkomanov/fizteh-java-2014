@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StoreableTableImpl implements Table {
     private static final Map<Class<?>, String> CLASSES_TO_NAMES_MAP =
@@ -47,11 +48,11 @@ public class StoreableTableImpl implements Table {
 
     private final List<Class<?>> columnTypes;
 
-    private boolean invalidated;
+    private AtomicBoolean invalidated;
 
     private StoreableTableImpl(TableProvider provider, StringTableImpl store, List<Class<?>> columnTypes) {
         this.provider = provider;
-        this.invalidated = false;
+        this.invalidated = new AtomicBoolean(false);
         this.store = store;
         this.columnTypes = Collections.unmodifiableList(new ArrayList<Class<?>>(columnTypes));
     }
@@ -155,12 +156,13 @@ public class StoreableTableImpl implements Table {
 
     /**
      * Checks whether the given storeable can be stored in the given table as a value.
-     * @throws ColumnFormatException
+     * @throws ru.fizteh.fivt.storage.structured.ColumnFormatException
      *         If columns count differs or some column has wrong type. Note that if some column has null
      *         value, its type cannot be determined.
-     * @throws java.lang.IllegalStateException
+     * @throws IllegalStateException
      *         If the given storeable is already assigned to another table. This check can be performed only
-     *         for instances of {@link StoreableTableImpl}.
+     *         for instances of {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db
+     *         .StoreableTableImpl}.
      */
     public static void checkStoreableAppropriate(Table table, Storeable storeable)
             throws ColumnFormatException, IllegalStateException {
@@ -215,14 +217,21 @@ public class StoreableTableImpl implements Table {
     }
 
     /**
-     * Mark this table as invalidated (all further operations throw {@link java.lang.IllegalStateException}).
+     * Mark this table as invalidated (all further operations throw {@link IllegalStateException}).
      */
     void invalidate() {
-        invalidated = true;
+        // We need table's write lock here to sync with file system.
+        // Remember the table becomes invalidated before being deleted.
+        store.getPersistenceLock().writeLock().lock();
+        try {
+            invalidated.set(true);
+        } finally {
+            store.getPersistenceLock().writeLock().unlock();
+        }
     }
 
     private void checkValidity() throws IllegalStateException {
-        if (invalidated) {
+        if (invalidated.get()) {
             throw new IllegalStateException(store.getName() + " is invalidated");
         }
     }

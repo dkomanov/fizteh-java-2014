@@ -61,7 +61,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
      *         Commands split by {@link #COMMAND_END_CHARACTER}.
      * @return List of commands, each command is an array of its parts (space splitters are excluded from
      * everywhere except quoted parts).
-     * @throws ParseException
+     * @throws java.text.ParseException
      *         In case of bad format.
      */
     public static List<String[]> splitCommandsString(String commandsStr) throws ParseException {

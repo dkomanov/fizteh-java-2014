@@ -6,6 +6,10 @@ import ru.fizteh.fivt.storage.structured.Table;
 
 import java.util.Objects;
 
+/**
+ * Implementation of Storeable that can be put to the table it is assigned to as a value.<br/>
+ * Not thread-safe.
+ */
 public class StoreableImpl implements Storeable {
     private final Object[] values;
 
@@ -118,16 +122,6 @@ public class StoreableImpl implements Storeable {
 
         if (host != storeable.host) {
             return false;
-        }
-
-        if (host.getColumnsCount() != storeable.host.getColumnsCount()) {
-            return false;
-        }
-
-        for (int col = 0; col < host.getColumnsCount(); col++) {
-            if (!host.getColumnType(col).equals(storeable.host.getColumnType(col))) {
-                return false;
-            }
         }
 
         for (int col = 0; col < host.getColumnsCount(); col++) {

@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
 public class DBTableProvider implements TableProvider {
@@ -66,9 +68,13 @@ public class DBTableProvider implements TableProvider {
     private final Map<String, TableCorruptIOException> corruptTables;
 
     /**
+     * Lock for getting/creating/removing tables access management.
+     */
+    private final ReadWriteLock persistenceLock = new ReentrantReadWriteLock(true);
+
+    /**
      * Constructs a database table provider.
-     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception
-     *         .DatabaseIOException
+     * @throws ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.DatabaseIOException
      *         If failed to scan database directory.
      */
     DBTableProvider(Path databaseRoot) throws DatabaseIOException {
@@ -81,16 +87,22 @@ public class DBTableProvider implements TableProvider {
     @Override
     public StoreableTableImpl getTable(String name) throws IllegalArgumentException {
         Utility.checkTableNameIsCorrect(name);
-        if (tables.containsKey(name)) {
-            StoreableTableImpl table = tables.get(name);
-            if (table == null) {
-                DatabaseIOException corruptionReason = corruptTables.get(name);
-                throw new IllegalArgumentException(
-                        corruptionReason.getMessage(), corruptionReason);
+
+        persistenceLock.readLock().lock();
+        try {
+            if (tables.containsKey(name)) {
+                StoreableTableImpl table = tables.get(name);
+                if (table == null) {
+                    DatabaseIOException corruptionReason = corruptTables.get(name);
+                    throw new IllegalArgumentException(
+                            corruptionReason.getMessage(), corruptionReason);
+                }
+                return table;
+            } else {
+                return null;
             }
-            return table;
-        } else {
-            return null;
+        } finally {
+            persistenceLock.readLock().unlock();
         }
     }
 
@@ -109,13 +121,18 @@ public class DBTableProvider implements TableProvider {
 
         Path tablePath = databaseRoot.resolve(name);
 
-        if (tables.containsKey(name) && tables.get(name) != null) {
-            return null;
-        }
+        persistenceLock.writeLock().lock();
+        try {
+            if (tables.containsKey(name) && tables.get(name) != null) {
+                return null;
+            }
 
-        StoreableTableImpl newTable = StoreableTableImpl.createTable(this, tablePath, columnTypes);
-        tables.put(name, newTable);
-        return newTable;
+            StoreableTableImpl newTable = StoreableTableImpl.createTable(this, tablePath, columnTypes);
+            tables.put(name, newTable);
+            return newTable;
+        } finally {
+            persistenceLock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -124,31 +141,39 @@ public class DBTableProvider implements TableProvider {
         Utility.checkTableNameIsCorrect(name);
         Path tablePath = databaseRoot.resolve(name);
 
-        if (!tables.containsKey(name)) {
-            throw new IllegalStateException(name + " not exists");
-        }
-
-        StoreableTableImpl removed = tables.remove(name);
-        if (removed != null) {
-            removed.invalidate();
-        }
-
-        corruptTables.remove(name);
-
-        if (!Files.exists(tablePath)) {
-            return;
-        }
-
+        persistenceLock.writeLock().lock();
         try {
-            Utility.rm(tablePath);
-        } catch (IOException exc) {
-            // Mark as corrupt.
-            tables.put(name, null);
+            if (!tables.containsKey(name)) {
+                throw new IllegalStateException(name + " not exists");
+            }
 
-            TableCorruptIOException corruptionReason = new TableCorruptIOException(
-                    name, "Failed to drop table: " + exc.toString(), exc);
-            corruptTables.put(name, corruptionReason);
-            throw corruptionReason;
+            StoreableTableImpl removed = tables.remove(name);
+            if (removed != null) {
+                // After invalidation all attempts to commit from other threads fail with
+                // IllegalStateException. Now we can delete the table without fear that it will be written
+                // to the file system again.
+                removed.invalidate();
+            }
+
+            corruptTables.remove(name);
+
+            if (!Files.exists(tablePath)) {
+                return;
+            }
+
+            try {
+                Utility.rm(tablePath);
+            } catch (IOException exc) {
+                // Mark as corrupt.
+                tables.put(name, null);
+
+                TableCorruptIOException corruptionReason = new TableCorruptIOException(
+                        name, "Failed to drop table: " + exc.toString(), exc);
+                corruptTables.put(name, corruptionReason);
+                throw corruptionReason;
+            }
+        } finally {
+            persistenceLock.writeLock().unlock();
         }
     }
 

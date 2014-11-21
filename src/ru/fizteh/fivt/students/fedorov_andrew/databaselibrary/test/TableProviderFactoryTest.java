@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import static org.hamcrest.CoreMatchers.*;
 
 /**
- * Tests {@link TableProviderFactory } mostly for error cases.
+ * Tests {@link ru.fizteh.fivt.storage.structured.TableProviderFactory } mostly for error cases.
  * @author phoenix
  */
 @RunWith(org.junit.runners.JUnit4.class)

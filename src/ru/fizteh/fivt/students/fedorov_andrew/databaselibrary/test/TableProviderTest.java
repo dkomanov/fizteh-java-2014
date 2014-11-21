@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test;
 
+import junit.framework.AssertionFailedError;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -16,6 +17,10 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.StringTableImpl;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.parallel.ControllableAgent;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.parallel.ControllableRunnable;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.parallel.ControllableRunner;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -30,6 +35,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -89,6 +95,71 @@ public class TableProviderTest extends TestBase {
                 wrongTypeMatcherAndAllOf(
                         containsString(
                                 "Does not match JSON simple list regular expression")));
+    }
+
+    @Test
+    public void testConcurrentCreateTable() throws Exception {
+        final String tableName = "table";
+
+        class TableCreator extends ControllableRunnable {
+            volatile Table createdTable;
+            volatile Table gotTable;
+
+            public TableCreator(ControllableRunner host) {
+                super(host);
+            }
+
+            @Override
+            public void runWithFreedom(ControllableAgent agent) throws Exception, AssertionError {
+                TestUtils.consumeCPU(ThreadLocalRandom.current().nextInt(20, 40));
+                System.err.println("Attempt to create table");
+                createdTable = provider.createTable(tableName, DEFAULT_COLUMN_TYPES);
+                gotTable = provider.getTable(tableName);
+            }
+        }
+
+        int threadsCount = 26;
+
+        ControllableRunner[] runners = new ControllableRunner[threadsCount];
+
+        for (int i = 0; i < threadsCount; i++) {
+            runners[i] = new ControllableRunner();
+            runners[i].assignRunnable(new TableCreator(runners[i]));
+        }
+
+        for (int i = 0; i < threadsCount; i++) {
+            new Thread(runners[i], "Runner " + i).start();
+        }
+
+        for (int i = 0; i < threadsCount; i++) {
+            runners[i].waitUntilEndOfWork();
+        }
+
+        // All gotTable must be equal.
+        // One createdTable must be equal to any gotTable, all other createdTables must be null.
+
+        Table gotTable = ((TableCreator) runners[0].getRunnable()).gotTable;
+
+        for (int i = 1; i < threadsCount; i++) {
+            assertTrue(
+                    "All links for gotTable must be the same",
+                    ((TableCreator) runners[i].getRunnable()).gotTable == gotTable);
+        }
+
+        boolean foundCreated = false;
+
+        for (int i = 0; i < threadsCount; i++) {
+            Table createdTable = ((TableCreator) runners[i].getRunnable()).createdTable;
+            if (createdTable != null) {
+                if (foundCreated) {
+                    throw new AssertionFailedError("More then one created table");
+                } else {
+                    foundCreated = true;
+                }
+            }
+        }
+
+        assertTrue("Must be one created table", foundCreated);
     }
 
     @Test
