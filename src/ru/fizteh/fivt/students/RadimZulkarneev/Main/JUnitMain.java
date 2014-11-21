@@ -152,7 +152,7 @@ public class JUnitMain {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
                         if (arguments[0].equals("tables")) {
-                            TableProviderRealize tableProvider = (TableProviderRealize)(((DataBaseInterpreterState)
+                            TableProviderRealize tableProvider = (TableProviderRealize) (((DataBaseInterpreterState)
                                     interpreterState).getTableProvider());
                             System.out.println(String.join("\n", tableProvider.getTableSet()));
                         } else {
@@ -163,7 +163,7 @@ public class JUnitMain {
                 new Command("rollback", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
-                        Table table = ((DataBaseInterpreterState)interpreterState).getUsedTable();
+                        Table table = ((DataBaseInterpreterState) interpreterState).getUsedTable();
                         if (table != null) {
                             System.out.println(table.rollback());
                         } else {
