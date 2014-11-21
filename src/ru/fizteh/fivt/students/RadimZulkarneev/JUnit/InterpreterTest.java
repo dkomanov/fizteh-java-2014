@@ -19,9 +19,9 @@ public class InterpreterTest {
     private PrintStream printStream;
     private static final String PROMPT = "$ ";
     private static final String COMMAND_SEPARATOR = ";";
-    private static final String testCommand = "test";
-    private static final String testOutput = "TEST";
-    private static final String newLine = System.getProperty("line.separator");
+    private final String testCommand = "test";
+    private final String testOutput = "TEST";
+    private final String newLine = System.getProperty("line.separator");
 
     @Before
     public void setUp() {
