@@ -42,7 +42,7 @@ public class RmCommand implements Command {
                 File[] listFiles = file.listFiles();
                 for (File f : listFiles) {
                     String[] newArgs = {"rm", "-r", f.getName()};
-                    if (rmRecursive(newArgs, Shell.currentPath + File.separator + file.getName()) != 0) {
+                    if (rmRecursive(newArgs, file.getCanonicalPath()) != 0) {
                         return 1;
                     }
                 }

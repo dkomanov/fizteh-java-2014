@@ -30,7 +30,31 @@ public class CreateCommand implements Command {
         List<Class<?>> typeList = new ArrayList<>();
         try {
             for (int i = 2; i < args.length; ++i) {
-                typeList.add(Class.forName(args[i]));
+                if (args[i].charAt(args[i].length() - 1) == ',') {
+                    args[i] = args[i].substring(0, args[i].length() - 1);
+                }
+                switch(args[i]) {
+                    case "int":
+                        typeList.add(Integer.class);
+                        break;
+                    case "double":
+                        typeList.add(Double.class);
+                        break;
+                    case "char":
+                        typeList.add(Character.class);
+                        break;
+                    case "long":
+                        typeList.add(Long.class);
+                        break;
+                    case "float":
+                        typeList.add(Float.class);
+                        break;
+                    case "boolean":
+                        typeList.add(Boolean.class);
+                        break;
+                    default:
+                        typeList.add(Class.forName("java.lang." + args[i]));
+                }
             }
         } catch (ClassNotFoundException e) {
             throw new IOException("Create: unknown class");

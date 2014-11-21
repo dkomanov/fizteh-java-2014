@@ -291,6 +291,7 @@ public class MultiMap implements TableProvider {
         while (reader.ready()) {
             buffer.append((char) reader.read());
         }
+        reader.close();
         String types = new String(buffer);
         String[] typeList = types.split("\\s+");
         Class[] result = new Class[typeList.length];
