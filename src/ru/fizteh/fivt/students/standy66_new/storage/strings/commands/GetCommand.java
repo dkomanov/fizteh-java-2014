@@ -25,8 +25,8 @@ public class GetCommand extends ContextualCommand {
         if (value == null) {
             throw new RowNotFoundException();
         } else {
-            out.println("found");
-            out.println(value);
+            getOutputWriter().println("found");
+            getOutputWriter().println(value);
         }
     }
 }

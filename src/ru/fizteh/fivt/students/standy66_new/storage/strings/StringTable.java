@@ -18,7 +18,7 @@ public class StringTable implements Table {
     private File tableDirectory;
     private Map<File, FileMap> openedFiles;
 
-    public StringTable(File tableDirectory) {
+    StringTable(File tableDirectory) {
         if (tableDirectory == null) {
             throw new IllegalArgumentException("table directory should not be null");
         }
@@ -127,7 +127,6 @@ public class StringTable implements Table {
 
     @Override
     public List<String> list() {
-
         return new ArrayList<>(openedFiles.values().stream().map(FileMap::keySet)
                 .reduce(new HashSet<>(), (accumulator, set) -> {
                     accumulator.addAll(set);

@@ -9,11 +9,11 @@ import java.util.function.IntPredicate;
  * Created by astepanov on 20.10.14.
  */
 public abstract class Command {
-    protected final PrintWriter out;
+    private final PrintWriter outputWriter;
     private final IntPredicate isValidNumberOfArguments;
 
-    protected Command(PrintWriter printWriter, IntPredicate isValidNumberOfArguments) {
-        this.out = printWriter;
+    protected Command(PrintWriter outputWriter, IntPredicate isValidNumberOfArguments) {
+        this.outputWriter = outputWriter;
         this.isValidNumberOfArguments = isValidNumberOfArguments;
     }
 
@@ -21,5 +21,9 @@ public abstract class Command {
         if (!isValidNumberOfArguments.test(arguments.length)) {
             throw new WrongNumberOfArgumentsException("invalid number of arguments");
         }
+    }
+
+    protected PrintWriter getOutputWriter() {
+        return outputWriter;
     }
 }

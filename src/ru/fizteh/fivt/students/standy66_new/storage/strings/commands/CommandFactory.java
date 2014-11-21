@@ -22,52 +22,7 @@ public class CommandFactory {
         this.writer = writer;
     }
 
-    public Command putCommand() {
-        return new PutCommand(writer, context);
-    }
-
-    public Command createCommand() {
-        return new CreateCommand(writer, context);
-    }
-
-    public Command dropCommand() {
-        return new DropCommand(writer, context);
-    }
-
-    public Command getCommand() {
-        return new GetCommand(writer, context);
-    }
-
-    public Command listCommand() {
-        return new ListCommand(writer, context);
-    }
-
-    public Command removeCommand() {
-        return new RemoveCommand(writer, context);
-    }
-
-    public Command showTablesCommand() {
-        return new ShowTablesCommand(writer, context);
-    }
-
-    public Command useCommand() {
-        return new UseCommand(writer, context);
-    }
-
-    public Command sizeCommand() {
-        return new SizeCommand(writer, context);
-    }
-
-    public Command commitCommand() {
-        return new CommitCommand(writer, context);
-    }
-
-    public Command rollbackCommand() {
-        return new RollbackCommand(writer, context);
-    }
-
     public Map<String, Command> getCommandsMap() {
-        
         Map<String, Command> map = new HashMap<>();
         map.put("put", putCommand());
         map.put("get", getCommand());
@@ -81,6 +36,50 @@ public class CommandFactory {
         map.put("commit", commitCommand());
         map.put("rollback", rollbackCommand());
         return map;
+    }
+
+    protected Command putCommand() {
+        return new PutCommand(writer, context);
+    }
+
+    protected Command createCommand() {
+        return new CreateCommand(writer, context);
+    }
+
+    protected Command dropCommand() {
+        return new DropCommand(writer, context);
+    }
+
+    protected Command getCommand() {
+        return new GetCommand(writer, context);
+    }
+
+    protected Command listCommand() {
+        return new ListCommand(writer, context);
+    }
+
+    protected Command removeCommand() {
+        return new RemoveCommand(writer, context);
+    }
+
+    protected Command showTablesCommand() {
+        return new ShowTablesCommand(writer, context);
+    }
+
+    protected Command useCommand() {
+        return new UseCommand(writer, context);
+    }
+
+    protected Command sizeCommand() {
+        return new SizeCommand(writer, context);
+    }
+
+    protected Command commitCommand() {
+        return new CommitCommand(writer, context);
+    }
+
+    protected Command rollbackCommand() {
+        return new RollbackCommand(writer, context);
     }
 
 }

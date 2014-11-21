@@ -33,7 +33,7 @@ public class UseCommand extends ContextualCommand {
                 }
             }
             getContext().setCurrentTable(newTable);
-            out.printf("using %s%n", arguments[1]);
+            getOutputWriter().printf("using %s%n", arguments[1]);
         }
     }
 }

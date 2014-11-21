@@ -23,10 +23,10 @@ public class PutCommand extends ContextualCommand {
         }
         String currentValue = current.get(arguments[1]);
         if (currentValue == null) {
-            out.println("new");
+            getOutputWriter().println("new");
         } else {
-            out.println("overwrite");
-            out.println(currentValue);
+            getOutputWriter().println("overwrite");
+            getOutputWriter().println(currentValue);
         }
         current.put(arguments[1], arguments[2]);
 

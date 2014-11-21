@@ -21,7 +21,7 @@ public class ListCommand extends ContextualCommand {
         if (current == null) {
             throw new NoTableSelectedException();
         }
-        out.println(current.list().stream()
+        getOutputWriter().println(current.list().stream()
                 .collect(Collectors.joining(", ")));
     }
 }
