@@ -12,6 +12,7 @@ public class ContextualCommand extends ru.fizteh.fivt.students.standy66_new.comm
         super(writer, isValidNumberOfArguments, context);
     }
 
+    @Override
     protected Context getContext() {
         return (Context) getContext();
     }
