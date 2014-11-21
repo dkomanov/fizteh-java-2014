@@ -5,6 +5,8 @@ import ru.fizteh.fivt.students.standy66_new.exceptions.TableNotExistsException;
 import ru.fizteh.fivt.students.standy66_new.exceptions.UncommitedChangesException;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.StringTable;
 
+import java.io.PrintWriter;
+
 /**
  * Created by astepanov on 20.10.14.
  */
@@ -12,13 +14,13 @@ public class UseCommand extends ContextualCommand {
 
     public static final boolean WARN_OF_UNSAVED_CHANGES = System.getProperty("warn_unsaved") != null;
 
-    protected UseCommand(Context context) {
-        super((x -> x == 2), context);
+    protected UseCommand(PrintWriter writer, Context context) {
+        super(writer, (x -> x == 2), context);
     }
 
     @Override
-    public void run(String[] arguments) throws Exception {
-        super.run(arguments);
+    public void execute(String... arguments) throws Exception {
+        super.execute(arguments);
         Table newTable = getContext().getProvider().getTable(arguments[1]);
         StringTable currentTable = (StringTable) getContext().getCurrentTable();
         if (newTable == null) {
@@ -31,7 +33,7 @@ public class UseCommand extends ContextualCommand {
                 }
             }
             getContext().setCurrentTable(newTable);
-            System.out.printf("using %s\n", arguments[1]);
+            out.printf("using %s%n", arguments[1]);
         }
     }
 }

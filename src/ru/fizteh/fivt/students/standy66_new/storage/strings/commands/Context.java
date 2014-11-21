@@ -10,9 +10,9 @@ public class Context {
     private TableProvider provider;
     private Table currentTable;
 
-    public Context(TableProvider provider) throws NullPointerException {
+    public Context(TableProvider provider) throws IllegalArgumentException {
         if (provider == null) {
-            throw new NullPointerException("database must not be null");
+            throw new IllegalArgumentException("database must not be null");
         }
         this.provider = provider;
         this.currentTable = null;

@@ -9,12 +9,13 @@ public final class FileUtility {
     private FileUtility() {
     }
 
-    public static boolean deleteRecursively(File f) {
-        if (f == null) {
+    public static boolean deleteRecursively(File file) {
+        if (file == null) {
             return false;
         }
-        if (f.isDirectory()) {
-            for (File sub : f.listFiles()) {
+        if (file.listFiles() != null) {
+
+            for (File sub : file.listFiles()) {
                 if (sub.isDirectory()) {
                     if (!deleteRecursively(sub)) {
                         return false;
@@ -24,6 +25,6 @@ public final class FileUtility {
                 }
             }
         }
-        return f.delete();
+        return file.delete();
     }
 }
