@@ -13,8 +13,8 @@ public final class FileUtility {
         if (file == null) {
             return false;
         }
-        if (file.isDirectory()) {
-            //noinspection ConstantConditions
+        if (file.listFiles() != null) {
+
             for (File sub : file.listFiles()) {
                 if (sub.isDirectory()) {
                     if (!deleteRecursively(sub)) {

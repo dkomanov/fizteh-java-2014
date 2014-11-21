@@ -25,9 +25,9 @@ public class FileMap implements Map<String, String>, AutoCloseable {
             throw new IllegalArgumentException("mapFile must not be null");
         }
         this.mapFile = mapFile.getAbsoluteFile();
-        //noinspection CollectionWithoutInitialCapacity
+
         cache = new HashMap<>();
-        //noinspection CollectionWithoutInitialCapacity
+
         changed = new HashSet<>();
         reload();
     }
@@ -105,7 +105,7 @@ public class FileMap implements Map<String, String>, AutoCloseable {
         changed.clear();
         if (cache.isEmpty()) {
             if (mapFile.exists()) {
-                //noinspection ResultOfMethodCallIgnored
+
                 mapFile.delete();
             }
             return keyChangedCount;
@@ -116,7 +116,7 @@ public class FileMap implements Map<String, String>, AutoCloseable {
             }
         }
         if (!mapFile.exists()) {
-            //noinspection ResultOfMethodCallIgnored
+
             mapFile.createNewFile();
         }
         try (FileOutputStream fos = new FileOutputStream(mapFile, false)) {
@@ -172,7 +172,7 @@ public class FileMap implements Map<String, String>, AutoCloseable {
                 }
                 byte[] value = new byte[valueSize];
                 buffer.get(value);
-                //noinspection ObjectAllocationInLoop,ObjectAllocationInLoop
+
                 cache.put(new String(key, CHARSET_NAME), new String(value, CHARSET_NAME));
             }
         } catch (BufferUnderflowException | NegativeArraySizeException e) {

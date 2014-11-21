@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.standy66_new.commands.Command;
 import ru.fizteh.fivt.students.standy66_new.exceptions.InterpreterInterruptionException;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -14,26 +15,27 @@ import java.util.stream.Stream;
  * Created by astepanov on 20.10.14.
  */
 public class Interpreter {
-    private Map<String, Command> commands;
-    private boolean isInteractive;
-    private Scanner scanner;
+    private final Map<String, Command> commands;
+    private final boolean isInteractive;
+    private final Scanner scanner;
 
     public Interpreter(InputStream inputStream, Map<String, Command> supportedCommands, boolean isInteractive) {
-        this.commands = supportedCommands;
+        this.commands = new HashMap<>(supportedCommands);
         this.isInteractive = isInteractive;
         scanner = new Scanner(inputStream);
     }
 
-    public boolean run() {
+    public boolean execute() {
         while (true) {
             if (isInteractive) {
                 System.out.print("$ ");
                 System.out.flush();
             }
             String line;
+
             try {
                 line = scanner.nextLine();
-            } catch (NoSuchElementException e) {
+            } catch (NoSuchElementException ignored) {
                 return true;
             }
             String[] actions = line.split(";");
@@ -41,7 +43,7 @@ public class Interpreter {
             for (String action : actions) {
                 String[] args =
                         Stream.of(action.split(" "))
-                                .filter((s) -> (s.length() > 0))
+                                .filter((s) -> (!s.isEmpty()))
                                 .toArray((size) -> (new String[size]));
                 if (args.length == 0) {
                     continue;
@@ -56,8 +58,8 @@ public class Interpreter {
                     continue;
                 }
                 try {
-                    commandRunnable.run(args);
-                } catch (InterpreterInterruptionException e) {
+                    commandRunnable.execute();
+                } catch (InterpreterInterruptionException ignored) {
                     return isInteractive;
                 } catch (Exception e) {
                     System.err.printf("%s: %s%n", commandName, e.getMessage());

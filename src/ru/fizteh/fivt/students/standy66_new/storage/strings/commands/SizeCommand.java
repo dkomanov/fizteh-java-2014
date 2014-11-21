@@ -3,21 +3,23 @@ package ru.fizteh.fivt.students.standy66_new.storage.strings.commands;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.standy66_new.exceptions.NoTableSelectedException;
 
+import java.io.PrintWriter;
+
 /**
  * Created by andrew on 01.11.14.
  */
 public class SizeCommand extends ContextualCommand {
-    public SizeCommand(Context context) {
-        super((x -> x == 1), context);
+    public SizeCommand(PrintWriter writer, Context context) {
+        super(writer, (x -> x == 1), context);
     }
 
     @Override
-    public void run(String[] arguments) throws Exception {
-        super.run(arguments);
+    public void execute(String... arguments) throws Exception {
+        super.execute(arguments);
         Table currentTable = getContext().getCurrentTable();
         if (currentTable == null) {
-            throw new NoTableSelectedException("no table");
+            throw new NoTableSelectedException();
         }
-        System.out.println(currentTable.size());
+        out.println(currentTable.size());
     }
 }

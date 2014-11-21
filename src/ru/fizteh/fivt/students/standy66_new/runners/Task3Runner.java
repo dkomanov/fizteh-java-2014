@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.standy66_new.runners;
 
+import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.standy66_new.Interpreter;
 import ru.fizteh.fivt.students.standy66_new.commands.Command;
 import ru.fizteh.fivt.students.standy66_new.commands.ExitCommand;
@@ -8,6 +9,7 @@ import ru.fizteh.fivt.students.standy66_new.storage.strings.StringDatabaseFactor
 import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.CommandFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,13 +21,13 @@ public final class Task3Runner {
     private Task3Runner() {
     }
 
-    public static void main(String[] args) {
+    public static void main(String... args) {
         String dbDir = System.getProperty("fizteh.db.dir");
         if (dbDir == null) {
             System.err.println("No dir specified, use -Dfizteh.db.dir=...");
             System.exit(1);
         }
-        StringDatabaseFactory tableProviderFactory = new StringDatabaseFactory();
+        TableProviderFactory tableProviderFactory = new StringDatabaseFactory();
         StringDatabase provider = null;
         try {
             provider = (StringDatabase) tableProviderFactory.create(dbDir);
@@ -33,9 +35,10 @@ public final class Task3Runner {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-        CommandFactory commandFactory = new CommandFactory(provider);
-        Map<String, Command> availableCommands = commandFactory.getCommandsMap("en-US");
-        availableCommands.put("exit", new ExitCommand());
+        PrintWriter systemOutWriter = new PrintWriter(System.out);
+        CommandFactory commandFactory = new CommandFactory(systemOutWriter, provider);
+        Map<String, Command> availableCommands = commandFactory.getCommandsMap();
+        availableCommands.put("exit", new ExitCommand(systemOutWriter));
         Interpreter interpreter;
         if (args.length == 0) {
             interpreter = new Interpreter(System.in, availableCommands, true);
@@ -43,7 +46,7 @@ public final class Task3Runner {
             String params = Stream.of(args).collect(Collectors.joining(" "));
             interpreter = new Interpreter(new ByteArrayInputStream(params.getBytes()), availableCommands, false);
         }
-        if (interpreter.run()) {
+        if (interpreter.execute()) {
             provider.commit();
             provider.close();
         }
