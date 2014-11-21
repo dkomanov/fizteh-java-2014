@@ -19,7 +19,7 @@ public class DropCommand extends ContextualCommand {
             throw new TableNotExistsException(String.format("%s not exists", arguments[1]));
         } else {
             getContext().getProvider().removeTable(arguments[1]);
-            out.println("dropped");
+            getOutputWriter().println("dropped");
         }
     }
 }

@@ -21,7 +21,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     private File lockFile;
     private Map<String, Table> tableInstances;
 
-    public StringDatabase(File directory) {
+    StringDatabase(File directory) {
         if (directory == null) {
             throw new IllegalArgumentException("directory is null");
         }
@@ -123,7 +123,6 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     @Override
     public void close() {
-
         lockFile.delete();
     }
 
