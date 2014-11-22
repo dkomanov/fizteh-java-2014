@@ -23,7 +23,7 @@ public abstract class JUnitCommand {
 
     public static JUnitCommand fromString(String needString) throws Exception {
         if (needString.length() < 1) {
-            throw new Exception("Empty command");
+            throw new Exception("");
         }
         if (needString.length() > 4 && needString.substring(0, 5).equals("show ")) {
             needString = needString.replaceFirst(" ", "_");

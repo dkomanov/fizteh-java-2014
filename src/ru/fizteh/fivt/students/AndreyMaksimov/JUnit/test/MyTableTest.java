@@ -16,7 +16,6 @@ import java.util.LinkedList;
 import static org.junit.Assert.*;
 
 public class MyTableTest {
-
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
@@ -53,11 +52,11 @@ public class MyTableTest {
 
     @Test
     public void testPutAndGet() {
-        assertNull(table.put("111", "333"));
-        assertEquals("333", table.get("111"));
-        assertEquals("333", table.put("111", "555"));
-        assertEquals("555", table.get("111"));
-        assertNull(table.get("fskhfsjkfsdlkjfklsd"));
+        assertNull(table.put("a", "b"));
+        assertEquals("b", table.get("a"));
+        assertEquals("b", table.put("a", "c"));
+        assertEquals("c", table.get("a"));
+        assertNull(table.get("h"));
     }
 
     @Test
@@ -76,36 +75,31 @@ public class MyTableTest {
         assertEquals(1, table.size());
         table.put("3", "4");
         assertEquals(2, table.size());
-        table.put("3", "5");
-        assertEquals(2, table.size());
-        table.remove("1");
-        assertEquals(1, table.size());
-        table.remove("1");
-        assertEquals(1, table.size());
     }
 
     @Test
     public void testList() {
         assertEquals(0, table.list().size());
-        table.put("100000", "200000");
-        table.put("300000", "400000");
-        table.put("300000", "500000");
-        table.remove("100000");
-        table.put("600000", "700000");
+        table.put("1000000000000", "2000000000000");
+        table.put("3000000000000", "4000000000000");
+        table.put("3000000000000", "5000000000000");
+        table.remove("1000000000000");
+        table.put("6000000000000", "7000000000000");
         table.put("key", "value");
         assertEquals(3, table.list().size());
-        assertTrue(table.list().containsAll(new LinkedList<>(Arrays.asList("300000", "600000", "key"))));
+        assertTrue(table.list().containsAll(new LinkedList<>(Arrays.asList("3000000000000", "6000000000000", "key"))));
     }
 
     @Test
     public void testRollBack() {
         assertEquals(0, table.rollback());
-        table.put("10", "20");
-        table.put("20", "30");
-        table.put("30", "40");
-        table.remove("10");
-        assertEquals(2, table.size());
-        assertEquals(4, table.rollback());
+        table.put("100", "200");
+        table.put("200", "300");
+        table.put("300", "400");
+        table.remove("100");
+        table.put("100", "500");
+        assertEquals(3, table.size());
+        assertEquals(3, table.rollback());
         assertEquals(0, table.size());
     }
 
@@ -116,7 +110,7 @@ public class MyTableTest {
         table.put("200", "300");
         table.put("300", "400");
         table.remove("300");
-        assertEquals(4, table.commit());
+        assertEquals(2, table.commit());
         assertEquals(2, table.size());
         TableProviderFactory factory = new MyTableProviderFactory();
         TableProvider provider = factory.create(dbDirPath);
@@ -133,7 +127,7 @@ public class MyTableTest {
         table.remove("10000000");
         table.remove("20000000");
         assertNull(table.get("10000000"));
+        assertNull(table.get("20000000"));
         assertEquals(2, table.rollback());
-
     }
 }
