@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 public class DbMain {
     public static void main(String[] args) {
         String dataBasePath = System.getProperty("db.file");
-        if ((dataBasePath == null) || !Files.exists(Paths.get(dataBasePath))) {
+        if (dataBasePath == null || !Files.exists(Paths.get(dataBasePath))) {
             System.out.println("cannot access the database");
             System.exit(1);
         }
