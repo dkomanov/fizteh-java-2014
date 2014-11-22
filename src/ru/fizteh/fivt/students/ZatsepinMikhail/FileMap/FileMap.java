@@ -33,6 +33,10 @@ public class FileMap {
         return dataBase.keySet();
     }
 
+    public int getNumberOfPairs() {
+        return dataBase.size();
+    }
+
     public boolean init() {
         try (FileInputStream inStream = new FileInputStream(diskFile)) {
             FileChannel inputChannel;
