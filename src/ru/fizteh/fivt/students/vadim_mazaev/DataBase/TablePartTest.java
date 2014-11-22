@@ -16,21 +16,28 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+
 public class TablePartTest {
+    //TODO тест кодировки!!!
     private final int offsetLength = 4;
     private final int dirNumber = 1;
     private final int fileNumber = 1;
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DbTestDir");
-    private final Path filePath = Paths.get(testDir.toString(), dirNumber + ".dir",
-            fileNumber + ".dat");
+    private TableProvider provider;
+//    private final Path filePath = Paths.get(testDir.toString(), dirNumber + ".dir",
+//            fileNumber + ".dat");
     private String wrongKey;
     private String correctKey1;
     private String correctKey2;
     private final String testValue = "val";
     
     @Before
-    public void setUp() {
+    public void setUp() throws DataBaseIOException {
         testDir.toFile().mkdir();
+        provider = new TableManager(testDir.toString());
+        Table table = provider.createTable("testTable", columnTypes);
         //Each key should be placed to directory with number 
         //key.getBytes()[0] % NUMBER_OF_PARTITIONS
         //and file with number
@@ -46,7 +53,7 @@ public class TablePartTest {
     
     @Test
     public void testTablePartIsCreatedForNonexistentFile() throws DataBaseIOException {
-        new TablePart(testDir, dirNumber, fileNumber);
+        new TablePart(null, testDir, dirNumber, fileNumber);
     }
     
     @Test(expected = DataBaseIOException.class)
@@ -58,15 +65,15 @@ public class TablePartTest {
     }
     
     @Test(expected = DataBaseIOException.class)
-    public void testTablePartThrowsExceptionLoadedFileHasKeyFromAnotherBucket()
+    public void testTablePartThrowsExceptionLoadedFileWithKeyFromAnotherBucket()
             throws IOException, DataBaseIOException {
         filePath.getParent().toFile().mkdir();
         try (DataOutputStream file
                 = new DataOutputStream(new FileOutputStream(filePath.toString()))) {
-            file.write(wrongKey.getBytes(TablePart.CODING));
+            file.write(wrongKey.getBytes(TablePart.ENCODING));
             file.write('\0');
             file.writeInt(wrongKey.length() + 1 + offsetLength);
-            file.write(testValue.getBytes(TablePart.CODING));
+            file.write(testValue.getBytes(TablePart.ENCODING));
         }
         new TablePart(testDir, dirNumber, fileNumber);
     }
@@ -77,7 +84,7 @@ public class TablePartTest {
         filePath.getParent().toFile().mkdir();
         try (DataOutputStream file
                 = new DataOutputStream(new FileOutputStream(filePath.toString()))) {
-            file.write(correctKey1.getBytes(TablePart.CODING));
+            file.write(correctKey1.getBytes(TablePart.ENCODING));
             file.write('\0');
             file.writeInt(correctKey1.length() + 1 + offsetLength);
             //Value wasn't writed to the file.
@@ -90,15 +97,15 @@ public class TablePartTest {
         filePath.getParent().toFile().mkdir();
         try (DataOutputStream file
                 = new DataOutputStream(new FileOutputStream(filePath.toString()))) {
-            file.write(correctKey1.getBytes(TablePart.CODING));
+            file.write(correctKey1.getBytes(TablePart.ENCODING));
             file.write('\0');
             file.writeInt(correctKey1.length() + correctKey2.length() + 2 + offsetLength * 2);
-            file.write(correctKey2.getBytes(TablePart.CODING));
+            file.write(correctKey2.getBytes(TablePart.ENCODING));
             file.write('\0');
             file.writeInt(correctKey2.length() + correctKey2.length() + 2 + offsetLength * 2
                     + testValue.length());
-            file.write(testValue.getBytes(TablePart.CODING));
-            file.write(testValue.getBytes(TablePart.CODING));
+            file.write(testValue.getBytes(TablePart.ENCODING));
+            file.write(testValue.getBytes(TablePart.ENCODING));
         }
         TablePart test = new TablePart(testDir, dirNumber, fileNumber);
         assertEquals(testValue, test.get(correctKey1));
@@ -204,15 +211,15 @@ public class TablePartTest {
         String[] keyList = {correctKey1, correctKey2};
         try (DataOutputStream file
                 = new DataOutputStream(new FileOutputStream(filePath.toString()))) {
-            file.write(correctKey1.getBytes(TablePart.CODING));
+            file.write(correctKey1.getBytes(TablePart.ENCODING));
             file.write('\0');
             file.writeInt(correctKey1.length() + correctKey2.length() + 2 + offsetLength * 2);
-            file.write(correctKey2.getBytes(TablePart.CODING));
+            file.write(correctKey2.getBytes(TablePart.ENCODING));
             file.write('\0');
             file.writeInt(correctKey2.length() + correctKey2.length() + 2 + offsetLength * 2
                     + testValue.length());
-            file.write(testValue.getBytes(TablePart.CODING));
-            file.write(testValue.getBytes(TablePart.CODING));
+            file.write(testValue.getBytes(TablePart.ENCODING));
+            file.write(testValue.getBytes(TablePart.ENCODING));
         }
         TablePart test = new TablePart(testDir, dirNumber, fileNumber);
         assertArrayEquals(keyList, test.list().toArray());

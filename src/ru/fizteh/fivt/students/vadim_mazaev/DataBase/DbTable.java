@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.vadim_mazaev.DataBase;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,10 +12,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.Set;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 
 /**
  * Represents the data table containing pairs key-value. The keys must be unique.
@@ -24,24 +29,48 @@ import ru.fizteh.fivt.storage.structured.Table;
  */
 public final class DbTable implements Table {
     public static final int NUMBER_OF_PARTITIONS = 16;
-    public static final String CODING = "UTF-8";
+    public static final String ENCODING = "UTF-8";
     private static final String FILE_NAME_REGEX = "([0-9]|1[0-5])\\.dat";
-    private static final String DIR_NAME_REGEX = "([0-9]|1[0-5])\\.dir"; 
+    private static final String DIR_NAME_REGEX = "([0-9]|1[0-5])\\.dir";
+    private static final String SIGNATURE_FILE_NAME = "signature.tsv";
+    private static final Map<String, Class<?>> TYPE_NAMES_MAP;
+    static {
+        Map<String, Class<?>> unitializerMap = new HashMap<>();
+        unitializerMap.put("int", Integer.class);
+        unitializerMap.put("long", Long.class);
+        unitializerMap.put("byte", Byte.class);
+        unitializerMap.put("float", Float.class);
+        unitializerMap.put("double", Double.class);
+        unitializerMap.put("boolean", Boolean.class);
+        unitializerMap.put("String", String.class);
+        TYPE_NAMES_MAP = Collections.unmodifiableMap(unitializerMap);
+    }
+    private TableProvider provider;
     private String name;
+    //TODO rename
     private Path tableDirPath;
+    private List<Class<?>> signature;
     private Map<Integer, TablePart> parts;
-    private Map<String, String> diff;
+    private Map<String, Storeable> diff;
     
     /**
+     * @param provider Link to TableProvider, which created the table. 
      * @param tableDirPath Path to table directory.
-     * @param name Table name. Method doesn't check for equality of table name and directory name. 
      * @throws DataBaseIOException If table directory is corrupted.
+     * @throws IllegalArgumentException If 
      */
-    public DbTable(Path tableDirPath, String name) throws DataBaseIOException {
+    public DbTable(TableProvider provider, Path tableDirPath)
+            throws DataBaseIOException {
         parts = new HashMap<>();
         diff = new HashMap<>();
+        signature = new ArrayList<>();
+        if (provider == null || tableDirPath == null) {
+            //TODO rewrite message
+            throw new IllegalArgumentException("Provider can't be null");
+        }
+        this.provider = provider;
         this.tableDirPath = tableDirPath;
-        this.name = name;
+        this.name = tableDirPath.getName(tableDirPath.getNameCount() - 1).toString();
         try {
             readTableDir();
         } catch (DataBaseIOException e) {
@@ -59,18 +88,18 @@ public final class DbTable implements Table {
     public int commit() throws IOException {
         int savedChangesCounter = diff.size();
         try {
-            for (Entry<String, String> pair : diff.entrySet()) {
+            for (Entry<String, Storeable> pair : diff.entrySet()) {
                 TablePart part = parts.get(getDirFileCode(pair.getKey()));
                 if (pair.getValue() == null) {
                     part.remove(pair.getKey());
                 } else {
                     if (part == null) {
                         //TODO вынести в отдельный метод
-                        int dirNumber = Math.abs(pair.getKey().getBytes(CODING)[0]
+                        int dirNumber = Math.abs(pair.getKey().getBytes(ENCODING)[0]
                                 % NUMBER_OF_PARTITIONS);
-                        int fileNumber = Math.abs((pair.getKey().getBytes(CODING)[0]
+                        int fileNumber = Math.abs((pair.getKey().getBytes(ENCODING)[0]
                                 / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS);
-                        part = new TablePart(tableDirPath, dirNumber, fileNumber);
+                        part = new TablePart(this, tableDirPath, dirNumber, fileNumber);
                         parts.put(getDirFileCode(pair.getKey()), part);
                     }
                     part.put(pair.getKey(), pair.getValue());
@@ -105,20 +134,42 @@ public final class DbTable implements Table {
     }
     
     /**
+     * @return Number of columns in table. 
+     */
+    @Override
+    public int getColumnsCount() {
+        return signature.size();
+    }
+
+    /**
+     * @param columnIndex Index of column. Starts from zero.
+     * @return Class representing type of value.
+     * @throws IndexOutOfBoundsException Wrong index of column.
+     */
+    @Override
+    public Class<?> getColumnType(int columnIndex)
+            throws IndexOutOfBoundsException {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
+            throw new IndexOutOfBoundsException();
+        }
+        return signature.get(columnIndex);
+    }
+    
+    /**
      * Returns file and directory numbers where the key should be placed.
      * @param key Key.
-     * @return Integer code of file number and its directory number in such format: ddff.
+     * @return Integer code of file number and its directory number.
      */
     private int getDirFileCode(String key) {
         //TODO переписать!
         int dirNumber;
         int fileNumber;
         try {
-            dirNumber = Math.abs(key.getBytes(CODING)[0] % NUMBER_OF_PARTITIONS);
-            fileNumber = Math.abs((key.getBytes(CODING)[0] / NUMBER_OF_PARTITIONS)
+            dirNumber = Math.abs(key.getBytes(ENCODING)[0] % NUMBER_OF_PARTITIONS);
+            fileNumber = Math.abs((key.getBytes(ENCODING)[0] / NUMBER_OF_PARTITIONS)
                 % NUMBER_OF_PARTITIONS);
         } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unable to encode key to " + CODING, e);
+            throw new IllegalArgumentException("Unable to encode key to " + ENCODING, e);
         }
         return dirNumber * NUMBER_OF_PARTITIONS + fileNumber;
     }
@@ -134,12 +185,11 @@ public final class DbTable implements Table {
      * method fails.
      */
     @Override
-    //TODO переделать!
     public Storeable get(String key) {
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
-        String value;
+        Storeable value;
         if (diff.containsKey(key)) {
             value = diff.get(key);
         } else {
@@ -166,11 +216,11 @@ public final class DbTable implements Table {
      * method fails.
      */
     @Override
-    public String put(String key, String value) {
+    public Storeable put(String key, Storeable value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException("Key or value is a null-string");
         }
-        String oldValue;
+        Storeable oldValue;
         if (!diff.containsKey(key)) {
             TablePart part = parts.get(getDirFileCode(key));
             if (part == null) {
@@ -186,7 +236,7 @@ public final class DbTable implements Table {
             oldValue = diff.remove(key);
         }
         diff.put(key, value);
-        return oldValue; 
+        return oldValue;
     }
     
     /**
@@ -197,11 +247,11 @@ public final class DbTable implements Table {
      * method fails.
      */
     @Override
-    public String remove(String key) {
+    public Storeable remove(String key) {
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
-        String removedValue;
+        Storeable removedValue;
         if (!diff.containsKey(key)) {
             TablePart part = parts.get(getDirFileCode(key));
             if (part == null) {
@@ -229,7 +279,7 @@ public final class DbTable implements Table {
         for (Entry<Integer, TablePart> part : parts.entrySet()) {
             numberOfRecords += part.getValue().getNumberOfRecords();
         }
-        for (Entry<String, String> pair : diff.entrySet()) {
+        for (Entry<String, Storeable> pair : diff.entrySet()) {
             if (pair.getValue() == null) {
                 numberOfRecords--;
             } else {
@@ -249,7 +299,7 @@ public final class DbTable implements Table {
         for (Entry<Integer, TablePart> pair : parts.entrySet()) {
             keySet.addAll(pair.getValue().list());
         }
-        for (Entry<String, String> pair : diff.entrySet()) {
+        for (Entry<String, Storeable> pair : diff.entrySet()) {
             if (pair.getValue() == null) {
                 keySet.remove(pair.getKey());
             } else {
@@ -264,46 +314,84 @@ public final class DbTable implements Table {
     /**
      * @return Number of changes after the last commit.
      */
-    public int getNumberOfChanges() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         return diff.size();
     }
     
     /**
-     * Reads table directory, checks it, creates new {@link TablePart}
-     * for every file in directory.
-     * @see
-     * {@link TablePart#TablePart(Path tableDirPath, int dirNumber, int fileNumber)
-     * TablePart Constructor} to know about saving data in memory.  
+     * Method has package-private modifier. Expects to use with TablePart class.
+     * @return TableProvider which provided this table.
+     */
+    TableProvider getProvider() {
+        return provider;
+    }
+    
+    /**
+     * Read and check table directory.
      * @throws DataBaseIOException If directory checking fails.
      */
     private void readTableDir() throws DataBaseIOException {
         String[] dirList = tableDirPath.toFile().list();
+        Path signatureFilePath = tableDirPath.resolve(SIGNATURE_FILE_NAME);
+        if (!signatureFilePath.toFile().isFile()) {
+            throw new DataBaseIOException("Signature file '" + SIGNATURE_FILE_NAME
+                    + "' is missing");
+        }
+        readSignature(signatureFilePath);
         for (String dir : dirList) {
-            Path curDir = tableDirPath.resolve(dir);
-            if (!dir.matches(DIR_NAME_REGEX)
-                    || !curDir.toFile().isDirectory()) {
-                throw new DataBaseIOException("File '" + dir
-                        + "' is not a directory or doesn't match required name '[0-"
-                        + (NUMBER_OF_PARTITIONS - 1) + "].dir'", null);
+            Path dirPath = tableDirPath.resolve(dir);
+            if (!dir.matches(DIR_NAME_REGEX) || !dirPath.toFile().isDirectory()) {
+                if (dir.equals(SIGNATURE_FILE_NAME) && dirPath.toFile().isFile()) {
+                    //Ignore signature file.
+                    continue;
+                }
+                //TODO check the text
+                throw new DataBaseIOException(String.format("File '" + dir
+                        + "' is not a directory or "
+                        + "doesn't match required name '[0-%1$d].dir'",
+                        NUMBER_OF_PARTITIONS - 1));
             }
-            String[] fileList = curDir.toFile().list();
+            String[] fileList = dirPath.toFile().list();
             if (fileList.length == 0) {
-                throw new DataBaseIOException("Directory '" + dir + "' is empty.", null);
+                throw new DataBaseIOException("Directory '" + dir + "' is empty.");
             }
             for (String file : fileList) {
-                Path filePath = curDir.resolve(file);
-                if (!file.matches(FILE_NAME_REGEX)
-                        || !filePath.toFile().isFile()) {
-                    throw new DataBaseIOException("File '" + file + "' in directory '" + dir
-                            + "' is not a file or doesn't match required name '[0-"
-                            + (NUMBER_OF_PARTITIONS - 1) + "].dat'", null);
+                Path filePath = dirPath.resolve(file);
+                if (!file.matches(FILE_NAME_REGEX) || !filePath.toFile().isFile()) {
+                    throw new DataBaseIOException(String.format("File '" + file + "'"
+                            + "in directory '" + dir + "' is not a regular file or"
+                            + "doesn't match required name '[0-%1$d].dat'",
+                            NUMBER_OF_PARTITIONS - 1));
                 }
                 //TODO вынести нахрен
                 int dirNumber = Integer.parseInt(dir.substring(0, dir.length() - 4));
                 int fileNumber = Integer.parseInt(file.substring(0, file.length() - 4));
-                TablePart part = new TablePart(tableDirPath, dirNumber, fileNumber);
+                TablePart part = new TablePart(this, tableDirPath, dirNumber, fileNumber);
                 parts.put(dirNumber * NUMBER_OF_PARTITIONS + fileNumber, part);
             }
+        }
+    }
+    
+    /**
+     * Reads {@value #SIGNATURE_FILE_NAME} and save table signature into memory.
+     * @param filePath Path to {@value #SIGNATURE_FILE_NAME} file.
+     * @throws DataBaseIOException If file is corrupted or can't be read.
+     */
+    private void readSignature(Path filePath) throws DataBaseIOException {
+        try (Scanner scanner = new Scanner(filePath)) {
+            //TODO check!
+            String[] types = scanner.nextLine().split("\\s+");
+            for (String typeName : types) {
+                Class<?> typeClass = TYPE_NAMES_MAP.get(typeName);
+                if (typeClass == null) {
+                    throw new DataBaseIOException("Unable read signature from " + filePath.toString()
+                            + ": file contains wrong type names");
+                }
+                signature.add(typeClass);
+            }
+        } catch (IOException | NoSuchElementException e) {
+            throw new DataBaseIOException("Unable read signature from " + filePath.toString(), e);
         }
     }
     

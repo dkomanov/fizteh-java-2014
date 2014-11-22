@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.vadim_mazaev.Interpreter;
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -90,7 +89,7 @@ public final class Interpreter {
         String[] cmds = line.split(COMMAND_SEPARATOR);
         try {
             for (String current : cmds) {
-                    parse(current.trim().split("\\s+"));
+                    parse(current.trim().split("\\s+(?![^\\[]*\\])(?=([^\"]*\"[^\"]*\")*[^\"]*$)"));
             }
             return 0;
         } catch (StopLineInterpretationException e) {
@@ -116,7 +115,16 @@ public final class Interpreter {
             if (command == null) {
                 throw new StopLineInterpretationException(NO_SUCH_COMMAND_MSG + commandName);
             } else {
-                String[] args = Arrays.copyOfRange(cmdWithArgs, 1, cmdWithArgs.length);
+                String[] args = new String[cmdWithArgs.length - 1];
+                //Exclude quotes along the edges of the string, if they presents.
+                for (int i = 1; i < cmdWithArgs.length; i++) {
+                    if (cmdWithArgs[i].charAt(0) == '"'
+                            && cmdWithArgs[i].charAt(cmdWithArgs[i].length() - 1) == '"') {
+                        args[i - 1] = cmdWithArgs[i].substring(1, cmdWithArgs[i].length() - 1);
+                    } else {
+                        args[i - 1] = cmdWithArgs[i];
+                    }
+                }
                 try {
                     command.execute(connector, args);
                 } catch (RuntimeException e) {

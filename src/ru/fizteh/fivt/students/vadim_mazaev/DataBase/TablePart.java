@@ -8,6 +8,7 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -15,38 +16,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
+
 /**
  * Class represents a single file of type *.dir/*.dat.
  * @author Vadim Mazaev
  */
 final class TablePart {
-    private Map<String, String> data;
-    private Path tablePartDirPath;
+    private Map<String, Storeable> data;
+    private DbTable table;
+    private Path tablePartDirectoryPath;
     private int fileNumber;
-    private int dirNumber;
-    public static final String CODING = "UTF-8";
+    private int directoryNumber;
+    public static final String ENCODING = "UTF-8";
     public static final int NUMBER_OF_PARTITIONS = 16;
     
     /**
      * Constructs a TablePart. Read data from file if it exists.
-     * @param tableDirPath Path to the directory of table.
-     * @param dirNumber Directory number.
+     * @param table Table, which part is this TablePart. Expects being non-null.
+     * @param tableDirectoryPath Path to the directory of table. Expects being non-null.
+     * @param directoryNumber Directory number.
      * @param fileNumber File number.
      * @throws DataBaseIOException If file reading or checking failed.
      */
-    public TablePart(Path tableDirPath, int dirNumber, int fileNumber)
+    public TablePart(DbTable table, Path tableDirectoryPath, int directoryNumber, int fileNumber)
             throws DataBaseIOException {
-        tablePartDirPath = Paths.get(tableDirPath.toString(),
-                dirNumber + ".dir", fileNumber + ".dat");
-        this.dirNumber = dirNumber;
+        tablePartDirectoryPath = Paths.get(tableDirectoryPath.toString(),
+                directoryNumber + ".dir", fileNumber + ".dat");
+        this.directoryNumber = directoryNumber;
         this.fileNumber = fileNumber;
+        this.table = table;
         data = new HashMap<>();
-        if (tablePartDirPath.toFile().exists()) {
+        if (tablePartDirectoryPath.toFile().exists()) {
             try {
                 readFile();
             } catch (IOException e) {
                 throw new DataBaseIOException("Error reading file '"
-                        + tablePartDirPath.toString() + "': " + e.getMessage(), e);
+                        + tablePartDirectoryPath.toString() + "': " + e.getMessage(), e);
             }
         }
     }
@@ -58,14 +64,14 @@ final class TablePart {
      */
     public void commit() throws DataBaseIOException {
         if (getNumberOfRecords() == 0) {
-            tablePartDirPath.toFile().delete();
-            tablePartDirPath.getParent().toFile().delete();
+            tablePartDirectoryPath.toFile().delete();
+            tablePartDirectoryPath.getParent().toFile().delete();
         } else {
             try {
                 writeToFile();
             } catch (IOException e) {
                 throw new DataBaseIOException("Error writing to file '"
-                        + tablePartDirPath.toString() + "': " + e.getMessage(), e);
+                        + tablePartDirectoryPath.toString() + "': " + e.getMessage(), e);
             }
         }
     }
@@ -78,10 +84,8 @@ final class TablePart {
      * method throws it.
      * @throws IllegalArgumentException If key is a null-string or can't be found in this file.
      */
-    public String get(String key) throws UnsupportedEncodingException {
-        if (key == null || !keyIsValidForFile(key)) {
-            throw new IllegalArgumentException("'" + key + "' can't be found in this file");
-        }
+    public Storeable get(String key) throws UnsupportedEncodingException {
+        checkKey(key);
         return data.get(key);
     }
     
@@ -95,10 +99,8 @@ final class TablePart {
      * @throws IllegalArgumentException If key or value is a null-string
      * or key can't be placed to this file.
      */
-    public String put(String key, String value) throws UnsupportedEncodingException {
-        if (key == null || !keyIsValidForFile(key)) {
-            throw new IllegalArgumentException("'" + key + "' can't be placed to this file");
-        }
+    public Storeable put(String key, Storeable value) throws UnsupportedEncodingException {
+        checkKey(key);
         if (value == null) {
             throw new IllegalArgumentException("Value cannot be null");
         }
@@ -113,10 +115,8 @@ final class TablePart {
      * method throws it.
      * @throws IllegalArgumentException If key is a null-string or cannot be found in this file.
      */
-    public String remove(String key) throws UnsupportedEncodingException {
-        if (key == null || !keyIsValidForFile(key)) {
-            throw new IllegalArgumentException("'" + key + "' can't be found in this file");
-        }
+    public Storeable remove(String key) throws UnsupportedEncodingException {
+        checkKey(key);
         return data.remove(key);
     }
     
@@ -135,44 +135,39 @@ final class TablePart {
     }
     
     /**
-     * Reads file from disk into memory.
+     * Reads file from disk.
      * @throws IOException If file is missing, corrupted or contains wrong data.
      */
     private void readFile() throws IOException {
-        try (RandomAccessFile file = new RandomAccessFile(tablePartDirPath.toString(), "r")) {
+        try (RandomAccessFile file = new RandomAccessFile(tablePartDirectoryPath.toString(), "r")) {
             ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
             List<Integer> offsets = new LinkedList<>();
             List<String> keys = new LinkedList<>();
-            int bytesCounter = 0;
             byte b;
             //Reading keys and offsets until reaching
             //the byte with first offset number.
             do {
                 while ((b = file.readByte()) != 0) {
-                    bytesCounter++;
                     bytesBuffer.write(b);
                 }
-                bytesCounter++;
                 offsets.add(file.readInt());
-                bytesCounter += 4;
-                String key = bytesBuffer.toString(CODING);
+                String key = bytesBuffer.toString(ENCODING);
                 bytesBuffer.reset();
-                if (!keyIsValidForFile(key)) {
-                    throw new IllegalArgumentException();
-                }
+                checkKey(key);
                 keys.add(key);
-            } while (bytesCounter < offsets.get(0));
-            //Reading values until reaching the end of file.
+            } while (file.getFilePointer() < offsets.get(0));
             offsets.add((int) file.length());
             offsets.remove(0);
+            //Reading values until reaching the end of file.
             Iterator<String> keyIter = keys.iterator();
             for (int nextOffset : offsets) {
-                while (bytesCounter < nextOffset) {
+                while (file.getFilePointer() < nextOffset) {
                     bytesBuffer.write(file.readByte());
-                    bytesCounter++;
                 }
                 if (bytesBuffer.size() > 0) {
-                    if (data.put(keyIter.next(), bytesBuffer.toString(CODING)) != null) {
+                    String serializedValue = bytesBuffer.toString(ENCODING);
+                    Storeable value = table.getProvider().deserialize(table, serializedValue);
+                    if (data.put(keyIter.next(), value) != null) {
                         throw new IllegalArgumentException("Key repeats in file");
                     }
                     bytesBuffer.reset();
@@ -182,11 +177,13 @@ final class TablePart {
             }
             bytesBuffer.close();
         } catch (UnsupportedEncodingException e) {
-            throw new IOException("Key or value can't be encoded to " + CODING, e);
+            throw new IOException("Key or value can't be encoded to " + ENCODING, e);
         } catch (IllegalArgumentException e) {
-            throw new IOException("Key is in a wrong file or directory", e);
+            throw new IOException(e.getMessage(), e);
         } catch (EOFException e) {
             throw new IOException("File breaks unexpectedly", e);
+        } catch (ParseException e) {
+            throw new IOException(e.getMessage(), e);
         } catch (IOException e) {
             throw new IOException("Unable read from file", e);
         }
@@ -194,15 +191,17 @@ final class TablePart {
     
     /**
      * @param key Key.
-     * @return True if key can be in this {@link TablePart}.
-     * @throws UnsupportedEncodingException If key bytes cannot be encode to {@value #CODING}.
+     * @throws UnsupportedEncodingException If key bytes cannot be encode to {@value #ENCODING}.
+     * @throws IllegalArgumentException If key can't be in this {@link TablePart}.
      */
-    private boolean keyIsValidForFile(String key)
+    private void checkKey(String key)
             throws UnsupportedEncodingException {
-        int expectedDirNumber = Math.abs(key.getBytes(CODING)[0] % NUMBER_OF_PARTITIONS);
-        int expectedFileNumber = Math.abs((key.getBytes(CODING)[0] / NUMBER_OF_PARTITIONS)
+        int expectedDirNumber = Math.abs(key.getBytes(ENCODING)[0] % NUMBER_OF_PARTITIONS);
+        int expectedFileNumber = Math.abs((key.getBytes(ENCODING)[0] / NUMBER_OF_PARTITIONS)
                 % NUMBER_OF_PARTITIONS);
-        return (dirNumber == expectedDirNumber && fileNumber == expectedFileNumber);
+        if (key == null || directoryNumber != expectedDirNumber || fileNumber != expectedFileNumber) {
+            throw new IllegalArgumentException("'" + key + "' can't be placed to this file");
+        }
     }
     
     /**
@@ -210,21 +209,23 @@ final class TablePart {
      * @throws IOException If method can't write to file.
      */
     private void writeToFile() throws IOException {
-        tablePartDirPath.getParent().toFile().mkdir();
-        try (RandomAccessFile file = new RandomAccessFile(tablePartDirPath.toString(), "rw")) {
+        tablePartDirectoryPath.getParent().toFile().mkdir();
+        try (RandomAccessFile file = new RandomAccessFile(tablePartDirectoryPath.toString(), "rw")) {
             file.setLength(0);
             Set<String> keys = data.keySet();
             List<Integer> offsetsPos = new LinkedList<>();
             for (String currentKey : keys) {
-                file.write(currentKey.getBytes(CODING));
+                file.write(currentKey.getBytes(ENCODING));
                 file.write('\0');
                 offsetsPos.add((int) file.getFilePointer());
                 file.writeInt(0);
             }
             List<Integer> offsets = new LinkedList<>();
-            for (String currentKey : keys) {
+            for (String key : keys) {
                 offsets.add((int) file.getFilePointer());
-                file.write(data.get(currentKey).getBytes(CODING));
+                Storeable value = data.get(key);
+                String serializedValue = table.getProvider().serialize(table, value);
+                file.write(serializedValue.getBytes(ENCODING));
             }
             Iterator<Integer> offIter = offsets.iterator();
             for (int offsetPos : offsetsPos) {
@@ -234,7 +235,7 @@ final class TablePart {
         } catch (FileNotFoundException e) {
             throw new IOException("Unable to create file", e);
         } catch (UnsupportedEncodingException e) {
-            throw new IOException("Key or value can't be encoded to " + CODING, e);
+            throw new IOException("Key or value can't be encoded to " + ENCODING, e);
         } catch (IOException e) {
             throw new IOException("Unable to write to file", e);
         }

@@ -1,12 +1,16 @@
 package ru.fizteh.fivt.students.vadim_mazaev;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.DbTable;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManager;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManagerFactory;
@@ -25,7 +29,7 @@ public final class Main {
         DataBaseState state = null;
         try {
             state = new DataBaseState(factory.create(dbDirPath));
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | IOException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
@@ -37,29 +41,34 @@ public final class Main {
                 new Command("put", 2, new BiConsumer<Object, String[]>() {
                     @Override
                     public void accept(Object state, String[] args) {
+                        TableProvider manager = ((DataBaseState) state).getManager();
                         Table link = ((DataBaseState) state).getUsedTable();
-                        if (link != null) {
-                            String oldValue = link.put(args[0], args[1]);
+                        try {
+                            Storeable oldValue = link.put(args[0], manager.deserialize(link, args[1]));
                             if (oldValue != null) {
                                 System.out.println("overwrite");
-                                System.out.println(oldValue);
+                                System.out.println(manager.serialize(link, oldValue));
                             } else {
                                 System.out.println("new");
                             }
-                        } else {
+                        } catch (NullPointerException e) {
                             throw new StopLineInterpretationException("no table");
+                        } catch (ColumnFormatException | ParseException e) {
+                            throw new StopLineInterpretationException("wrong type ("
+                                    + e.getMessage() + ")");
                         }
                     }
                 }),
                 new Command("get", 1, new BiConsumer<Object, String[]>() {
                     @Override
                     public void accept(Object state, String[] args) {
+                        TableProvider manager = ((DataBaseState) state).getManager();
                         Table link = ((DataBaseState) state).getUsedTable();
                         if (link != null) {
-                            String value = link.get(args[0]);
+                            Storeable value = link.get(args[0]);
                             if (value != null) {
                                 System.out.println("found");
-                                System.out.println(value);
+                                System.out.println(manager.serialize(link, value));
                             } else {
                                 System.out.println("not found");
                             }
@@ -73,7 +82,7 @@ public final class Main {
                     public void accept(Object state, String[] args) {
                         Table link = ((DataBaseState) state).getUsedTable();
                         if (link != null) {
-                            String removedValue = link.remove(args[0]);
+                            Storeable removedValue = link.remove(args[0]);
                             if (removedValue != null) {
                                 System.out.println("removed");
                             } else {
@@ -110,10 +119,12 @@ public final class Main {
                     @Override
                     public void accept(Object state, String[] args) {
                         Table link = ((DataBaseState) state).getUsedTable();
-                        if (link != null) {
+                        try {
                             System.out.println(link.commit());
-                        } else {
+                        } catch (NullPointerException e) {
                             throw new StopLineInterpretationException("no table");
+                        } catch (IOException e) {
+                            throw new StopLineInterpretationException(e.getMessage());
                         }
                     }
                 }),
@@ -128,15 +139,15 @@ public final class Main {
                         }
                     }
                 }),
-                new Command("create", 1, new BiConsumer<Object, String[]>() {
+                new Command("create", 2, new BiConsumer<Object, String[]>() {
                     @Override
                     public void accept(Object state, String[] args) {
-                        TableProvider manager = ((DataBaseState) state).getManager();
-                        if (manager.createTable(args[0]) != null) {
-                            System.out.println("created");
-                        } else {
-                            throw new StopLineInterpretationException(args[0] + " exists");
-                        }
+//                        TableProvider manager = ((DataBaseState) state).getManager();
+//                        if (manager.createTable(args[0]) != null) {
+//                            System.out.println("created");
+//                        } else {
+//                            throw new StopLineInterpretationException(args[0] + " exists");
+//                        }
                     }
                 }),
                 new Command("use", 1, new BiConsumer<Object, String[]>() {
@@ -147,8 +158,8 @@ public final class Main {
                         Table newTable = manager.getTable(args[0]);
                         DbTable usedTable = (DbTable) dbState.getUsedTable();
                         if (newTable != null) {
-                            if (usedTable != null && (usedTable.getNumberOfChanges() > 0)) {
-                                System.out.println(usedTable.getNumberOfChanges()
+                            if (usedTable != null && usedTable.getNumberOfUncommittedChanges() > 0) {
+                                System.out.println(usedTable.getNumberOfUncommittedChanges()
                                         + " unsaved changes");
                             } else {
                                 dbState.setUsedTable(newTable);
@@ -173,6 +184,8 @@ public final class Main {
                             System.out.println("dropped");
                         } catch (IllegalStateException e) {
                             throw new StopLineInterpretationException("tablename not exists");
+                        } catch (IOException e) {
+                            throw new StopLineInterpretationException(e.getMessage());
                         }
                     }
                 }),
@@ -182,7 +195,7 @@ public final class Main {
                         if (args[0].equals("tables")) {
                             DataBaseState dbState = ((DataBaseState) state);
                             TableManager manager = (TableManager) dbState.getManager();
-                            List<String> tableNames = manager.getTablesList();
+                            List<String> tableNames = manager.getTableNames();
                             System.out.println("table_name row_count");
                             for (String name : tableNames) {
                                 Table curTable = manager.getTable(name);
@@ -199,8 +212,8 @@ public final class Main {
             @Override
             public Boolean call() throws Exception {
                 DbTable link = (DbTable) state.getUsedTable();
-                if (link != null && (link.getNumberOfChanges() > 0)) {
-                    System.out.println(link.getNumberOfChanges()
+                if (link != null && (link.getNumberOfUncommittedChanges() > 0)) {
+                    System.out.println(link.getNumberOfUncommittedChanges()
                             + " unsaved changes");
                     return false;
                 }
