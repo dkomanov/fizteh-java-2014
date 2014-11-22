@@ -252,7 +252,8 @@ public class MultiTable implements Table {
             if (args.length != 1) {
                 throw new IOException("Filemap: Wrong arguments");
             }
-            Set<String> keys = new HashSet<String>();
+            Set<String> keys = data.keySet();
+            /*Set<String> keys = new HashSet<String>();
             File[] directories = tableDirectory.listFiles();
             for (File it : directories) {
                 int numDirectory = Integer.parseInt(it.getName().substring(0, it.getName().indexOf(".")));
@@ -271,7 +272,7 @@ public class MultiTable implements Table {
                         keys.add(keyIt);
                     }
                 }
-            }
+            }*/
             for (String keyIt : keys) {
                 System.out.print(keyIt + " ");
             }
