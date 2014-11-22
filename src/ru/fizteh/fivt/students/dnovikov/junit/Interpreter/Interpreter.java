@@ -12,6 +12,7 @@ public class Interpreter {
 
     private final Map<String, Command> commands;
     private final DataBaseProvider dbConnector;
+    private static final String PROMPT = "$ ";
     private final InputStream in;
     private final PrintStream out;
     private final PrintStream err;
@@ -102,9 +103,9 @@ public class Interpreter {
     }
 
     private void interactiveMode() throws StopInterpreterException {
-        out.print("$ ");
         try (Scanner scanner = new Scanner(in)) {
             while (true) {
+                out.print(PROMPT);
                 try {
                     String str = scanner.nextLine();
                     parseInvokeInteractiveLine(str);
@@ -116,7 +117,6 @@ public class Interpreter {
                     err.println(e.getMessage());
                     break;
                 }
-                out.print("$ ");
             }
         }
     }

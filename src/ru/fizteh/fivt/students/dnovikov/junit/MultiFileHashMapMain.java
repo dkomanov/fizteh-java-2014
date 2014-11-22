@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.dnovikov.junit;
 
 import javafx.util.Pair;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.TableNotFoundException;
 import ru.fizteh.fivt.students.dnovikov.junit.Interpreter.Command;
@@ -14,37 +13,51 @@ import java.util.function.BiConsumer;
 
 public class MultiFileHashMapMain {
 
-    private DataBaseProvider dbConnector = null;
+    private DataBaseProvider dbConnector;
 
     public static void main(String[] args) {
         MultiFileHashMapMain fileMap = new MultiFileHashMapMain();
-        try {
-            fileMap.run(args);
-        } catch (LoadOrSaveException e) {
-            System.err.println(e.getMessage());
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    private void run(String[] args) throws IOException {
         String directoryPath = System.getProperty("fizteh.db.dir");
         if (directoryPath == null) {
             System.err.println("database directory not set");
             System.exit(1);
         }
-        TableProviderFactory factory = new DataBaseProviderFactory();
-        dbConnector = (DataBaseProvider) factory.create(directoryPath);
-        Interpreter interpreter = new Interpreter(dbConnector, System.in, System.out, System.err, new Command[]{
+        try {
+            fileMap.run(args, directoryPath);
+        } catch (LoadOrSaveException | IOException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+    }
+
+    private void run(String[] args, String directoryPath) throws IOException {
+        dbConnector = (DataBaseProvider) new DataBaseProviderFactory().create(directoryPath);
+        Command[] commands = createCommands();
+        Interpreter interpreter = new Interpreter(dbConnector, System.in, System.out, System.err, commands);
+        interpreter.run(args);
+        if (interpreter.isBatch()) {
+            DataBaseTable currentTable = dbConnector.getCurrentTable();
+            if (currentTable != null) {
+                int unsavedChanges = currentTable.getNumberOfChanges();
+                if (unsavedChanges > 0) {
+                    System.out.println(unsavedChanges + " unsaved changes");
+                } else {
+                    dbConnector.saveTable();
+                }
+            }
+        }
+    }
+
+    Command[] createCommands() {
+        Command[] commands = new Command[]{
                 new Command("get", 1, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        String key = args[0];
-                        if (dbConnector.getCurrentTable() == null) {
+                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                        if (currentTable == null) {
                             System.out.println("no table");
                         } else {
-                            String result = dbConnector.getCurrentTable().get(key);
+                            String result = currentTable.get(args[0]);
                             if (result == null) {
                                 System.out.println("not found");
                             } else {
@@ -57,10 +70,11 @@ public class MultiFileHashMapMain {
                 new Command("put", 2, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        if (dbConnector.getCurrentTable() == null) {
+                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                        if (currentTable == null) {
                             System.out.println("no table");
                         } else {
-                            String result = dbConnector.getCurrentTable().put(args[0], args[1]);
+                            String result = currentTable.put(args[0], args[1]);
                             if (result == null) {
                                 System.out.println("new");
                             } else {
@@ -73,21 +87,22 @@ public class MultiFileHashMapMain {
                 new Command("list", 0, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        if (dbConnector.getCurrentTable() == null) {
+                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                        if (currentTable == null) {
                             System.out.println("no table");
                         } else {
-                            List<String> result = dbConnector.getCurrentTable().list();
-                            System.out.println(String.join(", ", result));
+                            System.out.println(String.join(", ", currentTable.list()));
                         }
                     }
                 }),
                 new Command("remove", 1, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        if (dbConnector.getCurrentTable() == null) {
+                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                        if (currentTable == null) {
                             System.out.println("no table");
                         } else {
-                            String result = dbConnector.getCurrentTable().remove(args[0]);
+                            String result = currentTable.remove(args[0]);
                             if (result == null) {
                                 System.out.println("not found");
                             } else {
@@ -99,30 +114,33 @@ public class MultiFileHashMapMain {
                 new Command("rollback", 0, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        if (dbConnector.getCurrentTable() == null) {
+                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                        if (currentTable == null) {
                             System.out.println("no table");
                         } else {
-                            System.out.println(dbConnector.getCurrentTable().rollback());
+                            System.out.println(currentTable.rollback());
                         }
                     }
                 }),
                 new Command("commit", 0, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        if (dbConnector.getCurrentTable() == null) {
+                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                        if (currentTable == null) {
                             System.out.println("no table");
                         } else {
-                            System.out.println(dbConnector.getCurrentTable().commit());
+                            System.out.println(currentTable.commit());
                         }
                     }
                 }),
                 new Command("size", 0, new BiConsumer<DataBaseProvider, String[]>() {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        if (dbConnector.getCurrentTable() == null) {
+                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                        if (currentTable == null) {
                             System.out.println("no table");
                         } else {
-                            System.out.println(dbConnector.getCurrentTable().size());
+                            System.out.println(currentTable.size());
                         }
                     }
                 }),
@@ -157,7 +175,8 @@ public class MultiFileHashMapMain {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
                         String name = new String(args[0]);
-                        if (dbConnector.getCurrentTable() == null) {
+                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                        if (currentTable == null) {
                             if (dbConnector.getTable(name) != null) {
                                 dbConnector.setCurrentTable(dbConnector.getTable(name));
                                 System.out.println("using " + name);
@@ -165,18 +184,17 @@ public class MultiFileHashMapMain {
                                 System.out.println(name + " not exists");
                             }
                         } else {
-                            int unsavedChanges = dbConnector.getCurrentTable().getNumberOfChanges();
+                            int unsavedChanges = currentTable.getNumberOfChanges();
                             if (dbConnector.getTable(name) != null) {
                                 if (unsavedChanges > 0) {
                                     System.out.println(unsavedChanges + " unsaved changes");
                                 } else {
-                                    dbConnector.getCurrentTable().save();
+                                    currentTable.save();
                                     dbConnector.setCurrentTable(dbConnector.getTable(name));
                                     System.out.println("using " + name);
                                 }
                             } else {
                                 System.out.println(name + " not exists");
-
                             }
                         }
                     }
@@ -198,8 +216,9 @@ public class MultiFileHashMapMain {
                     @Override
                     public void accept(DataBaseProvider dataBaseConnector, String[] args) {
                         try {
-                            if (dbConnector.getCurrentTable() != null) {
-                                int unsavedChanges = dbConnector.getCurrentTable().getNumberOfChanges();
+                            DataBaseTable currentTable = dbConnector.getCurrentTable();
+                            if (currentTable != null) {
+                                int unsavedChanges = currentTable.getNumberOfChanges();
                                 if (unsavedChanges > 0) {
                                     System.out.println("cannot exit: " + unsavedChanges + " unsaved changes");
                                 } else {
@@ -212,20 +231,11 @@ public class MultiFileHashMapMain {
                             }
                         } catch (LoadOrSaveException e) {
                             System.err.println(e.getMessage());
+                            System.exit(1);
                         }
                     }
-                })
-        });
-        interpreter.run(args);
-        if (interpreter.isBatch()) {
-            if (dbConnector.getCurrentTable() != null) {
-                int unsavedChanges = dbConnector.getCurrentTable().getNumberOfChanges();
-                if (unsavedChanges > 0) {
-                    System.out.println(unsavedChanges + " unsaved changes");
-                } else {
-                    dbConnector.saveTable();
-                }
-            }
-        }
+                })};
+        return commands;
     }
 }
+

@@ -8,8 +8,8 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class DataBaseTable implements Table {
-    private static final int FILES_CNT = 16;
-    private static final int FOLDERS_CNT = 16;
+    private static final int FILES_COUNT = 16;
+    private static final int FOLDERS_COUNT = 16;
     private String tableName;
     private List<SingleTable> tableParts;
     private SingleTable[][] parts;
@@ -21,12 +21,12 @@ public class DataBaseTable implements Table {
         tableName = new String(name);
         tableParts = new ArrayList<>();
         databaseConnector = dbConnector;
-        parts = new SingleTable[FOLDERS_CNT][];
-        for (int i = 0; i < FOLDERS_CNT; ++i) {
-            parts[i] = new SingleTable[FILES_CNT];
+        parts = new SingleTable[FOLDERS_COUNT][];
+        for (int i = 0; i < FOLDERS_COUNT; ++i) {
+            parts[i] = new SingleTable[FILES_COUNT];
         }
-        for (int i = 0; i < FOLDERS_CNT; ++i) {
-            for (int j = 0; j < FILES_CNT; ++j) {
+        for (int i = 0; i < FOLDERS_COUNT; ++i) {
+            for (int j = 0; j < FILES_COUNT; ++j) {
                 parts[i][j] = new SingleTable(i, j, this);
                 tableParts.add(parts[i][j]);
             }
@@ -35,13 +35,13 @@ public class DataBaseTable implements Table {
 
     private SingleTable selectSingleTable(String key) {
         int hashCode = key.hashCode();
-        int directoryNumber = hashCode % FOLDERS_CNT;
-        int fileNumber = hashCode / FOLDERS_CNT % FILES_CNT;
+        int directoryNumber = hashCode % FOLDERS_COUNT;
+        int fileNumber = hashCode / FOLDERS_COUNT % FILES_COUNT;
         if (directoryNumber < 0) {
-            directoryNumber += FOLDERS_CNT;
+            directoryNumber += FOLDERS_COUNT;
         }
         if (fileNumber < 0) {
-            fileNumber += FILES_CNT;
+            fileNumber += FILES_COUNT;
         }
         return parts[directoryNumber][fileNumber];
     }
@@ -80,11 +80,7 @@ public class DataBaseTable implements Table {
         if (diffs.containsKey(key)) {
             value = diffs.get(key);
         } else {
-            if (table.size() == 0) {
-                value = null;
-            } else {
-                value = table.get(key);
-            }
+            value = table.get(key);
         }
         return value;
     }
@@ -100,13 +96,9 @@ public class DataBaseTable implements Table {
         SingleTable table = selectSingleTable(key);
         String oldValue;
         if (!diffs.containsKey(key)) {
-            if (table.size() == 0) {
-                oldValue = null;
-            } else {
-                oldValue = table.get(key);
-                if (oldValue.equals(value)) {
-                    return oldValue;
-                }
+            oldValue = table.get(key);
+            if (oldValue != null && oldValue.equals(value)) {
+                return oldValue;
             }
         } else {
             oldValue = diffs.remove(key);
@@ -125,17 +117,13 @@ public class DataBaseTable implements Table {
 
         String deleted;
         if (!diffs.containsKey(key)) {
-            if (table.size() == 0) {
-                deleted = null;
-            } else {
-                deleted = table.get(key);
-                diffs.put(key, null);
-            }
+            deleted = table.get(key);
+            diffs.put(key, null);
         } else {
             deleted = diffs.remove(key);
-                if (table.size() != 0 && table.get(key) != null) {
-                    diffs.put(key, null);
-                }
+            if (table.get(key) != null) {
+                diffs.put(key, null);
+            }
         }
         return deleted;
     }

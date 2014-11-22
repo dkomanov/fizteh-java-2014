@@ -62,14 +62,13 @@ public class DataBaseProvider implements TableProvider {
             } catch (IOException e) {
                 throw new LoadOrSaveException("can't create directory: " + rootDirectory + File.separator + name);
             } catch (InvalidPathException e) {
-                System.out.println("invalid path");
+                throw new LoadOrSaveException("invalid path");
             }
             DataBaseTable table = new DataBaseTable(name, this);
             tableNames.put(name, table);
             tables.add(table);
             return table;
         }
-
     }
 
     @Override
@@ -91,7 +90,6 @@ public class DataBaseProvider implements TableProvider {
     }
 
     public List<Pair<String, Integer>> showTable() {
-
         List<Pair<String, Integer>> result = new ArrayList<>();
         for (Table table : tables) {
             String tableName = table.getName();
@@ -102,17 +100,20 @@ public class DataBaseProvider implements TableProvider {
     }
 
     public void loadTables() {
-        if (rootDirectory.toFile().exists() && rootDirectory.toFile().isDirectory()) {
+        if (rootDirectory.toFile().isDirectory()) {
             File[] foldersInRoot = rootDirectory.toFile().listFiles();
+            if (foldersInRoot == null)  {
+                throw new LoadOrSaveException("can't load database");
+            }
             for (File folder : foldersInRoot) {
                 if (!folder.isDirectory()) {
                     throw new LoadOrSaveException("file '" + folder.getName() + "' in root directory");
                 }
             }
             for (File folder : foldersInRoot) {
-                DataBaseTable currTable = new DataBaseTable(folder.getName(), this);
-                tables.add(currTable);
-                tableNames.put(folder.getName(), currTable);
+                DataBaseTable currentTable = new DataBaseTable(folder.getName(), this);
+                tables.add(currentTable);
+                tableNames.put(folder.getName(), currentTable);
             }
         } else if (!rootDirectory.toFile().exists()) {
             throw new LoadOrSaveException("root directory '" + rootDirectory.getFileName() + "' not found");
