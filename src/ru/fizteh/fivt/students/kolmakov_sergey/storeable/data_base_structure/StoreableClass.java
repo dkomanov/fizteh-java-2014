@@ -37,8 +37,7 @@ public class StoreableClass implements Storeable {
         } else {
             for (int i = 0; i < values.size(); ++i) {
                 if (values.getClass() != this.values.getClass()) {
-                    throw new ColumnFormatException
-                            ("Can't construct storeable: table type doesn't match initializer type");
+                    throw new ColumnFormatException("Creating storeable: table type doesn't match initializer type");
                 } else {
                     this.values.set(i, values.get(i));
                 }
@@ -124,13 +123,18 @@ public class StoreableClass implements Storeable {
     }
 
     @Override
-    public boolean equals(Object o) {
+         public boolean equals(Object o) {
         if (o == null || !(o instanceof StoreableClass)) {
             return  false;
         } else {
             StoreableClass storeableClass = (StoreableClass) o;
             return storeableClass.values.equals(values) && storeableClass.columnTypes.equals(columnTypes);
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return values.hashCode() + columnTypes.hashCode();
     }
 
     private void checkBounds(int columnIndex) throws IndexOutOfBoundsException {

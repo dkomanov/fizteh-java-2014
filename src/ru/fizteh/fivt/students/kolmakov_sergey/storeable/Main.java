@@ -86,8 +86,8 @@ public final class Main {
                     TableClass usedTable = (TableClass) state.getCurrentTable();
                     if (usedTable != null && (usedTable.getNumberOfUncommittedChanges() > 0)
                             && usedTable != newTable) {
-                        throw new IllegalArgumentException
-                                (usedTable.getNumberOfUncommittedChanges() + " unsaved changes");
+                        throw new IllegalArgumentException(usedTable.getNumberOfUncommittedChanges()
+                                + " unsaved changes");
                     } else {
                         state.setCurrentTable(newTable);
                         System.out.println("using " + args[0]);

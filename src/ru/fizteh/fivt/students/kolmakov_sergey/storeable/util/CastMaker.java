@@ -31,7 +31,7 @@ public final class CastMaker {
         if (classArg == String.class) {
             answer = "String";
         }
-        if (answer == null){
+        if (answer == null) {
             throw new IllegalArgumentException("Trying to cast unknown type to String");
         } else {
             return answer;
@@ -78,8 +78,8 @@ public final class CastMaker {
         return builder.toString();
     }
 
-    public static List<Class<?>> signatureToClassesList
-            (String[] stringsWhichHoldsSignature, int firstSignificantStringIndex) {
+    public static List<Class<?>> signatureToClassesList(String[] stringsWhichHoldsSignature,
+                                                        int firstSignificantStringIndex) {
         String string = makeJSON(stringsWhichHoldsSignature, firstSignificantStringIndex);
         List<Class<?>> signature = new ArrayList<>();
         string = string.trim();
@@ -97,7 +97,7 @@ public final class CastMaker {
         }
     }
 
-    public static Object excludeValue(String string, Class<?> type, Table table, String ILLEGAL_FORMAT_MESSAGE)
+    public static Object excludeValue(String string, Class<?> type, Table table, String illegalFormatMessage)
             throws ParseException {
         string = string.trim();
         if (string.equals("null")) {
@@ -116,17 +116,17 @@ public final class CastMaker {
                 return Double.parseDouble(string);
             } else if (type == Boolean.class) {
                 if (!"true".equals(string) && !"false".equals(string)) {
-                    throw new ParseException(ILLEGAL_FORMAT_MESSAGE + getSignatureFormat(table), 0);
+                    throw new ParseException(illegalFormatMessage + getSignatureFormat(table), 0);
                 }
                 return Boolean.parseBoolean(string);
             } else {
                 if (!string.startsWith("\"") || !string.endsWith("\"")) {
-                    throw new ParseException(ILLEGAL_FORMAT_MESSAGE + getSignatureFormat(table), 0);
+                    throw new ParseException(illegalFormatMessage + getSignatureFormat(table), 0);
                 }
                 return string;
             }
         } catch (NumberFormatException e) {
-            throw new ParseException(ILLEGAL_FORMAT_MESSAGE + getSignatureFormat(table), 0);
+            throw new ParseException(illegalFormatMessage + getSignatureFormat(table), 0);
         }
     }
 

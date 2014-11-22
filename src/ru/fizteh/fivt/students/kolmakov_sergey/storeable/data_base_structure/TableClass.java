@@ -114,8 +114,8 @@ public class TableClass implements Table {
         int numberOfChanges = difference.size();
         try { // Apply difference to tableMap.
             for (Entry<String, Storeable> currentOperation : difference.entrySet()) {
-                DataFile dataFile = tableMap.get
-                        (new Coordinates(currentOperation.getKey(), TableManager.NUMBER_OF_PARTITIONS));
+                DataFile dataFile = tableMap.get(new Coordinates(currentOperation.getKey(),
+                        TableManager.NUMBER_OF_PARTITIONS));
                 if (currentOperation.getValue() == null) {
                     dataFile.remove(currentOperation.getKey()); // In this case dataFile can't be null.
                 } else {
@@ -126,7 +126,7 @@ public class TableClass implements Table {
                             tableMap.put(new Coordinates(currentOperation.getKey(),
                                     TableManager.NUMBER_OF_PARTITIONS), dataFile);
                         }
-                        dataFile.put(currentOperation.getKey(),currentOperation.getValue());
+                        dataFile.put(currentOperation.getKey(), currentOperation.getValue());
                     } catch (DatabaseCorruptedException e) {
                         throw new RuntimeException("Can't commit table '" + getName()
                                 + "': " + e.getMessage(), e);

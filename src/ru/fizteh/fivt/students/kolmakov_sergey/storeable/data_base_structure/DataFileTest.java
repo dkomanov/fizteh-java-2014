@@ -99,7 +99,8 @@ public class DataFileTest {
             file.writeInt(correctKey1.length() + correctKey2.length() + 2 + offsetLength * 2);
             file.write(correctKey2.getBytes(encoding));
             file.write('\0');
-            file.writeInt(correctKey2.length() + correctKey2.length() + 2 + offsetLength * 2 + testStringValue.length());
+            file.writeInt(correctKey2.length() + correctKey2.length() + 2 + offsetLength * 2
+                    + testStringValue.length());
             file.write(testStringValue.getBytes(encoding));
             file.write(testStringValue.getBytes(encoding));
         }
