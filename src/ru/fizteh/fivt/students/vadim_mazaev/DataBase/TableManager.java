@@ -273,11 +273,13 @@ public final class TableManager implements TableProvider {
                             PARSER_METHODS.get(table.getColumnType(columnIndex)).apply(token));
                 }
             } catch (ColumnFormatException e) {
-                throw new ParseException("Token [" + columnIndex + "] isn't correct: "
+                //TODO repeating messages
+                throw new ParseException("Token " + columnIndex + " is not correct: "
                         + e.getMessage(), 0);
             } catch (NumberFormatException e) {
-                throw new ParseException("Token [" + columnIndex + "] isn't correct: "
-                        + "Input string '" + tokens[columnIndex] + "' isn't number", 0);
+                throw new ParseException("Token " + columnIndex + " is not correct: "
+                        + "Input string '" + tokens[columnIndex].trim() + "' is not a number of '"
+                        + table.getColumnType(columnIndex).getSimpleName() + "' type", 0);
             }
         }
         return deserialized;

@@ -253,7 +253,7 @@ public class TableManagerTest {
         TableProvider test = new TableManager(dirPath.toString());
         assertNotEquals(null, test.createTable(testTableName, ANOTHER_STRUCTURE));
         Table testTable = test.getTable(testTableName);
-        
+        //TODO
         Storeable store = test.createFor(testTable, TEST_VALUES);
         test.serialize(testTable, store);
     }

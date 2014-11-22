@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.vadim_mazaev;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
@@ -12,7 +13,6 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.DbTable;
-import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManager;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManagerFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.Interpreter.Command;
 import ru.fizteh.fivt.students.vadim_mazaev.Interpreter.Interpreter;
@@ -142,12 +142,21 @@ public final class Main {
                 new Command("create", 2, new BiConsumer<Object, String[]>() {
                     @Override
                     public void accept(Object state, String[] args) {
-//                        TableProvider manager = ((DataBaseState) state).getManager();
-//                        if (manager.createTable(args[0]) != null) {
-//                            System.out.println("created");
-//                        } else {
-//                            throw new StopLineInterpretationException(args[0] + " exists");
-//                        }
+                        String[] types = args[1].substring(1, args[1].length() - 1).split(" ");
+                        List<Class<?>> typesList = new ArrayList<>();
+                        for (String type : types) {
+                            typesList.add(DbTable.TYPE_NAMES_MAP.get(type));
+                        }
+                        TableProvider manager = ((DataBaseState) state).getManager();
+                        try {
+                            if (manager.createTable(args[0], typesList) != null) {
+                                System.out.println("created");
+                            } else {
+                                throw new StopLineInterpretationException(args[0] + " exists");
+                            }
+                        } catch (IOException e) {
+                            throw new StopLineInterpretationException(e.getMessage());
+                        }
                     }
                 }),
                 new Command("use", 1, new BiConsumer<Object, String[]>() {
@@ -156,7 +165,7 @@ public final class Main {
                         DataBaseState dbState = ((DataBaseState) state);
                         TableProvider manager = dbState.getManager();
                         Table newTable = manager.getTable(args[0]);
-                        DbTable usedTable = (DbTable) dbState.getUsedTable();
+                        Table usedTable = (DbTable) dbState.getUsedTable();
                         if (newTable != null) {
                             if (usedTable != null && usedTable.getNumberOfUncommittedChanges() > 0) {
                                 System.out.println(usedTable.getNumberOfUncommittedChanges()
@@ -193,8 +202,7 @@ public final class Main {
                     @Override
                     public void accept(Object state, String[] args) {
                         if (args[0].equals("tables")) {
-                            DataBaseState dbState = ((DataBaseState) state);
-                            TableManager manager = (TableManager) dbState.getManager();
+                            TableProvider manager = ((DataBaseState) state).getManager();
                             List<String> tableNames = manager.getTableNames();
                             System.out.println("table_name row_count");
                             for (String name : tableNames) {

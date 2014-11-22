@@ -33,7 +33,7 @@ public final class DbTable implements Table {
     private static final String FILE_NAME_REGEX = "([0-9]|1[0-5])\\.dat";
     private static final String DIR_NAME_REGEX = "([0-9]|1[0-5])\\.dir";
     private static final String SIGNATURE_FILE_NAME = "signature.tsv";
-    private static final Map<String, Class<?>> TYPE_NAMES_MAP;
+    public static final Map<String, Class<?>> TYPE_NAMES_MAP;
     static {
         Map<String, Class<?>> unitializerMap = new HashMap<>();
         unitializerMap.put("int", Integer.class);

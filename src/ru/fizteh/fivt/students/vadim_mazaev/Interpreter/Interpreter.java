@@ -54,12 +54,7 @@ public final class Interpreter {
     }
     
     private int batchMode(String[] args) throws Exception {
-        StringBuilder builder = new StringBuilder();
-        for (String current : args) {
-            builder.append(current);
-            builder.append(" ");
-        }
-        int exitStatus = executeLine(builder.toString());
+        int exitStatus = executeLine(String.join(" ", args));
         if (exitHandler != null) {
             exitHandler.call();
         }
@@ -89,7 +84,7 @@ public final class Interpreter {
         String[] cmds = line.split(COMMAND_SEPARATOR);
         try {
             for (String current : cmds) {
-                    parse(current.trim().split("\\s+(?![^\\[]*\\])(?=([^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    parse(current.trim().split("\\s+(?![^\\(]*\\))(?![^\\[]*\\])(?=([^\"]*\"[^\"]*\")*[^\"]*$)"));
             }
             return 0;
         } catch (StopLineInterpretationException e) {
