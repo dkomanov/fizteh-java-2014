@@ -48,13 +48,17 @@ public class Shell {
                 System.out.print("$ ");
                 command = reader.readLine();
                 String[] cmds = command.split("\\s+");
-                Command currentCommand;
+                /*Command currentCommand;
                 if ((currentCommand = commandMap.get(cmds[0])) != null) {
                     try {
                         currentCommand.execute(cmds, status);
                     } catch (IOException e) {
                         System.err.println(e.getMessage());
                     }
+                }*/
+                int result = new Shell(commandMap, status).handle(cmds);
+                if (result == 2) {
+                    break;
                 }
             }
         } catch (Exception e) {
@@ -91,8 +95,11 @@ public class Shell {
         try {
             Command currentCommand;
             for (String[] it : newArgs) {
-                if (it[0] == null || it[0].equals("exit")) {
+                if (it[0] == null) {
                     continue;
+                }
+                if (it[0].equals("exit")) {
+                    return 2;
                 }
                 if ((currentCommand = commandMap.get(it[0])) != null) {
                     if (currentCommand.execute(it, status) == 1) {
@@ -104,8 +111,14 @@ public class Shell {
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
+            System.exit(-1);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            if (e.getMessage().equals("")) {
+                System.out.println(e);
+            } else {
+                System.out.println(e.getMessage());
+            }
+            System.exit(-1);
         }
         return 0;
     }

@@ -20,6 +20,15 @@ public class MyStorable implements Storeable {
         dataList = new Object[typeList.length];
     }
 
+    public MyStorable(List<Class<?>> listOfTypes) {
+        int num = listOfTypes.size();
+        typeList = new Class[num];
+        for (int i = 0; i < num; ++i) {
+            typeList[i] = listOfTypes.get(i);
+        }
+        dataList = new Object[num];
+    }
+
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
         if (columnIndex < 0 || columnIndex >= typeList.length || columnIndex >= dataList.length) {

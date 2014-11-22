@@ -65,6 +65,14 @@ public class MultiTable implements Table {
         writeSignatures();
     }
 
+    public MultiTable(File tableDirectory, MultiMap multiMap, List<Class<?>> typeList) throws IOException {
+        Class[] typeArray = new Class[typeList.size()];
+        for (int i = 0; i < typeArray.length; ++i) {
+            typeArray[i] = typeList.get(i);
+        }
+        new MultiTable(tableDirectory, multiMap, typeArray);
+    }
+
     @Override
     public String getName() {
         return tableDirectory.getName();
