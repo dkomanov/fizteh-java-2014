@@ -79,7 +79,6 @@ public class MultiMap implements TableProvider {
             if (e.getMessage().substring(0, 5).equals("Can't")) {
                 throw new IllegalArgumentException();
             }
-            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -233,7 +232,12 @@ public class MultiMap implements TableProvider {
         switch (args[0]) {
             case "put":
                 try {
-                    Storeable input = StoreableParser.stringToStoreable(args[2], typeList);
+                    StringBuilder buffer = new StringBuilder();
+                    for (int i = 2; i < args.length; ++i) {
+                        buffer.append(args[i]);
+                    }
+                    String inputValue = new String(buffer);
+                    Storeable input = StoreableParser.stringToStoreable(inputValue, typeList);
                     result = multiTable.put(args[1], input);
                     if (result == null) {
                         System.out.println("new");
