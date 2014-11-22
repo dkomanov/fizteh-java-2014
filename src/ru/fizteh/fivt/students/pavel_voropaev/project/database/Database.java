@@ -31,7 +31,7 @@ public class Database implements TableProvider {
                 throw new IllegalArgumentException();
             }
         } catch (IllegalArgumentException | IOException e) {
-            throw new IllegalArgumentException("Illegal database directory name: " + databasePath.toString(), e);
+            throw new IllegalArgumentException("Cannot create database here: " + databasePath.toString(), e);
         }
         tables = new HashMap<>();
 
@@ -76,7 +76,7 @@ public class Database implements TableProvider {
             tables.put(name, newTable);
             return newTable;
         } catch (IOException e) {
-            throw new InputMistakeException("Illegal table name: " + e.getMessage());
+            throw new InputMistakeException("Cannot create table: " + e.getMessage());
         }
     }
 

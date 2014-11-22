@@ -9,7 +9,6 @@ import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProviderFactory;
 
 public class Main {
-
     public static void main(String[] args) {
         String dbPath = System.getProperty("fizteh.db.dir");
         if (dbPath == null) {

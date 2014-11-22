@@ -28,7 +28,7 @@ public class MultiFileTable implements Table {
 
     private String name;
     private Path directory;
-    private int size = 0;
+    private int size;
     private MultiFileMap[] content;
     private Map<String, String> diff;
 
@@ -37,6 +37,7 @@ public class MultiFileTable implements Table {
         if (!Files.exists(databaseDirectory)) {
             throw new RuntimeException(databaseDirectory.toString() + ": database doesn't exist");
         }
+        size = 0;
         directory = databaseDirectory.resolve(tableName);
         content = new MultiFileMap[FOLDERS * FILES];
         for (int i = 0; i < FOLDERS * FILES; ++i) {
@@ -79,9 +80,10 @@ public class MultiFileTable implements Table {
             throw new NullArgumentException("put");
         }
 
+        int place = getPlace(key);
         String oldValue;
-        if (!diff.containsKey(key) && content[getPlace(key)].map.containsKey(key)) {
-            oldValue = content[getPlace(key)].map.get(key);
+        if (!diff.containsKey(key) && content[place].map.containsKey(key)) {
+            oldValue = content[place].map.get(key);
             if (oldValue.equals(value)) {
                 return oldValue;
             }
@@ -102,16 +104,17 @@ public class MultiFileTable implements Table {
             throw new NullArgumentException("remove");
         }
 
+        int place = getPlace(key);
         String oldValue;
         if (!diff.containsKey(key)) {
-            if (!content[getPlace(key)].map.containsKey(key)) { // No such key.
+            if (!content[place].map.containsKey(key)) { // No such key.
                 return null;
             } else { // Key is saved on disk.
-                oldValue = content[getPlace(key)].map.get(key);
+                oldValue = content[place].map.get(key);
                 diff.put(key, null);
             }
         } else { // Some unsaved changes with this key.
-            if (!content[getPlace(key)].map.containsKey(key)) {
+            if (!content[place].map.containsKey(key)) {
                 oldValue = diff.remove(key);
             } else {
                 oldValue = diff.put(key, null);
@@ -136,11 +139,12 @@ public class MultiFileTable implements Table {
             String key = entry.getKey();
             String value = entry.getValue();
             changedFiles.add(getPlace(key));
+            int place = getPlace(key);
 
             if (value == null) {
-                content[getPlace(key)].map.remove(key);
+                content[place].map.remove(key);
             } else {
-                content[getPlace(key)].map.put(key, value);
+                content[place].map.put(key, value);
             }
         }
 
@@ -244,7 +248,9 @@ public class MultiFileTable implements Table {
                     throw new ContainsWrongFilesException(directory.toString());
                 }
 
-                content[dirNum * FILES + fileNum].map.put(key, value);
+                if (content[dirNum * FILES + fileNum].map.put(key, value) != null) { // The same key. Twice.
+                    throw new ContainsWrongFilesException(directory.toString());
+                }
                 ++size;
             }
         } catch (EOFException e) {

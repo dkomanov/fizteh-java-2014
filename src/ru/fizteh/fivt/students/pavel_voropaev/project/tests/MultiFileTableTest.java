@@ -24,7 +24,6 @@ public class MultiFileTableTest {
     private Path databasePath;
     private final String databaseDirectory = "test";
     private final String tableName = "testTable";
-    private final String fileName = "testFile";
     private final String key = "testKey";
     private final String key2 = "ключ";
     private final String value = "testValue";
