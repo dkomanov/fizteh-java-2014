@@ -1,10 +1,8 @@
 package ru.fizteh.fivt.students.vadim_mazaev.DataBase;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,24 +20,21 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
+/**
+ * Management class for working with the {link Table tables}.
+ * 
+ * Suggests that the current version from disk is saved when object instance is creating.
+ * Further input and output is performed only at the time of table creation and deletion.
+ *
+ * This class is not thread safe.
+ */
 public final class TableManager implements TableProvider {
+    private static final String ERROR_CONNECTING_TO_DATABASE_MSG = "Error connecting to database";
+    private static final String DOES_NOT_MATCH_JSON_FORMAT_MSG = "String doesn't match JSON format";
     private static final String TABLE_NAME_IS_NULL_MSG = "Table name is null";
-    private static final String ILLEGAL_TABLE_NAME_MSG = "Illegal table name: ";
-    private static final String ILLEGAL_CHAR_IN_TABLE_NAME_MSG = "contains '\\',  or '/',  or '.'";
-    private static final String ILLEGAL_TABLE_NAME_REGEX = ".*\\.|\\..*|.*(/|\\\\).*";
-    public static final String SIGNATURE_FILE_NAME = "signature.tsv";
-    private static final Map<Class<?>, String> TYPE_NAMES_MAP;
-    static {
-        Map<Class<?>, String> unitializerMap = new HashMap<>();
-        unitializerMap.put(Integer.class, "int");
-        unitializerMap.put(Long.class, "long");
-        unitializerMap.put(Byte.class, "byte");
-        unitializerMap.put(Float.class, "float");
-        unitializerMap.put(Double.class, "double");
-        unitializerMap.put(Boolean.class, "boolean");
-        unitializerMap.put(String.class, "String");
-        TYPE_NAMES_MAP = Collections.unmodifiableMap(unitializerMap);
-    }
+    private static final String ILLEGAL_TABLE_NAME_MSG = "Illegal table name";
+    private static final String ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG
+        = "contain filesystem separator or/and '.', '..'";
     private static final Map<Class<?>, Function<String, Object>> PARSER_METHODS;
     static {
         Map<Class<?>, Function<String, Object>> unitializerMap = new HashMap<>();
@@ -66,7 +61,8 @@ public final class TableManager implements TableProvider {
     private Path tablesDirectoryPath;
     
     /**
-     * @param directoryPath Path to the directory containing the tables. 
+     * @param directoryPath Path to the directory containing the tables.
+     * 
      * @throws DataBaseIOException If structure of data base is corrupted.
      * @throws IllegalArgumentException If path is incorrect or doesn't lead
      * to a directory.
@@ -78,11 +74,11 @@ public final class TableManager implements TableProvider {
                 tablesDirectoryPath.toFile().mkdir();
             }
             if (!tablesDirectoryPath.toFile().isDirectory()) {
-                throw new IllegalArgumentException("Error connecting database"
+                throw new IllegalArgumentException(ERROR_CONNECTING_TO_DATABASE_MSG
                         + ": path is incorrect or does not lead to a directory");
             }
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException("Error connecting database"
+            throw new IllegalArgumentException(ERROR_CONNECTING_TO_DATABASE_MSG
                     + ": '" + directoryPath + "' is illegal directory name", e);
         }
         tables = new HashMap<>();
@@ -92,11 +88,11 @@ public final class TableManager implements TableProvider {
                 try {
                     tables.put(tableDirectoryName, new DbTable(this, tableDirectoryPath));
                 } catch (DataBaseIOException e) {
-                    throw new DataBaseIOException("Error connecting database: "
+                    throw new DataBaseIOException(ERROR_CONNECTING_TO_DATABASE_MSG
                             + e.getMessage(), e);
                 }
             } else {
-                throw new DataBaseIOException("Error connecting database"
+                throw new DataBaseIOException(ERROR_CONNECTING_TO_DATABASE_MSG
                         + ": root directory contains non-directory files");
             }
         }
@@ -105,9 +101,11 @@ public final class TableManager implements TableProvider {
     /**
      * Returns table with the specified name. Consecutive calls a method with the same
      * arguments should return the same object table if it has not been removed
-     * by {@link #removeTable(String)}
+     * by {@link #removeTable(String)}.
+     * 
      * @param tableName name of the table.
      * @return Object represents table. If table with specified name doesn't exist returns null.
+     * 
      * @throws IllegalArgumentException If the name of the table is null or invalid.
      */
     @Override
@@ -117,21 +115,23 @@ public final class TableManager implements TableProvider {
         }
         try {
             tablesDirectoryPath.resolve(tableName);
-            if (tableName.matches(ILLEGAL_TABLE_NAME_REGEX)) {
-                throw new InvalidPathException(tableName, ILLEGAL_CHAR_IN_TABLE_NAME_MSG);
+            if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
+                throw new InvalidPathException(tableName, ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
             }
             return tables.get(tableName);
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + e.getMessage(), e);
+            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": " + e.getMessage(), e);
         }
     }
 
     /**
      * Creates table with specified name.
      * Creates new table. Commits the necessary disk operations.
+     * 
      * @param tableName Name of the table.
      * @param columnTypes Types of table columns. Can't be empty.
      * @return Object represents table. If table with specified name exists returns null.
+     * 
      * @throws IllegalArgumentException If the name of the table is null or invalid.
      * If columns types list is null or contains invalid values.
      * @throws DataBaseIOException If I/O errors occurred.
@@ -143,42 +143,44 @@ public final class TableManager implements TableProvider {
             throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
         }
         try {
-            if (tableName.matches(ILLEGAL_TABLE_NAME_REGEX)) {
-                throw new InvalidPathException(tableName, ILLEGAL_CHAR_IN_TABLE_NAME_MSG);
+            if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
+                throw new InvalidPathException(tableName, ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
             }
             if (tables.containsKey(tableName)) {
                 return null;
             }
             Path newTablePath = tablesDirectoryPath.resolve(tableName);
             newTablePath.toFile().mkdir();
-            writeSignature(newTablePath.resolve(SIGNATURE_FILE_NAME), columnTypes);
+            writeSignature(newTablePath.resolve(Helper.SIGNATURE_FILE_NAME), columnTypes);
             Table newTable = new DbTable(this, newTablePath);
             tables.put(tableName, newTable);
             return newTable;
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + e.getMessage(), e);
+            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": " + e.getMessage(), e);
         } catch (DataBaseIOException | IllegalArgumentException e) {
             throw new DataBaseIOException("Unable to create table '" + tableName
-                    + "':" + e.getMessage(), e);
+                    + "': " + e.getMessage(), e);
         }
     }
     
     /**
      * Write signature to {@value #SIGNATURE_FILE_NAME} file on disk.
+     * 
      * @param filePath Path to {@value #SIGNATURE_FILE_NAME} file.
      * @param columnTypes List of classes represents types of table columns. Can't be empty.
+     * 
      * @throws DataBaseIOException If method can't create file or write to it.
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException If list of column types is null.
      */
     private void writeSignature(Path filePath, List<Class<?>> columnTypes)
             throws DataBaseIOException {
-        if (columnTypes.isEmpty()) {
-            throw new IllegalArgumentException("List of column types can't be null");
+        if (columnTypes == null || columnTypes.isEmpty()) {
+            throw new IllegalArgumentException("List of column types can't be null or empty");
         }
         try (PrintWriter printer = new PrintWriter(filePath.toString())) {
             StringBuilder typesStringBuilder = new StringBuilder();
             for (Class<?> typeClass : columnTypes) {
-                typesStringBuilder.append(TYPE_NAMES_MAP.get(typeClass));
+                typesStringBuilder.append(Helper.SUPPORTED_TYPES_TO_NAMES.get(typeClass));
                 typesStringBuilder.append(" ");
             }
             typesStringBuilder.deleteCharAt(typesStringBuilder.length() - 1);
@@ -188,41 +190,48 @@ public final class TableManager implements TableProvider {
         }
     }
 
+    /**
+     * Deletes an existing table with the specified name.
+     * 
+     * Removed table object, if someone took it by a {@link #getTable (String)},
+     * from this moment must throw {@link IllegalStateException}.
+     * 
+     * @param tableName Name of the table.
+     * 
+     * @throws IllegalArgumentException If table name is null or incorrect.
+     * @throws IllegalStateException If table with specified name doesn't exist.
+     * @throws DataBaseIOException If I/O errors occurred.
+     */
     @Override
     public void removeTable(String tableName) throws DataBaseIOException {
         if (tableName == null) {
             throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
         }
         try {
-            if (tableName.matches(ILLEGAL_TABLE_NAME_REGEX)) {
-                throw new InvalidPathException(tableName, ILLEGAL_CHAR_IN_TABLE_NAME_MSG);
+            if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
+                throw new InvalidPathException(tableName, ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
             }
             //TODO removed tables should throw IllegalStateException
             Path tableDirectory = tablesDirectoryPath.resolve(tableName);
             if (tables.remove(tableName) == null) {
                 throw new IllegalStateException("There is no such table");
             } else {
-                recoursiveDelete(tableDirectory.toFile());
+                Helper.recoursiveDelete(tableDirectory.toFile());
             }
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + e.getMessage(), e);
+            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": " + e.getMessage(), e);
         } catch (IOException e) {
             throw new DataBaseIOException("Unable to remove table: "
                 + e.getMessage(), e);
         }
     }
     
-    private void recoursiveDelete(File file) throws IOException {
-        if (file.isDirectory()) {
-            for (File currentFile : file.listFiles()) {
-                recoursiveDelete(currentFile);
-            }
-        }
-        if (!file.delete()) {
-          throw new IOException("Unable to delete: " + file);
-        }
-    }
-    
+    /**
+     * Creates new empty {@link Storeable} for specified table.
+     * 
+     * @param table Table, which {@link Storeable} should belong to.
+     * @return Empty {@link Storeable} aimed at the usage with this table.
+     */
     @Override
     public Storeable createFor(Table table) {
         List<Class<?>> types = new ArrayList<>();
@@ -232,6 +241,18 @@ public final class TableManager implements TableProvider {
         return new Serializer(types);
     }
     
+    /**
+     * Creates new empty {@link Storeable} for specified table, substituting there the values.
+     * 
+     * @param table Table, which {@link Storeable} should belong to.
+     * @param values List of values which are needed for initializing the fields of Storeable.
+     * @return {@link Storeable}, initialized with the specified values.
+     * 
+     * @throws ColumnFormatException If types of provided value and columns
+     * don't match each other.
+     * @throws IndexOutOfBoundsException If number of columns and provided values
+     * don't match each other.
+     */
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException,
         IndexOutOfBoundsException {
@@ -246,18 +267,27 @@ public final class TableManager implements TableProvider {
         return store;
     }
     
+    /**
+     * Converts string in JSON format to {@link Storeable},
+     * corresponding to the structure of the table.
+     * 
+     * @param table Table, which {@link Storeable} should belong to.
+     * @param value String, which {@link Storeable} should be read from.
+     * @return Read {@link Storeable}.
+     * 
+     * @throws ParseException If any discrepancies in the read data.
+     */
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        //TODO check the method + add null
         value = value.trim();
         if (value.charAt(0) != '[') {
-            throw new ParseException("String doesn't match JSON format. '[' is missing", 0);
+            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": '[' is missing", 0);
         }
         if (value.charAt(value.length() - 1) != ']') {
-            throw new ParseException("String doesn't match JSON format. ']' is missing", 0);
+            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": '[' is missing", 0);
         }
         value = value.substring(1, value.length() - 1);
-        String[] tokens = value.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+        String[] tokens = value.split("," + Helper.IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);
         if (tokens.length != table.getColumnsCount()) {
             throw new ParseException("Incorrect number of tokens: "
                     + table.getColumnsCount() + " expected, but " + tokens.length + " found.", 0);
@@ -273,7 +303,6 @@ public final class TableManager implements TableProvider {
                             PARSER_METHODS.get(table.getColumnType(columnIndex)).apply(token));
                 }
             } catch (ColumnFormatException e) {
-                //TODO repeating messages
                 throw new ParseException("Token " + columnIndex + " is not correct: "
                         + e.getMessage(), 0);
             } catch (NumberFormatException e) {
@@ -285,18 +314,23 @@ public final class TableManager implements TableProvider {
         return deserialized;
     }
     
+    /**
+     * Converts {@link Storeable} to string in JSON format.
+     * 
+     * @param table Table, which {@link Storeable} should belong to.
+     * @param value {@link Storeable}, which should be writed.
+     * @return String in JSON format.
+     * 
+     * @throws ColumnFormatException If types of provided value and columns of the table
+     * don't match each other.
+     */
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
         String[] tokens = new String[table.getColumnsCount()];
-        Method[] methods = value.getClass().getDeclaredMethods();
-        Map<Class<?>, Method> getters = new HashMap<>();
-        for (Method method : methods) {
-            getters.put(method.getReturnType(), method);
-        }
         for (int columnIndex = 0; columnIndex < tokens.length; columnIndex++) {
             try {
                 Object tokenType = table.getColumnType(columnIndex);
-                Object token = getters.get(tokenType).invoke(value, columnIndex);
+                Object token = Helper.GETTERS.get(tokenType).invoke(value, columnIndex);
                 if (token == null) {
                     tokens[columnIndex] = null;
                 } else if (token.getClass().equals(String.class)) {
@@ -304,15 +338,20 @@ public final class TableManager implements TableProvider {
                 } else {
                     tokens[columnIndex] = token.toString();
                 }
-            } catch (IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | IndexOutOfBoundsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                throw new ColumnFormatException(e.getTargetException().getMessage(), e);
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException("Unable to serialize: " + e.getMessage(), e);
             }
         }
         return '[' + String.join(", ", tokens) + ']';
     }
     
+    /**
+     * Returns the names of existing tables.
+     * 
+     * @return Names of the tables.
+     */
     @Override
     public List<String> getTableNames() {
         List<String> namesList = new LinkedList<>();

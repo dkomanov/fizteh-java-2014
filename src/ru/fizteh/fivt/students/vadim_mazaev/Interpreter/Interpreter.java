@@ -84,6 +84,7 @@ public final class Interpreter {
         String[] cmds = line.split(COMMAND_SEPARATOR);
         try {
             for (String current : cmds) {
+                //TODO split regex
                     parse(current.trim().split("\\s+(?![^\\(]*\\))(?![^\\[]*\\])(?=([^\"]*\"[^\"]*\")*[^\"]*$)"));
             }
             return 0;

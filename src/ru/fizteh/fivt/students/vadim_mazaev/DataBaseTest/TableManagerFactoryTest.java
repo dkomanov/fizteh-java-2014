@@ -11,7 +11,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManagerFactory;
 
@@ -30,11 +29,9 @@ public class TableManagerFactoryTest {
     }
     
     @Test
-    public void testTableManagerFactoryCreatedNewTableManager() {
+    public void testTableManagerFactoryCreatedNewTableManager() throws IOException {
         TableProviderFactory test = new TableManagerFactory();
-        TableProvider testProvider = test.create(testDir.toString());
-        testProvider.createTable("testTable");
-        assertTrue(testDir.resolve("testTable").toFile().exists());
+        assertNotNull(test.create(testDir.toString()));
     }
     
     @After

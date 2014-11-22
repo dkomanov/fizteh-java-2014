@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.vadim_mazaev.DataBaseTest;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
@@ -16,17 +15,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
-
-
-
-
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-//import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.DataBaseIOException;
+import ru.fizteh.fivt.students.vadim_mazaev.DataBase.Helper;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManager;
 
 public class TableManagerTest {
@@ -47,13 +41,17 @@ public class TableManagerTest {
         unitializerList.add(String.class);
         STRUCTURE = Collections.unmodifiableList(unitializerList);
     }
-    private static final List<Class<?>> ANOTHER_STRUCTURE;
+    private static final List<Class<?>> MIXED_STRUCTURE;
     static {
         List<Class<?>> unitializerList = new ArrayList<>();
         unitializerList.add(Integer.class);
-        unitializerList.add(Double.class);
+        unitializerList.add(Float.class);
+        unitializerList.add(Long.class);
+        unitializerList.add(Boolean.class);
         unitializerList.add(String.class);
-        ANOTHER_STRUCTURE = Collections.unmodifiableList(unitializerList);
+        unitializerList.add(Byte.class);
+        unitializerList.add(Double.class);
+        MIXED_STRUCTURE = Collections.unmodifiableList(unitializerList);
     }
     private static final List<Object> TEST_VALUES;
     static {
@@ -67,12 +65,18 @@ public class TableManagerTest {
         unitializerList.add("test_value");
         TEST_VALUES = Collections.unmodifiableList(unitializerList);
     }
-    private static final String SERIALIZED_VALUES;
-    static {
-        SERIALIZED_VALUES = "[" + Integer.MAX_VALUE + ", " + Long.MAX_VALUE + ", " + Byte.MAX_VALUE
-                + ", " + Float.MAX_VALUE + ", " + Double.MAX_VALUE + ", " + Boolean.TRUE
-                + ", " + "\"test_value\"" + "]";
-    }
+    private static final String SERIALIZED_VALUES = "[" + Integer.MAX_VALUE
+            + ", " + Long.MAX_VALUE + ", " + Byte.MAX_VALUE
+            + ", " + Float.MAX_VALUE + ", " + Double.MAX_VALUE
+            + ", " + Boolean.TRUE + ", " + "\"test_value\"" + "]";
+    private static final String SERIALIZED_STRING_WITH_INCORRECT_BOOL_TOKEN
+            = "[0, 0, 0, 0.0, 0.0, notBoolean, \"string\"]";
+    private static final String SERIALIZED_STRING_WITH_INCORRECT_NUMBER_TOKEN
+            = "[0, 0, 0.5, 0.0, 0.0, true, \"string\"]";
+    private static final String SERIALIZED_STRING_WITH_INCORRECT_STRING_TOKEN
+            = "[0, 0, 0, 0.0, 0.0, true, unquoted]";
+    private static final String SERIALIZED_NULL_VALUES
+        = "[null, null, null, null, null, null, null]";
     
     @Before
     public void setUp() {
@@ -115,7 +119,7 @@ public class TableManagerTest {
         dirPath.toFile().mkdir();
         Path tablePath = dirPath.resolve(testTableName);
         tablePath.toFile().mkdir();
-        Path signatureFile = tablePath.resolve(TableManager.SIGNATURE_FILE_NAME);
+        Path signatureFile = tablePath.resolve(Helper.SIGNATURE_FILE_NAME);
         try (PrintWriter printer = new PrintWriter(signatureFile.toString())) {
             printer.print(structureString);
         }
@@ -127,6 +131,18 @@ public class TableManagerTest {
     public void testCreateTableThrowsExceptionCalledForNullTableName() throws IOException {
         TableProvider test = new TableManager(dirPath.toString());
         test.createTable(null, STRUCTURE);
+    }
+    
+    @Test(expected = DataBaseIOException.class)
+    public void testCreateTableThrowsExceptionCalledForNullTableStructureList() throws IOException {
+        TableProvider test = new TableManager(dirPath.toString());
+        test.createTable(testTableName, null);
+    }
+    
+    @Test(expected = DataBaseIOException.class)
+    public void testCreateTableThrowsExceptionCalledForEmptyTableStructureList() throws IOException {
+        TableProvider test = new TableManager(dirPath.toString());
+        test.createTable(testTableName, new ArrayList<Class<?>>());
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -147,7 +163,7 @@ public class TableManagerTest {
         dirPath.toFile().mkdir();
         Path tablePath = dirPath.resolve(testTableName);
         tablePath.toFile().mkdir();
-        Path signatureFile = tablePath.resolve(TableManager.SIGNATURE_FILE_NAME);
+        Path signatureFile = tablePath.resolve(Helper.SIGNATURE_FILE_NAME);
         try (PrintWriter printer = new PrintWriter(signatureFile.toString())) {
             printer.print(structureString);
         }
@@ -212,7 +228,7 @@ public class TableManagerTest {
     }
     
     @Test
-    public void testCreateForMethodCallExistentTable() throws IOException {
+    public void testCreateForMethodCallForExistentTable() throws IOException {
         TableProvider test = new TableManager(dirPath.toString());
         assertNotEquals(null, test.createTable(testTableName, STRUCTURE));
         Table testTable = test.getTable(testTableName);
@@ -233,7 +249,7 @@ public class TableManagerTest {
     }
     
     @Test
-    public void testSerializeStoreableContainedNullRows() throws IOException {
+    public void testSerializeStoreableContainedNullColumns() throws IOException {
         TableProvider test = new TableManager(dirPath.toString());
         assertNotEquals(null, test.createTable(testTableName, STRUCTURE));
         Table testTable = test.getTable(testTableName);
@@ -245,15 +261,15 @@ public class TableManagerTest {
         
         Storeable store = test.createFor(testTable, nullsContainingList);
         String serialized = test.serialize(testTable, store);
-        assertEquals("[null, null, null, null, null, null, null]", serialized);
+        assertEquals(SERIALIZED_NULL_VALUES, serialized);
     }
     
     @Test(expected = ColumnFormatException.class)
     public void testSerializeThrowsExceptionForStoreableNotForThisTable() throws IOException {
         TableProvider test = new TableManager(dirPath.toString());
-        assertNotEquals(null, test.createTable(testTableName, ANOTHER_STRUCTURE));
+        assertNotEquals(null, test.createTable(testTableName, MIXED_STRUCTURE));
         Table testTable = test.getTable(testTableName);
-        //TODO
+        
         Storeable store = test.createFor(testTable, TEST_VALUES);
         test.serialize(testTable, store);
     }
@@ -273,19 +289,79 @@ public class TableManagerTest {
         }
     }
     
-    @After
-    public void tearDown() throws IOException {
-        recoursiveDelete(testDir.toFile());
+    @Test(expected = ParseException.class)
+    public void testDeserializeThrowsExceptionForInvalidJSONStringWithoutOpenBracket()
+            throws IOException, ParseException {
+        TableProvider test = new TableManager(dirPath.toString());
+        assertNotEquals(null, test.createTable(testTableName, STRUCTURE));
+        Table testTable = test.getTable(testTableName);
+        
+        test.deserialize(testTable, SERIALIZED_VALUES.substring(1));
     }
     
-    private void recoursiveDelete(File file) throws IOException {
-        if (file.isDirectory()) {
-            for (File currentFile : file.listFiles()) {
-                recoursiveDelete(currentFile);
-            }
-        }
-        if (!file.delete()) {
-          throw new IOException("Unable to delete: " + file);
-        }
+    @Test(expected = ParseException.class)
+    public void testDeserializeThrowsExceptionForInvalidJSONStringWithoutCloseBracket()
+            throws IOException, ParseException {
+        TableProvider test = new TableManager(dirPath.toString());
+        assertNotEquals(null, test.createTable(testTableName, STRUCTURE));
+        Table testTable = test.getTable(testTableName);
+        
+        test.deserialize(testTable,
+                SERIALIZED_VALUES.substring(0, SERIALIZED_VALUES.length() - 1));
+    }
+    
+    @Test(expected = ParseException.class)
+    public void testDeserializeThrowsExceptionForInvalidStringWithLessTokensThanRequired()
+            throws IOException, ParseException {
+        TableProvider test = new TableManager(dirPath.toString());
+        assertNotEquals(null, test.createTable(testTableName, STRUCTURE));
+        Table testTable = test.getTable(testTableName);
+        
+        //Required number of tokens is equal to size of STRUCTURE (7).
+        test.deserialize(testTable, "[\"token 1\", \"token 2\"]");
+    }
+    
+    @Test(expected = ParseException.class)
+    public void testDeserializeThrowsExceptionForStringWithInvalidBooleanToken()
+            throws IOException, ParseException {
+        TableProvider test = new TableManager(dirPath.toString());
+        assertNotEquals(null, test.createTable(testTableName, STRUCTURE));
+        Table testTable = test.getTable(testTableName);
+        
+        test.deserialize(testTable, SERIALIZED_STRING_WITH_INCORRECT_BOOL_TOKEN);
+    }
+    
+    @Test(expected = ParseException.class)
+    public void testDeserializeThrowsExceptionForStringWithInvalidNumberToken()
+            throws IOException, ParseException {
+        TableProvider test = new TableManager(dirPath.toString());
+        assertNotEquals(null, test.createTable(testTableName, STRUCTURE));
+        Table testTable = test.getTable(testTableName);
+        
+        test.deserialize(testTable, SERIALIZED_STRING_WITH_INCORRECT_NUMBER_TOKEN);
+    }
+    
+    @Test(expected = ParseException.class)
+    public void testDeserializeThrowsExceptionForStringWithInvalidStringToken()
+            throws IOException, ParseException {
+        TableProvider test = new TableManager(dirPath.toString());
+        assertNotEquals(null, test.createTable(testTableName, STRUCTURE));
+        Table testTable = test.getTable(testTableName);
+        
+        test.deserialize(testTable, SERIALIZED_STRING_WITH_INCORRECT_STRING_TOKEN);
+    }
+    
+    @Test
+    public void testDeserializeStringContainedNullColumns() throws Exception {
+        TableProvider test = new TableManager(dirPath.toString());
+        assertNotEquals(null, test.createTable(testTableName, STRUCTURE));
+        Table testTable = test.getTable(testTableName);
+        
+        test.deserialize(testTable, SERIALIZED_NULL_VALUES);
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+        Helper.recoursiveDelete(testDir.toFile());
     }
 }
