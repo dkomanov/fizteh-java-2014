@@ -10,14 +10,12 @@ public interface Command<State extends ShellState<State>> {
     void execute(State state, String[] args) throws TerminalException;
 
     /**
-     * Information text for the command
-     * @return
+     * Information text for the command.
      */
     String getInfo();
 
     /**
      * Complete formula for command invocation excluding command name.
-     * @return
      */
     String getInvocation();
 }

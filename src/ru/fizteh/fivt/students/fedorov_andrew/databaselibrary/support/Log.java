@@ -32,9 +32,7 @@ public class Log {
 
     private static void reopen() {
         try {
-            writer = new PrintWriter(
-                    new FileOutputStream(
-                            LOG_PATH.toAbsolutePath().toString(), !firstOpen));
+            writer = new PrintWriter(new FileOutputStream(LOG_PATH.toAbsolutePath().toString(), !firstOpen));
             firstOpen = false;
         } catch (IOException exc) {
             System.err.println(String.format("Cannot create log file: %s", LOG_PATH));

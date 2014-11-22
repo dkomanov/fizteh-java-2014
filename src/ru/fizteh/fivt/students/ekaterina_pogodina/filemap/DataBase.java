@@ -15,8 +15,11 @@ import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
 public class DataBase {
-    private Path dBasePath;
-    private Map<String, String> dBase;
+    public DataBase() {
+
+    }
+    public Path dBasePath;
+    public Map<String, String> dBase;
     public DataBase(String name) throws Exception {
         dBasePath = Paths.get(name);
         dBase = new HashMap<String, String>();
@@ -45,7 +48,9 @@ public class DataBase {
         if (args.length > 1) {
             manyArgs("list");
         }
-        System.out.println(String.join("; ", dBase.keySet()));
+        if (!dBase.isEmpty()) {
+            System.out.println(String.join("; ", dBase.keySet()));
+        }
     }
 
     public void put(String[] args) throws Exception {
@@ -105,6 +110,13 @@ public class DataBase {
             System.out.println("not found");
         }
     }
+
+    public void remove(String key) throws Exception {
+        if (dBase.containsKey(key)) {
+            dBase.remove(key);
+        }
+    }
+
     private void writeDbToFile(final RandomAccessFile dbFile) throws Exception {
         dbFile.setLength(0);
         Set<String> keys = dBase.keySet();
@@ -127,7 +139,7 @@ public class DataBase {
         }
     }
 
-    private void readDbFromFile(final RandomAccessFile dbFile) throws Exception {
+    public void readDbFromFile(final RandomAccessFile dbFile) throws Exception {
         ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
         List<Integer> offsets = new LinkedList<Integer>();
         List<String> keys = new LinkedList<String>();
@@ -172,6 +184,10 @@ public class DataBase {
         } catch (Exception e) {
             throw new Exception("Error writing database to file");
         }
+    }
+
+    public int rowCount() throws Exception {
+        return dBase.size();
     }
 
     public void missingOperand(String operation) throws Exception {
