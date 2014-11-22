@@ -9,7 +9,7 @@ public class Database extends ru.fizteh.fivt.students.LebedevAleksey.MultiFileHa
     }
 
     @Override
-    protected Table generateTable(String name) {
-        return new Table(name, this);
+    protected Table generateTable(String name) throws DatabaseFileStructureException {
+        return new Table(name, getRootDirectoryPath());
     }
 }

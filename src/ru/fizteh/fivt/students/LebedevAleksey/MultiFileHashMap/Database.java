@@ -139,8 +139,8 @@ public class Database {
         }
     }
 
-    protected Table generateTable(String name) {
-        return new Table(name, this);
+    protected Table generateTable(String name) throws DatabaseFileStructureException {
+        return new Table(name, getRootDirectoryPath());
     }
 
     public void removeTable(String name) throws TableNotFoundException, LoadOrSaveException,

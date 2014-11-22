@@ -9,12 +9,12 @@ public class Table {
     protected static final int SUBDIRECTORIES_COUNT = 16;
     private TablePart[][] structuredParts;
     private String tableName;
-    private Database database;
+    private Path tablePath;
 
-    public Table(String name, Database databaseParent) {
+    public Table(String name, Path path) {
         initParts();
         tableName = name;
-        database = databaseParent;
+        tablePath = path;
     }
 
     protected void initParts() {
@@ -46,7 +46,7 @@ public class Table {
     }
 
     public Path getDirectory() throws DatabaseFileStructureException {
-        return database.getRootDirectoryPath().resolve(tableName);
+        return tablePath.resolve(tableName);
     }
 
     public int count() throws LoadOrSaveException, DatabaseFileStructureException {

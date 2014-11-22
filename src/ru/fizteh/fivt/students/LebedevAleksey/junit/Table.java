@@ -3,14 +3,15 @@ package ru.fizteh.fivt.students.LebedevAleksey.junit;
 import ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap.DatabaseFileStructureException;
 import ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap.LoadOrSaveException;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
 
 public class Table extends ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap.Table {
     private Map<String, String> changedKeys = new TreeMap<>();
 
-    public Table(String name, ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap.Database databaseParent) {
-        super(name, databaseParent);
+    public Table(String name, Path tablePath) {
+        super(name, tablePath);
     }
 
     @Override
