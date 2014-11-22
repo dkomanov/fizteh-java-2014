@@ -52,6 +52,7 @@ public class CommandRm extends Command {
     private boolean recursiveDelete(final String[] arguments) {
         Path dirPath = PathsFunction.toAbsolutePathString(arguments[2]);
         FileVisitorDelete myFileVisitorDelete = new FileVisitorDelete();
+
         try {
             Files.walkFileTree(dirPath, myFileVisitorDelete);
         } catch (IOException e) {

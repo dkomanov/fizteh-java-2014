@@ -1,6 +1,10 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
-import java.io.IOException;
+import ru.fizteh.fivt.students.ZatsepinMikhail.shell.CommandRm;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class CommandDrop extends CommandMultiFileHashMap {
     public CommandDrop() {
@@ -10,13 +14,28 @@ public class CommandDrop extends CommandMultiFileHashMap {
 
     @Override
     public boolean run(MFileHashMap myDataBase, String[] args) {
-        try {
-            myDataBase.removeTable(args[1]);
-            System.out.println("dropped");
-        } catch (IOException e) {
-            System.err.println("io exception while removing directory");
+        if (numberOfArguments != args.length) {
+            System.out.println(name + ": wrong number of arguments");
             return false;
         }
-        return true;
+        CommandRm myRemover = new CommandRm();
+        Path pathForRemoveTable = Paths.get(myDataBase.getDataBaseDirectory(), args[1]);
+        if (!Files.exists(pathForRemoveTable)) {
+            System.out.println(args[1] + " not exists");
+            return true;
+        }
+        String[] argsArray = {
+                "rm",
+                "-r",
+                pathForRemoveTable.toString()
+        };
+        if (myRemover.run(argsArray)) {
+            System.out.println("dropped");
+            myDataBase.dropTable(args[1]);
+            return true;
+        } else {
+            System.err.println(name + " : error while removing table's directory");
+            return false;
+        }
     }
 }

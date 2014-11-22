@@ -12,8 +12,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public class FileVisitorDelete extends SimpleFileVisitor<Path> {
     @Override
-    public FileVisitResult visitFile(final Path filePath, final BasicFileAttributes attr) throws IOException {
-        Files.delete(filePath.toAbsolutePath());
+    public FileVisitResult visitFile(final Path filePath, final BasicFileAttributes attr) {
+        try {
+            Files.delete(filePath.toAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("IOException: " + filePath.toAbsolutePath().toString());
+        }
         return CONTINUE;
     }
 
@@ -24,8 +28,12 @@ public class FileVisitorDelete extends SimpleFileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult postVisitDirectory(final Path directoryPath, final IOException exc) throws IOException {
-        Files.delete(directoryPath.toAbsolutePath());
+    public FileVisitResult postVisitDirectory(final Path directoryPath, final IOException exc) {
+        try {
+            Files.delete(directoryPath.toAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("IOException " + directoryPath.toAbsolutePath().toString());
+        }
         return CONTINUE;
     }
 }
