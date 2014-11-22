@@ -176,9 +176,6 @@ public class MultiTable implements Table {
                 Storeable value = data.get(pair.getKey());
                 if (value == null) {
                     numChanges++;
-                    //List<Object> currentStoreableData = ((MyStorable) pair.getValue()).dataToList();
-                    //String inputValueStoreableParser.dataToJsonString((String) pair.getKey(), currentStoreableData);
-                    //String[] args = {"put", (String) pair.getKey(),  inputValue };
                     JSONArray inputValue = new JSONArray(((MyStorable) pair.getValue()).dataToList());
                     String[] args = {"put", (String) pair.getKey(),  inputValue.toString() };
                     handle(args);
