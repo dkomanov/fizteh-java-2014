@@ -16,7 +16,7 @@ public class JUnit {
     public static OTable currentTable;
     public static TableProvider pv;
 
-    public static void main(final String[] args) {
+ public static void main(final String[] args) {
         try {
             path = System.getProperty("fizteh.db.dir");
             if (path == null) {
@@ -28,11 +28,13 @@ public class JUnit {
                 throw new Exception("directory not exist");
             }
             File[] children = dir.listFiles();
-            for (File child : children) {
-                TablePF pf = new TablePF();
-                pv = pf.create(path);
-                tableList.put(child.getName(), pv.getTable(child.getName()));
-            }
+            if (children != null) {
+                for (File child : children) {
+                    if (child.isDirectory()) {
+                        tableList.put(child.getName(), pv.getTable(child.getName()));
+                    }
+                }
+            }              
             if (args.length > 0) {
                 mode = true;
                 batch(args);
