@@ -219,13 +219,18 @@ public class MultiTable implements Table {
         return typeList[columnIndex];
     }
 
-    public List<String> list() throws IOException {
-        Map<String, Storeable> keyMap = getData();
-        List<String> retList = new ArrayList<>();
-        for (Map.Entry pair : keyMap.entrySet()) {
-            retList.add(pair.getKey().toString());
+    public List<String> list() {
+        try {
+            Map<String, Storeable> keyMap = getData();
+            List<String> retList = new ArrayList<>();
+            for (Map.Entry pair : keyMap.entrySet()) {
+                retList.add(pair.getKey().toString());
+            }
+            return retList;
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            return null;
         }
-        return retList;
     }
 
     public File getTableDirectory() {
@@ -410,5 +415,7 @@ public class MultiTable implements Table {
         writer.close();
     }
 
-
+    public int getNumberOfUncommittedChanges() {
+        return numUnsavedChanges;
+    }
 }

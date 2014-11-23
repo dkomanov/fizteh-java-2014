@@ -311,4 +311,12 @@ public class MultiMap implements TableProvider {
         }
         return result;
     }
+
+    public List<String> getTableNames() {
+        List<String> result = new ArrayList<>();
+        for (Map.Entry pair : tables.entrySet()) {
+            result.add(pair.getKey().toString());
+        }
+        return result;
+    }
 }
