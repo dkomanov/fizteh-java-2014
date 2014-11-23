@@ -50,7 +50,7 @@ public class JUnit {
         }
     }
 
-    public static void interactive() throws Exception{
+    public static void interactive() throws Exception {
         Scanner sc = new Scanner(System.in);
         try {
             while (true) {
