@@ -1,8 +1,8 @@
-package ru.fizteh.fivt.students.ilivanov.Storeable;
+package ru.fizteh.fivt.students.ilivanov.Parallel;
 
-import ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces.ColumnFormatException;
-import ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces.Storeable;
-import ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces.Table;
+import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.ColumnFormatException;
+import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Storeable;
+import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Table;
 
 import java.io.IOException;
 import java.io.PrintStream;

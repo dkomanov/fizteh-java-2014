@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces;
+package ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces;
 
 /**
  * Список фиксированной структуры, строка таблицы {@link Table}.

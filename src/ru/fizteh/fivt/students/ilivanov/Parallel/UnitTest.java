@@ -1,9 +1,9 @@
-package ru.fizteh.fivt.students.ilivanov.Storeable;
+package ru.fizteh.fivt.students.ilivanov.Parallel;
 
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces.ColumnFormatException;
-import ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces.Storeable;
+import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.ColumnFormatException;
+import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Storeable;
 
 import java.io.File;
 import java.io.IOException;

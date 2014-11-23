@@ -1,34 +1,51 @@
-package ru.fizteh.fivt.students.ilivanov.Storeable;
+package ru.fizteh.fivt.students.ilivanov.Parallel;
 
-import ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces.ColumnFormatException;
-import ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces.Index;
-import ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces.Storeable;
-import ru.fizteh.fivt.students.ilivanov.Storeable.Interfaces.Table;
+import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.ColumnFormatException;
+import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Index;
+import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Storeable;
+import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Table;
 
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 
-public class MultiFileMap implements Table, Index {
+import java.io.*;
+import java.text.ParseException;
+import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+public class MultiFileMap implements Table, AutoCloseable {
     private File location;
     private FileUsing[][] map;
-    private HashMap<String, Storeable> oldValues;
-    private HashSet<String> newKeys;
+    private ThreadLocal<TransactionHandler> transaction;
+    private TransactionPool transactionPool;
     private ArrayList<Class<?>> columnTypes;
     private FileMapProvider tableProvider;
-    private final int arraySize = 16;
+    private final int arraySize;
+    private ReentrantReadWriteLock lock;
+    private volatile boolean isClosed;
 
-    public MultiFileMap(File location, FileMapProvider tableProvider) {
+    public MultiFileMap(File location, int arraySize, FileMapProvider tableProvider, TransactionPool pool) {
         if (location == null) {
-            throw new IllegalArgumentException("null location");
+            throw new IllegalArgumentException("Null location");
         }
         if (tableProvider == null) {
-            throw new IllegalArgumentException("null tableProvider");
+            throw new IllegalArgumentException("Null tableProvider");
         }
+        this.transactionPool = pool;
         this.tableProvider = tableProvider;
         this.location = location;
+        this.arraySize = arraySize;
+        isClosed = false;
+        lock = new ReentrantReadWriteLock();
         columnTypes = new ArrayList<>();
         map = new FileUsing[arraySize][arraySize];
+        transaction = new ThreadLocal<TransactionHandler>() {
+            @Override
+            public TransactionHandler initialValue() {
+                return transactionPool.createHandler(MultiFileMap.this);
+            }
+        };
         for (int i = 0; i < arraySize; i++) {
             for (int j = 0; j < arraySize; j++) {
                 String relative = String.format("%d.dir/%d.dat", i, j);
@@ -36,16 +53,21 @@ public class MultiFileMap implements Table, Index {
                 map[i][j] = new FileUsing(path);
             }
         }
-        oldValues = new HashMap<>();
-        newKeys = new HashSet<>();
     }
 
-    public MultiFileMap(File location, FileMapProvider tableProvider, List<Class<?>> columnTypes) {
-        this(location, tableProvider);
+    public MultiFileMap(File location, int arraySize, FileMapProvider tableProvider,
+                        TransactionPool pool, List<Class<?>> columnTypes) {
+        this(location, arraySize, tableProvider, pool);
+        this.columnTypes = new ArrayList<>(columnTypes);
+    }
+
+    public void setColumnTypes(List<Class<?>> columnTypes) {
+        checkState();
         this.columnTypes = new ArrayList<>(columnTypes);
     }
 
     public boolean checkColumnTypes(Storeable list) {
+        checkState();
         try {
             for (int i = 0; i < columnTypes.size(); i++) {
                 if (list.getColumnAt(i) != null && columnTypes.get(i) != list.getColumnAt(i).getClass()) {
@@ -82,6 +104,7 @@ public class MultiFileMap implements Table, Index {
     }
 
     public String getName() {
+        checkState();
         return location.getName();
     }
 
@@ -91,20 +114,43 @@ public class MultiFileMap implements Table, Index {
                 map[i][j].clear();
             }
         }
-        oldValues.clear();
-        newKeys.clear();
+    }
+
+    public File getFile() {
+        checkState();
+        return location;
+    }
+
+    public int size(HashMap<String, Storeable> diff) {
+        checkState();
+        int size = 0;
+        lock.readLock().lock();
+        try {
+            for (int i = 0; i < arraySize; i++) {
+                for (int j = 0; j < arraySize; j++) {
+                    size += map[i][j].size();
+                }
+            }
+            for (Map.Entry<String, Storeable> entry : diff.entrySet()) {
+                int hashCode = Math.abs(entry.getKey().hashCode());
+                int dir = (hashCode % 16 + 16) % 16;
+                int file = ((hashCode / 16 % 16) + 16) % 16;
+                if (entry.getValue() == null) {
+                    if (map[dir][file].get(entry.getKey()) != null) {
+                        size--;
+                    }
+                } else if (map[dir][file].get(entry.getKey()) == null) {
+                    size++;
+                }
+            }
+        } finally {
+            lock.readLock().unlock();
+        }
+        return size;
     }
 
     public int size() {
-        int size = 0;
-
-        for (int i = 0; i < arraySize; i++) {
-            for (int j = 0; j < arraySize; j++) {
-                size += map[i][j].size();
-            }
-        }
-
-        return size;
+        return size(transaction.get().getDiff());
     }
 
     private boolean validateData() {
@@ -124,6 +170,7 @@ public class MultiFileMap implements Table, Index {
     }
 
     public void validateDirectory() {
+        checkState();
         File[] files = location.listFiles();
         if (files == null) {
             throw new RuntimeException("Path specifies invalid location");
@@ -159,6 +206,7 @@ public class MultiFileMap implements Table, Index {
      * Method is not synchronized, use methods of TableFactory instead
      */
     public void loadFromDisk() throws IOException, ParseException {
+        checkState();
         columnTypes.clear();
         clear();
         if (!location.getParentFile().exists() || !location.getParentFile().isDirectory()) {
@@ -174,23 +222,23 @@ public class MultiFileMap implements Table, Index {
         File signature = new File(location, "signature.tsv");
         try (BufferedReader reader = new BufferedReader(new FileReader(signature))) {
             String[] typeNames = reader.readLine().split("\\s+");
-            for (String typeName : typeNames) {
-                if (typeName.equals("int")) {
+            for (int i = 0; i < typeNames.length; i++) {
+                if (typeNames[i].equals("int")) {
                     columnTypes.add(Integer.class);
-                } else if (typeName.equals("long")) {
+                } else if (typeNames[i].equals("long")) {
                     columnTypes.add(Long.class);
-                } else if (typeName.equals("byte")) {
+                } else if (typeNames[i].equals("byte")) {
                     columnTypes.add(Byte.class);
-                } else if (typeName.equals("float")) {
+                } else if (typeNames[i].equals("float")) {
                     columnTypes.add(Float.class);
-                } else if (typeName.equals("double")) {
+                } else if (typeNames[i].equals("double")) {
                     columnTypes.add(Double.class);
-                } else if (typeName.equals("boolean")) {
+                } else if (typeNames[i].equals("boolean")) {
                     columnTypes.add(Boolean.class);
-                } else if (typeName.equals("String")) {
+                } else if (typeNames[i].equals("String")) {
                     columnTypes.add(String.class);
                 } else {
-                    throw new RuntimeException(String.format("Unknown type %s", typeName));
+                    throw new RuntimeException(String.format("Unknown type %s", typeNames[i]));
                 }
             }
         } catch (FileNotFoundException e) {
@@ -220,11 +268,13 @@ public class MultiFileMap implements Table, Index {
         if (!validateData()) {
             throw new RuntimeException("Wrong data format: key distribution among files is incorrect");
         }
-        oldValues.clear();
-        newKeys.clear();
     }
 
+    /**
+     * Method not synchronized use commit instead
+     */
     public void writeToDisk() throws IOException {
+        checkState();
         if (location.exists() && !location.isDirectory()) {
             throw new RuntimeException("Database can't be written to the specified location");
         }
@@ -299,8 +349,7 @@ public class MultiFileMap implements Table, Index {
                         }
                     }
                 }
-                File[] files = directory.listFiles();
-                if (files != null && directory.listFiles().length == 0) {
+                if (directory.listFiles().length == 0) {
                     if (!directory.delete()) {
                         throw new RuntimeException(String.format("Can't delete directory %s",
                                 directory.getCanonicalPath()));
@@ -308,11 +357,34 @@ public class MultiFileMap implements Table, Index {
                 }
             }
         }
-        oldValues.clear();
-        newKeys.clear();
     }
 
-    public Storeable put(String key, Storeable value) throws ColumnFormatException {
+    public boolean storeableEqual(Storeable first, Storeable second) {
+        checkState();
+        if (first == null && second == null) {
+            return true;
+        }
+        if (first == null || second == null) {
+            return false;
+        }
+        for (int i = 0; i < columnTypes.size(); i++) {
+            if (first.getColumnAt(i) == null) {
+                if (second.getColumnAt(i) != null) {
+                    return false;
+                }
+            } else if (!first.getColumnAt(i).equals(second.getColumnAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Storeable put(HashMap<String, Storeable> diff, String key, Storeable value)
+            throws ColumnFormatException {
+        checkState();
+        if (diff == null) {
+            throw new IllegalArgumentException("Null diff");
+        }
         if (key == null) {
             throw new IllegalArgumentException("Null pointer instead of string");
         }
@@ -334,35 +406,60 @@ public class MultiFileMap implements Table, Index {
         int hashCode = Math.abs(key.hashCode());
         int dir = (hashCode % 16 + 16) % 16;
         int file = ((hashCode / 16 % 16) + 16) % 16;
+        if (diff.containsKey(key)) {
+            return diff.put(key, value);
+        }
+        Storeable result = null;
+        lock.readLock().lock();
+        try {
+            result = map[dir][file].get(key);
+            diff.put(key, value);
+        } finally {
+            lock.readLock().unlock();
+        }
+        return result;
+    }
 
-        Storeable result = map[dir][file].put(key, value);
-        if (result != null) {
-            if (!newKeys.contains(key)) {
-                Storeable diffValue = oldValues.get(key);
-                if (diffValue == null) {
-                    if (!result.equals(value)) {
-                        oldValues.put(key, result);
-                    }
-                } else {
-                    if (diffValue.equals(value)) {
-                        oldValues.remove(key);
-                    }
-                }
-            }
-        } else {
-            Storeable diffValue = oldValues.get(key);
-            if (diffValue == null) {
-                newKeys.add(key);
-            } else {
-                if (diffValue.equals(value)) {
-                    oldValues.remove(key);
-                }
-            }
+    public Storeable put(String key, Storeable value) throws ColumnFormatException {
+        return put(transaction.get().getDiff(), key, value);
+    }
+
+    public Storeable get(HashMap<String, Storeable> diff, String key) {
+        checkState();
+        if (diff == null) {
+            throw new IllegalArgumentException("Null diff");
+        }
+        if (key == null) {
+            throw new IllegalArgumentException("Null pointer instead of string");
+        }
+        if (key.equals("")) {
+            throw new IllegalArgumentException("Empty key");
+        }
+        int hashCode = Math.abs(key.hashCode());
+        int dir = (hashCode % 16 + 16) % 16;
+        int file = ((hashCode / 16 % 16) + 16) % 16;
+        if (diff.containsKey(key)) {
+            return diff.get(key);
+        }
+        Storeable result = null;
+        lock.readLock().lock();
+        try {
+            result = map[dir][file].get(key);
+        } finally {
+            lock.readLock().unlock();
         }
         return result;
     }
 
     public Storeable get(String key) {
+        return get(transaction.get().getDiff(), key);
+    }
+
+    public Storeable remove(HashMap<String, Storeable> diff, String key) {
+        checkState();
+        if (diff == null) {
+            throw new IllegalArgumentException("Null diff");
+        }
         if (key == null) {
             throw new IllegalArgumentException("Null pointer instead of string");
         }
@@ -372,57 +469,110 @@ public class MultiFileMap implements Table, Index {
         int hashCode = Math.abs(key.hashCode());
         int dir = (hashCode % 16 + 16) % 16;
         int file = ((hashCode / 16 % 16) + 16) % 16;
-
-        return map[dir][file].get(key);
+        if (diff.containsKey(key)) {
+            return diff.put(key, null);
+        }
+        Storeable result = null;
+        lock.readLock().lock();
+        try {
+            result = map[dir][file].get(key);
+            if (result != null) {
+                diff.put(key, null);
+            }
+        } finally {
+            lock.readLock().unlock();
+        }
+        return result;
     }
 
     public Storeable remove(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException("Null pointer instead of string");
-        }
-        if (key.equals("")) {
-            throw new IllegalArgumentException("Empty key");
-        }
-        int hashCode = Math.abs(key.hashCode());
-        int dir = (hashCode % 16 + 16) % 16;
-        int file = ((hashCode / 16 % 16) + 16) % 16;
+        return remove(transaction.get().getDiff(), key);
+    }
 
-        Storeable result = map[dir][file].remove(key);
-        if (result != null) {
-            if (newKeys.contains(key)) {
-                newKeys.remove(key);
-            } else if (oldValues.get(key) == null) {
-                oldValues.put(key, result);
+    public int uncommittedChanges(HashMap<String, Storeable> diff) {
+        checkState();
+        if (diff == null) {
+            throw new IllegalArgumentException("Null diff");
+        }
+        int result = 0;
+        lock.readLock().lock();
+        try {
+            for (Map.Entry<String, Storeable> entry : diff.entrySet()) {
+                int hashCode = Math.abs(entry.getKey().hashCode());
+                int dir = (hashCode % 16 + 16) % 16;
+                int file = ((hashCode / 16 % 16) + 16) % 16;
+                if (entry.getValue() == null) {
+                    if (map[dir][file].get(entry.getKey()) != null) {
+                        result++;
+                    }
+                } else if (!storeableEqual(entry.getValue(), map[dir][file].get(entry.getKey()))) {
+                    result++;
+                }
             }
+        } finally {
+            lock.readLock().unlock();
         }
         return result;
     }
 
     public int uncommittedChanges() {
-        return newKeys.size() + oldValues.size();
+        return uncommittedChanges(transaction.get().getDiff());
     }
 
-    public int commit() throws IOException {
-        int changes =  uncommittedChanges();
-        writeToDisk();
-        return changes;
-    }
-
-    public int rollback() {
-        int changes = uncommittedChanges();
+    public int commit(HashMap<String, Storeable> diff) throws IOException {
+        checkState();
+        if (diff == null) {
+            throw new IllegalArgumentException("Null diff");
+        }
+        int changes = 0;
+        lock.writeLock().lock();
         try {
-            loadFromDisk();
-        } catch (IOException | ParseException e) {
-            System.err.println(e.getMessage());
+            changes = uncommittedChanges(diff);
+            for (Map.Entry<String, Storeable> entry : diff.entrySet()) {
+                int hashCode = Math.abs(entry.getKey().hashCode());
+                int dir = (hashCode % 16 + 16) % 16;
+                int file = ((hashCode / 16 % 16) + 16) % 16;
+                if (entry.getValue() == null) {
+                    map[dir][file].remove(entry.getKey());
+                } else {
+                    map[dir][file].put(entry.getKey(), entry.getValue());
+                }
+            }
+            writeToDisk();
+        } finally {
+            lock.writeLock().unlock();
         }
         return changes;
     }
 
+    public int commit() throws IOException {
+        int result = commit(transaction.get().getDiff());
+        transaction.get().clear();
+        return result;
+    }
+
+    public int rollback(HashMap<String, Storeable> diff) {
+        checkState();
+        if (diff == null) {
+            throw new IllegalArgumentException("Null diff");
+        }
+        int changes = uncommittedChanges(diff);
+        return changes;
+    }
+
+    public int rollback() {
+        int result = rollback(transaction.get().getDiff());
+        transaction.get().clear();
+        return result;
+    }
+
     public int getColumnsCount() {
+        checkState();
         return columnTypes.size();
     }
 
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        checkState();
         if (columnIndex >= getColumnsCount() || columnIndex < 0) {
             throw new IndexOutOfBoundsException(String.format("Index out of bounds: array size %d, found %d",
                     columnTypes.size(), columnIndex));
@@ -432,6 +582,7 @@ public class MultiFileMap implements Table, Index {
 
     @Override
     public String toString() {
+        checkState();
         try {
             return String.format("%s[%s]", this.getClass().getSimpleName(), location.getCanonicalPath());
         } catch (IOException e) {
@@ -439,6 +590,23 @@ public class MultiFileMap implements Table, Index {
         }
     }
 
+    private void checkState() {
+        if (isClosed) {
+            if (transaction.get().isSet()) {
+                transaction.get().clear();
+            }
+            throw new IllegalStateException("Table is closed");
+        }
+    }
+
+    public boolean isClosed() {
+        return isClosed;
+    }
+
+    public void close() {
+        transaction.get().clear();
+        isClosed = true;
+    }
 
     public List<String> list() {
         List<String> list = new ArrayList<>();
@@ -450,3 +618,6 @@ public class MultiFileMap implements Table, Index {
         return list;
     }
 }
+
+
+

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Storeable;
+package ru.fizteh.fivt.students.ilivanov.Parallel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
