@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class UnitTest {
 
@@ -42,7 +46,7 @@ public class UnitTest {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void notAFolderCheckTest() throws IOException {
         File file = new File(folder.getRoot(), "test");
         file.createNewFile();
@@ -678,5 +682,113 @@ public class UnitTest {
         FileMapProvider provider = factory.create(testFolder.getCanonicalPath());
         MultiFileMap table = provider.createTable("new", getColumnTypeList());
         Assert.assertEquals(table.getColumnsCount(), 3);
+    }
+
+    @Test
+    public void parallelCountsSizeSeparately() throws IOException, InterruptedException, ExecutionException {
+        File testFolder = new File(folder.getRoot(), "test");
+        testFolder.mkdir();
+        FileMapProviderFactory factory = new FileMapProviderFactory();
+        final FileMapProvider provider = factory.create(testFolder.getCanonicalPath());
+        final MultiFileMap table = provider.createTable("new", getColumnTypeList());
+
+        ExecutorService thread1 = Executors.newSingleThreadExecutor();
+        ExecutorService thread2 = Executors.newSingleThreadExecutor();
+
+        thread1.submit(() -> table.put("a", getSampleStoreable())).get();
+
+        Storeable sample = getSampleStoreable();
+        sample.setColumnAt(0, 3);
+
+        thread2.submit(() -> {
+            Assert.assertTrue(table.size() == 0);
+            table.put("b", getSampleStoreable());
+        }).get();
+
+        thread1.submit(() -> Assert.assertTrue(table.size() == 1)).get();
+
+        thread2.submit(() -> {
+            try {
+                table.commit();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).get();
+
+        thread1.submit(() -> {
+            try {
+                Assert.assertTrue(table.size() == 2);
+                table.commit();
+                Assert.assertTrue(table.size() == 2);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).get();
+
+        thread1.shutdown();
+        if (!thread1.awaitTermination(1, TimeUnit.SECONDS)) {
+            Assert.fail("Thread hasn't terminated");
+        }
+        thread2.shutdown();
+        if (!thread2.awaitTermination(1, TimeUnit.SECONDS)) {
+            Assert.fail("Thread hasn't terminated");
+        }
+        factory.close();
+    }
+
+    @Test
+    public void parallelPutAndGet() throws IOException, InterruptedException, ExecutionException {
+        final Object lock = new Object();
+        File testFolder = new File(folder.getRoot(), "test");
+        testFolder.mkdir();
+        FileMapProviderFactory factory = new FileMapProviderFactory();
+        final FileMapProvider provider = factory.create(testFolder.getCanonicalPath());
+        final MultiFileMap table = provider.createTable("new", getColumnTypeList());
+
+        ExecutorService thread1 = Executors.newSingleThreadExecutor();
+        ExecutorService thread2 = Executors.newSingleThreadExecutor();
+
+        thread1.submit(() -> table.put("a", getSampleStoreable())).get();
+
+        final Storeable sample = getSampleStoreable();
+        sample.setColumnAt(0, 3);
+
+        thread2.submit(() -> {
+            try {
+                Assert.assertTrue(table.size() == 0);
+                table.put("b", getSampleStoreable());
+                table.commit();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).get();
+
+        thread1.submit(() -> {
+            try {
+                Assert.assertTrue(table.storeableEqual(table.get("b"), getSampleStoreable()));
+                table.commit();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).get();
+
+        thread2.submit(() -> {
+            Assert.assertTrue(table.storeableEqual(getSampleStoreable(), table.get("a")));
+            table.put("a", sample);
+        }).get();
+
+        thread1.submit(() -> Assert.assertTrue(table.storeableEqual(table.get("a"), getSampleStoreable()))).get();
+
+        thread2.submit(() -> Assert.assertFalse(table.storeableEqual(getSampleStoreable(), table.get("a")))).get();
+
+        thread1.shutdown();
+        if (!thread1.awaitTermination(1, TimeUnit.SECONDS)) {
+            Assert.fail("Thread haven't terminated");
+        }
+        thread2.shutdown();
+        if (!thread2.awaitTermination(1, TimeUnit.SECONDS)) {
+            Assert.fail("Thread haven't terminated");
+        }
+        factory.close();
     }
 }

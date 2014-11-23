@@ -175,7 +175,7 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         if (!dir.exists()) {
             throw new IllegalStateException("Table doesn't exist");
         }
-        if (deleteFileRecursively(dir)) {
+        if (!deleteFileRecursively(dir)) {
             throw new RuntimeException("Unable to delete some files");
         }
         MultiFileMap table = used.remove(name);
