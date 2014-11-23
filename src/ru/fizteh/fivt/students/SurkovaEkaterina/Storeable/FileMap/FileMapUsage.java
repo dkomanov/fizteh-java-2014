@@ -47,16 +47,14 @@ public class FileMapUsage {
         throw new IllegalArgumentException("incorrect file name");
     }
 
-    public static int getDirNumber(String key) {
-        byte[] bytes = key.getBytes(ATable.CHARSET);
-        int firstSymbol = Math.abs(bytes[0]);
-        return firstSymbol % MAX_DIRECTORIES_NUMBER;
+    public static int getDirNumber(final String key) {
+        int hashCode = key.hashCode();
+        return hashCode % MAX_DIRECTORIES_NUMBER;
     }
 
-    public static int getFileNumber(String key) {
-        byte[] bytes = key.getBytes(ATable.CHARSET);
-        int firstSymbol = Math.abs(bytes[0]);
-        return firstSymbol / MAX_DIRECTORIES_NUMBER % MAX_FILES_NUMBER;
+    public static int getFileNumber(final String key) {
+        int hashCode = key.hashCode();
+        return hashCode / MAX_DIRECTORIES_NUMBER % MAX_FILES_NUMBER;
     }
 
     public static void checkKeyPlacement(String key, int currentBucket, int currentFile)
