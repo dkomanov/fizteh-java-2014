@@ -66,18 +66,18 @@ public class JUnit {
     }
 
     public static void batch(final String[] args) throws Exception {
-            String arg;
-            if (args.length > 0) {
-                arg = args[0];
-                for (int i = 1; i != args.length; i++) {
-                    arg = arg + ' ' + args[i];
-                }
-                String[] commands = arg.trim().split(";");
-                for (int i = 0; i != commands.length; i++) {
-                    doCommand(commands[i]);
-                }
+        String arg;
+        if (args.length > 0) {
+            arg = args[0];
+            for (int i = 1; i != args.length; i++) {
+                arg = arg + ' ' + args[i];
+            }
+            String[] commands = arg.trim().split(";");
+            for (int i = 0; i != commands.length; i++) {
+                doCommand(commands[i]);
             }
         }
+    }
 
     public static void doCommand(final String command)
             throws Exception {
@@ -121,6 +121,24 @@ public class JUnit {
                     }
                     list(args);
 
+                } else if (args[0].equals("commit")) {
+                    if (JUnit.currentTable == null) {
+                        throw new Exception("no table");
+                    } else {
+                        commit(args);
+                    }
+                } else if (args[0].equals("rollback")) {
+                    if (JUnit.currentTable == null) {
+                        throw new Exception("no table");
+                    } else {
+                        rollback(args);
+                    }
+                } else if (args[0].equals("size")) {
+                    if (JUnit.currentTable == null) {
+                        throw new Exception("no table");
+                    } else {
+                        size(args);
+                    }
                 } else if (args[0].equals("exit")) {
                     exit(args);
                 } else {
@@ -227,7 +245,7 @@ public class JUnit {
         checkArgs("size", 1, args.length);
         System.out.println(JUnit.currentTable.numberOfElements);
     }
-    
+
     public static void show(final String[] args) throws Exception {
         if (args.length >= 2) {
             if (!args[1].equals("tables")) {
@@ -241,7 +259,7 @@ public class JUnit {
         System.out.println("table_name row_count");
         for (Map.Entry<String, Table> table : JUnit.tableList.entrySet()) {
             int num = ((OTable) (table.getValue())).numberOfElements;
-             System.out.println(table.getKey() + " " + num);
+            System.out.println(table.getKey() + " " + num);
         }
     }
 
