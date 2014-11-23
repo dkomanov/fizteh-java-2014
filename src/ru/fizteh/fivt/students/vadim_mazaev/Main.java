@@ -54,8 +54,7 @@ public final class Main {
                                     System.out.println("new");
                                 }
                             } catch (ColumnFormatException | ParseException e) {
-                                throw new StopLineInterpretationException("wrong type ("
-                                        + e.getMessage() + ")");
+                                throw new StopLineInterpretationException("wrong type (" + e.getMessage() + ")");
                             }
                         } else {
                             throw new StopLineInterpretationException("no table");
@@ -179,8 +178,7 @@ public final class Main {
                         Table usedTable = (DbTable) dbState.getUsedTable();
                         if (newTable != null) {
                             if (usedTable != null && usedTable.getNumberOfUncommittedChanges() > 0) {
-                                System.out.println(usedTable.getNumberOfUncommittedChanges()
-                                        + " unsaved changes");
+                                System.out.println(usedTable.getNumberOfUncommittedChanges() + " unsaved changes");
                             } else {
                                 dbState.setUsedTable(newTable);
                                 System.out.println("using " + args[0]);
@@ -228,12 +226,10 @@ public final class Main {
                 })
         });
         dbInterpreter.setExitHandler(new Callable<Boolean>() {
-            @Override
             public Boolean call() throws Exception {
                 DbTable link = (DbTable) state.getUsedTable();
                 if (link != null && (link.getNumberOfUncommittedChanges() > 0)) {
-                    System.out.println(link.getNumberOfUncommittedChanges()
-                            + " unsaved changes");
+                    System.out.println(link.getNumberOfUncommittedChanges() + " unsaved changes");
                     return false;
                 }
                 return true;
