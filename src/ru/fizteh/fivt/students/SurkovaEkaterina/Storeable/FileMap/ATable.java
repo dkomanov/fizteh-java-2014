@@ -142,6 +142,10 @@ public abstract class ATable implements Table {
         return recordsDeleted;
     }
 
+    public int getNumberOfUncommittedChanges() {
+        return uncommittedChangesNumber;
+    }
+
     public String getName() {
         return tableName;
     }

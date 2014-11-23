@@ -62,6 +62,15 @@ public class DatabaseTableProvider implements TableProvider {
     }
 
     @Override
+    public List<String> getTableNames() {
+        List<String> names = new ArrayList<String>();
+        for (String name : tables.keySet()) {
+            names.add(name);
+        }
+        return names;
+    }
+
+    @Override
     public Table getTable(String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException(

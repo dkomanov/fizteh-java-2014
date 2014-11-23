@@ -86,6 +86,11 @@ public class DatabaseTable extends ATable implements Table {
     }
 
     @Override
+    public int getNumberOfUncommittedChanges() {
+        return super.getNumberOfUncommittedChanges();
+    }
+
+    @Override
     public int getColumnsCount() {
         return (columnTypes == null) ? 0 : columnTypes.size();
     }
