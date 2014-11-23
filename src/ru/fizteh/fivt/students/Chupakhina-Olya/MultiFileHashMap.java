@@ -129,7 +129,7 @@ public class MultiFileHashMap {
         if (args.length != 2) {
             throw new Exception("create: invalid number of arguments");
         }
-        File file = new File(path + File.separator + args[1]);
+        File file = new File(path + File.separator + args[1] + File.separator);
         if (file.exists()) {
             System.out.println(args[1] + " exists");
         } else {
