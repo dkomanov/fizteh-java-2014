@@ -92,13 +92,16 @@ public class MFileHashMap implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
+        lockForCreateAndGet.writeLock().lock();
         if (tables.containsKey(name)) {
             Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
             tables.remove(name);
             currentTable = null;
             FileUtils.rmdir(pathForRemoveTable);
+            lockForCreateAndGet.writeLock().unlock();
         } else {
-            throw new IllegalStateException();
+            lockForCreateAndGet.writeLock().unlock();
+            throw new IllegalStateException("table \'" + name + "\' doesn't exist");
         }
     }
 

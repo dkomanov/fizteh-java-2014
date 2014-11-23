@@ -16,6 +16,10 @@ public class CommandDrop extends CommandMultiFileHashMap {
         } catch (IOException e) {
             System.err.println("io exception while removing directory");
             return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
         }
         return true;
     }

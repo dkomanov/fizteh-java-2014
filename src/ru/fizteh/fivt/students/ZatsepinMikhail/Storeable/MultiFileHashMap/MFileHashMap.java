@@ -79,7 +79,7 @@ public class MFileHashMap implements TableProvider {
             currentTable = null;
             FileUtils.rmdir(pathForRemoveTable);
         } else {
-            throw new IllegalStateException();
+            throw new IllegalStateException("table \'" + name + "\' doesn't exist");
         }
     }
 
