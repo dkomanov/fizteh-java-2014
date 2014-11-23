@@ -134,13 +134,9 @@ public class OTable implements Table {
         if (dirs != null) {
             for (File dir : dirs) {
                 if (!dir.isDirectory()) {
-                    try {
-                        throw new Exception(dir.getName()
-                                + " is not directory");
-                    } catch (Exception e) {
-                        System.err.println(e.getMessage());
-                        System.exit(-1);
-                    }
+                    System.err.println(dir.getName()
+                            + " is not directory");
+                    System.exit(-1);
                 }
                 File[] dats = dir.listFiles();
                 if (dats.length == 0) {
@@ -165,7 +161,7 @@ public class OTable implements Table {
     @Override
     public int rollback() {
         TableState state = tableStates.get(numberOfState);
-        map = state.map;
+        map = new HashMap<>(ts.fm);
         numberOfElements = state.numberOfElements;
         int n = unsavedChanges;
         unsavedChanges = state.unsavedChanges;
@@ -175,7 +171,7 @@ public class OTable implements Table {
     @Override
     public List<String> list() {
         Set<String> keySet = map.keySet();
-        List<String> list = new LinkedList<String>();
+        List<String> list = new LinkedList();
         for (String current : keySet) {
             list.add(current);
         }
