@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -16,6 +17,7 @@ public class DataBaseTableDiff {
     Map<String, Storeable> rewriteMap;
     DataBaseTable table;
     ReentrantReadWriteLock lock;
+    int localVersion = 0;
 
     public DataBaseTableDiff(DataBaseTable table, ReentrantReadWriteLock lock) {
         this.table = table;
@@ -25,8 +27,48 @@ public class DataBaseTableDiff {
         rewriteMap = new HashMap<>();
     }
 
+    private void fixVersion() {
+        lock.readLock().lock();
+        try {
+            if (table.getVersion() > localVersion) {
+                localVersion = table.getVersion();
+            }
+            ArrayList<String> toRemove = new ArrayList<>();
+            for (Map.Entry<String, Storeable> entry: deleteMap.entrySet()) {
+                if (!table.tempData.containsKey(entry.getKey())) {
+                    toRemove.add(entry.getKey());
+                }
+            }
+            for (String removeKey: toRemove) {
+                deleteMap.remove(removeKey);
+            }
+            HashMap<String, Storeable> toAdd = new HashMap<>();
+            for (Map.Entry<String, Storeable> entry: rewriteMap.entrySet()) {
+                if (!table.tempData.containsKey(entry.getKey())) {
+                    toAdd.put(entry.getKey(), entry.getValue());
+                }
+            }
+            HashMap<String, Storeable> toRewrite = new HashMap<>();
+            for (Map.Entry<String, Storeable> entry: addMap.entrySet()) {
+                if (table.tempData.containsKey(entry.getKey())) {
+                    toRewrite.put(entry.getKey(), entry.getValue());
+                }
+            }
+            for (Map.Entry<String, Storeable> entry: toAdd.entrySet()) {
+                rewriteMap.remove(entry.getKey());
+                addMap.put(entry.getKey(), entry.getValue());
+            }
+            for (Map.Entry<String, Storeable> entry: toRewrite.entrySet()) {
+                addMap.remove(entry.getKey());
+                rewriteMap.put(entry.getKey(), entry.getValue());
+            }
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
 
     public Storeable put(String key, Storeable value) {
+        fixVersion();
         if (addMap.containsKey(key)) {
             Storeable result = addMap.get(key);
             addMap.put(key, value);
@@ -58,6 +100,7 @@ public class DataBaseTableDiff {
     }
 
     public Storeable get(String key) {
+        fixVersion();
         if (addMap.containsKey(key)) {
             return addMap.get(key);
         }
@@ -74,10 +117,12 @@ public class DataBaseTableDiff {
 
 
     public int changesSize() {
+        fixVersion();
         return addMap.size() + deleteMap.size() + rewriteMap.size();
     }
 
     public Storeable remove(String key) {
+        fixVersion();
         if (addMap.containsKey(key)) {
             return addMap.remove(key);
         }
@@ -101,8 +146,11 @@ public class DataBaseTableDiff {
     }
 
     public void commit() throws IOException {
+        fixVersion();
         lock.writeLock().lock();
         try {
+            localVersion++;
+            table.version = localVersion;
             for (String key : deleteMap.keySet()) {
                 table.originRemove(key);
             }

@@ -30,7 +30,7 @@ public class DataBaseTable implements Table {
     ThreadLocal<DataBaseTableDiff> diff;
     private TableRowSerializer serializer;
     private ArrayList<Class<?>> signature = new ArrayList<>();
-
+    int version = 0;
 
     public DataBaseTable(Path path,
                          String tableName,
@@ -328,5 +328,9 @@ public class DataBaseTable implements Table {
 
     public Storeable originPut(String key, Storeable value) {
         return tempData.put(key, value);
+    }
+
+    public int getVersion() {
+        return version;
     }
 }
