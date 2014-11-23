@@ -140,48 +140,51 @@ public class MultiFileHashMap {
                 throw new Exception("There is no table for this moment");
             }
         }
-        switch (args[0]) {
-            case "create":
-            case "drop":
-            case "use":
-            case "get":
-            case "remove":
-                if (args.length != 2) {
+        if (args[0] == "create" || args[0] == "drop" || args[0] == "use" || args[0] == "get" || args[0] == "remove") {
+            if (args.length != 2) {
+                throw new Exception(args[0] + ": invalid number of arguments");
+            }
+        }
+        if (args[0] == "list" || args[0] == "exit") {
+            if (args.length != 1) {
+                throw new Exception(args[0] + ": invalid number of arguments");
+            }
+        }
+        if (args[0] == "put" && args.length != 3) {
                     throw new Exception(args[0] + ": invalid number of arguments");
-                }
-            case "list":
-            case "exit":
-                if (args.length != 1) {
-                    throw new Exception(args[0] + ": invalid number of arguments");
-                }
-            case "put":
-                if (args.length != 3) {
-                    throw new Exception(args[0] + ": invalid number of arguments");
-                }
         }
         switch (args[0]) {
             case "create":
                 create(args);
+                break;
             case "drop":
                 drop(args);
+                break;
             case "use":
                 use(args);
+                break;
             case "show":
                 show(args);
+                break;
             case "put":
                 put(args);
+                break;
             case "get":
                 get(args);
+                break;
             case "remove":
                 remove(args);
+                break;
             case "list":
                 list(args);
+                break;
             case "exit":
                 if (currentTable.length() != 0) {
                     putCurrentMapToDirectory();
                 }
                 currentFileMap.clear();
                 System.exit(0);
+                break;
             default:
                 throw new Exception("Invalid command");
         }
