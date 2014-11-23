@@ -230,7 +230,7 @@ public final class DbTable implements Table {
         //Check Storeable structure.
         try {
             for (int i = 0; i < structure.size(); i++) {
-                if (structure.get(i) != value.getColumnAt(i).getClass()) {
+                if (value.getColumnAt(i) != null && structure.get(i) != value.getColumnAt(i).getClass()) {
                     throw new ColumnFormatException("Storeable has a wrong "
                             + "column format");
                 }

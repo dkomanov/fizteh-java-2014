@@ -23,6 +23,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
  */
 final class TablePart {
     private Map<String, Storeable> data;
+    private boolean changed;
     private DbTable table;
     private Path tablePartDirectoryPath;
     private int fileNumber;
@@ -44,6 +45,7 @@ final class TablePart {
         this.fileNumber = fileNumber;
         this.table = table;
         data = new HashMap<>();
+        changed = false;
         if (tablePartDirectoryPath.toFile().exists()) {
             try {
                 readFile();
@@ -60,15 +62,18 @@ final class TablePart {
      * has thrown an I/O Exception.
      */
     public void commit() throws DataBaseIOException {
-        if (getNumberOfRecords() == 0) {
-            tablePartDirectoryPath.toFile().delete();
-            tablePartDirectoryPath.getParent().toFile().delete();
-        } else {
-            try {
-                writeToFile();
-            } catch (IOException e) {
-                throw new DataBaseIOException("Error writing to file '"
-                        + tablePartDirectoryPath.toString() + "': " + e.getMessage(), e);
+        if (changed) {
+            changed = false;
+            if (getNumberOfRecords() == 0) {
+                tablePartDirectoryPath.toFile().delete();
+                tablePartDirectoryPath.getParent().toFile().delete();
+            } else {
+                try {
+                    writeToFile();
+                } catch (IOException e) {
+                    throw new DataBaseIOException("Error writing to file '"
+                            + tablePartDirectoryPath.toString() + "': " + e.getMessage(), e);
+                }
             }
         }
     }
@@ -101,6 +106,7 @@ final class TablePart {
         if (value == null) {
             throw new IllegalArgumentException("Value cannot be null");
         }
+        changed = true;
         return data.put(key, value);
     }
     
@@ -114,6 +120,7 @@ final class TablePart {
      */
     public Storeable remove(String key) throws UnsupportedEncodingException {
         checkKey(key);
+        changed = true;
         return data.remove(key);
     }
     

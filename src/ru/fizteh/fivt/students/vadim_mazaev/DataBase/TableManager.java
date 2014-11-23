@@ -282,10 +282,12 @@ public final class TableManager implements TableProvider {
     public Storeable deserialize(Table table, String value) throws ParseException {
         value = value.trim();
         if (value.charAt(0) != '[') {
-            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": '[' is missing", 0);
+            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG
+                    + ": '[' at the begging is missing", 0);
         }
         if (value.charAt(value.length() - 1) != ']') {
-            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": '[' is missing", 0);
+            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG
+                    + ": ']' at the end is missing", 0);
         }
         value = value.substring(1, value.length() - 1);
         String[] tokens = value.split("," + Helper.IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);

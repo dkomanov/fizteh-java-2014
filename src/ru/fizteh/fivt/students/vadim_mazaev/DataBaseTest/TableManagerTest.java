@@ -70,7 +70,7 @@ public class TableManagerTest {
             printer.print(TestHelper.STRUCTURE_STRING);
         }
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.getTable(TestHelper.TEST_TABLE_NAME));
+        assertNotNull(test.getTable(TestHelper.TEST_TABLE_NAME));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -116,7 +116,7 @@ public class TableManagerTest {
             printer.print(TestHelper.STRUCTURE_STRING);
         }
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         assertTrue(TestHelper.TEST_DIR.resolve(TestHelper.TEST_TABLE_NAME).toFile().exists());
     }
     
@@ -135,14 +135,14 @@ public class TableManagerTest {
     @Test
     public void testGetTableCalledForNonexistentTable() throws IOException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertEquals(null, test.getTable(TestHelper.TEST_TABLE_NAME));
+        assertNull(test.getTable(TestHelper.TEST_TABLE_NAME));
     }
     
     @Test
     public void testGetTableCalledForExistentTable() throws IOException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
-        assertNotEquals(null, test.getTable(TestHelper.TEST_TABLE_NAME));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.getTable(TestHelper.TEST_TABLE_NAME));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -166,12 +166,12 @@ public class TableManagerTest {
     @Test
     public void testRemoveTableCalledForExistentFullTable() throws IOException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
-        assertNotEquals(null, testTable);    
-        assertEquals(null, testTable.put("key", test.createFor(testTable,
+        assertNotNull(testTable);    
+        assertNull(testTable.put("key", test.createFor(testTable,
                 TestHelper.TEST_VALUES)));
-        assertEquals(null, testTable.put("key2", test.createFor(testTable,
+        assertNull(testTable.put("key2", test.createFor(testTable,
                 TestHelper.TEST_VALUES)));
         testTable.commit();
         test.removeTable(TestHelper.TEST_TABLE_NAME);
@@ -180,7 +180,7 @@ public class TableManagerTest {
     @Test
     public void testCreateForMethodCallForExistentTable() throws IOException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         Storeable store = test.createFor(testTable);
@@ -192,8 +192,8 @@ public class TableManagerTest {
     @Test
     public void testGetTableNames() throws IOException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME + "2",
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME + "2",
                 TestHelper.STRUCTURE));
         String[] tableNames = {TestHelper.TEST_TABLE_NAME, TestHelper.TEST_TABLE_NAME + "2"};
         assertArrayEquals(tableNames, test.getTableNames().toArray());
@@ -202,7 +202,7 @@ public class TableManagerTest {
     @Test
     public void testSerializeStoreableContainedNullColumns() throws IOException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         List<Object> nullsContainingList = new ArrayList<>();
@@ -218,7 +218,7 @@ public class TableManagerTest {
     @Test(expected = ColumnFormatException.class)
     public void testSerializeThrowsExceptionForStoreableNotForThisTable() throws IOException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME,
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME,
                 TestHelper.MIXED_STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
@@ -229,7 +229,7 @@ public class TableManagerTest {
     @Test
     public void testDeserializeSerializedStoreable() throws IOException, ParseException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         Storeable store = test.createFor(testTable, TestHelper.TEST_VALUES);
@@ -245,7 +245,7 @@ public class TableManagerTest {
     public void testDeserializeThrowsExceptionForInvalidJSONStringWithoutOpenBracket()
             throws IOException, ParseException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         test.deserialize(testTable, TestHelper.SERIALIZED_VALUES.substring(1));
@@ -255,7 +255,7 @@ public class TableManagerTest {
     public void testDeserializeThrowsExceptionForInvalidJSONStringWithoutCloseBracket()
             throws IOException, ParseException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         test.deserialize(testTable,
@@ -267,7 +267,7 @@ public class TableManagerTest {
     public void testDeserializeThrowsExceptionForInvalidStringWithLessTokensThanRequired()
             throws IOException, ParseException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         //Required number of tokens is equal to size of STRUCTURE (7).
@@ -278,7 +278,7 @@ public class TableManagerTest {
     public void testDeserializeThrowsExceptionForStringWithInvalidBooleanToken()
             throws IOException, ParseException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         test.deserialize(testTable,
@@ -289,7 +289,7 @@ public class TableManagerTest {
     public void testDeserializeThrowsExceptionForStringWithInvalidNumberToken()
             throws IOException, ParseException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         test.deserialize(testTable,
@@ -300,7 +300,7 @@ public class TableManagerTest {
     public void testDeserializeThrowsExceptionForStringWithInvalidStringToken()
             throws IOException, ParseException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         test.deserialize(testTable,
@@ -310,7 +310,7 @@ public class TableManagerTest {
     @Test
     public void testDeserializeStringContainedNullColumns() throws Exception {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        assertNotEquals(null, test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
+        assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE));
         Table testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
         
         test.deserialize(testTable, TestHelper.SERIALIZED_NULL_VALUES);

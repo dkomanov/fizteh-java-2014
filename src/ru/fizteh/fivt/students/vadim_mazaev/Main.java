@@ -44,19 +44,21 @@ public final class Main {
                     public void accept(Object state, String[] args) {
                         TableProvider manager = ((DataBaseState) state).getManager();
                         Table link = ((DataBaseState) state).getUsedTable();
-                        try {
-                            Storeable oldValue = link.put(args[0], manager.deserialize(link, args[1]));
-                            if (oldValue != null) {
-                                System.out.println("overwrite");
-                                System.out.println(manager.serialize(link, oldValue));
-                            } else {
-                                System.out.println("new");
+                        if (link != null) {
+                            try {
+                                Storeable oldValue = link.put(args[0], manager.deserialize(link, args[1]));
+                                if (oldValue != null) {
+                                    System.out.println("overwrite");
+                                    System.out.println(manager.serialize(link, oldValue));
+                                } else {
+                                    System.out.println("new");
+                                }
+                            } catch (ColumnFormatException | ParseException e) {
+                                throw new StopLineInterpretationException("wrong type ("
+                                        + e.getMessage() + ")");
                             }
-                        } catch (NullPointerException e) {
+                        } else {
                             throw new StopLineInterpretationException("no table");
-                        } catch (ColumnFormatException | ParseException e) {
-                            throw new StopLineInterpretationException("wrong type ("
-                                    + e.getMessage() + ")");
                         }
                     }
                 }),
@@ -120,12 +122,14 @@ public final class Main {
                     @Override
                     public void accept(Object state, String[] args) {
                         Table link = ((DataBaseState) state).getUsedTable();
-                        try {
-                            System.out.println(link.commit());
-                        } catch (NullPointerException e) {
+                        if (link != null) {
+                            try {
+                                System.out.println(link.commit());
+                            } catch (IOException e) {
+                                throw new StopLineInterpretationException(e.getMessage());
+                            }
+                        } else {
                             throw new StopLineInterpretationException("no table");
-                        } catch (IOException e) {
-                            throw new StopLineInterpretationException(e.getMessage());
                         }
                     }
                 }),
@@ -146,7 +150,13 @@ public final class Main {
                         String[] types = args[1].substring(1, args[1].length() - 1).split(" ");
                         List<Class<?>> typesList = new ArrayList<>();
                         for (String type : types) {
-                            typesList.add(Helper.SUPPORTED_NAMES_TO_TYPES.get(type));
+                            Class<?> typeClass = Helper.SUPPORTED_NAMES_TO_TYPES.get(type);
+                            if (typeClass != null) {
+                                typesList.add(typeClass);
+                            } else {
+                                throw new StopLineInterpretationException("wrong type ("
+                                        + "unsupported type: '" + type + "')");
+                            }
                         }
                         TableProvider manager = ((DataBaseState) state).getManager();
                         try {

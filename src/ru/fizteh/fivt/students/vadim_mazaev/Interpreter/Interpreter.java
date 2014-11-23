@@ -16,7 +16,7 @@ public final class Interpreter {
     private static final String IGNORE_IN_DOUBLE_QUOTES_REGEX = "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
     private static final String IGNORE_SYMBOL_IN_TOKENS_REGEX = IGNORE_IN_ROUND_BRACKETS_REGEX
             + IGNORE_IN_SQUARE_BRACKETS_REGEX + IGNORE_IN_DOUBLE_QUOTES_REGEX;
-    public static final String COMMAND_SEPARATOR = ";" + IGNORE_IN_DOUBLE_QUOTES_REGEX;
+    public static final String COMMAND_SEPARATOR = ";";
     private InputStream in;
     private PrintStream out;
     private Object connector;
@@ -86,7 +86,7 @@ public final class Interpreter {
     }
     
     private int executeLine(String line) throws Exception {
-        String[] cmds = line.split(COMMAND_SEPARATOR);
+        String[] cmds = line.split(COMMAND_SEPARATOR + IGNORE_IN_DOUBLE_QUOTES_REGEX);
         try {
             for (String current : cmds) {
                     parse(current.trim().split("\\s+" + IGNORE_SYMBOL_IN_TOKENS_REGEX));
