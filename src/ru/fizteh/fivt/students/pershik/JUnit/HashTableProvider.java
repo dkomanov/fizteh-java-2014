@@ -17,9 +17,6 @@ public class HashTableProvider implements TableProvider {
     private Set<String> tables;
     private String dbDirPath;
 
-    public HashTableProvider() {
-    }
-
     HashTableProvider(String dbDir) {
         dbDirPath = dbDir;
         tables = new HashSet<>();

@@ -28,8 +28,7 @@ public class HashTableProviderFactory implements TableProviderFactory {
     }
 
     private void checkName(String name) throws IllegalArgumentException {
-        if (name == null || "..".equals(name) || ".".equals(name)
-                || name.contains(File.separator)) {
+        if (name == null) {
             throw new IllegalArgumentException("Incorrect name");
         }
     }

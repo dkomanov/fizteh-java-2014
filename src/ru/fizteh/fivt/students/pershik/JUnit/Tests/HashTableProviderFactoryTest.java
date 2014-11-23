@@ -5,7 +5,6 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.fizteh.fivt.students.pershik.JUnit.HashTableProviderFactory;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -25,21 +24,6 @@ public class HashTableProviderFactoryTest {
     @Test(expected = IllegalArgumentException.class)
     public void createNull() {
         factory.create(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void createInvalidNameDoublePoint() {
-        factory.create("..");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void createInvalidNamePoint() {
-        factory.create(".");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void createInvalidNameSlash() {
-        factory.create("gg" + File.separator + "fd");
     }
 
     @Test
