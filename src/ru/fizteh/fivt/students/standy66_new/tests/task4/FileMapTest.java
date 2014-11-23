@@ -141,12 +141,9 @@ public class FileMapTest {
     public void testContains() throws Exception {
         bulkLoad();
         commitAndReopen();
-        assertTrue(fileMap.containsKey("a"));
-        assertTrue(fileMap.containsKey("c"));
-        assertTrue(fileMap.containsValue("ололо"));
-        assertFalse(fileMap.containsKey("asdkjhalksdjhlaskjd"));
-        assertFalse(fileMap.containsValue("asdkjhalksdjhlaskjd"));
-
+        assertNotNull(fileMap.get("a"));
+        assertNotNull(fileMap.get("c"));
+        assertNull(fileMap.get("asdkjhalksdjhlaskjd"));
     }
 
     @Test
@@ -155,7 +152,7 @@ public class FileMapTest {
             fm.put("a", "b");
         }
         fileMap = new FileMap(fileMapFile);
-        assertEquals("b", fileMap.get("a"));
+        assertNull(fileMap.get("a"));
 
     }
 
