@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.Serializator;
 
 public class FmCommandGet extends CommandFileMap {
@@ -9,9 +10,9 @@ public class FmCommandGet extends CommandFileMap {
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-        String value = Serializator.serialize(myFileMap, myFileMap.get(args[1]));
+        Storeable value = myFileMap.get(args[1]);
         if (value != null) {
-            System.out.println("found\n" + value);
+            System.out.println("found\n" + Serializator.serialize(myFileMap, myFileMap.get(args[1])));
         } else {
             System.out.println("not found");
         }
