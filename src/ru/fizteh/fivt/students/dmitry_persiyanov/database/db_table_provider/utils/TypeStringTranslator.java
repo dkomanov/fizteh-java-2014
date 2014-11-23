@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils;
 
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.UnsupportedTypeException;
+
 /**
  * Created by drack3800 on 20.11.2014.
  */
@@ -21,7 +23,7 @@ public class TypeStringTranslator {
             case "String":
                 return String.class;
             default:
-                return null;
+                throw new UnsupportedTypeException(stringName + " type isn't supported");
         }
     }
 

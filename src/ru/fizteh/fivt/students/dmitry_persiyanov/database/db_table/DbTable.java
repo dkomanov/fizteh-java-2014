@@ -277,7 +277,7 @@ public final class DbTable implements Table {
 
     private boolean checkStoreableValueValidity(final Storeable value) {
         for (int i = 0; i < columnTypes.size(); ++i) {
-            if (!columnTypes.get(i).equals(value.getColumnAt(i).getClass())) {
+            if (value.getColumnAt(i) != null && !columnTypes.get(i).equals(value.getColumnAt(i).getClass())) {
                 throw new ColumnFormatException("types incompatibility: column index " + i
                         + ", table type: " + TypeStringTranslator.getStringNameByType(columnTypes.get(i))
                         + ", passed type: "
