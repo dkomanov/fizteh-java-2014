@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-//import ru.fizteh.fivt.students.VasilevKirill.Storeable.JsonParser;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.MyStorable;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.StoreableParser;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.db.FileMap;
@@ -410,4 +409,6 @@ public class MultiTable implements Table {
         }
         writer.close();
     }
+
+
 }
