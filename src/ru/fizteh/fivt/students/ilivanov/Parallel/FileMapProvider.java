@@ -42,10 +42,7 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
 
     public boolean isValidLocation() {
         checkState();
-        if (!location.exists() || location.exists() && !location.isDirectory()) {
-            return false;
-        }
-        return true;
+        return !(!location.exists() || location.exists() && !location.isDirectory());
     }
 
     public boolean isValidContent() {
@@ -53,9 +50,12 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         if (!isValidLocation()) {
             return false;
         }
-        for (File f : location.listFiles()) {
-            if (!f.isDirectory()) {
-                return false;
+        File[] files = location.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (!f.isDirectory()) {
+                    return false;
+                }
             }
         }
         return true;
@@ -94,9 +94,7 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
             newMap = new MultiFileMap(dir, 16, this, transactionPool);
             try {
                 newMap.loadFromDisk();
-            } catch (IOException e) {
-                throw new RuntimeException("Error loading from disk:", e);
-            } catch (ParseException e) {
+            } catch (IOException | ParseException e) {
                 throw new RuntimeException("Error loading from disk:", e);
             }
             used.put(name, newMap);

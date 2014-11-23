@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.ilivanov.Parallel;
 
 import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.ColumnFormatException;
-import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Index;
 import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Storeable;
 import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Table;
 
@@ -9,9 +8,6 @@ import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 
-import java.io.*;
-import java.text.ParseException;
-import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MultiFileMap implements Table, AutoCloseable {
@@ -222,23 +218,23 @@ public class MultiFileMap implements Table, AutoCloseable {
         File signature = new File(location, "signature.tsv");
         try (BufferedReader reader = new BufferedReader(new FileReader(signature))) {
             String[] typeNames = reader.readLine().split("\\s+");
-            for (int i = 0; i < typeNames.length; i++) {
-                if (typeNames[i].equals("int")) {
+            for (String typeName : typeNames) {
+                if (typeName.equals("int")) {
                     columnTypes.add(Integer.class);
-                } else if (typeNames[i].equals("long")) {
+                } else if (typeName.equals("long")) {
                     columnTypes.add(Long.class);
-                } else if (typeNames[i].equals("byte")) {
+                } else if (typeName.equals("byte")) {
                     columnTypes.add(Byte.class);
-                } else if (typeNames[i].equals("float")) {
+                } else if (typeName.equals("float")) {
                     columnTypes.add(Float.class);
-                } else if (typeNames[i].equals("double")) {
+                } else if (typeName.equals("double")) {
                     columnTypes.add(Double.class);
-                } else if (typeNames[i].equals("boolean")) {
+                } else if (typeName.equals("boolean")) {
                     columnTypes.add(Boolean.class);
-                } else if (typeNames[i].equals("String")) {
+                } else if (typeName.equals("String")) {
                     columnTypes.add(String.class);
                 } else {
-                    throw new RuntimeException(String.format("Unknown type %s", typeNames[i]));
+                    throw new RuntimeException(String.format("Unknown type %s", typeName));
                 }
             }
         } catch (FileNotFoundException e) {
@@ -349,7 +345,8 @@ public class MultiFileMap implements Table, AutoCloseable {
                         }
                     }
                 }
-                if (directory.listFiles().length == 0) {
+                File[] files = directory.listFiles();
+                if (files != null && files.length == 0) {
                     if (!directory.delete()) {
                         throw new RuntimeException(String.format("Can't delete directory %s",
                                 directory.getCanonicalPath()));
@@ -556,8 +553,7 @@ public class MultiFileMap implements Table, AutoCloseable {
         if (diff == null) {
             throw new IllegalArgumentException("Null diff");
         }
-        int changes = uncommittedChanges(diff);
-        return changes;
+        return uncommittedChanges(diff);
     }
 
     public int rollback() {
