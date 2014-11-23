@@ -101,4 +101,3 @@ public class Shell<T> {
         return !errorOccuried;
     }
 }
-
