@@ -12,6 +12,11 @@ public final class Interpreter {
     public static final String PROMPT = "$ ";
     public static final String COMMAND_SEPARATOR = ";";
     public static final String NO_SUCH_COMMAND_MSG = "No such command declared: ";
+    private static final String IGNORE_IN_ROUND_BRACKETS_REGEX = "(?![^\\(]*\\))";
+    private static final String IGNORE_IN_SQUARE_BRACKETS_REGEX = "(?![^\\[]*\\])";
+    private static final String IGNORE_IN_DOUBLE_QUOTES_REGEX = "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+    private static final String IGNORE_SYMBOL_IN_TOKENS_REGEX = IGNORE_IN_ROUND_BRACKETS_REGEX
+            + IGNORE_IN_SQUARE_BRACKETS_REGEX + IGNORE_IN_DOUBLE_QUOTES_REGEX;
     private InputStream in;
     private PrintStream out;
     private Object connector;
@@ -84,8 +89,7 @@ public final class Interpreter {
         String[] cmds = line.split(COMMAND_SEPARATOR);
         try {
             for (String current : cmds) {
-                //TODO split regex
-                    parse(current.trim().split("\\s+(?![^\\(]*\\))(?![^\\[]*\\])(?=([^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    parse(current.trim().split("\\s+" + IGNORE_SYMBOL_IN_TOKENS_REGEX));
             }
             return 0;
         } catch (StopLineInterpretationException e) {

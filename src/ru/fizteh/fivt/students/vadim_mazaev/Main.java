@@ -13,6 +13,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.DbTable;
+import ru.fizteh.fivt.students.vadim_mazaev.DataBase.Helper;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManagerFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.Interpreter.Command;
 import ru.fizteh.fivt.students.vadim_mazaev.Interpreter.Interpreter;
@@ -33,10 +34,10 @@ public final class Main {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-        run(state, args);
+        initializeAndRunInterpreter(state, args);
     }
     
-    private static void run(DataBaseState state, String[] args) {
+    private static void initializeAndRunInterpreter(DataBaseState state, String[] args) {
         Interpreter dbInterpreter = new Interpreter(state, new Command[] {
                 new Command("put", 2, new BiConsumer<Object, String[]>() {
                     @Override
@@ -145,7 +146,7 @@ public final class Main {
                         String[] types = args[1].substring(1, args[1].length() - 1).split(" ");
                         List<Class<?>> typesList = new ArrayList<>();
                         for (String type : types) {
-                            typesList.add(DbTable.TYPE_NAMES_MAP.get(type));
+                            typesList.add(Helper.SUPPORTED_NAMES_TO_TYPES.get(type));
                         }
                         TableProvider manager = ((DataBaseState) state).getManager();
                         try {
@@ -229,9 +230,12 @@ public final class Main {
             }
             
         });
-        
+        runInterpreter(dbInterpreter, args);
+    }
+    
+    private static void runInterpreter(Interpreter interpreter, String[] args) {
         try {
-            System.exit(dbInterpreter.run(args));
+            System.exit(interpreter.run(args));
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 System.err.println(e.getMessage());

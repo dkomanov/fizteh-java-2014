@@ -45,29 +45,27 @@ public class Serializer implements Storeable {
         checkIndexInBounds(columnIndex);
         return storage.get(columnIndex);
     }
-
-    @Override
-    public Integer getIntAt(int columnIndex) throws ColumnFormatException,
-            IndexOutOfBoundsException {
+    
+    private <T> T checkAndGetType(int columnIndex, Class<T> type) {
         Object value = getColumnAt(columnIndex);
-        checkColumnFormat(columnIndex, Integer.class);
+        checkColumnFormat(columnIndex, type);
         if (value != null) {
-            return (Integer) value;
+            return type.cast(value);
         } else {
             return null;
         }
     }
 
     @Override
+    public Integer getIntAt(int columnIndex) throws ColumnFormatException,
+            IndexOutOfBoundsException {
+        return checkAndGetType(columnIndex, Integer.class);
+    }
+
+    @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException,
             IndexOutOfBoundsException {
-        Object value = getColumnAt(columnIndex);
-        checkColumnFormat(columnIndex, Long.class);
-        if (value != null) {
-            return (Long) value;
-        } else {
-            return null;
-        }
+        return checkAndGetType(columnIndex, Long.class);
     }
 
     @Override
@@ -85,49 +83,25 @@ public class Serializer implements Storeable {
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException,
             IndexOutOfBoundsException {
-        Object value = getColumnAt(columnIndex);
-        checkColumnFormat(columnIndex, Float.class);
-        if (value != null) {
-            return (Float) value;
-        } else {
-            return null;
-        }
+        return checkAndGetType(columnIndex, Float.class);
     }
 
     @Override
     public Double getDoubleAt(int columnIndex) throws ColumnFormatException,
             IndexOutOfBoundsException {
-        Object value = getColumnAt(columnIndex);
-        checkColumnFormat(columnIndex, Double.class);
-        if (value != null) {
-            return (Double) value;
-        } else {
-            return null;
-        }
+        return checkAndGetType(columnIndex, Double.class);
     }
 
     @Override
     public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException,
             IndexOutOfBoundsException {
-        Object value = getColumnAt(columnIndex);
-        checkColumnFormat(columnIndex, Boolean.class);
-        if (value != null) {
-            return (Boolean) value;
-        } else {
-            return null;
-        }
+        return checkAndGetType(columnIndex, Boolean.class);
     }
 
     @Override
     public String getStringAt(int columnIndex) throws ColumnFormatException,
             IndexOutOfBoundsException {
-        Object value = getColumnAt(columnIndex);
-        checkColumnFormat(columnIndex, String.class);
-        if (value != null) {
-            return (String) value;
-        } else {
-            return null;
-        }
+        return checkAndGetType(columnIndex, String.class);
     }
 
 }

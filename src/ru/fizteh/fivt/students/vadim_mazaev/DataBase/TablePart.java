@@ -20,7 +20,6 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 
 /**
  * Class represents a single file of type *.dir/*.dat.
- * @author Vadim Mazaev
  */
 final class TablePart {
     private Map<String, Storeable> data;
@@ -28,8 +27,6 @@ final class TablePart {
     private Path tablePartDirectoryPath;
     private int fileNumber;
     private int directoryNumber;
-    public static final String ENCODING = "UTF-8";
-    public static final int NUMBER_OF_PARTITIONS = 16;
     
     /**
      * Constructs a TablePart. Read data from file if it exists.
@@ -111,7 +108,7 @@ final class TablePart {
      * @param key Key.
      * @return The value which was associated with this key before removing
      * or null-string if there wasn't such key in this {@link TablePart}. 
-     * @throws UnsupportedEncodingException If {@link #keyIsValidForFile keyIsValidForFile}
+     * @throws UnsupportedEncodingException If {@link #checkKey checkKey}
      * method throws it.
      * @throws IllegalArgumentException If key is a null-string or cannot be found in this file.
      */
@@ -151,7 +148,7 @@ final class TablePart {
                     bytesBuffer.write(b);
                 }
                 offsets.add(file.readInt());
-                String key = bytesBuffer.toString(ENCODING);
+                String key = bytesBuffer.toString(Helper.ENCODING);
                 bytesBuffer.reset();
                 checkKey(key);
                 keys.add(key);
@@ -165,7 +162,7 @@ final class TablePart {
                     bytesBuffer.write(file.readByte());
                 }
                 if (bytesBuffer.size() > 0) {
-                    String serializedValue = bytesBuffer.toString(ENCODING);
+                    String serializedValue = bytesBuffer.toString(Helper.ENCODING);
                     Storeable value = table.getProvider().deserialize(table, serializedValue);
                     if (data.put(keyIter.next(), value) != null) {
                         throw new IllegalArgumentException("Key repeats in file");
@@ -177,7 +174,7 @@ final class TablePart {
             }
             bytesBuffer.close();
         } catch (UnsupportedEncodingException e) {
-            throw new IOException("Key or value can't be encoded to " + ENCODING, e);
+            throw new IOException("Key or value can't be encoded to " + Helper.ENCODING, e);
         } catch (IllegalArgumentException e) {
             throw new IOException(e.getMessage(), e);
         } catch (EOFException e) {
@@ -196,9 +193,9 @@ final class TablePart {
      */
     private void checkKey(String key)
             throws UnsupportedEncodingException {
-        int expectedDirNumber = Math.abs(key.getBytes(ENCODING)[0] % NUMBER_OF_PARTITIONS);
-        int expectedFileNumber = Math.abs((key.getBytes(ENCODING)[0] / NUMBER_OF_PARTITIONS)
-                % NUMBER_OF_PARTITIONS);
+        int expectedDirNumber = Math.abs(key.getBytes(Helper.ENCODING)[0] % Helper.NUMBER_OF_PARTITIONS);
+        int expectedFileNumber = Math.abs((key.getBytes(Helper.ENCODING)[0] / Helper.NUMBER_OF_PARTITIONS)
+                % Helper.NUMBER_OF_PARTITIONS);
         if (key == null || directoryNumber != expectedDirNumber || fileNumber != expectedFileNumber) {
             throw new IllegalArgumentException("'" + key + "' can't be placed to this file");
         }
@@ -215,7 +212,7 @@ final class TablePart {
             Set<String> keys = data.keySet();
             List<Integer> offsetsPos = new LinkedList<>();
             for (String currentKey : keys) {
-                file.write(currentKey.getBytes(ENCODING));
+                file.write(currentKey.getBytes(Helper.ENCODING));
                 file.write('\0');
                 offsetsPos.add((int) file.getFilePointer());
                 file.writeInt(0);
@@ -225,7 +222,7 @@ final class TablePart {
                 offsets.add((int) file.getFilePointer());
                 Storeable value = data.get(key);
                 String serializedValue = table.getProvider().serialize(table, value);
-                file.write(serializedValue.getBytes(ENCODING));
+                file.write(serializedValue.getBytes(Helper.ENCODING));
             }
             Iterator<Integer> offIter = offsets.iterator();
             for (int offsetPos : offsetsPos) {
@@ -235,7 +232,7 @@ final class TablePart {
         } catch (FileNotFoundException e) {
             throw new IOException("Unable to create file", e);
         } catch (UnsupportedEncodingException e) {
-            throw new IOException("Key or value can't be encoded to " + ENCODING, e);
+            throw new IOException("Key or value can't be encoded to " + Helper.ENCODING, e);
         } catch (IOException e) {
             throw new IOException("Unable to write to file", e);
         }

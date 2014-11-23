@@ -260,6 +260,12 @@ public class DbTableTest {
         assertFalse(filePath.toFile().exists());
     }
     
+    @Test(expected = IllegalStateException.class)
+    public void testCommitCallInRemovedTable() throws IOException {
+        test.removeTable(TestHelper.TEST_TABLE_NAME);
+        testTable.commit();
+    }
+    
     //Hereinafter we will create new TableManager to reload the table.
     //Old manager will help us to prepare data and will not be used after that.
     @Test

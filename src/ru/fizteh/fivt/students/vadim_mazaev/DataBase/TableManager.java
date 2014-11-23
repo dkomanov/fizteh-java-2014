@@ -211,12 +211,13 @@ public final class TableManager implements TableProvider {
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
                 throw new InvalidPathException(tableName, ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
             }
-            //TODO removed tables should throw IllegalStateException
             Path tableDirectory = tablesDirectoryPath.resolve(tableName);
-            if (tables.remove(tableName) == null) {
+            DbTable removedTable = (DbTable) tables.remove(tableName);
+            if (removedTable == null) {
                 throw new IllegalStateException("There is no such table");
             } else {
                 Helper.recoursiveDelete(tableDirectory.toFile());
+                removedTable.invalidate();
             }
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": " + e.getMessage(), e);

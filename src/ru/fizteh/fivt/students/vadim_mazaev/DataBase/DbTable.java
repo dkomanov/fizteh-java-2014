@@ -29,6 +29,7 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 public final class DbTable implements Table {
     private TableProvider provider;
     private String name;
+    private boolean invalid;
     private Path tableDirectoryPath;
     private List<Class<?>> structure;
     private Map<Long, TablePart> parts;
@@ -42,16 +43,17 @@ public final class DbTable implements Table {
      */
     public DbTable(TableProvider provider, Path tableDirectoryPath)
             throws DataBaseIOException {
-        parts = new HashMap<>();
-        diff = new HashMap<>();
-        structure = new ArrayList<>();
         if (provider == null || tableDirectoryPath == null) {
             throw new IllegalArgumentException("Unable to create table for"
                     + " null provider or/and null path to table directory");
         }
+        parts = new HashMap<>();
+        diff = new HashMap<>();
+        structure = new ArrayList<>();
         this.provider = provider;
         this.tableDirectoryPath = tableDirectoryPath;
         this.name = tableDirectoryPath.getName(tableDirectoryPath.getNameCount() - 1).toString();
+        invalid = false;
         try {
             readTableDir();
         } catch (DataBaseIOException e) {
@@ -67,6 +69,7 @@ public final class DbTable implements Table {
      */
     @Override
     public int commit() throws IOException {
+        checkTableIsNotRemoved();
         int savedChangesCounter = diff.size();
         try {
             for (Entry<String, Storeable> pair : diff.entrySet()) {
@@ -99,6 +102,7 @@ public final class DbTable implements Table {
      */
     @Override
     public int rollback() {
+        checkTableIsNotRemoved();
         int rolledChangesCounter = diff.size();
         diff.clear();
         return rolledChangesCounter;
@@ -109,6 +113,7 @@ public final class DbTable implements Table {
      */
     @Override
     public String getName() {
+        checkTableIsNotRemoved();
         return name;
     }
     
@@ -117,6 +122,7 @@ public final class DbTable implements Table {
      */
     @Override
     public int getColumnsCount() {
+        checkTableIsNotRemoved();
         return structure.size();
     }
 
@@ -128,6 +134,7 @@ public final class DbTable implements Table {
     @Override
     public Class<?> getColumnType(int columnIndex)
             throws IndexOutOfBoundsException {
+        checkTableIsNotRemoved();
         if (columnIndex < 0 || columnIndex >= structure.size()) {
             throw new IndexOutOfBoundsException("Column index out of bounds: "
                     + "expected index from 0 to " + structure.size()
@@ -155,6 +162,23 @@ public final class DbTable implements Table {
     }
     
     /**
+     * Checks if object doesn't refer to removed table.
+     * @throws IllegalStateException If table has already removed.
+     */
+    private void checkTableIsNotRemoved() {
+        if (invalid) {
+            throw new IllegalStateException("This table '" + name + "' has already removed");
+        }
+    }
+    
+    /**
+     * Set this DbTable object to removed state.
+     */
+    public void invalidate() {
+        invalid = true;
+    }
+    
+    /**
      * Gets the value of the specified key.
      * @param key The key is for searching the value. Can not be null.
      * For indexes on non-string fields parameter is a serialized column value.
@@ -165,6 +189,7 @@ public final class DbTable implements Table {
      */
     @Override
     public Storeable get(String key) {
+        checkTableIsNotRemoved();
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
@@ -197,11 +222,12 @@ public final class DbTable implements Table {
      */
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
+        checkTableIsNotRemoved();
         if (key == null || value == null) {
             throw new IllegalArgumentException("Key or value is a null-string");
         }
         //TODO how to check length of Storeable?
-        //Check Storeable structure. 
+        //Check Storeable structure.
         try {
             for (int i = 0; i < structure.size(); i++) {
                 if (structure.get(i) != value.getColumnAt(i).getClass()) {
@@ -241,6 +267,7 @@ public final class DbTable implements Table {
      */
     @Override
     public Storeable remove(String key) {
+        checkTableIsNotRemoved();
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
@@ -268,6 +295,7 @@ public final class DbTable implements Table {
      */
     @Override
     public int size() {
+        checkTableIsNotRemoved();
         int numberOfRecords = 0;
         for (Entry<Long, TablePart> part : parts.entrySet()) {
             numberOfRecords += part.getValue().getNumberOfRecords();
@@ -287,6 +315,7 @@ public final class DbTable implements Table {
      */
     @Override
     public List<String> list() {
+        checkTableIsNotRemoved();
         Set<String> keySet = new HashSet<>();
         for (Entry<Long, TablePart> pair : parts.entrySet()) {
             keySet.addAll(pair.getValue().list());
@@ -308,6 +337,7 @@ public final class DbTable implements Table {
      */
     @Override
     public int getNumberOfUncommittedChanges() {
+        checkTableIsNotRemoved();
         return diff.size();
     }
     
@@ -316,6 +346,7 @@ public final class DbTable implements Table {
      * @return TableProvider which provided this table.
      */
     TableProvider getProvider() {
+        checkTableIsNotRemoved();
         return provider;
     }
     
