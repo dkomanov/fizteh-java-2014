@@ -12,7 +12,7 @@ public class PackageMode implements CommandProcess {
             s1.append(s);
             s1.append(' ');
         }
-        commands = s1.toString().split(";");
+        commands = s1.toString().split(";\\s*");
     }
 
     @Override

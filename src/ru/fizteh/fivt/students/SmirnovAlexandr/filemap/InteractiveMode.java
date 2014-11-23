@@ -13,7 +13,7 @@ public class InteractiveMode implements CommandProcess {
         boolean flag = false;
         do {
             System.out.print("$ ");
-            for (String s : sc.nextLine().split(";")) {
+            for (String s : sc.nextLine().split(";\\s*")) {
                 try {
                     commandFromString.getCommandByName(s).execute();
                 } catch (ExceptionStopProcess e) {
