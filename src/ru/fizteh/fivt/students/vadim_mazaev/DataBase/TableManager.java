@@ -89,7 +89,7 @@ public final class TableManager implements TableProvider {
                     tables.put(tableDirectoryName, new DbTable(this, tableDirectoryPath));
                 } catch (DataBaseIOException e) {
                     throw new DataBaseIOException(ERROR_CONNECTING_TO_DATABASE_MSG
-                            + e.getMessage(), e);
+                            + ": " + e.getMessage(), e);
                 }
             } else {
                 throw new DataBaseIOException(ERROR_CONNECTING_TO_DATABASE_MSG

@@ -2,12 +2,12 @@ package ru.fizteh.fivt.students.vadim_mazaev.DataBaseTest;
 
 import static org.junit.Assert.*;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,296 +15,359 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.vadim_mazaev.DataBase.DataBaseIOException;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.DbTable;
+import ru.fizteh.fivt.students.vadim_mazaev.DataBase.Helper;
+import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManager;
 
 public class DbTableTest {
-    private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DbTestDir");
-    private final String tableName = "table1";
+    private TableProvider test;
+    private Table testTable;
+    private Storeable testStoreable;
+    private Storeable wrongStoreable;
     //The table directory must contain only files in such format:
     //"[path to the table directory]/*.dir/*.dat".
-    private final int dirNumber = 1;
-    private final int fileNumber = 1;
-    private final String wrongSubfileName = "wrong";
-    private final String requiredSubdirectoryName = dirNumber + ".dir";
-    private final String requiredSubfileName = fileNumber + ".dat";
-    private String correctKey;
     private final String testKey = "key";
     private final String anotherKey = "key2";
-    private final String testValue = "val";
-    private final int offsetLength = 4;
     
     @Before
-    public void setUp() {
-        testDir.toFile().mkdir();
-        //Each key should be placed to directory with number 
-        //key.getBytes()[0] % NUMBER_OF_PARTITIONS
-        //and file with number
-        //(key.getBytes()[0] / NUMBER_OF_PARTITIONS) % NUMBER_OF_PARTITIONS.
-        byte[] b = {dirNumber + fileNumber * DbTable.NUMBER_OF_PARTITIONS, 'k', 'e', 'y'};
-        correctKey = new String(b);
-    }
-
-    @Test
-    public void testDbTableCreatedForNonexistentDirectory() {
-        new DbTable(testDir, tableName);
+    public void setUp() throws IOException, ParseException {
+        TestHelper.TEST_DIR.toFile().mkdir();
+        test = new TableManager(TestHelper.TEST_DIR.toString());
+        test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE);
+        testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
+        testStoreable = test.deserialize(testTable, TestHelper.SERIALIZED_VALUES);
+        test.createTable("tempTable", TestHelper.MIXED_STRUCTURE);
+        Table tempTable = test.getTable("tempTable");
+        wrongStoreable = test.deserialize(tempTable, TestHelper.MIXED_SERIALIZED_VALUES);
+        test.removeTable("tempTable");
     }
     
-    @Test(expected = RuntimeException.class)
-    public void testDbTableThrowsExceptionLoadedDirectoryWithWrongNamedSubdirectory() {
-        testDir.resolve(wrongSubfileName).toFile().mkdir();
-        new DbTable(testDir, tableName);
+    @Test(expected = IllegalArgumentException.class)
+    public void testDbTableThrowsExceptionCreatedForNullProvider()
+            throws DataBaseIOException {
+        new DbTable(null, TestHelper.TEST_DIR.resolve(TestHelper.TEST_TABLE_NAME));
     }
     
-    @Test(expected = RuntimeException.class)
-    public void testDbTableThrowsExceptionLoadedDirectoryWithEmptySubdirectory() {
-        testDir.resolve(requiredSubdirectoryName).toFile().mkdir();
-        new DbTable(testDir, tableName);
-    }
-    
-    @Test(expected = RuntimeException.class)
-    public void testDbTableThrowsExceptionLoadedDirectoryWithSubfileNotInSubdirectory()
-            throws IOException {
-        testDir.resolve(requiredSubdirectoryName).toFile().createNewFile();
-        new DbTable(testDir, tableName);
-    }
-    
-    @Test(expected = RuntimeException.class)
-    public void testDbTableThrowsExceptionLoadedDirectoryWithWrongNamedFileInSubdirectory()
-            throws IOException {
-        Path subdirectoryPath = testDir.resolve(requiredSubdirectoryName);
-        subdirectoryPath.toFile().mkdir();
-        subdirectoryPath.resolve(wrongSubfileName).toFile().createNewFile();
-        new DbTable(testDir, tableName);
-    }
-    
-    @Test(expected = RuntimeException.class)
-    public void testDbTableThrowsExceptionLoadedDirectoryWithDirectoryInSubdirectory()
-            throws IOException {
-        Path subdirectoryPath = testDir.resolve(requiredSubdirectoryName);
-        subdirectoryPath.toFile().mkdir();
-        subdirectoryPath.resolve(requiredSubfileName).toFile().mkdir();
-        new DbTable(testDir, tableName);
+    @Test(expected = IllegalArgumentException.class)
+    public void testDbTableThrowsExceptionCreatedForNullPathToTableDirectory()
+            throws DataBaseIOException {
+        new DbTable(test, null);
     }
     
     @Test
-    public void testDbTableLoadedCorrectNonemptyDirectory() throws IOException {
-        Path subdirectoryPath = testDir.resolve(requiredSubdirectoryName);
-        subdirectoryPath.toFile().mkdir();
-        Path subfilePath = subdirectoryPath.resolve(requiredSubfileName);
-        try (DataOutputStream file
-                = new DataOutputStream(new FileOutputStream(subfilePath.toString()))) {
-            file.write(correctKey.getBytes(DbTable.CODING));
-            file.write('\0');
-            file.writeInt(correctKey.length() + 1 + offsetLength);
-            file.write(testValue.getBytes(DbTable.CODING));
-        }
-        new DbTable(testDir, tableName);
+    public void testGettingNameOfTable() {
+        assertEquals(TestHelper.TEST_TABLE_NAME, testTable.getName());
+    }
+    
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testGetColumnTypeThrowsExceptionForColumnIndexOutOfBounds() {
+        testTable.getColumnType(TestHelper.STRUCTURE.size() + 1);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testPutThrowsExceptionCalledForNullKeyAndNonNullValue() {
-        Table test = new DbTable(testDir, tableName);
-        test.put(null, testValue);
+        testTable.put(null, testStoreable);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testPutThrowsExceptionCalledForNonNullKeyAndNullValue() {
-        Table test = new DbTable(testDir, tableName);
-        test.put(testKey, null);
+        testTable.put(testKey, null);
+    }
+    
+    @Test(expected = ColumnFormatException.class)
+    public void testPutThrowsExceptionForValueWithWrongColumnStructure() {
+        testTable.put(testKey, wrongStoreable);
     }
     
     @Test
-    public void testCommitPuttingNonNullKeyAndValue() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        test.commit();
+    public void testCommitPuttingNonNullKeyAndValue() throws IOException {
+        assertEquals(null, testTable.put(testKey, testStoreable));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
     }
     
     @Test
-    public void testCommitPuttingTwiceNonNullKeyAndValue() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        assertEquals(testValue, test.put(testKey, testValue));
-        test.commit();
+    public void testCommitPuttingTwiceNonNullKeyAndValue() throws IOException {
+        assertEquals(null, testTable.put(testKey, testStoreable));
+        assertEquals(testStoreable, testTable.put(testKey, testStoreable));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
     }
     
     @Test
-    public void testCommitOverwritingCommitedKey() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        test.commit();
-        assertEquals(testValue, test.put(testKey, testValue));
-        test.commit();
+    public void testCommitOverwritingCommitedKey() throws IOException {
+        assertEquals(null, testTable.put(testKey, testStoreable));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
+        assertEquals(testStoreable, testTable.put(testKey, testStoreable));
+        numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testGetThrowsExceptionCalledForNullKey() {
-        Table test = new DbTable(testDir, tableName);
-        test.get(null);
+        testTable.get(null);
     }
     
     @Test
     public void testGetCalledForNonexistentKey() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.get(testKey));
+        assertNull(testTable.get(testKey));
     }
     
     @Test
     public void testGetCalledForNonComittedExistentKey() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        assertEquals(testValue, test.get(testKey));
+        assertNull(testTable.put(testKey, testStoreable));
+        assertEquals(testStoreable, testTable.get(testKey));
     }
     
     @Test
-    public void testGetCalledForComittedExistentKey() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        test.commit();
-        assertEquals(testValue, test.get(testKey));
+    public void testGetCalledForComittedExistentKey() throws IOException {
+        assertNull(testTable.put(testKey, testStoreable));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
+        assertEquals(testStoreable, testTable.get(testKey));
     }
     
     @Test
     public void testRollbackAfterPuttingNewKey() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(0, test.size());
-        assertEquals(null, test.put(testKey, testValue));
-        assertEquals(1, test.size());
-        test.rollback();
-        assertEquals(0, test.size());
-        assertEquals(null, test.get(testKey));
+        assertEquals(0, testTable.size());
+        assertNull(testTable.put(testKey, testStoreable));
+        assertEquals(1, testTable.size());
+        testTable.rollback();
+        assertEquals(0, testTable.size());
+        assertNull(testTable.get(testKey));
     }
     
     @Test
     public void testRollbackWithoutAnyChanges() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        test.rollback();
-        assertEquals(0, test.size());
-        test.rollback();
-        assertEquals(0, test.size());
+        assertEquals(null, testTable.put(testKey, testStoreable));
+        testTable.rollback();
+        assertEquals(0, testTable.size());
+        testTable.rollback();
+        assertEquals(0, testTable.size());
     }
     
     @Test(expected = RuntimeException.class)
-    public void testRemoveThrowsExceptionCalledForNullKey() {
-        Table test = new DbTable(testDir, tableName);
-        test.remove(null);
-        test.commit();
+    public void testRemoveThrowsExceptionCalledForNullKey() throws IOException {
+        testTable.remove(null);
+        testTable.commit();
     }
     
     @Test
-    public void testCommitRemovingNonexistentKeyFromNonCommitedFile() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.remove(testKey));
-        test.commit();
+    public void testCommitRemovingNonexistentKeyFromNonCommitedFile()
+            throws IOException {
+        assertNull(testTable.remove(testKey));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
     }
     
     @Test
-    public void testCommitRemovingExistentKeyFromNonCommitedFile() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        assertEquals(testValue, test.remove(testKey));
-        test.commit();
+    public void testCommitRemovingExistentKeyFromNonCommitedFile() throws IOException {
+        assertNull(testTable.put(testKey, testStoreable));
+        assertEquals(testStoreable, testTable.remove(testKey));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
     }
     
     @Test
-    public void testCommitRemovingExistentKeyFromCommitedFile() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        test.commit();
-        assertEquals(testValue, test.remove(testKey));
-        test.commit();
+    public void testCommitRemovingExistentKeyFromCommitedFile() throws IOException {
+        assertNull(testTable.put(testKey, testStoreable));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
+        assertEquals(testStoreable, testTable.remove(testKey));
+        numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
     }
     
     @Test
-    public void testCommitRemovingNonexistentKeyFromCommitedFile() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.remove(testKey));
-        test.commit();
+    public void testCommitRemovingNonexistentKeyFromCommitedFile() throws IOException {
+        assertNull(testTable.remove(testKey));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
     }
     
     @Test
     public void testListCalledForEmptyTable() {
-        Table test = new DbTable(testDir, tableName);
-        assertTrue(test.list().isEmpty());
+        assertTrue(testTable.list().isEmpty());
     }
     
     @Test
     public void testListCalledForNonEmptyNewTable() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        assertEquals(null, test.put(anotherKey, testValue));
+        assertNull(testTable.put(testKey, testStoreable));
+        assertNull(testTable.put(anotherKey, testStoreable));
         Set<String> expectedKeySet = new HashSet<>();
         expectedKeySet.add(testKey);
         expectedKeySet.add(anotherKey);
         Set<String> actualKeySet = new HashSet<>();
-        actualKeySet.addAll(test.list());
+        actualKeySet.addAll(testTable.list());
         assertEquals(expectedKeySet, actualKeySet);
     }
     
     @Test
-    public void testListCalledForNonEmptyCommitedTable() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        assertEquals(null, test.put(anotherKey, testValue));
-        test.commit();
-        assertEquals(testValue, test.remove(anotherKey));
+    public void testListCalledForNonEmptyCommitedTable() throws IOException {
+        assertNull(testTable.put(testKey, testStoreable));
+        assertNull(testTable.put(anotherKey, testStoreable));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
+        assertEquals(testStoreable, testTable.remove(anotherKey));
         Set<String> expectedKeySet = new HashSet<>();
         expectedKeySet.add(testKey);
         Set<String> actualKeySet = new HashSet<>();
-        actualKeySet.addAll(test.list());
+        actualKeySet.addAll(testTable.list());
         assertEquals(expectedKeySet, actualKeySet);
     }
     
     @Test
     public void testSizeCalledForEmptyTable() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(0, test.size());
+        assertEquals(0, testTable.size());
     }
     
     @Test
     public void testSizeCalledForNonemptyNonCommitedTable() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        assertEquals(null, test.put(anotherKey, testValue));
-        assertEquals(testValue, test.remove(anotherKey));
-        assertEquals(1, test.size());
+        assertNull(testTable.put(testKey, testStoreable));
+        assertNull(testTable.put(anotherKey, testStoreable));
+        assertEquals(testStoreable, testTable.remove(anotherKey));
+        assertEquals(1, testTable.size());
     }
     
     @Test
-    public void testSizeCalledForNonemptyCommitedTable() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        assertEquals(null, test.put(anotherKey, testValue));
-        test.commit();
-        assertEquals(testValue, test.remove(anotherKey));
-        assertEquals(1, test.size());
+    public void testSizeCalledForNonemptyCommitedTable() throws IOException {
+        assertNull(testTable.put(testKey, testStoreable));
+        assertNull(testTable.put(anotherKey, testStoreable));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
+        assertEquals(testStoreable, testTable.remove(anotherKey));
+        assertEquals(1, testTable.size());
     }
     
     @Test
-    public void testCommitEmptiedAfterLoadingTable() {
-        Table test = new DbTable(testDir, tableName);
-        assertEquals(null, test.put(testKey, testValue));
-        test.commit();
-        assertEquals(testValue, test.remove(testKey));
-        test.commit();
+    public void testCommitEmptiedAfterLoadingTable() throws IOException {
+        assertNull(testTable.put(testKey, testStoreable));
+        int numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
+        assertEquals(testStoreable, testTable.remove(testKey));
+        numberOfChanges = testTable.getNumberOfUncommittedChanges();
+        assertEquals(numberOfChanges, testTable.commit());
         String subdirectoryName = testKey.getBytes()[0] % 16 + ".dir";
         String fileName = (testKey.getBytes()[0] / 16) % 16 + ".dat";
-        Path filePath = Paths.get(testDir.toString(), subdirectoryName, fileName);
+        Path filePath = Paths.get(TestHelper.TEST_DIR.toString(),
+                subdirectoryName, fileName);
         assertFalse(filePath.toFile().exists());
     }
     
-    @After
-    public void tearDown() {
-        for (File curFile : testDir.toFile().listFiles()) {
-            if (curFile.isDirectory()) {
-                for (File subFile : curFile.listFiles()) {
-                    subFile.delete();
+    //Hereinafter we will create new TableManager to reload the table.
+    //Old manager will help us to prepare data and will not be used after that.
+    @Test
+    public void testReloadTableUsingNewTableManager() throws IOException {
+        testTable.put(testKey, testStoreable);
+        testTable.put(anotherKey, testStoreable);
+        testTable.commit();
+        
+        TableProvider test2 = new TableManager(TestHelper.TEST_DIR.toString());
+        assertNotNull(test2.getTable(TestHelper.TEST_TABLE_NAME));
+    }
+    
+    @Test(expected = DataBaseIOException.class)
+    public void testReloadCorruptedTableWithoutSignatureFile() throws IOException {
+        testTable.put(testKey, testStoreable);
+        testTable.commit();
+        
+        Paths.get(TestHelper.TEST_DIR.toString(),
+            TestHelper.TEST_TABLE_NAME, Helper.SIGNATURE_FILE_NAME).toFile().delete();
+        new TableManager(TestHelper.TEST_DIR.toString());
+    }
+    
+    @Test(expected = DataBaseIOException.class)
+    public void testReloadTableWithCorruptedEmptySignatureFile() throws IOException {
+        testTable.put(testKey, testStoreable);
+        testTable.commit();
+        
+        File signatureFile = Paths.get(TestHelper.TEST_DIR.toString(),
+                TestHelper.TEST_TABLE_NAME, Helper.SIGNATURE_FILE_NAME).toFile();
+        signatureFile.delete();
+        signatureFile.createNewFile();
+        
+        new TableManager(TestHelper.TEST_DIR.toString());
+    }
+    
+    @Test(expected = DataBaseIOException.class)
+    public void testReloadTableWithCorruptedSignatureFile() throws IOException {
+        testTable.put(testKey, testStoreable);
+        testTable.commit();
+        
+        File signatureFile = Paths.get(TestHelper.TEST_DIR.toString(),
+                TestHelper.TEST_TABLE_NAME, Helper.SIGNATURE_FILE_NAME).toFile();
+        try (PrintWriter printer = new PrintWriter(signatureFile.toString())) {
+            printer.print("unsupportedType");
+        }
+        
+        new TableManager(TestHelper.TEST_DIR.toString());
+    }
+    
+    @Test(expected = DataBaseIOException.class)
+    public void testReloadTableWithCorruptedDirectory() throws IOException {
+        testTable.put(testKey, testStoreable);
+        testTable.commit();
+        
+        File tableDirectory = TestHelper.TEST_DIR
+                .resolve(TestHelper.TEST_TABLE_NAME).toFile();
+        for (File subdirectory : tableDirectory.listFiles()) {
+            if (subdirectory.isDirectory()) {
+                for (File file : subdirectory.listFiles()) {
+                    file.delete();
                 }
             }
-            curFile.delete();
         }
-        testDir.toFile().delete();
+        
+        new TableManager(TestHelper.TEST_DIR.toString());
+    }
+    
+    @Test(expected = DataBaseIOException.class)
+    public void testReloadTableWithCorruptedDirectory2() throws IOException {
+        testTable.put(testKey, testStoreable);
+        testTable.commit();
+        
+        File tableDirectory = TestHelper.TEST_DIR
+                .resolve(TestHelper.TEST_TABLE_NAME).toFile();
+        for (File subdirectory : tableDirectory.listFiles()) {
+            if (subdirectory.isDirectory()) {
+                Path newName = tableDirectory.toPath().resolve("wrongName");
+                subdirectory.renameTo(newName.toFile());
+                break;
+            }
+        }
+        
+        new TableManager(TestHelper.TEST_DIR.toString());
+    }
+    
+    @Test(expected = DataBaseIOException.class)
+    public void testReloadTableWithCorruptedDirectory3() throws IOException {
+        testTable.put(testKey, testStoreable);
+        testTable.commit();
+        
+        File tableDirectory = TestHelper.TEST_DIR
+                .resolve(TestHelper.TEST_TABLE_NAME).toFile();
+        for (File subdirectory : tableDirectory.listFiles()) {
+            if (subdirectory.isDirectory()) {
+                for (File file : subdirectory.listFiles()) {
+                    Path newName = Paths.get(tableDirectory.getAbsolutePath(), 
+                            subdirectory.getName(), "wrongName");
+                    file.renameTo(newName.toFile());
+                }
+                break;
+            }
+        }
+        
+        new TableManager(TestHelper.TEST_DIR.toString());
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+        Helper.recoursiveDelete(TestHelper.TEST_DIR.toFile());
     }
 }

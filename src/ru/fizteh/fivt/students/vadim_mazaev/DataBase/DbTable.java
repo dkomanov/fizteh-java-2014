@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
 
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
@@ -29,8 +30,8 @@ public final class DbTable implements Table {
     private TableProvider provider;
     private String name;
     private Path tableDirectoryPath;
-    private List<Class<?>> signature;
-    private Map<Integer, TablePart> parts;
+    private List<Class<?>> structure;
+    private Map<Long, TablePart> parts;
     private Map<String, Storeable> diff;
     
     /**
@@ -43,10 +44,10 @@ public final class DbTable implements Table {
             throws DataBaseIOException {
         parts = new HashMap<>();
         diff = new HashMap<>();
-        signature = new ArrayList<>();
+        structure = new ArrayList<>();
         if (provider == null || tableDirectoryPath == null) {
             throw new IllegalArgumentException("Unable to create table for"
-                    + "null provider or/and path to table directory");
+                    + " null provider or/and null path to table directory");
         }
         this.provider = provider;
         this.tableDirectoryPath = tableDirectoryPath;
@@ -69,18 +70,16 @@ public final class DbTable implements Table {
         int savedChangesCounter = diff.size();
         try {
             for (Entry<String, Storeable> pair : diff.entrySet()) {
-                TablePart part = parts.get(getDirFileCode(pair.getKey()));
+                TablePart part = parts.get(getHash(pair.getKey()));
                 if (pair.getValue() == null) {
                     part.remove(pair.getKey());
                 } else {
                     if (part == null) {
-                        //TODO вынести в отдельный метод
-                        int dirNumber = Math.abs(pair.getKey().getBytes(Helper.ENCODING)[0]
-                                % Helper.NUMBER_OF_PARTITIONS);
-                        int fileNumber = Math.abs((pair.getKey().getBytes(Helper.ENCODING)[0]
-                                / Helper.NUMBER_OF_PARTITIONS) % Helper.NUMBER_OF_PARTITIONS);
+                        long hash = getHash(pair.getKey());
+                        int dirNumber = Helper.unhashFirstIntFromLong(hash);
+                        int fileNumber = Helper.unhashSecondIntFromLong(hash);
                         part = new TablePart(this, tableDirectoryPath, dirNumber, fileNumber);
-                        parts.put(getDirFileCode(pair.getKey()), part);
+                        parts.put(hash, part);
                     }
                     part.put(pair.getKey(), pair.getValue());
                 }
@@ -118,7 +117,7 @@ public final class DbTable implements Table {
      */
     @Override
     public int getColumnsCount() {
-        return signature.size();
+        return structure.size();
     }
 
     /**
@@ -129,19 +128,20 @@ public final class DbTable implements Table {
     @Override
     public Class<?> getColumnType(int columnIndex)
             throws IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= signature.size()) {
-            throw new IndexOutOfBoundsException();
+        if (columnIndex < 0 || columnIndex >= structure.size()) {
+            throw new IndexOutOfBoundsException("Column index out of bounds: "
+                    + "expected index from 0 to " + structure.size()
+                    + ", but found " + columnIndex);
         }
-        return signature.get(columnIndex);
+        return structure.get(columnIndex);
     }
     
     /**
-     * Returns file and directory numbers where the key should be placed.
+     * Returns hashed file and directory numbers where the key should be placed.
      * @param key Key.
-     * @return Integer code of file number and its directory number.
+     * @return Long hash of file number and its directory number.
      */
-    private int getDirFileCode(String key) {
-        //TODO переписать!
+    private long getHash(String key) {
         int dirNumber;
         int fileNumber;
         try {
@@ -151,18 +151,17 @@ public final class DbTable implements Table {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException("Unable to encode key to " + Helper.ENCODING, e);
         }
-        return dirNumber * Helper.NUMBER_OF_PARTITIONS + fileNumber;
+        return Helper.hashIntPairAsLong(dirNumber, fileNumber);
     }
     
     /**
      * Gets the value of the specified key.
      * @param key The key is for searching the value. Can not be null.
-     *            For indexes on non-string fields parameter is a serialized column value.
-     *            It is required to parse.
+     * For indexes on non-string fields parameter is a serialized column value.
+     * It is required to parse.
      * @return Value. If not found, returns null.
-     * @throws IllegalArgumentException If the parameter key is null.
-     * @throws RuntimeException If {@link TablePart#get(String) TablePart.get()}
-     * method fails.
+     * @throws IllegalArgumentException If {@link TablePart#get(String)
+     * TablePart.get} method fails.
      */
     @Override
     public Storeable get(String key) {
@@ -173,14 +172,14 @@ public final class DbTable implements Table {
         if (diff.containsKey(key)) {
             value = diff.get(key);
         } else {
-            TablePart part = parts.get(getDirFileCode(key));
+            TablePart part = parts.get(getHash(key));
             if (part == null) {
                 value = null;
             } else {
                 try {
                     value = part.get(key);
                 } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e.getMessage(), e);
+                    throw new IllegalArgumentException(e.getMessage(), e);
                 }
             }
         }
@@ -189,20 +188,35 @@ public final class DbTable implements Table {
     
     /**
      * Sets the value of the specified key.
-     * @param key Key.
-     * @param value Value.
+     * @param key Key for a new value. Can't be null.
+     * @param value New value. Can't be null.
      * @return Previous value associated with the key or null if the key is new.
-     * @throws RuntimeException If {@link TablePart#put(String, String) TablePart.put()}
-     * method fails.
+     * @throws IllegalArgumentException If key or value is null.
+     * @throws ColumnFormatException If types of columns in Storeable aren't equal to
+     * types of columns of table.
      */
     @Override
-    public Storeable put(String key, Storeable value) {
+    public Storeable put(String key, Storeable value) throws ColumnFormatException {
         if (key == null || value == null) {
             throw new IllegalArgumentException("Key or value is a null-string");
         }
+        //TODO how to check length of Storeable?
+        //Check Storeable structure. 
+        try {
+            for (int i = 0; i < structure.size(); i++) {
+                if (structure.get(i) != value.getColumnAt(i).getClass()) {
+                    throw new ColumnFormatException("Storeable has a wrong "
+                            + "column format");
+                }
+            }
+        } catch (IndexOutOfBoundsException e) {
+            throw new ColumnFormatException("Storeable has a wrong "
+                    + "column format: " + e.getMessage(), e);
+        }
+        //End of checking section.
         Storeable oldValue;
         if (!diff.containsKey(key)) {
-            TablePart part = parts.get(getDirFileCode(key));
+            TablePart part = parts.get(getHash(key));
             if (part == null) {
                 oldValue = null;
             } else {
@@ -221,10 +235,9 @@ public final class DbTable implements Table {
     
     /**
      * Removes the associated with the key value.
-     * @param key Key.
+     * @param key Key for looking for value. Can't be null.
      * @return Removed value or null if there wasn't such key in this table.
-     * @throws RuntimeException If {@link TablePart#remove(String) TablePart.remove()}
-     * method fails.
+     * @throws IllegalArgumentException If key is null.
      */
     @Override
     public Storeable remove(String key) {
@@ -233,7 +246,7 @@ public final class DbTable implements Table {
         }
         Storeable removedValue;
         if (!diff.containsKey(key)) {
-            TablePart part = parts.get(getDirFileCode(key));
+            TablePart part = parts.get(getHash(key));
             if (part == null) {
                 removedValue = null;
             } else {
@@ -256,7 +269,7 @@ public final class DbTable implements Table {
     @Override
     public int size() {
         int numberOfRecords = 0;
-        for (Entry<Integer, TablePart> part : parts.entrySet()) {
+        for (Entry<Long, TablePart> part : parts.entrySet()) {
             numberOfRecords += part.getValue().getNumberOfRecords();
         }
         for (Entry<String, Storeable> pair : diff.entrySet()) {
@@ -271,12 +284,11 @@ public final class DbTable implements Table {
     
     /**
      * @return List of the keys stored in this table in all parts.
-     * @throws RuntimeException If {@link TablePart#list()} method fails.
      */
     @Override
     public List<String> list() {
         Set<String> keySet = new HashSet<>();
-        for (Entry<Integer, TablePart> pair : parts.entrySet()) {
+        for (Entry<Long, TablePart> pair : parts.entrySet()) {
             keySet.addAll(pair.getValue().list());
         }
         for (Entry<String, Storeable> pair : diff.entrySet()) {
@@ -312,13 +324,8 @@ public final class DbTable implements Table {
      * @throws DataBaseIOException If directory checking fails.
      */
     private void readTableDir() throws DataBaseIOException {
+        readSignature();
         String[] dirList = tableDirectoryPath.toFile().list();
-        Path signatureFilePath = tableDirectoryPath.resolve(Helper.SIGNATURE_FILE_NAME);
-        if (!signatureFilePath.toFile().isFile()) {
-            throw new DataBaseIOException("Signature file '" + Helper.SIGNATURE_FILE_NAME
-                    + "' is missing");
-        }
-        readSignature(signatureFilePath);
         for (String dir : dirList) {
             Path dirPath = tableDirectoryPath.resolve(dir);
             if (!dir.matches(Helper.DIR_NAME_REGEX) || !dirPath.toFile().isDirectory()) {
@@ -339,15 +346,14 @@ public final class DbTable implements Table {
                 Path filePath = dirPath.resolve(file);
                 if (!file.matches(Helper.FILE_NAME_REGEX) || !filePath.toFile().isFile()) {
                     throw new DataBaseIOException(String.format("File '" + file + "'"
-                            + "in directory '" + dir + "' is not a regular file or"
-                            + "doesn't match required name '[0-%1$d].dat'",
+                            + " in directory '" + dir + "' is not a regular file or"
+                            + " doesn't match required name '[0-%1$d].dat'",
                             Helper.NUMBER_OF_PARTITIONS - 1));
                 }
-                //TODO вынести нахрен
                 int dirNumber = Integer.parseInt(dir.substring(0, dir.length() - 4));
                 int fileNumber = Integer.parseInt(file.substring(0, file.length() - 4));
                 TablePart part = new TablePart(this, tableDirectoryPath, dirNumber, fileNumber);
-                parts.put(dirNumber * Helper.NUMBER_OF_PARTITIONS + fileNumber, part);
+                parts.put(Helper.hashIntPairAsLong(dirNumber, fileNumber), part);
             }
         }
     }
@@ -357,20 +363,24 @@ public final class DbTable implements Table {
      * @param filePath Path to {@value #SIGNATURE_FILE_NAME} file.
      * @throws DataBaseIOException If file is corrupted or can't be read.
      */
-    private void readSignature(Path filePath) throws DataBaseIOException {
-        try (Scanner scanner = new Scanner(filePath)) {
-            //TODO check!
+    private void readSignature() throws DataBaseIOException {
+        Path signatureFilePath = tableDirectoryPath.resolve(Helper.SIGNATURE_FILE_NAME);
+        if (!signatureFilePath.toFile().isFile()) {
+            throw new DataBaseIOException("Signature file '" + Helper.SIGNATURE_FILE_NAME
+                    + "' is missing");
+        }
+        try (Scanner scanner = new Scanner(signatureFilePath)) {
             String[] types = scanner.nextLine().split("\\s+");
             for (String typeName : types) {
                 Class<?> typeClass = Helper.SUPPORTED_NAMES_TO_TYPES.get(typeName);
                 if (typeClass == null) {
-                    throw new DataBaseIOException("Unable read signature from " + filePath.toString()
-                            + ": file contains wrong type names");
+                    throw new IOException("file contains wrong type names");
                 }
-                signature.add(typeClass);
+                structure.add(typeClass);
             }
         } catch (IOException | NoSuchElementException e) {
-            throw new DataBaseIOException("Unable read signature from " + filePath.toString(), e);
+            throw new DataBaseIOException("Unable read signature from "
+                    + signatureFilePath.toString() + ": " + e.getMessage(), e);
         }
     }
     
@@ -380,9 +390,9 @@ public final class DbTable implements Table {
      * or some files cannot be wrote. 
      */
     private void writeTableToDir() throws DataBaseIOException {
-        Iterator<Entry<Integer, TablePart>> it = parts.entrySet().iterator();
+        Iterator<Entry<Long, TablePart>> it = parts.entrySet().iterator();
         while (it.hasNext()) {
-            Entry<Integer, TablePart> part = it.next();
+            Entry<Long, TablePart> part = it.next();
             part.getValue().commit();
             if (part.getValue().getNumberOfRecords() == 0) {
                 it.remove();

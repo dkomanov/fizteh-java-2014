@@ -80,7 +80,7 @@ final class TablePart {
      * @param key Key.
      * @return The value associated with the key or null if this
      * {@link TablePart} doesn't contain such key. 
-     * @throws UnsupportedEncodingException If {@link #keyIsValidForFile keyIsValidForFile}
+     * @throws UnsupportedEncodingException If {@link #checkKey checkKey}
      * method throws it.
      * @throws IllegalArgumentException If key is a null-string or can't be found in this file.
      */
@@ -96,7 +96,7 @@ final class TablePart {
      * or null if the key is a new one.
      * @throws UnsupportedEncodingException If {@link #keyIsValidForFile keyIsValidForFile}
      * method throws it.
-     * @throws IllegalArgumentException If key or value is a null-string
+     * @throws IllegalArgumentException If key or value is null
      * or key can't be placed to this file.
      */
     public Storeable put(String key, Storeable value) throws UnsupportedEncodingException {
