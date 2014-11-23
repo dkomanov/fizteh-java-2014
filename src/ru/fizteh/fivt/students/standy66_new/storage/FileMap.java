@@ -11,14 +11,15 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
-/**
+/** we have only one instance of the filemap
+ *
  * Created by astepanov on 26.09.14.
  */
-public class FileMap implements Map<String, String>, AutoCloseable {
+public class FileMap implements AutoCloseable {
     private static final String CHARSET_NAME = "UTF-8";
     private File mapFile;
-    private Map<String, String> cache;
-    private Set<String> changed;
+    private Map<String, String> synchronizedCache;
+    private ThreadLocal<Transaction> localDiff;
 
     public FileMap(File mapFile) throws IOException {
         if (mapFile == null) {
@@ -26,157 +27,206 @@ public class FileMap implements Map<String, String>, AutoCloseable {
         }
         this.mapFile = mapFile.getAbsoluteFile();
 
-        cache = new HashMap<>();
+        synchronizedCache = Collections.synchronizedMap(new HashMap<>());
 
-        changed = new HashSet<>();
+        localDiff = new ThreadLocal<Transaction>() {
+            @Override
+            protected Transaction initialValue() {
+                return new Transaction(synchronizedCache);
+            }
+        };
+
         reload();
     }
 
-    @Override
     public int size() {
-        return cache.size();
+        return localDiff.get().size();
     }
 
-    @Override
     public boolean isEmpty() {
-        return cache.isEmpty();
+        return localDiff.get().size() == 0;
     }
 
-    @Override
-    public boolean containsKey(Object key) {
-        return cache.containsKey(key);
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return cache.containsValue(value);
-    }
-
-    @Override
-    public void putAll(Map<? extends String, ? extends String> map) {
-        cache.putAll(map);
-        changed.addAll(map.keySet());
-    }
-
-    @Override
-    public Collection<String> values() {
-        return cache.values();
-    }
-
-    @Override
-    public Set<Entry<String, String>> entrySet() {
-        return cache.entrySet();
-    }
-
-    @Override
     public Set<String> keySet() {
-        return cache.keySet();
+        return localDiff.get().keySet();
     }
 
-    @Override
-    public String get(Object key) {
-        return cache.get(key);
+    public String get(String key) {
+        return localDiff.get().get(key);
     }
 
-    @Override
     public String put(String key, String value) {
-        changed.add(key);
-        return cache.put(key, value);
+        return localDiff.get().put(key, value);
     }
 
-    @Override
-    public String remove(Object key) {
-        if (key instanceof String) {
-            changed.add((String) key);
-            return cache.remove(key);
-        } else {
-            return null;
-        }
+    public String remove(String key) {
+        return localDiff.get().remove(key);
     }
 
-    @Override
     public void clear() {
-        changed.addAll(cache.keySet());
-        cache.clear();
+        for (String key : synchronizedCache.keySet()) {
+            localDiff.get().remove(key);
+        }
     }
 
     public int commit() throws IOException {
-        int keyChangedCount = changed.size();
-        changed.clear();
-        if (cache.isEmpty()) {
-            if (mapFile.exists()) {
+        int keyChangedCount = localDiff.get().diffSize();
+        localDiff.get().apply();
+        synchronized (synchronizedCache) {
+            if (synchronizedCache.isEmpty()) {
+                if (mapFile.exists()) {
+                    mapFile.delete();
+                }
+                return keyChangedCount;
+            }
+            if (!mapFile.getParentFile().exists()) {
+                if (!mapFile.getParentFile().mkdirs()) {
+                    throw new IOException("Cannot create  " + mapFile.getParent());
+                }
+            }
+            if (!mapFile.exists()) {
 
-                mapFile.delete();
+                mapFile.createNewFile();
+            }
+            try (FileOutputStream fos = new FileOutputStream(mapFile, false)) {
+                ByteBuffer lengthBuffer = ByteBuffer.allocate(4);
+                for (Map.Entry<String, String> stringStringEntry : synchronizedCache.entrySet()) {
+                    String value = stringStringEntry.getValue();
+                    byte[] keyEncoded = stringStringEntry.getKey().getBytes(CHARSET_NAME);
+                    fos.write(lengthBuffer.putInt(0, keyEncoded.length).array());
+                    fos.write(keyEncoded);
+                    byte[] valueEncoded = value.getBytes(CHARSET_NAME);
+                    fos.write(lengthBuffer.putInt(0, valueEncoded.length).array());
+                    fos.write(valueEncoded);
+                }
             }
             return keyChangedCount;
         }
-        if (!mapFile.getParentFile().exists()) {
-            if (!mapFile.getParentFile().mkdirs()) {
-                throw new IOException("Cannot create  " + mapFile.getParent());
-            }
-        }
-        if (!mapFile.exists()) {
-
-            mapFile.createNewFile();
-        }
-        try (FileOutputStream fos = new FileOutputStream(mapFile, false)) {
-            ByteBuffer lengthBuffer = ByteBuffer.allocate(4);
-            for (Entry<String, String> stringStringEntry : cache.entrySet()) {
-                String value = stringStringEntry.getValue();
-                byte[] keyEncoded = stringStringEntry.getKey().getBytes(CHARSET_NAME);
-                fos.write(lengthBuffer.putInt(0, keyEncoded.length).array());
-                fos.write(keyEncoded);
-                byte[] valueEncoded = value.getBytes(CHARSET_NAME);
-                fos.write(lengthBuffer.putInt(0, valueEncoded.length).array());
-                fos.write(valueEncoded);
-            }
-        }
-        return keyChangedCount;
     }
 
     public int unsavedChangesCount() {
-        return changed.size();
+        return localDiff.get().diffSize();
     }
 
     public int rollback() throws IOException {
-        int keyChangedCount = changed.size();
-        reload();
+        int keyChangedCount = localDiff.get().diffSize();
+        localDiff.get().clear();
         return keyChangedCount;
     }
 
     @Override
     public void close() throws Exception {
-        commit();
+        rollback();
     }
 
     private void reload() throws IOException {
-        cache.clear();
-        changed.clear();
-        if (!mapFile.exists()) {
-            return;
-        }
-        try (FileInputStream fis = new FileInputStream(mapFile);
-             FileChannel channel = fis.getChannel()) {
-            ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-
-            while (buffer.remaining() > 0) {
-                int keySize = buffer.getInt();
-                if (keySize > channel.size()) {
-                    throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
-                }
-                byte[] key = new byte[keySize];
-                buffer.get(key);
-                int valueSize = buffer.getInt();
-                if (valueSize > channel.size()) {
-                    throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
-                }
-                byte[] value = new byte[valueSize];
-                buffer.get(value);
-
-                cache.put(new String(key, CHARSET_NAME), new String(value, CHARSET_NAME));
+        synchronized (synchronizedCache) {
+            synchronizedCache.clear();
+            if (!mapFile.exists()) {
+                return;
             }
-        } catch (BufferUnderflowException | NegativeArraySizeException e) {
-            throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+            try (FileInputStream fis = new FileInputStream(mapFile);
+                 FileChannel channel = fis.getChannel()) {
+                ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+
+                while (buffer.remaining() > 0) {
+                    int keySize = buffer.getInt();
+                    if (keySize > channel.size()) {
+                        throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+                    }
+                    byte[] key = new byte[keySize];
+                    buffer.get(key);
+                    int valueSize = buffer.getInt();
+                    if (valueSize > channel.size()) {
+                        throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+                    }
+                    byte[] value = new byte[valueSize];
+                    buffer.get(value);
+
+                    synchronizedCache.put(new String(key, CHARSET_NAME), new String(value, CHARSET_NAME));
+                }
+            } catch (BufferUnderflowException | NegativeArraySizeException e) {
+                throw new FileCorruptedException(String.format("%s is corrupted", mapFile.getName()));
+            }
+        }
+    }
+
+    private final static class Transaction {
+        private final Map<String, String> base;
+        private final Map<String, String> chaged = new HashMap<>();
+        private final Set<String> deleted = new HashSet<>();
+
+        public Transaction(Map<String, String> base) {
+            this.base = base;
+        }
+
+        public void apply() {
+            synchronized (base) {
+                for (Map.Entry<String, String> entry : chaged.entrySet()) {
+                    base.put(entry.getKey(), entry.getValue());
+                }
+                for (String key : deleted) {
+                    base.remove(key);
+                }
+            }
+            chaged.clear();
+            deleted.clear();
+        }
+
+        public void clear() {
+            chaged.clear();
+            deleted.clear();
+        }
+
+        public String put(String key, String value) {
+            String returnValue = get(key);
+
+            if (deleted.contains(key)) {
+                deleted.remove(key);
+            }
+            chaged.put(key, value);
+
+            return returnValue;
+        }
+
+        public String remove(String key) {
+            String returnValue = get(key);
+
+            chaged.remove(key);
+            if (!deleted.contains(key)) {
+                deleted.add(key);
+            }
+            return returnValue;
+        }
+
+        public int diffSize() {
+            return chaged.size() + deleted.size();
+        }
+
+        public int size() {
+            return keySet().size();
+        }
+
+        public Set<String> keySet() {
+            Set<String> baseSet;
+            synchronized (base) {
+                baseSet = new HashSet<>(base.keySet());
+            }
+            for (String key : chaged.keySet()) {
+                baseSet.add(key);
+            }
+            for (String key : deleted) {
+                baseSet.remove(key);
+            }
+            return baseSet;
+        }
+
+        public String get(String key) {
+            if (deleted.contains(key))
+                return null;
+            if (chaged.containsKey(key))
+                return chaged.get(key);
+            return base.get(key);
         }
     }
 }
