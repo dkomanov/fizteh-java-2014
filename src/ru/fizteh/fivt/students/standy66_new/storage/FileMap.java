@@ -151,7 +151,7 @@ public class FileMap implements AutoCloseable {
         }
     }
 
-    private final static class Transaction {
+    private static final class Transaction {
         private final Map<String, String> base;
         private final Map<String, String> chaged = new HashMap<>();
         private final Set<String> deleted = new HashSet<>();
@@ -222,10 +222,12 @@ public class FileMap implements AutoCloseable {
         }
 
         public String get(String key) {
-            if (deleted.contains(key))
+            if (deleted.contains(key)) {
                 return null;
-            if (chaged.containsKey(key))
+            }
+            if (chaged.containsKey(key)) {
                 return chaged.get(key);
+            }
             return base.get(key);
         }
     }
