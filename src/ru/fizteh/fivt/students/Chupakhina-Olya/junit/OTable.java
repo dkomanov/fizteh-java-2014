@@ -161,7 +161,7 @@ public class OTable implements Table {
     @Override
     public int rollback() {
         TableState state = tableStates.get(numberOfState);
-        map = new HashMap<>(ts.fm);
+        map = new HashMap<String, String>(state.map);
         numberOfElements = state.numberOfElements;
         int n = unsavedChanges;
         unsavedChanges = state.unsavedChanges;
