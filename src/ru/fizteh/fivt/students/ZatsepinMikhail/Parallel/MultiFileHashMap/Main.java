@@ -8,23 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Main {
-    public static Shell<MFileHashMap> shellForThreadsFirst;
-    public static Shell<MFileHashMap> shellForThreadsSecond;
-
-    public static class MyRunnableFirst implements Runnable {
-        @Override
-        public void run() {
-            shellForThreadsFirst.interactiveMode();
-        }
-    }
-
-    public static class MyRunnableSecond implements Runnable {
-        @Override
-        public void run() {
-            shellForThreadsSecond.interactiveMode();
-        }
-    }
-
     public static void main(String[] args) {
 
         if (System.getProperty("fizteh.db.dir") == null) {
@@ -52,18 +35,15 @@ public class Main {
                 }
             }
         }
-
         MFileHashMap myMFileHashMap = new MFileHashMap(dataBaseDirectory.toString());
         if (!myMFileHashMap.init()) {
             System.exit(3);
         }
 
-        shellForThreadsFirst = new Shell<MFileHashMap>(myMFileHashMap);
-        shellForThreadsSecond = new Shell<MFileHashMap>(myMFileHashMap);
-        setUpShell(shellForThreadsFirst);
-        setUpShell(shellForThreadsSecond);
+        Shell<MFileHashMap> myShell = new Shell<>(myMFileHashMap);
+        setUpShell(myShell);
 
-        /*if (args.length > 0) {
+        if (args.length > 0) {
             allRight = myShell.packetMode(args);
         } else {
             allRight = myShell.interactiveMode();
@@ -72,12 +52,7 @@ public class Main {
             System.exit(0);
         } else {
             System.exit(1);
-        }*/
-
-        Thread firstThread = new Thread(new MyRunnableFirst());
-        Thread secondThread = new Thread(new MyRunnableSecond());
-        firstThread.start();
-        secondThread.start();
+        }
     }
 
 
