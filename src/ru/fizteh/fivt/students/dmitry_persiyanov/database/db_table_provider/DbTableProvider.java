@@ -118,64 +118,80 @@ public final class DbTableProvider implements TableProvider {
     @Override
     public Storeable deserialize(final Table table, final String value) throws ParseException {
         String str = value.trim();
-        String stringRegex = "'([^\\\\']+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|\""
-                + "([^\\\\\"]+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*\"";
+//        String stringRegex = "'([^\\\\']+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|\""
+//                + "([^\\\\\"]+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*\"";
+        String stringRegex = "\"([^\"]*)\"";
         String oneColumnTypeRegex = "\\s*(" + stringRegex + "|null|true|false|-?\\d+(\\.\\d+)?)\\s*";
         String jsonRegex = "^\\[" + oneColumnTypeRegex + "(," + oneColumnTypeRegex + ")*\\]$";
         if (!str.matches(jsonRegex)) {
             throw new ParseException("value isn't in JSON format", 0);
         } else {
-            int leftBracket = str.indexOf('[');
-            int rightBracket = str.lastIndexOf(']');
-            List<Object> values = new LinkedList<>();
-            int i = leftBracket + 1;
-            while (i < rightBracket) {
-                char currChar = str.charAt(i);
-                if (currChar == '\"') {
-                    // String argument. Finding end quote.
-                    int endQuoteIndex = i + 1;
-                    while (!(str.charAt(endQuoteIndex) == '\"' && str.charAt(endQuoteIndex - 1) != '\\')) {
-                        endQuoteIndex++;
-                    }
-                    String strColumn = str.substring(i + 1, endQuoteIndex);
-                    values.add(strColumn);
-                    i = endQuoteIndex + 1;
-                } else if (Character.isSpaceChar(currChar) || currChar == ',') {
-                    i++;
-                } else if (Character.isDigit(currChar)) {
-                    int nextComma = str.indexOf(',', i);
-                    if (nextComma == -1) {
-                        // Last column.
-                        nextComma = rightBracket;
-                    }
-                    String number = str.substring(i, nextComma).trim();
-                    if (number.indexOf('.') != -1) {
-                        values.add(new Double(number));
+            try {
+                int leftBracket = str.indexOf('[');
+                int rightBracket = str.lastIndexOf(']');
+                List<Object> values = new LinkedList<>();
+                int i = leftBracket + 1;
+                while (i < rightBracket) {
+                    char currChar = str.charAt(i);
+                    if (currChar == '\"') {
+                        // String argument. Finding end quote.
+                        int endQuoteIndex = i + 1;
+                        while (!(str.charAt(endQuoteIndex) == '\"' && str.charAt(endQuoteIndex - 1) != '\\')) {
+                            endQuoteIndex++;
+                        }
+                        String strColumn = str.substring(i + 1, endQuoteIndex);
+                        values.add(strColumn);
+                        i = endQuoteIndex + 1;
+                    } else if (Character.isSpaceChar(currChar) || currChar == ',') {
+                        i++;
+                    } else if (Character.isDigit(currChar)) {
+                        int nextComma = str.indexOf(',', i);
+                        if (nextComma == -1) {
+                            // Last column.
+                            nextComma = rightBracket;
+                        }
+                        String number = str.substring(i, nextComma).trim();
+                        Class<?> tableColType = table.getColumnType(values.size());
+                        if (number.indexOf('.') != -1) {
+                            if (tableColType.equals(Double.class)) {
+                                values.add(new Double(number));
+                            } else {
+                                values.add(new Float(number));
+                            }
+                        } else {
+                            if (tableColType.equals(Integer.class)) {
+                                values.add(new Integer(number));
+                            } else {
+                                values.add(new Long(number));
+                            }
+                        }
+                        i = nextComma + 1;
                     } else {
-                        values.add(new Long(number));
+                        // Boolean or null
+                        int nextComma = str.indexOf(',', i);
+                        if (nextComma == -1) {
+                            nextComma = rightBracket;
+                        }
+                        String boolOrNullValue = str.substring(i, nextComma).trim();
+                        if (boolOrNullValue.equals("true")) {
+                            values.add(true);
+                        } else if (boolOrNullValue.equals("false")) {
+                            values.add(false);
+                        } else if (boolOrNullValue.equals("null")) {
+                            values.add(null);
+                        } else {
+                            throw new ParseException("it's not possible, but there is a parse error!", 0);
+                        }
+                        i = nextComma + 1;
                     }
-                    i = nextComma + 1;
-                } else {
-                    // Boolean
-                    int nextComma = str.indexOf(',', i);
-                    if (nextComma == -1) {
-                        nextComma = rightBracket;
-                    }
-                    String boolValue = str.substring(i, nextComma).trim();
-                    if (boolValue.equals("true")) {
-                        values.add(true);
-                    } else if (boolValue.equals("false")) {
-                        values.add(false);
-                    } else {
-                        throw new ParseException("it's not possible, but there is a parse error!", 0);
-                    }
-                    i = nextComma + 1;
                 }
+                if (values.size() != table.getColumnsCount()) {
+                    throw new ParseException("incompatible sizes of Storeable in the table and json you passed", 0);
+                }
+                return createFor(table, values);
+            } catch (IndexOutOfBoundsException e) {
+                throw new ParseException("can't parse your json", 0);
             }
-            if (values.size() != table.getColumnsCount()) {
-                throw new ParseException("incompatible sizes of Storeable in the table and json you passed", 0);
-            }
-            return createFor(table, values);
         }
     }
 

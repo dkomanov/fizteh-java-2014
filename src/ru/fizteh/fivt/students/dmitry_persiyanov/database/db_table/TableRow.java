@@ -12,10 +12,19 @@ import java.util.List;
  */
 public class TableRow implements Storeable {
     private List<Object> values;
+    private List<Class<?>> types;
 
     public TableRow(final List<Object> values) {
         this.values = new ArrayList<>();
         this.values.addAll(values);
+        this.types = new ArrayList<>();
+        for (Object value : values) {
+            if (value == null) {
+                this.types.add(null);
+            } else {
+                this.types.add(value.getClass());
+            }
+        }
     }
 
     @Override
@@ -23,7 +32,7 @@ public class TableRow implements Storeable {
         checkIndex(columnIndex);
         if (value == null) {
             values.set(columnIndex, null);
-        } else if (value.getClass().equals(values.get(columnIndex).getClass())) {
+        } else if (types.get(columnIndex) == null || value.getClass().equals(types.get(columnIndex))) {
             values.set(columnIndex, value);
         } else {
             throw new ColumnFormatException();

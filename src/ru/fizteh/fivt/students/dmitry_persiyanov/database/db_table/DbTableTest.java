@@ -37,7 +37,7 @@ public class DbTableTest {
     public void setUp() throws Exception {
         testKeysValues.put("key", "[\"value\"]");
         testKeysValues.put("mazafakka", "[\"yo\"]");
-        testKeysValues.put("12345", "[\"!)@J D! =!_@O  as \"|}\"]");
+        testKeysValues.put("12345", "[\"!)@J D! =!_@O  as |}\"]");
         tempFile = tempFolder.newFile();
         dbDir = tempFolder.newFolder();
         db = new DbTableProvider(dbDir.toPath());
@@ -145,7 +145,7 @@ public class DbTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void putInvalidKey() throws ParseException {
-        tm.put(null, db.deserialize(tm, "[]"));
+        tm.put(null, db.deserialize(tm, "[\"hello\"]"));
     }
 
     @Test(expected = IllegalArgumentException.class)

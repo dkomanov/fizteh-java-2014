@@ -28,7 +28,7 @@ public final class TableLoaderDumper {
         readSignatureFile(tableDir, columnTypes);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(tableDir)) {
             for (Path dir : stream) {
-                if (!dir.getName(dir.getNameCount() - 1).equals(TABLE_SIGNATURE_FILENAME)) {
+                if (!Utility.getNameByPath(dir).equals(TABLE_SIGNATURE_FILENAME)) {
                     int indexOfDir = parseNum(dir);
                     loadDirectory(dir, tableHashMap.get(indexOfDir));
                 }
