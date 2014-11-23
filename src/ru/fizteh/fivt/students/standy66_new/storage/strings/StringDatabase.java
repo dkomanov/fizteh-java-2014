@@ -7,10 +7,7 @@ import ru.fizteh.fivt.students.standy66_new.utility.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /** TableProvider implementation
@@ -98,7 +95,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
         return tableInstances.get(name);
     }
 
-    public Collection<String> listTableNames() {
+    public List<String> listTableNames() {
         synchronized (tableInstances) {
             return tableInstances.values().stream()
                     .map(Table::getName).collect(Collectors.toList());
