@@ -1,14 +1,13 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.JUnit;
 
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap.ConstClass;
 
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
 public class MyTable implements Table {
-    protected static final int NUM_FILES = 16;
-    protected static final int NUM_DIRECTORIES = 16;
 
     private SingleTableDataBaseDir fakeDir;
     private HybridTable table;
@@ -31,8 +30,8 @@ public class MyTable implements Table {
             throw new IllegalArgumentException();
         }
         int hashCode = Math.abs(key.hashCode());
-        int dir = hashCode % NUM_DIRECTORIES;
-        int file = hashCode / NUM_FILES % NUM_FILES;
+        int dir = hashCode % ConstClass.NUM_DIRECTORIES;
+        int file = hashCode / ConstClass.NUM_FILES % ConstClass.NUM_FILES;
         return table.dirtyTable.databases[dir][file].data.get(key);
     }
 
@@ -100,8 +99,8 @@ public class MyTable implements Table {
     @Override
     public List<String> list() {
         List<String> result = new LinkedList<>();
-        for (int i = 0; i < NUM_DIRECTORIES; i++) {
-            for (int j = 0; j < NUM_FILES; j++) {
+        for (int i = 0; i < ConstClass.NUM_DIRECTORIES; i++) {
+            for (int j = 0; j < ConstClass.NUM_FILES; j++) {
                 result.addAll(table.dirtyTable.databases[i][j].data.keySet());
             }
         }

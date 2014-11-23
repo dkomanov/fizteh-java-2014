@@ -25,8 +25,8 @@ public class MultiRemoveCommand extends Command {
     @Override
     public void executeOnTable(Table table) throws Exception {
         int hashCode = Math.abs(key.hashCode());
-        int dir = hashCode % NUM_DIRECTORIES;
-        int file = hashCode / NUM_FILES % NUM_FILES;
+        int dir = hashCode % ConstClass.NUM_DIRECTORIES;
+        int file = hashCode / ConstClass.NUM_FILES % ConstClass.NUM_FILES;
         RemoveCommand remove = new RemoveCommand(key);
         if (table.databases[dir][file] == null) {
             System.out.println("not found");
@@ -43,12 +43,12 @@ public class MultiRemoveCommand extends Command {
                     }
                     table.databases[dir][file] = null;
                     int k = 0;
-                    for (int j = 0; j < NUM_FILES; j++) {
+                    for (int j = 0; j < ConstClass.NUM_FILES; j++) {
                         if (table.databases[dir][j] == null) {
                             k++;
                         }
                     }
-                    if (k == NUM_FILES) {
+                    if (k == ConstClass.NUM_FILES) {
                         try {
                             Files.delete(dbFile.getParentFile().toPath());
                         } catch (DirectoryNotEmptyException e) {

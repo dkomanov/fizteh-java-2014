@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.andrey_reshetnikov.JUnit.MyTableProviderFactory;
-
+import static org.junit.Assert.*;
 import java.io.IOException;
 
 public class MyTableProviderFactoryTest {
@@ -18,21 +18,21 @@ public class MyTableProviderFactoryTest {
 
     @Before
     public void before() {
-        factory = new MyTableProviderFactory();
+        assertNotNull(factory = new MyTableProviderFactory());
     }
 
     @Test
     public void create() throws IOException {
-        factory.create(tmpFolder.newFolder().getAbsolutePath());
+        assertNotNull(factory.create(tmpFolder.newFolder().getAbsolutePath()));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void createWithNullArgument() {
-        factory.create(null);
+        assertNotNull(factory.create(null));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void createWithIncorrectArgument() throws IOException {
-        factory.create(tmpFolder.newFile().getAbsolutePath());
+        assertNotNull(factory.create(tmpFolder.newFile().getAbsolutePath()));
     }
 }

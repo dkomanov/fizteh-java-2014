@@ -20,8 +20,8 @@ public class MultiGetCommand extends Command {
     @Override
     public void executeOnTable(Table table) throws Exception {
         int hashCode = Math.abs(key.hashCode());
-        int dir = hashCode % NUM_DIRECTORIES;
-        int file = hashCode / NUM_FILES % NUM_FILES;
+        int dir = hashCode % ConstClass.NUM_DIRECTORIES;
+        int file = hashCode / ConstClass.NUM_FILES % ConstClass.NUM_FILES;
         GetCommand get = new GetCommand(key);
         DataBase db = table.databases[dir][file];
         if (db == null) {

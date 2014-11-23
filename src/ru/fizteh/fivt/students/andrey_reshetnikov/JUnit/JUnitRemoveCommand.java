@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.JUnit;
 
 import ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap.Command;
+import ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap.ConstClass;
 import ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap.MultiRemoveCommand;
 
 public class JUnitRemoveCommand extends JUnitCommand {
@@ -20,8 +21,8 @@ public class JUnitRemoveCommand extends JUnitCommand {
         } else {
             Command remove = new MultiRemoveCommand(key);
             int hashCode = Math.abs(key.hashCode());
-            int dir = hashCode % NUM_DIRECTORIES;
-            int file = hashCode / NUM_FILES % NUM_FILES;
+            int dir = hashCode % ConstClass.NUM_DIRECTORIES;
+            int file = hashCode / ConstClass.NUM_FILES % ConstClass.NUM_FILES;
             if (base.getUsing().dirtyTable.databases[dir][file].data.get(key) != null) {
                 remove.executeOnTable(base.getUsing().dirtyTable);
                 base.getUsing().changes.add(remove);

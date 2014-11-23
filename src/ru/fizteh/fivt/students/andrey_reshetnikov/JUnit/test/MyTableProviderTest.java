@@ -41,7 +41,7 @@ public class MyTableProviderTest {
 
     @Test
     public void createAndGetTable() {
-        provider.createTable("newTable");
+        assertNotNull(provider.createTable("newTable"));
         assertNull(provider.getTable("notExistingTable"));
         assertNotNull(provider.getTable("newTable"));
     }

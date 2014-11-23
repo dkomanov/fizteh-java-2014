@@ -5,17 +5,15 @@ import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 
 public class Table {
-    protected static final int NUM_FILES = 16;
-    protected static final int NUM_DIRECTORIES = 16;
     public DataBase[][] databases;
     File mainDir;
 
     public Table(File tableDir) throws Exception {
-        databases = new DataBase[NUM_DIRECTORIES][NUM_FILES];
+        databases = new DataBase[ConstClass.NUM_DIRECTORIES][ConstClass.NUM_FILES];
         mainDir = tableDir;
-        for (int i = 0; i < NUM_DIRECTORIES; i++) {
+        for (int i = 0; i < ConstClass.NUM_DIRECTORIES; i++) {
             File subDir = new File(tableDir, String.valueOf(i) + ".dir");
-            for (int j = 0; j < NUM_FILES; j++) {
+            for (int j = 0; j < ConstClass.NUM_FILES; j++) {
                 File dbFile = new File(subDir, String.valueOf(j) + ".dat");
                 if (dbFile.exists()) {
                     databases[i][j] = new DataBase(dbFile.toString());
@@ -29,9 +27,9 @@ public class Table {
     public Table() {}
 
     public void drop() throws Exception {
-        for (int i = 0; i < NUM_DIRECTORIES; i++) {
+        for (int i = 0; i < ConstClass.NUM_DIRECTORIES; i++) {
             File subDir = new File(mainDir, String.valueOf(i) + ".dir");
-            for (int j = 0; j < NUM_FILES; j++) {
+            for (int j = 0; j < ConstClass.NUM_FILES; j++) {
                 if (databases[i][j] != null) {
                     File dbFile = new File(subDir, String.valueOf(j) + ".dat");
                     if (dbFile.exists()) {
@@ -64,8 +62,8 @@ public class Table {
 
     public int recordsNumber() {
         int answer = 0;
-        for (int i = 0; i < NUM_DIRECTORIES; i++) {
-            for (int j = 0; j < NUM_FILES; j++) {
+        for (int i = 0; i < ConstClass.NUM_DIRECTORIES; i++) {
+            for (int j = 0; j < ConstClass.NUM_FILES; j++) {
                 if (databases[i][j] != null) {
                     answer += databases[i][j].recordsNumber();
                 }

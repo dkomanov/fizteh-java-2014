@@ -10,8 +10,8 @@ public class MultiListCommand extends Command {
     public void executeOnTable(Table table) throws Exception {
         StringBuilder allKeys = new StringBuilder();
         ListCommand list = new ListCommand();
-        for (int i = 0; i < NUM_DIRECTORIES; i++) {
-            for (int j = 0; j < NUM_FILES; j++) {
+        for (int i = 0; i < ConstClass.NUM_DIRECTORIES; i++) {
+            for (int j = 0; j < ConstClass.NUM_FILES; j++) {
                 DataBase cur = table.databases[i][j];
                 if (cur != null) {
                     String newList = list.getList(cur);

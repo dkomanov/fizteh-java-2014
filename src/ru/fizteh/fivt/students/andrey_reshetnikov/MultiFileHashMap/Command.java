@@ -3,9 +3,6 @@ package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 import java.util.HashMap;
 
 public abstract class Command {
-    protected static final int NUM_FILES = 16;
-    protected static final int NUM_DIRECTORIES = 16;
-
     private static final HashMap<String, Command> COMMANDS;
 
     static {
