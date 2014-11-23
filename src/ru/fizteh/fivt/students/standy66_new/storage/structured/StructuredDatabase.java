@@ -32,12 +32,12 @@ public class StructuredDatabase implements TableProvider {
     }
 
     @Override
-    public StructuredTable getTable(String name) {
+    public synchronized StructuredTable getTable(String name) {
         return wrap(backendDatabase.getTable(name));
     }
 
     @Override
-    public StructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
+    public synchronized StructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
         StringTable table = backendDatabase.createTable(name);
         if (table == null) {
             return null;
@@ -49,7 +49,7 @@ public class StructuredDatabase implements TableProvider {
     }
 
     @Override
-    public void removeTable(String name) throws IOException {
+    public synchronized void removeTable(String name) throws IOException {
         backendDatabase.removeTable(name);
     }
 

@@ -37,35 +37,15 @@ public class StructuredTable implements Table {
     }
 
     @Override
-    public TableRow put(String key, Storeable value) throws ColumnFormatException {
-        String strOldValue = backendTable.get(key);
-        TableRow oldValue;
-        try {
-            if (strOldValue != null) {
-                oldValue = database.deserialize(this, strOldValue);
-            } else {
-                oldValue = null;
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException("ParseException occurred", e);
-        }
-        String newValueString = database.serialize(this, value);
-        backendTable.put(key, newValueString);
+    public synchronized TableRow put(String key, Storeable value) throws ColumnFormatException {
+        TableRow oldValue = get(key);
+        backendTable.put(key, TableRow.fromStoreable(tableSignature, value).serialize());
         return oldValue;
     }
 
     @Override
-    public TableRow remove(String key) {
-        String strValue = backendTable.get(key);
-        if (strValue == null) {
-            return null;
-        }
-        TableRow value;
-        try {
-            value = database.deserialize(this, strValue);
-        } catch (ParseException e) {
-            throw new RuntimeException("ParseException occurred", e);
-        }
+    public synchronized TableRow remove(String key) {
+        TableRow value = get(key);
         backendTable.remove(key);
         return value;
     }
@@ -101,7 +81,7 @@ public class StructuredTable implements Table {
     }
 
     @Override
-    public TableRow get(String key) {
+    public synchronized TableRow get(String key) {
         String value = backendTable.get(key);
         if (value == null) {
             return null;
