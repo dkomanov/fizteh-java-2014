@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 public class StringTable implements Table {
     private static final int MAX_FILE_CHUNK = 16;
     private static final int MAX_DIR_CHUNK = 16;
-    private File tableDirectory;
-    private Map<File, FileMap> openedFiles;
+    private final File tableDirectory;
+    private final Map<File, FileMap> openedFiles;
 
     StringTable(File tableDirectory) {
         if (tableDirectory == null) {
@@ -34,7 +34,6 @@ public class StringTable implements Table {
             for (int j = 0; j < MAX_FILE_CHUNK; j++) {
                 File file = new File(dir, j + ".dat");
                 try {
-
                     openedFiles.put(file, new FileMap(file));
                 } catch (IOException e) {
                     throw new CheckedExceptionCaughtException("IOException occurred", e);
@@ -92,7 +91,7 @@ public class StringTable implements Table {
     }
 
     @Override
-    public int commit() {
+    public synchronized int commit() {
         int keyChangedCount = 0;
         for (FileMap fm : openedFiles.values()) {
             try {
@@ -105,7 +104,6 @@ public class StringTable implements Table {
             File dir = new File(tableDirectory, String.format("%d.dir", i));
 
             if (dir.exists() && (dir.listFiles() != null) && (dir.listFiles().length == 0)) {
-
                 dir.delete();
             }
         }
@@ -113,7 +111,7 @@ public class StringTable implements Table {
     }
 
     @Override
-    public int rollback() {
+    public synchronized int rollback() {
         int keyChangedCount = 0;
         for (FileMap fm : openedFiles.values()) {
             try {
