@@ -16,14 +16,17 @@ public class CreateCommand extends DbCommand {
     }
 
     @Override
-    protected void execute(final PrintStream out) throws IOException {
+    protected void execChecked(final PrintStream out) throws IOException {
         String tableToCreate = args[0];
         try {
             if (tableProvider.getTable(tableToCreate) != null) {
-                out.println(tableToCreate + "exists");
+                out.println(tableToCreate + " exists");
             } else {
                 String typesTuple = args[1];
-                String[] types = typesTuple.replace("(", "").replace(")", "").split(",");
+                if (!typesTuple.startsWith("(") || !typesTuple.endsWith(")")) {
+                    throw new IllegalArgumentException("wrong syntax of create command");
+                }
+                String[] types = typesTuple.replace("(", "").replace(")", "").split("\\s+");
                 List<Class<?>> signature = new LinkedList<>();
                 for (String type : types) {
                     signature.add(TypeStringTranslator.getTypeByStringName(type));

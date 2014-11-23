@@ -58,36 +58,61 @@ public final class DbCommandsParser implements InterpreterCommandsParser {
         switch (cmdChunks[0]) {
             // TableManagerCommands.
             case "put":
-                String[] args = new String[2];
-                args[0] = commandArgs[0];
-                args[1] = String.join("", Arrays.copyOfRange(commandArgs, 1, commandArgs.length));
-                return new PutCommand(args, tableProvider, tableProvider.getCurrentTable());
+                return new PutCommand(makeArgsForPut(commandArgs), tableProvider);
             case "get":
-                return new GetCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
+                return new GetCommand(commandArgs, tableProvider);
             case "remove":
-                return new RemoveCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
+                return new RemoveCommand(commandArgs, tableProvider);
             case "list":
-                return new ListCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
+                return new ListCommand(commandArgs, tableProvider);
             case "size":
-                return new SizeCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
+                return new SizeCommand(commandArgs, tableProvider);
             case "commit":
-                return new CommitCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
+                return new CommitCommand(commandArgs, tableProvider);
             case "rollback":
-                return new RollbackCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
+                return new RollbackCommand(commandArgs, tableProvider);
             case "exit":
-                return new ExitCommand(commandArgs, tableProvider, tableProvider.getCurrentTable());
+                return new ExitCommand(commandArgs, tableProvider);
             // DatabaseManagerCommands.
             case "create":
-                String[] cmdArgs = new String[2];
-                cmdArgs[0] = commandArgs[0];
-                cmdArgs[1] = String.join("", Arrays.copyOfRange(commandArgs, 1, commandArgs.length));
-                return new CreateCommand(cmdArgs, tableProvider);
+
+                return new CreateCommand(makeArgsForCreate(commandArgs), tableProvider);
             case "drop":
                 return new DropCommand(commandArgs, tableProvider);
             case "use":
                 return new UseCommand(commandArgs, tableProvider);
             default:
                 throw new WrongCommandException(strCommand);
+        }
+    }
+
+    private static String[] makeArgsForPut(final String[] argsSplittedByDelimiter) {
+        if (argsSplittedByDelimiter.length == 0) {
+            return null;
+        } else {
+            List<String> args = new LinkedList<>();
+            args.add(argsSplittedByDelimiter[0]);
+            if (argsSplittedByDelimiter.length > 1) {
+                args.add(String.join(" ",
+                        Arrays.copyOfRange(argsSplittedByDelimiter, 1, argsSplittedByDelimiter.length)));
+            }
+            String[] res = new String[args.size()];
+            return args.toArray(res);
+        }
+    }
+
+    private static String[] makeArgsForCreate(final String[] argsSplittedByDelimiter) {
+        if (argsSplittedByDelimiter.length == 0) {
+            return null;
+        } else {
+            List<String> args = new LinkedList<>();
+            args.add(argsSplittedByDelimiter[0]);
+            if (argsSplittedByDelimiter.length > 1) {
+                args.add(String.join(" ",
+                        Arrays.copyOfRange(argsSplittedByDelimiter, 1, argsSplittedByDelimiter.length)));
+            }
+            String[] res = new String[args.size()];
+            return args.toArray(res);
         }
     }
 }

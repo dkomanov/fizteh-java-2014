@@ -12,7 +12,7 @@ public class DropCommand extends DbCommand {
     }
 
     @Override
-    protected void execute(final PrintStream out) throws IOException {
+    protected void execChecked(final PrintStream out) throws IOException {
         String tableToDrop = args[0];
         if (tableProvider.getTable(tableToDrop) == null) {
             out.println(tableToDrop + " not exists");

@@ -5,14 +5,16 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.TypeStringTranslator;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.Utility;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.*;
 
 public final class DbTable implements Table {
-    private final File tableDir;
+    private final Path tableDir;
     private final List<Class<?>> columnTypes;
     private final TableProvider tableProvider;
 
@@ -33,20 +35,20 @@ public final class DbTable implements Table {
      * @param tableProvider
      * @return Empty table.
      */
-    public static DbTable createDbTable(final File tableDir,
+    public static DbTable createDbTable(final Path tableDir,
                                         final List<Class<?>> columnTypes,
                                         final TableProvider tableProvider) {
         return new DbTable(tableDir, columnTypes, tableProvider);
     }
 
-    public static DbTable loadExistingDbTable(final File tableDir, final TableProvider tableProvider) {
+    public static DbTable loadExistingDbTable(final Path tableDir, final TableProvider tableProvider) {
         return new DbTable(tableDir, tableProvider);
     }
 
     // This ctor CREATES unexisted table.
-    private DbTable(final File tableDir, final List<Class<?>> columnTypes, final TableProvider tableProvider) {
-        if (!tableDir.isDirectory()) {
-            throw new IllegalArgumentException("is not a directory: " + tableDir.getPath());
+    private DbTable(final Path tableDir, final List<Class<?>> columnTypes, final TableProvider tableProvider) {
+        if (!Files.isDirectory(tableDir)) {
+            throw new IllegalArgumentException("is not a directory: " + tableDir.toString());
         } else {
             this.tableProvider = tableProvider;
             this.columnTypes = new ArrayList<>();
@@ -56,7 +58,7 @@ public final class DbTable implements Table {
             try {
                 TableLoaderDumper.createTable(this.tableDir, columnTypes);
             } catch (IOException e) {
-                throw new RuntimeException("can't create table from \'" + tableDir.getPath() + "\'"
+                throw new RuntimeException("can't create table from \'" + tableDir.toString() + "\'"
                         + ", [" + e.getMessage() + "]");
             }
             size = 0;
@@ -65,9 +67,9 @@ public final class DbTable implements Table {
     }
 
     // This ctor LOADS existed table.
-    private DbTable(final File tableDir, final TableProvider tableProvider) {
-        if (!tableDir.isDirectory()) {
-            throw new IllegalArgumentException("is not a directory: " + tableDir.getPath());
+    private DbTable(final Path tableDir, final TableProvider tableProvider) {
+        if (!Files.isDirectory(tableDir)) {
+            throw new IllegalArgumentException("is not a directory: " + tableDir.toString());
         } else {
             this.tableProvider = tableProvider;
             this.columnTypes = new ArrayList<>();
@@ -76,7 +78,7 @@ public final class DbTable implements Table {
             try {
                 TableLoaderDumper.loadTable(this.tableDir, lastCommitTableMap, columnTypes);
             } catch (IOException e) {
-                throw new RuntimeException("can't load table from \'" + tableDir.getPath() + "\'"
+                throw new RuntimeException("can't load table from \'" + tableDir.toString() + "\'"
                         + ", [" + e.getMessage() + "]");
             }
             calculateTableSize();
@@ -108,9 +110,7 @@ public final class DbTable implements Table {
         } else if (uncommittedChangesMap.containsKey(key)) {
             return deserializeWrapper(uncommittedChangesMap.get(key));
         } else {
-            int dir = getDirNumByKey(key);
-            int file = getFileNumByKey(key);
-            return deserializeWrapper(lastCommitTableMap.get(dir).get(file).get(key));
+            return deserializeWrapper(getTablePartByKey(key).get(key));
         }
     }
 
@@ -120,8 +120,6 @@ public final class DbTable implements Table {
             throw new IllegalArgumentException();
         }
         checkStoreableValueValidity(value);
-        int dir = getDirNumByKey(key);
-        int file = getFileNumByKey(key);
         if (uncommittedChangesMap.containsKey(key)) {   // Was changed/added in current commit.
             String uncommitedValue = uncommittedChangesMap.get(key);
             uncommittedChangesMap.put(key, serializeWrapper(value));
@@ -132,7 +130,7 @@ public final class DbTable implements Table {
             size++;
             return null;
         } else {    // It hasn't been deleted or changed yet. We change/add this key-value pair now.
-            Storeable oldValue = deserializeWrapper(lastCommitTableMap.get(dir).get(file).get(key));
+            Storeable oldValue = deserializeWrapper(getTablePartByKey(key).get(key));
             if (oldValue != null) { // Changing.
                 uncommittedChangesMap.put(key, serializeWrapper(value));
                 return oldValue;
@@ -173,9 +171,7 @@ public final class DbTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        int dir = getDirNumByKey(key);
-        int file = getFileNumByKey(key);
-        Storeable prevCommitValue = deserializeWrapper(lastCommitTableMap.get(dir).get(file).get(key));
+        Storeable prevCommitValue = deserializeWrapper(getTablePartByKey(key).get(key));
         // This pair was deleted in this commit or hasn't been changed in this commit and was absent in previous commit.
         if ((prevCommitValue == null && !uncommittedChangesMap.containsKey(key))
                 || uncommittedDeletionsSet.contains(key)) {
@@ -226,7 +222,7 @@ public final class DbTable implements Table {
 
     @Override
     public String getName() {
-        return tableDir.getName();
+        return Utility.getNameByPath(tableDir);
     }
 
     @Override
@@ -258,16 +254,18 @@ public final class DbTable implements Table {
 
     private void commitChangesToTableMap() {
         for (Map.Entry<String, String> pair : uncommittedChangesMap.entrySet()) {
-            int dir = getDirNumByKey(pair.getKey());
-            int file = getFileNumByKey(pair.getKey());
-            lastCommitTableMap.get(dir).get(file).put(pair.getKey(), pair.getValue());
+            getTablePartByKey(pair.getKey()).put(pair.getKey(), pair.getValue());
         }
         for (String deletedKey : uncommittedDeletionsSet) {
             lastCommitTableMap.remove(deletedKey);
         }
     }
 
-
+    private Map<String, String> getTablePartByKey(final String key) {
+        int dir = getDirNumByKey(key);
+        int file = getFileNumByKey(key);
+        return lastCommitTableMap.get(dir).get(file);
+    }
 
     private void calculateTableSize() {
         for (List<Map<String, String>> list : lastCommitTableMap) {

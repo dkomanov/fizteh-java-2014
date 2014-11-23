@@ -40,7 +40,7 @@ public class DbTableTest {
         testKeysValues.put("12345", "[\"!)@J D! =!_@O  as \"|}\"]");
         tempFile = tempFolder.newFile();
         dbDir = tempFolder.newFolder();
-        db = new DbTableProvider(dbDir);
+        db = new DbTableProvider(dbDir.toPath());
         signature = new LinkedList<>();
         signature.add(String.class);
         tm = db.createTable("table", signature);
@@ -82,7 +82,7 @@ public class DbTableTest {
     public void putCommitLoadTableAgainAndCheckValues() throws ParseException, IOException {
         addKeysToTable(tm);
         tm.commit();
-        Table newTm = new DbTableProvider(dbDir).getTable("table");
+        Table newTm = new DbTableProvider(dbDir.toPath()).getTable("table");
         List<String> actualList = newTm.list();
         Set<String> actualSet = new HashSet<>();
         actualSet.addAll(actualList);
@@ -133,7 +133,7 @@ public class DbTableTest {
         assertTrue(tm.size() == 2);
         tm.commit();
         assertTrue(tm.size() == 2);
-        assertTrue(new DbTableProvider(dbDir).getTable("table").size() == 2);
+        assertTrue(new DbTableProvider(dbDir.toPath()).getTable("table").size() == 2);
     }
 
     @Test

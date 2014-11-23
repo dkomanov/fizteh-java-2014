@@ -13,8 +13,9 @@ public class ShowTablesCommand extends DbCommand {
     }
 
     @Override
-    protected void execute(final PrintStream out) {
+    protected void execChecked(final PrintStream out) {
         List<String> tableNames = tableProvider.getTableNames();
+        out.println("table_name table_size");
         if (tableNames.size() != 0) {
             StringBuilder msgBuilder = new StringBuilder();
             for (String tableName : tableNames) {
@@ -22,8 +23,7 @@ public class ShowTablesCommand extends DbCommand {
                 msgBuilder.append(tableName + " " + tableSize);
                 msgBuilder.append(System.lineSeparator());
             }
-            msgBuilder.delete(msgBuilder.length() - 1, msgBuilder.length());
-            out.println(msgBuilder.toString());
+            out.print(msgBuilder.toString());
         }
     }
 }

@@ -13,15 +13,14 @@ public class UseCommand extends DbCommand {
     }
 
     @Override
-    protected void execute(final PrintStream out) throws IOException {
+    protected void execChecked(final PrintStream out) throws IOException {
         String tableToUse = args[0];
         Table newTable = tableProvider.getTable(tableToUse);
         if (newTable == null) {
             out.println(tableToUse + " not exists");
         } else {
-            int unsavedChanges = newTable.getNumberOfUncommittedChanges();
+            int unsavedChanges = tableProvider.useTable(tableToUse);
             if (unsavedChanges == 0) {
-                tableProvider.useTable(tableToUse);
                 out.println("using " + tableToUse);
             } else {
                 out.println(unsavedChanges + " unsaved changes");

@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.table_commands;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.commands.DbCommand;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableIsNotChosenException;
@@ -9,21 +8,21 @@ import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableIsNotC
 import java.io.PrintStream;
 
 public class GetCommand extends DbCommand {
-    public GetCommand(final String[] args, final DbTableProvider tableProvider, final Table table) {
-        super("get", 1, args, tableProvider, table);
+    public GetCommand(final String[] args, final DbTableProvider tableProvider) {
+        super("get", 1, args, tableProvider);
     }
 
     @Override
-    protected void execute(final PrintStream out) throws TableIsNotChosenException {
-        if (currentTable == null) {
+    protected void execChecked(final PrintStream out) throws TableIsNotChosenException {
+        if (currentTable() == null) {
             throw new TableIsNotChosenException();
         } else {
             String key = args[0];
-            Storeable value = currentTable.get(key);
+            Storeable value = currentTable().get(key);
             if (value == null) {
                 out.println("not found");
             } else {
-                out.println("found" + System.lineSeparator() + tableProvider.serialize(currentTable, value));
+                out.println("found" + System.lineSeparator() + tableProvider.serialize(currentTable(), value));
             }
         }
     }

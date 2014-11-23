@@ -4,8 +4,6 @@ import ru.fizteh.fivt.students.dmitry_persiyanov.interpreter.exceptions.WrongCom
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Scanner;
 
 public final class Interpreter {
@@ -53,9 +51,7 @@ public final class Interpreter {
         } catch (TerminateInterpeterException e) {
             exitStatus = e.getExitStatus();
         } catch (Exception e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            err.println(stackTrace.toString());
+            err.println(e.getMessage());
         }
     }
 

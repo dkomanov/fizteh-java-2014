@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.dmitry_persiyanov.database.commands;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.IllegalNumberOfArgumentsException;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableCorruptedException;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableIsNotChosenException;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
 import ru.fizteh.fivt.students.dmitry_persiyanov.interpreter.InterpreterCommand;
@@ -15,7 +16,6 @@ public abstract class DbCommand implements InterpreterCommand {
     protected String[] args;
     protected String name;
     protected DbTableProvider tableProvider;
-    protected Table currentTable;
 
     /**
      *
@@ -28,13 +28,6 @@ public abstract class DbCommand implements InterpreterCommand {
         this.args = args;
         this.name = name;
         this.tableProvider = tableProvider;
-        this.currentTable = null;
-    }
-
-    public DbCommand(final String name, int numOfArgs, final String[] args, final DbTableProvider tableProvider,
-                     Table currentTable) {
-        this(name, numOfArgs, args, tableProvider);
-        this.currentTable = currentTable;
     }
 
     /**
@@ -59,12 +52,14 @@ public abstract class DbCommand implements InterpreterCommand {
     public void exec(final PrintStream out, final PrintStream err) {
         if (checkArgs()) {
             try {
-                execute(out);
+                execChecked(out);
             } catch (IOException e) {
                 err.println(e.getMessage());
             } catch (TableIsNotChosenException e) {
                 out.println(e.getMessage());
             } catch (WrongTableNameException e) {
+                out.println(e.getMessage());
+            } catch (TableCorruptedException e) {
                 out.println(e.getMessage());
             }
         } else {
@@ -77,5 +72,9 @@ public abstract class DbCommand implements InterpreterCommand {
      * @param out Output stream.
      * @param err Error stream.
      */
-    protected abstract void execute(final PrintStream out) throws IOException, TableIsNotChosenException;
+    protected abstract void execChecked(final PrintStream out) throws IOException, TableIsNotChosenException;
+
+    protected Table currentTable() {
+        return tableProvider.getCurrentTable();
+    }
 }

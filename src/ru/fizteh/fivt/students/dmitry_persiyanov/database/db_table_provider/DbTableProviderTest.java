@@ -32,7 +32,7 @@ public class DbTableProviderTest {
         signature = new LinkedList<>();
         signature.add(String.class);
         dbDir = tempFolder.newFolder();
-        dbm = new DbTableProvider(dbDir);
+        dbm = new DbTableProvider(dbDir.toPath());
         tempFile = tempFolder.newFile();
     }
 
@@ -43,7 +43,7 @@ public class DbTableProviderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createDbManagerWithNonDirectoryArgument() {
-        new DbTableProvider(tempFile);
+        new DbTableProvider(tempFile.toPath());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -97,7 +97,7 @@ public class DbTableProviderTest {
         t.put("key", dbm.deserialize(t, "[\"value\"]"));
         t.commit();
         dbm.removeTable("table1");
-        TableProvider tableProvider = new DbTableProvider(dbDir);
+        TableProvider tableProvider = new DbTableProvider(dbDir.toPath());
         assertTrue(tableProvider.getTable("table1") == null);
     }
 

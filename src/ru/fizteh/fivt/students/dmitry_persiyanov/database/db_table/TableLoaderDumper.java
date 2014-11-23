@@ -1,59 +1,65 @@
 package ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table;
 
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.TypeStringTranslator;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.Utility;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.TableCorruptedException;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-final class TableLoaderDumper {
+public final class TableLoaderDumper {
     private static final String TABLE_SIGNATURE_FILENAME = "signature.tsv";
     private static final String DIRS_EXTENSION = ".dir";
     private static final String FILES_EXTENSION = ".dat";
     private static final String ENCODING = "UTF-8";
 
-    public static void createTable(final File tableDir, final List<Class<?>> columnTypes) throws IOException {
+    public static void createTable(final Path tableDir, final List<Class<?>> columnTypes) throws IOException {
         dumpSignatureFile(tableDir, columnTypes);
     }
 
-    public static void loadTable(final File tableDir,
+    public static void loadTable(final Path tableDir,
                                  List<List<Map<String, String>>> tableHashMap,
                                  List<Class<?>> columnTypes) throws IOException {
-        columnTypes = readSignatureFile(tableDir);
-        File[] tableDirectories = tableDir.listFiles();
-        if (tableDirectories == null) {
-            throw new NotDirectoryException(tableDir.getName());
-        }
-        for (int i = 0; i < tableDirectories.length; ++i) {
-            if (!tableDirectories[i].getName().equals(TABLE_SIGNATURE_FILENAME)) {
-                int indexOfDir = parseNum(tableDirectories[i].toPath());
-                loadDirectory(tableDirectories[i], tableHashMap.get(indexOfDir));
+        readSignatureFile(tableDir, columnTypes);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(tableDir)) {
+            for (Path dir : stream) {
+                if (!dir.getName(dir.getNameCount() - 1).equals(TABLE_SIGNATURE_FILENAME)) {
+                    int indexOfDir = parseNum(dir);
+                    loadDirectory(dir, tableHashMap.get(indexOfDir));
+                }
             }
+        } catch (NumberFormatException e) {
+            throw new TableCorruptedException(Utility.getNameByPath(tableDir));
         }
     }
 
-    private static List<Class<?>> readSignatureFile(final File tableDir) throws IOException {
-        File signatureFile = new File(tableDir, TABLE_SIGNATURE_FILENAME);
+    private static List<Class<?>> readSignatureFile(final Path tableDir,
+                                                    List<Class<?>> columnTypes) throws IOException {
             try (BufferedReader bufReader
-                         = new BufferedReader(new InputStreamReader(new FileInputStream(signatureFile), ENCODING))) {
-                List<Class<?>> res = new ArrayList<>();
+                         = Files.newBufferedReader(getSignatureFilePath(tableDir), Charset.forName(ENCODING))) {
                 String[] types = bufReader.readLine().split("\\s+");
-                for (String type : types) {
-                    res.add(TypeStringTranslator.getTypeByStringName(type));
+                for (String stringType : types) {
+                    Class<?> type = TypeStringTranslator.getTypeByStringName(stringType);
+                    if (type == null) {
+                        throw new TableCorruptedException(Utility.getNameByPath(tableDir));
+                    } else {
+                        columnTypes.add(type);
+                    }
                 }
-                return res;
+                return columnTypes;
             } catch (FileNotFoundException e) {
                 return null;
             }
     }
 
-    private static void dumpSignatureFile(final File tableDir, final List<Class<?>> columnTypes) throws IOException {
-        File signatureFIle = new File(tableDir, TABLE_SIGNATURE_FILENAME);
+    private static void dumpSignatureFile(final Path tableDir, final List<Class<?>> columnTypes) throws IOException {
         try (BufferedWriter bufWriter
-                     = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(signatureFIle), ENCODING))) {
+                     = Files.newBufferedWriter(getSignatureFilePath(tableDir), Charset.forName(ENCODING))) {
             for (Class<?> type : columnTypes) {
                 bufWriter.write(TypeStringTranslator.getStringNameByType(type));
                 bufWriter.write("\t");
@@ -61,51 +67,50 @@ final class TableLoaderDumper {
         }
     }
 
-    private static void loadDirectory(final File directory, List<Map<String, String>> dirHashMap) throws IOException {
-        File[] dirFiles = directory.listFiles();
-        if (dirFiles == null) {
-            throw new NotDirectoryException(directory.getPath());
-        }
-        for (int i = 0; i < dirFiles.length; ++i) {
-            int fileNum = parseNum(dirFiles[i].toPath());
-            loadFile(dirFiles[i], dirHashMap.get(fileNum));
+    private static void loadDirectory(final Path directory, List<Map<String, String>> dirHashMap) throws IOException {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+            for (Path file : stream) {
+                int fileNum = parseNum(file);
+                loadFile(file, dirHashMap.get(fileNum));
+            }
         }
     }
 
-    private static void loadFile(final File file, Map<String, String> fileHashMap) throws IOException {
-        RandomAccessFile raFile = new RandomAccessFile(file, "r");
-        if (raFile.length() != 0) {
-            try (ByteArrayOutputStream buf = new ByteArrayOutputStream()) {
-                long currentSeek = 0;
-                LinkedList<String> keys = new LinkedList<>();
-                LinkedList<Integer> offsets = new LinkedList<>();
-                // Reading keys and offsets.
-                currentSeek = readKeyAndOffset(raFile, currentSeek, keys, offsets);
-                int firstOffset = offsets.getFirst();
-                while (currentSeek != firstOffset) {
+    private static void loadFile(final Path file, Map<String, String> fileHashMap) throws IOException {
+        try (RandomAccessFile raFile = new RandomAccessFile(file.toFile(), "r")) {
+            if (raFile.length() != 0) {
+                try (ByteArrayOutputStream buf = new ByteArrayOutputStream()) {
+                    long currentSeek = 0;
+                    LinkedList<String> keys = new LinkedList<>();
+                    LinkedList<Integer> offsets = new LinkedList<>();
+                    // Reading keys and offsets.
                     currentSeek = readKeyAndOffset(raFile, currentSeek, keys, offsets);
-                }
-                // End of reading keys and offsets.
-                // Reading values and filling hashmap.
-                Iterator<String> keysIter = keys.iterator();
-                Iterator<Integer> offsetIter = offsets.iterator();
-                offsetIter.next();
-                while (offsetIter.hasNext()) {
-                    int nextOffset = offsetIter.next();
-                    while (currentSeek != nextOffset) {
+                    int firstOffset = offsets.getFirst();
+                    while (currentSeek != firstOffset) {
+                        currentSeek = readKeyAndOffset(raFile, currentSeek, keys, offsets);
+                    }
+                    // End of reading keys and offsets.
+                    // Reading values and filling hashmap.
+                    Iterator<String> keysIter = keys.iterator();
+                    Iterator<Integer> offsetIter = offsets.iterator();
+                    offsetIter.next();
+                    while (offsetIter.hasNext()) {
+                        int nextOffset = offsetIter.next();
+                        while (currentSeek != nextOffset) {
+                            buf.write(raFile.readByte());
+                            currentSeek++;
+                        }
+                        fileHashMap.put(keysIter.next(), buf.toString(ENCODING));
+                        buf.reset();
+                    }
+                    // Reading last value.
+                    while (currentSeek != raFile.length()) {
                         buf.write(raFile.readByte());
                         currentSeek++;
                     }
                     fileHashMap.put(keysIter.next(), buf.toString(ENCODING));
                     buf.reset();
                 }
-                // Reading last value.
-                while (currentSeek != raFile.length()) {
-                    buf.write(raFile.readByte());
-                    currentSeek++;
-                }
-                fileHashMap.put(keysIter.next(), buf.toString(ENCODING));
-                buf.reset();
             }
         }
     }
@@ -128,10 +133,10 @@ final class TableLoaderDumper {
         return currentSeek;
     }
 
-    public static void dumpTable(final File tableDir,
+    public static void dumpTable(final Path tableDir,
                                   List<List<Map<String, String>>> tableHashMap) throws IOException {
         for (int i = 0; i < tableHashMap.size(); ++i) {
-            dumpDirectory(makeDirPath(tableDir.toPath(), i), tableHashMap.get(i));
+            dumpDirectory(makeDirPath(tableDir, i), tableHashMap.get(i));
         }
     }
 
@@ -187,8 +192,34 @@ final class TableLoaderDumper {
         }
     }
 
+    public static void checkTableForCorruptness(final Path tablePath) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(tablePath)) {
+            for (Path file : stream) {
+                if (!Utility.getNameByPath(file).equals(TABLE_SIGNATURE_FILENAME)) {
+                    checkInnerDirectory(file);
+                }
+            }
+        } catch (IOException | TableCorruptedException e) {
+            throw new TableCorruptedException(tablePath.toString());
+        }
+    }
+
+    private static void checkInnerDirectory(final Path dir) {
+        if (!Files.isDirectory(dir) || parseNum(dir) == -1) {
+            throw new TableCorruptedException();
+        }
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+            for (Path file : stream) {
+                parseNum(file);
+            }
+        } catch (IOException | NumberFormatException e) {
+            throw new TableCorruptedException();
+        }
+    }
+
+
     private static Path makeDirPath(final Path tablePath, Integer dirNum) {
-        return Paths.get(tablePath.toString(), dirNum.toString() + DIRS_EXTENSION).normalize();
+        return tablePath.resolve(dirNum + DIRS_EXTENSION);
     }
 
     private static Path makeFilePathFromDirPath(final Path dirPath, Integer fileNum) {
@@ -198,6 +229,14 @@ final class TableLoaderDumper {
     private static int parseNum(final Path path) {
         String pathStr = path.getFileName().toString();
         int extensionIndex = pathStr.indexOf('.');
-        return Integer.parseInt(pathStr.substring(0, extensionIndex));
+        try {
+            return Integer.parseInt(pathStr.substring(0, extensionIndex));
+        } catch (IndexOutOfBoundsException | NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    private static Path getSignatureFilePath(final Path tableDir) {
+        return tableDir.resolve(TABLE_SIGNATURE_FILENAME);
     }
 }

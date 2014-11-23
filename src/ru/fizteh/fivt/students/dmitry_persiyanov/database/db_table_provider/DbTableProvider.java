@@ -5,16 +5,17 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.DbTable;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.TableLoaderDumper;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.TableRow;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.SyntaxCheckers;
-import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.TypeStringTranslator;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.Utility;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,25 +23,27 @@ import java.util.List;
 import java.util.Map;
 
 public final class DbTableProvider implements TableProvider {
-    private File rootDir;
+    private Path rootDir;
     private DbTable currentTable;
     private Map<String, DbTable> tables = new HashMap<>();
 
-    public DbTableProvider(final File rootDir) {
+    public DbTableProvider(final Path rootDir) {
         if (rootDir == null) {
             throw new NullPointerException();
-        } else if (!rootDir.exists()) {
-            if (!rootDir.mkdirs()) {
-                throw new RuntimeException("can't create directory: " + rootDir.getAbsolutePath());
+        } else if (!Files.exists(rootDir)) {
+            try {
+                Files.createDirectories(rootDir);
+            } catch (IOException e) {
+                throw new RuntimeException("can't create directory: " + rootDir.toString());
             }
-        } else if (!rootDir.isDirectory()) {
-            throw new IllegalArgumentException(rootDir.getAbsolutePath() + " isn't a directory");
+        } else if (!Files.isDirectory(rootDir)) {
+            throw new IllegalArgumentException(rootDir.toString() + " isn't a directory");
         }
         this.rootDir = rootDir;
         try {
             loadTables();
         } catch (IOException e) {
-            throw new RuntimeException("can't load table names from: " + rootDir.getPath()
+            throw new RuntimeException("can't load tables from: " + rootDir.toString()
                     + ", [" + e.getMessage() + "]");
         }
     }
@@ -68,7 +71,7 @@ public final class DbTableProvider implements TableProvider {
         } else {
             DbTable table = tables.get(tableName);
             if (table == null) {
-                tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName).toFile(), this));
+                tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName), this));
             }
             return tables.get(tableName);
         }
@@ -84,7 +87,7 @@ public final class DbTableProvider implements TableProvider {
             if (!containsTable(tableName)) {
                 Path tablePath = getTablePath(tableName);
                 Files.createDirectory(tablePath);
-                DbTable table = DbTable.createDbTable(tablePath.toFile(), columnTypes, this);
+                DbTable table = DbTable.createDbTable(tablePath, columnTypes, this);
                 tables.put(tableName, table);
                 return table;
             } else {
@@ -115,45 +118,64 @@ public final class DbTableProvider implements TableProvider {
     @Override
     public Storeable deserialize(final Table table, final String value) throws ParseException {
         String str = value.trim();
-        if (str.charAt(0) != '[' || str.charAt(str.length() - 1) != ']') {
-            throw new ParseException("invalid borders", 0);
+        String stringRegex = "'([^\\\\']+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|\""
+                + "([^\\\\\"]+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*\"";
+        String oneColumnTypeRegex = "\\s*(" + stringRegex + "|null|true|false|-?\\d+(\\.\\d+)?)\\s*";
+        String jsonRegex = "^\\[" + oneColumnTypeRegex + "(," + oneColumnTypeRegex + ")*\\]$";
+        if (!str.matches(jsonRegex)) {
+            throw new ParseException("value isn't in JSON format", 0);
         } else {
-            str = str.replace("[", "").replace("]", "");
-            String[] columns = str.split(",");
-            if (columns.length != table.getColumnsCount()) {
-                throw new ParseException("sizes of table and value don't correspond", 0);
-            }
+            int leftBracket = str.indexOf('[');
+            int rightBracket = str.lastIndexOf(']');
             List<Object> values = new LinkedList<>();
-            for (int i = 0; i < columns.length; ++i) {
-                columns[i] = columns[i].trim();
-                values.add(parseColumn(table.getColumnType(i), columns[i]));
+            int i = leftBracket + 1;
+            while (i < rightBracket) {
+                char currChar = str.charAt(i);
+                if (currChar == '\"') {
+                    // String argument. Finding end quote.
+                    int endQuoteIndex = i + 1;
+                    while (!(str.charAt(endQuoteIndex) == '\"' && str.charAt(endQuoteIndex - 1) != '\\')) {
+                        endQuoteIndex++;
+                    }
+                    String strColumn = str.substring(i + 1, endQuoteIndex);
+                    values.add(strColumn);
+                    i = endQuoteIndex + 1;
+                } else if (Character.isSpaceChar(currChar) || currChar == ',') {
+                    i++;
+                } else if (Character.isDigit(currChar)) {
+                    int nextComma = str.indexOf(',', i);
+                    if (nextComma == -1) {
+                        // Last column.
+                        nextComma = rightBracket;
+                    }
+                    String number = str.substring(i, nextComma).trim();
+                    if (number.indexOf('.') != -1) {
+                        values.add(new Double(number));
+                    } else {
+                        values.add(new Long(number));
+                    }
+                    i = nextComma + 1;
+                } else {
+                    // Boolean
+                    int nextComma = str.indexOf(',', i);
+                    if (nextComma == -1) {
+                        nextComma = rightBracket;
+                    }
+                    String boolValue = str.substring(i, nextComma).trim();
+                    if (boolValue.equals("true")) {
+                        values.add(true);
+                    } else if (boolValue.equals("false")) {
+                        values.add(false);
+                    } else {
+                        throw new ParseException("it's not possible, but there is a parse error!", 0);
+                    }
+                    i = nextComma + 1;
+                }
             }
-            return new TableRow(values);
-        }
-    }
-
-    private Object parseColumn(final Class<?> tableColumnType, String column) throws ParseException {
-        try {
-            switch (TypeStringTranslator.getStringNameByType(tableColumnType)) {
-                case "int":
-                    return new Integer(column);
-                case "long":
-                    return new Long(column);
-                case "byte":
-                    return new Byte(column);
-                case "float":
-                    return new Float(column);
-                case "double":
-                    return new Double(column);
-                case "boolean":
-                    return new Boolean(column);
-                case "String":
-                    return column.replace("\"", "");
-                default:
-                    return null;
+            if (values.size() != table.getColumnsCount()) {
+                throw new ParseException("incompatible sizes of Storeable in the table and json you passed", 0);
             }
-        } catch (NumberFormatException e) {
-            throw new ParseException("types incompatibility", 0);
+            return createFor(table, values);
         }
     }
 
@@ -229,7 +251,7 @@ public final class DbTableProvider implements TableProvider {
         } else {
             if (currentTable == null) {
                 if (tables.get(tableName) == null) {
-                    tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName).toFile(), this));
+                    tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName), this));
                 }
                 currentTable = tables.get(tableName);
                 return 0;
@@ -238,7 +260,7 @@ public final class DbTableProvider implements TableProvider {
                 if (currentAndNewTablesAreDistinct) {
                     if (currentTable.getNumberOfUncommittedChanges() == 0) {
                         if (tables.get(tableName) == null) {
-                            tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName).toFile(), this));
+                            tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName), this));
                         }
                         currentTable = tables.get(tableName);
                         return 0;
@@ -256,7 +278,7 @@ public final class DbTableProvider implements TableProvider {
         Map<String, Integer> res = new HashMap<>();
         for (String tableName : tables.keySet()) {
             if (tables.get(tableName) == null) {
-                tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName).toFile(), this));
+                tables.put(tableName, DbTable.loadExistingDbTable(getTablePath(tableName), this));
             }
             res.put(tableName, tables.get(tableName).size());
         }
@@ -284,14 +306,16 @@ public final class DbTableProvider implements TableProvider {
     }
 
     private Path getTablePath(final String tableName) {
-        return Paths.get(rootDir.getAbsolutePath(), tableName).normalize();
+        return rootDir.resolve(tableName);
     }
 
     private void loadTables() throws IOException {
-        String[] tableNames = rootDir.list();
         tables.clear();
-        for (String name : tableNames) {
-            tables.put(name, null);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(rootDir)) {
+            for (Path tableDir : stream) {
+                TableLoaderDumper.checkTableForCorruptness(tableDir);
+                tables.put(Utility.getNameByPath(tableDir), null);
+            }
         }
     }
 }

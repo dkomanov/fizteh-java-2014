@@ -11,12 +11,13 @@ import java.io.PrintStream;
 import java.text.ParseException;
 
 public class PutCommand extends DbCommand {
-    public PutCommand(final String[] args, final DbTableProvider tableProvider, final Table table) {
-        super("put", 2, args, tableProvider, table);
+    public PutCommand(final String[] args, final DbTableProvider tableProvider) {
+        super("put", 2, args, tableProvider);
     }
 
     @Override
-    protected void execute(final PrintStream out) throws TableIsNotChosenException {
+    protected void execChecked(final PrintStream out) throws TableIsNotChosenException {
+        Table currentTable = tableProvider.getCurrentTable();
         if (currentTable == null) {
             throw new TableIsNotChosenException();
         } else {

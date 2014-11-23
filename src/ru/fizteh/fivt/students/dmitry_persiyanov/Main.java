@@ -5,11 +5,12 @@ import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.DbTa
 import ru.fizteh.fivt.students.dmitry_persiyanov.interpreter.Interpreter;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public final class Main {
-    private static File rootDir;
+    private static Path rootDir;
     private static DbTableProvider tableProvider;
     private static DbCommandsParser dbParser;
 
@@ -19,7 +20,7 @@ public final class Main {
             System.err.println("You must specify a variable \"fizteh.db.dir\".");
             System.exit(1);
         } else {
-            rootDir = new File(dbdir);
+            rootDir = Paths.get(dbdir);
         }
         try {
             tableProvider = new DbTableProvider(rootDir);
