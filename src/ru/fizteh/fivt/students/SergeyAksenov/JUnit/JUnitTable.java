@@ -9,10 +9,10 @@ import java.util.*;
 public class JUnitTable implements Table {
 
     public JUnitTable(String name, String tablePath) {
-        DataBasePath = Paths.get(tablePath);
-        File table = DataBasePath.toFile();
-        ChangesCounter = 0;
-        DataBase = new HashMap<>();
+        dataBasePath = Paths.get(tablePath);
+        File table = dataBasePath.toFile();
+        changesCounter = 0;
+        dataBase = new HashMap<>();
         if (table.exists()) {
             read();
             return;
@@ -20,15 +20,15 @@ public class JUnitTable implements Table {
         if (!table.mkdir()) {
             System.out.println("Cannot create directory for new table");
         }
-        Name = name;
+        this.name = name;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public int size() {
-        return DataBase.size();
+        return dataBase.size();
     }
 
     public String get(String key)
@@ -36,9 +36,11 @@ public class JUnitTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("get");
         }
-        if (DataBase.containsKey(key)) {
-            return DataBase.get(key);
-        } else return null;
+        if (dataBase.containsKey(key)) {
+            return dataBase.get(key);
+        } else {
+            return null;
+        }
     }
 
     public String put(String key, String value)
@@ -47,12 +49,12 @@ public class JUnitTable implements Table {
             throw new IllegalArgumentException("put");
         }
         String ret = null;
-        if (DataBase.containsKey(key)) {
-            ret = DataBase.get(key);
-            DataBase.remove(key);
+        if (dataBase.containsKey(key)) {
+            ret = dataBase.get(key);
+            dataBase.remove(key);
         }
-        DataBase.put(key, value);
-        ChangesCounter++;
+        dataBase.put(key, value);
+        changesCounter++;
         return ret;
     }
 
@@ -62,10 +64,10 @@ public class JUnitTable implements Table {
             throw new IllegalArgumentException("remove");
         }
         String ret = null;
-        if (DataBase.containsKey(key)) {
-            ret = DataBase.get(key);
-            DataBase.remove(key);
-            ChangesCounter++;
+        if (dataBase.containsKey(key)) {
+            ret = dataBase.get(key);
+            dataBase.remove(key);
+            changesCounter++;
            /* try {
                 clear();
                 write();
@@ -80,7 +82,7 @@ public class JUnitTable implements Table {
     }
 
     public List<String> list() {
-        Set<String> keySet = DataBase.keySet();
+        Set<String> keySet = dataBase.keySet();
         return new ArrayList<>(keySet);
     }
 
@@ -88,8 +90,8 @@ public class JUnitTable implements Table {
         try {
             clear();
             write();
-            int ret = DataBase.size();
-            ChangesCounter = 0;
+            int ret = dataBase.size();
+            changesCounter = 0;
             return ret;
         } catch (Exception e) {
             System.out.println("Error in writing to file");
@@ -98,20 +100,19 @@ public class JUnitTable implements Table {
     }
 
     public int rollback() {
-        int ret = ChangesCounter;
-        DataBase.clear();
+        int ret = changesCounter;
+        dataBase.clear();
         read();
-        ChangesCounter = 0;
+        changesCounter = 0;
         return ret;
     }
 
     public int getChangesCounter() {
-        return ChangesCounter;
+        return changesCounter;
     }
 
 
     private String readUtil(DataInputStream inStream) throws IOException {
-        // DataInputStream inStream = new DataInputStream(new FileInputStream(file));
         int length = inStream.readInt();
         byte[] word = new byte[length];
         inStream.readFully(word);
@@ -119,7 +120,7 @@ public class JUnitTable implements Table {
     }
 
     private void read() {
-        File[] directories = DataBasePath.toFile().listFiles();
+        File[] directories = dataBasePath.toFile().listFiles();
         for (File dir : directories) {
             File[] files = dir.listFiles();
             try {
@@ -127,11 +128,10 @@ public class JUnitTable implements Table {
                     boolean end = false;
                     DataInputStream stream = new DataInputStream(new FileInputStream(file));
                     while (!end) {
-                        //DataInputStream stream = new DataInputStream(new FileInputStream(file));
-                        try /*(DataInputStream stream = new DataInputStream(new FileInputStream(file)))*/ {
+                        try {
                             String key = readUtil(stream);
                             String value = readUtil(stream);
-                            DataBase.put(key, value);
+                            dataBase.put(key, value);
                         } catch (IOException e) {
                             end = true;
                         }
@@ -154,20 +154,20 @@ public class JUnitTable implements Table {
     }
 
     private void write() throws Exception {
-        for (Map.Entry<String, String> entry : DataBase.entrySet()) {
+        for (Map.Entry<String, String> entry : dataBase.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             int hashcode = key.hashCode();
             int ndirectory = hashcode % 16;
             int nfile = hashcode / 16 % 16;
-            File directory = new File(DataBasePath.toString() + File.separator + ndirectory + ".dir");
+            File directory = new File(dataBasePath.toString() + File.separator + ndirectory + ".dir");
             if (!directory.exists()) {
                 if (!directory.mkdir()) {
                     throw new Exception("Error in writing");
                 }
             }
-            File file = new File(directory.getCanonicalPath() + File.separator +
-                    nfile + ".dat");
+            File file = new File(directory.getCanonicalPath() + File.separator
+                    + nfile + ".dat");
             if (!file.exists()) {
                 if (!file.createNewFile()) {
                     throw new Exception("Error in writing");
@@ -183,18 +183,18 @@ public class JUnitTable implements Table {
     }
 
     private void clear() {
-        File[] files = DataBasePath.toFile().listFiles();
+        File[] files = dataBasePath.toFile().listFiles();
         for (File file : files) {
             Executor.delete(file);
         }
     }
 
-    private HashMap<String, String> DataBase;
+    private HashMap<String, String> dataBase;
 
-    private Path DataBasePath;
+    private Path dataBasePath;
 
-    private int ChangesCounter;
+    private int changesCounter;
 
-    private String Name;
+    private String name;
 
 }

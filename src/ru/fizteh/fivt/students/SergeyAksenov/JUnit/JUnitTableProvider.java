@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 public class JUnitTableProvider implements TableProvider {
 
     public JUnitTableProvider(String Dir) {
-        Directory = Paths.get(Dir);
+        directory = Paths.get(Dir);
         usingTable = null;
     }
 
@@ -16,7 +16,7 @@ public class JUnitTableProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("invalid argument");
         }
-        String tablePath = Directory.toString() + File.separator + name;
+        String tablePath = directory.toString() + File.separator + name;
         File tableDir = new File(tablePath);
         if (!tableDir.exists()) {
             return null;
@@ -28,7 +28,7 @@ public class JUnitTableProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("invalid argument");
         }
-        String tablePath = Directory.toString() + File.separator + name;
+        String tablePath = directory.toString() + File.separator + name;
         File tableDir = new File(tablePath);
         if (tableDir.exists()) {
             return null;
@@ -40,7 +40,7 @@ public class JUnitTableProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("invalid argument");
         }
-        String tablePath = Directory.toString() + File.separator + name;
+        String tablePath = directory.toString() + File.separator + name;
         File tableDir = new File(tablePath);
         if (!tableDir.exists()) {
             throw new IllegalStateException(name + "does not exist");
@@ -63,7 +63,7 @@ public class JUnitTableProvider implements TableProvider {
     }
 
     public String[] getTableNames() {
-        return Directory.toFile().list();
+        return directory.toFile().list();
     }
 
     public JUnitTable getCurrentTable() {
@@ -72,6 +72,6 @@ public class JUnitTableProvider implements TableProvider {
 
     private JUnitTable usingTable;
 
-    private Path Directory;
+    private Path directory;
 
 }
