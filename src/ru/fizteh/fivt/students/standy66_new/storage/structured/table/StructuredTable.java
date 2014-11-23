@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * Created by andrew on 07.11.14.
@@ -78,6 +79,16 @@ public class StructuredTable implements Table {
     @Override
     public String getName() {
         return backendTable.getName();
+    }
+
+    @Override
+    public List<String> list() {
+        return backendTable.list();
+    }
+
+    @Override
+    public int getNumberOfUncommittedChanges() {
+        return backendTable.unsavedChangesCount();
     }
 
     @Override

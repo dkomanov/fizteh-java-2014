@@ -82,6 +82,11 @@ public class StructuredDatabase implements TableProvider {
         return storeable;
     }
 
+    @Override
+    public List<String> getTableNames() {
+        return backendDatabase.listTableNames();
+    }
+
     private StructuredTable wrap(ru.fizteh.fivt.storage.strings.Table table) {
         if (table == null) {
             return null;
