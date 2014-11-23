@@ -76,6 +76,7 @@ public class MFileHashMap implements TableProvider {
         if (tables.containsKey(name)) {
             Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
             tables.remove(name);
+            currentTable = null;
             FileUtils.rmdir(pathForRemoveTable);
         } else {
             throw new IllegalStateException();
