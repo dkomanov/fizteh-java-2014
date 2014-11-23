@@ -16,9 +16,11 @@ public class JUnit {
     public static OTable currentTable;
     public static TableProvider pv;
 
- public static void main(final String[] args) {
+    public static void main(final String[] args) {
         try {
             path = System.getProperty("fizteh.db.dir");
+            TablePF pf = new TablePF();
+            pv = pf.create(path);
             if (path == null) {
                 throw new Exception("Enter directory");
             }
@@ -34,7 +36,7 @@ public class JUnit {
                         tableList.put(child.getName(), pv.getTable(child.getName()));
                     }
                 }
-            }              
+            }
             if (args.length > 0) {
                 mode = true;
                 batch(args);
@@ -48,7 +50,7 @@ public class JUnit {
         }
     }
 
-    public static void interactive() throws Exception {
+    public static void interactive() throws Exception{
         Scanner sc = new Scanner(System.in);
         try {
             while (true) {
@@ -222,7 +224,7 @@ public class JUnit {
     }
 
     public static void size(String[] args) throws Exception {
-        checkArgs("rollback", 1, args.length);
+        checkArgs("size", 1, args.length);
         System.out.println(JUnit.currentTable.numberOfElements);
     }
     
@@ -238,8 +240,8 @@ public class JUnit {
         checkArgs("show tables", 2, args.length);
         System.out.println("table_name row_count");
         for (Map.Entry<String, Table> table : JUnit.tableList.entrySet()) {
-            Integer num = ((OTable) (table.getValue())).numberOfElements;
-            System.out.println(table.getKey() + " " + num.toString());
+            int num = ((OTable) (table.getValue())).numberOfElements;
+             System.out.println(table.getKey() + " " + num);
         }
     }
 
