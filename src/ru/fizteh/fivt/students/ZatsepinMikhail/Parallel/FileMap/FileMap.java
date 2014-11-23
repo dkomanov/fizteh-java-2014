@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class FileMap implements Table {
     private HashMap<String, Storeable> stableData;
@@ -44,6 +46,7 @@ public class FileMap implements Table {
     private int numberOfColumns;
     private String directoryOfTable;
     private TableProvider parent;
+    private Lock lockForCommit;
 
     private int getNumberOfDirectory(int hash) {
         int result = hash % 16;
@@ -79,6 +82,7 @@ public class FileMap implements Table {
         typeList = newTypeList;
         numberOfColumns = typeList.size();
         parent = newParent;
+        lockForCommit = new ReentrantLock();
     }
 
     public TableProvider getTableProvider() {
@@ -115,31 +119,15 @@ public class FileMap implements Table {
         if (removedData.get().contains(key)) {
             return null;
         }
-        HashMap<String, Storeable> tmpAddedData;
-        HashMap<String, Storeable> tmpChangedData;
-        HashSet<String> tmpRemovedData;
-        Storeable returnValue;
         if (addedData.get().containsKey(key)) {
-            /*tmpAddedData = addedData.get();
-            returnValue = tmpAddedData.remove(key);
-            addedData.set(tmpAddedData);
-            return returnValue;*/
             return addedData.get().remove(key);
         }
         if (changedData.get().containsKey(key)) {
-            tmpRemovedData = removedData.get();
-            tmpRemovedData.add(key);
-            removedData.set(tmpRemovedData);
-
-            tmpChangedData = changedData.get();
-            returnValue = tmpChangedData.remove(key);
-            changedData.set(tmpChangedData);
-            return returnValue;
+            removedData.get().add(key);
+            return changedData.get().remove(key);
         }
         if (stableData.containsKey(key)) {
-            tmpRemovedData = removedData.get();
-            tmpRemovedData.add(key);
-            removedData.set(tmpRemovedData);
+            removedData.get().add(key);
         }
         return stableData.get(key);
     }
@@ -152,39 +140,22 @@ public class FileMap implements Table {
         if (!TypesUtils.checkNewStorableValue(typeList, value)) {
             throw new ColumnFormatException();
         }
-        HashMap<String, Storeable> tmpAddedData;
-        HashMap<String, Storeable> tmpChangedData;
-        HashSet<String> tmpRemovedData;
-        Storeable returnValue;
-
         boolean wasDeleted = false;
         if (removedData.get().contains(key)) {
-            tmpRemovedData = removedData.get();
-            tmpRemovedData.remove(key);
-            removedData.set(tmpRemovedData);
+            removedData.get().remove(key);
             wasDeleted = true;
         }
         if (changedData.get().containsKey(key)) {
-            tmpChangedData = changedData.get();
-            returnValue = tmpChangedData.put(key, value);
-            changedData.set(tmpChangedData);
-            return returnValue;
+            return changedData.get().put(key, value);
         }
         if (addedData.get().containsKey(key)) {
-            tmpAddedData = addedData.get();
-            returnValue = tmpAddedData.put(key, value);
-            addedData.set(tmpAddedData);
-            return returnValue;
+            return addedData.get().put(key, value);
         }
 
         if (stableData.containsKey(key)) {
-            tmpChangedData = changedData.get();
-            tmpChangedData.put(key, value);
-            changedData.set(tmpChangedData);
+            changedData.get().put(key, value);
         } else {
-            tmpAddedData = addedData.get();
-            tmpAddedData.put(key, value);
-            addedData.set(tmpAddedData);
+            addedData.get().put(key, value);
         }
 
         if (wasDeleted) {
@@ -218,26 +189,44 @@ public class FileMap implements Table {
 
     @Override
     public int commit() throws IOException {
-        int result = stableData.size();
+        lockForCommit.lock();
+
+        HashMap<String, Storeable> tmpAddedData = new HashMap<>(addedData.get());
+        HashMap<String, Storeable> tmpBufferAdded = new HashMap<>(addedData.get());
+        HashMap<String, Storeable> tmpChangedData = new HashMap<>(changedData.get());
+        HashMap<String, Storeable> tmpBufferChanged = new HashMap<>(changedData.get());
+
+        tmpAddedData.keySet().removeAll(stableData.keySet());
+        tmpBufferChanged.keySet().removeAll(stableData.keySet());
+        tmpAddedData.putAll(tmpBufferChanged);
+
+        tmpChangedData.keySet().retainAll(stableData.keySet());
+        tmpBufferAdded.keySet().retainAll(stableData.keySet());
+        tmpChangedData.putAll(tmpBufferAdded);
+
+        removedData.get().retainAll(stableData.entrySet());
+        int result = tmpChangedData.size()
+                + removedData.get().size() + tmpAddedData.size();
         stableData.keySet().removeAll(removedData.get());
-        stableData.putAll(changedData.get());
-        stableData.putAll(addedData.get());
+        stableData.putAll(tmpChangedData);
+        stableData.putAll(tmpAddedData);
 
         boolean allRight = true;
-        if (changedData.get().size() + removedData.get().size() > 0) {
+        if (tmpChangedData.size() + removedData.get().size() > 0) {
             Set<String> reloadKeys = removedData.get();
-            reloadKeys.addAll(changedData.get().keySet());
+            reloadKeys.addAll(tmpChangedData.keySet());
             for (String oneKey : reloadKeys) {
                 if (!load(oneKey, false)) {
                     allRight = false;
                 }
             }
         }
-        for (String oneKey : addedData.get().keySet()) {
+        for (String oneKey : tmpAddedData.keySet()) {
             if (!load(oneKey, true)) {
                 allRight = false;
             }
         }
+        lockForCommit.unlock();
 
         clearStaff();
         if (allRight) {

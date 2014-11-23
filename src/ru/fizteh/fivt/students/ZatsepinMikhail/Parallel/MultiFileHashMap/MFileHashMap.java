@@ -20,14 +20,18 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MFileHashMap implements TableProvider {
     private String dataBaseDirectory;
     private HashMap<String, FileMap> tables;
     private FileMap currentTable;
+    private ReentrantReadWriteLock lockForCreateAndGet;
+
     public MFileHashMap(String newDirectory) {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
+        lockForCreateAndGet = new ReentrantReadWriteLock();
     }
 
     @Override
@@ -35,11 +39,16 @@ public class MFileHashMap implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
+
+        lockForCreateAndGet.readLock().lock();
+        Table returnValue;
         if (tables.containsKey(name)) {
-            return tables.get(name);
+            returnValue = tables.get(name);
         } else {
-            return null;
+            returnValue = null;
         }
+        lockForCreateAndGet.readLock().unlock();
+        return returnValue;
     }
 
     @Override
@@ -48,12 +57,16 @@ public class MFileHashMap implements TableProvider {
             throw new IllegalArgumentException("null argument");
         }
         TypesUtils.checkTypes(columnTypes);
+
+        lockForCreateAndGet.writeLock().lock();
+        Table returnValue;
         if (tables.containsKey(name)) {
-            return null;
+            returnValue = null;
         } else {
             Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
             Path pathOfNewTableSignatureFile = Paths.get(dataBaseDirectory, name, "signature.tsv");
             if (Files.exists(pathOfNewTable) & Files.isDirectory(pathOfNewTable)) {
+                lockForCreateAndGet.writeLock().unlock();
                 throw new IllegalArgumentException("this directory already exists");
             }
             try {
@@ -64,11 +77,14 @@ public class MFileHashMap implements TableProvider {
                 }
                 FileMap newTable = new FileMap(pathOfNewTable.toString(), columnTypes, this);
                 tables.put(name, newTable);
-                return newTable;
+                returnValue = newTable;
             } catch (IOException e) {
+                lockForCreateAndGet.writeLock().unlock();
                 throw new IOException();
             }
         }
+        lockForCreateAndGet.writeLock().unlock();
+        return returnValue;
     }
 
     @Override
