@@ -8,6 +8,7 @@ import ru.fizteh.fivt.students.standy66_new.utility.FileUtility;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,9 +18,9 @@ import java.util.stream.Collectors;
  */
 public class StringDatabase implements TableProvider, AutoCloseable {
     private static final boolean FILE_BASED_LOCK_MECHANISM = (System.getProperty("use_locks") != null);
-    private File dbDirectory;
+    private final File dbDirectory;
+    private final Map<String, StringTable> tableInstances;
     private File lockFile;
-    private Map<String, StringTable> tableInstances;
 
     StringDatabase(File directory) {
         if (directory == null) {
@@ -50,7 +51,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
         }
         dbDirectory = directory;
 
-        tableInstances = new HashMap<>();
+        tableInstances = Collections.synchronizedMap(new HashMap<>());
 
         initTableInstances(directory);
     }
@@ -85,40 +86,49 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     public StringTable createTable(String name) {
         throwIfIncorrectTableName(name);
         File tableDirectory = new File(dbDirectory, name);
-        if (tableInstances.get(name) != null) {
-
-            return null;
+        synchronized (tableInstances) {
+            if (tableInstances.get(name) != null) {
+                return null;
+            }
+            if (!tableDirectory.mkdirs()) {
+                throw new IllegalArgumentException("table cannot be created");
+            }
+            tableInstances.put(name, new StringTable(tableDirectory));
         }
-        if (!tableDirectory.mkdirs()) {
-            throw new IllegalArgumentException("table cannot be created");
-        }
-        tableInstances.put(name, new StringTable(tableDirectory));
         return tableInstances.get(name);
     }
 
     public Collection<String> listTableNames() {
-        return tableInstances.values().stream()
-                .map(Table::getName).collect(Collectors.toList());
+        synchronized (tableInstances) {
+            return tableInstances.values().stream()
+                    .map(Table::getName).collect(Collectors.toList());
+        }
     }
 
     @Override
     public void removeTable(String name) {
         throwIfIncorrectTableName(name);
-        if (tableInstances.get(name) == null) {
-            throw new IllegalStateException("table doesn't exist");
-        }
-        tableInstances.remove(name);
-        if (!FileUtility.deleteRecursively(new File(dbDirectory, name))) {
-            throw new IllegalArgumentException("failed to remove table");
+        synchronized (tableInstances) {
+            if (tableInstances.get(name) == null) {
+                throw new IllegalStateException("table doesn't exist");
+            }
+            tableInstances.remove(name);
+            if (!FileUtility.deleteRecursively(new File(dbDirectory, name))) {
+                throw new IllegalArgumentException("failed to remove table");
+            }
         }
     }
 
     public void commit() {
-        tableInstances.values().forEach(Table::commit);
+        synchronized (tableInstances) {
+            tableInstances.values().forEach(Table::commit);
+        }
     }
 
     public void rollback() {
-        tableInstances.values().forEach(Table::rollback);
+        synchronized (tableInstances) {
+            tableInstances.values().forEach(Table::rollback);
+        }
     }
 
     @Override
