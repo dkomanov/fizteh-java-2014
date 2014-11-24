@@ -197,8 +197,8 @@ public class TabledbTest {
 
     @Test
     public void testRussian() throws Exception {
-        put("Ключ", "Значение");
-        Assert.assertEquals("Значение", get("Ключ"));
+        put("РљР»СЋС‡", "Р—РЅР°С‡РµРЅРёРµ");
+        Assert.assertEquals("Р—РЅР°С‡РµРЅРёРµ", get("РљР»СЋС‡"));
     }
 
     @Test
