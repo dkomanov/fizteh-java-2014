@@ -142,7 +142,7 @@ public class Launcher {
     private boolean readData() throws IOException {
         keysPath = new HashMap[numberDIRECTORIES][numberDIRECTORIES];
         for (int i = 0; i < numberDIRECTORIES; i++) {
-            for (int j = 0; j < numberDIRECTORIES; j++) {
+            for (int j = 0; j < numberFILESINDIRECTORY; j++) {
                 reader = new MultiReader(parentDir + File.separator + currentTable + File.separator
                         + Integer.toString(i) + ".dir" + File.separator + Integer.toString(j) + ".dat");
                 keysPath[i][j] = reader.readDataFromFile();
@@ -201,7 +201,7 @@ public class Launcher {
         }
         int hash = arguments[1].hashCode();
         int ndir = hash % numberDIRECTORIES;
-        int nfile = hash / numberDIRECTORIES % numberDIRECTORIES;
+        int nfile = hash / numberDIRECTORIES % numberFILESINDIRECTORY;
         if (keysPath[ndir][nfile].containsKey(arguments[1])) {
             keysPath[ndir][nfile].remove(arguments[1]);
             int num = tableNames.get(currentTable);
@@ -234,7 +234,7 @@ public class Launcher {
             if (!subdir.mkdir()) {
                 return false;
             }
-            for (int j = 0; j < numberDIRECTORIES; j++) {
+            for (int j = 0; j < numberFILESINDIRECTORY; j++) {
                 File data = new File(subdir.getAbsolutePath() + File.separator + Integer.toString(j) + ".dat");
                 if (!data.createNewFile()) {
                     return false;
@@ -328,7 +328,7 @@ public class Launcher {
             return false;
         }
         for (int i = 0; i < numberDIRECTORIES; i++) {
-            for (int j = 0; j < numberDIRECTORIES; j++) {
+            for (int j = 0; j < numberFILESINDIRECTORY; j++) {
                 Set<String> keySet = keysPath[i][j].keySet();
                 for (String key : keySet) {
                     printStream.print(key + " ");
