@@ -108,7 +108,11 @@ public class StructuredTable implements Table {
         return table.list();
     }
 
-    public int unsavedChanges() {
+    public int getNumberOfUncommittedChanges() {
         return table.unsavedChanges();
+    }
+
+    public StructuredTableProvider getProvider() {
+        return provider;
     }
 }

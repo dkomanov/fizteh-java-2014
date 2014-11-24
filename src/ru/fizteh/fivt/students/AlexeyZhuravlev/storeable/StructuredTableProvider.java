@@ -183,7 +183,7 @@ public class StructuredTableProvider implements TableProvider {
         return result;
     }
 
-    public List<String> listOfTables() {
+    public List<String> getTableNames() {
         List<String> res = new ArrayList<>();
         res.addAll(tables.keySet());
         return res;

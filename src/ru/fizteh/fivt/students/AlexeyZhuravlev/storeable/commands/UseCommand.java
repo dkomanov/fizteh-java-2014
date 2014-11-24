@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.commands;
 
 import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.Command;
-import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTableProvider;
 
 /**
@@ -13,8 +12,8 @@ public class UseCommand extends Command {
 
     @Override
     public void execute(StructuredTableProvider base) throws Exception {
-        if (base.getUsing() != null && ((StructuredTable) base.getUsing()).unsavedChanges() != 0) {
-            System.out.println(((StructuredTable) base.getUsing()).unsavedChanges() + " unsaved changes");
+        if (base.getUsing() != null && base.getUsing().getNumberOfUncommittedChanges() != 0) {
+            System.out.println(base.getUsing().getNumberOfUncommittedChanges() + " unsaved changes");
         } else if (base.setUsing(name) == null) {
             System.out.println(name + " not exists");
         } else {
