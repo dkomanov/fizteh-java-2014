@@ -27,7 +27,7 @@ public class ParallelTableProvider implements TableProvider {
         StructuredTableProviderFactory factory = new StructuredTableProviderFactory();
         tableLocks = new HashMap<>();
         oldProvider = (StructuredTableProvider) factory.create(path);
-        for (String name: oldProvider.listOfTables()) {
+        for (String name: oldProvider.getTableNames()) {
             tableLocks.put(name, new ReentrantReadWriteLock(true));
         }
     }
@@ -82,6 +82,16 @@ public class ParallelTableProvider implements TableProvider {
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
         return oldProvider.createFor(((ParallelTable) table).getStructuredTable(), values);
+    }
+
+    @Override
+    public List<String> getTableNames() {
+        lock.readLock().lock();
+        try {
+            return oldProvider.getTableNames();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
