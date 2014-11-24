@@ -5,7 +5,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.*;
-import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTableProviderFactory;
 
 import java.io.IOException;
@@ -172,8 +171,8 @@ public class StructuredTableTest {
         table.put("1", value);
         table.put("2", value);
         table.put("3", value);
-        assertEquals(3, ((StructuredTable) table).list().size());
-        assertTrue(((StructuredTable) table).list().containsAll(new LinkedList<>(Arrays.asList("1", "2", "3"))));
+        assertEquals(3, table.list().size());
+        assertTrue(table.list().containsAll(new LinkedList<>(Arrays.asList("1", "2", "3"))));
     }
 
     @Test
@@ -183,8 +182,8 @@ public class StructuredTableTest {
         table.put("2", value);
         table.put("3", value);
         table.remove("1");
-        assertEquals(((StructuredTable) table).unsavedChanges(), 4);
+        assertEquals(table.getNumberOfUncommittedChanges(), 4);
         table.commit();
-        assertEquals(((StructuredTable) table).unsavedChanges(), 0);
+        assertEquals(table.getNumberOfUncommittedChanges(), 0);
     }
 }
