@@ -1,8 +1,11 @@
-package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
+package ru.fizteh.fivt.students.andrey_reshetnikov.JUnit;
+
+import ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.NoSuchElementException;
 
-public class MultiFileHashMapMain {
+public class JUnitMain {
     public static void main(String[] args) {
         run(args);
     }
@@ -15,7 +18,7 @@ public class MultiFileHashMapMain {
         }
         boolean interactive = false;
         try {
-            DataBaseDir dbDir = new DataBaseDir(path);
+            JUnitDataBaseDir jUnitDbDir = new JUnitDataBaseDir(path);
             CommandGetter getter;
             if (args.length == 0) {
                 interactive = true;
@@ -27,10 +30,13 @@ public class MultiFileHashMapMain {
             do {
                 try {
                     String s = getter.nextCommand();
-                    Command command = Command.fromString(s);
-                    command.execute(dbDir);
+                    JUnitCommand command = JUnitCommand.fromString(s);
+                    command.execute(jUnitDbDir);
                 } catch (ExitCommandException e) {
                     exitStatus = true;
+                } catch (NoSuchElementException e) {
+                    System.err.println("No such element");
+                    System.err.flush();
                 } catch (Exception e) {
                     if (interactive) {
                         System.err.println(e.getMessage());
@@ -53,11 +59,11 @@ public class MultiFileHashMapMain {
             System.out.println("Can not remove table directory. Redundant files");
             System.exit(1);
         } catch (CannotDeleteDataBaseFileException e) {
-           System.out.println(e.message);
-           System.exit(1);
+            System.out.println(e.message);
+            System.exit(1);
         } catch (FileFromDataBaseIsNotDirectoryException e) {
-           System.out.println(e.childName + " from databases directory is not a directory");
-           System.exit(1);
+            System.out.println(e.childName + " from databases directory is not a directory");
+            System.exit(1);
         } catch (ParentDirectoryIsNotDirectory e) {
             System.out.println("Specified fizteh.db.dir is not a directory");
             System.exit(1);

@@ -4,12 +4,23 @@ public class GetCommand extends CommandFileMap {
 
     private String key;
 
-    public GetCommand(String newKey) {
-        key = newKey;
+    public int numberOfArguments() {
+        return 1;
+    }
+
+    public void putArguments(String[] args) {
+        key = args[1];
+    }
+
+    public GetCommand(String passedKey) {
+        key = passedKey;
+    }
+
+    public GetCommand() {
     }
 
     @Override
-    public void execute(DataBaseOneFile base, Boolean exitStatus) {
+    public void execute(DataBase base) {
         String value = base.data.get(key);
         if (value == null) {
             System.out.println("not found");

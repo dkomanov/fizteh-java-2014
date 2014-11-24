@@ -8,49 +8,66 @@ import java.nio.file.Files;
 public class MultiRemoveCommand extends Command {
     private String key;
 
-    public MultiRemoveCommand(String newKey) {
-       key = newKey;
+    protected void putArguments(String[] args) {
+        key = args[1];
+    }
+
+    protected int numberOfArguments() {
+        return 1;
+    }
+
+    public MultiRemoveCommand() {}
+
+    public MultiRemoveCommand(String passedKey) {
+        key = passedKey;
     }
 
     @Override
-    public void execute(DataBaseOneDir base) throws Exception {
-        if (base.getUsing() == null) {
-            System.out.println("no table");
+    public void executeOnTable(Table table) throws Exception {
+        int hashCode = Math.abs(key.hashCode());
+        int dir = hashCode % ConstClass.NUM_DIRECTORIES;
+        int file = hashCode / ConstClass.NUM_FILES % ConstClass.NUM_FILES;
+        RemoveCommand remove = new RemoveCommand(key);
+        if (table.databases[dir][file] == null) {
+            System.out.println("not found");
         } else {
-            int hashCode = Math.abs(key.hashCode());
-            int ndirectory = hashCode % NUM_DIRECTORIES;
-            int nfile = hashCode / NUM_FILES % NUM_FILES;
-            RemoveCommand remove = new RemoveCommand(key);
-            if (base.getUsing().databases[ndirectory][nfile] == null) {
-                System.out.println("not found");
-            } else {
-                DataBaseOneFile dataBase = base.getUsing().databases[ndirectory][nfile];
-                remove.execute(dataBase, false);
-                if (dataBase.recordsNumber() == 0) {
-                    File dbFile = new File(dataBase.dataBaseFileName);
+            DataBase db = table.databases[dir][file];
+            remove.execute(db);
+            if (table.getClass() == Table.class) {
+                if (db.recordsNumber() == 0) {
+                    File dbFile = new File(db.dbFileName);
                     try {
                         Files.delete(dbFile.toPath());
                     } catch (SecurityException | IOException e) {
-                        throw new Exception("You cann't delete database file");
+                        throw new Exception("Access violation: cannon delete database file");
                     }
-                    base.getUsing().databases[ndirectory][nfile] = null;
+                    table.databases[dir][file] = null;
                     int k = 0;
-                    for (int j = 0; j < 16; j++) {
-                        if (base.getUsing().databases[ndirectory][j] == null) {
+                    for (int j = 0; j < ConstClass.NUM_FILES; j++) {
+                        if (table.databases[dir][j] == null) {
                             k++;
                         }
                     }
-                    if (k == 16) {
+                    if (k == ConstClass.NUM_FILES) {
                         try {
                             Files.delete(dbFile.getParentFile().toPath());
                         } catch (DirectoryNotEmptyException e) {
-                            throw new Exception("You cann't remove directory. There are some subdirectories there");
-                        } catch (IOException e) {
-                            throw new Exception("You cann't delete database subdirectory");
+                            throw new Exception("Cannot remove table subdirectory. Redundant files");
+                        } catch (SecurityException | IOException e) {
+                            throw new Exception("Access violation: cannot delete database subdirectory");
                         }
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void execute(DataBaseDir base) throws Exception {
+        if (base.getUsing() == null) {
+            System.out.println("no table");
+        } else {
+            executeOnTable(base.getUsing());
         }
     }
 }
