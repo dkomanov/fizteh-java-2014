@@ -19,6 +19,7 @@ import ru.fizteh.fivt.students.Bulat_Galiev.storeable.Storeabledb;
 import ru.fizteh.fivt.students.Bulat_Galiev.storeable.TabledbProvider;
 
 public class TabledbProviderTest {
+    private static final int INTVALUENUMBER = 139;
     private static ArrayList<Class<?>> typeList;
     private TableProvider provider;
     private Path testDir;
@@ -147,7 +148,7 @@ public class TabledbProviderTest {
         provider.removeTable("table");
         Assert.assertNotNull(provider.createTable("table", typeList));
     }
-    
+
     @Test
     public final void testGetTableNames() throws IOException {
         provider.createTable("table1", typeList);
@@ -183,9 +184,10 @@ public class TabledbProviderTest {
         TabledbProvider.changeCurTable("table");
         Assert.assertNotNull(((TabledbProvider) provider).getDataBase());
     }
-    
+
     @Test(expected = IndexOutOfBoundsException.class)
-    public final void testCreateForThrowsExceptionIfColumnsAndValuesAmountAreNotEqual() throws IOException {
+    public final void testCreateForThrowsExceptionIfColumnsAndValuesAmountAreNotEqual()
+            throws IOException {
         Table singleTable = provider.createTable("table", typeList);
         List<String> values = new ArrayList<>();
         values.add("stuff");
@@ -193,41 +195,45 @@ public class TabledbProviderTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public final void testCreateForThrowsExceptionIfColumnAndValuesTypesAreNotCompatible() throws IOException {
+    public final void testCreateForThrowsExceptionIfColumnAndValuesTypesAreNotCompatible()
+            throws IOException {
         Table singleTable = provider.createTable("table", typeList);
         List<Object> values = new ArrayList<>();
         values.add(1, "stuff");
         values.add(2, null);
         provider.createFor(singleTable, values);
     }
-    
+
     @Test
     public final void testCreateForNormalTable() throws IOException {
         List<Object> values = new ArrayList<>();
         values.add(0, "Testing");
-        values.add(1, 139);
+        values.add(1, INTVALUENUMBER);
         Storeable storeableExpected = new Storeabledb(values);
-        
+
         Table singleTable = provider.createTable("table", typeList);
         Storeable storeableValue = provider.createFor(singleTable);
         storeableValue = new Storeabledb(values);
-        
-        Assert.assertEquals(storeableValue.getStringAt(0), storeableExpected.getStringAt(0));
-        Assert.assertEquals(storeableValue.getIntAt(1), storeableExpected.getIntAt(1));
+
+        Assert.assertEquals(storeableValue.getStringAt(0),
+                storeableExpected.getStringAt(0));
+        Assert.assertEquals(storeableValue.getIntAt(1),
+                storeableExpected.getIntAt(1));
     }
-    
+
     @Test
     public final void testCreateForNormal() throws IOException {
         Table singleTable = provider.createTable("table", typeList);
         List<Object> values = new ArrayList<>();
         values.add(0, "Testing");
-        values.add(1, 139);
+        values.add(1, INTVALUENUMBER);
         Storeable storeableExpected = new Storeabledb(values);
         Storeable result = provider.createFor(singleTable, values);
-        Assert.assertEquals(result.getStringAt(0), storeableExpected.getStringAt(0));
+        Assert.assertEquals(result.getStringAt(0),
+                storeableExpected.getStringAt(0));
         Assert.assertEquals(result.getIntAt(1), storeableExpected.getIntAt(1));
     }
-    
+
     @After
     public final void tearDown() throws Exception {
         Cleaner.clean(testDir.toFile());

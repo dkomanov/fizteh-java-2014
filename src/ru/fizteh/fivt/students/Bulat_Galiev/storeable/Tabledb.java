@@ -14,8 +14,6 @@ import java.util.Map.Entry;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.Bulat_Galiev.storeable.CellForKey;
-import ru.fizteh.fivt.students.Bulat_Galiev.storeable.DatabaseSerializer;
 
 public final class Tabledb implements Table {
     private static final int KEYNUMBER = 16;
@@ -27,7 +25,8 @@ public final class Tabledb implements Table {
     private List<Class<?>> columnTypeList;
 
     public Tabledb(final Path path, final String name,
-            final TabledbProvider singleprovider, final List<Class<?>> columnListType) {
+            final TabledbProvider singleprovider,
+            final List<Class<?>> columnListType) {
         databaseFiles = new HashMap<CellForKey, DatabaseSerializer>();
         tablePath = path;
         tableName = name;
@@ -60,8 +59,8 @@ public final class Tabledb implements Table {
     }
 
     public int rollback() {
-        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles.entrySet()
-                .iterator();
+        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles
+                .entrySet().iterator();
         int diffnrecords = 0;
         while (it.hasNext()) {
             Entry<CellForKey, DatabaseSerializer> databaseFile = it.next();
@@ -166,7 +165,8 @@ public final class Tabledb implements Table {
 
     public List<String> list() {
         List<String> list = new LinkedList<String>();
-        for (Entry<CellForKey, DatabaseSerializer> pair : databaseFiles.entrySet()) {
+        for (Entry<CellForKey, DatabaseSerializer> pair : databaseFiles
+                .entrySet()) {
             list.addAll(pair.getValue().list());
         }
         return list;
@@ -232,8 +232,8 @@ public final class Tabledb implements Table {
     }
 
     private int writeTableToDir() throws IOException {
-        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles.entrySet()
-                .iterator();
+        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles
+                .entrySet().iterator();
         int diffnrecords = 0;
         while (it.hasNext()) {
             Entry<CellForKey, DatabaseSerializer> databaseFile = it.next();
@@ -302,7 +302,8 @@ public final class Tabledb implements Table {
     @Override
     public int getNumberOfUncommittedChanges() {
         int diffNumRecords = 0;
-        for (Entry<CellForKey, DatabaseSerializer> databaseFile : databaseFiles.entrySet()) {
+        for (Entry<CellForKey, DatabaseSerializer> databaseFile : databaseFiles
+                .entrySet()) {
             diffNumRecords += databaseFile.getValue().getChangedRecordsNumber();
         }
         return diffNumRecords;

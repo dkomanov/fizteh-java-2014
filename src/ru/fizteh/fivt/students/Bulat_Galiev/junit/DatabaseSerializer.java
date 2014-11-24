@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.lang.Math;
 
 public class DatabaseSerializer {
     private static final int BYTESNUMBER = 8;
@@ -141,7 +140,8 @@ public class DatabaseSerializer {
         if (putValue == null) {
             unsavedRecordsNumber++;
         }
-        if ((putValue == null) && (savedFileMap.get(key)!=null) && (!savedFileMap.get(key).equals(value))) {
+        if ((putValue == null) && (savedFileMap.get(key) != null)
+                && (!savedFileMap.get(key).equals(value))) {
             unsavedRecordsNumber++;
         }
         return putValue;

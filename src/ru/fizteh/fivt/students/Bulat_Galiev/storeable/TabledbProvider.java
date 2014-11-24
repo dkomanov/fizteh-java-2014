@@ -283,7 +283,7 @@ public final class TabledbProvider implements TableProvider {
                         + type.substring(1);
             }
             if (type.equals("integer")) {
-                type = type.substring(0, 3);
+                type = "int";
             }
             if (Types.stringToClass(type) == null) {
                 throw new IllegalArgumentException("Class " + type

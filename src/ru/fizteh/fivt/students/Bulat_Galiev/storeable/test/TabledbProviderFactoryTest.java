@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.Bulat_Galiev.storeable.TabledbProviderFactory;
-import ru.fizteh.fivt.students.Bulat_Galiev.storeable.test.Cleaner;
 
 public class TabledbProviderFactoryTest {
     TableProviderFactory factory = new TabledbProviderFactory();
@@ -18,8 +17,8 @@ public class TabledbProviderFactoryTest {
 
     @Before
     public void setUp() throws Exception {
-        String tmp_dir_prefix = "Swing_";
-        testDir = Files.createTempDirectory(tmp_dir_prefix);
+        String tmpDirPrefix = "Swing_";
+        testDir = Files.createTempDirectory(tmpDirPrefix);
     }
 
     @Test(expected = IllegalArgumentException.class)

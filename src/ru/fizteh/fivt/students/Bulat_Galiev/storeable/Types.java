@@ -12,8 +12,8 @@ import ru.fizteh.fivt.storage.structured.Table;
 
 public class Types {
 
-    private HashMap<Class<?>, serializeObject> classSerializerMap = new HashMap<>();
-    private HashMap<Class<?>, deserializeString> classDeserializerMap = new HashMap<>();
+    private HashMap<Class<?>, SerializeObject> classSerializerMap = new HashMap<>();
+    private HashMap<Class<?>, DeserializeString> classDeserializerMap = new HashMap<>();
 
     private static Map<Class<?>, String> classStringMap = new HashMap<>();
     private static Map<String, Class<?>> stringClassMap = new HashMap<>();
@@ -125,11 +125,11 @@ public class Types {
         return new Storeabledb(values);
     }
 
-    interface deserializeString {
+    interface DeserializeString {
         Object getObject(String string) throws ParseException;
     }
 
-    interface serializeObject {
+    interface SerializeObject {
         String getString(Object object);
     }
 }
