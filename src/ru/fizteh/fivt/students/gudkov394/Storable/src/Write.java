@@ -1,6 +1,5 @@
-package ru.fizteh.fivt.students.gudkov394.MultiMap;
+package ru.fizteh.fivt.students.gudkov394.Storable.src;
 
-import ru.fizteh.fivt.students.gudkov394.map.*;
 import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
@@ -10,18 +9,19 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Set;
 
+
 /**
  * Created by kagudkov on 28.09.14.
  */
 public class Write {
 
-    public Write(final CurrentTable currentTable, File f) {
+    public Write(final CurrentTable currentTable, File f, CurrentTable table, TableProviderClass tableProviderClass) {
         clearDirectory(f);
         Set<String> set = currentTable.keySet();
         for (String s : set) {
             int hashcode = s.hashCode();
-            int ndirectory = (hashcode + 16) % 16;
-            int nfile = (hashcode / 16 + 16) % 16;
+            int ndirectory = (hashcode % 16 + 16) % 16;
+            int nfile = (hashcode / 16 % 16 + 16) % 16;
 
             FileOutputStream output = null;
             try {
@@ -45,11 +45,16 @@ public class Write {
                 System.exit(2);
             }
             writeWord(s, output);
-            String tmp = currentTable.get(s).toString();
+            String tmp = tableProviderClass.serialize(table, currentTable.get(s));
             writeWord(tmp, output);
+            try {
+                output.close();
+            } catch (IOException e) {
+                System.err.println("Ouput file didn't close");
+                System.exit(2);
+            }
         }
     }
-
 
     private void clearDirectory(File f) {
         String[] filesInDirectory = f.list();

@@ -1,20 +1,29 @@
-package ru.fizteh.fivt.students.gudkov394.MultiMap;
+package ru.fizteh.fivt.students.gudkov394.Storable.src;
+
+import ru.fizteh.fivt.storage.structured.Storeable;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class Init {
-    public Init(Map<String, String> currentTable, final String property) {
+    public Init(Map<String, Storeable> currentTable, final String property,
+                TableProviderClass tableProviderClass, CurrentTable table) {
         if (property == null) {
             System.err.println("You forgot file");
             System.exit(4);
         }
         File f = new File(property);
+        Utils utils = new Utils();
+        table.setSignature(utils.readSignature(table.getName()));
         File[] files = f.listFiles();
         if (files != null) {
             for (File tmp : files) {
+                if ((tmp.toString()).equals("signature.tsv")) {
+                    break;
+                }
                 DataInputStream input = null;
                 try {
                     input = new DataInputStream(new FileInputStream(tmp));
@@ -36,7 +45,12 @@ public class Init {
                             System.err.println("Wrong data: same keys");
                             System.exit(2);
                         }
-                        currentTable.put(key, value);
+                        try {
+                            currentTable.put(key, tableProviderClass.deserialize(table, value));
+                        } catch (ParseException e) {
+                            System.err.println("We have a problem with parsing in init");
+                            System.exit(3);
+                        }
                     }
                 } catch (IOException e) {
                     System.err.println("failed file");
@@ -49,10 +63,11 @@ public class Init {
                     System.exit(6);
                 }
             }
-        } else {
-            System.err.println("Empty directory");
-            System.exit(2);
         }
+//        else {
+//            System.err.println("Empty directory");
+//            System.exit(2);
+//        }
     }
 
     private static byte[] read(final DataInputStream input, final int length) throws IOException {

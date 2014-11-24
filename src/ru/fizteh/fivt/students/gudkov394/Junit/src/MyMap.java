@@ -1,29 +1,23 @@
-package ru.fizteh.fivt.students.gudkov394.MultiMap;
+package ru.fizteh.fivt.students.gudkov394.Junit.src;
 
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.io.File;
 
 public class MyMap {
-    public Map<String, CurrentTable> tables = new HashMap<String, CurrentTable>();
     public CurrentTable ct = new CurrentTable();
+    TableProviderClass tableProviderClass = new TableProviderClass();
 
     public Boolean checkName(final String name) {
-        Map<String, Integer> mapStrign = new HashMap<String, Integer>();
-        mapStrign.put("put", 0);
-        mapStrign.put("get", 1);
-        mapStrign.put("remove", 2);
-        mapStrign.put("list", 3);
-        mapStrign.put("exit", 4);
-        mapStrign.put("create", 4);
-        mapStrign.put("use", 4);
-        mapStrign.put("drop", 4);
-        mapStrign.put("size", 4);
-        mapStrign.put("#*#", 4);
-        return mapStrign.containsKey(name);
+        String[] s = {"put", "get", "remove", "list", "exit", "create", "use", "drop", "#*#",
+                "size", "commit", "rollback"};
+        for (int i = 0; i < s.length; ++i) {
+            if (name.equals(s[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void initMap() {
@@ -34,7 +28,7 @@ public class MyMap {
                 CurrentTable ct = new CurrentTable(tmp);
                 ct.init(); //в number запишем количество аргументов, а дальше поддерживаем его
                 ct.clear();
-                tables.put(tmp, ct);
+                tableProviderClass.put(tmp, ct);
             }
         }
     }
@@ -75,15 +69,15 @@ public class MyMap {
                 System.err.println("wrong number of argument to Create");
                 System.exit(1);
             }
-            createTable(currentArgs[1]);
+            tableProviderClass.createTable(currentArgs[1]);
         } else if ("use".equals(currentArgs[0])) {
             if (currentArgs.length != 2) {
                 System.err.println("wrong number of argument to use");
                 System.exit(1);
             }
-            if (tables.containsKey(currentArgs[1])) {
+            if (tableProviderClass.tables.containsKey(currentArgs[1])) {
                 ct.clear();
-                ct = tables.get(currentArgs[1]);
+                ct = tableProviderClass.tables.get(currentArgs[1]);
                 ct.init();
                 System.out.println("using " + ct.getName());
             } else {
@@ -94,18 +88,18 @@ public class MyMap {
                 System.err.println("wrong number of argument to drop");
                 System.exit(1);
             }
-            removeTable(currentArgs[1]);
-            if (tables.containsKey(currentArgs[1])) {
-                tables.get(currentArgs[1]).delete();
-                tables.remove(currentArgs[1]);
+            tableProviderClass.removeTable(currentArgs[1]);
+            if (tableProviderClass.tables.containsKey(currentArgs[1])) {
+                tableProviderClass.tables.get(currentArgs[1]).delete();
+                tableProviderClass.tables.remove(currentArgs[1]);
             } else {
                 System.out.println("tablename not exists");
             }
         } else if ("#*#".equals(currentArgs[0])) {
-            Set<String> set = tables.keySet();
+            Set<String> set = tableProviderClass.tables.keySet();
             System.out.println("table_name row_count");
             for (String s : set) {
-                System.out.println(s + " " + ((Integer) tables.get(s).size()).toString());
+                System.out.println(s + " " + ((Integer) tableProviderClass.tables.get(s).size()).toString());
             }
             System.out.println();
         } else if ("size".equals(currentArgs[0])) {
@@ -114,10 +108,22 @@ public class MyMap {
                 System.exit(1);
             }
             int size = 0;
-            for (String s : tables.keySet()) {
-                size += tables.get(s).size();
+            for (String s : tableProviderClass.tables.keySet()) {
+                size += tableProviderClass.tables.get(s).size();
             }
             System.out.println(size);
+        } else if ("commit".equals(currentArgs[0])) {
+            if (currentArgs.length != 1) {
+                System.err.println("wrong number of argument to drop");
+                System.exit(1);
+            }
+            System.out.println(ct.commit());
+        } else if ("rollback".equals(currentArgs[0])) {
+            if (currentArgs.length != 1) {
+                System.err.println("wrong number of argument to drop");
+                System.exit(1);
+            }
+            System.out.println(ct.rollback());
         } else {
             System.err.println("wrong command");
             System.exit(22);
@@ -129,7 +135,9 @@ public class MyMap {
         CurrentTable currentTable = new CurrentTable();
         initMap();
         while (true) {
+
             String currentString = sc.nextLine();
+            currentString = currentString.trim();
             currentString = currentString.replaceAll("\\s*;\\s*", ";");
             currentString = currentString.replaceAll("\\s+", " ");
             currentString = currentString.replaceAll("show tables", "#*#");
@@ -187,41 +195,6 @@ public class MyMap {
             interactive();
         } else {
             packageMode(args);
-        }
-    }
-
-    public CurrentTable getTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException();
-        }
-        if (!tables.containsKey(name)) {
-            return null;
-        }
-        return tables.get(name);
-    }
-
-    public CurrentTable createTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException();
-        }
-        if (tables.containsKey(name)) {
-            return null;
-        } else {
-            CurrentTable newTable = new CurrentTable(name);
-            tables.put(name, newTable);
-            return newTable;
-        }
-    }
-
-    public void removeTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException();
-        }
-        if (tables.containsKey(name)) {
-            tables.get(name).delete();
-            tables.remove(name);
-        } else {
-            throw new IllegalStateException();
         }
     }
 }

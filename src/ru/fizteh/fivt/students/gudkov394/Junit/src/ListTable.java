@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.gudkov394.MultiMap;
+package ru.fizteh.fivt.students.gudkov394.Junit.src;
 
 import java.util.Set;
 

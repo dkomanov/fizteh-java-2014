@@ -1,15 +1,20 @@
-package ru.fizteh.fivt.students.gudkov394.MultiMap;
+package ru.fizteh.fivt.students.gudkov394.Junit.src;
 
+import javafx.util.Pair;
+import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
 import java.io.File;
 import java.util.*;
 
-public class CurrentTable {
+public class CurrentTable implements Table {
     String name;
     Map currentTable = new HashMap<String, String>();
+    Map newKey = new HashMap<String, String>();
+    Map removedKey = new HashMap<String, String>();
     private int number = 0;
+    int alreadyAdded = 0;
 
     public CurrentTable(String nameTmp) {
         name = nameTmp;
@@ -28,6 +33,8 @@ public class CurrentTable {
         return System.getProperty("db.file") + File.separator + getName();
     }
 
+    private ArrayList<Pair<CurrentTable, File>> currentChanges = new ArrayList<Pair<CurrentTable, File>>();
+
     void write() {
         if (System.getProperty("db.file") == null) {
             System.err.println("You forgot directory");
@@ -35,7 +42,23 @@ public class CurrentTable {
         }
         String newPath = System.getProperty("db.file") + File.separator + getName();
         File f = new File(newPath);
-        Write w = new Write(this, f);
+        currentChanges.add(new Pair<CurrentTable, File>(this, f));
+    }
+
+    @Override
+    public int commit() {
+        for (Pair<CurrentTable, File> tmp : currentChanges) {
+            Write write = new Write(tmp.getKey(), tmp.getValue());
+        }
+        return shadeOperationsRemindChanges();
+    }
+
+    private int shadeOperationsRemindChanges() {
+        currentChanges.clear();
+        newKey.clear();
+        int oldAlreadyAdded = alreadyAdded;
+        alreadyAdded = 0;
+        return oldAlreadyAdded;
     }
 
     public Set<String> keySet() {
@@ -53,8 +76,19 @@ public class CurrentTable {
     }
 
     public String put(String key, String value) {
+        if (key == null || value == null) {
+            throw new IllegalArgumentException();
+        }
         ++number;
         String oldValue = null;
+        if (removedKey.containsKey(key)) {
+            removedKey.remove(key);
+        }
+        if (!newKey.containsKey(key)) {
+            ++alreadyAdded;
+            newKey.put(key, value);
+            write();
+        }
         if (currentTable.containsKey(key)) {
             oldValue = get(key);
         }
@@ -68,10 +102,20 @@ public class CurrentTable {
     }
 
     public String remove(String currentArg) {
+        if (currentArg == null) {
+            throw new IllegalArgumentException();
+        }
         --number;
+        if (!newKey.containsKey(currentArg) && currentTable.containsKey(currentArg)) {
+            removedKey.put(currentArg, currentTable.get(currentArg));
+        }
+        if (newKey.containsKey(currentArg)) {
+            --alreadyAdded;
+            newKey.remove(currentArg);
+        }
         String oldValue = null;
         if (!currentTable.containsKey(currentArg)) {
-            throw new IllegalFormatCodePointException(2);
+            return null;
         } else {
             oldValue = get(currentArg);
             currentTable.remove(currentArg);
@@ -80,6 +124,22 @@ public class CurrentTable {
         return oldValue;
     }
 
+
+    @Override
+    public int rollback() {
+        for (Object s : newKey.keySet()) {
+            currentTable.remove(s);
+        }
+        for (Object s : removedKey.keySet()) {
+            currentTable.put(s, removedKey.get(s));
+        }
+        return shadeOperationsRemindChanges();
+    }
+
+    @Override
+    public List<String> list() {
+        return (List<String>) keySet();
+    }
 
     public void create() {
         String s = getHomeDirectory();
@@ -114,12 +174,9 @@ public class CurrentTable {
         File f = new File(getHomeDirectory());
         if (f.exists()) {
             File[] files = f.listFiles();
-            if (files != null) {
-                for (File tmp : files) {
-                    Init z = new Init(currentTable, tmp.toString());
-                }
+            for (File tmp : files) {
+                Init z = new Init(currentTable, tmp.toString());
             }
-
         }
         number = currentTable.size();
     }

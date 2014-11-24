@@ -1,8 +1,7 @@
-package ru.fizteh.fivt.students.gudkov394.MultiMap;
+package ru.fizteh.fivt.students.gudkov394.Junit.src;
 
 
 public class Put {
-
     public Put(final String[] currentArgs, CurrentTable ct) {
         if (currentArgs.length != 3) {
             System.err.println("wrong number of argument to Put");
