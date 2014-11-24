@@ -21,4 +21,3 @@ public class ColumnFormatException extends IllegalArgumentException {
         super(cause);
     }
 }
-
