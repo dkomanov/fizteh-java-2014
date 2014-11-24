@@ -6,7 +6,9 @@ import java.util.LinkedList;
  * Class for convenient probable action set forming and picking random actions from this set.
  * @param <Action>
  * @author phoenix
+ * @deprecated Not used, because random tests are not a piece of cake to support.
  */
+@Deprecated
 public class ProbableActionSet<Action> {
     private final LinkedList<ProbableAction> actions;
     private int probCasesSum;
