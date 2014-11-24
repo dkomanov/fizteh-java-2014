@@ -36,31 +36,31 @@ public class DataBaseTableDiff {
                 return;
             }
             ArrayList<String> toRemove = new ArrayList<>();
-            for (Map.Entry<String, Storeable> entry: deleteMap.entrySet()) {
+            for (Map.Entry<String, Storeable> entry : deleteMap.entrySet()) {
                 if (!table.tempData.containsKey(entry.getKey())) {
                     toRemove.add(entry.getKey());
                 }
             }
-            for (String removeKey: toRemove) {
+            for (String removeKey : toRemove) {
                 deleteMap.remove(removeKey);
             }
             HashMap<String, Storeable> toAdd = new HashMap<>();
-            for (Map.Entry<String, Storeable> entry: rewriteMap.entrySet()) {
+            for (Map.Entry<String, Storeable> entry : rewriteMap.entrySet()) {
                 if (!table.tempData.containsKey(entry.getKey())) {
                     toAdd.put(entry.getKey(), entry.getValue());
                 }
             }
             HashMap<String, Storeable> toRewrite = new HashMap<>();
-            for (Map.Entry<String, Storeable> entry: addMap.entrySet()) {
+            for (Map.Entry<String, Storeable> entry : addMap.entrySet()) {
                 if (table.tempData.containsKey(entry.getKey())) {
                     toRewrite.put(entry.getKey(), entry.getValue());
                 }
             }
-            for (Map.Entry<String, Storeable> entry: toAdd.entrySet()) {
+            for (Map.Entry<String, Storeable> entry : toAdd.entrySet()) {
                 rewriteMap.remove(entry.getKey());
                 addMap.put(entry.getKey(), entry.getValue());
             }
-            for (Map.Entry<String, Storeable> entry: toRewrite.entrySet()) {
+            for (Map.Entry<String, Storeable> entry : toRewrite.entrySet()) {
                 Storeable result = addMap.remove(entry.getKey());
                 if (!result.equals(entry.getValue())) {
                     rewriteMap.put(entry.getKey(), entry.getValue());

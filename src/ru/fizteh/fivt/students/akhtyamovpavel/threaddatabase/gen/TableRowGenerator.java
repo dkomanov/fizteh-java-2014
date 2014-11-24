@@ -49,6 +49,7 @@ public class TableRowGenerator {
     interface Generator {
         Object getObject();
     }
+
     static {
         types = new HashMap<>();
         types.put(0, Integer.class);

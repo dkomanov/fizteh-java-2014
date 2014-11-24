@@ -28,9 +28,9 @@ public class DataBaseTable implements Table {
     HashMap<String, Storeable> tempData = new HashMap<>();
     ReentrantReadWriteLock lock;
     ThreadLocal<DataBaseTableDiff> diff;
+    int version = 0;
     private TableRowSerializer serializer;
     private ArrayList<Class<?>> signature = new ArrayList<>();
-    int version = 0;
 
     public DataBaseTable(Path path,
                          String tableName,
@@ -273,6 +273,7 @@ public class DataBaseTable implements Table {
         return changes;
     }
 
+
     @Override
     public int getColumnsCount() {
         return signature.size();
@@ -283,16 +284,17 @@ public class DataBaseTable implements Table {
         return signature.get(columnIndex);
     }
 
+    @Override
     public List<String> list() {
         ArrayList<String> nameList = new ArrayList<>();
         for (String currentKey : tempData.keySet()) {
             nameList.add(currentKey);
         }
-        for (String currentKey: diff.get().addMap.keySet()) {
+        for (String currentKey : diff.get().addMap.keySet()) {
             nameList.add(currentKey);
         }
 
-        for (String currentKey: diff.get().deleteMap.keySet()) {
+        for (String currentKey : diff.get().deleteMap.keySet()) {
             nameList.remove(currentKey);
         }
         return nameList;
@@ -308,8 +310,8 @@ public class DataBaseTable implements Table {
         return diff.get().changesSize() > 0;
     }
 
-
-    public int getNumberOfChanges() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         return diff.get().changesSize();
     }
 

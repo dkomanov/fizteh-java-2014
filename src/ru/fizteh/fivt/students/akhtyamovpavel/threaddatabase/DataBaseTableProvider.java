@@ -58,11 +58,9 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
     }
 
 
-
     public HashMap<String, Integer> getTableSet() {
         return tableSet;
     }
-
 
 
     private void initDataBaseDirectory(String dir) {
@@ -189,7 +187,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
         try {
             try {
                 if (fileMap != null && fileMap.hasUnsavedChanges()) {
-                    throw new IllegalArgumentException(fileMap.getNumberOfChanges() + " unsaved changes");
+                    throw new IllegalArgumentException(fileMap.getNumberOfUncommittedChanges() + " unsaved changes");
                 }
                 fileMap = tables.get(name);
             } catch (IllegalArgumentException iae) {
@@ -308,6 +306,16 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
         return new TableRow(objectValues);
     }
 
+    @Override
+    public List<String> getTableNames() {
+        List<String> result = new ArrayList<>();
+        for (String currentString: tables.keySet()) {
+            result.add(currentString);
+        }
+        return result;
+        //There is an extra implementation method for my realization, watch below
+    }
+
     public HashMap<String, Integer> getTableList() {
         HashMap<String, Integer> tableList = new HashMap<>();
         for (Map.Entry<String, DataBaseTable> entry : tables.entrySet()) {
@@ -315,4 +323,6 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
         }
         return tableList;
     }
+
+
 }

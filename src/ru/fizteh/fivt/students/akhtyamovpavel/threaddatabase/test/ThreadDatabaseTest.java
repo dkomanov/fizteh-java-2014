@@ -15,44 +15,12 @@ import static org.junit.Assert.*;
 
 public class ThreadDataBaseTest {
 
-    abstract class DataBaseTableProviderRunner implements Runnable {
-        DataBaseTable table;
-        DataBaseTableProvider provider;
-        TableRowSerializer serializer;
-        ArrayList<Class<?>> signature;
-
-        ArrayList<Storeable> values = new ArrayList<>();
-
-        DataBaseTableProviderRunner() {
-            try {
-                provider = new DataBaseTableProvider("D:\\test\\database3");
-            } catch (Exception e) {
-                assertTrue(false);
-            }
-            serializer = new TableRowSerializer();
-            String tableName = UUID.randomUUID().toString();
-            signature = TableRowGenerator.generateSignature();
-            try {
-                table = (DataBaseTable) provider.createTable(tableName, signature);
-            } catch (Exception e) {
-                assertTrue(false);
-            }
-            generateValues();
-        }
-
-        void generateValues() {
-            for (int i = 0; i < 100; ++i) {
-                values.add(provider.createFor(table, TableRowGenerator.generateValues(signature)));
-            }
-        }
-
-    }
-
     @Test
     public void testPutCommit() {
         DataBaseTableProviderRunner runner = new DataBaseTableProviderRunner() {
             boolean flag = false;
             boolean flagRemove = false;
+
             @Override
             public void run() {
                 synchronized (this.getClass()) {
@@ -128,6 +96,39 @@ public class ThreadDataBaseTest {
             th2.join();
         } catch (InterruptedException e) {
             fail();
+        }
+
+    }
+
+    abstract class DataBaseTableProviderRunner implements Runnable {
+        DataBaseTable table;
+        DataBaseTableProvider provider;
+        TableRowSerializer serializer;
+        ArrayList<Class<?>> signature;
+
+        ArrayList<Storeable> values = new ArrayList<>();
+
+        DataBaseTableProviderRunner() {
+            try {
+                provider = new DataBaseTableProvider("D:\\test\\database3");
+            } catch (Exception e) {
+                assertTrue(false);
+            }
+            serializer = new TableRowSerializer();
+            String tableName = UUID.randomUUID().toString();
+            signature = TableRowGenerator.generateSignature();
+            try {
+                table = (DataBaseTable) provider.createTable(tableName, signature);
+            } catch (Exception e) {
+                assertTrue(false);
+            }
+            generateValues();
+        }
+
+        void generateValues() {
+            for (int i = 0; i < 100; ++i) {
+                values.add(provider.createFor(table, TableRowGenerator.generateValues(signature)));
+            }
         }
 
     }

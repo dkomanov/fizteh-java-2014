@@ -16,6 +16,7 @@ public class TableRowSerializer {
 
     private static Map<Class<?>, String> classStringMap = new HashMap<>();
     private static Map<String, Class<?>> stringClassMap = new HashMap<>();
+
     static {
         classStringMap.put(Integer.class, "int");
         classStringMap.put(Long.class, "long");
@@ -34,6 +35,7 @@ public class TableRowSerializer {
         stringClassMap.put("String", String.class);
 
     }
+
     private HashMap<Class, RowSerializer> writeMap = new HashMap<>();
     private HashMap<Class, RowDeserializer> readMap = new HashMap<>();
 

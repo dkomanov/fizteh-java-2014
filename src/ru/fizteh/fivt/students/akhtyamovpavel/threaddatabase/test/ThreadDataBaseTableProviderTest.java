@@ -11,25 +11,12 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 public class ThreadDataBaseTableProviderTest {
-    abstract class DataBaseProviderRunner implements Runnable{
-        DataBaseTableProvider provider;
-        DataBaseTableProviderFactory factory;
-
-        public DataBaseProviderRunner() {
-            factory = new DataBaseTableProviderFactory();
-            try {
-                provider = new DataBaseTableProvider("D:\\test\\database4");
-            } catch (Exception e) {
-                fail();
-            }
-        }
-    }
-
     @Test
     public void testCreateDelete() {
         DataBaseProviderRunner runner = new DataBaseProviderRunner() {
             boolean flagCreated = false;
             boolean flagDropped = false;
+
             @Override
             public void run() {
                 synchronized (this.getClass()) {
@@ -79,6 +66,19 @@ public class ThreadDataBaseTableProviderTest {
         }
 
 
+    }
 
+    abstract class DataBaseProviderRunner implements Runnable {
+        DataBaseTableProvider provider;
+        DataBaseTableProviderFactory factory;
+
+        public DataBaseProviderRunner() {
+            factory = new DataBaseTableProviderFactory();
+            try {
+                provider = new DataBaseTableProvider("D:\\test\\database4");
+            } catch (Exception e) {
+                fail();
+            }
+        }
     }
 }
