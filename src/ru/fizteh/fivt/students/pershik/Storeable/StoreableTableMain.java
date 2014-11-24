@@ -1,13 +1,13 @@
-package ru.fizteh.fivt.students.pershik.JUnit;
+package ru.fizteh.fivt.students.pershik.Storeable;
 
 import ru.fizteh.fivt.students.pershik.FileMap.Runner;
 
 import java.io.File;
 
 /**
- * Created by pershik on 10/29/14.
+ * Created by pershik on 11/12/14.
  */
-public class HashTableMain {
+public class StoreableTableMain {
     public static void main(String[] args) {
         try {
             String dbDirPath = System.getProperty("fizteh.db.dir");
@@ -22,7 +22,7 @@ public class HashTableMain {
                     System.exit(-1);
                 }
             }
-            Runner db = new HashTableRunner(dbDir.getAbsolutePath());
+            Runner db = new StoreableTableRunner(dbDir.getAbsolutePath());
             if (args.length == 0) {
                 db.runInteractive();
             } else {
@@ -34,4 +34,3 @@ public class HashTableMain {
         }
     }
 }
-

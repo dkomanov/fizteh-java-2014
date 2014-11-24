@@ -1,23 +1,27 @@
-package ru.fizteh.fivt.students.pershik.JUnit;
+package ru.fizteh.fivt.students.pershik.Storeable;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.pershik.FileMap.InvalidCommandException;
 import ru.fizteh.fivt.students.pershik.FileMap.Runner;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by pershik on 10/29/14.
+ * Created by pershik on 11/12/14.
  */
-public class HashTableRunner extends Runner {
+public class StoreableTableRunner extends Runner {
 
-    HashTableProvider provider;
-    HashTable table;
+    StoreableTableProvider provider;
+    StoreableTable table;
 
-    public HashTableRunner(String dbDir) {
-        provider = new HashTableProviderFactory().create(dbDir);
+    public StoreableTableRunner(String dbDir) throws IOException {
+        provider = new StoreableTableProviderFactory().create(dbDir);
     }
 
     @Override
@@ -25,7 +29,6 @@ public class HashTableRunner extends Runner {
         String[] tokens = parseCommand(command);
         try {
             switch (tokens[0]) {
-
                 case "create":
                     create(tokens);
                     break;
@@ -38,7 +41,6 @@ public class HashTableRunner extends Runner {
                 case "show":
                     showTables(tokens);
                     break;
-
                 case "size":
                     size(tokens);
                     break;
@@ -60,7 +62,6 @@ public class HashTableRunner extends Runner {
                 case "rollback":
                     rollback(tokens);
                     break;
-
                 case "exit":
                     exit(tokens);
                     break;
@@ -70,7 +71,12 @@ public class HashTableRunner extends Runner {
                     errorUnknownCommand(tokens[0]);
                     break;
             }
-        } catch (InvalidCommandException e) {
+        } catch (ParseException | ColumnFormatException | IndexOutOfBoundsException e) {
+            System.err.println("wrong type (" + e.getMessage() + ")");
+            if (batchMode) {
+                System.exit(-1);
+            }
+        } catch (InvalidCommandException | IOException e) {
             System.err.println(e.getMessage());
             if (batchMode) {
                 System.exit(-1);
@@ -83,9 +89,9 @@ public class HashTableRunner extends Runner {
             errorCntArguments("show tables");
         }
         System.out.println("table_name row_count");
-        Map<String, Integer> tables = provider.getAllTables();
+        Map<String, StoreableTable> tables = provider.getAllTables();
         for (String tableName : tables.keySet()) {
-            System.out.println(tableName + " " + tables.get(tableName));
+            System.out.println(tableName + " " + tables.get(tableName).size());
         }
     }
 
@@ -100,7 +106,8 @@ public class HashTableRunner extends Runner {
         }
     }
 
-    private void commit(String[] args) throws InvalidCommandException {
+    private void commit(String[] args)
+            throws InvalidCommandException, IOException {
         if (!checkArguments(0, 0, args.length - 1)) {
             errorCntArguments("commit");
         }
@@ -122,16 +129,64 @@ public class HashTableRunner extends Runner {
         }
     }
 
-    private void create(String[] args) throws InvalidCommandException {
-        if (!checkArguments(1, 1, args.length - 1)) {
-            errorCntArguments("create");
+    private void create(String[] args)
+            throws InvalidCommandException, IOException {
+        if (args.length < 3) {
+            throw new InvalidCommandException("Invalid number of arguments");
         }
         String name = args[1];
-        Table newTable = provider.createTable(name);
+        StringBuilder toParse = new StringBuilder("");
+        for (int i = 2; i < args.length; i++) {
+            toParse.append(args[i]);
+            toParse.append(" ");
+        }
+        List<Class<?>> signature = parseSignature(toParse.toString());
+        StoreableTable newTable = provider.createTable(name, signature);
         if (newTable == null) {
             System.out.println(name + " exists");
         } else {
             System.out.println("created");
+        }
+    }
+
+    private List<Class<?>> parseSignature(String str)
+            throws InvalidCommandException {
+        List<Class<?>> signature = new ArrayList<>();
+        str = str.trim();
+        if (!str.startsWith("(") || !str.endsWith(")")) {
+            throw new InvalidCommandException("Invalid signature format");
+        } else {
+            str = str.substring(1, str.length() - 1);
+            String[] strArr = str.split(" ");
+            for (String s : strArr) {
+                switch (s) {
+                    case "int":
+                        signature.add(Integer.class);
+                        break;
+                    case "long":
+                        signature.add(Long.class);
+                        break;
+                    case "byte":
+                        signature.add(Byte.class);
+                        break;
+                    case "float":
+                        signature.add(Float.class);
+                        break;
+                    case "double":
+                        signature.add(Double.class);
+                        break;
+                    case "boolean":
+                        signature.add(Boolean.class);
+                        break;
+                    case "String":
+                        signature.add(String.class);
+                        break;
+                    default:
+                        throw new InvalidCommandException("Invalid signature");
+                }
+
+            }
+            return signature;
         }
     }
 
@@ -140,13 +195,13 @@ public class HashTableRunner extends Runner {
             errorCntArguments("use");
         }
         String name = args[1];
-        HashTable newTable = provider.getTable(name);
+        StoreableTable newTable = provider.getTable(name);
         if (newTable == null) {
             System.out.println(name + " not exists");
         } else {
             int uncommitted = 0;
             if (table != null) {
-                uncommitted = table.getUncommittedCnt();
+                uncommitted = table.getNumberOfUncommittedChanges();
             }
             if (uncommitted == 0) {
                 System.out.println("using " + name);
@@ -157,11 +212,16 @@ public class HashTableRunner extends Runner {
         }
     }
 
-    private void drop(String[] args) throws InvalidCommandException {
+    private void drop(String[] args)
+            throws InvalidCommandException, IOException {
         if (!checkArguments(1, 1, args.length - 1)) {
             errorCntArguments("drop");
         }
         boolean notExists = false;
+        String oldName = null;
+        if (table != null) {
+            oldName = table.getName();
+        }
         String name = args[1];
         try {
             provider.removeTable(name);
@@ -173,24 +233,26 @@ public class HashTableRunner extends Runner {
         } else {
             System.out.println("dropped");
         }
-        if (table != null && table.getName().equals(name)) {
+        if (table != null && oldName.equals(name)) {
             table = null;
         }
     }
 
-    private void put(String[] args) throws InvalidCommandException {
+    private void put(String[] args)
+            throws InvalidCommandException, ParseException {
         if (!checkArguments(2, 2, args.length - 1)) {
             errorCntArguments("put");
         }
         if (table == null) {
             noTable();
         } else {
-            String oldValue = table.put(args[1], args[2]);
+            Storeable oldValue =
+                    table.put(args[1], provider.deserialize(table, args[2]));
             if (oldValue == null) {
                 System.out.println("new");
             } else {
                 System.out.println("overwrite");
-                System.out.println(oldValue);
+                System.out.println(provider.serialize(table, oldValue));
             }
         }
     }
@@ -202,12 +264,12 @@ public class HashTableRunner extends Runner {
         if (table == null) {
             noTable();
         } else {
-            String value = table.get(args[1]);
+            Storeable value = table.get(args[1]);
             if (value == null) {
                 System.out.println("not found");
             } else {
                 System.out.println("found");
-                System.out.println(value);
+                System.out.println(provider.serialize(table, value));
             }
         }
     }
@@ -219,7 +281,7 @@ public class HashTableRunner extends Runner {
         if (table == null) {
             noTable();
         } else {
-            String value = table.remove(args[1]);
+            Storeable value = table.remove(args[1]);
             if (value == null) {
                 System.out.println("not found");
             } else {
