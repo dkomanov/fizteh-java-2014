@@ -45,8 +45,8 @@ public final class TableProvider {
     }
 
     public static void changeCurTable(final String name) throws IOException {
-        try {
-            tablesDirPath.resolve(name);
+        tablesDirPath.resolve(name);
+        if (Files.exists(tablesDirPath)) {
             Table newTable = tableLinks.get(name);
             if (newTable != null) {
                 if (currentTable != null) {
@@ -57,10 +57,8 @@ public final class TableProvider {
             } else {
                 System.out.println(name + " does not exist");
             }
-        } catch (InvalidPathException e) {
-            System.err.println("table name " + name + " is incorrect. "
-                    + e.getMessage());
-            return;
+        } else {
+            throw new IllegalArgumentException("Incorrect name.");
         }
     }
 
@@ -87,11 +85,11 @@ public final class TableProvider {
     }
 
     public static void removeTable(final String name) throws IOException {
-        try {
-            tablesDirPath.resolve(name);
+        tablesDirPath.resolve(name);
+        if (Files.exists(tablesDirPath)) {
             Table removedTable = tableLinks.remove(name);
             if (removedTable == null) {
-                System.out.println(name + " does not exist");
+                System.out.println(name + " not exists");
             } else {
                 if (currentTable == removedTable) {
                     currentTable = null;
@@ -99,10 +97,8 @@ public final class TableProvider {
                 removedTable.deleteTable();
                 System.out.println("dropped");
             }
-        } catch (InvalidPathException e) {
-            System.err.println("table name " + name + " is incorrect. "
-                    + e.getMessage());
-            return;
+        } else {
+            throw new IllegalArgumentException("Incorrect name.");
         }
     }
 

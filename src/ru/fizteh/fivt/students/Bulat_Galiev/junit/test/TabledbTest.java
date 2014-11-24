@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.Bulat_Galiev.junit.test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -156,12 +157,62 @@ public class TabledbTest {
     }
 
     @Test
-    public final void testGetdiffnrecords() throws Exception {
-        table.put("1", "2");
-        table.put("2", "3");
-        table.put("3", "4");
+    public final void testNumberOfUncommittedChanges0() throws Exception {
+        table.put("key1", "value1");
+        table.put("key2", "value2");
+        table.put("key3", "value3");
         Assert.assertEquals(CHECKNUMBERTHREE,
-                ((Tabledb) table).getdiffnrecords());
+                ((Tabledb) table).getChangedRecordsNumber());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges1() throws IOException {
+        table.put("key", "value");
+        table.put("key", "value2");
+
+        Assert.assertEquals(CHECKNUMBERONE,
+                ((Tabledb) table).getChangedRecordsNumber());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges2() throws IOException {
+        table.put("key", "value");
+        table.remove("key");
+
+        Assert.assertEquals(CHECKNUMBERZERO,
+                ((Tabledb) table).getChangedRecordsNumber());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges3() throws IOException {
+        table.put("key", "value");
+        table.commit();
+        table.remove("key");
+
+        Assert.assertEquals(CHECKNUMBERONE,
+                ((Tabledb) table).getChangedRecordsNumber());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges4() throws IOException {
+        table.put("key", "value");
+        table.commit();
+        table.remove("key");
+        table.put("key", "value");
+
+        Assert.assertEquals(CHECKNUMBERZERO,
+                ((Tabledb) table).getChangedRecordsNumber());
+    }
+
+    @Test
+    public void testNumberOfUncommittedChanges5() throws IOException {
+        table.put("key", "value");
+        table.commit();
+        table.remove("key");
+        table.put("key", "value2");
+
+        Assert.assertEquals(CHECKNUMBERONE,
+                ((Tabledb) table).getChangedRecordsNumber());
     }
 
     @Test

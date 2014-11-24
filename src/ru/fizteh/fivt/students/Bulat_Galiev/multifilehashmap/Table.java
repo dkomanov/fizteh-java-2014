@@ -15,10 +15,10 @@ public final class Table {
     private static final int INTNUMBER = 4;
     private String tableName;
     private Path tablePath;
-    private Map<Key, DatabaseSerializer> databaseFiles;
+    private Map<CellForKey, DatabaseSerializer> databaseFiles;
 
     public Table(final Path path, final String name) {
-        databaseFiles = new HashMap<Key, DatabaseSerializer>();
+        databaseFiles = new HashMap<CellForKey, DatabaseSerializer>();
         tablePath = path;
         tableName = name;
         try {
@@ -39,47 +39,39 @@ public final class Table {
     }
 
     public void get(final String key) throws IOException {
-        DatabaseSerializer databaseFile = databaseFiles.get(new Key(key));
-        if (databaseFile != null) {
-            databaseFile.get(key);
-        } else {
-            System.out.println("not found");
-        }
+        DatabaseSerializer databaseFile = databaseFiles.get(new CellForKey(key));
+        databaseFile.get(key);
     }
 
     public void put(final String key, final String value) throws IOException {
-        DatabaseSerializer databaseFile = databaseFiles.get(new Key(key));
+        DatabaseSerializer databaseFile = databaseFiles.get(new CellForKey(key));
         if (databaseFile == null) {
             int nbytes = key.getBytes("UTF-8")[0];
             int ndirectory = Math.abs(nbytes % KEYNUMBER);
             int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
             databaseFile = new DatabaseSerializer(tablePath, ndirectory, nfile);
-            databaseFiles.put(new Key(ndirectory, nfile), databaseFile);
+            databaseFiles.put(new CellForKey(ndirectory, nfile), databaseFile);
         }
         databaseFile.put(key, value);
     }
 
     public void remove(final String key) throws IOException {
-        DatabaseSerializer databaseFile = databaseFiles.get(new Key(key));
-        if (databaseFile != null) {
-            databaseFile.remove(key);
-        } else {
-            System.out.println("not found");
-        }
+        DatabaseSerializer databaseFile = databaseFiles.get(new CellForKey(key));
+        databaseFile.remove(key);
     }
 
     public int size() {
-        int numrecords = 0;
-        for (Entry<Key, DatabaseSerializer> databaseFile : databaseFiles
+        int numRecords = 0;
+        for (Entry<CellForKey, DatabaseSerializer> databaseFile : databaseFiles
                 .entrySet()) {
-            numrecords += databaseFile.getValue().getnrecords();
+            numRecords += databaseFile.getValue().getRecordsNumber();
         }
-        return numrecords;
+        return numRecords;
     }
 
     public void list() throws IOException {
         List<String> list = new LinkedList<String>();
-        for (Entry<Key, DatabaseSerializer> pair : databaseFiles.entrySet()) {
+        for (Entry<CellForKey, DatabaseSerializer> pair : databaseFiles.entrySet()) {
             list.addAll(pair.getValue().list());
         }
         int iteration = 0;
@@ -137,7 +129,7 @@ public final class Table {
                 try {
                     databaseFile = new DatabaseSerializer(tablePath,
                             ndirectory, nfile);
-                    databaseFiles.put(new Key(ndirectory, nfile), databaseFile);
+                    databaseFiles.put(new CellForKey(ndirectory, nfile), databaseFile);
                 } catch (Exception e) {
                     System.err.print(e.getMessage());
                     System.exit(-1);
@@ -147,12 +139,12 @@ public final class Table {
     }
 
     private void writeTableToDir() throws IOException {
-        Iterator<Entry<Key, DatabaseSerializer>> it = databaseFiles.entrySet()
+        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles.entrySet()
                 .iterator();
         while (it.hasNext()) {
-            Entry<Key, DatabaseSerializer> databaseFile = it.next();
+            Entry<CellForKey, DatabaseSerializer> databaseFile = it.next();
             databaseFile.getValue().disconnect();
-            if (databaseFile.getValue().getnrecords() == 0) {
+            if (databaseFile.getValue().getRecordsNumber() == 0) {
                 it.remove();
             }
         }

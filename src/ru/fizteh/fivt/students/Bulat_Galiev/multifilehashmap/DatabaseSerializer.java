@@ -17,7 +17,7 @@ public class DatabaseSerializer {
     private Map<String, String> fileMap;
     private RandomAccessFile inputStream;
     private RandomAccessFile outputStream;
-    private int nrecords;
+    private int recordsNumber;
 
     public DatabaseSerializer(final Path databasePath, final int dirName,
             final int fileName) throws IOException {
@@ -74,7 +74,7 @@ public class DatabaseSerializer {
             fileMap.put(key, value);
 
             bytesLeft -= keyLength + valueLength;
-            nrecords++;
+            recordsNumber++;
         }
         inputStream.close();
     }
@@ -93,7 +93,7 @@ public class DatabaseSerializer {
     }
 
     public final void disconnect() {
-        if (nrecords == 0) {
+        if (recordsNumber == 0) {
             filePathdb.toFile().delete();
             filePathdb.getParent().toFile().delete();
         } else {
@@ -117,7 +117,7 @@ public class DatabaseSerializer {
             String putValue = fileMap.put(key, value);
             if (putValue == null) {
                 System.out.println("new");
-                nrecords++;
+                recordsNumber++;
             } else {
                 System.out.println("overwrite");
                 System.out.println(putValue);
@@ -147,7 +147,7 @@ public class DatabaseSerializer {
             String getValue = fileMap.remove(arg1);
             if (getValue != null) {
                 System.out.println("removed");
-                nrecords--;
+                recordsNumber--;
             } else {
                 System.out.println("not found");
             }
@@ -160,7 +160,7 @@ public class DatabaseSerializer {
         return fileMap.keySet();
     }
 
-    public final int getnrecords() {
-        return nrecords;
+    public final int getRecordsNumber() {
+        return recordsNumber;
     }
 }

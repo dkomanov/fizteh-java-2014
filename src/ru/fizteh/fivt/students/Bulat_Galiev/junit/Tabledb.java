@@ -18,10 +18,10 @@ public final class Tabledb implements Table {
     private static final int INTNUMBER = 4;
     private String tableName;
     private Path tablePath;
-    private Map<Key, DatabaseSerializer> databaseFiles;
+    private Map<CellForKey, DatabaseSerializer> databaseFiles;
 
     public Tabledb(final Path path, final String name) {
-        databaseFiles = new HashMap<Key, DatabaseSerializer>();
+        databaseFiles = new HashMap<CellForKey, DatabaseSerializer>();
         tablePath = path;
         tableName = name;
         try {
@@ -37,39 +37,36 @@ public final class Tabledb implements Table {
         return tableName;
     }
 
-    public int getdiffnrecords() throws IOException {
-        Iterator<Entry<Key, DatabaseSerializer>> it = databaseFiles.entrySet()
-                .iterator();
-        int diffnrecords = 0;
-        while (it.hasNext()) {
-            Entry<Key, DatabaseSerializer> databaseFile = it.next();
-            diffnrecords += databaseFile.getValue().getchangednrecords();
+    public int getChangedRecordsNumber() throws IOException {
+        int diffNumRecords = 0;
+        for (Entry<CellForKey, DatabaseSerializer> databaseFile : databaseFiles.entrySet()) {
+            diffNumRecords += databaseFile.getValue().getChangedRecordsNumber();
         }
-        return diffnrecords;
+        return diffNumRecords;
     }
 
     public int commit() {
         try {
-            int diffnrecords = writeTableToDir();
-            return diffnrecords;
+            int diffNumRecords = writeTableToDir();
+            return diffNumRecords;
         } catch (IOException e) {
             throw new RuntimeException("Error writing table " + tableName, e);
         }
     }
 
     public int rollback() {
-        Iterator<Entry<Key, DatabaseSerializer>> it = databaseFiles.entrySet()
+        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles.entrySet()
                 .iterator();
-        int diffnrecords = 0;
+        int diffNumRecords = 0;
         while (it.hasNext()) {
-            Entry<Key, DatabaseSerializer> databaseFile = it.next();
-            diffnrecords += databaseFile.getValue().rollback();
-            if (databaseFile.getValue().getnrecords() == 0) {
+            Entry<CellForKey, DatabaseSerializer> databaseFile = it.next();
+            diffNumRecords += databaseFile.getValue().rollback();
+            if (databaseFile.getValue().getRecordsNumber() == 0) {
                 it.remove();
             }
         }
-        System.out.println(diffnrecords);
-        return diffnrecords;
+        System.out.println(diffNumRecords);
+        return diffNumRecords;
     }
 
     public String get(final String oldkey) {
@@ -78,7 +75,7 @@ public final class Tabledb implements Table {
             if (!key.isEmpty()) {
                 DatabaseSerializer databaseFile;
                 try {
-                    databaseFile = databaseFiles.get(new Key(key));
+                    databaseFile = databaseFiles.get(new CellForKey(key));
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException(e.getMessage(), e);
                 }
@@ -102,7 +99,7 @@ public final class Tabledb implements Table {
                 String value = oldvalue.trim();
                 if ((!key.isEmpty()) && (!value.isEmpty())) {
                     DatabaseSerializer databaseFile = databaseFiles
-                            .get(new Key(key));
+                            .get(new CellForKey(key));
                     if (databaseFile == null) {
 
                         int nbytes = key.getBytes("UTF-8")[0];
@@ -110,7 +107,7 @@ public final class Tabledb implements Table {
                         int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
                         databaseFile = new DatabaseSerializer(tablePath,
                                 ndirectory, nfile);
-                        databaseFiles.put(new Key(ndirectory, nfile),
+                        databaseFiles.put(new CellForKey(ndirectory, nfile),
                                 databaseFile);
                     }
                     return databaseFile.put(key, value);
@@ -134,7 +131,7 @@ public final class Tabledb implements Table {
             if (!key.isEmpty()) {
                 DatabaseSerializer databaseFile;
                 try {
-                    databaseFile = databaseFiles.get(new Key(key));
+                    databaseFile = databaseFiles.get(new CellForKey(key));
                     if (databaseFile == null) {
                         return null;
                     } else {
@@ -153,16 +150,16 @@ public final class Tabledb implements Table {
 
     public int size() {
         int numrecords = 0;
-        for (Entry<Key, DatabaseSerializer> databaseFile : databaseFiles
+        for (Entry<CellForKey, DatabaseSerializer> databaseFile : databaseFiles
                 .entrySet()) {
-            numrecords += databaseFile.getValue().getnrecords();
+            numrecords += databaseFile.getValue().getRecordsNumber();
         }
         return numrecords;
     }
 
     public List<String> list() {
         List<String> list = new LinkedList<String>();
-        for (Entry<Key, DatabaseSerializer> pair : databaseFiles.entrySet()) {
+        for (Entry<CellForKey, DatabaseSerializer> pair : databaseFiles.entrySet()) {
             list.addAll(pair.getValue().list());
         }
         return list;
@@ -212,7 +209,7 @@ public final class Tabledb implements Table {
                 try {
                     databaseFile = new DatabaseSerializer(tablePath,
                             ndirectory, nfile);
-                    databaseFiles.put(new Key(ndirectory, nfile), databaseFile);
+                    databaseFiles.put(new CellForKey(ndirectory, nfile), databaseFile);
                 } catch (Exception e) {
                     System.err.print(e.getMessage());
                     System.exit(-1);
@@ -222,17 +219,17 @@ public final class Tabledb implements Table {
     }
 
     private int writeTableToDir() throws IOException {
-        Iterator<Entry<Key, DatabaseSerializer>> it = databaseFiles.entrySet()
+        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles.entrySet()
                 .iterator();
-        int diffnrecords = 0;
+        int diffNumRecords = 0;
         while (it.hasNext()) {
-            Entry<Key, DatabaseSerializer> databaseFile = it.next();
-            diffnrecords += databaseFile.getValue().commit();
-            if (databaseFile.getValue().getnrecords() == 0) {
+            Entry<CellForKey, DatabaseSerializer> databaseFile = it.next();
+            diffNumRecords += databaseFile.getValue().commit();
+            if (databaseFile.getValue().getRecordsNumber() == 0) {
                 it.remove();
             }
         }
-        return diffnrecords;
+        return diffNumRecords;
     }
 
 }

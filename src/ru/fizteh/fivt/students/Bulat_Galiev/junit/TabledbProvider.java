@@ -57,7 +57,7 @@ public final class TabledbProvider implements TableProvider {
             if (name != null && !name.equals("")) {
                 tablesDirPath.resolve(name);
                 if (currentTable != null) {
-                    int diff = ((Tabledb) currentTable).getdiffnrecords();
+                    int diff = ((Tabledb) currentTable).getChangedRecordsNumber();
                     if (diff != 0) {
                         System.out.println(diff + " unsaved changes");
                         return;

@@ -1,9 +1,9 @@
-package ru.fizteh.fivt.students.Bulat_Galiev.junit;
+package ru.fizteh.fivt.students.Bulat_Galiev.storeable;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 
-public final class MainMultiFileHashMap {
-    private MainMultiFileHashMap() {
+public final class MainStoreable {
+    private MainStoreable() {
         // Disable instantiation to this class.
     }
 
@@ -16,11 +16,7 @@ public final class MainMultiFileHashMap {
             }
             TableProvider provider = new TabledbProviderFactory()
                     .create(databaseDir);
-            if (args.length == 0) {
-                Modesfilemap.interactiveMode(provider);
-            } else {
-                Modesfilemap.batchMode(provider, args);
-            }
+            new Interpreter(provider, args);
         } catch (Exception e) {
             System.err.print(e.getMessage());
             System.exit(-1);

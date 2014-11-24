@@ -1,15 +1,15 @@
-package ru.fizteh.fivt.students.Bulat_Galiev.junit;
+package ru.fizteh.fivt.students.Bulat_Galiev.storeable;
 
 import java.io.UnsupportedEncodingException;
 
-public class Key {
+public class CellForKey {
 
     private static final int KEYNUMBER = 16;
     private static final int HASHNUMBER = 16;
     private final int x;
     private final int y;
 
-    public Key(final String key) throws UnsupportedEncodingException {
+    public CellForKey(final String key) throws UnsupportedEncodingException {
         int nbytes = key.getBytes("UTF-8")[0];
         int ndirectory = Math.abs(nbytes % KEYNUMBER);
         int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
@@ -17,7 +17,7 @@ public class Key {
         this.y = nfile;
     }
 
-    public Key(final int ndirectory, final int nfile) {
+    public CellForKey(final int ndirectory, final int nfile) {
         this.x = ndirectory;
         this.y = nfile;
     }
@@ -27,10 +27,10 @@ public class Key {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Key)) {
+        if (!(o instanceof CellForKey)) {
             return false;
         }
-        Key key = (Key) o;
+        CellForKey key = (CellForKey) o;
         return (x == key.x) && (y == key.y);
     }
 

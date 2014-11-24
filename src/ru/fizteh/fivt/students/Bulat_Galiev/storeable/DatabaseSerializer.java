@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Bulat_Galiev.junit;
+package ru.fizteh.fivt.students.Bulat_Galiev.storeable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,31 +6,36 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.lang.Math;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
+
 public class DatabaseSerializer {
     private static final int BYTESNUMBER = 8;
     private static final int KEYNUMBER = 16;
     private Path filePathdb;
-    private Map<String, String> fileMap;
-    private Map<String, String> savedFileMap;
+    private Map<String, Storeable> fileMap;
+    private Map<String, Storeable> savedFileMap;
     private RandomAccessFile inputStream;
     private RandomAccessFile outputStream;
     private int recordsNumber;
     private int unsavedRecordsNumber;
+    private Tabledb localtable;
 
     public DatabaseSerializer(final Path databasePath, final int dirName,
-            final int fileName) throws IOException {
+            final int fileName, final Tabledb singletable) throws IOException {
         fileMap = new HashMap<>();
         savedFileMap = new HashMap<>();
         String dirString = Integer.toString(dirName) + ".dir";
         String fileString = Integer.toString(fileName) + ".dat";
         filePathdb = databasePath.resolve(dirString);
         filePathdb = filePathdb.resolve(fileString);
+        localtable = singletable;
         if (!Files.exists(filePathdb)) {
             filePathdb.getParent().toFile().mkdir();
             filePathdb.toFile().createNewFile();
@@ -76,12 +81,19 @@ public class DatabaseSerializer {
             if (!filePathdb.toString().endsWith(dirfile)) {
                 throw new IOException(filePathdb + ": bad file format");
             }
-            savedFileMap.put(key, value);
+            Storeable deserializedValue;
+            try {
+                deserializedValue = localtable.getLocalProvider().deserialize(
+                        localtable, value);
+            } catch (ParseException ex) {
+                throw new IOException("Corrupted database");
+            }
+            savedFileMap.put(key, deserializedValue);
 
             bytesLeft -= keyLength + valueLength;
             recordsNumber++;
         }
-        fileMap = new HashMap<String, String>(savedFileMap);
+        fileMap = new HashMap<String, Storeable>(savedFileMap);
         inputStream.close();
     }
 
@@ -89,12 +101,14 @@ public class DatabaseSerializer {
             throws IOException {
         outputStream = new RandomAccessFile(filePathdb.toString(), "rw");
         filedb.setLength(0);
-        Set<Map.Entry<String, String>> rows = savedFileMap.entrySet();
-        for (Map.Entry<String, String> row : rows) {
+        Set<Map.Entry<String, Storeable>> rows = savedFileMap.entrySet();
+        for (Map.Entry<String, Storeable> row : rows) {
+            String serializedValue = localtable.getLocalProvider().serialize(
+                    localtable, row.getValue());
             outputStream.writeInt(row.getKey().getBytes("UTF-8").length);
-            outputStream.writeInt(row.getValue().getBytes("UTF-8").length);
+            outputStream.writeInt(serializedValue.getBytes("UTF-8").length);
             outputStream.write(row.getKey().getBytes("UTF-8"));
-            outputStream.write(row.getValue().getBytes("UTF-8"));
+            outputStream.write(serializedValue.getBytes("UTF-8"));
         }
     }
 
@@ -107,8 +121,8 @@ public class DatabaseSerializer {
             try (RandomAccessFile filedb = new RandomAccessFile(
                     filePathdb.toString(), "rw")) {
 
-                Set<Map.Entry<String, String>> rows = fileMap.entrySet();
-                for (Map.Entry<String, String> row : rows) {
+                Set<Map.Entry<String, Storeable>> rows = fileMap.entrySet();
+                for (Map.Entry<String, Storeable> row : rows) {
                     if (row.getValue() == null) {
                         savedFileMap.remove(row.getKey());
                         recordsNumber -= 2;
@@ -136,44 +150,54 @@ public class DatabaseSerializer {
         return diffrecordsNumber;
     }
 
-    public final String put(final String key, final String value) {
-        String putValue = fileMap.put(key, value);
+    public final Storeable put(final String key, final Storeable value) {
+        Storeable putValue = fileMap.put(key, value);
         if (putValue == null) {
             unsavedRecordsNumber++;
         }
-        if ((putValue == null) && (savedFileMap.get(key)!=null) && (!savedFileMap.get(key).equals(value))) {
+        String serializedValue1 = null;
+
+        if (savedFileMap.get(key) != null) {
+            serializedValue1 = localtable.getLocalProvider().serialize(
+                    localtable, savedFileMap.get(key));
+        }
+        String serializedValue2 = localtable.getLocalProvider().serialize(
+                localtable, value);
+
+        if ((putValue == null) && (serializedValue1 != null)
+                && (serializedValue2 != null)
+                && (!serializedValue1.equals(serializedValue2))
+                && (savedFileMap.get(key) != null)) {
             unsavedRecordsNumber++;
         }
         return putValue;
     }
 
-    public final String get(final String key) {
-        String getValue = fileMap.get(key);
+    public final Storeable get(final String key) {
+        Storeable getValue = fileMap.get(key);
         if (getValue == null) {
             getValue = savedFileMap.get(key);
         }
         return getValue;
     }
 
-    public final String remove(final String key) {
-        String getValue = fileMap.remove(key);
-        if (getValue != null) {
-            unsavedRecordsNumber--;
-        } else {
+    public final Storeable remove(final String key) {
+        Storeable getValue = fileMap.remove(key);
+        if (getValue == null) {
             if (savedFileMap.get(key) != null) {
                 fileMap.put(key, null);
                 getValue = savedFileMap.get(key);
-                unsavedRecordsNumber--;
             }
         }
+        unsavedRecordsNumber--;
         return getValue;
     }
 
     public final Set<String> list() {
         Set<String> mergedSet = new HashSet<>();
         mergedSet.addAll(savedFileMap.keySet());
-        Set<Map.Entry<String, String>> rows = fileMap.entrySet();
-        for (Map.Entry<String, String> row : rows) {
+        Set<Map.Entry<String, Storeable>> rows = fileMap.entrySet();
+        for (Map.Entry<String, Storeable> row : rows) {
             if (row.getValue() == null) {
                 mergedSet.remove(row.getKey());
             } else {
