@@ -6,7 +6,7 @@ import ru.fizteh.fivt.students.andrey_reshetnikov.Storeable.MyStoreableTableProv
 public class ShowTablesCommand extends Command {
     @Override
     public void execute(MyStoreableTableProvider base) throws Exception {
-        for (String name: base.listOfTables()) {
+        for (String name: base.getTableNames()) {
             System.out.println(name + " " + base.getTable(name).size());
         }
     }

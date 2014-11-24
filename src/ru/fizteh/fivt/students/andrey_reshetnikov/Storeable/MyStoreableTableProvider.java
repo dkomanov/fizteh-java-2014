@@ -180,7 +180,8 @@ public class MyStoreableTableProvider implements TableProvider {
         return result;
     }
 
-    public List<String> listOfTables() {
+    @Override
+    public List<String> getTableNames() {
         List<String> res = new ArrayList<>();
         res.addAll(tables.keySet());
         return res;

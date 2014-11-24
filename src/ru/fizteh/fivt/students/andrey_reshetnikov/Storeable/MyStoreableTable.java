@@ -101,11 +101,14 @@ public class MyStoreableTable implements Table {
         }
     }
 
+    @Override
     public List<String> list() {
         return table.list();
     }
 
-    public int unsavedChanges() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         return table.unsavedChanges();
     }
+
 }

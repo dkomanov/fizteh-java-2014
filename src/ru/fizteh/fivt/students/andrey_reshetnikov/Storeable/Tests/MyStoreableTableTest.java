@@ -183,8 +183,8 @@ public class MyStoreableTableTest {
         table.put("2", value);
         table.put("3", value);
         table.remove("1");
-        assertEquals(((MyStoreableTable) table).unsavedChanges(), 4);
+        assertEquals(((MyStoreableTable) table).getNumberOfUncommittedChanges(), 4);
         table.commit();
-        assertEquals(((MyStoreableTable) table).unsavedChanges(), 0);
+        assertEquals(((MyStoreableTable) table).getNumberOfUncommittedChanges(), 0);
     }
 }

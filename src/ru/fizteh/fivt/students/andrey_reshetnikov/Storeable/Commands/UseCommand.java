@@ -10,8 +10,8 @@ public class UseCommand extends Command {
 
     @Override
     public void execute(MyStoreableTableProvider base) throws Exception {
-        if (base.getUsing() != null && ((MyStoreableTable) base.getUsing()).unsavedChanges() != 0) {
-            System.out.println(((MyStoreableTable) base.getUsing()).unsavedChanges() + " unsaved changes");
+        if (base.getUsing() != null && ((MyStoreableTable) base.getUsing()).getNumberOfUncommittedChanges() != 0) {
+            System.out.println(((MyStoreableTable) base.getUsing()).getNumberOfUncommittedChanges() + " unsaved changes");
         } else if (base.setUsing(name) == null) {
             System.out.println(name + " not exists");
         } else {

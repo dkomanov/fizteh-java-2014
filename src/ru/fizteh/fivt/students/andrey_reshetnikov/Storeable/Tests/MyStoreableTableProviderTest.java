@@ -172,12 +172,12 @@ public class MyStoreableTableProviderTest {
         provider.createTable("table", Arrays.asList(types));
         provider.createTable("таблица", Arrays.asList(types));
         provider.createTable("табличка", Arrays.asList(types));
-        assertTrue(((MyStoreableTableProvider) provider).listOfTables().containsAll(
+        assertTrue(((MyStoreableTableProvider) provider).getTableNames().containsAll(
                 new LinkedList<>(Arrays.asList("table", "таблица", "табличка"))));
-        assertEquals(((MyStoreableTableProvider) provider).listOfTables().size(), 3);
+        assertEquals(((MyStoreableTableProvider) provider).getTableNames().size(), 3);
         provider.removeTable("table");
-        assertEquals(((MyStoreableTableProvider) provider).listOfTables().size(), 2);
-        assertTrue(((MyStoreableTableProvider) provider).listOfTables().containsAll(
+        assertEquals(((MyStoreableTableProvider) provider).getTableNames().size(), 2);
+        assertTrue(((MyStoreableTableProvider) provider).getTableNames().containsAll(
                 new LinkedList<>(Arrays.asList("таблица", "табличка"))));
     }
 }
