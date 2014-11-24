@@ -8,16 +8,19 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.ByteArrayInputStream;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Launcher {
-    private boolean exitFlag;
+    private boolean exitFlag = false;
     private HashMap<String, Integer> tableNames;
-    private PrintStream printStream;
-    private HashMap<String, String>[][] keysPath;
+    private PrintStream printStream = System.out;
+    private HashMap<String, String>[][] keysPath = null;
     private String parentDir;
-    private String currentTable;
+    private String currentTable = null;
     private MultiReader reader;
     private MultiWrite writer;
     private boolean exec(InputStream inputStream, boolean isPackage) throws IOException {
@@ -84,12 +87,8 @@ public class Launcher {
     }
 
     public Launcher(HashMap<String, Integer> tables, String path) {
-        exitFlag = false;
         tableNames = tables;
         parentDir = path;
-        printStream = System.out;
-        keysPath = null;
-        currentTable = null;
     }
 
     public boolean launch(String[] arguments) throws IOException {
@@ -151,54 +150,51 @@ public class Launcher {
     }
 
     private boolean putCommand(String[] arguments) {
-        if (arguments.length != 3) {
+        if (!checkCom(arguments.length, 3)) {
             return false;
         }
-        if (currentTable == null) {
-            printStream.println("no table");
+        if (!checkCurrentTable(currentTable)) {
             return false;
         }
         int hash = arguments[1].hashCode();
         int ndir = hash % 16;
         int nfile = hash / 16 % 16;
         if (keysPath[ndir][nfile].containsKey(arguments[1])) {
-            printStream.print("overwrite\n" + keysPath[ndir][nfile].get(arguments[1]) + "\n");
+            printStream.println("overwrite\n" + keysPath[ndir][nfile].get(arguments[1]));
             keysPath[ndir][nfile].remove(arguments[1]);
         } else {
             int num = tableNames.get(currentTable);
             tableNames.remove(currentTable);
             tableNames.put(currentTable, num + 1);
-            printStream.print("new\n");
+            printStream.println("new");
         }
         keysPath[ndir][nfile].put(arguments[1], arguments[2]);
         return true;
     }
 
     private boolean getCommand(String[] arguments) {
-        if (arguments.length != 2) {
+        if (!checkCom(arguments.length, 2)) {
             return false;
         }
-        if (currentTable == null) {
-            printStream.println("no table");
+        if (!checkCurrentTable(currentTable)) {
             return false;
         }
         int hash = arguments[1].hashCode();
         int ndir = hash % 16;
         int nfile = hash / 16 % 16;
         if (keysPath[ndir][nfile].containsKey(arguments[1])) {
-            printStream.print("found\n" + keysPath[ndir][nfile].get(arguments[1]) + "\n");
+            printStream.println("found\n" + keysPath[ndir][nfile].get(arguments[1]));
         } else {
-            printStream.print("not found\n");
+            printStream.println("not found");
         }
         return true;
     }
 
     private boolean removeCommand(String[] arguments) {
-        if (arguments.length != 2) {
+        if (!checkCom(arguments.length, 2)) {
             return false;
         }
-        if (currentTable == null) {
-            printStream.println("no table");
+        if (!checkCurrentTable(currentTable)) {
             return false;
         }
         int hash = arguments[1].hashCode();
@@ -209,15 +205,15 @@ public class Launcher {
             int num = tableNames.get(currentTable);
             tableNames.remove(currentTable);
             tableNames.put(currentTable, num - 1);
-            printStream.print("removed\n");
+            printStream.println("removed");
         } else {
-            printStream.print("not found\n");
+            printStream.println("not found");
         }
         return true;
     }
 
     private boolean createCommand(String[] arguments) throws IOException {
-        if (arguments.length != 2) {
+        if (!checkCom(arguments.length, 2)) {
             return false;
         }
         if (tableNames != null && tableNames.containsKey(arguments[1])) {
@@ -227,12 +223,12 @@ public class Launcher {
             System.err.println("Incorrect name: " + arguments[1]);
             return false;
         }
-        File table = new File(parentDir + File.separator + arguments[1]);
+        File table = new File(Paths.get(parentDir).resolve(arguments[1]).toString());
         if (!table.mkdir()) {
             return false;
         }
         for (int i = 0; i < 16; i++) {
-            File subdir = new File(table.getAbsolutePath() + File.separator + Integer.toString(i) + ".dir");
+            File subdir = new File(Paths.get(table.getAbsolutePath()).resolve(Integer.toString(i)).toString() + ".dir");
             if (!subdir.mkdir()) {
                 return false;
             }
@@ -271,14 +267,14 @@ public class Launcher {
     }
 
     private boolean dropCommand(String[] arguments) {
-        if (arguments.length != 2) {
+        if (!checkCom(arguments.length, 2)) {
             return false;
         }
         if (tableNames == null || !tableNames.containsKey(arguments[1])) {
             printStream.println(arguments[1] + " not exists");
             return false;
         }
-        if (!recursiveRemove(new File(parentDir + File.separator + arguments[1]))) {
+        if (!recursiveRemove(new File(Paths.get(parentDir).resolve(arguments[1]).toString()))) {
             return false;
         }
         tableNames.remove(arguments[1]);
@@ -304,7 +300,7 @@ public class Launcher {
     }
 
     private boolean useCommand(String[] arguments) throws IOException {
-        if (arguments.length != 2) {
+        if (!checkCom(arguments.length, 2)) {
             return false;
         }
         if (tableNames == null || !tableNames.containsKey(arguments[1])) {
@@ -322,7 +318,7 @@ public class Launcher {
     }
 
     private boolean listCommand(String[] arguments) {
-        if (arguments.length != 1) {
+        if (!checkCom(arguments.length, 1)) {
             return false;
         }
         if (currentTable == null || keysPath == null) {
@@ -337,7 +333,7 @@ public class Launcher {
                 }
             }
         }
-        printStream.print("\n");
+        printStream.println();
         return true;
     }
 
@@ -348,32 +344,17 @@ public class Launcher {
         exitFlag = true;
         return true;
     }
-    public boolean checkNameCorrection(final String name) {
-        if (name.contains("*")) {
-            return false;
-        }
-        if (name.contains("\\")) {
-            return false;
-        }
-        if (name.contains("|")) {
-            return false;
-        }
-        if (name.contains("/")) {
-            return false;
-        }
-        if (name.contains("\"")) {
-            return false;
-        }
-        if (name.contains(":")) {
-            return false;
-        }
-        if (name.contains("?")) {
-            return false;
-        }
-        if (name.contains(">")) {
-            return false;
-        }
-        if (name.contains("<")) {
+    public boolean checkNameCorrection(String toExamine) {
+          Pattern pattern = Pattern.compile("[~#@*+%{}<>\\[\\]|\"\\_^]");
+          Matcher matcher = pattern.matcher(toExamine);
+          return matcher.find();
+    }
+    boolean checkCom(Integer k1, Integer k2) {
+       return (k1.equals(k2));
+    }
+    boolean checkCurrentTable(String table) {
+        if (table == null) {
+            printStream.println("no table");
             return false;
         }
         return true;
