@@ -15,6 +15,13 @@ public class RemoveCommand extends Command {
         return 1;
     }
 
+    public RemoveCommand(String passedKey) {
+        key = passedKey;
+    }
+
+    public RemoveCommand() {
+    }
+
     @Override
     public void execute(DataBase base) throws Exception {
         if (base.data.containsKey(key)) {
