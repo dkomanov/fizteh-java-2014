@@ -23,6 +23,8 @@ public class Launcher {
     private String currentTable = null;
     private MultiReader reader;
     private MultiWrite writer;
+    private final int numberDIRECTORIES = 16;
+    private final int numberFILESINDIRECTORY = 16;
     private boolean exec(InputStream inputStream, boolean isPackage) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -127,8 +129,8 @@ public class Launcher {
         if (keysPath == null) {
             return true;
         }
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
+        for (int i = 0; i < numberDIRECTORIES - 1 ; i++) {
+            for (int j = 0; j < numberDIRECTORIES - 1 ; j++) {
                 writer = new MultiWrite(parentDir + File.separator + currentTable + File.separator
                         + Integer.toString(i) + ".dir" + File.separator + Integer.toString(j) + ".dat");
                 writer.writeDataToFile(keysPath[i][j]);
@@ -138,9 +140,9 @@ public class Launcher {
     }
 
     private boolean readData() throws IOException {
-        keysPath = new HashMap[16][16];
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        keysPath = new HashMap[numberDIRECTORIES][numberDIRECTORIES];
+        for (int i = 0; i < numberDIRECTORIES; i++) {
+            for (int j = 0; j < numberDIRECTORIES; j++) {
                 reader = new MultiReader(parentDir + File.separator + currentTable + File.separator
                         + Integer.toString(i) + ".dir" + File.separator + Integer.toString(j) + ".dat");
                 keysPath[i][j] = reader.readDataFromFile();
@@ -157,8 +159,8 @@ public class Launcher {
             return false;
         }
         int hash = arguments[1].hashCode();
-        int ndir = hash % 16;
-        int nfile = hash / 16 % 16;
+        int ndir = hash % numberDIRECTORIES;
+        int nfile = hash / numberDIRECTORIES % numberDIRECTORIES;
         if (keysPath[ndir][nfile].containsKey(arguments[1])) {
             printStream.println("overwrite\n" + keysPath[ndir][nfile].get(arguments[1]));
             keysPath[ndir][nfile].remove(arguments[1]);
@@ -180,8 +182,8 @@ public class Launcher {
             return false;
         }
         int hash = arguments[1].hashCode();
-        int ndir = hash % 16;
-        int nfile = hash / 16 % 16;
+        int ndir = hash % numberDIRECTORIES;
+        int nfile = hash / numberDIRECTORIES % numberDIRECTORIES;
         if (keysPath[ndir][nfile].containsKey(arguments[1])) {
             printStream.println("found\n" + keysPath[ndir][nfile].get(arguments[1]));
         } else {
@@ -198,8 +200,8 @@ public class Launcher {
             return false;
         }
         int hash = arguments[1].hashCode();
-        int ndir = hash % 16;
-        int nfile = hash / 16 % 16;
+        int ndir = hash % numberDIRECTORIES;
+        int nfile = hash / numberDIRECTORIES % numberDIRECTORIES;
         if (keysPath[ndir][nfile].containsKey(arguments[1])) {
             keysPath[ndir][nfile].remove(arguments[1]);
             int num = tableNames.get(currentTable);
@@ -227,12 +229,12 @@ public class Launcher {
         if (!table.mkdir()) {
             return false;
         }
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < numberDIRECTORIES; i++) {
             File subdir = new File(Paths.get(table.getAbsolutePath()).resolve(Integer.toString(i)).toString() + ".dir");
             if (!subdir.mkdir()) {
                 return false;
             }
-            for (int j = 0; j < 16; j++) {
+            for (int j = 0; j < numberDIRECTORIES; j++) {
                 File data = new File(subdir.getAbsolutePath() + File.separator + Integer.toString(j) + ".dat");
                 if (!data.createNewFile()) {
                     return false;
@@ -325,8 +327,8 @@ public class Launcher {
             printStream.println("no table");
             return false;
         }
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
+        for (int i = 0; i < numberDIRECTORIES; i++) {
+            for (int j = 0; j < numberDIRECTORIES; j++) {
                 Set<String> keySet = keysPath[i][j].keySet();
                 for (String key : keySet) {
                     printStream.print(key + " ");
