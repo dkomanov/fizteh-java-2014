@@ -7,6 +7,7 @@ import ru.fizteh.fivt.students.gudkov394.Storable.src.CurrentTable;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -66,6 +67,11 @@ public class ParallelTable implements Table {
     }
 
     @Override
+    public List<String> list() {
+        return null;
+    }
+
+    @Override
     public int commit() throws IOException {
         try {
             return diff.get().commit();
@@ -78,6 +84,11 @@ public class ParallelTable implements Table {
     @Override
     public int rollback() {
         return diff.get().rollback();
+    }
+
+    @Override
+    public int getNumberOfUncommittedChanges() {
+        return 0;
     }
 
     @Override
