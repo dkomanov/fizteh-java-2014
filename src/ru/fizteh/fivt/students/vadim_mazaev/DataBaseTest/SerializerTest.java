@@ -67,7 +67,7 @@ public class SerializerTest {
         serializer.setColumnAt(0, 0);
         serializer.setColumnAt(1, (byte) 0);
         serializer.setColumnAt(2, (float) 0.0);
-        serializer.setColumnAt(3, (double) 0.0);
+        serializer.setColumnAt(3, 0.0);
         serializer.setColumnAt(4, (long) 0);
         serializer.setColumnAt(5, false);
         serializer.setColumnAt(6, "abc");

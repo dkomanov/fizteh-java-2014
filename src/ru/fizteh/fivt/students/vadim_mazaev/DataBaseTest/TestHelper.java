@@ -61,11 +61,11 @@ public final class TestHelper {
     public static final List<Object> TEST_VALUES;
     static {
         List<Object> unitializerList = new ArrayList<>();
-        unitializerList.add((int) Integer.MAX_VALUE);
-        unitializerList.add((long) Long.MAX_VALUE);
-        unitializerList.add((byte) Byte.MAX_VALUE);
-        unitializerList.add((float) Float.MAX_VALUE);
-        unitializerList.add((double) Double.MAX_VALUE);
+        unitializerList.add(Integer.MAX_VALUE);
+        unitializerList.add(Long.MAX_VALUE);
+        unitializerList.add(Byte.MAX_VALUE);
+        unitializerList.add(Float.MAX_VALUE);
+        unitializerList.add(Double.MAX_VALUE);
         unitializerList.add(Boolean.TRUE);
         unitializerList.add("test_value");
         TEST_VALUES = Collections.unmodifiableList(unitializerList);

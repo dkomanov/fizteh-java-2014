@@ -43,7 +43,7 @@ public final class Interpreter {
     }
     
     public int run(String[] args) throws Exception {
-        int exitStatus = 0;
+        int exitStatus;
         try {
             if (args.length == 0) {
                 exitStatus = interactiveMode();

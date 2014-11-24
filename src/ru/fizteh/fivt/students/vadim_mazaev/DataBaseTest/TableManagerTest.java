@@ -90,7 +90,7 @@ public class TableManagerTest {
     public void testCreateTableThrowsExceptionCalledForEmptyTableStructureList()
             throws IOException {
         TableProvider test = new TableManager(TestHelper.TEST_DIR.toString());
-        test.createTable(TestHelper.TEST_TABLE_NAME, new ArrayList<Class<?>>());
+        test.createTable(TestHelper.TEST_TABLE_NAME, new ArrayList<>());
     }
     
     @Test(expected = IllegalArgumentException.class)

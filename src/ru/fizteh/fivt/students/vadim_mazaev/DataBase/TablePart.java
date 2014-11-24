@@ -182,12 +182,10 @@ final class TablePart {
             bytesBuffer.close();
         } catch (UnsupportedEncodingException e) {
             throw new IOException("Key or value can't be encoded to " + Helper.ENCODING, e);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | ParseException e) {
             throw new IOException(e.getMessage(), e);
         } catch (EOFException e) {
             throw new IOException("File breaks unexpectedly", e);
-        } catch (ParseException e) {
-            throw new IOException(e.getMessage(), e);
         } catch (IOException e) {
             throw new IOException("Unable read from file", e);
         }
@@ -200,10 +198,13 @@ final class TablePart {
      */
     private void checkKey(String key)
             throws UnsupportedEncodingException {
+        if (key == null) {
+            throw new IllegalArgumentException("Key is null");
+        }
         int expectedDirNumber = Math.abs(key.getBytes(Helper.ENCODING)[0] % Helper.NUMBER_OF_PARTITIONS);
         int expectedFileNumber = Math.abs((key.getBytes(Helper.ENCODING)[0] / Helper.NUMBER_OF_PARTITIONS)
                 % Helper.NUMBER_OF_PARTITIONS);
-        if (key == null || directoryNumber != expectedDirNumber || fileNumber != expectedFileNumber) {
+        if (directoryNumber != expectedDirNumber || fileNumber != expectedFileNumber) {
             throw new IllegalArgumentException("'" + key + "' can't be placed to this file");
         }
     }

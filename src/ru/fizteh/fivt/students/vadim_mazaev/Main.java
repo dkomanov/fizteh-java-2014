@@ -175,7 +175,7 @@ public final class Main {
                         DataBaseState dbState = ((DataBaseState) state);
                         TableProvider manager = dbState.getManager();
                         Table newTable = manager.getTable(args[0]);
-                        Table usedTable = (DbTable) dbState.getUsedTable();
+                        Table usedTable = dbState.getUsedTable();
                         if (newTable != null) {
                             if (usedTable != null && usedTable.getNumberOfUncommittedChanges() > 0) {
                                 System.out.println(usedTable.getNumberOfUncommittedChanges() + " unsaved changes");
