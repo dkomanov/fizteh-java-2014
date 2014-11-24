@@ -93,8 +93,8 @@ public class TabledbTest {
 
     @Before
     public void setUp() throws Exception {
-        String tmp_dir_prefix = "Swing_";
-        testDir = Files.createTempDirectory(tmp_dir_prefix);
+        String tmpDirPrefix = "Swing_";
+        testDir = Files.createTempDirectory(tmpDirPrefix);
         provider = new TabledbProvider(testDir.toString());
         typeList = new ArrayList<Class<?>>();
         typeList1 = new ArrayList<Class<?>>();
