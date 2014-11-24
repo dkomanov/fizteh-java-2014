@@ -8,6 +8,7 @@ import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.DbTable;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.TableLoaderDumper;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table.TableRow;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.SyntaxCheckers;
+import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.TypeStringTranslator;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.db_table_provider.utils.Utility;
 import ru.fizteh.fivt.students.dmitry_persiyanov.database.exceptions.WrongTableNameException;
 
@@ -155,14 +156,18 @@ public final class DbTableProvider implements TableProvider {
                         if (number.indexOf('.') != -1) {
                             if (tableColType.equals(Double.class)) {
                                 values.add(new Double(number));
-                            } else {
+                            } else if (tableColType.equals(Float.class)) {
                                 values.add(new Float(number));
                             }
                         } else {
                             if (tableColType.equals(Integer.class)) {
                                 values.add(new Integer(number));
-                            } else {
+                            } else if (tableColType.equals(Long.class)) {
                                 values.add(new Long(number));
+                            } else if (tableColType.equals(Double.class)) {
+                                values.add(new Double(number));
+                            } else if (tableColType.equals(Float.class)) {
+                                values.add(new Float(number));
                             }
                         }
                         i = nextComma + 1;
@@ -238,7 +243,9 @@ public final class DbTableProvider implements TableProvider {
         List<Object> storeableValues = new LinkedList<>();
         for (int i = 0; i < values.size(); ++i) {
             if (values.get(i) != null && !table.getColumnType(i).equals(values.get(i).getClass())) {
-                throw new ColumnFormatException();
+                throw new ColumnFormatException("types incompatibility, needed type: "
+                        + TypeStringTranslator.getStringNameByType(table.getColumnType(i)) + ", passed type: "
+                        + TypeStringTranslator.getStringNameByType(values.get(i).getClass()));
             } else {
                 storeableValues.add(values.get(i));
             }
