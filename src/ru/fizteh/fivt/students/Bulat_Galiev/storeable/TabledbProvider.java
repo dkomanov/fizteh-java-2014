@@ -282,6 +282,9 @@ public final class TabledbProvider implements TableProvider {
                 type = Character.toLowerCase(type.charAt(0))
                         + type.substring(1);
             }
+            if (type.equals("integer")) {
+                type = type.substring(0, 3);
+            }
             if (Types.stringToClass(type) == null) {
                 throw new IllegalArgumentException("Class " + type
                         + " is not supported.");
@@ -306,6 +309,7 @@ public final class TabledbProvider implements TableProvider {
             throw new IllegalArgumentException("null table");
         }
         List<Object> values = new ArrayList<>(table.getColumnsCount());
+
         return new Storeabledb(values);
     }
 
@@ -322,6 +326,11 @@ public final class TabledbProvider implements TableProvider {
         List<Object> objectValues = new ArrayList<>(values);
 
         return new Storeabledb(objectValues);
+    }
+
+    @Override
+    public List<String> getTableNames() {
+        return new ArrayList<String>(tableMap.keySet());
     }
 
 }
