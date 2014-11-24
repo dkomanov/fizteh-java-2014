@@ -77,12 +77,7 @@ public class DataBaseTable implements Table {
         try {
             writeSignature();
             saveMap();
-            diff = new ThreadLocal<DataBaseTableDiff>() {
-                @Override
-                protected DataBaseTableDiff initialValue() {
-                    return new DataBaseTableDiff(DataBaseTable.this, lock);
-                }
-            };
+
         } finally {
             this.lock.writeLock().unlock();
         }

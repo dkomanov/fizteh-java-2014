@@ -32,6 +32,8 @@ public class DataBaseTableDiff {
         try {
             if (table.getVersion() > localVersion) {
                 localVersion = table.getVersion();
+            } else {
+                return;
             }
             ArrayList<String> toRemove = new ArrayList<>();
             for (Map.Entry<String, Storeable> entry: deleteMap.entrySet()) {
@@ -59,8 +61,10 @@ public class DataBaseTableDiff {
                 addMap.put(entry.getKey(), entry.getValue());
             }
             for (Map.Entry<String, Storeable> entry: toRewrite.entrySet()) {
-                addMap.remove(entry.getKey());
-                rewriteMap.put(entry.getKey(), entry.getValue());
+                Storeable result = addMap.remove(entry.getKey());
+                if (!result.equals(entry.getValue())) {
+                    rewriteMap.put(entry.getKey(), entry.getValue());
+                }
             }
         } finally {
             lock.readLock().unlock();
@@ -84,6 +88,7 @@ public class DataBaseTableDiff {
             rewriteMap.put(key, value);
             return null;
         }
+
         lock.readLock().tryLock();
         try {
             Storeable result = table.originGet(key);
