@@ -57,24 +57,13 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
         tableSet.put(table, 0);
     }
 
-    public void removeKeyFromTable(String table) {
-        int value = tableSet.get(table);
-        tableSet.put(table, value - 1);
-    }
+
 
     public HashMap<String, Integer> getTableSet() {
         return tableSet;
     }
 
-    public void putKeyToTable(String table) {
-        int value = tableSet.get(table);
-        tableSet.put(table, value + 1);
-    }
 
-    public void rollbackTableSize(String table) {
-        int value = fileMap.size();
-        tableSet.put(table, value);
-    }
 
     private void initDataBaseDirectory(String dir) {
         dataBaseDirectory = Paths.get(System.getProperty("user.dir")).resolve(dir);

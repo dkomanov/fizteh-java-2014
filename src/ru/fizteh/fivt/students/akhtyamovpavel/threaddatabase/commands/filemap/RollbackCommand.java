@@ -26,9 +26,7 @@ public class RollbackCommand implements Command {
         }
 
         try {
-            String result = Integer.toString(table.getOpenedTable().rollback());
-            table.rollbackTableSize(table.getOpenedTableName());
-            return result;
+            return Integer.toString(table.getOpenedTable().rollback());
         } catch (Exception e) {
 
             throw new Exception(e.getMessage());
