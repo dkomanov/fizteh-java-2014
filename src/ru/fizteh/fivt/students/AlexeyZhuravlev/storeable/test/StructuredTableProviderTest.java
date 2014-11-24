@@ -172,12 +172,12 @@ public class StructuredTableProviderTest {
         provider.createTable("table", Arrays.asList(types));
         provider.createTable("таблица", Arrays.asList(types));
         provider.createTable("табличка", Arrays.asList(types));
-        assertTrue(((StructuredTableProvider) provider).listOfTables().containsAll(
+        assertTrue(provider.getTableNames().containsAll(
                     new LinkedList<>(Arrays.asList("table", "таблица", "табличка"))));
-        assertEquals(((StructuredTableProvider) provider).listOfTables().size(), 3);
+        assertEquals(provider.getTableNames().size(), 3);
         provider.removeTable("table");
-        assertEquals(((StructuredTableProvider) provider).listOfTables().size(), 2);
-        assertTrue(((StructuredTableProvider) provider).listOfTables().containsAll(
+        assertEquals(provider.getTableNames().size(), 2);
+        assertTrue(provider.getTableNames().containsAll(
                 new LinkedList<>(Arrays.asList("таблица", "табличка"))));
     }
 }

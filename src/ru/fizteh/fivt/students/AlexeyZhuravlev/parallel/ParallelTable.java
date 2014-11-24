@@ -7,6 +7,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -75,6 +76,16 @@ public class ParallelTable implements Table {
     }
 
     @Override
+    public List<String> list() {
+        lock.readLock().lock();
+        try {
+            return originalTable.list();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
     public int commit() throws IOException {
         int result = diff.get().changesCount();
         diff.get().commit();
@@ -87,6 +98,11 @@ public class ParallelTable implements Table {
         int result = diff.get().changesCount();
         diff.get().clear();
         return result;
+    }
+
+    @Override
+    public int getNumberOfUncommittedChanges() {
+        return diff.get().changesCount();
     }
 
     @Override
