@@ -6,7 +6,7 @@ import ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap.Table;
 import java.util.*;
 
 public class HybridTable {
-    Table cleanTable;
+    public Table cleanTable;
     FancyTable dirtyTable;
     ArrayList<Command> changes;
 

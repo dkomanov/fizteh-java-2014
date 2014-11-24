@@ -13,7 +13,7 @@ public class MyTable implements Table {
     private HybridTable table;
     private String name;
 
-    protected MyTable(HybridTable passedTable, String passedName) {
+    public MyTable(HybridTable passedTable, String passedName) {
         table = passedTable;
         name = passedName;
         fakeDir = new SingleTableDataBaseDir(table);
@@ -105,5 +105,9 @@ public class MyTable implements Table {
             }
         }
         return result;
+    }
+
+    public int unsavedChanges() {
+        return table.changes.size();
     }
 }

@@ -6,7 +6,7 @@ import java.nio.file.Files;
 
 public class Table {
     public DataBase[][] databases;
-    File mainDir;
+    public File mainDir;
 
     public Table(File tableDir) throws Exception {
         databases = new DataBase[ConstClass.NUM_DIRECTORIES][ConstClass.NUM_FILES];
