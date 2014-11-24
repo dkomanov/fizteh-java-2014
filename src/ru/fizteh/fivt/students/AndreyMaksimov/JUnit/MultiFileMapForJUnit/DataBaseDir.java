@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class DataBaseDir {
     public HashMap<String, Table> tables;
     public String using;
-    File parentDirectory;
+    public File parentDirectory;
 
     public DataBaseDir(String needBasePath) throws Exception {
         parentDirectory = new File(needBasePath);
@@ -34,5 +34,3 @@ public class DataBaseDir {
         return tables.get(using);
     }
 }
-
-
