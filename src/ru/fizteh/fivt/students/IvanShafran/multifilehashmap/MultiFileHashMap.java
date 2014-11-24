@@ -43,7 +43,7 @@ public class MultiFileHashMap extends AbstractShell {
         }
 
         if (!workingDirectoryTest.exists()) {
-            throw new Exception("wrong path to working directory");
+            workingDirectoryTest.mkdirs();
         }
 
         if (!workingDirectoryTest.isDirectory()) {
