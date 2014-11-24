@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.alexpodkin.FileMap;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -12,9 +13,11 @@ public class FileMap {
         }
         Reader reader = new Reader(fileMapPath);
         Writer writer = new Writer(fileMapPath);
-        HashMap<String, String> fileMap;
+        HashMap<String, String> fileMap = new HashMap<>();
         try {
-            fileMap = reader.readDataFromFile();
+            if ((new File(fileMapPath)).exists()) {
+                fileMap = reader.readDataFromFile();
+            }
             Launcher launcher = new Launcher(fileMap, writer);
             if (!launcher.launch(args)) {
                 System.exit(1);
