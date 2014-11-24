@@ -3,19 +3,21 @@ package ru.fizteh.fivt.students.vadim_mazaev.Interpreter;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class Interpreter {
     public static final String PROMPT = "$ ";
     public static final String NO_SUCH_COMMAND_MSG = "No such command declared: ";
-    private static final String IGNORE_IN_ROUND_BRACKETS_REGEX = "(?![^\\(]*\\))";
-    private static final String IGNORE_IN_SQUARE_BRACKETS_REGEX = "(?![^\\[]*\\])";
     private static final String IGNORE_IN_DOUBLE_QUOTES_REGEX = "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
-    private static final String IGNORE_SYMBOL_IN_TOKENS_REGEX = IGNORE_IN_ROUND_BRACKETS_REGEX
-            + IGNORE_IN_SQUARE_BRACKETS_REGEX + IGNORE_IN_DOUBLE_QUOTES_REGEX;
+    private static final String SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX
+        = "\\s*(\".*\"|\\(.*\\)|\\[.*\\]|[^\\s]+)\\s*";
     public static final String COMMAND_SEPARATOR = ";";
     private InputStream in;
     private PrintStream out;
@@ -87,9 +89,16 @@ public final class Interpreter {
     
     private int executeLine(String line) throws Exception {
         String[] cmds = line.split(COMMAND_SEPARATOR + IGNORE_IN_DOUBLE_QUOTES_REGEX);
+        Pattern p = Pattern.compile(SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX);
+        List<String> tokens = new LinkedList<>();
         try {
             for (String current : cmds) {
-                    parse(current.trim().split("\\s+" + IGNORE_SYMBOL_IN_TOKENS_REGEX));
+                tokens.clear();
+                Matcher m = p.matcher(current.trim());
+                while (m.find()) {
+                    tokens.add(m.group().trim());
+                }
+                parse(tokens.toArray(new String[tokens.size()]));
             }
             return 0;
         } catch (StopLineInterpretationException e) {
