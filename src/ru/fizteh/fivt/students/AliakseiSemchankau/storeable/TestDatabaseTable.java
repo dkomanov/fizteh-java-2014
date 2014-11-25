@@ -100,23 +100,38 @@ public class TestDatabaseTable {
     }
 
     @Test
-    public void testCommit() throws Exception {
+    public void testCommitRollBack() throws Exception {
+        for (int i = 0; i < 1000; ++i) {
+            dTable.put(Integer.toString(i), new DatabaseStoreable(randomizer.takeRandomValue(signature)));
+        }
 
+        assertEquals(dTable.rollback(), 1000);
+
+        for (int i = 0; i < 1000; ++i) {
+            dTable.put(Integer.toString(i), new DatabaseStoreable(randomizer.takeRandomValue(signature)));
+        }
+
+        assertEquals(dTable.commit(), 1000);
+
+        for (int i = 1000; i < 2000; ++i) {
+            dTable.put(Integer.toString(i), new DatabaseStoreable(randomizer.takeRandomValue(signature)));
+        }
+
+        assertEquals(dTable.commit(), 1000);
     }
 
-    @Test
-    public void testRollback() throws Exception {
 
-    }
 
     @Test
     public void testGetColumnsCount() throws Exception {
-
+        assertEquals(dTable.getColumnsCount(), signature.size());
     }
 
     @Test
     public void testGetColumnType() throws Exception {
-
+        for (int i = 0; i < signature.size(); ++i) {
+            assertEquals(dTable.getColumnType(i), signature.get(i));
+        }
     }
 
    @After
