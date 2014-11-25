@@ -6,6 +6,7 @@ public class CreateCommand implements Command {
     public void run(final String[] args, DataBase dataBase) {
         if (!Executor.checkArgNumber(2, args.length, 2)) {
             System.out.println("Invalid number of arguments");
+            return;
         }
         File table = new File(dataBase.getDataBasePath() + File.separator + args[1]);
         if (table.exists()) {

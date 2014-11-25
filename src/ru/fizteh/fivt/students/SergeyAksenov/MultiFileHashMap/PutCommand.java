@@ -5,6 +5,11 @@ public class PutCommand implements Command {
             throws MultiFileMapException {
         if (!Executor.checkArgNumber(3, args.length, 3)) {
             System.out.println("Invalid number of arguments");
+            return;
+        }
+        if (dataBase.getCurrentTablePath() == null) {
+            System.out.println("no table");
+            return;
         }
         if (!args[1].isEmpty() && !args[2].isEmpty()) {
             String key = args[1];

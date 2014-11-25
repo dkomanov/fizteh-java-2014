@@ -30,8 +30,6 @@ public final class DataBase {
     }
 
     private void read() throws Exception {
-     //   boolean end = false;
-     //   File tableDirectory = new File(dataBasePath.toString() + currentTablePath.toString());
         File tableDirectory = new File(currentTablePath.toString());
         File[] directories = tableDirectory.listFiles();
         for (File dir : directories) {
@@ -50,7 +48,7 @@ public final class DataBase {
             }
         }
     }
-
+/*
     public void write() throws Exception {
         for (Map.Entry<String, String> entry : dataBase.entrySet()) {
             String key = entry.getKey();
@@ -77,6 +75,43 @@ public final class DataBase {
             }
         }
     }
+*/
+
+    private void write() throws Exception {
+        for (Map.Entry<String, String> entry : dataBase.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            int hashcode = key.hashCode();
+            int ndirectory = hashcode % 16;
+            int nfile = hashcode / 16 % 16;
+            File directory = new File(currentTablePath.toString() + File.separator + ndirectory + ".dir");
+            if (!directory.exists()) {
+                if (!directory.mkdir()) {
+                    throw new Exception("Error in writing");
+                }
+            }
+            File file = new File(directory.getCanonicalPath() + File.separator
+                    + nfile + ".dat");
+            if (!file.exists()) {
+                if (!file.createNewFile()) {
+                    throw new Exception("Error in writing");
+                }
+            }
+            try (DataOutputStream stream = new DataOutputStream(new FileOutputStream(file))) {
+                writeUtil(stream, key);
+                writeUtil(stream, value);
+            } catch (Exception e) {
+                throw new Exception("Error in writing");
+            }
+        }
+    }
+
+    private void clear() {
+        File[] files = currentTablePath.toFile().listFiles();
+        for (File file : files) {
+            Executor.delete(file);
+        }
+    }
 
     private void writeUtil(DataOutputStream outStream, String str) throws IOException {
         byte[] byteStr = str.getBytes("UTF-8");
@@ -89,23 +124,32 @@ public final class DataBase {
     }
 
     public void setUsingTable(String tablename) {
-        try {
-            write();
-            if (currentTablePath.toFile().listFiles().length == 0) {
-                Executor.delete(currentTablePath.toFile());
-            } else {
-                File[] files = currentTablePath.toFile().listFiles();
-                for (File file : files) {
-                    if (file.length() == 0) {
-                        Executor.delete(file);
+        if (currentTablePath != null) {
+            try {
+                clear();
+                write();/*
+                if (currentTablePath.toFile().listFiles().length == 0) {
+                    Executor.delete(currentTablePath.toFile());
+                } else {
+                    File[] files = currentTablePath.toFile().listFiles();
+                    for (File file : files) {
+                        if (file.length() == 0) {
+                            Executor.delete(file);
+                        }
                     }
                 }
+            */
+            } catch (Exception e) {
+                System.err.println("Cannot write table to files");
+                return;
             }
-            currentTablePath = Paths.get(dataBasePath.toString() + File.separator + tablename);
-            dataBase.clear();
+        }
+        currentTablePath = Paths.get(dataBasePath.toString() + File.separator + tablename);
+        dataBase.clear();
+        try {
             read();
         } catch (Exception e) {
-            System.err.println("Cannot write table to files");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -115,23 +159,28 @@ public final class DataBase {
 
     public void close() {
         try {
-            if (currentTablePath.toFile().listFiles().length == 0) {
-                Executor.delete(currentTablePath.toFile());
-            } else {
-                File[] files = currentTablePath.toFile().listFiles();
-                for (File file : files) {
-                    if (file.length() == 0) {
-                        Executor.delete(file);
+           /* if (currentTablePath.toFile().listFiles().length != 0) {
+                File[] directories = currentTablePath.toFile().listFiles();
+                for (File dir : directories) {
+                    File[] files = dir.listFiles();
+                    for (File file : files) {
+                        BufferedReader bf = new BufferedReader(new FileReader(file));
+                        if (bf.readLine() == null) {
+                            Executor.delete(file);
+                        }
                     }
                 }
+            }*/
+            if (currentTablePath != null) {
+                clear();
+                write();
             }
-            write();
         } catch (Exception e) {
             System.err.println("Cannot write database to file");
         }
     }
 
-    public void drop (String tablename) {
+    public void drop(String tablename) {
         String tablePath = dataBasePath + File.separator + tablename;
         File fileToRem = new File(tablePath);
         if (!fileToRem.getParentFile().toString().equals(dataBasePath.toString()) ||
@@ -147,9 +196,15 @@ public final class DataBase {
     }
 
     public String[] getTableNames() {
-       return dataBasePath.toFile().list();
+        return dataBasePath.toFile().list();
     }
 
+    public String getCurrentTablePath () {
+        if (currentTablePath == null) {
+            return null;
+        }
+        return currentTablePath.toString();
+    }
     private static HashMap<String, String> dataBase;
     private static Path dataBasePath;
     private static Path currentTablePath;

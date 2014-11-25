@@ -5,6 +5,11 @@ public class RemoveCommand implements Command {
             throws MultiFileMapException {
         if (!Executor.checkArgNumber(2, args.length, 2)) {
             System.out.println("Invalid number of arguments");
+            return;
+        }
+        if (dataBase.getCurrentTablePath() == null) {
+            System.out.println("no table");
+            return;
         }
         if (!args[1].isEmpty()) {
             String key = args[1];
