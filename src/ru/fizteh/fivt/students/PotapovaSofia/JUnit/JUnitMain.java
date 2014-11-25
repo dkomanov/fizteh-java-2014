@@ -103,8 +103,7 @@ public class JUnitMain {
                             try {
                                 commitCount = currentTable.commit();
                             } catch (IOException e) {
-                                System.err.println("Error writing table ");
-                                System.exit(1);
+                                e.printStackTrace();
                             }
                             System.out.println(commitCount);
                         } else {

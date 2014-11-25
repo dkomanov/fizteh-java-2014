@@ -128,7 +128,7 @@ public class DbTable implements Table {
     }
 
     @Override
-    public int commit() throws IOException {
+    public int commit() {
         int commitCount = diff.size();
         for (Map.Entry<String, ValueWrapper> f : diff.entrySet()) {
             ValueWrapper valueWrapper = f.getValue();
@@ -141,7 +141,11 @@ public class DbTable implements Table {
                 state.put(f.getKey(), valueWrapper.value);
             }
         }
-        writeToDisk();
+        try {
+            writeToDisk();
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing table " + tableName, e);
+        }
         diff.clear();
         return commitCount;
     }
