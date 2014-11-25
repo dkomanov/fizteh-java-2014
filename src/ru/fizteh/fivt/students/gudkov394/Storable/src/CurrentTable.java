@@ -189,6 +189,11 @@ public class CurrentTable implements Table {
     }
 
     @Override
+    public int getNumberOfUncommittedChanges() {
+        return 0;
+    }
+
+    @Override
     public int getColumnsCount() {
         return signature.size();
     }

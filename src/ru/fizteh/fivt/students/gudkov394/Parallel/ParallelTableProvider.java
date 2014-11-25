@@ -92,4 +92,9 @@ public class ParallelTableProvider implements TableProvider {
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
         return providerFromStorable.createFor(table, values);
     }
+
+    @Override
+    public List<String> getTableNames() {
+        return (List<String>) providerFromStorable.tables.keySet();
+    }
 }
