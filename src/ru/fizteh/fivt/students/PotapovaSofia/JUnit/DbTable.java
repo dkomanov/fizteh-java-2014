@@ -141,13 +141,7 @@ public class DbTable implements Table {
                 state.put(f.getKey(), valueWrapper.value);
             }
         }
-        try {
-            writeToDisk();
-        } catch (IOException e) {
-            throw new IOException("Error writing table " + tableName);
-            //System.err.println("Error writing table " + tableName);
-            //System.exit(1);
-        }
+        writeToDisk();
         diff.clear();
         return commitCount;
     }
