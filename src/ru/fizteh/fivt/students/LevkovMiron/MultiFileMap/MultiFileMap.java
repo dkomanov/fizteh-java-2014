@@ -83,6 +83,9 @@ class MultiFileMap {
     void runCommand(String inString, final PrintStream stream) {
         try {
             inString = inString.trim();
+            if (inString.isEmpty()) {
+                return;
+            }
             if (inString.equals("show tables")) {
                 showTables();
                 return;
@@ -167,7 +170,7 @@ class MultiFileMap {
     void showTables() {
         for (File table : parentDirectory.listFiles()) {
             if (table.isDirectory()) {
-                System.out.println(table.getName() + " " + tableRowCounter.get(table));
+                System.out.println(table.getName() + " " + tableRowCounter.get(table.getAbsoluteFile()));
             }
         }
     }
@@ -277,8 +280,11 @@ class MultiFileMap {
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 map[i][j].clear();
-                try (FileInputStream inputStream = new FileInputStream(
-                        new File(tableDirectory.getAbsolutePath() + "/" + i + ".dir/" + j + ".dat"))) {
+                File tablePartFile = new File(tableDirectory.getAbsolutePath() + "\\" + i + ".dir\\" + j + ".dat");
+                if (!tablePartFile.exists()) {
+                    continue;
+                }
+                try (FileInputStream inputStream = new FileInputStream(tablePartFile)) {
                     int sz = readInt(inputStream);
                     String key = readString(inputStream, sz);
                     int sz2 = readInt(inputStream);
