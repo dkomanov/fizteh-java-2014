@@ -30,9 +30,9 @@ public class InterpreterTest {
     }
 
     @Test
-    public void testInterpreterRunInInteractiveMode() throws Exception {
+    public void testInteractiveMode() throws Exception {
         Interpreter interpreter = new Interpreter(null, new Command[] {
-                new Command("test", 0, new BiConsumer<TableState, String[]>() {
+                new Command(testCommand, 0, new BiConsumer<TableState, String[]>() {
                     @Override
                     public void accept(TableState tableState, String[] arguments) {
                         printStream.println(testOutput);
@@ -61,27 +61,25 @@ public class InterpreterTest {
     public void testBatchModeForUnexpectedCommand() throws Exception {
         Interpreter interpreter = new Interpreter(null, new Command[] {},
                 new ByteArrayInputStream(new byte[] {}), printStream);
-        interpreter.run(new String[] {testCommand + Interpreter.STATEMENT_DELIMITER, testCommand});
+        interpreter.run(new String[] {testCommand});
         assertEquals(Interpreter.COMMAND_NOT_FOUND_MSG + testCommand + newLine, outputStream.toString());
     }
 
     @Test
     public void testInteractiveModeForUnexpectedCommand() throws Exception {
-        String testInput = testCommand + newLine + testCommand;
-        Interpreter interpreter = new Interpreter(null, new Command[] {},
-                new ByteArrayInputStream(testInput.getBytes()), printStream);
-        interpreter.run(new String[] {});
-        String expectedOutput
-                = Interpreter.PROMPT + Interpreter.COMMAND_NOT_FOUND_MSG + testCommand + newLine
-                + Interpreter.PROMPT + Interpreter.COMMAND_NOT_FOUND_MSG + testCommand + newLine
-                + Interpreter.PROMPT;
-        assertEquals(expectedOutput, outputStream.toString());
+        Interpreter interpreter = new Interpreter(null, new Command[]{}, new ByteArrayInputStream(("wrongCommand"
+                + newLine + "exit" + newLine).getBytes()), printStream);
+        interpreter.run(new String[]{});
+        String actual = outputStream.toString();
+        String expected = new String(Interpreter.PROMPT + Interpreter.COMMAND_NOT_FOUND_MSG + "wrongCommand" + newLine
+                + Interpreter.PROMPT);
+        assertEquals(actual, expected);
     }
 
     @Test
     public void testOnCommandWithWrongNumberOfArguments() throws Exception {
         Interpreter interpreter = new Interpreter(null, new Command[] {
-                new Command("test", 0, new BiConsumer<TableState, String[]>() {
+                new Command(testCommand, 0, new BiConsumer<TableState, String[]>() {
                     @Override
                     public void accept(TableState tableState, String[] arguments) {
                         printStream.println(testOutput);

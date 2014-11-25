@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter;
 
+import ru.fizteh.fivt.students.PotapovaSofia.JUnit.DbTable;
+import ru.fizteh.fivt.students.PotapovaSofia.JUnit.JUnitMain;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.StopInterpretationException;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.TableState;
 
@@ -34,6 +36,8 @@ public class Interpreter {
     }
 
     public Interpreter(TableState state, Command[] commands) {
+        this.in = System.in;
+        this.out = System.out;
         this.state = state;
         this.commands = new HashMap<>();
         for (Command command : commands) {
@@ -79,10 +83,11 @@ public class Interpreter {
                 String[] params = Arrays.copyOfRange(chunks, 1, chunks.length);
                 Command command = commands.get(commandName);
                 if (commandName.equals("exit")) {
-                    throw new StopInterpretationException();
+                    JUnitMain.exit(this.state);
+                    //throw new StopInterpretationException();
                 }
                 if (command == null) {
-                    Utils.interpreterError(COMMAND_NOT_FOUND_MSG + commandName);
+                    out.println(COMMAND_NOT_FOUND_MSG + commandName);
                 } else {
                     command.execute(this.state, params);
                 }

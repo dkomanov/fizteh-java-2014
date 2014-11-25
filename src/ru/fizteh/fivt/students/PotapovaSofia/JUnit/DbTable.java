@@ -27,16 +27,18 @@ public class DbTable implements Table {
 
     static final int DIR_COUNT = 16;
     static final int FILE_COUNT = 16;
+    static final String CODING = "UTF-8";
 
-    public DbTable(Path path, String name) {
+    public DbTable(Path path, String name) throws RuntimeException{
         tableName = name;
         tablePath = path;
         diff = new HashMap<>();
         try {
             readFromDisk();
         } catch (IOException e) {
-            System.err.println("Error reading table " + tableName);
-            System.exit(1);
+            //System.err.println("Error reading table " + tableName);
+            //System.exit(1);
+            throw new RuntimeException("Error reading table '" + tableName);
         }
     }
 
@@ -202,7 +204,7 @@ public class DbTable implements Table {
         int length = in.readInt();
         byte[] word = new byte[length];
         in.read(word, 0, length);
-        String str = new String(word, "UTF-8");
+        String str = new String(word, CODING);
         return str;
     }
 
@@ -282,7 +284,7 @@ public class DbTable implements Table {
     }
 
     private void writeWord(DataOutputStream out, String word) throws IOException {
-        byte[] byteWord = word.getBytes("UTF-8");
+        byte[] byteWord = word.getBytes(CODING);
         out.writeInt(byteWord.length);
         out.write(byteWord);
         out.flush();

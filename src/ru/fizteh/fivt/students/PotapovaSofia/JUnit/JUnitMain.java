@@ -181,22 +181,22 @@ public class JUnitMain {
                             System.out.println("Wrong command");
                         }
                     }
+                }),
+                new Command("exit", 0, new BiConsumer<TableState, String[]>() {
+                    @Override
+                    public void accept(TableState state, String[] args) {
+                    }
                 })
         });
-        /*
-        dbInterpreter.setExitHandler(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                DbTable currentTable = (DbTable) state.getUsedTable();
-                if (currentTable != null && (currentTable.getDiffCount() > 0)) {
-                    System.out.println(currentTable.getDiffCount()
-                            + " unsaved changes");
-                    return false;
-                }
-                return true;
-            }
-        });
-        */
         dbInterpreter.run(args);
+    }
+    public static void exit(TableState state) throws StopInterpretationException {
+        TableProvider tableProvider = state.getTableProvider();
+        DbTable usedTable = (DbTable) state.getUsedTable();
+        if (usedTable != null && (usedTable.getDiffCount() > 0)) {
+            System.out.println(usedTable.getDiffCount() + " unsaved changes");
+        } else {
+            throw new StopInterpretationException();
+        }
     }
 }
