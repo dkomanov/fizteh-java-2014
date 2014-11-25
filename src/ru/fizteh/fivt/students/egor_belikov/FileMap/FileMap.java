@@ -13,7 +13,7 @@ public class FileMap {
         fileMap = new TreeMap<String, String>();
         try {
             try {
--               currentPath = System.getProperty("db.file");
+                currentPath = System.getProperty("db.file");
                 try {
                     currentDatabase = new RandomAccessFile(currentPath, "r");
                     makeFileMapFromFile();
