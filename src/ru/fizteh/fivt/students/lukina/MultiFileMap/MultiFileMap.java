@@ -207,6 +207,14 @@ public/* abstract */class MultiFileMap {
                         printError("unknown command format");
                     }
                     break;
+                case "exit":
+                    try {
+                        writeDirectory(dbDir);
+                    } catch (IOException e) {
+                        System.out.println("can't write to file");
+                    }
+                    System.exit(0);
+                    break;
                 default:
                     printError("unknown_command");
             }
@@ -229,29 +237,29 @@ public/* abstract */class MultiFileMap {
             readFile(fileName, tableName);
             return;
         }
-        int lenght;
-        StringBuilder key = new StringBuilder();
-        StringBuilder value = new StringBuilder();
+        int length;
         while (true) {
             try {
-                lenght = input.readInt();
-                for (int i = 0; i < lenght; i++) {
-                    key.append(input.readChar());
-                }
-                lenght = input.readInt();
-                for (int i = 0; i < lenght; i++) {
-                    value.append(input.readChar());
-                }
-                //тут могу проверять,правильно ли данные лежа
+                length = input.readInt();
+                byte[] key = new byte[length];
+                input.read(key, 0, length);
+
+                length = input.readInt();
+                byte[] value = new byte[length];
+                input.read(value, 0, length);
+
+                String stringKey = new String(key);
+                String stringValue = new String(value);
+
+                //проверка правильности расположения данных
                 int fileNumber = Integer.parseInt(f.getName());
                 int dirNumber = Integer.parseInt(f.getParentFile().getName());
                 if (fileNumber != key.toString().hashCode() / 16 % 16
                         || dirNumber != key.toString().hashCode() % 16) {
                     System.out.println(" incorrect format of file " + fileName);
                 }
-                fileMap.get(tableName).put(key.toString(), value.toString());
-                key.delete(0, key.length());
-                value.delete(0, value.length());
+                fileMap.get(tableName).put(stringKey, stringValue);
+                
             } catch (EOFException e) {
                 return;
             }
@@ -260,6 +268,11 @@ public/* abstract */class MultiFileMap {
 
     private static void readTables(String startDirectory) {
         File start = new File(startDirectory);
+        if (!start.exists()) {
+            ShellMain.mkdir(startDirectory);
+            ;
+            System.out.println(start.getName() + " not found but created");
+        }
         if (start.exists() && start.isDirectory()) {
             for (File table : start.listFiles()) {
                 if (table.isDirectory()) {
@@ -284,6 +297,7 @@ public/* abstract */class MultiFileMap {
 
     private static void writeDirectory(String start) throws IOException {
         File startDirectory = new File(start);
+        System.out.println(startDirectory.exists() + "aaaaaa\n\n\n");
         for (File f : startDirectory.listFiles()) {
             if (f.isDirectory()) {
                 ShellMain.rm(f.getAbsolutePath(), true);
@@ -328,6 +342,10 @@ public/* abstract */class MultiFileMap {
     }
 
     public static void exec(String[] args) {
+        if (System.getProperty("fizteh.db.dir") == null) {
+            printError("empty param");
+            System.exit(1);
+        }
         File dir = new File(System.getProperty("fizteh.db.dir"));
         if (dir.isAbsolute()) {
             dbDir = dir.getAbsolutePath();
@@ -364,21 +382,11 @@ public/* abstract */class MultiFileMap {
             Scanner scanner = new Scanner(System.in);
             scanner.useDelimiter(System.lineSeparator());
             while (scanner.hasNextLine()) {
-                Scanner scannerParse = new Scanner(scanner.next());
+                Scanner scannerParse = new Scanner(scanner.nextLine());
                 scannerParse.useDelimiter("[ ]*;[ ]*");
                 while (scannerParse.hasNext()) {
                     String string = "";
                     string = scannerParse.next();
-                    if (string.equals("exit")) {
-                        scanner.close();
-                        scannerParse.close();
-                        try {
-                            writeDirectory(dbDir);
-                        } catch (IOException e) {
-                            System.out.println("can't write to file");
-                        }
-                        return;
-                    }
                     if (!string.isEmpty()) {
                         execProc(getArgsFromString(string));
                     }
