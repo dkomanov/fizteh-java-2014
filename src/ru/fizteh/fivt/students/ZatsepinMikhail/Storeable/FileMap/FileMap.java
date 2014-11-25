@@ -205,7 +205,8 @@ public class FileMap implements Table {
         return keyList;
     }
 
-    public int getNumberOfUncommitedChanges() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         return addedData.size() + changedData.size() + removedData.size();
     }
 
