@@ -11,7 +11,7 @@ public final class DataBase {
     public DataBase() {
         dataBase = new HashMap<>();
         try {
-            dataBasePath = Paths.get(System.getProperty("db.file"));
+            dataBasePath = Paths.get(System.getProperty("fizteh.db.dir"));
             if (!dataBasePath.toFile().exists()) {
                 System.out.println("Database does not exist");
                 System.exit(-1);
@@ -82,8 +82,6 @@ public final class DataBase {
         byte[] byteStr = str.getBytes("UTF-8");
         outStream.writeInt(str.length());
         outStream.write(byteStr);
-        outStream.flush();
-        outStream.close();
     }
 
     public String getDataBasePath() {
