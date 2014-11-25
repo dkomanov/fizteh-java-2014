@@ -161,7 +161,7 @@ public class StoreableTableProviderTest {
     }
 
     @Test
-    public void getTableNamesTest() throws IOException{
+    public void getTableNamesTest() throws IOException {
         tableProvider.createTable("table", signature);
         tableProvider.createTable("table2", signature);
         List<String> result = tableProvider.getTableNames();
