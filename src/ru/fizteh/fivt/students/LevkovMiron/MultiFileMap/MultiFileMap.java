@@ -60,7 +60,7 @@ class MultiFileMap {
                     }
                 }
             }
-            tableRowCounter.put(table, counter);
+            tableRowCounter.put(table.getAbsoluteFile(), counter);
         }
     }
 
