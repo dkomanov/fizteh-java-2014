@@ -116,15 +116,7 @@ public/* abstract */class FileMap {
                     } else {
                         printError("unknown command format");
                     }
-                    break;
-                case "exit":
-                    try {
-                        writeFile(System.getProperty("db.file"));
-                    } catch (IOException e) {
-                        printError("cannot write to file");
-                        return;
-                    }
-                    System.exit(0);
+//
                     break;
                 default:
                     printError("unknown_command");
@@ -145,26 +137,26 @@ public/* abstract */class FileMap {
         } catch (FileNotFoundException e1) {
             File f = new File(fileName);
             f.createNewFile();
-            System.out.println(fileName + " not found but created");
+            System.out.println(fileName + "not found but created");
             readFile(fileName);
            return;
         }
-        int length;
+        int lenght;
+        StringBuilder key = new StringBuilder();
+        StringBuilder value = new StringBuilder();
         while (true) {
             try {
-
-                length = input.readInt();
-                byte[] key = new byte[length];
-                input.read(key, 0, length);
-
-                length = input.readInt();
-                byte[] value = new byte[length];
-                input.read(value, 0, length);
-
-                String stringKey = new String(key);
-                String stringValue = new String(value);
-
-                map.put(stringKey, stringValue);
+                lenght = input.readInt();
+                for (int i = 0; i < lenght; i++) {
+                    key.append(input.readChar());
+                }
+                lenght = input.readInt();
+                for (int i = 0; i < lenght; i++) {
+                    value.append(input.readChar());
+                }
+                map.put(key.toString(), value.toString());
+                key.delete(0, key.length());
+                value.delete(0, value.length());
             } catch (EOFException e) {
                 return;
             }
@@ -210,6 +202,9 @@ public/* abstract */class FileMap {
             while (scanner.hasNext()) {
                 String string = "";
                 string = scanner.next();
+                if (string.equals("exit")) {
+                    break;
+                }
                 if (!string.isEmpty()) {
                     execProc(getArgsFromString(string));
                 }
@@ -227,11 +222,22 @@ public/* abstract */class FileMap {
             Scanner scanner = new Scanner(System.in);
             scanner.useDelimiter(System.lineSeparator());
             while (scanner.hasNextLine()) {
-                Scanner scannerParse = new Scanner(scanner.nextLine());
+                Scanner scannerParse = new Scanner(scanner.next());
                 scannerParse.useDelimiter("[ ]*;[ ]*");
                 while (scannerParse.hasNext()) {
                     String string = "";
                     string = scannerParse.next();
+                    if (string.equals("exit")) {
+                        scanner.close();
+                        scannerParse.close();
+                        try {
+                            writeFile(System.getProperty("db.file"));
+                        } catch (IOException e) {
+                            printError("cannot write to file");
+                            return;
+                        }
+                        return;
+                    }
                     if (!string.isEmpty()) {
                         execProc(getArgsFromString(string));
                     }
