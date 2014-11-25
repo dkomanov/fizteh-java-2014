@@ -20,62 +20,38 @@ public final class DataBase {
             System.err.println("Cannot create a database");
         }
     }
-
-    private String readUtil(File file) throws IOException {
-        DataInputStream inStream = new DataInputStream(new FileInputStream(file));
+    private String readUtil(DataInputStream inStream) throws IOException {
         int length = inStream.readInt();
         byte[] word = new byte[length];
         inStream.readFully(word);
         return new String(word, "UTF-8");
     }
 
-    private void read() throws Exception {
-        File tableDirectory = new File(currentTablePath.toString());
-        File[] directories = tableDirectory.listFiles();
+    private void read() {
+        File[] directories = currentTablePath.toFile().listFiles();
         for (File dir : directories) {
             File[] files = dir.listFiles();
-            for (File file : files) {
-                boolean end = false;
-                while (!end) {
-                    try {
-                        String key = readUtil(file);
-                        String value = readUtil(file);
-                        dataBase.put(key, value);
-                    } catch (IOException e) {
-                        end = true;
+            try {
+                for (File file : files) {
+                    boolean end = false;
+                    DataInputStream stream = new DataInputStream(new FileInputStream(file));
+                    while (!end) {
+                        try {
+                            String key = readUtil(stream);
+                            String value = readUtil(stream);
+                            dataBase.put(key, value);
+                        } catch (IOException e) {
+                            end = true;
+                        }
                     }
+
                 }
+            } catch (FileNotFoundException e) {
+                System.out.println("Error in reading");
+                return;
             }
         }
     }
-/*
-    public void write() throws Exception {
-        for (Map.Entry<String, String> entry : dataBase.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            int hashcode = key.hashCode();
-            int ndirectory = hashcode % 16;
-            int nfile = hashcode / 16 % 16;
-            File directory = new File(currentTablePath.toString() + File.separator + ndirectory + ".dir");
-            if (!directory.exists()) {
-                directory.mkdir();
-            }
-            File file = new File(directory.getCanonicalPath() + File.separator +
-                    nfile + ".dat");
-            if (!file.exists()) {
-                if (!file.createNewFile()) {
-                    throw new Exception("Error in writing");
-                }
-            }
-            try (DataOutputStream stream = new DataOutputStream(new FileOutputStream(file))) {
-                writeUtil(stream, key);
-                writeUtil(stream, value);
-            } catch (Exception e) {
-                throw new Exception("Error in writing");
-            }
-        }
-    }
-*/
 
     private void write() throws Exception {
         for (Map.Entry<String, String> entry : dataBase.entrySet()) {
@@ -127,18 +103,7 @@ public final class DataBase {
         if (currentTablePath != null) {
             try {
                 clear();
-                write();/*
-                if (currentTablePath.toFile().listFiles().length == 0) {
-                    Executor.delete(currentTablePath.toFile());
-                } else {
-                    File[] files = currentTablePath.toFile().listFiles();
-                    for (File file : files) {
-                        if (file.length() == 0) {
-                            Executor.delete(file);
-                        }
-                    }
-                }
-            */
+                write();
             } catch (Exception e) {
                 System.err.println("Cannot write table to files");
                 return;
@@ -159,18 +124,6 @@ public final class DataBase {
 
     public void close() {
         try {
-           /* if (currentTablePath.toFile().listFiles().length != 0) {
-                File[] directories = currentTablePath.toFile().listFiles();
-                for (File dir : directories) {
-                    File[] files = dir.listFiles();
-                    for (File file : files) {
-                        BufferedReader bf = new BufferedReader(new FileReader(file));
-                        if (bf.readLine() == null) {
-                            Executor.delete(file);
-                        }
-                    }
-                }
-            }*/
             if (currentTablePath != null) {
                 clear();
                 write();
@@ -187,12 +140,13 @@ public final class DataBase {
                 !fileToRem.exists()) {
             System.out.println(tablename + " not exists");
         }
-        if (!(tablePath).equals(currentTablePath.toString())) {
-            Executor.delete(fileToRem);
-        } else {
-            dataBase.clear();
-            Executor.delete(fileToRem);
+        if (currentTablePath != null) {
+            if (tablePath.equals(currentTablePath.toString())) {
+                dataBase.clear();
+                currentTablePath = null;
+            }
         }
+        Executor.delete(fileToRem);
     }
 
     public String[] getTableNames() {

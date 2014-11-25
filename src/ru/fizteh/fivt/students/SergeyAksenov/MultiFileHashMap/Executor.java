@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-//
 public class Executor {
     public static boolean checkArgNumber(int from, int value, int to) {
         return from <= value && value <= to;

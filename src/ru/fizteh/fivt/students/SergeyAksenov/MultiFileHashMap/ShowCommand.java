@@ -9,7 +9,9 @@ public class ShowCommand implements Command {
         }
         String[] tables = dataBase.getTableNames();
         for (String table : tables) {
-            System.out.println(table);
+            if (table.charAt(0) != '.') {
+                System.out.println(table);
+            }
         }
     }
 }

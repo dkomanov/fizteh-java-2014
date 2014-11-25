@@ -14,9 +14,6 @@ public class ListCommand implements Command {
             return;
         }
         Set<String> keySet = dataBase.getDataBase().keySet();
-        for (String key : keySet) {
-            System.out.print(key + ",");
-        }
-        System.out.println();
+        System.out.println(String.join(", ", keySet));
     }
 }
