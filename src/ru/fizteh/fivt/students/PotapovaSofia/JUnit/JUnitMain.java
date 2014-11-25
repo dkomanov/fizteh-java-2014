@@ -99,11 +99,14 @@ public class JUnitMain {
                     public void accept(TableState state, String[] args) {
                         Table currentTable = state.getUsedTable();
                         if (currentTable != null) {
+                            int commitCount = 0;
                             try {
-                                System.out.println(currentTable.commit());
+                                commitCount = currentTable.commit();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                System.err.println(e.getMessage());
+                                System.exit(1);
                             }
+                            System.out.println(commitCount);
                         } else {
                             System.out.println("no table");
                         }

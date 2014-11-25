@@ -128,7 +128,7 @@ public class DbTable implements Table {
     }
 
     @Override
-    public int commit() {
+    public int commit() throws IOException {
         int commitCount = diff.size();
         for (Map.Entry<String, ValueWrapper> f : diff.entrySet()) {
             ValueWrapper valueWrapper = f.getValue();
@@ -144,8 +144,9 @@ public class DbTable implements Table {
         try {
             writeToDisk();
         } catch (IOException e) {
-            System.err.println("Error writing table " + tableName);
-            System.exit(1);
+            throw new IOException("Error writing table " + tableName);
+            //System.err.println("Error writing table " + tableName);
+            //System.exit(1);
         }
         diff.clear();
         return commitCount;
