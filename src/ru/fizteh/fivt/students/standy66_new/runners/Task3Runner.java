@@ -35,7 +35,7 @@ public final class Task3Runner {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-        PrintWriter systemOutWriter = new PrintWriter(System.out);
+        PrintWriter systemOutWriter = new PrintWriter(System.out, true);
         CommandFactory commandFactory = new CommandFactory(systemOutWriter, provider);
         Map<String, Command> availableCommands = commandFactory.getCommandsMap();
         availableCommands.put("exit", new ExitCommand(systemOutWriter));
@@ -47,8 +47,12 @@ public final class Task3Runner {
             interpreter = new Interpreter(new ByteArrayInputStream(params.getBytes()), availableCommands, false);
         }
         if (interpreter.execute()) {
-            provider.commit();
-            provider.close();
+            try {
+                provider.commit();
+                provider.close();
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
         }
     }
 }
