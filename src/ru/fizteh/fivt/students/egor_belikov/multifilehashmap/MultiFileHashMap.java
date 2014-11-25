@@ -145,8 +145,8 @@ public class MultiFileHashMap {
                     throw new Exception("no table");
                 }
             }
-            if (args[0].equals("create") || args[0].equals("drop") || args[0].equals("use") || 
-                                        args[0].equals("get") || args[0].equals("remove")) {
+            if (args[0].equals("create") || args[0].equals("drop") || args[0].equals("use") 
+                                        || args[0].equals("get") || args[0].equals("remove")) {
                 if (args.length != 2) {
                     throw new Exception(args[0] + ": invalid number of arguments");
                 }
@@ -337,8 +337,8 @@ public class MultiFileHashMap {
                 if (!newDirectory.exists()) {
                     newDirectory.mkdir();
                 }
-                File newFile = new File(currentPath + separator + currentTable + separator + 
-                                    ndirectory + ".dir" + separator + nfile + ".dat");
+                File newFile = new File(currentPath + separator + currentTable + separator
+                                    + ndirectory + ".dir" + separator + nfile + ".dat");
                 if (!newFile.exists()) {
                     newFile.createNewFile();
                 }
