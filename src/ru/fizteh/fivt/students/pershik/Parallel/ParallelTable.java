@@ -228,7 +228,7 @@ public class ParallelTable implements Table {
     }
 
     private void writeDb() throws IOException {
-        removeFromDisk();
+        removeFromDisk(false);
         Map<String, Storeable>[][] dbParts = new HashMap[mod][mod];
         for (int i = 0; i < mod; i++) {
             for (int j = 0; j < mod; j++) {
@@ -371,11 +371,9 @@ public class ParallelTable implements Table {
         }
     }
 
-    public void removeFromDisk() throws IOException {
-        Boolean locked = false;
-        if (!lock.isWriteLocked()) {
+    public void removeFromDisk(boolean providerCall) throws IOException {
+        if (providerCall) {
             lock.writeLock().lock();
-            locked = true;
         }
         try {
             String pathTable = dbDirPath;
@@ -396,7 +394,7 @@ public class ParallelTable implements Table {
                 }
             }
         } finally {
-            if (locked) {
+            if (providerCall) {
                 lock.writeLock().unlock();
             }
         }

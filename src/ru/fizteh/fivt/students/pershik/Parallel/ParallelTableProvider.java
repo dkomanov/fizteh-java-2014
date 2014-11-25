@@ -100,7 +100,7 @@ public class ParallelTableProvider implements TableProvider {
         try {
             if (tables.containsKey(name)) {
                 ParallelTable table = tables.get(name);
-                table.removeFromDisk();
+                table.removeFromDisk(true);
                 String tablePath = dbDirPath + File.separator + name;
                 File tableDir = new File(tablePath);
                 String signaturePath = tablePath + File.separator + signatureFileName;
