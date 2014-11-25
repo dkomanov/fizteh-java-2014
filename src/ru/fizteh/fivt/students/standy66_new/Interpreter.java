@@ -58,7 +58,7 @@ public class Interpreter {
                     continue;
                 }
                 try {
-                    commandRunnable.execute();
+                    commandRunnable.execute(args);
                 } catch (InterpreterInterruptionException ignored) {
                     return isInteractive;
                 } catch (Exception e) {
