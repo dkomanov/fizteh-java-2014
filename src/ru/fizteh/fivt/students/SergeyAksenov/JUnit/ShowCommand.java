@@ -8,7 +8,9 @@ public class ShowCommand implements Command {
         }
         String[] tables = tableProvider.getTableNames();
         for (String tableName : tables) {
-            System.out.println(tableName);
+            if (tableName.charAt(0) != '.') {
+                System.out.println(tableName);
+            }
         }
     }
 }
