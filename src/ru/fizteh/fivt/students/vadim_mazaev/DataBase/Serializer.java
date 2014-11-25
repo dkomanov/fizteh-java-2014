@@ -12,7 +12,7 @@ public class Serializer implements Storeable {
     
     public Serializer(List<Class<?>> structure) {
         storage = new ArrayList<>(structure.size());
-        this.structure = structure;
+        this.structure = new ArrayList<>(structure);
     }
     
     private void checkIndexInBounds(int columnIndex)
