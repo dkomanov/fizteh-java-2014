@@ -6,10 +6,10 @@ package ru.fizteh.fivt.students.standy66_new.exceptions;
  */
 public class CheckedExceptionCaughtException extends RuntimeException {
     public CheckedExceptionCaughtException(String message, Throwable cause) {
-        super(message, cause);
+        super(message + ", cause: " + cause.getMessage(), cause);
     }
 
     public CheckedExceptionCaughtException(Throwable cause) {
-        super(cause);
+        super(cause.getMessage(), cause);
     }
 }

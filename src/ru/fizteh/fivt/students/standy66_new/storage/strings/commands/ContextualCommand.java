@@ -14,6 +14,6 @@ public class ContextualCommand extends ru.fizteh.fivt.students.standy66_new.comm
 
     @Override
     protected Context getContext() {
-        return (Context) getContext();
+        return (Context) super.getContext();
     }
 }
