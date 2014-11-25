@@ -29,7 +29,7 @@ public class Task5Runner {
         StructuredDatabaseFactory tableProviderFactory = new StructuredDatabaseFactory();
         StructuredDatabase provider = null;
         try {
-            provider = (StructuredDatabase) tableProviderFactory.create(dbDir);
+            provider = tableProviderFactory.create(dbDir);
         } catch (IOException e) {
             System.err.println("Couldn't create TableProvider");
             System.exit(-1);
@@ -46,8 +46,12 @@ public class Task5Runner {
             interpreter = new Interpreter(new ByteArrayInputStream(params.getBytes()), availableCommands, false);
         }
         if (interpreter.execute()) {
-            provider.getBackendDatabase().commit();
-            provider.getBackendDatabase().close();
+            try {
+                provider.getBackendDatabase().commit();
+            } catch (Exception e) {
+                System.err.println(e);
+            }
         }
+        provider.getBackendDatabase().close();
     }
 }
