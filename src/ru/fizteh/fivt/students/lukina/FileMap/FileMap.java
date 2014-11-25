@@ -9,7 +9,6 @@ import java.util.Set;
 public/* abstract */class FileMap {
     private static HashMap<String, String> map = new HashMap<>();
     private static boolean isPacket = false;
-
     private static void printError(String strError) {
         if (isPacket) {
             System.err.println(strError);
@@ -18,11 +17,9 @@ public/* abstract */class FileMap {
             System.out.println(strError);
         }
     }
-
     private static boolean checkArgs(int num, String[] args) {
         return args.length == num;
     }
-
     private static void put(String key, String value) {
         if (map.containsKey(key)) {
             System.out.println("overwrite " + map.get(key));
@@ -32,7 +29,6 @@ public/* abstract */class FileMap {
         }
         map.put(key, value);
     }
-
     private static void get(String key) {
         if (map.containsKey(key)) {
             System.out.println("found");
@@ -41,7 +37,6 @@ public/* abstract */class FileMap {
             System.out.println("not found");
         }
     }
-
     private static void remove(String key) {
         if (map.containsKey(key)) {
             map.remove(key);
@@ -50,7 +45,6 @@ public/* abstract */class FileMap {
             System.out.println("not found");
         }
     }
-
     private static void list() {
         Set<String> keySet = map.keySet();
         for (String key : keySet) {
@@ -58,7 +52,6 @@ public/* abstract */class FileMap {
         }
         System.out.println("");
     }
-
     private static String[] getArgsFromString(String str) {
         String newStr = str.replaceAll("[ ]+", " ");
         int countWords = 1;
@@ -85,7 +78,6 @@ public/* abstract */class FileMap {
         }
         return arg;
     }
-
     protected static void execProc(String[] args) {
         if (args.length != 0) {
             switch (args[0]) {
@@ -131,14 +123,12 @@ public/* abstract */class FileMap {
             }
         }
     }
-
     /*
-     * сначала аргументы делятся по пробелу.а мы их склеим и поделим по ";"потом
-     * вызовем для каждой группы аргументов функцию, разбивающую их снова,
-     * как нужно, и выполняющую программки
-     */
+    * сначала аргументы делятся по пробелу.а мы их склеим и поделим по ";"потом
+    * вызовем для каждой группы аргументовфункцию разбивающую аргументы снова
+    * как нужнои выполняющую программки
+    */
     private static void readFile(String fileName) throws IOException {
-
         DataInputStream input = null;
         try {
             input = new DataInputStream(new FileInputStream(fileName));
@@ -161,13 +151,11 @@ public/* abstract */class FileMap {
                 String sKey = new String(key);
                 String sValue = new String(value);
                 map.put(sKey, sValue);
-
             } catch (EOFException e) {
                 return;
             }
         }
     }
-
     private static void writeFile(String fileName) throws IOException {
         DataOutputStream output = null;
         try {
@@ -183,7 +171,6 @@ public/* abstract */class FileMap {
             output.write(entry.getValue().getBytes("UTF-8"));
         }
     }
-
     public static void exec(String[] args) {
         if (System.getProperty("db.file") == null) {
             printError("empty param");
@@ -238,7 +225,6 @@ public/* abstract */class FileMap {
             scanner.close();
         }
     }
-
     public static void main(String[] args) {
         FileMap.exec(args);
         System.exit(0);
