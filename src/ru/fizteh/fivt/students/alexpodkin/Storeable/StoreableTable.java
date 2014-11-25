@@ -6,6 +6,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,6 +185,11 @@ public class StoreableTable implements Table {
             throw new IllegalArgumentException("Table doesn't exist");
         }
         return table.size();
+    }
+
+    @Override
+    public List<String> list() {
+        return new ArrayList<>(table.keySet());
     }
 
     @Override
