@@ -226,7 +226,8 @@ public/* abstract */class MultiFileMap {
      * вызовем для каждой группы аргументовфункцию разбивающую аргументы снова
      * как нужнои выполняющую программки
      */
-    private static void readFile(String fileName, String tableName) throws IOException {
+    private static void readFile(String fileName, String tableName)
+            throws IOException {
         File f = new File(fileName);
         DataInputStream input = null;
         try {
@@ -251,15 +252,15 @@ public/* abstract */class MultiFileMap {
                 String stringKey = new String(key);
                 String stringValue = new String(value);
 
-                //проверка правильности расположения данных
+                // проверка правильности расположения данных
                 int fileNumber = Integer.parseInt(f.getName());
                 int dirNumber = Integer.parseInt(f.getParentFile().getName());
-                if (fileNumber != key.toString().hashCode() / 16 % 16
-                        || dirNumber != key.toString().hashCode() % 16) {
-                    System.out.println(" incorrect format of file " + fileName);
+                if (fileNumber != (stringKey.toString().hashCode() / 16) % 16
+                        || dirNumber != stringKey.toString().hashCode() % 16) {
+                    System.out.println("incorrect format of file " + fileName);
                 }
                 fileMap.get(tableName).put(stringKey, stringValue);
-                
+
             } catch (EOFException e) {
                 return;
             }
@@ -270,7 +271,6 @@ public/* abstract */class MultiFileMap {
         File start = new File(startDirectory);
         if (!start.exists()) {
             ShellMain.mkdir(startDirectory);
-            ;
             System.out.println(start.getName() + " not found but created");
         }
         if (start.exists() && start.isDirectory()) {
@@ -282,7 +282,8 @@ public/* abstract */class MultiFileMap {
                                 if (file.isFile()) {
                                     createWithoutPrinting(table.getName());
                                     try {
-                                        readFile(file.getAbsolutePath(), table.getName());
+                                        readFile(file.getAbsolutePath(),
+                                                table.getName());
                                     } catch (IOException e) {
                                         return;
                                     }
@@ -297,7 +298,6 @@ public/* abstract */class MultiFileMap {
 
     private static void writeDirectory(String start) throws IOException {
         File startDirectory = new File(start);
-        System.out.println(startDirectory.exists() + "aaaaaa\n\n\n");
         for (File f : startDirectory.listFiles()) {
             if (f.isDirectory()) {
                 ShellMain.rm(f.getAbsolutePath(), true);
@@ -310,10 +310,11 @@ public/* abstract */class MultiFileMap {
                 for (Entry<String, String> entry : fileMap.get(key).entrySet()) {
                     if (entry.getKey().hashCode() % 16 == i % 16
                             && entry.getKey().hashCode() / 16 % 16 == i / 16 % 16) {
-                        File directory = new File(dbDir + File.separator
-                                + key + File.separator + i % 16);
+                        File directory = new File(dbDir + File.separator + key
+                                + File.separator + i % 16);
                         File file = new File(dbDir + File.separator + key
-                                + File.separator + i % 16 + File.separator + i / 16 % 16);
+                                + File.separator + i % 16 + File.separator + i
+                                / 16 % 16);
                         if (!directory.exists() || !directory.isDirectory()) {
                             ShellMain.mkdir(directory.getAbsolutePath());
                         }
@@ -321,14 +322,17 @@ public/* abstract */class MultiFileMap {
                             try {
                                 file.createNewFile();
                             } catch (IOException e) {
-                                System.out.println("can't create " + file.getAbsolutePath());
+                                System.out.println("can't create "
+                                        + file.getAbsolutePath());
                             }
                         }
                         DataOutputStream output = null;
                         try {
-                            output = new DataOutputStream(new FileOutputStream(file.getAbsolutePath()));
+                            output = new DataOutputStream(new FileOutputStream(
+                                    file.getAbsolutePath()));
                         } catch (FileNotFoundException e) {
-                            printError(file.getAbsolutePath() + " file not found");
+                            printError(file.getAbsolutePath()
+                                    + " file not found");
                             System.exit(1);
                         }
                         output.writeInt(entry.getKey().getBytes("UTF-8").length);
@@ -350,8 +354,8 @@ public/* abstract */class MultiFileMap {
         if (dir.isAbsolute()) {
             dbDir = dir.getAbsolutePath();
         } else {
-            dbDir = System.getProperty("user.dir")
-                    + File.separator + System.getProperty("fizteh.db.dir");
+            dbDir = System.getProperty("user.dir") + File.separator
+                    + System.getProperty("fizteh.db.dir");
         }
         readTables(dbDir);
         if (args.length != 0) {
