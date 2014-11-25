@@ -35,8 +35,8 @@ public class StoreableClass implements Storeable {
         if (values.size() != this.values.size()) {
             throw new IndexOutOfBoundsException("Can't construct storeable: table signature size != initializer size");
         } else {
-            for (int i = 0; i < values.size(); ++i) {
-                if (values.getClass() != this.values.getClass()) {
+            for (int i = 0; i < values.size() && i < this.columnTypes.size(); ++i) {
+                if (values.get(i).getClass() != this.columnTypes.get(i)) {
                     throw new ColumnFormatException("Creating storeable: table type doesn't match initializer type");
                 } else {
                     this.values.set(i, values.get(i));
@@ -123,7 +123,7 @@ public class StoreableClass implements Storeable {
     }
 
     @Override
-         public boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (o == null || !(o instanceof StoreableClass)) {
             return  false;
         } else {

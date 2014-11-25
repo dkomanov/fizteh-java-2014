@@ -34,13 +34,38 @@ public class TableManagerTest {
     List<String> values = new ArrayList<>();
     private Storeable testStoreableValue;
 
+    private List<Class<?>> listWhichHoldsAllTypes = new ArrayList<>();
+    List<Object> listWhichHoldsAllValues = new ArrayList<>();
+    private Storeable megaStoreable;
+
     @Before
     public void setUp() throws DatabaseCorruptedException {
+
+        testDir.toFile().mkdir();
+        listWhichHoldsAllValues.add(1); // int = 0
+        listWhichHoldsAllValues.add((long) 2); // long = 1
+        listWhichHoldsAllValues.add((byte) 3); // byte = 2
+        listWhichHoldsAllValues.add(7.62f); // float = 3
+        listWhichHoldsAllValues.add(3.14); // double = 4
+        listWhichHoldsAllValues.add(false); // boolean = 5
+        listWhichHoldsAllValues.add("string"); // string = 6
+
+        listWhichHoldsAllTypes.add(Integer.class);
+        listWhichHoldsAllTypes.add(Long.class);
+        listWhichHoldsAllTypes.add(Byte.class);
+        listWhichHoldsAllTypes.add(Float.class);
+        listWhichHoldsAllTypes.add(Double.class);
+        listWhichHoldsAllTypes.add(Boolean.class);
+        listWhichHoldsAllTypes.add(String.class);
+
+        Table tableWhichHoldsAllTypes = new TableClass(testDir, "table name", provider, listWhichHoldsAllTypes);
+        megaStoreable = new StoreableClass(tableWhichHoldsAllTypes, listWhichHoldsAllValues);
+
+
         values.add("\"" + stringValue + "\"");
         columnTypes.add(String.class);
         table = new TableClass(testDir, tableName, provider, columnTypes);
         testStoreableValue = new StoreableClass(table, values);
-        testDir.toFile().mkdir();
     }
 
     @Test
@@ -51,6 +76,16 @@ public class TableManagerTest {
     @Test
     public void testDeserializeMethod() throws ParseException {
         assertEquals(provider.deserialize(table, "[\"" + stringValue + "\"]"), testStoreableValue);
+    }
+
+    @Test (expected = ParseException.class)
+    public void testDeserializeMethodWithoutBracket1() throws ParseException {
+        assertEquals(provider.deserialize(table, stringValue + "\"]"), testStoreableValue);
+    }
+
+    @Test (expected = ParseException.class)
+    public void testDeserializeMethodWithoutBracket2() throws ParseException {
+        assertEquals(provider.deserialize(table, "[\"" + stringValue), testStoreableValue);
     }
 
     @Test
@@ -250,6 +285,16 @@ public class TableManagerTest {
         List<String> expected = new ArrayList<>();
         expected.add(tableName);
         assertEquals(expected, test.getTableNames());
+    }
+
+    @Test
+    public void testExcludeFromStoreable() {
+        try {
+            table = new TableClass(testDir, tableName, provider, listWhichHoldsAllTypes);
+            assertEquals(provider.serialize(table, megaStoreable), "[1, 2, 3, 7.62, 3.14, false, string]");
+        } catch (DatabaseCorruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @After

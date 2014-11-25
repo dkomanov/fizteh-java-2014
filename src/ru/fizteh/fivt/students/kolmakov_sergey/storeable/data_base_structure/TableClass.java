@@ -9,6 +9,7 @@ import ru.fizteh.fivt.students.kolmakov_sergey.storeable.util.CastMaker;
 import ru.fizteh.fivt.students.kolmakov_sergey.storeable.util.Coordinates;
 
 import java.io.*;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -28,7 +29,6 @@ public class TableClass implements Table {
 
     public TableClass(Path tablePath, String name, TableProvider tableProvider, List<Class<?>> columnTypes)
             throws DatabaseCorruptedException {
-        this.columnTypes = columnTypes;
         this.tableProvider = tableProvider;
         tableMap = new HashMap<>();
         difference = new HashMap<>();
@@ -38,6 +38,7 @@ public class TableClass implements Table {
         if (columnTypes == null) {
             readColumnTypes();
         } else { // Write columnTypes to the table directory.
+            this.columnTypes = new ArrayList<>(columnTypes);
             Path currentFolderPath = this.tablePath.resolve(signatureFileName);
             File currentFile = currentFolderPath.toFile();
             try {
@@ -93,9 +94,14 @@ public class TableClass implements Table {
         columnTypes = new ArrayList<>();
         Path currentFolderPath = this.tablePath.resolve(signatureFileName);
         List<String> list = new ArrayList<>();
+        boolean fileIsEmpty = true;
         try (Scanner in = new Scanner(new File(currentFolderPath.toString()))) {
             while (in.hasNextLine()) {
                 list.add(in.nextLine());
+                fileIsEmpty = false;
+            }
+            if (fileIsEmpty) {
+                throw new DatabaseCorruptedException(signatureFileName + " is corrupted in table " + name);
             }
         } catch (FileNotFoundException e) {
             throw new DatabaseCorruptedException("Can't find " + signatureFileName + " in table " + name);

@@ -19,13 +19,13 @@ public final class Main {
     public static void main(String[] args) {
         String rootDirectory = System.getProperty("fizteh.db.dir");
         if (rootDirectory == null) {
-            System.out.println("You must specify DataBase directory via -Dfizteh.db.dir JVM parameter");
+            System.err.println("You must specify DataBase directory via -Dfizteh.db.dir JVM parameter");
             System.exit(1);
         }
         try {
             run(new DataBaseState(new TableManagerFactory().create(rootDirectory)), args);
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             System.exit(1);
         }
     }

@@ -108,10 +108,10 @@ public class TableManager implements TableProvider {
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
         if (!value.startsWith("[")) {
-            throw new ParseException("Deserialize <" + value + ">: argument doesn't start with \"[\"", 0);
+            throw new ParseException("Can't deserialize <" + value + ">: argument doesn't start with \"[\"", 0);
         }
         if (!value.endsWith("]")) {
-            throw new ParseException("Deserialize <" + value + ">: argument doesn't end with \"]\"", 0);
+            throw new ParseException("Can't deserialize <" + value + ">: argument doesn't end with \"]\"", 0);
         }
         value = value.substring(1, value.length() - 1);
         String[] parsedValues = value.split(REGEXP_TO_SPLIT_JSON);

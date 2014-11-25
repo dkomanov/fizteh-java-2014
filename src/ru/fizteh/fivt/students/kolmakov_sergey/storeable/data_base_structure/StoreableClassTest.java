@@ -20,8 +20,9 @@ public class StoreableClassTest {
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DataBaseTestDirectory");
     private List<Class<?>> listWhichHoldsAllTypes = new ArrayList<>();
     private TableProvider provider = new TableManager(testDir.toString());
-    List<Object> listWhichHoldsAllValues = new ArrayList<>();
+    private List<Object> listWhichHoldsAllValues = new ArrayList<>();
     private Storeable megaStoreable;
+    private Table tableWhichHoldsAllTypes;
 
     @Before
     public void setUp() throws DatabaseCorruptedException {
@@ -43,7 +44,7 @@ public class StoreableClassTest {
         listWhichHoldsAllTypes.add(Boolean.class);
         listWhichHoldsAllTypes.add(String.class);
 
-        Table tableWhichHoldsAllTypes = new TableClass(testDir, "table name", provider, listWhichHoldsAllTypes);
+        tableWhichHoldsAllTypes = new TableClass(testDir, "table name", provider, listWhichHoldsAllTypes);
         megaStoreable = new StoreableClass(tableWhichHoldsAllTypes, listWhichHoldsAllValues);
     }
 
@@ -67,6 +68,20 @@ public class StoreableClassTest {
     public void testThrowIndexOutOfBoundExceptionWhileGetting() throws Exception {
         megaStoreable.getIntAt(42);
     }
+
+    @Test (expected = IndexOutOfBoundsException.class)
+    public void testThrowIndexOutOfBoundExceptionWhileConstructing() throws Exception {
+        listWhichHoldsAllTypes.add(String.class);
+        new StoreableClass(tableWhichHoldsAllTypes, listWhichHoldsAllTypes);
+    }
+
+    @Test (expected = ColumnFormatException.class)
+    public void testThrowColumnFormatExceptionWhileConstructing() throws Exception {
+        listWhichHoldsAllTypes.remove(listWhichHoldsAllTypes.size() - 1);
+        listWhichHoldsAllTypes.add(Integer.class);
+        new StoreableClass(tableWhichHoldsAllTypes, listWhichHoldsAllTypes);
+    }
+
 
     @Test
     public void testGetIntAt() throws Exception {
