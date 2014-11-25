@@ -27,7 +27,7 @@ public class CurrentTable extends HashMap<String, String> implements Table {
         dbPath = new File(name).toPath();
     }
 
-    public CurrentTable(Path path) throws IOException{
+    public CurrentTable(Path path) throws IOException {
         dbPath = path.normalize();
         if (!Files.exists(path)) {
             Files.createDirectory(path);
@@ -125,6 +125,7 @@ public class CurrentTable extends HashMap<String, String> implements Table {
                         readFromFile(nameOfTable, stream, i, j);
                     }
                 } catch (IOException ignore) {
+                    System.err.println("Error: " + ignore.getMessage());
                 }
             }
         }
@@ -150,7 +151,8 @@ public class CurrentTable extends HashMap<String, String> implements Table {
                         if (Files.exists(nameOfPath(nameOfTable, i, j))) {
                             Files.delete(nameOfPath(nameOfTable, i, j));
                         }
-                        if (Files.exists(nameOfPath(nameOfTable, i)) && nameOfPath(nameOfTable, i).toFile().list().length == 0) {
+                        if (Files.exists(nameOfPath(nameOfTable, i)) && 
+                        nameOfPath(nameOfTable, i).toFile().list().length == 0) {
                             Files.delete(nameOfPath(nameOfTable, i));
                         }
                     }
@@ -207,6 +209,7 @@ public class CurrentTable extends HashMap<String, String> implements Table {
                         try {
                             streams[i][j].close();
                         } catch (IOException ignored) {
+                            System.err.prinln("Error: " + ignore.getMessage());
                         }
                     }
                 }
@@ -244,7 +247,8 @@ public class CurrentTable extends HashMap<String, String> implements Table {
     @Override
     public java.util.List<String> list() {
         java.util.List<String> result = newKey.keySet().stream().collect(Collectors.toList());
-        result.addAll(activeTable.keySet().stream().filter(key -> !newKey.containsKey(key)).collect(Collectors.toList()));
+        result.addAll(activeTable.keySet().stream().filter(key -> !newKey.containsKey(key))
+        .collect(Collectors.toList()));
         return result;
     }
 
