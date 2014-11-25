@@ -11,13 +11,17 @@ public class MultiFileHashMap {
     private static boolean isInteractiveMode;
     private static TreeMap<String, Integer> listOfTables;    
     private static TreeMap<String, String> currentFileMap;
-    private static String currentTable;
+    private static String currentTable;    
+    private static int currentNumberOfElements;
     private static String separator;
 
 
     public static void main(String[] args) throws Exception {
         separator = File.separator;
+        listOfTables = new TreeMap<>();
+
         try {
+            //currentPath = System.getProperty("user.dir") + separator + "db";
             currentPath = Paths.get(System.getProperty("fizteh.db.dir")).toString();
             File directoryFromCurrentPath = new File(currentPath);
             if (directoryFromCurrentPath.exists() && directoryFromCurrentPath.isDirectory()) {
@@ -26,7 +30,6 @@ public class MultiFileHashMap {
 
                 if (!isInteractiveMode) {
                     pack(args);
-
                 } else {
                     interactive();
                 }
@@ -46,6 +49,7 @@ public class MultiFileHashMap {
             if (dir.isDirectory()) {
                 String currentTablePath = dir.toString();
                 File tableDirectory = new File(currentTablePath);
+                //getMapFromDirectory(tableDirectory);
                 String tableName = tableDirectory.getName();
                 if (!listOfTables.containsKey(tableName)) {
                     listOfTables.put(tableName, 0);
@@ -58,9 +62,6 @@ public class MultiFileHashMap {
                     }
                     File[] datFiles = directory.listFiles();
                     for (File datFile : datFiles) {
-                        if (!datFile.getName().matches("[0 - 15].dat")) {
-                            throw new Exception("Filename must be .dat");
-                        }
                         int nDirectory;
                         nDirectory = Integer.parseInt(directory.getName().substring(0, directory.getName().length() - 4));
                         int nFile;
@@ -124,6 +125,7 @@ public class MultiFileHashMap {
                         execute(s);
                     }
                 } catch (Exception exception) {
+                    System.out.println(exception.getMessage());
                     System.exit(0);
                 }
             }
@@ -133,73 +135,77 @@ public class MultiFileHashMap {
         }
     }
 
-    private static void execute(String s) throws Exception {        
-        String[] args = s.trim().split("\\s+");
-        if (args[0].equals("get") || args[0].equals("remove") || args[0].equals("list") || args[0].equals("put")) {
-            if (currentTable.length() == 0) {
-                throw new Exception("There is no table for this moment");
-            }
-        }
-        if (args[0] == "create" || args[0] == "drop" || args[0] == "use" || args[0] == "get" || args[0] == "remove") {
-            if (args.length != 2) {
-                throw new Exception(args[0] + ": invalid number of arguments");
-            }
-        }
-        if (args[0] == "list" || args[0] == "exit") {
-            if (args.length != 1) {
-                throw new Exception(args[0] + ": invalid number of arguments");
-            }
-        }
-        if (args[0] == "put" && args.length != 3) {
-                    throw new Exception(args[0] + ": invalid number of arguments");
-        }
-        switch (args[0]) {
-            case "create":
-                create(args);
-                break;
-            case "drop":
-                drop(args);
-                break;
-            case "use":
-                use(args);
-                break;
-            case "show":
-                show(args);
-                break;
-            case "put":
-                put(args);
-                break;
-            case "get":
-                get(args);
-                break;
-            case "remove":
-                remove(args);
-                break;
-            case "list":
-                list(args);
-                break;
-            case "exit":
-                if (currentTable.length() != 0) {
-                    putCurrentMapToDirectory();
+    private static void execute(String s) throws Exception {   
+        try {
+            String[] args = s.trim().split("\\s+");
+            if (args[0].equals("get") || args[0].equals("remove") || args[0].equals("list") || args[0].equals("put")) {
+                if (currentTable == null) {
+                    throw new Exception("no table");
                 }
-                currentFileMap.clear();
-                System.exit(0);
-                break;
-            default:
-                throw new Exception("Invalid command");
+            }
+            if (args[0].equals("create") || args[0].equals("drop") || args[0].equals("use") || args[0].equals("get") || args[0].equals("remove")) {
+                if (args.length != 2) {
+                    throw new Exception(args[0] + ": invalid number of arguments");
+                }
+            }
+            if (args[0].equals("list") || args[0].equals("exit")) {
+                if (args.length != 1) {
+                    throw new Exception(args[0] + ": invalid number of arguments");
+                }
+            }
+            if (args[0].equals("put") && args.length != 3) {
+                throw new Exception(args[0] + ": invalid number of arguments");
+            }
+            switch (args[0]) {
+                case "create":
+                    create(args);
+                    break;
+                case "drop":
+                    drop(args);
+                    break;
+                case "use":
+                    use(args);
+                    break;
+                case "show":
+                    show(args);
+                    break;
+                case "put":
+                    put(args);
+                    break;
+                case "get":
+                    get(args);
+                    break;
+                case "remove":
+                    remove(args);
+                    break;
+                case "list":
+                    list(args);
+                    break;
+                case "exit":
+                    if (currentTable.length() != 0) {
+                        putCurrentMapToDirectory();
+                    }
+                    currentFileMap.clear();
+                    System.exit(0);
+                    break;
+                default:
+                    throw new Exception("Invalid command");
+            }
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+            if (!isInteractiveMode) {
+                System.exit(1);
+            }
         }
     }
 
     private static void create(String[] args) throws Exception {
         File currentFile;
-        currentFile = new File(currentPath + separator + args[1]);
+        currentFile = new File(currentPath + separator + args[1] + separator);
         if (!currentFile.exists()) {
-            currentFile.createNewFile();
-            if (!currentFile.isDirectory()) {
-                throw new Exception(currentFile.toString() + ": is not a directory");
-            } else {
-                System.out.println("created");
-            }
+            currentFile.mkdir();
+            listOfTables.put(args[1], 0);
+            System.out.println("created");
         } else {
             System.out.println(args[1] + " exists");
         }
@@ -207,14 +213,14 @@ public class MultiFileHashMap {
 
     private static void drop(String[] args) {
         
-        File currentfile = new File(currentPath + separator + args[1]);
-        if (currentfile.exists()) {
-            if (currentfile.isDirectory()) {
-                deleteDirectory(currentfile);
+        File currentFile = new File(currentPath + separator + args[1]);
+        if (currentFile.exists()) {
+            if (currentFile.isDirectory()) {
+                deleteDirectory(currentFile);
                 System.out.println("dropped");
             } else {
                 try {
-                    throw new Exception(currentfile.toString() + ": is not a directory");
+                    throw new Exception(currentFile.toString() + ": is not a directory");
                 } catch (Exception exception) {
                     Logger.getLogger(MultiFileHashMap.class.getName()).log(Level.SEVERE, null, exception);
                 }
@@ -224,29 +230,31 @@ public class MultiFileHashMap {
         }
     }
 
-    private static void use(String[] args) throws IOException {
-        if (currentTable.length() != 0) {
+    private static void use(String[] args) throws Exception {
+        if (currentTable != null) {
             putCurrentMapToDirectory();
+            listOfTables.put(currentTable, currentNumberOfElements);
         }
-        File currentfile;
-        currentfile = new File(currentPath + separator + args[1]);
-        if (!currentfile.exists()) {
+        File currentFile;
+        currentFile = new File(currentPath + separator + args[1]);
+        if (!currentFile.exists()) {
             System.out.println(args[1] + " not exists");
         }
-        if (currentfile.isDirectory()) {
+        if (currentFile.isDirectory()) {
             currentTable = args[1];
-            getMapFromDirectory(currentfile);
+            currentFileMap = new TreeMap<>();
+            getMapFromDirectory(currentFile);
             System.out.println("using " + args[1]);
+            currentNumberOfElements = listOfTables.get(args[1]);
         } else {
-            try {
-                throw new Exception(currentfile.toString() + ": is not a directory");
-            } catch (Exception exception) {
-                Logger.getLogger(MultiFileHashMap.class.getName()).log(Level.SEVERE, null, exception);
-            }
+            throw new Exception(currentFile.toString() + ": is not a directory");
         }
     }
 
     private static void show(String[] args) {
+        if (currentTable != null) {
+            listOfTables.put(currentTable, currentNumberOfElements);
+        }
         System.out.println("table_name row_count");
         listOfTables.entrySet().stream().forEach((table) -> {
             System.out.println(table.getKey() + " " + table.getValue());
@@ -254,9 +262,11 @@ public class MultiFileHashMap {
     }
 
     private static void put(String[] args) {
-        String key = args[1], value = args[2], temp = currentFileMap.put(key, value);
+        String key = args[1], value = args[2];
+        String temp = currentFileMap.put(key, value);
         if (temp == null) {
             System.out.println("new");
+            currentNumberOfElements++;
         } else {
             System.out.println("overwrite\n" + temp);
         }
@@ -277,7 +287,9 @@ public class MultiFileHashMap {
         if (temp == null) {
             System.out.println("not found");
         } else {
-            System.out.println("removed");
+            System.out.println("removed");        
+            currentNumberOfElements--;
+
         }
     }
 
@@ -301,64 +313,79 @@ public class MultiFileHashMap {
             }
         }
     }
-    private static void putCurrentMapToDirectory() throws IOException {
+    private static void putCurrentMapToDirectory() throws Exception {
         String stringKey, stringValue;
         File table = new File(currentPath + File.separator + currentTable);
         File[] dirs = table.listFiles();
         for (File dir: dirs) {
             deleteDirectory(dir);
         }
-        for (Map.Entry<String, String> i : currentFileMap.entrySet()) {
-            stringKey = i.getKey();
-            stringValue = i.getValue();
-            int hashcode = stringKey.hashCode();
-            int ndirectory = hashcode % 16;
-            int nfile = hashcode / 16 % 16;
-            File newFile = new File(currentPath + separator + currentTable + separator + ndirectory + ".dir" + separator + nfile + ".dat");
-            if (!newFile.exists()) {
-                newFile.createNewFile();
+        if (currentFileMap != null) {
+            for (Map.Entry<String, String> i : currentFileMap.entrySet()) {
+                stringKey = i.getKey();
+                stringValue = i.getValue();
+                Integer hashcode = stringKey.hashCode();
+                Integer ndirectory = hashcode % 16;
+                Integer nfile = hashcode / 16 % 16;
+                File newDirectory = new File(currentPath + File.separator + currentTable + separator + ndirectory.toString() + ".dir");
+                if (!newDirectory.exists()) {
+                    newDirectory.mkdir();
+                }
+                File newFile = new File(currentPath + separator + currentTable + separator + ndirectory + ".dir" + separator + nfile + ".dat");
+                if (!newFile.exists()) {
+                    newFile.createNewFile();
+                }
+                DataOutputStream outStream = new DataOutputStream(new FileOutputStream(newFile));
+                byte[] byteWord = stringKey.getBytes("UTF-8");
+                outStream.writeInt(byteWord.length);
+                outStream.write(byteWord);
+                outStream.flush();
+                byteWord = stringValue.getBytes("UTF-8");
+                outStream.writeInt(byteWord.length);
+                outStream.write(byteWord);
+                outStream.flush();
             }
-            DataOutputStream outStream = new DataOutputStream(new FileOutputStream(newFile));
-            byte[] byteWord = stringKey.getBytes("UTF-8");
-            outStream.writeInt(byteWord.length);
-            outStream.write(byteWord);
-            outStream.flush();
-            byteWord = stringValue.getBytes("UTF-8");
-            outStream.writeInt(byteWord.length);
-            outStream.write(byteWord);
-            outStream.flush();
         }
     }
 
-    private static void getMapFromDirectory(File currentFile) {
+    private static void getMapFromDirectory(File currentFile) throws Exception {
         for (File dir: currentFile.listFiles()) {
-            if (dir.isDirectory()) {
-                try {
-                    RandomAccessFile randomAccessCurrentFile = new RandomAccessFile(currentFile, "r");
-                    String stringKey, stringValue;
+            if (!dir.isDirectory()) {
+                throw new Exception(currentFile.getAbsolutePath() + " is not directory");
+            }
+            if (dir.listFiles().length == 0) {
+                System.err.println("Empty folders found");
+                System.exit(-1);
+            }
+            for (File dat : dir.listFiles()) {
+                int nDirectory = Integer.parseInt(dir.getName().substring(0,
+                        dir.getName().length() - 4));
+                int nFile = Integer.parseInt(dat.getName().substring(0,
+                        dat.getName().length() - 4));
+                String stringKey;
+                String stringValue;
+                try (RandomAccessFile file = new RandomAccessFile(dat.getAbsolutePath(), "r")) {
                     while (true) {
                         try {
-                            int length = randomAccessCurrentFile.readInt();
-                            byte[] bytesArray = new byte[length];
-                            randomAccessCurrentFile.readFully(bytesArray);
-                            stringKey = new String(bytesArray, "UTF-8");
-                            length = randomAccessCurrentFile.readInt();
-                            bytesArray = new byte[length];
-                            randomAccessCurrentFile.readFully(bytesArray);
-                            stringValue = new String(bytesArray, "UTF-8");
+                            int length = file.readInt();
+                            byte[] bytes = new byte[length];
+                            file.readFully(bytes);
+                            stringKey = new String(bytes, "UTF-8");
+                            length = file.readInt();
+                            bytes = new byte[length];
+                            file.readFully(bytes);
+                            stringValue = new String(bytes, "UTF-8");
                             currentFileMap.put(stringKey, stringValue);
+                            if (!(nDirectory ==  Math.abs(stringKey.getBytes("UTF-8")[0] % 16))
+                                    || !(nFile == Math.abs((stringKey.getBytes("UTF-8")[0]
+                                            / 16) % 16))) {
+                                System.out.println("Error while reading table");
+                                System.exit(-1);
+                            }
                         } catch (IOException exception) {
                             break;
                         }
                     }
-                } catch (FileNotFoundException exception) {            
-                    Logger.getLogger(MultiFileHashMap.class.getName()).log(Level.SEVERE, null, exception);
-                }
-            } else {
-                try {
-                    throw new Exception(dir.getName() + " is not directory");
-                } catch (Exception exception) {
-                    Logger.getLogger(MultiFileHashMap.class.getName()).log(Level.SEVERE, null, exception);
                 }
             }
         }
