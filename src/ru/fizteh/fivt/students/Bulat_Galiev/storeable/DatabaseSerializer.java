@@ -27,14 +27,14 @@ public class DatabaseSerializer {
     private Tabledb localtable;
 
     public DatabaseSerializer(final Path databasePath, final int dirName,
-            final int fileName, final Tabledb singletable) throws IOException {
+            final int fileName, final Tabledb singleTable) throws IOException {
         fileMap = new HashMap<>();
         savedFileMap = new HashMap<>();
         String dirString = Integer.toString(dirName) + ".dir";
         String fileString = Integer.toString(fileName) + ".dat";
         filePathdb = databasePath.resolve(dirString);
         filePathdb = filePathdb.resolve(fileString);
-        localtable = singletable;
+        localtable = singleTable;
         if (!Files.exists(filePathdb)) {
             filePathdb.getParent().toFile().mkdir();
             filePathdb.toFile().createNewFile();

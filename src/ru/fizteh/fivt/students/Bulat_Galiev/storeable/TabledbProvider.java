@@ -17,7 +17,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.HashMap;
 
-import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
@@ -255,7 +254,7 @@ public final class TabledbProvider implements TableProvider {
             String typesString = scanner.nextLine();
             checkColumnTypes(typesString);
             scanner.close();
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             throw new IllegalArgumentException("table named "
                     + singleTable.getName() + " is incorrect: "
                     + e.getMessage());
@@ -267,8 +266,7 @@ public final class TabledbProvider implements TableProvider {
         }
     }
 
-    public static void checkColumnTypes(final String oldTypesString)
-            throws IllegalArgumentException {
+    public static void checkColumnTypes(final String oldTypesString) {
         String typesString = "";
         String prefix = "class java.lang.";
         if (oldTypesString.startsWith(prefix)) {
@@ -314,8 +312,7 @@ public final class TabledbProvider implements TableProvider {
     }
 
     @Override
-    public Storeable createFor(final Table table, final List<?> values)
-            throws ColumnFormatException, IndexOutOfBoundsException {
+    public Storeable createFor(final Table table, final List<?> values) {
         if (table == null || values == null || values.isEmpty()) {
             throw new IllegalArgumentException("null value or table");
         }

@@ -10,7 +10,7 @@ public class CommandShowtables implements Command {
     }
 
     public final int getArgumentsCount() {
-        return 0;
+        return 1;
     }
 
     public final void execute(final TableProvider provider, final String[] arg)

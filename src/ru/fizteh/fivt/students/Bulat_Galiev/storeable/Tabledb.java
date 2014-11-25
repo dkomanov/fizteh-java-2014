@@ -1,9 +1,11 @@
 package ru.fizteh.fivt.students.Bulat_Galiev.storeable;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -22,7 +24,7 @@ public final class Tabledb implements Table {
     private Path tablePath;
     private Map<CellForKey, DatabaseSerializer> databaseFiles;
     private TabledbProvider localProvider;
-    private List<Class<?>> columnTypeList;
+    private List<Class<?>> columnTypeList = new ArrayList<>();
 
     public Tabledb(final Path path, final String name,
             final TabledbProvider singleprovider,
@@ -31,8 +33,11 @@ public final class Tabledb implements Table {
         tablePath = path;
         tableName = name;
         localProvider = singleprovider;
-        columnTypeList = columnListType;
+        if (columnListType != null) {
+            columnTypeList = columnListType;
+        }
         try {
+            readSignature();
             readTableDir();
         } catch (IOException e) {
             System.err.print("Error reading table " + tableName + ": "
@@ -131,6 +136,59 @@ public final class Tabledb implements Table {
 
     }
 
+    private void readSignature() throws IOException {
+        columnTypeList.clear();
+        Path tableSignaturePath = tablePath.resolve("signature.tsv");
+        try (RandomAccessFile readSig = new RandomAccessFile(
+                tableSignaturePath.toString(), "r")) {
+            if (readSig.length() > 0) {
+                while (readSig.getFilePointer() < readSig.length()) {
+                    String types = readSig.readLine();
+                    int i = 0;
+                    String typesString = "";
+                    String prefix = "class java.lang.";
+                    if (types.startsWith(prefix)) {
+                        typesString = types.substring(prefix.length());
+                    } else {
+                        throw new IllegalArgumentException(
+                                "table named "
+                                        + tableName
+                                        + " is incorrect: signature.tsv format is wrong.");
+                    }
+                    String[] typesNames = typesString
+                            .split(" class java.lang.");
+                    for (String type : typesNames) {
+                        if (!type.equals("String")) {
+                            type = Character.toLowerCase(type.charAt(0))
+                                    + type.substring(1);
+                        }
+                        if (type.equals("integer")) {
+                            type = "int";
+                        }
+                        if (Types.stringToClass(type) == null) {
+                            throw new IllegalArgumentException("Class " + type
+                                    + " is not supported.");
+                        }
+
+                        if (Types.stringToClass(type) != null) {
+                            columnTypeList.add(i++, Types.stringToClass(type));
+                        } else {
+                            throw new IllegalArgumentException("table named "
+                                    + tableName + " is incorrect: "
+                                    + "signature.tsv contains incorrect type "
+                                    + type + ".");
+
+                        }
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException("table named " + tableName
+                        + " is incorrect: " + "signature.tsv is empty.");
+            }
+        }
+
+    }
+
     public Storeable remove(final String oldkey) {
         if (oldkey != null) {
             String key = oldkey.trim();
@@ -223,7 +281,8 @@ public final class Tabledb implements Table {
                         databaseFiles.put(new CellForKey(ndirectory, nfile),
                                 databaseFile);
                     } catch (Exception e) {
-                        System.err.print(e.getMessage());
+                        System.err.print("Error reading table " + tableName
+                                + ": " + e.getMessage());
                         System.exit(-1);
                     }
                 }
@@ -251,8 +310,7 @@ public final class Tabledb implements Table {
     }
 
     @Override
-    public Class<?> getColumnType(final int columnIndex)
-            throws IndexOutOfBoundsException {
+    public Class<?> getColumnType(final int columnIndex) {
         return columnTypeList.get(columnIndex);
     }
 
@@ -260,7 +318,7 @@ public final class Tabledb implements Table {
         for (int i = 0; i < table.getColumnsCount(); ++i) {
             try {
                 value.getColumnAt(i);
-            } catch (IndexOutOfBoundsException ex) {
+            } catch (IndexOutOfBoundsException e) {
                 return false;
             }
         }
@@ -292,7 +350,7 @@ public final class Tabledb implements Table {
 
         try {
             value.getColumnAt(table.getColumnsCount());
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException e) {
             return true;
         }
 
