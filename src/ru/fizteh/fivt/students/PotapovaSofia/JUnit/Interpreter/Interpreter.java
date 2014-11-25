@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter;
 
-import ru.fizteh.fivt.students.PotapovaSofia.JUnit.DbTable;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.JUnitMain;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.StopInterpretationException;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.TableState;

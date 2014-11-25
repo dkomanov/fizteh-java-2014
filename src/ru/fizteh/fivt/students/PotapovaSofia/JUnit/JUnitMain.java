@@ -6,9 +6,7 @@ import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter.Command;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter.Interpreter;
 
-import java.io.IOException;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 
 public class JUnitMain {
@@ -28,7 +26,7 @@ public class JUnitMain {
                         Table currentTable = state.getUsedTable();
                         if (currentTable != null) {
                             String oldValue = currentTable.put(args[0], args[1]);
-                            if (oldValue !=null) {
+                            if (oldValue != null) {
                                 System.out.println("overwrite");
                                 System.out.println(oldValue);
                             } else {

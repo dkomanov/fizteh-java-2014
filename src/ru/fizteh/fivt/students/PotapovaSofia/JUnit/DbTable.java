@@ -29,7 +29,7 @@ public class DbTable implements Table {
     static final int FILE_COUNT = 16;
     static final String CODING = "UTF-8";
 
-    public DbTable(Path path, String name) throws RuntimeException{
+    public DbTable(Path path, String name) throws RuntimeException {
         tableName = name;
         tablePath = path;
         diff = new HashMap<>();
