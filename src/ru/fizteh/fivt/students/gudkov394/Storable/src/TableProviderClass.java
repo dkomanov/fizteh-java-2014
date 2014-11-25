@@ -88,11 +88,6 @@ public class TableProviderClass implements TableProvider {
         return new TableContents(valuesTmp);
     }
 
-    @Override
-    public List<String> getTableNames() {
-        return (List<String>) tables.keySet();
-    }
-
     public void put(String tmp, CurrentTable ct) {
         tables.put(tmp, ct);
     }

@@ -95,6 +95,6 @@ public class ParallelTableProvider implements TableProvider {
 
     @Override
     public List<String> getTableNames() {
-        return (List<String>) providerFromStorable.tables.keySet();
+        return null;
     }
 }

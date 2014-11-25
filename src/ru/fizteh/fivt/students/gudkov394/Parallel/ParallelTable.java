@@ -68,7 +68,7 @@ public class ParallelTable implements Table {
 
     @Override
     public List<String> list() {
-        return (List<String>) table.keySet();
+        return null;
     }
 
     @Override

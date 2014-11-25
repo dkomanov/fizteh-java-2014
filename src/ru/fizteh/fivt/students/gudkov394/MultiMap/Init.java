@@ -27,7 +27,11 @@ public class Init {
                         int length = readInt(input);
                         String key = readString(input, length);
                         length = readInt(input);
+                        key = readString(input, length);
+                        length = readInt(input);
                         String value = readString(input, length);
+                        length = readInt(input);
+                        value = readString(input, length);
                         if (currentTable.containsKey(key)) {
                             System.err.println("Wrong data: same keys");
                             System.exit(2);
