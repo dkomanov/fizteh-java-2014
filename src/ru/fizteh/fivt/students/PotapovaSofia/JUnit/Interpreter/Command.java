@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter;
 
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.TableState;
-
 import java.util.function.BiConsumer;
 
     public class Command {
