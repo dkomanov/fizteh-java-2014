@@ -43,8 +43,8 @@ public class JUnitMain {
                         ++j;
                     }
                     if (arguments[j].equals("exit")) {
-                        if (!dbConnector.activeTable.newKey.isEmpty() ||
-                                !dbConnector.activeTable.removed.isEmpty() ) {
+                        if (!dbConnector.activeTable.newKey.isEmpty() 
+                        || !dbConnector.activeTable.removed.isEmpty()) {
                             if (exitWarning()) {
                                 break;
                             }
@@ -111,8 +111,8 @@ public class JUnitMain {
                     }
                 }
                 if (exit) {
-                    if (!dbConnector.activeTable.newKey.isEmpty() ||
-                            !dbConnector.activeTable.removed.isEmpty() ) {
+                    if (!dbConnector.activeTable.newKey.isEmpty() 
+                    || !dbConnector.activeTable.removed.isEmpty()) {
                         if (exitWarning()) {
                             break;
                         }
