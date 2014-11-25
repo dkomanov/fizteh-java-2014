@@ -6,6 +6,7 @@ import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter.Command;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter.Interpreter;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -98,7 +99,12 @@ public class JUnitMain {
                         Table currentTable = state.getUsedTable();
                         if (currentTable != null) {
                             int commitCount = 0;
-                            //commitCount = currentTable.commit();
+                            try {
+                                commitCount = currentTable.commit();
+                            } catch (IOException e) {
+                                System.out.println(e.getMessage());
+                                System.exit(1);
+                            }
                             System.out.println(commitCount);
                         } else {
                             System.out.println("no table");
