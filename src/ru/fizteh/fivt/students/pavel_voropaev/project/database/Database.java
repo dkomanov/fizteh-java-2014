@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.database;
 
 import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.ContainsWrongFilesException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.TableDoesNotExistException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
@@ -38,7 +39,7 @@ public class Database implements TableProvider {
         try (DirectoryStream<Path> directory = Files.newDirectoryStream(databasePath)) {
             for (Path entry : directory) {
                 if (!Files.isDirectory(entry)) {
-                    throw new IllegalArgumentException("Database directory contains illegal files");
+                    throw new ContainsWrongFilesException(databasePath.toString());
                 }
 
                 Table currentTable = new MultiFileTable(databasePath, entry.getFileName().toString());

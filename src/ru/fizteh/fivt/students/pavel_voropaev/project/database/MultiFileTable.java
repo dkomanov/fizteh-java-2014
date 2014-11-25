@@ -223,15 +223,15 @@ public class MultiFileTable implements Table {
     private void readDir(Path entry, int dirNum) throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(entry)) {
             for (Path path : stream) {
-                boolean correctFile = false;
+                boolean isFileCorrect = false;
                 for (int i = 0; i < FILES; ++i) {
                     if (path.endsWith(Integer.toString(i) + ".dat") && Files.isRegularFile(path)) {
                         readFile(path.toString(), dirNum, i);
-                        correctFile = true;
+                        isFileCorrect = true;
                         break;
                     }
                 }
-                if (!correctFile) {
+                if (!isFileCorrect) {
                     throw new ContainsWrongFilesException(directory.toString());
                 }
             }
@@ -239,10 +239,11 @@ public class MultiFileTable implements Table {
     }
 
     private void readFile(String fileName, int dirNum, int fileNum) throws IOException {
-        try (DataInputStream stream = new DataInputStream(new FileInputStream(fileName))) {
-            while (true) {
+        try (RandomAccessFile stream = new RandomAccessFile(new File(fileName), "r")) {
+            while (stream.getFilePointer() < stream.length()) {
                 String key = readWord(stream);
                 String value = readWord(stream);
+
                 int hashCode = Math.abs(key.hashCode());
                 if (hashCode % FOLDERS != dirNum || hashCode / FOLDERS % FILES != fileNum) {
                     throw new ContainsWrongFilesException(directory.toString());
@@ -254,11 +255,11 @@ public class MultiFileTable implements Table {
                 ++size;
             }
         } catch (EOFException e) {
-            // File is read.
+                throw new ContainsWrongFilesException(directory.toString());
         }
     }
 
-    private String readWord(DataInputStream stream) throws IOException {
+    private String readWord(RandomAccessFile stream) throws IOException {
         int length = stream.readInt();
         try {
             byte[] word = new byte[length];
