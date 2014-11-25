@@ -35,7 +35,7 @@ public abstract class ATable {
     }
 
     public final String get(final String key) {
-        if ((key == null) || (key.equals(""))) {
+        if ("".equals(key)) {
             throw new IllegalArgumentException("Key cannot be empty!");
         }
         return data.get(key);
@@ -48,10 +48,10 @@ public abstract class ATable {
         if (value == null) {
             throw new IllegalArgumentException("Value should not be null!");
         }
-        if ((key.equals("")) || (key.trim().isEmpty())) {
+        if (key.trim().isEmpty()) {
             throw new IllegalArgumentException("Key should not be empty!");
         }
-        if ((value.equals("") || (value.trim().isEmpty()))) {
+        if (value.trim().isEmpty()) {
             throw new IllegalArgumentException("Value should not be empty!");
         }
 
@@ -63,7 +63,7 @@ public abstract class ATable {
     }
 
     public final String remove(final String key) {
-        if ((key == null) || (key.equals(""))) {
+        if ("".equals(key)) {
             throw new IllegalArgumentException("key cannot be null");
         }
         if (get(key) == null) {
