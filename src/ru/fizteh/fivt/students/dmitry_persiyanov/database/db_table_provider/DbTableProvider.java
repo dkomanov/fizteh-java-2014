@@ -145,7 +145,7 @@ public final class DbTableProvider implements TableProvider {
                         i = endQuoteIndex + 1;
                     } else if (Character.isSpaceChar(currChar) || currChar == ',') {
                         i++;
-                    } else if (Character.isDigit(currChar)) {
+                    } else if (Character.isDigit(currChar) || currChar == '-') {
                         int nextComma = str.indexOf(',', i);
                         if (nextComma == -1) {
                             // Last column.
@@ -196,6 +196,8 @@ public final class DbTableProvider implements TableProvider {
                 return createFor(table, values);
             } catch (IndexOutOfBoundsException e) {
                 throw new ParseException("can't parse your json", 0);
+            } catch (NumberFormatException e) {
+                throw new ParseException("types incompatibility", 0);
             }
         }
     }
