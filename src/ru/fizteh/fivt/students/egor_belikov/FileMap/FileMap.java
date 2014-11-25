@@ -8,12 +8,12 @@ public class FileMap {
     private static String currentPath;
     private static boolean packageMode;
     private static RandomAccessFile currentDatabase;
-
+    
     public static void main(String[] args) {
         fileMap = new TreeMap<String, String>();
         try {
             try {
-                currentPath = System.getProperty("db.file");
+                currentPath = System.getProperty("user.dir") + File.separator + "db";//System.getProperty("db.file");
                 try {
                     currentDatabase = new RandomAccessFile(currentPath, "r");
                     makeFileMapFromFile();
@@ -35,8 +35,8 @@ public class FileMap {
             System.exit(1);
         }
     }
-
-    private static void pack(String[] args) {
+    
+    private static void pack(String[] args) throws Exception {
         StringBuilder commands = new StringBuilder();
         for (String arg: args) {
             commands.append(arg);
@@ -50,30 +50,31 @@ public class FileMap {
         } catch (Exception exception) {
             System.exit(0);
         }
+        createFileMapDatabase();
     }
-
+    
     private static void interactive() {
         Scanner scanner = new Scanner(System.in);
         try  {
             while (true) {
-                    System.out.print("$ ");
-                    String commands;
-                    commands = scanner.nextLine();
-                    try {
-                        String[] splittedCommands = commands.trim().split(";");
-                        for (String s: splittedCommands) {
-                            execute(s);
-                        }
-                    } catch (Exception exception) {
-                        System.exit(0);
+                System.out.print("$ ");
+                String commands;
+                commands = scanner.nextLine();
+                try {
+                    String[] splittedCommands = commands.trim().split(";");
+                    for (String s: splittedCommands) {
+                        execute(s);
                     }
+                } catch (Exception exception) {
+                    System.exit(0);
                 }
-            } catch (NoSuchElementException exception) {
-                System.err.println(exception.getMessage());
-                System.exit(1);
+            }
+        } catch (NoSuchElementException exception) {
+            System.err.println(exception.getMessage());
+            System.exit(1);
         }
     }
-
+    
     private static void execute(String s) throws Exception {
         String[] args = s.trim().split("\\s+");
         try {
@@ -127,12 +128,12 @@ public class FileMap {
             }
         }
     }
-
+    
     private static void createFileMapDatabase() throws Exception {
         String key;
         String value;
         DataOutputStream outStream = new DataOutputStream(
-                new FileOutputStream(currentPath));
+                                                          new FileOutputStream(currentPath));
         for (Map.Entry<String, String> i : fileMap.entrySet()) {
             key = i.getKey();
             value = i.getValue();
@@ -146,7 +147,7 @@ public class FileMap {
             outStream.flush();
         }
     }
-
+    
     private static void makeFileMapFromFile() throws Exception {
         int n = 0;
         int i = 0;
@@ -169,7 +170,7 @@ public class FileMap {
             }
         }
     }
-
+    
     private static void list() {
         Set<String> keySet = fileMap.keySet();
         int counter = 0;
@@ -182,8 +183,8 @@ public class FileMap {
         }
         System.out.println();
     }
-
-
+    
+    
     private static void remove(String[] args) {
         String s = fileMap.remove(args[1]);
         if (s != null) {
@@ -192,8 +193,8 @@ public class FileMap {
             System.out.println("not found");
         }
     }
-
-
+    
+    
     private static void get(String[] args) {
         String found = fileMap.get(args[1]);
         if (found != null) {
@@ -203,8 +204,8 @@ public class FileMap {
             System.out.println("not found");
         }
     }
-
-
+    
+    
     private static void put(String[] args) {
         String key = args[1];
         String value = args[2];
