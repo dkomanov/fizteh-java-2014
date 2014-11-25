@@ -24,6 +24,8 @@ public class StoreableTableTest {
     private static List<Class<?>> signature;
     private StoreableEntry storeable;
     private StoreableEntry storeable2;
+    private StoreableEntry storeable3;
+    private StoreableEntry storeable4;
 
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
@@ -42,6 +44,8 @@ public class StoreableTableTest {
         table = provider.createTable(tableName, signature);
         storeable = provider.createFor(table);
         storeable2 = provider.createFor(table);
+        storeable3 = provider.createFor(table);
+        storeable4 = provider.createFor(table);
     }
 
     @After
@@ -171,13 +175,13 @@ public class StoreableTableTest {
     public void rollback() throws IOException {
         storeable.setColumnAt(0, "1");
         table.put("1", storeable);
-        storeable.setColumnAt(0, "2");
-        table.put("2", storeable);
+        storeable2.setColumnAt(0, "2");
+        table.put("2", storeable2);
         Assert.assertEquals(2, table.commit());
-        storeable.setColumnAt(0, "3");
-        table.put("2", storeable);
-        storeable.setColumnAt(0, "4");
-        table.put("4", storeable);
+        storeable3.setColumnAt(0, "3");
+        table.put("2", storeable3);
+        storeable4.setColumnAt(0, "4");
+        table.put("4", storeable4);
         Assert.assertEquals(2, table.rollback());
         Assert.assertNull(table.get("4"));
         Assert.assertEquals("2", table.get("2").getStringAt(0));
