@@ -116,7 +116,6 @@ public/* abstract */class FileMap {
                     } else {
                         printError("unknown command format");
                     }
-
                     break;
                 case "exit":
                     try {
@@ -148,7 +147,7 @@ public/* abstract */class FileMap {
             f.createNewFile();
             System.out.println(fileName + "not found but created");
             readFile(fileName);
-           return;
+            return;
         }
         int length;
         while (true) {
@@ -162,7 +161,7 @@ public/* abstract */class FileMap {
                 String sKey = new String(key);
                 String sValue = new String(value);
                 map.put(sKey, sValue);
-            
+
             } catch (EOFException e) {
                 return;
             }
