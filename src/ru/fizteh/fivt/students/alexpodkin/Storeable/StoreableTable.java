@@ -211,6 +211,11 @@ public class StoreableTable implements Table {
     }
 
     @Override
+    public int getNumberOfUncommittedChanges() {
+        return uncommitedChanges;
+    }
+
+    @Override
     public int getColumnsCount() {
         if (storeableTableProvider.getTable(tableName) == null) {
             throw new IllegalArgumentException("Table doesn't exist");

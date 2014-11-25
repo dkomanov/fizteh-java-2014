@@ -164,4 +164,9 @@ public class StoreableTableProvider implements TableProvider {
         }
         return storeableEntry;
     }
+
+    @Override
+    public List<String> getTableNames() {
+        return new ArrayList<>(tables.keySet());
+    }
 }

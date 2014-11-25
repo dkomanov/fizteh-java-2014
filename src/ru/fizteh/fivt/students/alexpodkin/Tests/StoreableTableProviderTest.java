@@ -159,4 +159,13 @@ public class StoreableTableProviderTest {
             Assert.assertEquals(valuesList.get(columnNumber), storeable.getColumnAt(columnNumber));
         }
     }
+
+    @Test
+    public void getTableNamesTest() throws IOException{
+        tableProvider.createTable("table", signature);
+        tableProvider.createTable("table2", signature);
+        List<String> result = tableProvider.getTableNames();
+        Assert.assertTrue((result.get(0).equals("table") && result.get(1).equals("table2"))
+                || (result.get(0).equals("table2") && result.get(1).equals("table")));
+    }
 }

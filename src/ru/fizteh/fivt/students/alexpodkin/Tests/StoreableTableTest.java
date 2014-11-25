@@ -164,4 +164,11 @@ public class StoreableTableTest {
     public void getWithExceptionTest() {
         table.get(null);
     }
+
+    @Test
+    public void getNumberOfUncommittedChangesTest() {
+        storeable.setColumnAt(0, "k");
+        table.put("k", storeable);
+        Assert.assertEquals(1, table.getNumberOfUncommittedChanges());
+    }
 }
