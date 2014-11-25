@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.deserg.multifilehashmap;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Created by deserg on 03.10.14.
@@ -9,7 +9,7 @@ import java.util.Vector;
 public class TableList implements Command {
 
     @Override
-    public void execute(Vector<String> args, Database db) {
+    public void execute(ArrayList<String> args, Database db) {
 
         if (args.size() == 1) {
 
@@ -21,10 +21,15 @@ public class TableList implements Command {
 
             if (db.curTable.size() > 0) {
 
-                Iterator<String> it = db.curTable.keySet().iterator();
-                System.out.print(it.next());
-                while (it.hasNext()) {
-                    System.out.print(", " + it.next());
+                String out = "";
+                for (String key: db.curTable.keySet()) {
+                    out = out + key + ", ";
+                }
+
+                if (out.isEmpty()) {
+                    System.out.println("");
+                } else {
+                    System.out.println(out.substring(0, out.length() - 2));
                 }
 
             }

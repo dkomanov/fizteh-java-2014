@@ -1,12 +1,12 @@
 package ru.fizteh.fivt.students.deserg.multifilehashmap;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Created by deserg on 03.10.14.
  */
 public interface Command {
 
-    void execute(Vector<String> args, Database db);
+    void execute(ArrayList<String> args, Database db);
 
 }

@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.deserg.multifilehashmap;
 
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Created by deserg on 22.10.14.
@@ -9,7 +9,7 @@ import java.util.Vector;
 public class DbShowTables implements Command {
 
     @Override
-    public void execute(Vector<String> args, Database db) {
+    public void execute(ArrayList<String> args, Database db) {
 
         if (args.size() < 2) {
             throw new MyException("Wrong command");

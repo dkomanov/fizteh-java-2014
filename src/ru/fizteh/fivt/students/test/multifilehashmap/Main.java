@@ -9,14 +9,13 @@ import java.util.*;
 /**
  * Created by deserg on 03.10.14.
  */
+public class Main {
 
-public class FMMain {
+    protected Map<String, Command> commandMap;
+    protected Queue<ArrayList<String>> argumentsQueue;
+    protected Database db;
 
-    protected static Map<String, Command> commandMap;
-    protected static Queue<Vector<String>> argumentsQueue;
-    protected static Database db;
-
-    public FMMain() {
+    public Main() {
 
         commandMap = new HashMap();
         argumentsQueue = new LinkedList<>();
@@ -53,7 +52,7 @@ public class FMMain {
 
     public static void main(String[] args) {
 
-        FMMain mainObj = new FMMain();
+        Main mainObj = new Main();
 
         if (args.length == 0) {
 
@@ -92,7 +91,11 @@ public class FMMain {
 
         if (args == null) {
             Scanner lineScan = new Scanner(System.in);
-            lineStr = lineScan.nextLine();
+            if (lineScan.hasNext()) {
+                lineStr = lineScan.nextLine();
+            } else {
+                System.exit(1);
+            }
         } else {
 
             for (String string: args) {
@@ -105,7 +108,7 @@ public class FMMain {
 
         for (String commandBlock: commandBlockAr) {
             String[] argsStr = commandBlock.trim().split("\\s+");
-            Vector<String> argumentVector = new Vector<>();
+            ArrayList<String> argumentVector = new ArrayList<>();
 
             for (String arg: argsStr) {
                 argumentVector.add(arg);
@@ -120,16 +123,14 @@ public class FMMain {
 
     public void executeAll() {
         if (argumentsQueue.size() == 0) {
-            throw new MyException("No command");
+            return;
         }
 
         while (argumentsQueue.size() > 0) {
-            Vector<String> arguments = new Vector<>(argumentsQueue.poll());
+            ArrayList<String> arguments = new ArrayList<>(argumentsQueue.poll());
 
             Command command = commandMap.get(arguments.get(0));
-            if (command == null) {
-                throw new MyException("Wrong command");
-            } else {
+            if (command != null) {
                 command.execute(arguments, db);
             }
         }
