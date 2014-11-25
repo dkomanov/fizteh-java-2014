@@ -63,10 +63,12 @@ public class MultiFileHashMap {
                     File[] datFiles = directory.listFiles();
                     for (File datFile : datFiles) {
                         int nDirectory;
-                        nDirectory = Integer.parseInt(directory.getName().substring(0, directory.getName().length() - 4));
+                        nDirectory = Integer.parseInt(directory.getName().substring(0, 
+                                                    directory.getName().length() - 4));
                         int nFile;
                         nFile = Integer.parseInt(datFile.getName().substring(0, datFile.getName().length() - 4));
-                        String stringKey, stringValue;
+                        String stringKey;
+                        String stringValue;
                         try (RandomAccessFile currentFile = new RandomAccessFile(datFile.getAbsolutePath(), "r")) {
                             while (true) {
                                 try {
@@ -143,7 +145,8 @@ public class MultiFileHashMap {
                     throw new Exception("no table");
                 }
             }
-            if (args[0].equals("create") || args[0].equals("drop") || args[0].equals("use") || args[0].equals("get") || args[0].equals("remove")) {
+            if (args[0].equals("create") || args[0].equals("drop") || args[0].equals("use") || 
+                                        args[0].equals("get") || args[0].equals("remove")) {
                 if (args.length != 2) {
                     throw new Exception(args[0] + ": invalid number of arguments");
                 }
@@ -262,7 +265,8 @@ public class MultiFileHashMap {
     }
 
     private static void put(String[] args) {
-        String key = args[1], value = args[2];
+        String key = args[1];
+        String value = args[2];
         String temp = currentFileMap.put(key, value);
         if (temp == null) {
             System.out.println("new");
@@ -314,7 +318,8 @@ public class MultiFileHashMap {
         }
     }
     private static void putCurrentMapToDirectory() throws Exception {
-        String stringKey, stringValue;
+        String stringKey;
+        String stringValue;
         File table = new File(currentPath + File.separator + currentTable);
         File[] dirs = table.listFiles();
         for (File dir: dirs) {
@@ -327,11 +332,13 @@ public class MultiFileHashMap {
                 Integer hashcode = stringKey.hashCode();
                 Integer ndirectory = hashcode % 16;
                 Integer nfile = hashcode / 16 % 16;
-                File newDirectory = new File(currentPath + File.separator + currentTable + separator + ndirectory.toString() + ".dir");
+                File newDirectory = new File(currentPath + File.separator + currentTable 
+                                    + separator + ndirectory.toString() + ".dir");
                 if (!newDirectory.exists()) {
                     newDirectory.mkdir();
                 }
-                File newFile = new File(currentPath + separator + currentTable + separator + ndirectory + ".dir" + separator + nfile + ".dat");
+                File newFile = new File(currentPath + separator + currentTable + separator + 
+                                    ndirectory + ".dir" + separator + nfile + ".dat");
                 if (!newFile.exists()) {
                     newFile.createNewFile();
                 }
