@@ -26,7 +26,7 @@ public class Main {
             commands.put("remove", new HandleTable());
             try {
                 int retValue = 0;
-                String rootDirectory = System.getProperty("db.file");
+                String rootDirectory = System.getProperty("fizteh.db.dir");
                 if (rootDirectory == null) {
                     throw new IOException("Can't find the directory");
                 }
