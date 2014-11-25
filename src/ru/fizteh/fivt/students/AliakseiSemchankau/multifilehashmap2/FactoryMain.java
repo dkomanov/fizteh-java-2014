@@ -1,5 +1,6 @@
  package ru.fizteh.fivt.students.AliakseiSemchankau.multifilehashmap2;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,6 +28,14 @@ public class FactoryMain {
         }
 
         Path pathDirection = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("fizteh.db.dir"));
+
+        if (!Files.exists(pathDirection)) {
+            try {
+                Files.createDirectory(pathDirection);
+            } catch (IOException ioexc) {
+                throw new DatabaseException("can't create directory " + pathDirection.toString());
+            }
+            }
 
         if (!Files.isDirectory(pathDirection)) {
             throw new DatabaseException(pathDirection.toString() + " isn't a directory");
@@ -77,50 +86,23 @@ public class FactoryMain {
             return;
         }
 
-        String curArgument = "";
-
-        for (int curSymbol = 0; ; ++curSymbol) {
-            if (curSymbol != toParse.length() && toParse.charAt(curSymbol) != ';') {
-                curArgument += toParse.charAt(curSymbol);
-            } else {
-
-                listOfCommands.add(processing(curArgument));
-
-                curArgument = "";
-                if (curSymbol == toParse.length()) {
-                    break;
-                }
-            }
+        String[] argLines = toParse.split(";");
+        for (String curArgument : argLines) {
+            listOfCommands.add(processing(curArgument));
         }
-
-       /*while (!listOfCommands.isEmpty())
-        {
-            Vector<String> curLine = listOfCommands.poll();
-            for (int i = 0; i < curLine.size(); ++i)
-                System.out.print(curLine.get(i) + " ");
-            System.out.println(";");
-        }*/
     }
 
     public  Vector<String> processing(String argLine) {
-        Vector<String> argumentList = new Vector<String>();
-        String argument = new String();
-        argument = "";
-        for (int symbol = 0; ; ++symbol) {
-            if (symbol != argLine.length() && argLine.charAt(symbol) != ' ') {
-                argument += argLine.charAt(symbol);
-            } else {
-                if (argument.length() > 0) {
-                    argumentList.add(argument);
-                    argument = "";
-                }
 
-                if (symbol == argLine.length()) {
-                    break;
-                }
+        String[] arguments = argLine.split(" ");
+
+        Vector<String> argumentList = new Vector<String>();
+
+        for (String curArg : arguments) {
+            if (curArg != null && curArg.length() > 0) {
+                argumentList.add(curArg);
             }
         }
-
         return argumentList;
     }
 
@@ -142,6 +124,11 @@ public class FactoryMain {
 
         while (!listOfCommands.isEmpty()) {
             Vector<String> args = listOfCommands.poll();
+
+            if (args.isEmpty()) {
+                System.out.println();
+                continue;
+            }
 
             //System.out.println(args.elementAt(0));
 
