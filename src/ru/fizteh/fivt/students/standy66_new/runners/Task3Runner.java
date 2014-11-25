@@ -49,10 +49,10 @@ public final class Task3Runner {
         if (interpreter.execute()) {
             try {
                 provider.commit();
-                provider.close();
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
         }
+        provider.close();
     }
 }
