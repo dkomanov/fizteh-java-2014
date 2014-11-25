@@ -15,11 +15,18 @@ public final class DataBase {
             dataBasePath = Paths.get(System.getProperty("db.file"));
             try {
                 File dataBaseFile = new File(dataBasePath.toString());
-                if (dataBaseFile.length() > 0) {
-                    inStream = new DataInputStream(
-                            new FileInputStream(dataBasePath.toString()));
-                    read();
+                if (!dataBaseFile.exists()) {
+                    System.out.println("File does not exist");
+                    throw new FileMapExitException();
                 }
+                if (dataBaseFile.isDirectory()) {
+                    System.out.println("It's a directory");
+                    throw new FileMapExitException();
+                }
+                inStream = new DataInputStream(
+                        new FileInputStream(dataBasePath.toString()));
+                read();
+
             } catch (FileNotFoundException e) {
                 dataBasePath.toFile().createNewFile();
             }
@@ -50,19 +57,23 @@ public final class DataBase {
     }
 
     public void write(File file) throws Exception {
-        if (file.length() > 0) {
-            outStream = new DataOutputStream(new FileOutputStream(file.toString()));
-            for (Map.Entry<String, String> entry : dataBase.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                try {
-                    writeUtil(key);
-                    writeUtil(value);
-                } catch (Exception e) {
-                    throw new Exception("Error in writing");
-                }
-
+        try {
+            Executor.delete(file);
+        } catch (FileMapException e) {
+            throw new Exception(e.getMessage());
+        }
+        file.createNewFile();
+        outStream = new DataOutputStream(new FileOutputStream(file.toString()));
+        for (Map.Entry<String, String> entry : dataBase.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            try {
+                writeUtil(key);
+                writeUtil(value);
+            } catch (Exception e) {
+                throw new Exception("Error in writing");
             }
+
         }
     }
 
@@ -81,10 +92,8 @@ public final class DataBase {
         try {
             File file = new File(dataBasePath.toString());
             write(file);
-            inStream.close();
-            outStream.close();
         } catch (Exception e) {
-            System.err.println("Cannot write database to file");
+            System.err.println(e.getMessage());
         }
     }
 

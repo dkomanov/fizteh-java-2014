@@ -6,7 +6,7 @@ public class RemoveCommand implements Command {
             throws FileMapException {
         if (!Executor.checkArgNumber(2, args.length, 2)) {
             ErrorHandler.countArguments("remove");
-        }//
+        }
         if (!args[1].isEmpty()) {
             String key = args[1];
             if (dataBase.getDataBase().containsKey(key)) {

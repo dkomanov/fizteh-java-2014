@@ -8,12 +8,6 @@ public class ErrorHandler {
                 command + ": invalid number of arguments");
     }
 
-    protected static final void canNotPerform(String command)
-            throws FileMapException {
-        throw new FileMapException(
-                command + ": cannot perform this operation");
-    }
-
     protected static final void unknownCommand(String command)
             throws FileMapException {
         throw new FileMapException(

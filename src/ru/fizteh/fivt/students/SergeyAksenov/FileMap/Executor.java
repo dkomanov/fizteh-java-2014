@@ -1,10 +1,10 @@
 package ru.fizteh.fivt.students.SergeyAksenov.FileMap;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-//
 public class Executor {
     public static boolean checkArgNumber(int from, int value, int to) {
         return from <= value && value <= to;
@@ -44,6 +44,23 @@ public class Executor {
         } catch (FileMapExitException e) {
             System.exit(0);
         }
+    }
+
+    public static void delete(File fileToRem)
+            throws FileMapException {
+        if (fileToRem.isDirectory()) {
+            File[] files = fileToRem.listFiles();
+            if (files == null) {
+                throw new FileMapException("Cannot delete directory");
+            }
+            for (File file : files) {
+                delete(file);
+            }
+        }
+        if (!fileToRem.delete()) {
+            throw new FileMapException("cannot delete");
+        }
+
     }
 
     public static void interactiveMode(

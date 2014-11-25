@@ -5,7 +5,7 @@ public class PutCommand implements Command {
             throws FileMapException {
         if (!Executor.checkArgNumber(3, args.length, 3)) {
             ErrorHandler.countArguments("put");
-        }//
+        }
         if (!args[1].isEmpty() && !args[2].isEmpty()) {
             String key = args[1];
             String value = args[2];

@@ -8,6 +8,7 @@ public class ExitCommand implements Command {
             dataBase.close();
             ErrorHandler.countArguments("exit");
         }
+        dataBase.close();
         throw new FileMapExitException();
     }
 }
