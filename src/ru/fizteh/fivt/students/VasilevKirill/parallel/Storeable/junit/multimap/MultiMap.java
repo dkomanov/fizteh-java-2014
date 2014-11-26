@@ -6,6 +6,7 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.VasilevKirill.parallel.SharedMyTable;
 import ru.fizteh.fivt.students.VasilevKirill.parallel.Storeable.MyStorable;
 import ru.fizteh.fivt.students.VasilevKirill.parallel.Storeable.StoreableParser;
 import ru.fizteh.fivt.students.VasilevKirill.parallel.Storeable.junit.multimap.db.shell.RmCommand;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by Kirill on 19.10.2014.
@@ -26,7 +28,8 @@ import java.util.Map;
 public class MultiMap implements TableProvider {
     private String workingDirectory;
     private String workingTable;
-    private Map<String, MultiTable> tables;
+    private Map<String, SharedMyTable> tables;
+    private ReentrantReadWriteLock providerLock;
 
     public MultiMap(String directory) throws IOException {
         workingDirectory = directory == null ? new File("").getCanonicalPath() : directory;
@@ -39,7 +42,8 @@ public class MultiMap implements TableProvider {
         if (!workingFile.isDirectory()) {
             throw new IOException(directory + " is not a directory");
         }
-        tables = new HashMap<String, MultiTable>();
+        tables = new HashMap<String, SharedMyTable>();
+        providerLock = new ReentrantReadWriteLock();
         File[] tableDirectories = new File(workingDirectory).listFiles();
         for (File it : tableDirectories) {
             File signatures = new File(it.getCanonicalPath() + File.separator + "signature.tsv");
@@ -47,7 +51,8 @@ public class MultiMap implements TableProvider {
                 throw new IOException("No signature file for table " + it.getName());
             }
             Class[] sig = readSignatures(signatures);
-            tables.put(it.getName(), new MultiTable(it, this, sig));
+            MultiTable inputTable = new MultiTable(it, this, sig);
+            tables.put(it.getName(), new SharedMyTable(inputTable));
         }
     }
 
@@ -56,7 +61,10 @@ public class MultiMap implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException();
         }
-        return tables.get(name);
+        providerLock.readLock().lock();
+        Table retValue = tables.get(name);
+        providerLock.readLock().unlock();
+        return retValue;
     }
 
     @Override
@@ -68,17 +76,20 @@ public class MultiMap implements TableProvider {
         for (int i = 0; i < columnTypes.size(); ++i) {
             typeList[i] = columnTypes.get(i);
         }
+        providerLock.writeLock().lock();
         try {
             if (!addTable(name, typeList)) {
                 return null;
             }
             MultiTable retTable = new MultiTable(new File(workingDirectory + File.separator + name), this, typeList);
-            tables.put(name, retTable);
+            tables.put(name, new SharedMyTable(retTable));
             return retTable;
         } catch (IOException e) {
             if (e.getMessage().substring(0, 5).equals("Can't")) {
                 throw new IllegalArgumentException();
             }
+        } finally {
+            providerLock.writeLock().unlock();
         }
         return null;
     }
@@ -91,10 +102,13 @@ public class MultiMap implements TableProvider {
         if (tables.get(name) == null) {
             throw new IllegalStateException();
         }
+        providerLock.writeLock().lock();
         try {
             oldRemoveTable(name);
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        } finally {
+            providerLock.writeLock().unlock();
         }
     }
 
@@ -105,19 +119,22 @@ public class MultiMap implements TableProvider {
         if (tables.get(name) == null) {
             throw new IllegalStateException();
         } else {
+            providerLock.writeLock().lock();
             try {
                 if (workingTable != null) {
-                    MultiTable currentTable = tables.get(workingTable);
+                    SharedMyTable currentTable = tables.get(workingTable);
                     if (currentTable == null) {
                         throw new IOException("Multimap: current table is null");
                     }
-                    if (currentTable.getNumUnsavedChanges() != 0) {
-                        System.out.println(currentTable.getNumUnsavedChanges() + " unsaved changes");
+                    if (currentTable.getNumberOfUncommittedChanges() != 0) {
+                        System.out.println(currentTable.getNumberOfUncommittedChanges() + " unsaved changes");
                     }
                 }
                 setWorkingTable(name);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
+            } finally {
+                providerLock.writeLock().unlock();
             }
         }
     }
@@ -180,7 +197,8 @@ public class MultiMap implements TableProvider {
                     throw new IOException("Can't create the directory: " + newDir.getName());
                 }
             }
-            tables.put(name, new MultiTable(newDir, this, typeList));
+            MultiTable inputTable = new MultiTable(newDir, this, typeList);
+            tables.put(name, new SharedMyTable(inputTable));
             return true;
         } else {
             return false;
@@ -193,7 +211,7 @@ public class MultiMap implements TableProvider {
             throw new IOException("Wrong argument");
         }
         if (tables.containsKey(name)) {
-            String[] rmArgs = {"rm", "-r", tables.get(name).getTableDirectory().getAbsolutePath()};
+            String[] rmArgs = {"rm", "-r", tables.get(name).getMultiTable().getTableDirectory().getAbsolutePath()};
             Status status = null;
             if (new RmCommand().execute(rmArgs, status) == 1) {
                 throw new IOException("Can't delete the table");
@@ -223,11 +241,11 @@ public class MultiMap implements TableProvider {
         if (workingTable == null) {
             return false;
         }
-        MultiTable multiTable = tables.get(workingTable);
+        SharedMyTable multiTable = tables.get(workingTable);
         if (multiTable == null) {
-            throw new IOException("Unknown error");
+            throw new IOException("MultiMap: Can't handle the table");
         }
-        Class[] typeList = multiTable.getTypeList();
+        Class[] typeList = multiTable.getMultiTable().getTypeList();
         Storeable result = null;
         switch (args[0]) {
             case "put":
@@ -267,7 +285,7 @@ public class MultiMap implements TableProvider {
                 }
                 break;
             default:
-                multiTable.handle(args);
+                multiTable.getMultiTable().handle(args);
         }
         return true;
     }
@@ -285,7 +303,7 @@ public class MultiMap implements TableProvider {
         }
     }
 
-    public MultiTable getMultiTable(String name) {
+    public SharedMyTable getMultiTable(String name) {
         return tables.get(name);
     }
 
