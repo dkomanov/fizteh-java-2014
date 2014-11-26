@@ -25,7 +25,8 @@ public class Put extends Action {
         }
         String oldValue = null;
         try {
-            oldValue = db.serialize(db.getCurrentTable(), db.getCurrentTable().put(args[0], db.deserialize(db.getCurrentTable(), args[1])));
+            oldValue = db.serialize(db.getCurrentTable(), db.getCurrentTable().put(args[0],
+                    db.deserialize(db.getCurrentTable(), args[1])));
         } catch (ParseException e) {
             //it is never thrown.
         }

@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.torunova.storeable.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.Database;
 import ru.fizteh.fivt.students.torunova.storeable.DatabaseWrapper;
 import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.storeable.exceptions.TableNotCreatedException;

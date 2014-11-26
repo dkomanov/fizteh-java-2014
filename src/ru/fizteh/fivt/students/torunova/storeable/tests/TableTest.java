@@ -29,7 +29,9 @@ public class TableTest{
 	public void setUp() throws Exception {
 		File testDirectory = folder.newFolder("db");
 		db = new DatabaseWrapper(testDirectory.getAbsolutePath());
-		testTable = (TableWrapper) db.createTable("table", Arrays.asList(String.class, Integer.class, Boolean.class, Float.class, Long.class, Byte.class, Double.class));
+		testTable = (TableWrapper) db.createTable("table", Arrays.asList(
+				String.class, Integer.class, Boolean.class, Float.class,
+				Long.class, Byte.class, Double.class));
 	}
 
 	@Test
@@ -39,7 +41,8 @@ public class TableTest{
 	}
 	@Test public void testPutExisting() throws Exception {
 		testTable.put("key", db.createFor(testTable, Arrays.asList(VALUE_1)));
-		assertEquals(db.createFor(testTable, Arrays.asList(VALUE_1)), testTable.put("key", db.createFor(testTable, Arrays.asList(VALUE_2))));
+		assertEquals(db.createFor(testTable, Arrays.asList(VALUE_1)), testTable.put("key",
+				db.createFor(testTable, Arrays.asList(VALUE_2))));
 	}
 	@Test(expected = ColumnFormatException.class)
 	public void testPutWrongValue() {

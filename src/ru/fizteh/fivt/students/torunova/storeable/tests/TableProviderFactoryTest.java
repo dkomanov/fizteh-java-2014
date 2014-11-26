@@ -5,13 +5,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
-import ru.fizteh.fivt.students.torunova.storeable.Database;
 import ru.fizteh.fivt.students.torunova.storeable.DatabaseFactoryWrapper;
 import ru.fizteh.fivt.students.torunova.storeable.DatabaseWrapper;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TableProviderFactoryTest {
 	TableProviderFactory tableProviderFactory;

@@ -4,18 +4,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.torunova.storeable.DatabaseWrapper;
 import ru.fizteh.fivt.students.torunova.storeable.StoreableType;
 import ru.fizteh.fivt.students.torunova.storeable.TableWrapper;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class TableProviderTest {
 	DatabaseWrapper db;
@@ -31,14 +30,16 @@ public class TableProviderTest {
 	public void testGetTable() throws Exception {
 		db.createTable("table", Arrays.asList(String.class, Integer.class, Boolean.class));
 		File table = new File(testDirectory, "table");
-		TableWrapper t = new TableWrapper(table.getAbsolutePath(), db, String.class, Integer.class, Boolean.class);
+		TableWrapper t = new TableWrapper(table.getAbsolutePath(), db,
+				String.class, Integer.class, Boolean.class);
 		assertEquals(t, db.getTable("table"));
 	}
 
 	@Test
 	public void testCreateNotExistingTable() throws Exception {
 		File table = new File(testDirectory, "table");
-		TableWrapper t = new TableWrapper(table.getAbsolutePath(), db, String.class, Integer.class, Boolean.class);
+		TableWrapper t = new TableWrapper(table.getAbsolutePath(), db,
+				String.class, Integer.class, Boolean.class);
 		assertEquals(t, db.createTable("table", Arrays.asList(String.class, Integer.class, Boolean.class)));
 	}
 
@@ -52,7 +53,8 @@ public class TableProviderTest {
 	public void testRemoveExistingTable() throws Exception {
 		db.createTable("table", Arrays.asList(String.class, Integer.class, Boolean.class));
 		db.removeTable("table");
-		assertNotEquals(null, db.createTable("table", Arrays.asList(String.class, Integer.class, Boolean.class)));
+		assertNotEquals(null, db.createTable("table", Arrays.asList(String.class,
+				Integer.class, Boolean.class)));
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -62,23 +64,26 @@ public class TableProviderTest {
 
 	@Test
 	public void testDeserialize() throws Exception {
-		TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(String.class, Integer.class, Boolean.class));
+		TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(
+				String.class, Integer.class, Boolean.class));
 		StoreableType value = (StoreableType) db.createFor(table, Arrays.asList("String value", 42, false));
 		assertEquals(value, db.deserialize(table, "[\"String value\", 42, false]"));
 	}
 
 	@Test
 	public void testSerialize() throws Exception {
-		TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(String.class, Integer.class, Boolean.class));
+		TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(
+				String.class, Integer.class, Boolean.class));
 		StoreableType value = (StoreableType) db.createFor(table, Arrays.asList("String value", 42, false));
 		assertEquals("[\"String value\", 42, false]", db.serialize(table, value));
 	}
 
 	@Test
 	public void testCreateFor() throws Exception {
-		TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(String.class, Integer.class, Boolean.class));
+		TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(
+				String.class, Integer.class, Boolean.class));
 		StoreableType value = new StoreableType(String.class, Integer.class, Boolean.class);
-		value.setColumnAt(0,"Some string");
+		value.setColumnAt(0, "Some string");
 		value.setColumnAt(1, 42);
 		value.setColumnAt(2, false);
 		assertEquals(value, db.createFor(table, Arrays.asList("Some string", 42, false)));
@@ -86,7 +91,8 @@ public class TableProviderTest {
 
 	@Test
 	public void testCreateFor1() throws Exception {
-		TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(String.class, Integer.class, Boolean.class));
+		TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(
+				String.class, Integer.class, Boolean.class));
 		StoreableType value = new StoreableType(String.class, Integer.class, Boolean.class);
 		assertEquals(value, db.createFor(table));
 	}

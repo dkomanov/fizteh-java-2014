@@ -11,16 +11,18 @@ public class StoreableTest {
 	StoreableType storeable;
 	@Before
 	public void setUp() throws Exception {
-		storeable = new StoreableType(String.class, Integer.class, Long.class, Float.class, Double.class, Byte.class, Boolean.class);
+		storeable = new StoreableType(String.class,
+				Integer.class, Long.class, Float.class,
+				Double.class, Byte.class, Boolean.class);
 	}
 	@Test
 	public void testSetColumnAt() throws Exception {
-		storeable.setColumnAt(0,"Some string");
+		storeable.setColumnAt(0, "Some string");
 		assertEquals("Some string", storeable.getColumnAt(0));
 	}
 	@Test(expected = ColumnFormatException.class)
 	public void testSetColumnAtWithException() throws Exception {
-		storeable.setColumnAt(0,12);
+		storeable.setColumnAt(0, 12);
 	}
 
 	@Test
@@ -92,7 +94,7 @@ public class StoreableTest {
 
 	@Test
 	public void testGetStringAt() throws Exception {
-		storeable.setColumnAt(0,"Some string");
+		storeable.setColumnAt(0, "Some string");
 		assertEquals("Some string", storeable.getStringAt(0));
 	}
 	@Test(expected = ColumnFormatException.class)
