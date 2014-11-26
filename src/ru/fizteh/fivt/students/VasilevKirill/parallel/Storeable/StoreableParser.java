@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.VasilevKirill.parallel.Storeable;
 
 import org.json.JSONArray;
 import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.students.VasilevKirill.parallel.structures.MyStorable;
 
 import java.text.ParseException;
 

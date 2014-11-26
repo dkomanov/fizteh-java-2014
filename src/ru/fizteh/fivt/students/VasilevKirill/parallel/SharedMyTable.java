@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.VasilevKirill.parallel;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.VasilevKirill.parallel.Storeable.junit.multimap.MultiTable;
+import ru.fizteh.fivt.students.VasilevKirill.parallel.structures.MultiTable;
 
 import java.io.IOException;
 import java.util.List;
