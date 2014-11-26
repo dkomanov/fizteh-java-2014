@@ -113,21 +113,19 @@ public class FileMap {
         try (FileOutputStream outputStream = new FileOutputStream(diskFile, appendFile)) {
             ByteBuffer bufferForSize = ByteBuffer.allocate(4);
             for (String key : keySet) {
-                if (!appendFile | key.equals(addKey)) {
-                    try {
-                        byte[] keyByte = key.getBytes("UTF-8");
-                        byte[] valueByte = dataBase.get(key).getBytes("UTF-8");
-                        outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
-                        outputStream.write(keyByte);
-                        outputStream.write(bufferForSize.putInt(0, valueByte.length).array());
-                        outputStream.write(valueByte);
-                    } catch (UnsupportedEncodingException e) {
-                        System.out.println("unsupported encoding");
-                        return false;
-                    } catch (IOException e) {
-                        System.out.println("io exception");
-                        return false;
-                    }
+                try {
+                    byte[] keyByte = key.getBytes("UTF-8");
+                    byte[] valueByte = dataBase.get(key).getBytes("UTF-8");
+                    outputStream.write(bufferForSize.putInt(0, keyByte.length).array());
+                    outputStream.write(keyByte);
+                    outputStream.write(bufferForSize.putInt(0, valueByte.length).array());
+                    outputStream.write(valueByte);
+                } catch (UnsupportedEncodingException e) {
+                    System.out.println("unsupported encoding");
+                    return false;
+                } catch (IOException e) {
+                    System.out.println("io exception");
+                    return false;
                 }
             }
         } catch (FileNotFoundException e) {
