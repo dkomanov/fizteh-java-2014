@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap;
 
-import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
@@ -118,9 +117,8 @@ public class FileMap implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
-        if (!TypesUtils.checkNewStorableValue(typeList, value)) {
-            throw new ColumnFormatException();
-        }
+        TypesUtils.checkNewStorableValue(typeList, value);
+
         boolean wasDeleted = false;
         if (removedData.contains(key)) {
             removedData.remove(key);
