@@ -23,10 +23,30 @@ public class ParallelTable implements Table {
     private String name;
     private ParallelTableProvider provider;
     private Map<String, Storeable> db;
-    private ThreadLocal<Map<String, Storeable>> added;
-    private ThreadLocal<Set<String>> removed;
-    private ThreadLocal<Integer> uncommitted;
-    private ThreadLocal<Integer> sz;
+    private ThreadLocal<Map<String, Storeable>> added = new ThreadLocal<Map<String, Storeable>>() {
+        @Override
+        protected Map<String, Storeable> initialValue() {
+            return new HashMap<String, Storeable>();
+        }
+    };
+    private ThreadLocal<Set<String>> removed = new ThreadLocal<Set<String>>() {
+        @Override
+        protected Set<String> initialValue() {
+            return new HashSet<>();
+        }
+    };
+    private ThreadLocal<Integer> uncommitted = new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
+            return 0;
+        }
+    };
+    private ThreadLocal<Integer> sz = new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
+            return 0;
+        }
+    };
     private ReentrantReadWriteLock lock;
     private ReentrantReadWriteLock providerLock;
 
@@ -36,14 +56,6 @@ public class ParallelTable implements Table {
         name = dbName;
         dbDirPath = parentDir + File.separator + dbName;
         db = new HashMap<>();
-        added = new ThreadLocal<>();
-        added.set(new HashMap<String, Storeable>());
-        removed = new ThreadLocal<>();
-        removed.set(new HashSet<String>());
-        uncommitted = new ThreadLocal<>();
-        uncommitted.set(0);
-        sz = new ThreadLocal<>();
-        sz.set(0);
         signature = newSignature;
         provider = newProvider;
         providerLock = newProviderLock;
@@ -136,7 +148,7 @@ public class ParallelTable implements Table {
         lock.readLock().lock();
         Set<String> res;
         try {
-            res = db.keySet();
+            res = new HashSet<>(db.keySet());
         } finally {
             lock.readLock().unlock();
         }
