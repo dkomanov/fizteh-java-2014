@@ -4,7 +4,7 @@ import strings.*;
 
 import util.*;
 
-public final class FileMap {
+public final class JUnit {
 
     public static void main(final String[] args) {
         String path = System.getProperty("fizteh.db.dir");
