@@ -105,6 +105,6 @@ public class TableProviderTest {
         List<String> real = db.getTableNames();
         Collections.sort(expected);
         Collections.sort(real);
-        assertEquals(expected,real);
+        assertEquals(expected, real);
     }
 }
