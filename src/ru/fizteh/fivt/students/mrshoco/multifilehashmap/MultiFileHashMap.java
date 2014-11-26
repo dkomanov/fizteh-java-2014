@@ -3,7 +3,7 @@ import util.*;
 import java.io.File;
 import java.util.Scanner;
 
-public final class FileMap {
+public final class MultiFileHashMap {
 
     public static void main(final String[] args) {
         File file = null;
