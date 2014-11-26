@@ -4,9 +4,7 @@ import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CurrentTable {
     String name;
@@ -15,7 +13,7 @@ public class CurrentTable {
 
     public CurrentTable(String nameTmp) {
         name = nameTmp;
-        create();
+        //   create();
     }
 
     public CurrentTable() {
@@ -45,22 +43,43 @@ public class CurrentTable {
     }
 
     public String get(String s) {
+        if (s == null) {
+            throw new IllegalArgumentException();
+        }
+        if (!currentTable.containsKey(s)) {
+            return null;
+        }
         return String.valueOf(currentTable.get(s));
     }
 
-    public void put(String key, String value) {
+    public String put(String key, String value) {
         ++number;
+        String oldValue = null;
+        if (currentTable.containsKey(key)) {
+            oldValue = get(key);
+        }
         currentTable.put(key, value);
+        return oldValue;
+
     }
 
     public boolean containsKey(String currentArg) {
         return currentTable.containsKey(currentArg);
     }
 
-    public Object remove(String currentArg) {
+    public String remove(String currentArg) {
         --number;
-        return currentTable.remove(currentArg);
+        String oldValue = null;
+        if (!currentTable.containsKey(currentArg)) {
+            throw new IllegalFormatCodePointException(2);
+        } else {
+            oldValue = get(currentArg);
+            currentTable.remove(currentArg);
+            write();
+        }
+        return oldValue;
     }
+
 
     public void create() {
         String s = getHomeDirectory();
@@ -83,7 +102,7 @@ public class CurrentTable {
         System.out.println("Deleted");
     }
 
-    public int getNumber() {
+    public int size() {
         return number;
     }
 
@@ -95,9 +114,13 @@ public class CurrentTable {
         File f = new File(getHomeDirectory());
         if (f.exists()) {
             File[] files = f.listFiles();
-            for (File tmp : files) {
+            if (files != null) {
+                for (File tmp : files) {
                     Init z = new Init(currentTable, tmp.toString());
+                }
             }
+
         }
+        number = currentTable.size();
     }
 }

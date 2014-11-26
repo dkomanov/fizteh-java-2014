@@ -32,11 +32,9 @@ public class Write {
         writeWord(tmp, output);
     }
 }
-
     private void writeWord(final String s, final FileOutputStream output) {
-
-        String key = ((Integer) s.length()).toString();
-        writeBytes(key, output);
+     //   String key = ((Integer) s.length()).toString();
+       // writeBytes(key, output);
         writeBytes(s, output);
     }
 

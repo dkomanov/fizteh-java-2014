@@ -5,6 +5,10 @@ package ru.fizteh.fivt.students.moskupols.cliutils;
  */
 public class CommandExecutionException extends Exception {
     public CommandExecutionException(Command cmd, String s) {
-        super(cmd.name() + ": " + s);
+        this(cmd, s, null);
+    }
+
+    public CommandExecutionException(Command cmd, String s, Throwable cause) {
+        super(cmd.name() + ": " + s, cause);
     }
 }

@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
 import ru.fizteh.fivt.students.gudkov394.map.*;
+import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
+import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,11 +16,12 @@ import java.util.Set;
 public class Write {
 
     public Write(final CurrentTable currentTable, File f) {
+        clearDirectory(f);
         Set<String> set = currentTable.keySet();
         for (String s : set) {
             int hashcode = s.hashCode();
-            int ndirectory = hashcode % 16;
-            int nfile = hashcode / 16 % 16;
+            int ndirectory = (hashcode + 16) % 16;
+            int nfile = (hashcode / 16 + 16) % 16;
 
             FileOutputStream output = null;
             try {
@@ -36,7 +39,7 @@ public class Write {
                 if (!newFile.exists()) {
                     newFile.createNewFile();
                 }
-                output = new FileOutputStream(newFile);
+                output = new FileOutputStream(newFile, true);
             } catch (IOException e) {
                 System.err.println("Ouput file didn't find");
                 System.exit(2);
@@ -44,6 +47,19 @@ public class Write {
             writeWord(s, output);
             String tmp = currentTable.get(s).toString();
             writeWord(tmp, output);
+        }
+    }
+
+
+    private void clearDirectory(File f) {
+        String[] filesInDirectory = f.list();
+        if (filesInDirectory != null) {
+            for (String tmp : filesInDirectory) {
+                String[] arg = {"rm", "-r", tmp};
+                CurrentDirectory cd = new CurrentDirectory();
+                cd.changeCurrentDirectory(f.getPath());
+                RemoveDirectory remove = new RemoveDirectory(arg, cd);
+            }
         }
     }
 

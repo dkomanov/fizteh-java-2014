@@ -13,7 +13,6 @@ public final class Interactive {
         try {
             dataBase = new DataBase(
                      System.getProperty("db.file"));
-            
              try {
                  while (true) {
                      System.out.print("$ ");
@@ -33,7 +32,7 @@ public final class Interactive {
                  }
              } catch (Exception ex) {
                  System.out.println(ex.getMessage());
-                 in.close(); 
+                 in.close();
                  System.exit(1);
              }
              dataBase.writeInFile();

@@ -7,13 +7,13 @@ import java.util.Scanner;
 
 public class MyMap {
     public Boolean checkName(final String name) {
-        String[] s = {"put", "get", "remove", "list", "exit"};
-        for (int i = 0; i < s.length; ++i) {
-            if (name.equals(s[i])) {
-                return true;
-            }
-        }
-        return false;
+        Map<String, Integer> mapStrign = new HashMap<String, Integer>();
+        mapStrign.put("put", 0);
+        mapStrign.put("get", 1);
+        mapStrign.put("remove", 2);
+        mapStrign.put("list", 3);
+        mapStrign.put("exit", 4);
+        return mapStrign.containsKey(name);
     }
 
     public void run(final String[] currentArgs, final Map ct) {
@@ -39,8 +39,13 @@ public class MyMap {
         Init init = new Init(currentTable, System.getProperty("db.file"));
         while (true) {
             String currentString = sc.nextLine();
-            currentString = currentString.trim();
-                run(currentString.split("\\s+"), currentTable);
+            currentString = currentString.replaceAll("\\s*;\\s*", ";");
+            currentString = currentString.replaceAll("\\s+", " ");
+            currentString = currentString.replaceAll("show tables", "#*#");
+            String[] arrayCommands = currentString.split(";");
+            for (int j = 0; j < arrayCommands.length; ++j) {
+                run(arrayCommands[j].trim().split("\\s+"), currentTable);
+            }
         }
 
     }
@@ -50,6 +55,8 @@ public class MyMap {
         Init init = new Init(currentTable, System.getProperty("db.file"));
         StringBuilder builder = new StringBuilder();
         for (String s : args) {
+            s = s.replace('\'', ' ');
+            s = s.replaceAll("\"\"", "\"");
             builder.append(s).append(" ");
         }
         String string = new String(builder);

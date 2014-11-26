@@ -15,11 +15,12 @@ public class DataBase {
             throws MapExcept {
         try {
             dBasePath = Paths.get(dbName);
-            dBase = new HashMap<String, String>();
             Functions.makeDbFile(dbName);
+            dBase = new HashMap<String, String>();
         } catch (MapExcept ex) {
             if (ex.toString().equals(
                     "MakeDbFile: File already exist")) {
+                dBase = new HashMap<String, String>();
                 try {
                     RandomAccessFile dbFile = new
                             RandomAccessFile(
@@ -35,6 +36,7 @@ public class DataBase {
                             readFromDataBase(
                                     dbFile);
                             dBase.put(key, value);
+
                         }
                     }
                     dbFile.close();
@@ -43,10 +45,6 @@ public class DataBase {
                             "DataBase: "
                     + "I don't know-exception");
                 }
-            } 
-            if (ex.toString().equals("It is a directory")) {
-                System.out.println("It is a directory");
-                System.exit(1);
             }
         }
     }

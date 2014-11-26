@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
 
 public class Put {
+
     public Put(final String[] currentArgs, CurrentTable ct) {
         if (currentArgs.length != 3) {
             System.err.println("wrong number of argument to Put");
