@@ -140,6 +140,11 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
         return new TableEntry(objValues);
     }
 
+    @Override
+    public List<String> getTableNames() {
+        return new ArrayList<>(tables.keySet());
+    }
+
     public void open() throws ConnectionInterruptException {
         if (tables == null) {
             tables = new HashMap<>();

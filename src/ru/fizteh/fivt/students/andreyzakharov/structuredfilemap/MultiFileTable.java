@@ -167,7 +167,8 @@ public class MultiFileTable implements Table {
         return stableData.size() + added.size() - removed.size();
     }
 
-    public int getPending() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         return pending;
     }
 
@@ -212,11 +213,7 @@ public class MultiFileTable implements Table {
         return signature.get(columnIndex);
     }
 
-    /**
-     * Returns list of keys in current version of the table.
-     *
-     * @return List of keys.
-     */
+    @Override
     public List<String> list() {
         List<String> keySet = new ArrayList<>(stableData.keySet());
         keySet.removeAll(removed);
