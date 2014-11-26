@@ -4,7 +4,7 @@ import strings.*;
 
 import util.*;
 
-public final class JUnit {
+public final class Storeable {
 
     public static void main(final String[] args) {
         String path = System.getProperty("fizteh.db.dir");
