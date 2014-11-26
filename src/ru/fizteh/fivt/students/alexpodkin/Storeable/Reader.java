@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.alexpodkin.Storeable;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -11,13 +12,13 @@ import java.util.HashMap;
 public class Reader {
 
     private String fileMapPath;
-    private StoreableTableProvider storeableTableProvider;
+    private TableProvider storeableTableProvider;
     private Table storeableTable;
 
     public Reader() {
     }
 
-    public Reader(String path, StoreableTableProvider stp, Table st) {
+    public Reader(String path, TableProvider stp, Table st) {
         fileMapPath = path;
         storeableTableProvider = stp;
         storeableTable = st;
