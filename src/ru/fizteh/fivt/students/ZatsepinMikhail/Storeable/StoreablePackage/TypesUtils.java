@@ -21,16 +21,15 @@ public class TypesUtils {
         canonicalTypes.add(String.class);
     }
 
-    public static boolean checkTypes(List<Class<?>> types) {
+    public static void checkTypes(List<Class<?>> types) {
         for (Class<?> oneClass : types) {
             if (!canonicalTypes.contains(oneClass)) {
                 throw new IllegalArgumentException("wrong type (" + oneClass.getTypeName() + ")");
             }
         }
-        return true;
     }
 
-    public static boolean checkNewStorableValue(List<Class<?>> types, Storeable newValue)
+    public static void checkNewStorableValue(List<Class<?>> types, Storeable newValue)
     throws IndexOutOfBoundsException {
         if (types.size() != TypesUtils.getSizeOfStoreable(newValue)) {
             throw new IndexOutOfBoundsException();
@@ -39,10 +38,10 @@ public class TypesUtils {
         for (int i = 0; i < types.size(); ++i) {
             valueList.add(newValue.getColumnAt(i));
         }
-        return checkNewStorableValue(types, valueList);
+        checkNewStorableValue(types, valueList);
     }
 
-    public static boolean checkNewStorableValue(List<Class<?>> types, List<Object> newValue)
+    public static void checkNewStorableValue(List<Class<?>> types, List<Object> newValue)
     throws ColumnFormatException, IndexOutOfBoundsException {
         if (types.size() != newValue.size()) {
             throw new IndexOutOfBoundsException();
@@ -53,7 +52,6 @@ public class TypesUtils {
                 throw new ColumnFormatException(newValue.get(i).getClass().toString());
             }
         }
-        return true;
     }
 
     public static List<Class<?>> toTypeList(String[] types) throws ColumnFormatException {
