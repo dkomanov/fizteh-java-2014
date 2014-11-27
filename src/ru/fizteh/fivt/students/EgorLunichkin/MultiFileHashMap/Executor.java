@@ -106,7 +106,7 @@ public class Executor {
                 exec = new UseCommand(multiDataBase, command[1]);
                 break;
             case "show":
-                if (command.length < 2 || command[2] != "tables") {
+                if (command.length < 2 || !command[1].equals("!=")) {
                     throw new MultiFileHashMapException("Unknown command");
                 }
                 if (command.length > 2) {
