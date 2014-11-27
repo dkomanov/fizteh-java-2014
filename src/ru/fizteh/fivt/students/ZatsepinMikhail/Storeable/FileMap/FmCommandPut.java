@@ -9,14 +9,10 @@ import java.util.NoSuchElementException;
 public class FmCommandPut extends CommandFileMap {
     public FmCommandPut() {
         name = "put";
-        numberOfArguments = -1;
+        numberOfArguments = 2;
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-        if (args.length < 3) {
-            System.out.println(name + ": wrong number of arguments");
-            return false;
-        }
         Storeable oldValue = myFileMap.get(args[1]);
         try {
             myFileMap.put(args[1], Serializator.deserialize(myFileMap, args[2]));
