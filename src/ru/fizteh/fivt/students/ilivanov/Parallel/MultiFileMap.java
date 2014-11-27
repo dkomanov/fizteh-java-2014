@@ -614,6 +614,3 @@ public class MultiFileMap implements Table, AutoCloseable {
         return list;
     }
 }
-
-
-
