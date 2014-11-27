@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class FileMapProviderFactory implements TableProviderFactory {
 
-    public FileMapProvider create(final String location) throws IllegalArgumentException, IOException{
+    public FileMapProvider create(final String location) throws IllegalArgumentException, IOException {
         if (location == null) {
             throw new IllegalArgumentException("Null location");
         }
