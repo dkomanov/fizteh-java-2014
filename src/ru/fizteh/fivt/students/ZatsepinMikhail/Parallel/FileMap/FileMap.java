@@ -240,9 +240,11 @@ public class FileMap implements Table {
         return keyList;
     }
 
-    public int getNumberOfUncommitedChanges() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         return addedData.get().size() + changedData.get().size() + removedData.get().size();
     }
+
 
     public boolean init() {
         String[] listOfDirectories = new File(directoryOfTable).list();
