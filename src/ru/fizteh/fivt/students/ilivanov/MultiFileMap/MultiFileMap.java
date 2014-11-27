@@ -153,21 +153,25 @@ public class MultiFileMap implements Table {
                         if (map[dir][file].empty()) {
                             if (db.exists()) {
                                 if (!db.delete()) {
-                                    throw new RuntimeException(String.format("commit: can't delete file %s\n", db.getCanonicalPath()));
+                                    throw new RuntimeException(
+                                            String.format("commit: can't delete file %s\n", db.getCanonicalPath()));
                                 }
                             }
                         } else {
                             try {
                                 map[dir][file].writeToDisk();
                             } catch (Exception e) {
-                                throw new RuntimeException(String.format("commit: error in file %d.dir/%d.dat\n", dir, file), e);
+                                throw new RuntimeException(
+                                        String.format("commit: error in file %d.dir/%d.dat\n", dir, file), e);
                             }
                         }
                     }
                     File[] list = directory.listFiles();
                     if (directory.listFiles() != null && list != null && list.length == 0) {
                         if (!directory.delete()) {
-                            throw new RuntimeException(String.format("commit: can't delete directory %s\n", directory.getCanonicalPath()));
+                            throw new RuntimeException(
+                                    String.format("commit: can't delete directory %s\n",
+                                            directory.getCanonicalPath()));
                         }
                     }
                 }
