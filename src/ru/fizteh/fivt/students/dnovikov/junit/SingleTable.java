@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.dnovikov.junit;
 
+import javafx.util.Pair;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
 
 import java.io.*;
@@ -9,6 +10,9 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class SingleTable {
+    private static final String CODING = "UTF-8";
+    public static final int FOLDERS_COUNT = 16;
+    public static final int FILES_COUNT = 16;
     private Map<String, String> dataBase;
     private Path singleTablePath;
     private DataBaseTable parentTable;
@@ -90,6 +94,22 @@ public class SingleTable {
         return getFolder().resolve(fileNumber + ".dat");
     }
 
+    private boolean checkKey(String key) {
+        int hashCode = key.hashCode();
+        int directoryNumber = hashCode % FOLDERS_COUNT;
+        int fileNumber = hashCode / FOLDERS_COUNT % FILES_COUNT;
+        if (directoryNumber < 0) {
+            directoryNumber += FOLDERS_COUNT;
+        }
+        if (fileNumber < 0) {
+            fileNumber += FILES_COUNT;
+        }
+        if (directoryNumber != this.folderNumber || fileNumber != this.fileNumber) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     private void load() {
         if (getFolder().toFile().isFile()) {
             throw new LoadOrSaveException("cannot load table: '" + getFolder().toAbsolutePath() + "' is not directory");
@@ -101,7 +121,12 @@ public class SingleTable {
             try (DataInputStream inputStream = new DataInputStream(Files.newInputStream(singleTablePath))) {
                 dataBase.clear();
                 while (inputStream.available() > 0) {
-                    dataBase.put(readString(inputStream), readString(inputStream));
+                    String key = readString(inputStream);
+                    String value = readString(inputStream);
+                    if (!checkKey(key)){
+                        throw new LoadOrSaveException("cannot load from database: format error");
+                    }
+                    dataBase.put(key,value);
                 }
             } catch (IOException e) {
                 try (DataOutputStream outputStream = new DataOutputStream(Files.newOutputStream(singleTablePath))) {
@@ -122,13 +147,13 @@ public class SingleTable {
         }
         byte[] byteString = new byte[length];
         inputStream.readFully(byteString);
-        return new String(byteString, "UTF-8");
+        return new String(byteString, CODING);
 
     }
 
     private void writeString(DataOutputStream outputStream, String string) throws IOException {
         try {
-            byte[] stringByte = string.getBytes("UTF-8");
+            byte[] stringByte = string.getBytes(CODING);
             outputStream.writeInt(stringByte.length);
             outputStream.write(stringByte);
         } catch (IOException e) {
