@@ -4,13 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class ShellBigBoss {
-    final private FileUsing database;
+    private final FileUsing database;
 
     public ShellBigBoss(final String location) {
         database = new FileUsing(new File(location));
     }
 
-    final private Shell.ShellCommand[] commands = new Shell.ShellCommand[]{
+    private final Shell.ShellCommand[] commands = new Shell.ShellCommand[]{
             new Shell.ShellCommand("put", new Shell.ShellExecutable() {
                 @Override
                 public int execute(final Shell shell, final ArrayList<String> args) {
