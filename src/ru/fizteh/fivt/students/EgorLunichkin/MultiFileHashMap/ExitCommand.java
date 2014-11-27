@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap;
 
 public class ExitCommand implements Command {
-    public void run() throws MultiFileHashMapException {
+    public ExitCommand() {}
 
+    public void run() throws MultiFileHashMapException {
+        System.exit(0);
     }
 }

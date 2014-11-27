@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap;
 import java.util.Scanner;
 
 public class Executor {
-    public Executor(String[] args) throws MultiFileHashMapException {
+    public Executor(String[] args) throws Exception {
         multiDataBase = new MultiDataBase(System.getProperty("fizteh.db.dir"));
         if (args.length == 0) {
             interactiveMode();
@@ -113,6 +113,12 @@ public class Executor {
                     throw new MultiFileHashMapException("show tables: Too many arguments");
                 }
                 exec = new ShowTablesCommand(multiDataBase);
+                break;
+            case "exit":
+                if (command.length > 1) {
+                    throw new MultiFileHashMapException("exit: Too many arguments");
+                }
+                exec = new ExitCommand();
                 break;
             default:
                 throw new MultiFileHashMapException("Unknown command");
