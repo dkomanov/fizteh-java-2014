@@ -22,7 +22,7 @@ import java.util.*;
 public class MultiTable implements Table {
     private File tableDirectory;
     private FileMap[][] files;
-    private Map<String, Storeable> data;
+    Map<String, Storeable> data;
     private Map<String, Storeable> oldData;
     //private Map<String, Storeable> prevCommitData;
     private int numUnsavedChanges;
@@ -55,8 +55,8 @@ public class MultiTable implements Table {
                 files[numDirectory][numFile] = new FileMap(datIt.getCanonicalPath(), typeList);
             }
         }
-        data = getData();
-        oldData = getData();
+        data = getUpdatedData();
+        oldData = getUpdatedData();
         //prevCommitData = getData();
         numUnsavedChanges = 0;
         writeSignatures();
@@ -240,7 +240,7 @@ public class MultiTable implements Table {
 
     public List<String> list() {
         try {
-            Map<String, Storeable> keyMap = getData();
+            Map<String, Storeable> keyMap = getUpdatedData();
             List<String> retList = new ArrayList<>();
             for (Map.Entry pair : keyMap.entrySet()) {
                 retList.add(pair.getKey().toString());
@@ -389,7 +389,7 @@ public class MultiTable implements Table {
         return numKeys;
     }
 
-    public Map<String, Storeable> getData() throws IOException {
+    public Map<String, Storeable> getUpdatedData() throws IOException {
         Map<String, Storeable> data = new HashMap<>();
         for (FileMap[] it : files) {
             for (FileMap it2 : it) {

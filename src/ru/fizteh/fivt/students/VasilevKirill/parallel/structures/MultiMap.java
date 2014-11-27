@@ -283,7 +283,7 @@ public class MultiMap implements TableProvider {
                 }
                 break;
             default:
-                multiTable.getMultiTable().handle(args);
+                multiTable.handle(args);
         }
         return true;
     }

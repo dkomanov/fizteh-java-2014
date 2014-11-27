@@ -6,12 +6,14 @@ import ru.fizteh.fivt.storage.structured.Table;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Kirill on 26.11.2014.
  */
 public class SharedMyTable implements Table {
     private ThreadLocal<MultiTable> threadLocal;
+    private volatile Map<String, Storeable> data;
 
     public SharedMyTable(MultiTable multiTable) throws IOException {
         threadLocal = new ThreadLocal<MultiTable>() {
@@ -23,6 +25,7 @@ public class SharedMyTable implements Table {
         if (threadLocal == null) {
             throw new IOException("SharedTable: threadLocal wasn't initialized");
         }
+        data = threadLocal.get().data;
     }
 
     @Override
@@ -32,32 +35,52 @@ public class SharedMyTable implements Table {
 
     @Override
     public Storeable get(String key) {
+        if (!threadLocal.get().data.equals(data)) {
+            threadLocal.get().data = data;
+        }
         return threadLocal.get().get(key);
     }
 
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
+        if (!threadLocal.get().data.equals(data)) {
+            threadLocal.get().data = data;
+        }
         return threadLocal.get().put(key, value);
     }
 
     @Override
     public Storeable remove(String key) {
+        if (!threadLocal.get().data.equals(data)) {
+            threadLocal.get().data = data;
+        }
         return threadLocal.get().remove(key);
     }
 
     @Override
     public int size() {
+        if (!threadLocal.get().data.equals(data)) {
+            threadLocal.get().data = data;
+        }
         return threadLocal.get().size();
     }
 
     @Override
     public List<String> list() {
+        if (!threadLocal.get().data.equals(data)) {
+            threadLocal.get().data = data;
+        }
         return threadLocal.get().list();
     }
 
     @Override
     public int commit() throws IOException {
-        return threadLocal.get().commit();
+        if (!threadLocal.get().data.equals(data)) {
+            threadLocal.get().data = data;
+        }
+        int result = threadLocal.get().commit();
+        data = threadLocal.get().data;
+        return result;
     }
 
     @Override
@@ -82,5 +105,21 @@ public class SharedMyTable implements Table {
 
     public MultiTable getMultiTable() {
         return threadLocal.get();
+    }
+
+    public void handle(String[] args) throws IOException {
+        switch (args[0]) {
+            case "commit":
+                System.out.println(commit());
+                break;
+            case "size":
+                System.out.println(size());
+                break;
+            case "rollback":
+                System.out.println(rollback());
+                break;
+            default:
+                threadLocal.get().handle(args);
+        }
     }
 }
