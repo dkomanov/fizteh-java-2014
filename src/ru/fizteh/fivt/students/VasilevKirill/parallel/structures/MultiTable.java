@@ -24,7 +24,7 @@ public class MultiTable implements Table {
     private FileMap[][] files;
     private Map<String, Storeable> data;
     private Map<String, Storeable> oldData;
-    private Map<String, Storeable> prevCommitData;
+    //private Map<String, Storeable> prevCommitData;
     private int numUnsavedChanges;
     private MultiMap multiMap;
     private Class[] typeList;
@@ -57,7 +57,7 @@ public class MultiTable implements Table {
         }
         data = getData();
         oldData = getData();
-        prevCommitData = getData();
+        //prevCommitData = getData();
         numUnsavedChanges = 0;
         writeSignatures();
     }
@@ -143,7 +143,7 @@ public class MultiTable implements Table {
             }
             newOutput.close();
             System.setOut(oldOutput);
-            prevCommitData = new HashMap<>(oldData);
+            //prevCommitData = new HashMap<>(oldData);
             oldData = new HashMap<>(data);
             numUnsavedChanges = 0;
         } catch (IOException e) {
@@ -161,6 +161,27 @@ public class MultiTable implements Table {
     @Override
     public int rollback() {
         int numChanges = 0;
+        for (Map.Entry pair : data.entrySet()) {
+            if (!oldData.containsKey(pair.getKey())) {
+                numChanges++;
+            } else {
+                if (oldData.get(pair.getKey()) != pair.getValue()) {
+                    numChanges++;
+                }
+            }
+        }
+        for (Map.Entry pair : oldData.entrySet()) {
+            if (!data.containsKey(pair.getKey())) {
+                numChanges++;
+            } else {
+                if (data.get(pair.getKey()) != pair.getValue()) {
+                    numChanges++;
+                }
+            }
+        }
+        data = oldData;
+        return numChanges;
+        /*int numChanges = 0;
         try {
             PrintStream oldOutput = System.out;
             PrintStream newOutput = new PrintStream(new OutputStream() {
@@ -201,7 +222,7 @@ public class MultiTable implements Table {
                 System.out.println(e.getMessage());
             }
         }
-        return numChanges;
+        return numChanges;*/
     }
 
     @Override
