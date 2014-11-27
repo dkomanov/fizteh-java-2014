@@ -118,6 +118,7 @@ public class FileMap implements Table {
             throw new IllegalArgumentException("null argument");
         }
         TypesUtils.checkNewStorableValue(typeList, value);
+
         boolean wasDeleted = false;
         if (removedData.contains(key)) {
             removedData.remove(key);
@@ -202,7 +203,8 @@ public class FileMap implements Table {
         return keyList;
     }
 
-    public int getNumberOfUncommitedChanges() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         return addedData.size() + changedData.size() + removedData.size();
     }
 
