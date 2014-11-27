@@ -23,7 +23,7 @@ public class MultiTable implements Table {
     private FileMap[][] files;
     private Map<String, String> data;
     private Map<String, String> oldData;
-    private Map<String, String> prevCommitData;
+    //private Map<String, String> prevCommitData;
     private int numUnsavedChanges;
 
     public MultiTable(File tableDirectory) throws IOException {
@@ -52,7 +52,7 @@ public class MultiTable implements Table {
         }
         data = getData();
         oldData = getData();
-        prevCommitData = getData();
+        //prevCommitData = getData();
         numUnsavedChanges = 0;
     }
 
@@ -128,7 +128,7 @@ public class MultiTable implements Table {
             }
             newOutput.close();
             System.setOut(oldOutput);
-            prevCommitData = new HashMap<>(oldData);
+            //prevCommitData = new HashMap<>(oldData);
             oldData = new HashMap<>(data);
             numUnsavedChanges = 0;
         } catch (IOException e) {
@@ -142,7 +142,26 @@ public class MultiTable implements Table {
     @Override
     public int rollback() {
         int numChanges = 0;
-        try {
+        for (Map.Entry pair : data.entrySet()) {
+            if (!oldData.containsKey(pair.getKey())) {
+                numChanges++;
+            } else {
+                if (oldData.get(pair.getKey()) != pair.getValue()) {
+                    numChanges++;
+                }
+            }
+        }
+        for (Map.Entry pair : oldData.entrySet()) {
+            if (!data.containsKey(pair.getKey())) {
+                numChanges++;
+            } else {
+                if (data.get(pair.getKey()) != pair.getValue()) {
+                    numChanges++;
+                }
+            }
+        }
+        data = oldData;
+        /*try {
             PrintStream oldOutput = System.out;
             PrintStream newOutput = new PrintStream(new OutputStream() {
                 @Override
@@ -176,7 +195,7 @@ public class MultiTable implements Table {
             System.out.println(e.getMessage());
         } catch (Exception e) {
             System.out.println(e);
-        }
+        }*/
         return numChanges;
     }
 
