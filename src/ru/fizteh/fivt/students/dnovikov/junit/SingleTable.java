@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.dnovikov.junit;
 
-import javafx.util.Pair;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
 
 import java.io.*;
@@ -10,9 +9,9 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class SingleTable {
-    private static final String CODING = "UTF-8";
     public static final int FOLDERS_COUNT = 16;
     public static final int FILES_COUNT = 16;
+    private static final String CODING = "UTF-8";
     private Map<String, String> dataBase;
     private Path singleTablePath;
     private DataBaseTable parentTable;
@@ -106,10 +105,10 @@ public class SingleTable {
         }
         if (directoryNumber != this.folderNumber || fileNumber != this.fileNumber) {
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
+
     private void load() {
         if (getFolder().toFile().isFile()) {
             throw new LoadOrSaveException("cannot load table: '" + getFolder().toAbsolutePath() + "' is not directory");
@@ -123,10 +122,10 @@ public class SingleTable {
                 while (inputStream.available() > 0) {
                     String key = readString(inputStream);
                     String value = readString(inputStream);
-                    if (!checkKey(key)){
+                    if (!checkKey(key)) {
                         throw new LoadOrSaveException("cannot load from database: format error");
                     }
-                    dataBase.put(key,value);
+                    dataBase.put(key, value);
                 }
             } catch (IOException e) {
                 try (DataOutputStream outputStream = new DataOutputStream(Files.newOutputStream(singleTablePath))) {
