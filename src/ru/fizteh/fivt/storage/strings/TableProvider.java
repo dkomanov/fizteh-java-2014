@@ -1,5 +1,4 @@
 package ru.fizteh.fivt.storage.strings;
-
 /**
  * @author Fedor Lavrentyev
  * @author Dmitriy Komanov
