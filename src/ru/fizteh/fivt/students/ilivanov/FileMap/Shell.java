@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class Shell {
 
-    final private HashMap<String, ShellCommand> commands;
+    private final HashMap<String, ShellCommand> commands;
     private boolean exit;
 
 
@@ -149,9 +149,9 @@ public class Shell {
     }
 
     public static class ShellCommand {
-        final private String name;
-        final private ShellExecutable exec;
-        final private boolean parsingRequired;
+        private final String name;
+        private final ShellExecutable exec;
+        private final boolean parsingRequired;
 
         public ShellCommand(final String name, final ShellExecutable exec) {
             this.name = name;
