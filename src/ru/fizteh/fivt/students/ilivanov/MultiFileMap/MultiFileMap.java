@@ -11,7 +11,7 @@ public class MultiFileMap implements Table {
     private FileUsing[][] map;
     private HashMap<String, String> oldValues;
     private HashSet<String> newKeys;
-    final private int arraySize = 16;
+    private final int arraySize = 16;
 
     public MultiFileMap(final File location) {
         if (location == null) {

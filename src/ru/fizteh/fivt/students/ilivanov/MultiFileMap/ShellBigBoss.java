@@ -5,7 +5,7 @@ import ru.fizteh.fivt.students.ilivanov.MultiFileMap.TableInterfaces.Table;
 import java.util.ArrayList;
 
 public class ShellBigBoss {
-    final private FileMapProvider database;
+    private final FileMapProvider database;
     private MultiFileMap current;
 
     public ShellBigBoss(final String location) {
@@ -24,7 +24,7 @@ public class ShellBigBoss {
         System.err.println(e.getMessage());
     }
 
-    final private Shell.ShellCommand[] commands = new Shell.ShellCommand[]{
+    private final Shell.ShellCommand[] commands = new Shell.ShellCommand[]{
             new Shell.ShellCommand("create", new Shell.ShellExecutable() {
                 @Override
                 public int execute(final Shell shell, final ArrayList<String> args) {

@@ -9,7 +9,7 @@ import java.util.Map;
 public class FileUsing {
     private File file;
     private HashMap<String, String> map;
-    final private int maxLength;
+    private final int maxLength;
 
     public FileUsing(final File file) {
         if (file == null) {
