@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class StoreableEntry implements Storeable {
 
-    private List<Object> list;
+    protected List<Object> list;
     private Set<Class<?>> typeSet;
     private List<Class<?>> signature;
 
