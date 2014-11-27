@@ -69,11 +69,10 @@ public class CreateCommand implements Command {
 
     @Override
     public boolean checkArgs(String[] args) {
-        if (args == null || args[1] == null) {
+        if (args == null || args.length < 3) {
             return false;
         }
         return true;
-        //return args.length == 2;
     }
 
     @Override

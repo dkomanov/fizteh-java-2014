@@ -113,11 +113,7 @@ public class Shell {
             System.err.println(e.getMessage());
             System.exit(-1);
         } catch (Exception e) {
-            if (e.getMessage().equals("")) {
-                System.out.println(e);
-            } else {
-                System.out.println(e.getMessage());
-            }
+            System.out.println(e);
             System.exit(-1);
         }
         return 0;

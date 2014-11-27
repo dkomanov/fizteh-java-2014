@@ -6,7 +6,6 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.VasilevKirill.parallel.SharedMyTable;
 import ru.fizteh.fivt.students.VasilevKirill.parallel.Storeable.StoreableParser;
 import ru.fizteh.fivt.students.VasilevKirill.parallel.Commands.shelldata.RmCommand;
 import ru.fizteh.fivt.students.VasilevKirill.parallel.Commands.shelldata.Status;
@@ -292,12 +291,12 @@ public class MultiMap implements TableProvider {
     public void showTables() throws IOException {
         for (Map.Entry entry : tables.entrySet()) {
             Object value = entry.getValue();
-            MultiTable multiTable = null;
-            if (value instanceof MultiTable) {
-                multiTable = (MultiTable) value;
+            SharedMyTable multiTable = null;
+            if (value instanceof SharedMyTable) {
+                multiTable = (SharedMyTable) value;
             }
             if (multiTable != null) {
-                System.out.println(entry.getKey() + " " + multiTable.getNumKeys());
+                System.out.println(entry.getKey() + " " + multiTable.getMultiTable().getNumKeys());
             }
         }
     }

@@ -380,7 +380,6 @@ public class MultiTable implements Table {
                     for (Map.Entry pair : currentFileData.entrySet()) {
                         Storeable inputValue = StoreableParser.stringToStoreable((String) pair.getValue(), typeList);
                         data.put((String) pair.getKey(), inputValue);
-                        //data.put((String) pair.getKey(), (String) pair.getValue());
                     }
                 } catch (ParseException e) {
                     throw new IOException("MultiTable: can't parse the data");
