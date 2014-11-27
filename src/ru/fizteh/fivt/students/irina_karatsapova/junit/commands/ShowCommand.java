@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.irina_karatsapova.junit.commands;
 
 import ru.fizteh.fivt.students.irina_karatsapova.junit.table_provider_factory.TableProvider;
-import ru.fizteh.fivt.students.irina_karatsapova.junit.utils.TableException;
 
 import java.util.Set;
 
