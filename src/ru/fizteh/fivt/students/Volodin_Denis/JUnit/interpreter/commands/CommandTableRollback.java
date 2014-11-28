@@ -30,6 +30,7 @@ public class CommandTableRollback extends Command {
                         }
 
                         System.out.println(table.rollback());
+                        state.setTable(table);
                     }
                 });
     }

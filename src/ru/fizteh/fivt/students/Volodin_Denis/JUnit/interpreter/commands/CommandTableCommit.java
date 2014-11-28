@@ -30,6 +30,7 @@ public class CommandTableCommit extends Command {
                         }
 
                         System.out.println(table.commit());
+                        state.setTable(table);
                     }
                 });
     }

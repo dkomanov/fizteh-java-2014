@@ -24,7 +24,7 @@ public class TableByVolodden implements Table {
     private String dbPath;
     private FileMap fileMap;
     
-    TableByVolodden(final String path) throws Exception {
+    public TableByVolodden(final String path) throws Exception {
         dbPath = WorkWithFile.toAbsolutePath(path);
         fileMap = new FileMap(dbPath);
     }
@@ -58,10 +58,6 @@ public class TableByVolodden implements Table {
             } else {
                 WorkWithFile.createDirectory(databasePath);
             }
-        }
-
-        public String getPath() throws Exception {
-            return WorkWithFile.getFileName(databasePath);
         }
 
         private void readFromDisk() throws Exception {
@@ -161,12 +157,16 @@ public class TableByVolodden implements Table {
 
         private void upgrade() throws Exception {
             for (String key : diff.keySet()) {
-                database.put(key, diff.get(key));
+                if (diff.get(key) == null) {
+                    database.remove(key);
+                } else {
+                    database.put(key, diff.get(key));
+                }
             }
             diff.clear();
             writeOnDisk();
         }
-        
+
         private void downgrade(){
             diff.clear();
         }
@@ -186,6 +186,7 @@ public class TableByVolodden implements Table {
             diff.clear();
         }
 
+        //Not used.
         @Override
         public boolean containsKey(Object key) {
             if (database.containsKey(key)) {
@@ -203,6 +204,7 @@ public class TableByVolodden implements Table {
             }
         }
 
+        //Not used.
         @Override
         public boolean containsValue(Object value) {
             if (diff.containsValue(value)) {
@@ -301,7 +303,11 @@ public class TableByVolodden implements Table {
         @Override
         public String remove(Object key) {
             if (diff.containsKey(key)) {
-                return diff.remove(key);
+                if (diff.get(key) == null) {
+                    return null;
+                } else {
+                    return diff.put((String) key, null);
+                }
             } else {
                 if (database.containsKey(key)) {
                     diff.put((String) key, null);
@@ -313,7 +319,6 @@ public class TableByVolodden implements Table {
         @Override
         public int size() {
             int result = database.size();
-            
             for (String key : database.keySet()) {
                 if (diff.containsKey(key)) {
                     if (diff.get(key) == null) {
@@ -323,7 +328,9 @@ public class TableByVolodden implements Table {
             }
             for (String key : diff.keySet()) {
                 if (!database.containsKey(key)) {
-                    ++result;
+                    if (diff.get(key) != null) {
+                        ++result;
+                    }
                 }
             }
             return result;
