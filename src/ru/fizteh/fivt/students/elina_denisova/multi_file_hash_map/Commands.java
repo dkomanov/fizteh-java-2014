@@ -18,7 +18,7 @@ public enum Commands {
         value = word;
     }
 
-    public static Commands getCommand(String word) throws IllegalArgumentException{
+    public static Commands getCommand(String word) throws IllegalArgumentException {
         for (Commands command : Commands.values()) {
             if (command.getValue().equals(word)) {
                 return command;
