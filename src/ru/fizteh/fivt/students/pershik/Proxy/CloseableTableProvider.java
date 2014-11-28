@@ -72,7 +72,9 @@ public class CloseableTableProvider implements TableProvider, AutoCloseable {
         lock.writeLock().lock();
         try {
             if (tables.containsKey(name) && tables.get(name).isClosed()) {
-                return new CloseableTable(tables.get(name));
+                CloseableTable newTable = new CloseableTable(tables.get(name));
+                tables.put(name, newTable);
+                return newTable;
             } else if (tables.containsKey(name)) {
                 return null;
             } else {
