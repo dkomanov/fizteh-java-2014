@@ -13,7 +13,7 @@ public class TableProviderFactory {
     String using;
     File parentDirectory;
 
-    public TableProviderFactory(String path){
+    public TableProviderFactory(String path) {
         parentDirectory = new File(path);
         using = null;
         tables = new HashMap<String, TableProvider>();
@@ -25,7 +25,8 @@ public class TableProviderFactory {
                 throw new UnsupportedOperationException("TableProviderFactory: Cannot create working directory");
             }
             if (!parentDirectory.isDirectory()) {
-                throw new FileNotFoundException("TableProviderFactory:" + parentDirectory.toString() + " is not a directory");
+                throw new FileNotFoundException("TableProviderFactory:" + parentDirectory.toString()
+                        + " is not a directory");
             }
             for (String childName : parentDirectory.list()) {
                 File childDirectory = new File(parentDirectory, childName);

@@ -9,7 +9,7 @@ import java.nio.file.Files;
 
 public class TableProvider {
 
-    Table[][] databases;
+   Table[][] databases;
    File mainDir;
 
     public TableProvider(final File tableDir) {
@@ -75,7 +75,7 @@ public class TableProvider {
         }
     }
 
-    final public int recordsNumber() {
+    public int recordsNumber() {
         int answer = 0;
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
@@ -87,7 +87,7 @@ public class TableProvider {
         return answer;
     }
 
-    final public void commit() {
+    public void commit() {
             for (int i = 0; i < 16; i++) {
                 for (int j = 0; j < 16; j++) {
                     if (databases[i][j] != null) {

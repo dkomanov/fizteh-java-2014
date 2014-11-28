@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class ParserCommands {
 
-    public static void commandsExecution(String[] command, DataBase dataBase) throws IllegalMonitorStateException{
+    public static void commandsExecution(String[] command, DataBase dataBase) throws IllegalMonitorStateException {
         if (command.length == 0) {
             return;
         }

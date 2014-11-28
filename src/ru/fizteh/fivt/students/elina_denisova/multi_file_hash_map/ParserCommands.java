@@ -11,7 +11,7 @@ import java.util.Map;
 public class ParserCommands {
 
     public static void commandsExecution(String[] command, TableProviderFactory directory)
-            throws IllegalMonitorStateException{
+            throws IllegalMonitorStateException {
         if (command.length == 0) {
             return;
         }
@@ -25,10 +25,10 @@ public class ParserCommands {
                         } else {
                             File newTable = new File(directory.parentDirectory, command[1]);
                             if (!newTable.mkdir()) {
-                                throw new UnsupportedOperationException("ParserCommands.commandsExecution.create: " +
-                                        "Unable to create working directory for new table");
+                                throw new UnsupportedOperationException("ParserCommands.commandsExecution.create: "
+                                        + "Unable to create working directory for new table");
                             }
-                            directory.tables.put(command[1], new TableProvider (newTable));
+                            directory.tables.put(command[1], new TableProvider(newTable));
                             System.out.println("created");
                         }
 
@@ -93,15 +93,15 @@ public class ParserCommands {
                                 File subDir = new File(directory.getUsing().mainDir, dir + ".dir");
                                 if (!subDir.exists()) {
                                     if (!subDir.mkdir()) {
-                                        throw new UnsupportedOperationException("ParserCommands.commandsExecution.put: " +
-                                                "Unable to create directories in working catalog");
+                                        throw new UnsupportedOperationException("ParserCommands.commandsExecution.put:"
+                                                + " Unable to create directories in working catalog");
                                     }
                                 }
                                 File dbFile = new File(subDir, file + ".dat");
                                 if (!dbFile.exists()) {
                                     if (!dbFile.createNewFile()) {
-                                        throw new UnsupportedOperationException("ParserCommands.commandsExecution.put: " +
-                                                "Unable to create database files in working catalog");
+                                        throw new UnsupportedOperationException("ParserCommands.commandsExecution.put:"
+                                                + " Unable to create database files in working catalog");
                                     }
                                 }
                                 directory.getUsing().databases[dir][file] = new Table(dbFile.toString());
@@ -113,7 +113,8 @@ public class ParserCommands {
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.err.println("put: need two arguments" + e);
                     } catch (IOException e) {
-                        HandlerException.handler("ParserCommands.commandsExecution.put: Problem with creation of file", e);
+                        HandlerException.handler("ParserCommands.commandsExecution.put:"
+                                + " Problem with creation of file", e);
                     } catch (Exception e) {
                         HandlerException.handler("ParserCommands.commandsExecution.put: Unknown error", e);
                     }
@@ -157,8 +158,8 @@ public class ParserCommands {
                                     try {
                                         Files.delete(dbFile.toPath());
                                     } catch (IOException e) {
-                                        HandlerException.handler("ParserCommands.commandsExecution.remove: " +
-                                                "cannon delete database file ", e);
+                                        HandlerException.handler("ParserCommands.commandsExecution.remove: "
+                                                + "cannon delete database file ", e);
                                     }
                                     directory.getUsing().databases[dir][file] = null;
 
@@ -172,10 +173,11 @@ public class ParserCommands {
                                         try {
                                             Files.delete(parentFile);
                                         } catch (DirectoryNotEmptyException e) {
-                                            HandlerException.handler("Cannot remove table subdirectory. Redundant files", e);
+                                            HandlerException.handler("Cannot remove table subdirectory. "
+                                                    + "Redundant files", e);
                                         } catch (IOException e) {
-                                            HandlerException.handler("ParserCommands.commandsExecution.remove: " +
-                                                    "cannot delete database subdirectory", e);
+                                            HandlerException.handler("ParserCommands.commandsExecution.remove: "
+                                                    + "cannot delete database subdirectory", e);
                                         }
                                     }
                                 }
