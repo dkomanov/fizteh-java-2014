@@ -87,6 +87,11 @@ public class StructuredDatabase implements TableProvider {
         return backendDatabase.listTableNames();
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s[%s]", getClass().getSimpleName(), backendDatabase.getFile().getAbsolutePath());
+    }
+
     private StructuredTable wrap(ru.fizteh.fivt.storage.strings.Table table) {
         if (table == null) {
             return null;

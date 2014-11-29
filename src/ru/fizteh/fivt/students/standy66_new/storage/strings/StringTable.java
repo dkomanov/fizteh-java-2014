@@ -132,6 +132,11 @@ public class StringTable implements Table {
                 }));
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s[%s]", getClass().getSimpleName(), tableDirectory.getAbsolutePath());
+    }
+
     private File getChunkFileByKey(String key) {
         int hashcode = key.hashCode();
         int nDirectory = Integer.remainderUnsigned(hashcode, MAX_DIR_CHUNK);

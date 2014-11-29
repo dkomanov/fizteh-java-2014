@@ -103,4 +103,9 @@ public class StructuredTable implements Table {
             throw new RuntimeException("ParseException occurred", e);
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s[%s]", getClass().getSimpleName(), backendTable.getFile().getAbsolutePath());
+    }
 }

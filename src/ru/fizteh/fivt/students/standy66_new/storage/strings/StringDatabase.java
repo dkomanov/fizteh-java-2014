@@ -7,7 +7,10 @@ import ru.fizteh.fivt.students.standy66_new.utility.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /** TableProvider implementation
@@ -131,6 +134,11 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     @Override
     public void close() {
         lockFile.delete();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s[%s]", getClass().getSimpleName(), dbDirectory.getAbsolutePath());
     }
 
     private void initTableInstances(File directory) {
