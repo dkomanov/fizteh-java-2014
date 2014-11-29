@@ -50,7 +50,11 @@ public class JSONLoggingProxyFactory implements LoggingProxyFactory {
             }
 
             if (method.getReturnType() != void.class) {
-                log.put("returnValue", returnValue);
+                if (returnValue instanceof Iterable) {
+                    log.put("returnValue", unwindIterable((Iterable) returnValue, new IdentityHashMap<>()));
+                } else {
+                    log.put("returnValue", returnValue);
+                }
             }
             if (targetException != null) {
                 log.put("thrown", targetException);
