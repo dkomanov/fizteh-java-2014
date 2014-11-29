@@ -31,7 +31,7 @@ public class Table {
         for (int dir = 0; dir < 16; ++dir) {
             File subDirectory = new File(tableDirectory, String.valueOf(dir) + ".dir");
             for (int file = 0; file < 16; ++file) {
-                if (!dataBases[dir][file].equals(null)) {
+                if (dataBases[dir][file] != null) {
                     File dbFile = new File(subDirectory, String.valueOf(file) + ".dat");
                     if (dbFile.exists()) {
                         try {
@@ -65,7 +65,7 @@ public class Table {
         int size = 0;
         for (int dir = 0; dir < 16; ++dir) {
             for (int file = 0; file < 16; ++file) {
-                if (!dataBases[dir][file].equals(null)) {
+                if (dataBases[dir][file] != null) {
                     size += dataBases[dir][file].dbSize();
                 }
             }

@@ -4,7 +4,8 @@ import java.util.Scanner;
 
 public class Executor {
     public Executor(String[] args) throws Exception {
-        multiDataBase = new MultiDataBase(System.getProperty("fizteh.db.dir"));
+        String dbPath = System.getProperty("fizteh.db.dir");
+        multiDataBase = new MultiDataBase(dbPath);
         if (args.length == 0) {
             interactiveMode();
         } else {

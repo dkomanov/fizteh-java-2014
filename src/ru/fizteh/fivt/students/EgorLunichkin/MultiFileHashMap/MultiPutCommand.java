@@ -17,7 +17,7 @@ public class MultiPutCommand implements Command {
     private MultiDataBase multiDataBase;
 
     public void run() throws Exception {
-        if (multiDataBase.getUsing().equals(null)) {
+        if (multiDataBase.using == null) {
             System.out.println("no table");
         } else {
             int hashCode = Math.abs(key.hashCode());
@@ -35,7 +35,7 @@ public class MultiPutCommand implements Command {
                 multiDataBase.getUsing().dataBases[dir][file] = new DataBase(dbFile.toString());
             }
             DataBase dataBase = multiDataBase.getUsing().dataBases[dir][file];
-            new PutCommand(dataBase, key, value);
+            new PutCommand(dataBase, key, value).run();
         }
     }
 }

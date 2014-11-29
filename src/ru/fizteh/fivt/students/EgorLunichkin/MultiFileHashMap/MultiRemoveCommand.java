@@ -18,13 +18,13 @@ public class MultiRemoveCommand implements Command {
     private String key;
 
     public void run() throws Exception {
-        if (multiDataBase.getUsing().equals(null)) {
+        if (multiDataBase.using == null) {
             System.out.println("no table");
         } else {
             int hashCode = Math.abs(key.hashCode());
             int dir = hashCode % 16;
             int file = hashCode / 16 % 16;
-            if (multiDataBase.getUsing().dataBases[dir][file].equals(null)) {
+            if (multiDataBase.getUsing().dataBases[dir][file] == null) {
                 System.out.println("not found");
             } else {
                 DataBase dataBase = multiDataBase.getUsing().dataBases[dir][file];
@@ -39,7 +39,7 @@ public class MultiRemoveCommand implements Command {
                     dataBase = null;
                     int notUsedDBs = 0;
                     for (int i = 0; i < 16; ++i) {
-                        if (multiDataBase.getUsing().dataBases[dir][i].equals(null)) {
+                        if (multiDataBase.getUsing().dataBases[dir][i] == null) {
                             ++notUsedDBs;
                         }
                     }

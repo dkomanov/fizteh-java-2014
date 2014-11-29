@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.Iterator;
 
 public class DataBase {
-    public DataBase(String path) throws FileMapException {
+    public DataBase(String path) throws Exception {
         File file = new File(path).getAbsoluteFile();
         dbPath = file.getPath();
         if (file.exists()) {
@@ -43,7 +43,7 @@ public class DataBase {
         }
     }
 
-    private HashMap<String, String> readDataBase() throws FileMapException {
+    private HashMap<String, String> readDataBase() throws Exception {
         HashMap<String, String> ans = new HashMap<String, String>();
         DataInputStream in;
         try {
@@ -60,6 +60,7 @@ public class DataBase {
                 break;
             }
         }
+        in.close();
         return ans;
     }
 
@@ -74,7 +75,7 @@ public class DataBase {
         }
     }
 
-    public void writeDataBase() throws FileMapException {
+    public void writeDataBase() throws Exception {
         DataOutputStream out;
         try {
             out = new DataOutputStream(new FileOutputStream(dbPath));
@@ -88,5 +89,6 @@ public class DataBase {
             writeElement(out, key);
             writeElement(out, db.get(key));
         }
+        out.close();
     }
 }

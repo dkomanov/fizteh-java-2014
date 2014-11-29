@@ -13,6 +13,9 @@ public class DropCommand implements Command {
         if (!multiDataBase.tables.containsKey(tableName)) {
             System.out.println(tableName + " not exists");
         } else {
+            if (tableName.equals(multiDataBase.using)) {
+                multiDataBase.using = null;
+            }
             multiDataBase.tables.get(tableName).drop();
             multiDataBase.tables.remove(tableName);
             System.out.println("dropped");
