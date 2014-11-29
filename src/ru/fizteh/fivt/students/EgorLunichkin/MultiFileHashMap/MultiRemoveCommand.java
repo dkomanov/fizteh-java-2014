@@ -47,9 +47,9 @@ public class MultiRemoveCommand implements Command {
                         try {
                             Files.delete(dbFile.getParentFile().toPath());
                         } catch (DirectoryNotEmptyException ex) {
-                            throw new MultiFileHashMapException("Cannot delete database subdirectory: redundant files");
+                            throw new MultiFileHashMapException("Cannot delete database subdir: redundant files");
                         } catch (SecurityException | IOException ex) {
-                            throw new MultiFileHashMapException("Access violation: cannot delete database subdirectory");
+                            throw new MultiFileHashMapException("Access violation: cannot delete database subdir");
                         }
                     }
                 }
