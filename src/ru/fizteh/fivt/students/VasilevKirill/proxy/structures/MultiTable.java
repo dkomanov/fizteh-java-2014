@@ -142,7 +142,6 @@ public class MultiTable implements Table {
             }
             newOutput.close();
             System.setOut(oldOutput);
-            //prevCommitData = new HashMap<>(oldData);
             oldData = new HashMap<>(data);
             numUnsavedChanges = 0;
         } catch (IOException e) {

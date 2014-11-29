@@ -189,6 +189,14 @@ public class MyStorable implements Storeable {
     @Override
     public String toString() {
         JSONArray arr = new JSONArray(dataList);
+        String result = arr.toString();
+        result = result.replace("null", "");
+        return result;
+    }
+
+    public String toFileFormat() {
+        JSONArray arr = new JSONArray(dataList);
+        String result = arr.toString();
         return arr.toString();
     }
 }

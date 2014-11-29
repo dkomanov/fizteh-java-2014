@@ -14,10 +14,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -27,6 +24,7 @@ public class MultiMap implements TableProvider {
     private String workingDirectory;
     private String workingTable;
     private Map<String, SharedMyTable> tables;
+    private Set<String> closedTables;
     private ReentrantReadWriteLock providerLock;
 
     public MultiMap(String directory) throws IOException {
@@ -60,7 +58,15 @@ public class MultiMap implements TableProvider {
             throw new IllegalArgumentException();
         }
         providerLock.readLock().lock();
-        Table retValue = tables.get(name);
+        if (closedTables.contains(name)) {
+            providerLock.readLock().unlock();
+            try {
+                Table retValue = new MultiTable(new File(workingDirectory + File.separator + name), this, new Class[0]);
+            } catch (IOException e) {
+                return null;
+            }
+        }
+        Table retValue = tables.get(name).getMultiTable();
         providerLock.readLock().unlock();
         return retValue;
     }
@@ -215,6 +221,7 @@ public class MultiMap implements TableProvider {
                 throw new IOException("Can't delete the table");
             }
             tables.remove(name);
+            closedTables.remove(name);
             return true;
         } else {
             return false;
@@ -235,7 +242,7 @@ public class MultiMap implements TableProvider {
     }
 
     //Old version of method. Saved for compatibility.
-    public boolean handleTable(String[] args) throws IOException {
+    public boolean handleTable(String[] args) throws IOException, IllegalStateException {
         if (workingTable == null) {
             return false;
         }
@@ -334,5 +341,20 @@ public class MultiMap implements TableProvider {
             result.add(pair.getKey().toString());
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "[" + workingDirectory + "]";
+    }
+
+    public void setTableClosed(String name) throws IllegalArgumentException, IllegalStateException {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (!tables.containsKey(name)) {
+            throw new IllegalStateException();
+        }
+        closedTables.add(name);
     }
 }
