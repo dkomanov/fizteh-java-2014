@@ -44,9 +44,7 @@ public class FileMap {
                 if (tableFile.getName().equals(".DS_Store")) {
                     continue;
                 }
-                FileChannel channel = null;
-                try {
-                    channel = new FileInputStream(tableFile.getCanonicalPath()).getChannel();
+                try (FileChannel channel = new FileInputStream(tableFile.getCanonicalPath()).getChannel()) {
 
                     ByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
 
@@ -60,8 +58,9 @@ public class FileMap {
                         byteBuffer.get(value, 0, valueLength);
                         data.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
                     }
+                    channel.close();
                 } catch (IOException e) {
-                    System.err.println("error reading file" + e.toString()
+                    System.err.println("error reading file: " + e.getMessage()
                     );
                 }
             }
