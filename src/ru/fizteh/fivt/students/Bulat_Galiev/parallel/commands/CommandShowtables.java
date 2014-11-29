@@ -16,6 +16,6 @@ public class CommandShowtables implements Command {
 
     public final void execute(final TableProvider provider, final String[] arg)
             throws IOException {
-        ((TabledbProvider)provider).showTables();
+        ((TabledbProvider) provider).showTables();
     }
 }

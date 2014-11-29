@@ -16,6 +16,6 @@ public class CommandUse implements Command {
 
     public final void execute(final TableProvider provider, final String[] arg)
             throws IOException {
-        ((TabledbProvider)provider).changeCurTable(arg[1]);
+        ((TabledbProvider) provider).changeCurTable(arg[1]);
     }
 }
