@@ -28,9 +28,9 @@ public class MultiDataBase {
         }
     }
 
-    private HashMap<String, Table> tables;
-    private String using;
-    private File dbDirectory;
+    public HashMap<String, Table> tables;
+    public File dbDirectory;
+    public String using;
 
     public Table getUsing() {
         return tables.get(using);

@@ -4,7 +4,8 @@ import java.util.Scanner;
 
 public class Executor {
     public Executor(String[] args) throws Exception {
-        multiDataBase = new MultiDataBase(System.getProperty("fizteh.db.dir"));
+        String dbDir = "db";
+        multiDataBase = new MultiDataBase(dbDir);
         if (args.length == 0) {
             interactiveMode();
         } else {
@@ -14,23 +15,21 @@ public class Executor {
 
     private MultiDataBase multiDataBase;
 
-    private void interactiveMode() throws MultiFileHashMapException {
+    private void interactiveMode() throws Exception {
         Scanner in = new Scanner(System.in);
         System.out.print("$ ");
-        System.out.flush();
         while (in.hasNextLine()) {
             String[] commands = in.nextLine().trim().split(";");
             for (String command : commands) {
                 executeCommand(command);
             }
             System.out.print("$ ");
-            System.out.flush();
         }
         in.close();
         System.out.close();
     }
 
-    private void packageMode(String[] args) throws MultiFileHashMapException {
+    private void packageMode(String[] args) throws Exception {
         StringBuilder line = new StringBuilder();
         for (String arg : args) {
             line.append(arg + ' ');
@@ -41,7 +40,7 @@ public class Executor {
         }
     }
 
-    private void executeCommand(String cmd) throws MultiFileHashMapException {
+    private void executeCommand(String cmd) throws Exception {
         String[] command = cmd.trim().split("\\s+");
         Command exec;
         switch (command[0]) {
@@ -106,7 +105,7 @@ public class Executor {
                 exec = new UseCommand(multiDataBase, command[1]);
                 break;
             case "show":
-                if (command.length < 2 || !command[1].equals("!=")) {
+                if (command.length < 2 || !command[1].equals("tables")) {
                     throw new MultiFileHashMapException("Unknown command");
                 }
                 if (command.length > 2) {
@@ -123,5 +122,6 @@ public class Executor {
             default:
                 throw new MultiFileHashMapException("Unknown command");
         }
+        exec.run();
     }
 }

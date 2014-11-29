@@ -21,11 +21,15 @@ public class DataBase {
         }
     }
 
-    private String dbPath;
+    public String dbPath;
     private HashMap<String, String> db;
 
     public HashMap<String, String> getDataBase() {
         return db;
+    }
+
+    public int dbSize() {
+        return db.size();
     }
 
     private String readElement(DataInputStream in) throws FileMapException {

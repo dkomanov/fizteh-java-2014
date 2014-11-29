@@ -10,6 +10,11 @@ public class UseCommand implements Command {
     private MultiDataBase multiDataBase;
 
     public void run() throws MultiFileHashMapException {
-
+        if (!multiDataBase.tables.containsKey(tableName)) {
+            System.out.println(tableName + " not exists");
+        } else {
+            multiDataBase.using = tableName;
+            System.out.println("using " + tableName);
+        }
     }
 }

@@ -10,15 +10,20 @@ public class ListCommand implements Command {
 
     private DataBase dataBase;
 
-    public void run() throws FileMapException {
+    public String list() {
+        StringBuilder listKeys = new StringBuilder();
         Set<String> keys = dataBase.getDataBase().keySet();
         Iterator<String> it = keys.iterator();
         if (it.hasNext()) {
-            System.out.print(it.next());
+            listKeys.append(it.next());
         }
         while (it.hasNext()) {
-            System.out.print(", " + it.next());
+            listKeys.append(", " + it.next());
         }
-        System.out.println();
+        return listKeys.toString();
+    }
+
+    public void run() throws FileMapException {
+        System.out.println(list());
     }
 }

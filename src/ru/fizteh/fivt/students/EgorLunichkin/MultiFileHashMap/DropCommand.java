@@ -10,6 +10,12 @@ public class DropCommand implements Command {
     private MultiDataBase multiDataBase;
 
     public void run() throws MultiFileHashMapException {
-
+        if (!multiDataBase.tables.containsKey(tableName)) {
+            System.out.println(tableName + " not exists");
+        } else {
+            multiDataBase.tables.get(tableName).drop();
+            multiDataBase.tables.remove(tableName);
+            System.out.println("dropped");
+        }
     }
 }
