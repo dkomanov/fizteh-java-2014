@@ -33,6 +33,13 @@ public class MultiFileTable implements Table {
             return new MultiFileTableDiff();
         }
     };
+    private int stableVersion = 0;
+    private ThreadLocal<Integer> version = new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
+            return 0;
+        }
+    };
     private Path dbPath;
     private String name;
 
@@ -96,6 +103,7 @@ public class MultiFileTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
+        sync();
 
         if (diff.get().removed.contains(key)) {
             return null;
@@ -113,6 +121,7 @@ public class MultiFileTable implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
+        sync();
 
         if (diff.get().removed.remove(key)) {
             if (stableData.get(key).equals(value)) {
@@ -149,6 +158,7 @@ public class MultiFileTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
+        sync();
 
         if (stableData.containsKey(key)) {
             if (diff.get().removed.add(key)) {
@@ -173,15 +183,21 @@ public class MultiFileTable implements Table {
 
     @Override
     public int size() {
+        sync();
+
         return stableData.size() + diff.get().added.size() - diff.get().removed.size();
     }
 
     public int getPending() {
+        sync();
+
         return diff.get().pending;
     }
 
     @Override
     public int commit() {
+        sync();
+
         stableData.keySet().removeAll(diff.get().removed);
         stableData.putAll(diff.get().changed);
         stableData.putAll(diff.get().added);
@@ -198,17 +214,53 @@ public class MultiFileTable implements Table {
         int p = diff.get().pending;
         diff.get().pending = 0;
 
+        ++stableVersion;
+
         return p;
     }
 
     @Override
     public int rollback() {
+        sync();
+
         diff.get().removed.clear();
         diff.get().changed.clear();
         diff.get().added.clear();
         int p = diff.get().pending;
         diff.get().pending = 0;
         return p;
+    }
+
+    private void sync() {
+        if (version.get() < stableVersion) {
+            for (String key : diff.get().removed) {
+                if (stableData.containsKey(key)) {
+                    diff.get().removed.remove(key);
+                    --diff.get().pending;
+                }
+            }
+            for (Map.Entry<String, Storeable> entry : diff.get().added.entrySet()) {
+                if (stableData.containsKey(entry.getKey())) {
+                    if (stableData.get(entry.getKey()) == entry.getValue()) {
+                        diff.get().added.remove(entry.getKey());
+                        --diff.get().pending;
+                    } else {
+                        diff.get().added.remove(entry.getKey());
+                        diff.get().changed.put(entry.getKey(), entry.getValue());
+                    }
+                }
+            }
+            for (Map.Entry<String, Storeable> entry : diff.get().changed.entrySet()) {
+                Storeable value = stableData.get(entry.getKey());
+                if (value == null) {
+                    diff.get().changed.remove(entry.getKey());
+                    diff.get().added.put(entry.getKey(), entry.getValue());
+                } else if (value.equals(entry.getValue())) {
+                    diff.get().changed.remove(entry.getKey());
+                    --diff.get().pending;
+                }
+            }
+        }
     }
 
     @Override
