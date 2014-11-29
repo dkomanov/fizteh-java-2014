@@ -73,6 +73,10 @@ public class TableTest {
             map.put(key, value);
             table.put(key, value);
 
+            String val1 = map.get(key);
+            String val2 = table.get(key);
+            assertEquals(val1, val2);
+
             if (key.hashCode() % 2 == 0) {
                 table.commit();
             }
@@ -91,6 +95,7 @@ public class TableTest {
             assertEquals(expValue, value);
             assertEquals(table.size(), curSize--);
             table.remove(key);
+
         }
 
         assertTrue(table.size() == 0);

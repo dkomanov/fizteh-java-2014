@@ -52,17 +52,18 @@ public class DbTable implements Table {
             throw new IllegalArgumentException("Table \"" + tableName + "\": get: invalid key");
         }
 
-        String value = commitedData.get(key);
-        if (value != null) {
-            return value;
-        }
 
-        value = addedData.get(key);
+        String value = addedData.get(key);
         if (value != null) {
             return value;
         }
 
         value = changedData.get(key);
+        if (value != null) {
+            return value;
+        }
+
+        value = commitedData.get(key);
         if (value != null) {
             return value;
         }
