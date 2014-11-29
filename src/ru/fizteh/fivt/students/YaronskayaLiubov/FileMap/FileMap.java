@@ -17,7 +17,7 @@ public class FileMap {
     private static HashMap<String, Command> fileMapCommands;
 
     public static boolean exec(String[] args) {
-        String curDBPath = System.getProperty("db.file");
+        String curDBPath = System.getProperty("db.dir");
         errorOccurred = false;
         if (curDBPath == null) {
             System.err.println("database not found");
