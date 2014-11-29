@@ -103,13 +103,11 @@ public class TableRow implements Storeable {
     }
 
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("TableRow [");
+        StringBuilder stringBuilder = new StringBuilder(getClass().getSimpleName() + "[");
         for (int i = 0; i < row.length; i++) {
             Object element = row[i];
-            if (element == null) {
-                stringBuilder.append("null");
-            } else {
-                stringBuilder.append(element.getClass().toString() + ": " + element.toString());
+            if (element != null) {
+                stringBuilder.append(element.toString());
             }
             if (i < row.length - 1) {
                 stringBuilder.append(", ");
