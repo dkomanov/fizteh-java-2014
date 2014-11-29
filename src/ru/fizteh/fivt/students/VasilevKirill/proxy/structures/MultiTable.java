@@ -19,7 +19,7 @@ import java.util.*;
 /**
  * Created by Kirill on 19.10.2014.
  */
-public class MultiTable implements Table {
+public class MultiTable implements Table, AutoCloseable {
     private File tableDirectory;
     private FileMap[][] files;
     Map<String, Storeable> data;
@@ -444,5 +444,11 @@ public class MultiTable implements Table {
             result = "";
         }
         return result;
+    }
+
+    @Override
+    public void close() throws Exception {
+        rollback();
+        multiMap.setTableClosed(getName());
     }
 }

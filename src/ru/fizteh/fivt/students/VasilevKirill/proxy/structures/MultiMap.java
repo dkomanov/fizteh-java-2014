@@ -62,6 +62,7 @@ public class MultiMap implements TableProvider {
             providerLock.readLock().unlock();
             try {
                 Table retValue = new MultiTable(new File(workingDirectory + File.separator + name), this, new Class[0]);
+                return retValue;
             } catch (IOException e) {
                 return null;
             }
@@ -120,7 +121,7 @@ public class MultiMap implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException();
         }
-        if (tables.get(name) == null) {
+        if (closedTables.contains(name) || tables.get(name) == null) {
             throw new IllegalStateException();
         } else {
             providerLock.writeLock().lock();
@@ -245,6 +246,9 @@ public class MultiMap implements TableProvider {
     public boolean handleTable(String[] args) throws IOException, IllegalStateException {
         if (workingTable == null) {
             return false;
+        }
+        if (closedTables.contains(workingTable)) {
+            throw new IllegalStateException();
         }
         SharedMyTable multiTable = tables.get(workingTable);
         if (multiTable == null) {
