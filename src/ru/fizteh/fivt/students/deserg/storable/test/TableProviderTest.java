@@ -1,8 +1,8 @@
-package ru.fizteh.fivt.students.deserg.junit.test;
+package ru.fizteh.fivt.students.deserg.storable.test;
 
 import org.junit.Test;
-import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
-import ru.fizteh.fivt.students.deserg.junit.DbTableProviderFactory;
+import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.storable.DbTableProviderFactory;
 
 import java.util.ArrayList;
 import java.util.UUID;

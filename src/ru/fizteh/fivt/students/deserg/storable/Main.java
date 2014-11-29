@@ -1,7 +1,7 @@
-package ru.fizteh.fivt.students.deserg.junit;
+package ru.fizteh.fivt.students.deserg.storable;
 
 import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.students.deserg.junit.commands.*;
+import ru.fizteh.fivt.students.deserg.storable.commands.*;
 
 import java.util.*;
 

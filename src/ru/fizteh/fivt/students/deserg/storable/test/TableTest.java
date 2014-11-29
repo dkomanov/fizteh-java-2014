@@ -1,9 +1,9 @@
-package ru.fizteh.fivt.students.deserg.junit.test;
+package ru.fizteh.fivt.students.deserg.storable.test;
 
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.deserg.junit.DbTable;
-import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.storable.DbTable;
+import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

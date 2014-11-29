@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.deserg.junit;
+package ru.fizteh.fivt.students.deserg.storable;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
