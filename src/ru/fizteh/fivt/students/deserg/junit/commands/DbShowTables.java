@@ -1,11 +1,8 @@
 package ru.fizteh.fivt.students.deserg.junit.commands;
 
-import javafx.util.Pair;
-import ru.fizteh.fivt.students.deserg.junit.DbTable;
 import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
 import ru.fizteh.fivt.students.deserg.junit.MyException;
 
-import java.util.HashMap;
 import java.util.ArrayList;
 
 /**

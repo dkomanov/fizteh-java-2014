@@ -122,7 +122,7 @@ public class Main {
 
             Command command = commandMap.get(arguments.get(0));
             if (command != null) {
-                command.execute(arguments, (DbTableProvider)db);
+                command.execute(arguments, (DbTableProvider) db);
             }
         }
 

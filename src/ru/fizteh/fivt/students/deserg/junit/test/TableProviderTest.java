@@ -1,13 +1,10 @@
 package ru.fizteh.fivt.students.deserg.junit.test;
 
 import org.junit.Test;
-import ru.fizteh.fivt.students.deserg.junit.DbTable;
 import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
 import ru.fizteh.fivt.students.deserg.junit.DbTableProviderFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -22,7 +19,7 @@ public class TableProviderTest {
     @Test
     public void testCreateTable() {
 
-        DbTableProvider provider = (DbTableProvider)factory.create("db");
+        DbTableProvider provider = (DbTableProvider) factory.create("db");
 
         try {
             provider.createTable(null);
@@ -39,7 +36,7 @@ public class TableProviderTest {
     @Test
     public void testRemoveTable() {
 
-        DbTableProvider provider = (DbTableProvider)factory.create("db");
+        DbTableProvider provider = (DbTableProvider) factory.create("db");
 
         try {
             provider.removeTable(null);
@@ -60,7 +57,7 @@ public class TableProviderTest {
     @Test
     public void testGetTable() {
 
-        DbTableProvider provider = (DbTableProvider)factory.create("db");
+        DbTableProvider provider = (DbTableProvider) factory.create("db");
 
         try {
             provider.getTable(null);
@@ -77,7 +74,7 @@ public class TableProviderTest {
     @Test
     public void testCombined() {
 
-        DbTableProvider provider = (DbTableProvider)factory.create("db");
+        DbTableProvider provider = (DbTableProvider) factory.create("db");
         ArrayList<String> names = new ArrayList<>();
         int size = 100;
         for (int i = 0; i < size; i++) {

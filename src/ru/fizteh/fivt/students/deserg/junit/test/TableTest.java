@@ -39,7 +39,7 @@ public class TableTest {
 
         try {
             String name = "ABC";
-            DbTable table = (DbTable)provider.createTable(name);
+            DbTable table = (DbTable) provider.createTable(name);
             assertEquals(name, table.getName());
 
         } catch (Exception ex) {
@@ -53,7 +53,7 @@ public class TableTest {
     public void testPutGetRemove() {
 
         Map<String, String> map = new HashMap<>();
-        DbTable table = (DbTable)provider.createTable("table");
+        DbTable table = (DbTable) provider.createTable("table");
 
         int size = 1000;
         for (int i = 0; i < size; i++) {
@@ -106,7 +106,7 @@ public class TableTest {
     @Test
     public void testCommitRollback() {
 
-        DbTable table = (DbTable)provider.createTable("table");
+        DbTable table = (DbTable) provider.createTable("table");
         table.put("123", "kokok");
         table.put("456", "lololo");
 

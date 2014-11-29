@@ -4,7 +4,6 @@ import ru.fizteh.fivt.students.deserg.junit.DbTable;
 import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
