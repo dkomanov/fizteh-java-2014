@@ -58,11 +58,11 @@ public class TableProviderFactory {
         return tables.get(key);
     }
 
-    public Set< Map.Entry<String, TableProvider> > entrySet() {
+    public Set<Map.Entry<String, TableProvider>> entrySet() {
         return tables.entrySet();
     }
 
-    public void put(String key, TableProvider value ) {
+    public void put(String key, TableProvider value) {
         tables.put(key, value);
     }
 
