@@ -237,13 +237,13 @@ public class MultiFileTable implements Table {
         stableData.clear();
     }
 
-    private static class DfPair {
+    private static class DirFilePair {
         public int d;
         public int f;
     }
 
-    private static DfPair getHash(String key) {
-        DfPair p = new DfPair();
+    private static DirFilePair getHash(String key) {
+        DirFilePair p = new DirFilePair();
         int hash = key.hashCode();
         p.d = (hash % 16 < 0) ? hash % 16 + 16 : hash % 16;
         hash /= 16;
@@ -316,7 +316,7 @@ public class MultiFileTable implements Table {
                         try (DataInputStream fileStream = new DataInputStream(Files.newInputStream(file))) {
                             while (fileStream.available() > 0) {
                                 String key = readKeyValue(fileStream);
-                                DfPair p = getHash(key);
+                                DirFilePair p = getHash(key);
                                 if (d != p.d || f != p.f) {
                                     throw new ConnectionInterruptException(
                                             "database: key/file correspondence is invalid");
@@ -354,7 +354,7 @@ public class MultiFileTable implements Table {
 
         MultiFileTableDiff d = diff.get();
 
-        DfPair p;
+        DirFilePair p;
         for (String key : diff.get().added.keySet()) {
             p = getHash(key);
             status[p.d][p.f] = 1;
