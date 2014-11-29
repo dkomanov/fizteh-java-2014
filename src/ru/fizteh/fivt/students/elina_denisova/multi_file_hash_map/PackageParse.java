@@ -21,14 +21,11 @@ public class PackageParse {
             }
             directory.getUsing().commit();
         } catch (IllegalMonitorStateException e) {
-            directory.getUsing().commit();
             System.out.println("Goodbye");
             System.exit(0);
         } catch (IllegalArgumentException e) {
-            directory.getUsing().commit();
             HandlerException.handler("PackageParse: Wrong arguments", e);
         } catch (Exception e) {
-            directory.getUsing().commit();
             HandlerException.handler("PackageParse: Unknown error", e);
         }
     }

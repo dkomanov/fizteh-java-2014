@@ -20,7 +20,7 @@ public class ParserCommands {
             switch (request) {
                 case CREATECOMMAND:
                     try {
-                        if (directory.tables.containsKey(command[1])) {
+                        if (directory.containsKey(command[1])) {
                             System.out.println(command[1] + " exists");
                         } else {
                             File newTable = new File(directory.parentDirectory, command[1]);
@@ -28,7 +28,7 @@ public class ParserCommands {
                                 throw new UnsupportedOperationException("ParserCommands.commandsExecution.create: "
                                         + "Unable to create working directory for new table");
                             }
-                            directory.tables.put(command[1], new TableProvider(newTable));
+                            directory.put(command[1], new TableProvider(newTable));
                             System.out.println("created");
                         }
 
@@ -39,13 +39,12 @@ public class ParserCommands {
                     }
                     break;
                 case DROPCOMMAND:
-                    directory.getUsing().commit();
                     try {
-                        if (!directory.tables.containsKey(command[1])) {
+                        if (!directory.containsKey(command[1])) {
                             System.out.println(command[1] + " not exist");
                         } else {
-                            directory.tables.get(command[1]).drop();
-                            directory.tables.remove(command[1]);
+                            directory.get(command[1]).drop();
+                            directory.remove(command[1]);
                             System.out.println("dropped");
                         }
                     } catch (ArrayIndexOutOfBoundsException e) {
@@ -54,7 +53,7 @@ public class ParserCommands {
                     break;
                 case USECOMMAND:
                     try {
-                        if (!directory.tables.containsKey(command[1])) {
+                        if (!directory.containsKey(command[1])) {
                             System.err.println("use: " + command[1] + " not exists");
                         } else {
                             directory.using = command[1];
@@ -67,7 +66,7 @@ public class ParserCommands {
                 case SHOWCOMMAND:
                     try {
                         if (command[1].equals("tables")) {
-                            for (Map.Entry<String, TableProvider> entry: directory.tables.entrySet()) {
+                            for (Map.Entry<String, TableProvider> entry: directory.entrySet()) {
                                 String name = entry.getKey();
                                 int size = entry.getValue().recordsNumber();
                                 System.out.println(name + " " + size);
@@ -89,8 +88,8 @@ public class ParserCommands {
                             int hashCode = Math.abs(command[1].hashCode());
                             int dir = hashCode % 16;
                             int file = hashCode / 16 % 16;
-                            if (directory.getUsing().databases[dir][file] == null) {
-                                File subDir = new File(directory.getUsing().mainDir, dir + ".dir");
+                            if (directory.getUsing().getBase(dir, file) == null) {
+                                File subDir = new File(directory.getUsing().getMainDir(), dir + ".dir");
                                 if (!subDir.exists()) {
                                     if (!subDir.mkdir()) {
                                         throw new UnsupportedOperationException("ParserCommands.commandsExecution.put:"
@@ -104,9 +103,9 @@ public class ParserCommands {
                                                 + " Unable to create database files in working catalog");
                                     }
                                 }
-                                directory.getUsing().databases[dir][file] = new Table(dbFile.toString());
+                                directory.getUsing().addBase(dir, file, new Table(dbFile.toString()));
                             }
-                            directory.getUsing().databases[dir][file].dbPut(command[1], command[2]);
+                            directory.getUsing().getBase(dir, file).dbPut(command[1], command[2]);
                         }
                     } catch (UnsupportedOperationException e) {
                         HandlerException.handler(e);
@@ -118,6 +117,7 @@ public class ParserCommands {
                     } catch (Exception e) {
                         HandlerException.handler("ParserCommands.commandsExecution.put: Unknown error", e);
                     }
+                    directory.getUsing().commit();
                     break;
                 case GETCOMMAND:
                     try {
@@ -127,11 +127,11 @@ public class ParserCommands {
                             int hashCode = Math.abs(command[1].hashCode());
                             int dir = hashCode % 16;
                             int file = hashCode / 16 % 16;
-                            Table db = directory.getUsing().databases[dir][file];
+                            Table db = directory.getUsing().getBase(dir, file);
                             if (db == null) {
                                 System.out.println("not found");
                             } else {
-                                directory.getUsing().databases[dir][file].dbGet(command[1]);
+                                directory.getUsing().getBase(dir, file).dbGet(command[1]);
                             }
                         }
                     } catch (ArrayIndexOutOfBoundsException e) {
@@ -139,7 +139,6 @@ public class ParserCommands {
                     }
                     break;
                 case REMOVECOMMAND:
-                    directory.getUsing().commit();
                     try {
                         if (directory.getUsing() == null) {
                             System.out.println("no table");
@@ -147,13 +146,13 @@ public class ParserCommands {
                             int hashCode = Math.abs(command[1].hashCode());
                             int dir = hashCode % 16;
                             int file = hashCode / 16 % 16;
-                            if (directory.getUsing().databases[dir][file] == null) {
+                            if (directory.getUsing().getBase(dir, file) == null) {
                                 System.out.println("not found");
                             } else {
-                                Table db = directory.getUsing().databases[dir][file];
+                                Table db = directory.getUsing().getBase(dir, file);
                                 db.dbRemove(command[1]);
                                 if (db.recordsNumber() == 0) {
-                                    File dbFile = new File(db.dbFileName.toString());
+                                    File dbFile = new File(db.getName());
                                     Path parentFile = dbFile.getParentFile().toPath();
                                     try {
                                         Files.delete(dbFile.toPath());
@@ -161,11 +160,11 @@ public class ParserCommands {
                                         HandlerException.handler("ParserCommands.commandsExecution.remove: "
                                                 + "cannon delete database file ", e);
                                     }
-                                    directory.getUsing().databases[dir][file] = null;
+                                    directory.getUsing().addBase(dir, file, null);
 
                                     int k = 0;
                                     for (int j = 0; j < 16; j++) {
-                                        if (directory.getUsing().databases[dir][j] == null) {
+                                        if (directory.getUsing().getBase(dir, j) == null) {
                                             k++;
                                         }
                                     }
@@ -186,6 +185,7 @@ public class ParserCommands {
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.err.println("remove: need argument" + e);
                     }
+                    directory.getUsing().commit();
                     break;
                 case LISTCOMMAND:
                     if (directory.getUsing() == null) {
@@ -194,7 +194,7 @@ public class ParserCommands {
                         StringBuilder allKeys = new StringBuilder();
                         for (int i = 0; i < 16; i++) {
                             for (int j = 0; j < 16; j++) {
-                                Table cur = directory.getUsing().databases[i][j];
+                                Table cur = directory.getUsing().getBase(i, j);
                                 if (cur != null) {
                                     cur.dbList();
                                 }
@@ -204,7 +204,6 @@ public class ParserCommands {
                     }
                     break;
                 case EXITCOMMAND:
-                    directory.getUsing().commit();
                     throw new IllegalMonitorStateException("Exit");
                 default:
                     System.err.println(command[0] + " - unknown command");

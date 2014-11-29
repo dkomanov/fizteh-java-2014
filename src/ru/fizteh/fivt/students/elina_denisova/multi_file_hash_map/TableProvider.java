@@ -9,8 +9,20 @@ import java.nio.file.Files;
 
 public class TableProvider {
 
-   Table[][] databases;
-   File mainDir;
+   private Table[][] databases;
+   private File mainDir;
+
+    public Table getBase(int i, int j) {
+        return databases[i][j];
+    }
+
+    public File getMainDir() {
+        return mainDir;
+    }
+
+    public void addBase(int i, int j, Table t) {
+        databases[i][j] = t;
+    }
 
     public TableProvider(final File tableDir) {
        try {

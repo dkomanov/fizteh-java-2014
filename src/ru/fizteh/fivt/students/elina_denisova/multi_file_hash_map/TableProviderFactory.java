@@ -2,16 +2,18 @@ package ru.fizteh.fivt.students.elina_denisova.multi_file_hash_map;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 
 public class TableProviderFactory {
 
-    HashMap<String, TableProvider> tables;
+    private HashMap<String, TableProvider> tables;
     String using;
     File parentDirectory;
+
 
     public TableProviderFactory(String path) {
         parentDirectory = new File(path);
@@ -42,8 +44,6 @@ public class TableProviderFactory {
             HandlerException.handler(e);
         } catch (FileNotFoundException e) {
             HandlerException.handler(e);
-        } catch (IOException e) {
-            HandlerException.handler("TableProviderFactory: Problems with reading from database file", e);
         } catch (Exception e) {
             HandlerException.handler("TableProviderFactory: Unknown error", e);
         }
@@ -52,6 +52,26 @@ public class TableProviderFactory {
 
     public TableProvider getUsing() {
         return tables.get(using);
+    }
+
+    public TableProvider get(String key) {
+        return tables.get(key);
+    }
+
+    public Set< Map.Entry<String, TableProvider> > entrySet() {
+        return tables.entrySet();
+    }
+
+    public void put(String key, TableProvider value ) {
+        tables.put(key, value);
+    }
+
+    public void remove(String key) {
+        tables.remove(key);
+    }
+
+    public boolean containsKey(String key) {
+        return tables.containsKey(key);
     }
 
 }

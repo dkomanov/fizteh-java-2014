@@ -8,13 +8,17 @@ import java.util.Map;
 
 public class Table {
 
-    public Path dbFileName;
+    private Path dbFileName;
     private Map<String, String> data;
+
+    public String getName() {
+        return dbFileName.toString();
+    }
 
     public Table(String path) throws FileNotFoundException {
         try {
             dbFileName = Paths.get(path);
-            data = new HashMap<String, String>();
+            data = new HashMap<>();
             File dbFile = new File(path);
             if (!dbFile.exists() && !dbFile.createNewFile()) {
                 throw new FileNotFoundException("Table: Cannot create new database file");

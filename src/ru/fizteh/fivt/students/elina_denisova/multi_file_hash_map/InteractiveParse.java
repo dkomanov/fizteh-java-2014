@@ -19,15 +19,12 @@ public class InteractiveParse {
             }
         } catch (IllegalMonitorStateException e) {
             in.close();
-            directory.getUsing().commit();
             System.out.println("Goodbye");
             System.exit(0);
         } catch (Exception e) {
             in.close();
-            directory.getUsing().commit();
             HandlerException.handler("InteractiveParse: Unknown error", e);
         }
         in.close();
-        directory.getUsing().commit();
     }
 }
