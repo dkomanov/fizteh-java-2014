@@ -59,7 +59,13 @@ public class JSONLoggingProxyFactory implements LoggingProxyFactory {
             if (targetException != null) {
                 log.put("thrown", targetException);
             }
-            log.write(writer);
+            synchronized (writer) {
+                try {
+                    log.write(writer);
+                } catch (Exception e) {
+                    boolean veryBad = true;
+                }
+            }
             writer.write(String.format("%n"));
             if (targetException != null) {
                 throw targetException;
