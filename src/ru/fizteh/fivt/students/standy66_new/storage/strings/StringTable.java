@@ -12,20 +12,23 @@ import java.util.stream.Collectors;
 /**
  * Created by astepanov on 20.10.14.
  */
-public class StringTable implements Table {
+public class StringTable implements Table, AutoCloseable {
     private static final int MAX_FILE_CHUNK = 16;
     private static final int MAX_DIR_CHUNK = 16;
     private final File tableDirectory;
     private final Map<File, FileMap> openedFiles;
+    private boolean closed = false;
+    private StringDatabase database;
 
-    StringTable(File tableDirectory) {
-        if (tableDirectory == null) {
-            throw new IllegalArgumentException("table directory should not be null");
+    StringTable(File tableDirectory, StringDatabase database) {
+        if (tableDirectory == null || database == null) {
+            throw new IllegalArgumentException("table directory or database should not be null");
         }
         if (tableDirectory.isFile()) {
             throw new IllegalArgumentException("table directory should not point to a regular file");
         }
         this.tableDirectory = tableDirectory;
+        this.database = database;
 
         openedFiles = new HashMap<>();
 
@@ -42,6 +45,15 @@ public class StringTable implements Table {
         }
     }
 
+    @Override
+    public void close() throws Exception {
+        if (!closed) {
+            rollback();
+            database.onTableClosed(this);
+            closed = true;
+        }
+    }
+
     public File getFile() {
         return tableDirectory;
     }
@@ -53,6 +65,7 @@ public class StringTable implements Table {
 
     @Override
     public String get(String key) {
+        assertNotClosed();
         if (key == null) {
             throw new IllegalArgumentException("key should not be null");
         }
@@ -63,6 +76,7 @@ public class StringTable implements Table {
 
     @Override
     public String put(String key, String value) {
+        assertNotClosed();
         if (key == null) {
             throw new IllegalArgumentException("key should not be null");
         }
@@ -73,6 +87,7 @@ public class StringTable implements Table {
 
     @Override
     public String remove(String key) {
+        assertNotClosed();
         if (key == null) {
             throw new IllegalArgumentException("key is null");
         }
@@ -82,16 +97,19 @@ public class StringTable implements Table {
     }
 
     public int unsavedChangesCount() {
+        assertNotClosed();
         return openedFiles.values().stream().collect(Collectors.summingInt(FileMap::unsavedChangesCount));
     }
 
     @Override
     public int size() {
+        assertNotClosed();
         return openedFiles.values().stream().collect(Collectors.summingInt(FileMap::size));
     }
 
     @Override
     public synchronized int commit() {
+        assertNotClosed();
         int keyChangedCount = 0;
         for (FileMap fm : openedFiles.values()) {
             try {
@@ -112,6 +130,7 @@ public class StringTable implements Table {
 
     @Override
     public synchronized int rollback() {
+        assertNotClosed();
         int keyChangedCount = 0;
         for (FileMap fm : openedFiles.values()) {
             try {
@@ -125,6 +144,7 @@ public class StringTable implements Table {
 
     @Override
     public List<String> list() {
+        assertNotClosed();
         return new ArrayList<>(openedFiles.values().stream().map(FileMap::keySet)
                 .reduce(new HashSet<>(), (accumulator, set) -> {
                     accumulator.addAll(set);
@@ -148,5 +168,11 @@ public class StringTable implements Table {
     private FileMap getFileMapByKey(String key) {
         File chunkFile = getChunkFileByKey(key);
         return openedFiles.get(chunkFile);
+    }
+
+    private void assertNotClosed() {
+        if (closed) {
+            throw new IllegalStateException("Table has been closed, but method was invoked");
+        }
     }
 }

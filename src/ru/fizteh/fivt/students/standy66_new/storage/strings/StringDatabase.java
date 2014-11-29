@@ -21,6 +21,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     private final File dbDirectory;
     private final Map<String, StringTable> tableInstances;
     private File lockFile;
+    private boolean closed = false;
 
     StringDatabase(File directory) {
         if (directory == null) {
@@ -78,12 +79,14 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     @Override
     public StringTable getTable(String name) {
+        assertNotClosed();
         throwIfIncorrectTableName(name);
         return tableInstances.get(name);
     }
 
     @Override
     public StringTable createTable(String name) {
+        assertNotClosed();
         throwIfIncorrectTableName(name);
         File tableDirectory = new File(dbDirectory, name);
         synchronized (tableInstances) {
@@ -93,12 +96,13 @@ public class StringDatabase implements TableProvider, AutoCloseable {
             if (!tableDirectory.mkdirs()) {
                 throw new IllegalArgumentException("table cannot be created");
             }
-            tableInstances.put(name, new StringTable(tableDirectory));
+            tableInstances.put(name, new StringTable(tableDirectory, this));
         }
         return tableInstances.get(name);
     }
 
     public List<String> listTableNames() {
+        assertNotClosed();
         synchronized (tableInstances) {
             return tableInstances.values().stream()
                     .map(Table::getName).collect(Collectors.toList());
@@ -107,6 +111,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     @Override
     public void removeTable(String name) {
+        assertNotClosed();
         throwIfIncorrectTableName(name);
         synchronized (tableInstances) {
             if (tableInstances.get(name) == null) {
@@ -120,12 +125,14 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     }
 
     public void commit() {
+        assertNotClosed();
         synchronized (tableInstances) {
             tableInstances.values().forEach(Table::commit);
         }
     }
 
     public void rollback() {
+        assertNotClosed();
         synchronized (tableInstances) {
             tableInstances.values().forEach(Table::rollback);
         }
@@ -133,12 +140,20 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     @Override
     public void close() {
-        lockFile.delete();
+        if (!closed) {
+            rollback();
+            lockFile.delete();
+            closed = true;
+        }
     }
 
     @Override
     public String toString() {
         return String.format("%s[%s]", getClass().getSimpleName(), dbDirectory.getAbsolutePath());
+    }
+
+    void onTableClosed(StringTable table) {
+        tableInstances.put(table.getName(), new StringTable(table.getFile(), this));
     }
 
     private void initTableInstances(File directory) {
@@ -153,11 +168,17 @@ public class StringDatabase implements TableProvider, AutoCloseable {
                                 + e.getMessage(), e);
                     }
 
-                    tableInstances.put(tableName, new StringTable(tableFile));
+                    tableInstances.put(tableName, new StringTable(tableFile, this));
                 }
             }
         } else {
             throw new IllegalArgumentException("illegal arg");
+        }
+    }
+
+    private void assertNotClosed() {
+        if (closed) {
+            throw new IllegalStateException("String Database had been closed, but then method called");
         }
     }
 }
