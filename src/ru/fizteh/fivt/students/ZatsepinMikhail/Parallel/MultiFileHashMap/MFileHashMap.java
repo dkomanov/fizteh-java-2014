@@ -148,6 +148,17 @@ public class MFileHashMap implements TableProvider {
         return Serializator.deserialize(table, value);
     }
 
+    @Override
+    public List<String> getTableNames() {
+        List<String> result = new ArrayList<>();
+        Collection<FileMap> filemaps = tables.values();
+        for (FileMap oneTable : filemaps) {
+            result.add(oneTable.getName());
+        }
+        return result;
+    }
+
+
     public void showTables() {
         Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneTable: pairSet) {

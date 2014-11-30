@@ -16,8 +16,8 @@ public class CommandUse extends CommandMultiFileHashMap {
             if (currentTable == null) {
                 myMap.setCurrentTable(newCurrentTable);
                 System.out.println("using " + args[1]);
-            } else if (currentTable.getNumberOfUncommitedChanges() > 0) {
-                System.out.println(currentTable.getNumberOfUncommitedChanges() + " unsaved changes");
+            } else if (currentTable.getNumberOfUncommittedChanges() > 0) {
+                System.out.println(currentTable.getNumberOfUncommittedChanges() + " unsaved changes");
             } else {
                 myMap.setCurrentTable(newCurrentTable);
                 System.out.println("using " + args[1]);

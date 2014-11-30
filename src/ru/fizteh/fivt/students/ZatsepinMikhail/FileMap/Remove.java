@@ -9,7 +9,6 @@ public class Remove extends CommandFileMap {
     public boolean run(FileMap myFileMap, String[] args) {
         if (args.length != numberOfArguments) {
             System.out.println(name + ": wrong number of arguments");
-
             return false;
         }
         String value = myFileMap.remove(args[1]);
