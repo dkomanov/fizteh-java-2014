@@ -48,39 +48,12 @@ public class FileMap implements Table, AutoCloseable {
     private Lock lockForCommit;
     private boolean isClosed;
 
-    private int getNumberOfDirectory(int hash) {
-        int result = hash % 16;
-        if (result < 0) {
-            result += 16;
-        }
-        return result;
-    }
-
-    private int getNumberOfFile(int hash) {
-        int result = hash / 16 % 16;
-        if (result < 0) {
-            result += 16;
-        }
-        return result;
-    }
-
-    private void assertNotClosed() throws IllegalStateException {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
-    }
-
-    private void clearStaff() {
-        removedData.set(new HashSet<>());
-        addedData.set(new HashMap<>());
-        changedData.set(new HashMap<>());
-    }
-
     /**
-     * Create empty Filemap
+     * Create empty FileMap
      *
      * @param newDirectory - directory of this FileMap
      * @param newTypeList - list of types (signature of table)
+     * @param newParent - TableProvider
      */
     public FileMap(String newDirectory, List<Class<?>> newTypeList, TableProvider newParent) throws IOException {
         directoryOfTable = newDirectory;
@@ -93,10 +66,6 @@ public class FileMap implements Table, AutoCloseable {
         if (!init()) {
             throw new IOException("error while initialization");
         }
-    }
-
-    public TableProvider getTableProvider() {
-        return parent;
     }
 
     @Override
@@ -439,7 +408,31 @@ public class FileMap implements Table, AutoCloseable {
         return true;
     }
 
-    public boolean deleteEmptyFiles(Path directory, Path file) {
+    @Override
+    public void close() throws Exception {
+        assertNotClosed();
+        rollback();
+        isClosed = true;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[" + Paths.get(directoryOfTable).toAbsolutePath().toString() + "]";
+    }
+
+    public boolean checkIfClosed() {
+        return isClosed;
+    }
+
+    public TableProvider getTableProvider() {
+        return parent;
+    }
+
+    /*
+    private methods
+     */
+
+    private boolean deleteEmptyFiles(Path directory, Path file) {
         try {
             if (Files.size(file) == 0) {
                 Files.delete(file);
@@ -460,14 +453,31 @@ public class FileMap implements Table, AutoCloseable {
         return true;
     }
 
-    @Override
-    public void close() throws Exception {
-        assertNotClosed();
-        rollback();
-        isClosed = true;
+    private int getNumberOfDirectory(int hash) {
+        int result = hash % 16;
+        if (result < 0) {
+            result += 16;
+        }
+        return result;
     }
 
-    public boolean checkIfClosed() {
-        return isClosed;
+    private int getNumberOfFile(int hash) {
+        int result = hash / 16 % 16;
+        if (result < 0) {
+            result += 16;
+        }
+        return result;
+    }
+
+    private void assertNotClosed() throws IllegalStateException {
+        if (isClosed) {
+            throw new IllegalStateException("table is closed");
+        }
+    }
+
+    private void clearStaff() {
+        removedData.set(new HashSet<>());
+        addedData.set(new HashMap<>());
+        changedData.set(new HashMap<>());
     }
 }

@@ -6,7 +6,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.AbstractStoreable;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.AbstractStoreable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.shell.FileUtils;
 
@@ -35,21 +35,6 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
         lockForCreateAndGet = new ReentrantReadWriteLock();
         isClosed = false;
         init();
-    }
-
-    private void assertNotClosed() throws IllegalStateException {
-        if (isClosed) {
-            throw new IllegalStateException("table provider is closed");
-        }
-    }
-
-    @Override
-    public void close() throws Exception {
-        assertNotClosed();
-        isClosed = true;
-        for (FileMap oneTable : tables.values()) {
-            oneTable.close();
-        }
     }
 
     @Override
@@ -230,5 +215,30 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
             }
         }
         return allRight;
+    }
+
+
+    @Override
+    public void close() throws Exception {
+        assertNotClosed();
+        isClosed = true;
+        for (FileMap oneTable : tables.values()) {
+            oneTable.close();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[" + Paths.get(dataBaseDirectory).toAbsolutePath().toString() + "]";
+    }
+
+    /*
+    private methods
+    */
+
+    private void assertNotClosed() throws IllegalStateException {
+        if (isClosed) {
+            throw new IllegalStateException("table provider is closed");
+        }
     }
 }
