@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.irina_karatsapova.junit.table_provider_factory;
 
+import java.util.List;
+
 public interface Table {
 
     /**
@@ -58,6 +60,13 @@ public interface Table {
      * @return Количество отменённых ключей.
      */
     int rollback() throws Exception;
+
+    /**
+     * Выводит список ключей таблицы
+     *
+     * @return Список ключей.
+     */
+    List<String> list();
 
     int changesNumber();
 }
