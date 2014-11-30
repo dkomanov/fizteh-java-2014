@@ -99,7 +99,7 @@ public class FileMap {
         }
         return res;
     }
-    
+
     public String clearGet(String key) {
         return table.get(key);
     }
@@ -121,8 +121,8 @@ public class FileMap {
         // pw.println();
         pw.flush();
     }
-    
-    public void fullList (PrintWriter pw) {
+
+    public void fullList(PrintWriter pw) {
         Set<Entry<String, String>> tableSet = table.entrySet();
         Iterator<Entry<String, String>> checkLast = tableSet.iterator();
         if (checkLast.hasNext()) {
