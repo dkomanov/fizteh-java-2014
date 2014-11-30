@@ -16,6 +16,20 @@ public class TableRow implements Storeable {
         columnValues = values.toArray();
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append("[");
+
+        String[] stringObjects = new String[columnValues.length];
+        for (int i = 0; i < columnValues.length; ++i) {
+            stringObjects[i] = columnValues == null ? columnValues[i].toString() : "";
+        }
+        sb.append(String.join(",", stringObjects));
+        sb.append("]");
+        return sb.toString();
+    }
+
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
         if (value == null) {

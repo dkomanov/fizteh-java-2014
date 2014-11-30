@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
+import java.io.File;
 
 /**
  * Created by akhtyamovpavel on 30.11.14.
@@ -15,10 +16,12 @@ import java.util.IdentityHashMap;
 public class Logger implements InvocationHandler {
     Writer writer;
     Object object;
-
+    File file;
+    public static final String LOG = "log.txt";
     public Logger(Object implementation, Writer writer) {
         object = implementation;
         this.writer = writer;
+        file = new File(LOG);
     }
 
     @Override
@@ -28,7 +31,7 @@ public class Logger implements InvocationHandler {
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
             XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
-
+            streamWriter.writeStartDocument();
             streamWriter.writeStartElement("invoke");
             streamWriter.writeAttribute("timestamp", String.valueOf(System.currentTimeMillis()));
             streamWriter.writeAttribute("class", object.getClass().getName());
@@ -48,6 +51,7 @@ public class Logger implements InvocationHandler {
             } else {
                 streamWriter.writeStartElement("argument");
                 streamWriter.writeEmptyElement("null");
+                streamWriter.writeEndElement();
                 streamWriter.writeEndElement();
             }
             Throwable exceptionResult = null;
@@ -104,7 +108,9 @@ public class Logger implements InvocationHandler {
         for (Object element: iterable) {
             if (element instanceof Iterable) {
                 if (map.containsKey(element)) {
+                    streamWriter.writeStartElement("value");
                     streamWriter.writeCharacters("cyclic");
+                    streamWriter.writeEndElement();
                 } else {
                     writeLists(iterable, map, streamWriter);
                 }
@@ -122,6 +128,7 @@ public class Logger implements InvocationHandler {
     private void printState(XMLStreamWriter streamWriter) {
         try {
             synchronized (writer) {
+                streamWriter.writeEndDocument();
                 streamWriter.flush();
             }
         } catch (XMLStreamException e) {

@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.loggingdatabase.test;
 
 import org.junit.Test;
-import ru.fizteh.fivt.students.akhtyamovpavel.loggingdatabase.DataBaseTable;
 import ru.fizteh.fivt.students.akhtyamovpavel.loggingdatabase.DataBaseTableProviderFactory;
 
 import java.io.IOException;
