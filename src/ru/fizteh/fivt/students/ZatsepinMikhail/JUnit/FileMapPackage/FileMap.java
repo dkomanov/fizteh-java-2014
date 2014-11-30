@@ -41,12 +41,15 @@ public class FileMap implements Table {
         changedData.clear();
     }
 
-    public FileMap(String newDirectoryFile) {
+    public FileMap(String newDirectoryFile) throws IOException {
         directoryOfTable = newDirectoryFile;
         stableData = new HashMap<>();
         addedData = new HashMap<>();
         changedData = new HashMap<>();
         removedData = new HashSet<>();
+        if (!init()) {
+            throw new IOException("error while initialization");
+        }
     }
 
     public String getName() {
