@@ -9,6 +9,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationHandler;
@@ -43,12 +44,13 @@ public class CLoggingProxyFactory implements LoggingProxyFactory {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            writer.write("<invoke timestamp=\"" + System.currentTimeMillis()
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("<invoke timestamp=\"" + System.currentTimeMillis()
                     + "\" class=\"" + implementation + "\" name=\"" + method.getName() + "\">");
             if (args != null && args.length > 0) {
-                writer.write(xmlParser.parse(args));
+                stringBuilder.append(xmlParser.parse(args));
             } else {
-                writer.write("<arguments/>");
+                stringBuilder.append("<arguments/>");
             }
             try {
                 Object result;
@@ -72,15 +74,20 @@ public class CLoggingProxyFactory implements LoggingProxyFactory {
                     } else {
                         res = result.toString();
                     }
-                    writer.write("<return>" + res + "</return>");
+                    stringBuilder.append("<return>" + res + "</return>");
                 }
                 return result;
             } catch (InvocationTargetException e) {
-                writer.write("<thrown>" + e.getTargetException() + "</thrown>");
-                writer.flush();
+                stringBuilder.append("<thrown>" + e.getTargetException() + "</thrown>");
                 throw e;
             } finally {
-                writer.write("</invoke>");
+                stringBuilder.append("</invoke>");
+                try {
+                    writer.write(stringBuilder.toString());
+                } catch (IOException e) {
+                    System.out.println("Can't write log");
+                }
+                writer.flush();
             }
         }
     }
