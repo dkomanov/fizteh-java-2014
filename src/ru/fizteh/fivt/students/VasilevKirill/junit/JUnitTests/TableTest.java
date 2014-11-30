@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.VasilevKirill.junit.JUnitTests;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
@@ -15,7 +17,8 @@ public class TableTest {
     private static String path;
     private static TableProvider dataBase;
 
-    static {
+    @BeforeClass
+    public static void beforeClass() {
         try {
             path = new File("").getCanonicalPath();
         } catch (IOException e) {
@@ -23,6 +26,13 @@ public class TableTest {
         }
         dataBase = new MyTableProviderFactory().create(path);
         dataBase.createTable("First");
+        dataBase.createTable("Second");
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        dataBase.removeTable("First");
+        dataBase.removeTable("Second");
     }
 
     @Test
@@ -47,7 +57,6 @@ public class TableTest {
             assertEquals(1, 1);
         }
         resultTable.remove("1");
-        resultTable.commit();
     }
 
     @Test
@@ -60,7 +69,6 @@ public class TableTest {
         } catch (IllegalArgumentException e) {
             assertTrue(true);
         }
-        resultTable.commit();
     }
 
     @Test
@@ -76,7 +84,6 @@ public class TableTest {
         } catch (IllegalArgumentException e) {
             assertTrue(true);
         }
-        resultTable.commit();
     }
 
     @Test
@@ -107,13 +114,10 @@ public class TableTest {
 
     @Test
     public void testRollback() throws Exception {
-        Table resultTable = dataBase.getTable("First");
+        Table resultTable = dataBase.getTable("Second");
         assertFalse(resultTable == null);
         resultTable.put("1", "value1");
-        resultTable.commit();
-        resultTable.rollback();
-        assertNull(resultTable.get("1"));
-        resultTable.commit();
+        assertEquals(1, resultTable.rollback());
     }
 
     @Test
