@@ -29,7 +29,7 @@ public class SaveTable {
     }
 
     private static void saveFile(MyTable table, int dir, int file) throws TableException {
-        File dirPath = Paths.get(table.tablePath.toString(), dir + ".providerDir").toFile();
+        File dirPath = Paths.get(table.tablePath.toString(), dir + ".dir").toFile();
         File filePath = Paths.get(dirPath.toString(), file + ".dat").toFile();
 
         if (table.currentKeys[dir][file].isEmpty()) {
@@ -80,7 +80,7 @@ public class SaveTable {
 
     private static void deleteEmptyDirs(MyTable table) throws TableException {
         for (int dir = 0; dir < 16; dir++) {
-            File dirPath = Paths.get(table.tablePath.toString(), dir + ".providerDir").toFile();
+            File dirPath = Paths.get(table.tablePath.toString(), dir + ".dir").toFile();
             if (dirPath.exists() && dirPath.list().length == 0) {
                 Utils.delete(dirPath);
             }
