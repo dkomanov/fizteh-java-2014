@@ -56,7 +56,9 @@ public class XMLLoggingProxyInvocationHandler implements InvocationHandler {
             result = method.invoke(target, args);
         } catch (InvocationTargetException e) {
             error = e.getTargetException();
-        } catch (Throwable e) {}
+        } catch (Throwable e) {
+            // Swallowed.
+        }
         if (method.getDeclaringClass() != Object.class) {
             try {
                 StringWriter stringWriter = new StringWriter();
@@ -67,9 +69,9 @@ public class XMLLoggingProxyInvocationHandler implements InvocationHandler {
                 writer.writeAttribute("name", method.getName());
                 if (args != null && args.length != 0) {
                     writer.writeStartElement("arguments");
-                    for (int i = 0; i < args.length; i++) {
+                    for (Object arg : args) {
                         writer.writeStartElement("argument");
-                        writeObject(args[i]);
+                        writeObject(arg);
                         writer.writeEndElement();
                     }
                     writer.writeEndElement();
@@ -88,7 +90,9 @@ public class XMLLoggingProxyInvocationHandler implements InvocationHandler {
                 writer.writeEndElement();
                 writer.flush();
                 initialWriter.write(stringWriter.toString() + System.lineSeparator());
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                // Swallowed.
+            }
         }
         if (error != null) {
             throw error;
