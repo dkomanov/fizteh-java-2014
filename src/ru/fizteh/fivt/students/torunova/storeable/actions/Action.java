@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.storeable.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
 import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.storeable.exceptions.TableNotCreatedException;
 
@@ -29,7 +29,7 @@ public abstract class Action {
         return true;
     }
 
-    public abstract boolean run(String[] args, DatabaseWrapper db)
+    public abstract boolean run(String[] args, CurrentTable currentTable)
                                   throws IOException,
                                   IncorrectFileException,
                                   TableNotCreatedException;

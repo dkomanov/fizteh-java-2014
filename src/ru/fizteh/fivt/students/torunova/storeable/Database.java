@@ -17,9 +17,8 @@ import java.util.regex.Pattern;
  * Created by nastya on 19.10.14.
  */
 public class  Database implements TableProvider {
-    public String dbName;
-    private  Map<String, Table> tables = new HashMap<>();
-    public Table currentTable;
+    private String dbName;
+    private  Map<String, TableImpl> tables = new HashMap<>();
 
     @Override
     public int hashCode() {
@@ -40,10 +39,6 @@ public class  Database implements TableProvider {
                                         TableNotCreatedException,
                                         IncorrectFileException,
                                         IncorrectDbException {
-        if (name == null) {
-            throw new IncorrectDbNameException("Name of database not specified."
-                    + "Please,specify it via -Dfizteh.db.dir");
-        }
         File db = new File(name).getAbsoluteFile();
         if (!db.exists()) {
             db.mkdirs();
@@ -55,7 +50,7 @@ public class  Database implements TableProvider {
         if (dbTables != null) {
             for (File table : dbTables) {
                 if (table.getAbsoluteFile().isDirectory()) {
-                    tables.put(table.getName(), new Table(table.getAbsolutePath()));
+                    tables.put(table.getName(), new TableImpl(table.getAbsolutePath()));
                 } else {
                     throw new IncorrectDbException("Database contains illegal files.");
                 }
@@ -64,20 +59,20 @@ public class  Database implements TableProvider {
     }
 
     @Override
-    public Table getTable(String name) {
+    public TableImpl getTable(String name) {
         checkTableName(name);
         return tables.get(name);
     }
 
     @Override
-    public Table createTable(String tableName) {
+    public TableImpl createTable(String tableName) {
         checkTableName(tableName);
         File table = new File(dbName, tableName);
         String newTableName = table.getAbsolutePath();
         if (!tables.containsKey(tableName)) {
-            Table newTable;
+            TableImpl newTable;
             try {
-                newTable = new Table(newTableName);
+                newTable = new TableImpl(newTableName);
             } catch (TableNotCreatedException | IncorrectFileException | IOException e) {
                 throw new RuntimeException(e);
             }
@@ -94,28 +89,18 @@ public class  Database implements TableProvider {
         if (tables.containsKey(name)) {
             removeRecursive(f.getAbsolutePath());
             tables.remove(name);
-            if (currentTable != null) {
-                if (currentTable.tableName.equals(f.getAbsolutePath())) {
-                    currentTable = null;
-                }
-            }
         } else {
             throw new IllegalStateException("does not exist");
         }
-    }
-
-    public boolean useTable(String name) {
-        if (tables.containsKey(name)) {
-            currentTable = tables.get(name);
-            return true;
-        }
-        return false;
     }
 
     public Map<String, Integer> showTables() {
         Map<String, Integer> tablesWithSize = new HashMap<>();
         tables.forEach((name, table)->tablesWithSize.put(name, table.numberOfEntries));
         return tablesWithSize;
+    }
+    public String getDbName() {
+        return dbName;
     }
 
     /**
@@ -124,14 +109,14 @@ public class  Database implements TableProvider {
      * @return true if file is regular and deleted,false otherwise.
      */
     private  boolean remove(final String file) {
-        File file1 = new File(file).getAbsoluteFile();
-        if (file1.isFile()) {
-            if (!file1.delete()) {
+        File fileWithAbsolutePath = new File(file).getAbsoluteFile();
+        if (fileWithAbsolutePath.isFile()) {
+            if (!fileWithAbsolutePath.delete()) {
                 return false;
             }
-        } else if (file1.isDirectory()) {
+        } else if (fileWithAbsolutePath.isDirectory()) {
             return false;
-        } else if (!file1.exists()) {
+        } else if (!fileWithAbsolutePath.exists()) {
             return false;
         }
         return true;
@@ -144,9 +129,6 @@ public class  Database implements TableProvider {
     private  boolean removeRecursive(final String dir) {
         File directory = new File(dir).getAbsoluteFile();
         if (directory.isDirectory()) {
-            if (dir.equals(System.getProperty("user.dir"))) {
-                System.setProperty("user.dir", directory.getParent());
-            }
             File[] content = directory.listFiles();
             if (content != null) {
                 for (File item : content) {

@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.storeable.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
 import ru.fizteh.fivt.students.torunova.storeable.TableWrapper;
 import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.storeable.exceptions.TableNotCreatedException;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class CreateTable extends Action{
     @Override
-    public boolean run(String[] args, DatabaseWrapper db)
+    public boolean run(String[] args, CurrentTable currentTable)
                                 throws IOException,
                                 IncorrectFileException,
                                 TableNotCreatedException {
@@ -25,10 +25,10 @@ public class CreateTable extends Action{
         TableWrapper table = null;
         List<Class<?>> classes = new ArrayList<>();
         for (int i = 1; i < args.length; i++) {
-            classes.add(db.classForName(args[i]));
+            classes.add(currentTable.getDb().classForName(args[i]));
         }
         try {
-            table = (TableWrapper) db.createTable(tableName, classes);
+            table = (TableWrapper) currentTable.getDb().createTable(tableName, classes);
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
             return false;

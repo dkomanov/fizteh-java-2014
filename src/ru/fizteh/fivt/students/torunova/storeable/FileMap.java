@@ -12,6 +12,7 @@ import java.util.Set;
  * Created by nastya on 19.10.14.
  */
 public class FileMap {
+    private static final String ENCODING = "UTF-8";
     private static final int NUMBER_OF_PARTITIONS = 16;
     private Map<String, String> savedCopy = new HashMap<>();
     private Map<String, String> workingCopy = new HashMap<>();
@@ -57,10 +58,10 @@ public class FileMap {
         Set<String> keys = workingCopy.keySet();
 
         for (String key : keys) {
-            fos.writeInt(key.getBytes("UTF-8").length);
-            fos.write(key.getBytes("UTF-8"));
-            fos.writeInt(workingCopy.get(key).getBytes("UTF-8").length);
-            fos.write(workingCopy.get(key).getBytes("UTF-8"));
+            fos.writeInt(key.getBytes(ENCODING).length);
+            fos.write(key.getBytes(ENCODING));
+            fos.writeInt(workingCopy.get(key).getBytes(ENCODING).length);
+            fos.write(workingCopy.get(key).getBytes(ENCODING));
         }
         int numberOfChangedEntries = countChangedEntries();
         savedCopy = new HashMap<>();
@@ -98,7 +99,7 @@ public class FileMap {
             if (fis.read(key) != length) {
                 throw new IncorrectFileException("File " + file + " has wrong structure.");
             }
-            if (!checkKey(new String(key, "UTF-8"))) {
+            if (!checkKey(new String(key, ENCODING))) {
                 throw new IncorrectFileException("File " + file + " contains illegal key.");
             }
             length = fis.readInt();
@@ -112,8 +113,8 @@ public class FileMap {
             if (fis.read(value) != length) {
                 throw new IncorrectFileException("File " + file + " has wrong structure.");
             }
-            savedCopy.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
-            workingCopy.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+            savedCopy.put(new String(key, ENCODING), new String(value, ENCODING));
+            workingCopy.put(new String(key, ENCODING), new String(value, ENCODING));
         }
     }
     private int getIndexOfFile() {
