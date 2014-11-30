@@ -89,6 +89,9 @@ public class Diff {
             lock.readLock().lock();
             try {
                 Storeable originResult = origin.get(key);
+                if (originResult == null) {
+                    return null;
+                }
                 return origin.getProvider().serialize(origin, originResult);
             } finally {
                 lock.readLock().unlock();

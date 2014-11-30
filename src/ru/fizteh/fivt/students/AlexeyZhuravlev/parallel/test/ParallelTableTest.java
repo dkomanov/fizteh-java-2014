@@ -66,6 +66,7 @@ public class ParallelTableTest {
         Storeable old = table.put("key", value);
         assertEquals(old.getColumnAt(0), 5);
         assertEquals(table.get("key").getColumnAt(0), 2);
+        assertNull(table.get("nothere"));
     }
 
     @Test
