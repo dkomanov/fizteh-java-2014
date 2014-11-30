@@ -4,14 +4,8 @@ package ru.fizteh.fivt.students.torunova.storeable;
  * Created by nastya on 21.10.14.
  */
 
-import ru.fizteh.fivt.students.torunova.junit.*;
 import ru.fizteh.fivt.students.torunova.storeable.actions.Action;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectDbException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectDbNameException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.TableNotCreatedException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
