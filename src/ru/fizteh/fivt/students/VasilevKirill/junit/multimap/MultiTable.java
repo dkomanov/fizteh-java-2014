@@ -161,6 +161,7 @@ public class MultiTable implements Table {
             }
         }
         data = oldData;
+        numUnsavedChanges = 0;
         /*try {
             PrintStream oldOutput = System.out;
             PrintStream newOutput = new PrintStream(new OutputStream() {
