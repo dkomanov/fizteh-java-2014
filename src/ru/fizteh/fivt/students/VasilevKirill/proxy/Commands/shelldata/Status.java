@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.VasilevKirill.proxy.Commands.shelldata;
 
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.FileMap;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MultiMap;
-import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MultiTable;
+import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTable;
 
 /**
  * Created by Kirill on 19.10.2014.
@@ -22,7 +22,7 @@ public class Status {
         return object instanceof MultiMap ? (MultiMap) object : null;
     }
 
-    public MultiTable getMultiTable() {
-        return object instanceof MultiTable ? (MultiTable) object : null;
+    public MyTable getMultiTable() {
+        return object instanceof MyTable ? (MyTable) object : null;
     }
 }

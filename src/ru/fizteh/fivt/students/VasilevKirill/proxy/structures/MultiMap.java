@@ -39,6 +39,7 @@ public class MultiMap implements TableProvider {
             throw new IOException(directory + " is not a directory");
         }
         tables = new HashMap<String, SharedMyTable>();
+        closedTables = new HashSet<>();
         providerLock = new ReentrantReadWriteLock();
         File[] tableDirectories = new File(workingDirectory).listFiles();
         for (File it : tableDirectories) {
@@ -47,7 +48,7 @@ public class MultiMap implements TableProvider {
                 throw new IOException("No signature file for table " + it.getName());
             }
             Class[] sig = readSignatures(signatures);
-            MultiTable inputTable = new MultiTable(it, this, sig);
+            MyTable inputTable = new MyTable(it, this, sig);
             tables.put(it.getName(), new SharedMyTable(inputTable));
         }
     }
@@ -61,7 +62,7 @@ public class MultiMap implements TableProvider {
         if (closedTables.contains(name)) {
             providerLock.readLock().unlock();
             try {
-                Table retValue = new MultiTable(new File(workingDirectory + File.separator + name), this, new Class[0]);
+                Table retValue = new MyTable(new File(workingDirectory + File.separator + name), this, new Class[0]);
                 return retValue;
             } catch (IOException e) {
                 return null;
@@ -86,7 +87,7 @@ public class MultiMap implements TableProvider {
             if (!addTable(name, typeList)) {
                 return null;
             }
-            MultiTable retTable = new MultiTable(new File(workingDirectory + File.separator + name), this, typeList);
+            MyTable retTable = new MyTable(new File(workingDirectory + File.separator + name), this, typeList);
             tables.put(name, new SharedMyTable(retTable));
             return retTable;
         } catch (IOException e) {
@@ -202,7 +203,7 @@ public class MultiMap implements TableProvider {
                     throw new IOException("Can't create the directory: " + newDir.getName());
                 }
             }
-            MultiTable inputTable = new MultiTable(newDir, this, typeList);
+            MyTable inputTable = new MyTable(newDir, this, typeList);
             tables.put(name, new SharedMyTable(inputTable));
             return true;
         } else {

@@ -19,7 +19,7 @@ import java.util.*;
 /**
  * Created by Kirill on 19.10.2014.
  */
-public class MultiTable implements Table, AutoCloseable {
+public class MyTable implements Table, AutoCloseable {
     private File tableDirectory;
     private FileMap[][] files;
     Map<String, Storeable> data;
@@ -28,7 +28,7 @@ public class MultiTable implements Table, AutoCloseable {
     private MultiMap multiMap;
     private Class[] typeList;
 
-    public MultiTable(File tableDirectory, MultiMap multiMap, Class[] typeList) throws IOException {
+    public MyTable(File tableDirectory, MultiMap multiMap, Class[] typeList) throws IOException {
         this.multiMap = multiMap;
         this.tableDirectory = tableDirectory;
         this.typeList = typeList;
@@ -61,12 +61,12 @@ public class MultiTable implements Table, AutoCloseable {
         writeSignatures();
     }
 
-    public MultiTable(File tableDirectory, MultiMap multiMap, List<Class<?>> typeList) throws IOException {
+    public MyTable(File tableDirectory, MultiMap multiMap, List<Class<?>> typeList) throws IOException {
         Class[] typeArray = new Class[typeList.size()];
         for (int i = 0; i < typeArray.length; ++i) {
             typeArray[i] = typeList.get(i);
         }
-        new MultiTable(tableDirectory, multiMap, typeArray);
+        new MyTable(tableDirectory, multiMap, typeArray);
     }
 
     @Override

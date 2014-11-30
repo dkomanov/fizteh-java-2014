@@ -12,14 +12,14 @@ import java.util.Map;
  * Created by Kirill on 26.11.2014.
  */
 public class SharedMyTable implements Table {
-    private ThreadLocal<MultiTable> threadLocal;
+    private ThreadLocal<MyTable> threadLocal;
     private volatile Map<String, Storeable> data;
 
-    public SharedMyTable(MultiTable multiTable) throws IOException {
-        threadLocal = new ThreadLocal<MultiTable>() {
+    public SharedMyTable(MyTable myTable) throws IOException {
+        threadLocal = new ThreadLocal<MyTable>() {
             @Override
-            protected MultiTable initialValue() {
-                return multiTable;
+            protected MyTable initialValue() {
+                return myTable;
             }
         };
         if (threadLocal == null) {
@@ -103,7 +103,7 @@ public class SharedMyTable implements Table {
         return threadLocal.get().getColumnType(columnIndex);
     }
 
-    public MultiTable getMultiTable() {
+    public MyTable getMultiTable() {
         return threadLocal.get();
     }
 
