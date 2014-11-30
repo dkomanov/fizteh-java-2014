@@ -30,12 +30,6 @@ public class DatabaseWrapper implements TableProvider {
     DatabaseWrapper(ru.fizteh.fivt.storage.strings.TableProvider newDb) {
         db = (Database) newDb;
     }
-    public Table getCurrentTable() {
-        if (db.currentTable != null) {
-            return getTable(db.currentTable.getName());
-        }
-        return null;
-    }
 
     @Override
     public int hashCode() {
@@ -52,7 +46,7 @@ public class DatabaseWrapper implements TableProvider {
 
     @Override
     public Table getTable(String name) {
-        File table = new File(db.dbName, name);
+        File table = new File(db.getDbName(), name);
         File signature = new File(table, SIGNATURE_FILE);
         Scanner scanner;
         try {
@@ -69,12 +63,12 @@ public class DatabaseWrapper implements TableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        ru.fizteh.fivt.students.torunova.storeable.Table t = db.createTable(name);
+        TableImpl t = db.createTable(name);
         if (t == null) {
             return null;
         }
         TableWrapper table = new TableWrapper(t, this, columnTypes.toArray(new Class[0]));
-        File tableDir = new File(db.dbName, name);
+        File tableDir = new File(db.getDbName(), name);
         File signature = new File(tableDir, SIGNATURE_FILE);
         signature.createNewFile();
         PrintWriter fos = new PrintWriter(new FileOutputStream(signature));
@@ -192,9 +186,6 @@ public class DatabaseWrapper implements TableProvider {
     }
     public Map<String, Integer> showTables() {
         return db.showTables();
-    }
-    public boolean useTable(String name) {
-        return db.useTable(name);
     }
 
     public Class<?> classForName(String className) {

@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.torunova.junit.Database;
-import ru.fizteh.fivt.students.torunova.junit.Table;
+import ru.fizteh.fivt.students.torunova.junit.TableImpl;
 
 import java.io.File;
 
@@ -26,7 +26,7 @@ public class TableProviderTest {
     @Test
     public void testGetTableWithNormalName() throws Exception {
         File table = new File(testDirectory, "table");
-        Table t = new Table(table.getAbsolutePath());
+        TableImpl t = new TableImpl(table.getAbsolutePath());
         db.createTable("table");
         assertEquals(t, db.getTable("table"));
     }
@@ -50,7 +50,7 @@ public class TableProviderTest {
     @Test
     public void testCreateNotExistingTable() throws Exception {
         File table = new File(testDirectory, "table");
-        Table t = new Table(table.getAbsolutePath());
+        TableImpl t = new TableImpl(table.getAbsolutePath());
         assertEquals(t, db.createTable("table"));
     }
 

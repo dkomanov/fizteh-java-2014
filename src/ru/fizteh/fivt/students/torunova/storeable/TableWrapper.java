@@ -14,7 +14,7 @@ import java.util.List;
  * Created by nastya on 19.11.14.
  */
 public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table{
-    private Table table;
+    private TableImpl table;
     private StoreableType headOfTable;
     private TableProvider tableProvider;
 
@@ -23,11 +23,11 @@ public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table{
             throws IOException,
             TableNotCreatedException,
             IncorrectFileException {
-        table = new Table(tableName);
+        table = new TableImpl(tableName);
         headOfTable = new StoreableType(newTypes);
         tableProvider = newTableProvider;
     }
-    public TableWrapper(Table newTable, DatabaseWrapper newTableProvider, Class<?>... newTypes) {
+    public TableWrapper(TableImpl newTable, DatabaseWrapper newTableProvider, Class<?>... newTypes) {
         table = newTable;
         headOfTable = new StoreableType(newTypes);
         tableProvider = newTableProvider;
@@ -84,7 +84,7 @@ public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table{
     }
 
     @Override
-    public int commit() throws IOException {
+    public int commit() {
         return table.commit();
     }
 

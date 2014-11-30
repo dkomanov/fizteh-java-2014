@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.junit.actions;
 
-import ru.fizteh.fivt.students.torunova.junit.Database;
+import ru.fizteh.fivt.students.torunova.junit.CurrentTable;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
 
@@ -11,14 +11,14 @@ import java.io.IOException;
  */
 public class Commit extends Action {
     @Override
-    public boolean run(String[] args, Database db)
+    public boolean run(String[] args, CurrentTable currentTable)
             throws IOException, IncorrectFileException, TableNotCreatedException {
         if (checkNumberOfArguments(0, args.length)) {
-            if (db.currentTable == null) {
+            if (currentTable.get() == null) {
                 System.err.println("no table");
                 return false;
             }
-            System.out.println(db.currentTable.commit());
+            System.out.println(currentTable.get().commit());
             return true;
         }
         return false;
