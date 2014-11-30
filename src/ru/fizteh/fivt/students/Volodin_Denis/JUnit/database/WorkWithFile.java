@@ -6,13 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class WorkWithFile {
-
+    
     public static void createDirectory(final String path) throws IOException {
         Files.createDirectory(Paths.get(path));
-    }
-
-    public static boolean createDirectory(final String path, final String secondPath) {
-        return Paths.get(path, secondPath).normalize().toFile().mkdir();
     }
 
     public static boolean delete(final String path, final String secondPath) {
@@ -38,13 +34,13 @@ public class WorkWithFile {
     public static String getFileName(final String path) {
         return Paths.get(path).toAbsolutePath().normalize().getFileName().toString();
     }
-
-    public static String getFileName(final String path, final String secondPath) {
-        return Paths.get(path, secondPath).normalize().getFileName().toString();
-    }
     
     public static String getParentName(final String path) {
         return Paths.get(path).normalize().getParent().getFileName().toString();
+    }
+    
+    public static String getFileName(final String path, final String secondPath) {
+        return Paths.get(path, secondPath).normalize().getFileName().toString();
     }
     
     public static boolean isDirectory(final String path) {
@@ -53,6 +49,10 @@ public class WorkWithFile {
     
     public static boolean isDirectory(final String path, final String secondPath) {
         return Paths.get(path, secondPath).toAbsolutePath().normalize().toFile().isDirectory();
+    }
+    
+    public static boolean mkdir(final String path, final String secondPath) {
+        return Paths.get(path, secondPath).normalize().toFile().mkdir();
     }
     
     public static String toAbsolutePath(final String path) {

@@ -1,7 +1,6 @@
-package ru.fizteh.fivt.students.Volodin_Denis.JUnit.Tests;
+package ru.fizteh.fivt.students.Volodin_Denis.JUnit.main;
 
 import org.junit.Test;
-import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
 
 public class ErrorFunctionsTest {
 
@@ -12,7 +11,8 @@ public class ErrorFunctionsTest {
     @Test(expected = Exception.class)
     public void testErrorFunctionsClass() throws Exception {
         ErrorFunctions error = new ErrorFunctions();
-        error.nameIsNull(name, string); }
+        error.nameIsNull(name, string);
+    }
 
     @Test(expected = Exception.class)
     public void testErrorRead() throws Exception {

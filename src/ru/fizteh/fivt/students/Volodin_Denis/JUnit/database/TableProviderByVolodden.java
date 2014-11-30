@@ -15,7 +15,7 @@ public class TableProviderByVolodden implements TableProvider {
     private String dbPath;
     private Set<String> tables;
     
-    public TableProviderByVolodden(String dir) throws Exception {
+    TableProviderByVolodden(String dir) throws Exception {
         dbPath = WorkWithFile.toAbsolutePath(dir);   
         if (!WorkWithFile.exists(dbPath)) {
             WorkWithFile.createDirectory(dbPath);
@@ -52,13 +52,7 @@ public class TableProviderByVolodden implements TableProvider {
                 ErrorFunctions.tableNameIsFile("create", name);
             }
         } else {
-            boolean exists = false;
-            try {
-                exists = WorkWithFile.createDirectory(dbPath, name);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-            if (exists) {
+            if (WorkWithFile.mkdir(dbPath, name)) {
                 try {
                     dbTable = new TableByVolodden(name);
                     tables.add(name);
