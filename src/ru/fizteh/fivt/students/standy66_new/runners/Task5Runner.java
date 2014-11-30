@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.standy66_new.runners;
 import ru.fizteh.fivt.students.standy66_new.Interpreter;
 import ru.fizteh.fivt.students.standy66_new.commands.Command;
 import ru.fizteh.fivt.students.standy66_new.commands.ExitCommand;
-import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.CommandFactory;
+import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.StorageCommandFactory;
 import ru.fizteh.fivt.students.standy66_new.storage.structured.StructuredDatabase;
 import ru.fizteh.fivt.students.standy66_new.storage.structured.StructuredDatabaseFactory;
 import ru.fizteh.fivt.students.standy66_new.storage.structured.commands.ExtendedCommandFactory;
@@ -35,7 +35,7 @@ public class Task5Runner {
             System.exit(-1);
         }
         PrintWriter systemOutWriter = new PrintWriter(System.out);
-        CommandFactory commandFactory = new ExtendedCommandFactory(systemOutWriter, provider);
+        StorageCommandFactory commandFactory = new ExtendedCommandFactory(systemOutWriter, provider);
         Map<String, Command> availableCommands = commandFactory.getCommandsMap();
         availableCommands.put("exit", new ExitCommand(systemOutWriter));
         Interpreter interpreter;
