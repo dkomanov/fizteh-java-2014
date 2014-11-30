@@ -45,7 +45,7 @@ public class MultiFileHashMap {
     }
 
     public String put(String key, String value) throws Exception {
-        int mapNum = key.hashCode() % fileMapsAm;
+        int mapNum = Math.abs(key.hashCode() % fileMapsAm);
         if (openedMaps.get(mapNum)) {
             return maps[mapNum].put(key, value);
         } else {
@@ -57,7 +57,7 @@ public class MultiFileHashMap {
     }
 
     public String get(String key) throws Exception {
-        int mapNum = key.hashCode() % fileMapsAm;
+        int mapNum = Math.abs(key.hashCode() % fileMapsAm);
         if (openedMaps.get(mapNum)) {
             return maps[mapNum].get(key);
         } else {
@@ -69,7 +69,7 @@ public class MultiFileHashMap {
     }
 
     public String remove(String key) throws Exception {
-        int mapNum = key.hashCode() % fileMapsAm;
+        int mapNum = Math.abs(key.hashCode() % fileMapsAm);
         if (openedMaps.get(mapNum)) {
             return maps[mapNum].remove(key);
         } else {

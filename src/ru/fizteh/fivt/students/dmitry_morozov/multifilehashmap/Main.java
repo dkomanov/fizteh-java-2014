@@ -17,6 +17,7 @@ public class Main {
     private static String curTname = "";
     private static MultiFileHashMap currentDB = null;
     private static FileMap maps = null;
+    private static FileMap count = null;
 
     public static String use(String tablename) throws Exception {
         String toParse = maps.get(tablename);
@@ -43,6 +44,7 @@ public class Main {
             return tablename + " exists";
         } else {
             maps.put(tablename, dirPath + "/" + tablename);
+            count.put(tablename, "0");
             File dir = new File(dirPath + "/" + tablename);
             dir.mkdirs();
             return "created";
@@ -53,9 +55,9 @@ public class Main {
                                                          // throw anything.
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        maps.list(pw);
+        count.fullList(pw);
         String tablenames = sw.toString();
-        String[] tnames = tablenames.split(", ");
+        String[] tnames = tablenames.split("\n");
         for (String str : tnames) {
             System.out.println(str);
         }
@@ -104,6 +106,7 @@ public class Main {
                 System.err.println("deleting table from disk failed");
             } else {
                 maps.remove(tablename);
+                count.remove(tablename);  
                 res = "dropped";
             }
             if (tablename.equals(curTname)) {
@@ -140,8 +143,13 @@ public class Main {
             if (bIndex + 3 > eIndex) {
                 System.out.println("Not enough parametres for put");
             } else {
-                System.out.println(currentDB.put(comAndParams[bIndex + 1],
-                        comAndParams[bIndex + 2]));
+                String fRes = currentDB.put(comAndParams[bIndex + 1],
+                        comAndParams[bIndex + 2]);
+                if (fRes.startsWith("new")) {
+                    int cnt = Integer.valueOf(count.clearGet(curTname));
+                    count.put(curTname, cnt + 1 + "");
+                }
+                System.out.println(fRes);
             }
         } else if (com.equals("remove")) {
             if (currentDB == null) {
@@ -151,7 +159,12 @@ public class Main {
             if (bIndex + 2 > eIndex) {
                 System.out.println("Not enough parametres for remove");
             } else {
-                System.out.println(currentDB.remove(comAndParams[bIndex + 1]));
+                String fRes = currentDB.remove(comAndParams[bIndex + 1]);
+                if (fRes.startsWith("removed")) {
+                    int cnt = Integer.valueOf(count.clearGet(curTname));
+                    count.put(curTname, cnt - 1 + "");
+                }
+                System.out.println(fRes);
             }
         } else if (com.equals("get")) {
             if (currentDB == null) {
@@ -237,7 +250,7 @@ public class Main {
         }
         String[] commands = currentLine.split(";");
         try {
-            FileMap fm = new FileMap(path);
+//            MultiFileHashMap fm = new MultiFileHashMap(path);
             boolean exitCode = true;
             for (int i = 0; i < commands.length; i++) {
                 if (commands[i].length() > 0) {
@@ -247,13 +260,20 @@ public class Main {
                     }
                 }
             }
-            if (exitCode) {
-                fm.exit();
-            }
-            System.exit(0);
+//            if (exitCode) {
+//                fm.exit();
+//            }
+            
+//            System.exit(0);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             System.exit(2);
+        } finally {
+            maps.exit();
+            count.exit();
+        }
+        if (currentDB != null) {
+            currentDB.exit();
         }
         System.exit(0);
     }
@@ -273,6 +293,7 @@ public class Main {
         }
         try {
             maps = new FileMap(dirPath + "/tables_info.dat");
+            count = new FileMap(dirPath + "/tables_cnt.dat");
         } catch (Exception e) {
             System.err.println("I caught it!");
             e.printStackTrace();
@@ -301,6 +322,7 @@ public class Main {
         } finally {
             in.close();
             maps.exit();
+            count.exit();
         }
     }
 }

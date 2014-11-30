@@ -99,6 +99,10 @@ public class FileMap {
         }
         return res;
     }
+    
+    public String clearGet(String key) {
+        return table.get(key);
+    }
 
     public void list(PrintWriter pw) {
         Set<Entry<String, String>> tableSet = table.entrySet();
@@ -112,6 +116,24 @@ public class FileMap {
                 checkLast.next();
             } else {
                 pw.print(i.getKey());
+            }
+        }
+        // pw.println();
+        pw.flush();
+    }
+    
+    public void fullList (PrintWriter pw) {
+        Set<Entry<String, String>> tableSet = table.entrySet();
+        Iterator<Entry<String, String>> checkLast = tableSet.iterator();
+        if (checkLast.hasNext()) {
+            checkLast.next();
+        }
+        for (Entry<String, String> i : tableSet) {
+            if (checkLast.hasNext()) {
+                pw.println(i.getKey() + " " + i.getValue());
+                checkLast.next();
+            } else {
+                pw.print(i.getKey() + " " + i.getValue());
             }
         }
         // pw.println();
