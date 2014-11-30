@@ -73,6 +73,7 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
             }
         }
         if (tables.get(name) == null) {
+            providerLock.readLock().unlock();
             return null;
         }
         Table retValue = tables.get(name).getMultiTable();
@@ -92,6 +93,7 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
         for (int i = 0; i < columnTypes.size(); ++i) {
             typeList[i] = columnTypes.get(i);
         }
+        providerLock.writeLock().lock();
         try {
             if (!addTable(name, typeList)) {
                 return null;
@@ -103,6 +105,8 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
             if (e.getMessage().substring(0, 5).equals("Can't")) {
                 throw new IllegalArgumentException();
             }
+        } finally {
+            providerLock.writeLock().unlock();
         }
         return null;
     }
@@ -118,10 +122,13 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
         if (tables.get(name) == null) {
             throw new IllegalStateException();
         }
+        providerLock.writeLock().lock();
         try {
             oldRemoveTable(name);
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        } finally {
+            providerLock.writeLock().unlock();
         }
     }
 
@@ -135,6 +142,7 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
         if (closedTables.contains(name) || tables.get(name) == null) {
             throw new IllegalStateException();
         } else {
+            providerLock.writeLock().lock();
             try {
                 if (workingTable != null) {
                     SharedMyTable currentTable = tables.get(workingTable);
@@ -148,12 +156,15 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
                 setWorkingTable(name);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
+            } finally {
+                providerLock.writeLock().unlock();
             }
         }
     }
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
+        providerLock.readLock().lock();
         if (isClosed) {
             throw new IllegalStateException();
         }
@@ -161,6 +172,7 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
         for (int i = 0; i < typeList.length; ++i) {
             typeList[i] = table.getColumnType(i);
         }
+        providerLock.readLock().unlock();
         return StoreableParser.stringToStoreable(value, typeList);
     }
 

@@ -1,15 +1,19 @@
 package ru.fizteh.fivt.students.VasilevKirill.proxy.tests;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
-import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.MyTableProviderFactory;
+import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTableProviderFactory;
+
+import java.io.File;
 
 import static org.junit.Assert.assertTrue;
 
 public class TableProviderFactoryTest {
     private static TableProviderFactory factory;
 
-    static {
+    @BeforeClass
+    public static void beforeClass() {
         factory = new MyTableProviderFactory();
     }
 
@@ -19,6 +23,24 @@ public class TableProviderFactoryTest {
             factory.create(null);
             assertTrue(false);
         } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testClose() throws Exception {
+        TableProviderFactory factory2 = new MyTableProviderFactory();
+        try {
+            factory2.create(new File("").getCanonicalPath());
+            assertTrue(true);
+        } catch (IllegalStateException e) {
+            assertTrue(false);
+        }
+        ((MyTableProviderFactory) factory2).close();
+        try {
+            factory2.create(new File("").getCanonicalPath());
+            assertTrue(false);
+        } catch (IllegalStateException e) {
             assertTrue(true);
         }
     }
