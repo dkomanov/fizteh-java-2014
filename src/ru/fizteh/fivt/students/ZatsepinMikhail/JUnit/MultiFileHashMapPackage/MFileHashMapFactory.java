@@ -30,10 +30,11 @@ public class MFileHashMapFactory implements TableProviderFactory {
             }
         }
 
-        MFileHashMap myMFileHashMap = new MFileHashMap(dataBaseDirectory.toString());
-        if (!myMFileHashMap.init()) {
+        try {
+            MFileHashMap myMFileHashMap = new MFileHashMap(dataBaseDirectory.toString());
+            return myMFileHashMap;
+        } catch (IOException e) {
             throw new IllegalArgumentException();
         }
-        return myMFileHashMap;
     }
 }
