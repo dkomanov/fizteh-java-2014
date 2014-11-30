@@ -1,12 +1,13 @@
 package ru.fizteh.fivt.students.VasilevKirill.proxy.tests;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.VasilevKirill.Storeable.MyStorable;
-import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.MyTableProviderFactory;
+import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyStorable;
+import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTableProviderFactory;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTable;
 
 import java.io.File;
@@ -31,14 +32,27 @@ public class MyTableTest {
             typeList.add(Integer.class);
             typeList.add(String.class);
             multiMap.createTable("First", typeList);
+            multiMap.createTable("Second", typeList);
+            multiMap.createTable("Third", typeList);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         } catch (Exception e) {
             if (e.getMessage().equals("")) {
-                System.out.println(e);
+                System.err.println(e);
             } else {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
             }
+        }
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        try {
+            multiMap.removeTable("First");
+            multiMap.removeTable("Second");
+            multiMap.removeTable("Third");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
     }
 
@@ -109,7 +123,7 @@ public class MyTableTest {
 
     @Test
     public void testRollback() throws Exception {
-        Table table = multiMap.getTable("First");
+        Table table = multiMap.getTable("Second");
         Storeable input = new MyStorable(typeList);
         input.setColumnAt(0, 1);
         input.setColumnAt(1, "one");
@@ -117,11 +131,7 @@ public class MyTableTest {
         input.setColumnAt(0, 2);
         input.setColumnAt(1, "two");
         table.put("key2", input);
-        table.commit();
         assertEquals(2, table.rollback());
-        table.remove("key1");
-        table.remove("key2");
-        table.commit();
     }
 
     @Test
@@ -142,9 +152,9 @@ public class MyTableTest {
         assertEquals(Integer.class, table.getColumnType(0));
     }
 
-    /*@Test
+    @Test
     public void testClose() throws Exception {
-        Table table = multiMap.getTable("First");
+        Table table = multiMap.getTable("Third");
         assertNotNull(table);
         try {
             table.get("key");
@@ -163,5 +173,5 @@ public class MyTableTest {
         } catch (IllegalStateException e) {
             assertTrue(true);
         }
-    }*/
+    }
 }

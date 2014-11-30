@@ -103,6 +103,10 @@ public class SharedMyTable implements Table {
         return threadLocal.get().getColumnType(columnIndex);
     }
 
+    public void close() {
+        threadLocal.get().close();
+    }
+
     public MyTable getMultiTable() {
         return threadLocal.get();
     }

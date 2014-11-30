@@ -27,6 +27,7 @@ public class MyTable implements Table, AutoCloseable {
     private int numUnsavedChanges;
     private MyTableProvider myTableProvider;
     private Class[] typeList;
+    private boolean isClosed = false;
 
     public MyTable(File tableDirectory, MyTableProvider myTableProvider, Class[] typeList) throws IOException {
         this.myTableProvider = myTableProvider;
@@ -71,11 +72,17 @@ public class MyTable implements Table, AutoCloseable {
 
     @Override
     public String getName() {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         return tableDirectory.getName();
     }
 
     @Override
     public Storeable get(String key) throws IllegalArgumentException {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         if (key == null) {
             throw new IllegalArgumentException();
         }
@@ -84,6 +91,9 @@ public class MyTable implements Table, AutoCloseable {
 
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         }
@@ -95,6 +105,9 @@ public class MyTable implements Table, AutoCloseable {
 
     @Override
     public Storeable remove(String key) {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         if (key == null) {
             throw new IllegalArgumentException();
         }
@@ -109,11 +122,17 @@ public class MyTable implements Table, AutoCloseable {
 
     @Override
     public int size() {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         return data.size();
     }
 
     @Override
     public int commit() {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         int number = 0;
         try {
             PrintStream oldOutput = System.out;
@@ -158,6 +177,9 @@ public class MyTable implements Table, AutoCloseable {
 
     @Override
     public int rollback() {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         int numChanges = 0;
         for (Map.Entry pair : data.entrySet()) {
             if (!oldData.containsKey(pair.getKey())) {
@@ -179,57 +201,21 @@ public class MyTable implements Table, AutoCloseable {
         }
         data = oldData;
         return numChanges;
-        /*int numChanges = 0;
-        try {
-            PrintStream oldOutput = System.out;
-            PrintStream newOutput = new PrintStream(new OutputStream() {
-                @Override
-                public void write(int b) throws IOException {
-                }
-            });
-            System.setOut(newOutput);
-            for (Map.Entry pair : prevCommitData.entrySet()) {
-                Storeable value = data.get(pair.getKey());
-                if (value == null) {
-                    numChanges++;
-                    JSONArray inputValue = new JSONArray(((MyStorable) pair.getValue()).dataToList());
-                    String[] args = {"put", (String) pair.getKey(),  inputValue.toString() };
-                    handle(args);
-                }
-            }
-            for (Map.Entry pair : data.entrySet()) {
-                Storeable value = prevCommitData.get(pair.getKey());
-                if (value == null) {
-                    numChanges++;
-                    String[] args = {"remove", (String) pair.getKey()};
-                    handle(args);
-                }
-            }
-            newOutput.close();
-            System.setOut(oldOutput);
-            oldData = prevCommitData;
-            data = prevCommitData;
-            numUnsavedChanges = 0;
-
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } catch (Exception e) {
-            if (e.getMessage().equals("")) {
-                System.out.println(e);
-            } else {
-                System.out.println(e.getMessage());
-            }
-        }
-        return numChanges;*/
     }
 
     @Override
     public int getColumnsCount() {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         return typeList.length;
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         if (columnIndex < 0 || columnIndex >= typeList.length) {
             throw new IndexOutOfBoundsException("MultiTable: incorrect index");
         }
@@ -237,6 +223,9 @@ public class MyTable implements Table, AutoCloseable {
     }
 
     public List<String> list() {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         try {
             Map<String, Storeable> keyMap = getUpdatedData();
             List<String> retList = new ArrayList<>();
@@ -447,8 +436,9 @@ public class MyTable implements Table, AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         rollback();
         myTableProvider.setTableClosed(getName());
+        isClosed = true;
     }
 }
