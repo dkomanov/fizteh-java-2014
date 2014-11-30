@@ -32,8 +32,8 @@ public class MultiFileHashMap {
             }
         }
 
-        tables = new HashMap<String, FileMap>();
-        multiFileHashMapCommands = new HashMap<String, Command>();
+        tables = new HashMap<>();
+        multiFileHashMapCommands = new HashMap<>();
         multiFileHashMapCommands.put("create", new CreateCommand());
         multiFileHashMapCommands.put("drop", new DropCommand());
         multiFileHashMapCommands.put("exit", new ExitCommand());
@@ -44,10 +44,9 @@ public class MultiFileHashMap {
         multiFileHashMapCommands.put("show", new ShowCommand());
         multiFileHashMapCommands.put("use", new UseCommand());
         String[] tableNames = new File(dbDir).list();
-        for (String s : tableNames) {
-            Path tableName = Paths.get(dbDir).resolve(s);
-            if (Files.isDirectory(tableName)) {
-                tables.put(s, new FileMap(tableName.toString()));
+        for (String tableName : tableNames) {
+            if (Files.isDirectory(Paths.get(dbDir).resolve(tableName))) {
+                tables.put(tableName, new FileMap(dbDir, tableName));
             }
         }
 
