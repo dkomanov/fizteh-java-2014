@@ -18,6 +18,7 @@ public class Shell {
     private Map<String, Action> commands;
     private Scanner scanner;
     private Database db;
+    private CurrentTable currentTable;
     private boolean interactive;
 
     public Shell(Set<Action> cmds, InputStream is, String dbfile, boolean isInteractive) {
@@ -30,7 +31,10 @@ public class Shell {
             db = new Database(dbfile);
         } catch (IncorrectDbNameException e) {
             System.err.println("Caught IncorrectDbNameException: " + e.getMessage());
-            abort();
+            if (e.getMessage().equals("Name of database not specified.")) {
+                System.err.println("Please,specify it via -Dfizteh.db.dir");
+            }
+                abort();
         } catch (IOException e1) {
             System.err.println("Caught IOException: " + e1.getMessage());
             abort();
@@ -48,6 +52,7 @@ public class Shell {
             System.err.println(e4.getMessage());
         }
         interactive = isInteractive;
+        currentTable = new CurrentTable(db);
     }
 
     public void run() {
@@ -60,8 +65,8 @@ public class Shell {
             try {
                 nextCommand = scanner.nextLine();
             } catch (NoSuchElementException e) {
-                if (db.currentTable != null) {
-                    db.currentTable.commit();
+                if (currentTable.get() != null) {
+                    currentTable.get().commit();
                 }
                 return;
             }
@@ -74,7 +79,7 @@ public class Shell {
                 if (commands.containsKey(name)) {
                     boolean res = false;
                     try {
-                         res = commands.get(name).run(args, db);
+                         res = commands.get(name).run(args, currentTable);
                     } catch (IOException e) {
                         System.err.println("Caught IOException: " + e.getMessage());
                         if (!interactive || name.equals("exit")) {
@@ -102,8 +107,8 @@ public class Shell {
                         }
                     }
                     if (!interactive && !res) {
-                        if (db.currentTable != null) {
-                            db.currentTable.commit();
+                        if (currentTable.get() != null) {
+                            currentTable.get().commit();
                         }
                         System.exit(1);
                     } else if (!res) {
@@ -112,8 +117,8 @@ public class Shell {
                 } else if (!Pattern.matches("\\s*", name)) {
                     System.err.println("Command not found.");
                     if (!interactive) {
-                        if (db.currentTable != null) {
-                            db.currentTable.commit();
+                        if (currentTable.get() != null) {
+                            currentTable.get().commit();
                         }
                             System.exit(1);
 

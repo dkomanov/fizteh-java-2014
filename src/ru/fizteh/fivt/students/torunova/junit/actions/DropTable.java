@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.junit.actions;
 
-import ru.fizteh.fivt.students.torunova.junit.Database;
+import ru.fizteh.fivt.students.torunova.junit.CurrentTable;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 
 import java.io.IOException;
@@ -10,15 +10,20 @@ import java.io.IOException;
  */
 public class DropTable extends Action {
     @Override
-    public boolean run(String[] args, Database db) throws IOException, IncorrectFileException {
+    public boolean run(String[] args, CurrentTable currentTable) throws IOException, IncorrectFileException {
         if (!checkNumberOfArguments(1, args.length)) {
             return false;
         }
         try {
-            db.removeTable(args[0]);
+            currentTable.getDb().removeTable(args[0]);
         } catch (IllegalStateException e) {
             System.err.println(e.getMessage());
             return false;
+        }
+        if (currentTable.get() != null) {
+            if (currentTable.get().getName().equals(args[0])) {
+                currentTable.reset();
+            }
         }
         System.out.println("dropped");
         return true;

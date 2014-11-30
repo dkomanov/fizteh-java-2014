@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.torunova.junit.actions;
 
-import ru.fizteh.fivt.students.torunova.junit.Database;
-import ru.fizteh.fivt.students.torunova.junit.Table;
+import ru.fizteh.fivt.students.torunova.junit.CurrentTable;
+import ru.fizteh.fivt.students.torunova.junit.TableImpl;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
 
@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class CreateTable extends Action{
     @Override
-    public boolean run(String[] args, Database db)
+    public boolean run(String[] args, CurrentTable currentTable)
                                 throws IOException,
                                 IncorrectFileException,
                                 TableNotCreatedException {
@@ -20,9 +20,9 @@ public class CreateTable extends Action{
             return false;
         }
         String tableName = args[0];
-        Table table = null;
+        TableImpl table = null;
         try {
-            table = (Table) db.createTable(tableName);
+            table = (TableImpl) currentTable.getDb().createTable(tableName);
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
             return false;

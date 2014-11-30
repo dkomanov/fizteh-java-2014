@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.students.torunova.junit.Table;
+import ru.fizteh.fivt.students.torunova.junit.TableImpl;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,13 +14,13 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class TableTest {
-    Table testTable;
+    TableImpl testTable;
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     @Before
     public void setUp() throws Exception {
         File testDirectory = folder.newFolder("table");
-        testTable = new Table(testDirectory.getAbsolutePath());
+        testTable = new TableImpl(testDirectory.getAbsolutePath());
     }
 
     @Test
