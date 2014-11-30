@@ -34,19 +34,19 @@ public class Utils {
         return path.normalize().toFile();
     }
 
-    public static void recursiveRemove(File removed) throws Exception {
+    public static void delete(File file) throws TableException {
+        if (!file.delete()) {
+            throw new TableException(file.toString() + ": Can't delete");
+        }
+    }
+
+    public static void rmdirs(File removed) throws Exception {
         if (removed.isDirectory()) {
             for (File object: removed.listFiles()) {
-                recursiveRemove(object);
+                rmdirs(object);
             }
         }
         Utils.delete(removed);
-    }
-
-    public static void delete(File file) throws Exception {
-        if (!file.delete()) {
-            throw new Exception(file.toString() + ": Can't delete");
-        }
     }
 
     public static boolean checkTableLoading() {

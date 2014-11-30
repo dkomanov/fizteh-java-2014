@@ -8,15 +8,16 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class SaveTable {
-    public static void start() throws TableException, IOException, Exception {
+    public static void start() throws TableException, IOException {
         if (!Table.loaded) {
             return;
         }
 
         if (!Table.dir.exists()) {
-            throw new TableException("Database: save: Dir is missed");
+            throw new TableException("save: Dir (" + Table.dir + ") missed");
         }
 
 
@@ -26,16 +27,14 @@ public class SaveTable {
             }
         }
 
-        deleteEmptyDirs();
-
         DataBase.saveInf(Table.dir);
 
-        Table.loaded = false;
+        deleteEmptyDirs();
     }
 
-    private static void saveFile(int dir, int file) throws TableException, IOException, Exception {
-        File dirPath = Utils.makePathAbsolute(Table.dir + "/" + dir + ".dir");
-        File filePath = Utils.makePathAbsolute(dirPath.toString() + "/" + file + ".dat");
+    private static void saveFile(int dir, int file) throws TableException {
+        File dirPath = Paths.get(Table.dir.toString(), dir + ".dir").toFile();
+        File filePath = Paths.get(dirPath.toString(), file + ".dat").toFile();
 
         if (Table.keys[dir][file].isEmpty()) {
             if (filePath.exists()) {
@@ -46,20 +45,26 @@ public class SaveTable {
                 dirPath.mkdir();
             }
             if (!filePath.exists()) {
-                filePath.createNewFile();
+                try {
+                    filePath.createNewFile();
+                } catch (Exception e) {
+                    throw new TableException("save: Error while creating new file");
+                }
+
             }
-            DataOutputStream outStream = new DataOutputStream(new FileOutputStream(filePath));
+            DataOutputStream outStream = null;
             try {
+                outStream = new DataOutputStream(new FileOutputStream(filePath));
                 for (String key : Table.keys[dir][file]) {
-                    if (Table.map.containsKey(key)) {
-                        writeBytes(outStream, key, Table.map.get(key));
-                    }
+                    writeBytes(outStream, key, Table.map.get(key));
                 }
             } catch (Exception e) {
-                throw new TableException("save: Error while writing the file");
+                throw new TableException("save: Error while writing into the file");
             } finally {
                 try {
-                    outStream.close();
+                    if (outStream != null) {
+                        outStream.close();
+                    }
                 } catch (Exception e) {
                     throw new TableException("save: Error while closing the file");
                 }
@@ -77,9 +82,9 @@ public class SaveTable {
         outStream.flush();
     }
 
-    private static void deleteEmptyDirs() throws Exception {
+    private static void deleteEmptyDirs() throws TableException {
         for (int dir = 0; dir < 16; dir++) {
-            File dirPath = Utils.makePathAbsolute(Table.dir + "/" + dir + ".dir");
+            File dirPath = Paths.get(Table.dir.toString(), dir + ".dir").toFile();
             if (dirPath.exists() && dirPath.list().length == 0) {
                 Utils.delete(dirPath);
             }

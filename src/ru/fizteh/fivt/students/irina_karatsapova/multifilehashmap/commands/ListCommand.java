@@ -2,11 +2,8 @@ package ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.commands;
 
 import ru.fizteh.fivt.students.irina_karatsapova.multifilehashmap.table.Table;
 
-import java.util.List;
-
 public class ListCommand implements Command {
     public void execute(String[] args) throws Exception {
-        List<String>[][] keys = Table.keys;
         String allKeys = "";
         for (int dir = 0; dir < 16; dir++) {
             for (int file = 0; file < 16; file++) {

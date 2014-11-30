@@ -19,6 +19,13 @@ public class Table {
         Table.keys[dir][file].add(key);
     }
 
+    public static void deleteKey(String key) {
+        byte keyHash = key.getBytes()[0];
+        int dir = keyHash % 16;
+        int file = keyHash / 16 % 16;
+        keys[dir][file].remove(key);
+    }
+
     public static int countValues() {
         int keysNumber = 0;
         for (int dir = 0; dir < 16; dir++) {

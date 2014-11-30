@@ -14,6 +14,7 @@ public class RemoveCommand implements Command {
             System.out.println("not found");
         } else {
             Table.map.remove(key);
+            Table.deleteKey(key);
             DataBase.decreaseValuesNumber(Table.dir.getName());
             System.out.println("removed");
         }

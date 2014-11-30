@@ -12,7 +12,7 @@ public class DropCommand implements Command {
         String tableName = args[1];
         File removingTable = Utils.makePathAbsolute(tableName);
         if (removingTable.exists()) {
-            Utils.recursiveRemove(removingTable);
+            Utils.rmdirs(removingTable);
             DataBase.tables.remove(tableName);
             System.out.println("dropped");
         } else {
