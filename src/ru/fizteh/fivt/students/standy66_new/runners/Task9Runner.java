@@ -9,9 +9,11 @@ import ru.fizteh.fivt.students.standy66_new.server.commands.ServerCommandFactory
 import ru.fizteh.fivt.students.standy66_new.server.http.HttpDbServer;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,13 +22,15 @@ import java.util.stream.Stream;
  *         Created by andrew on 30.11.14.
  */
 public class Task9Runner {
-    public static void main(String... args) {
+    public static void main(String... args) throws Exception {
         String dbDir = System.getProperty("fizteh.db.dir");
         if (dbDir == null) {
             System.err.println("No dir specified, use -Dfizteh.db.dir=...");
             System.exit(1);
         }
-        DbServer httpServer = new HttpDbServer(new InetSocketAddress(8008));
+        Random r = new Random();
+        DbServer httpServer = new HttpDbServer(new InetSocketAddress(r.nextInt(65535)), new File(dbDir));
+        httpServer.start();
         //TODO: generalize this approach
         PrintWriter systemOutWriter = new PrintWriter(System.out, true);
         CommandFactory serverCommandFactory = new ServerCommandFactory(systemOutWriter, httpServer, null);

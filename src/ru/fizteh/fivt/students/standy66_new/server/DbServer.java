@@ -6,6 +6,5 @@ package ru.fizteh.fivt.students.standy66_new.server;
  */
 public interface DbServer {
     void start() throws Exception;
-
     void stop() throws Exception;
 }

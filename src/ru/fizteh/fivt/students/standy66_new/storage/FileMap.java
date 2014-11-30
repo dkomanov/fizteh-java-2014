@@ -19,7 +19,7 @@ public class FileMap implements AutoCloseable {
     private static final String CHARSET_NAME = "UTF-8";
     private File mapFile;
     private Map<String, String> synchronizedCache;
-    private ThreadLocal<Transaction> localDiff;
+    private ThreadLocal<Diff> localDiff;
 
     public FileMap(File mapFile) throws IOException {
         if (mapFile == null) {
@@ -29,10 +29,10 @@ public class FileMap implements AutoCloseable {
 
         synchronizedCache = Collections.synchronizedMap(new HashMap<>());
 
-        localDiff = new ThreadLocal<Transaction>() {
+        localDiff = new ThreadLocal<Diff>() {
             @Override
-            protected Transaction initialValue() {
-                return new Transaction(synchronizedCache);
+            protected Diff initialValue() {
+                return new Diff(synchronizedCache);
             }
         };
 
@@ -151,84 +151,4 @@ public class FileMap implements AutoCloseable {
         }
     }
 
-    private static final class Transaction {
-        private final Map<String, String> base;
-        private final Map<String, String> chaged = new HashMap<>();
-        private final Set<String> deleted = new HashSet<>();
-
-        public Transaction(Map<String, String> base) {
-            this.base = base;
-        }
-
-        public void apply() {
-            synchronized (base) {
-                for (Map.Entry<String, String> entry : chaged.entrySet()) {
-                    base.put(entry.getKey(), entry.getValue());
-                }
-                for (String key : deleted) {
-                    base.remove(key);
-                }
-            }
-            chaged.clear();
-            deleted.clear();
-        }
-
-        public void clear() {
-            chaged.clear();
-            deleted.clear();
-        }
-
-        public String put(String key, String value) {
-            String returnValue = get(key);
-
-            if (deleted.contains(key)) {
-                deleted.remove(key);
-            }
-            chaged.put(key, value);
-
-            return returnValue;
-        }
-
-        public String remove(String key) {
-            String returnValue = get(key);
-
-            chaged.remove(key);
-            if (!deleted.contains(key)) {
-                deleted.add(key);
-            }
-            return returnValue;
-        }
-
-        public int diffSize() {
-            return chaged.size() + deleted.size();
-        }
-
-        public int size() {
-            return keySet().size();
-        }
-
-        public Set<String> keySet() {
-            Set<String> baseSet;
-            synchronized (base) {
-                baseSet = new HashSet<>(base.keySet());
-            }
-            for (String key : chaged.keySet()) {
-                baseSet.add(key);
-            }
-            for (String key : deleted) {
-                baseSet.remove(key);
-            }
-            return baseSet;
-        }
-
-        public String get(String key) {
-            if (deleted.contains(key)) {
-                return null;
-            }
-            if (chaged.containsKey(key)) {
-                return chaged.get(key);
-            }
-            return base.get(key);
-        }
-    }
 }
