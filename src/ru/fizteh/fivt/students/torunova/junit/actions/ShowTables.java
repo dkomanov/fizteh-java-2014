@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.junit.actions;
 
-import ru.fizteh.fivt.students.torunova.junit.Database;
+import ru.fizteh.fivt.students.torunova.junit.CurrentTable;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
 
@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class ShowTables extends Action {
     @Override
-    public boolean run(String[] args, Database db)
+    public boolean run(String[] args, CurrentTable currentTable)
                                throws IOException,
                                IncorrectFileException,
                                TableNotCreatedException {
@@ -27,7 +27,7 @@ public class ShowTables extends Action {
             return false;
         } else {
             System.out.println("table_name row_count");
-            Map<String, Integer> tables = db.showTables();
+            Map<String, Integer> tables = currentTable.getDb().showTables();
             tables.forEach((tableName, rowCount)->System.out.println(tableName + " " + rowCount));
             return true;
         }

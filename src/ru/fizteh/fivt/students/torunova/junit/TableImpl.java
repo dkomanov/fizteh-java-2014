@@ -10,18 +10,20 @@ import java.util.regex.Pattern;
 /**
  * Created by nastya on 19.10.14.
  */
-public class Table implements ru.fizteh.fivt.storage.strings.Table{
+public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
     private static final int NUMBER_OF_PARTITIONS = 16;
+    private static final String DIRECTORY_PATTERN = "([0-9]|1[0-5])\\.dir";
+    private static final String FILE_PATTERN = "([0-9]|1[0-5])\\.dat";
     String tableName;
     Map<File, FileMap> files = new HashMap<>();
     int numberOfEntries;
 
     @Override
     public boolean equals(Object t) {
-        if (!(t instanceof Table)) {
+        if (!(t instanceof TableImpl)) {
             return false;
         }
-        Table table = (Table) t;
+        TableImpl table = (TableImpl) t;
         return tableName.equals(table.tableName)
                 && files.equals(table.files)
                 && numberOfEntries == table.numberOfEntries;
@@ -32,7 +34,7 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         return tableName.hashCode();
     }
 
-    public Table(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
+    public TableImpl(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
         File table = new File(newTableName).getAbsoluteFile();
         if (!table.exists()) {
             if (!table.mkdirs()) {
@@ -44,14 +46,14 @@ public class Table implements ru.fizteh.fivt.storage.strings.Table{
         File[] filesOfDir;
         if (tableFiles != null) {
             for (File nextDir : tableFiles) {
-                if (!(Pattern.matches("([0-9]|1[0-5])\\.dir", nextDir.getName()) && nextDir.isDirectory())) {
+                if (!(Pattern.matches(DIRECTORY_PATTERN, nextDir.getName()) && nextDir.isDirectory())) {
                     throw new TableNotCreatedException("Table " + getName()
                             + " contains illegal files: " + nextDir.getAbsolutePath());
                 }
                 filesOfDir = nextDir.listFiles();
                 if (filesOfDir != null) {
                     for (File nextFile : filesOfDir) {
-                        if (!(Pattern.matches("([0-9]|1[0-5])\\.dat", nextFile.getName()) && nextFile.isFile())) {
+                        if (!(Pattern.matches(FILE_PATTERN, nextFile.getName()) && nextFile.isFile())) {
                             throw new TableNotCreatedException("Table " + getName()
                                     + " contains illegal files: " + nextFile.getAbsolutePath());
                         }

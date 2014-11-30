@@ -1,22 +1,22 @@
 package ru.fizteh.fivt.students.torunova.junit.actions;
 
-import ru.fizteh.fivt.students.torunova.junit.Database;
+import ru.fizteh.fivt.students.torunova.junit.CurrentTable;
 
 /**
  * Created by nastya on 21.10.14.
  */
 public class Remove extends Action {
     @Override
-    public boolean run(String[] args, Database db) {
+    public boolean run(String[] args, CurrentTable currentTable) {
         if (!checkNumberOfArguments(1, args.length)) {
             return false;
         }
-        if (db.currentTable == null) {
+        if (currentTable.get() == null) {
             System.out.println("no table");
             return false;
         }
-        String result = db.currentTable.get(args[0]);
-        db.currentTable.remove(args[0]);
+        String result = currentTable.get().get(args[0]);
+        currentTable.get().remove(args[0]);
         if (result != null) {
             System.out.println("removed");
         } else {

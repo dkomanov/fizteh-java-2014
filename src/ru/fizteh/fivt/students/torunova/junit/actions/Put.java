@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.junit.actions;
 
-import ru.fizteh.fivt.students.torunova.junit.Database;
+import ru.fizteh.fivt.students.torunova.junit.CurrentTable;
 import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
 
 import java.io.IOException;
@@ -10,15 +10,15 @@ import java.io.IOException;
  */
 public class Put extends Action {
     @Override
-    public boolean run(String[] args, Database db) throws IOException, IncorrectFileException {
+    public boolean run(String[] args, CurrentTable currentTable) throws IOException, IncorrectFileException {
         if (!checkNumberOfArguments(2, args.length)) {
             return false;
         }
-        if (db.currentTable == null) {
+        if (currentTable.get() == null) {
             System.out.println("no table");
             return false;
         }
-        String oldValue = db.currentTable.put(args[0], args[1]);
+        String oldValue = currentTable.get().put(args[0], args[1]);
         if (oldValue == null) {
             System.out.println("new");
         } else {

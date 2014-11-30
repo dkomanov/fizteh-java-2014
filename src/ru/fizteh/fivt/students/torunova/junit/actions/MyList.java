@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.junit.actions;
 
-import ru.fizteh.fivt.students.torunova.junit.Database;
+import ru.fizteh.fivt.students.torunova.junit.CurrentTable;
 
 import java.util.List;
 
@@ -9,15 +9,15 @@ import java.util.List;
  */
 public class MyList extends Action {
     @Override
-    public boolean run(String[] args, Database db) {
+    public boolean run(String[] args, CurrentTable currentTable) {
         if (!checkNumberOfArguments(0, args.length)) {
             return false;
         }
-        if (db.currentTable == null) {
+        if (currentTable.get() == null) {
             System.out.println("no table");
             return false;
         }
-        List<String> keys = db.currentTable.list();
+        List<String> keys = currentTable.get().list();
         String result = String.join(", ", keys);
         System.out.println(result);
         return true;

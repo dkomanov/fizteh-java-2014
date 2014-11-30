@@ -10,6 +10,7 @@ import java.util.Set;
  */
 
 public class Main {
+    private static final String DATABASE_DIRECTORY = "fizteh.db.dir";
     public static void main(String[] args) {
         Set<Action> actions = new HashSet<>();
         actions.add(new Put());
@@ -25,11 +26,14 @@ public class Main {
         actions.add(new Exit());
         actions.add(new Size());
         Shell shell;
+        if (System.getProperty(DATABASE_DIRECTORY) == null) {
+            System.err.println("Name of database not specified. Please, specify it via -D" + DATABASE_DIRECTORY);
+        }
         if (args.length > 0) {
             ByteArrayInputStream is = new ByteArrayInputStream(parseCommandsFromArray(args).getBytes());
-            shell = new Shell(actions, is, System.getProperty("fizteh.db.dir"), false);
+            shell = new Shell(actions, is, System.getProperty(DATABASE_DIRECTORY), false);
         } else {
-            shell = new Shell(actions, System.in, System.getProperty("fizteh.db.dir"), true);
+            shell = new Shell(actions, System.in, System.getProperty(DATABASE_DIRECTORY), true);
         }
         shell.run();
     }
