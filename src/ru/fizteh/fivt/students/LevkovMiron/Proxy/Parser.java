@@ -44,7 +44,8 @@ public class Parser {
                 throw new ParseException("not valid String value", 0);
             });
 
-        ArrayList<Class> classes = new ArrayList<>(Arrays.asList(Integer.class, Long.class, Float.class, Double.class, Byte.class, Boolean.class));
+        ArrayList<Class> classes = new ArrayList<>(Arrays.asList(Integer.class, Long.class,
+                Float.class, Double.class, Byte.class, Boolean.class));
 
         for (Class c : classes) {
             writeMap.put(c, new Write() {

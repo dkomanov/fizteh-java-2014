@@ -7,7 +7,6 @@ import ru.fizteh.fivt.students.LevkovMiron.Proxy.LoggingProxyFactory;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 

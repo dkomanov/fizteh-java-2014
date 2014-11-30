@@ -65,7 +65,8 @@ public class CLoggingProxyFactory implements LoggingProxyFactory {
                         Transformer transformer = TransformerFactory.newInstance().newTransformer();
                         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
                         StringWriter stringWriter = new StringWriter();
-                        transformer.transform(new DOMSource(xmlParser.parseObject(result, new IdentityHashMap<>(), document)),
+                        transformer.transform(new DOMSource(xmlParser.parseObject(result,
+                                        new IdentityHashMap<>(), document)),
                                 new StreamResult(stringWriter));
                         res = stringWriter.toString();
                     } else {
