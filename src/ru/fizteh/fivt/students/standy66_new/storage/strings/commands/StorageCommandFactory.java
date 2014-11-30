@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.standy66_new.storage.strings.commands;
 
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.standy66_new.commands.Command;
+import ru.fizteh.fivt.students.standy66_new.commands.CommandFactory;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -10,16 +11,25 @@ import java.util.Map;
 /**
  * Created by astepanov on 20.10.14.
  */
-public class CommandFactory {
+public class StorageCommandFactory implements CommandFactory {
     protected Context context;
     private PrintWriter writer;
 
-    public CommandFactory(PrintWriter writer, TableProvider provider) throws IllegalArgumentException {
+    public StorageCommandFactory(PrintWriter writer, TableProvider provider) throws IllegalArgumentException {
         if (provider == null) {
             throw new IllegalArgumentException("database must not be null");
         }
         this.context = new Context(provider);
         this.writer = writer;
+    }
+
+    @Override
+    public Map<String, Command> getCommandMap(String locale) {
+        if (locale.equals("en-US")) {
+            return getCommandsMap();
+        } else {
+            throw new IllegalArgumentException(locale + " not supported");
+        }
     }
 
     public Map<String, Command> getCommandsMap() {
