@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.parallel.actions;
 
-import ru.fizteh.fivt.students.torunova.parallel.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.parallel.CurrentTable;
 import ru.fizteh.fivt.students.torunova.parallel.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.parallel.exceptions.TableNotCreatedException;
 
@@ -13,13 +13,13 @@ public class Exit extends Action {
 
 
     @Override
-    public boolean run(String[] args, DatabaseWrapper db)
+    public boolean run(String[] args, CurrentTable currentTable)
             throws IOException, IncorrectFileException, TableNotCreatedException {
         if (!checkNumberOfArguments(0, args.length)) {
             return false;
         }
-        if (db.getCurrentTable() != null) {
-            db.getCurrentTable().commit();
+        if (currentTable.get() != null) {
+            currentTable.get().commit();
         }
         System.exit(0);
         return true;

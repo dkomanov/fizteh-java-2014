@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.parallel.actions;
 
-import ru.fizteh.fivt.students.torunova.parallel.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.parallel.CurrentTable;
 import ru.fizteh.fivt.students.torunova.parallel.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.parallel.exceptions.TableNotCreatedException;
 
@@ -11,14 +11,14 @@ import java.io.IOException;
  */
 public class Rollback extends Action {
     @Override
-    public boolean run(String[] args, DatabaseWrapper db)
+    public boolean run(String[] args, CurrentTable currentTable)
             throws IOException, IncorrectFileException, TableNotCreatedException {
         if (checkNumberOfArguments(0, args.length)) {
-            if (db.getCurrentTable() == null) {
+            if (currentTable.get() == null) {
                 System.err.println("no table");
                 return false;
             }
-            System.out.println(db.getCurrentTable().rollback());
+            System.out.println(currentTable.get().rollback());
             return true;
         }
         return false;

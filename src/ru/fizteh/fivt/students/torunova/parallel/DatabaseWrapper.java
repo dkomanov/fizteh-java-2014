@@ -33,17 +33,6 @@ public class DatabaseWrapper implements TableProvider {
     DatabaseWrapper(ru.fizteh.fivt.storage.strings.TableProvider newDb) {
         db = (Database) newDb;
     }
-    public Table getCurrentTable() {
-        if (db.currentTable != null) {
-            readWriteLock.readLock().lock();
-            try {
-                return getTable(db.currentTable.getName());
-            } finally {
-                readWriteLock.readLock().unlock();
-            }
-        }
-        return null;
-    }
 
     @Override
     public int hashCode() {
@@ -62,7 +51,7 @@ public class DatabaseWrapper implements TableProvider {
     public Table getTable(String name) {
         readWriteLock.readLock().lock();
         try {
-            File table = new File(db.dbName, name);
+            File table = new File(db.getDbName(), name);
             File signature = new File(table, SIGNATURE_FILE);
             Scanner scanner;
             try {
@@ -84,12 +73,12 @@ public class DatabaseWrapper implements TableProvider {
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
         readWriteLock.writeLock().lock();
         try {
-            ru.fizteh.fivt.students.torunova.parallel.Table t = db.createTable(name);
+            TableImpl t = db.createTable(name);
             if (t == null) {
                 return null;
             }
             TableWrapper table = new TableWrapper(t, this, columnTypes.toArray(new Class[0]));
-            File tableDir = new File(db.dbName, name);
+            File tableDir = new File(db.getDbName(), name);
             File signature = new File(tableDir, SIGNATURE_FILE);
             signature.createNewFile();
             PrintWriter fos = new PrintWriter(new FileOutputStream(signature));
@@ -224,14 +213,6 @@ public class DatabaseWrapper implements TableProvider {
             return db.showTables();
         } finally {
             readWriteLock.readLock().unlock();
-        }
-    }
-    public boolean useTable(String name) {
-        readWriteLock.writeLock().lock();
-        try {
-            return db.useTable(name);
-        } finally {
-            readWriteLock.writeLock().unlock();
         }
     }
 

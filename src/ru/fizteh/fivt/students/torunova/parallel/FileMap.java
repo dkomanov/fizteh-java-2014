@@ -18,6 +18,7 @@ public class FileMap {
     private static final int ADDED = 0;
     private static final int DELETED = 2;
     private static final int NUMBER_OF_PARTITIONS = 16;
+    private static final String ENCODING = "UTF-8";
     private Map<String, String> savedCopy = new HashMap<>();
     private final ThreadLocal<Map<String, String>> diff = new ThreadLocal<Map<String, String>>() {
         @Override
@@ -99,9 +100,14 @@ public class FileMap {
         Set<String> allKeys = new HashSet<>();
         allKeys.addAll(savedCopy.keySet());
         allKeys.addAll(diff.get().keySet());
+        if (allKeys == null) {
+            return true;
+        }
         for (String key :allKeys) {
-            if (changes.get().get(key) != DELETED) {
-                return false;
+            if (changes != null && changes.get() != null && changes.get().get(key) != null) {
+                if (changes.get().get(key) != DELETED) {
+                    return false;
+                }
             }
         }
         return true;
@@ -134,12 +140,12 @@ public class FileMap {
         readWriteLock.writeLock().lock();
         try {
             for (String key : keys) {
-                fos.writeInt(key.getBytes("UTF-8").length);
-                fos.write(key.getBytes("UTF-8"));
+                fos.writeInt(key.getBytes(ENCODING).length);
+                fos.write(key.getBytes(ENCODING));
                 valueFromDiff = diff.get().get(key);
                 valueFromSavedCopy = savedCopy.get(key);
-                fos.writeInt((valueFromDiff == null ? valueFromSavedCopy : valueFromDiff).getBytes("UTF-8").length);
-                fos.write((valueFromDiff == null ? valueFromSavedCopy : valueFromDiff).getBytes("UTF-8"));
+                fos.writeInt((valueFromDiff == null ? valueFromSavedCopy : valueFromDiff).getBytes(ENCODING).length);
+                fos.write((valueFromDiff == null ? valueFromSavedCopy : valueFromDiff).getBytes(ENCODING));
             }
         } finally {
             readWriteLock.writeLock().unlock();
@@ -176,7 +182,7 @@ public class FileMap {
             if (fis.read(key) != length) {
                 throw new IncorrectFileException("File " + file + " has wrong structure.");
             }
-            if (!checkKey(new String(key, "UTF-8"))) {
+            if (!checkKey(new String(key, ENCODING))) {
                 throw new IncorrectFileException("File " + file + " contains illegal key.");
             }
             length = fis.readInt();
@@ -190,7 +196,7 @@ public class FileMap {
             if (fis.read(value) != length) {
                 throw new IncorrectFileException("File " + file + " has wrong structure.");
             }
-            savedCopy.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
+            savedCopy.put(new String(key, ENCODING), new String(value, ENCODING));
         }
     }
     private int getIndexOfFile() {

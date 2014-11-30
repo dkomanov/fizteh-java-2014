@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.torunova.parallel.actions;
 
-import ru.fizteh.fivt.students.torunova.parallel.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.parallel.CurrentTable;
 
 import java.util.List;
 
@@ -9,15 +9,15 @@ import java.util.List;
  */
 public class MyList extends Action {
     @Override
-    public boolean run(String[] args, DatabaseWrapper db) {
+    public boolean run(String[] args, CurrentTable currentTable) {
         if (!checkNumberOfArguments(0, args.length)) {
             return false;
         }
-        if (db.getCurrentTable() == null) {
+        if (currentTable.get() == null) {
             System.out.println("no table");
             return false;
         }
-        List<String> keys = db.getCurrentTable().list();
+        List<String> keys = currentTable.get().list();
         String result = String.join(", ", keys);
         System.out.println(result);
         return true;
