@@ -58,8 +58,7 @@ public class ParallelTest {
     ;
 
     private class tread extends Thread {
-        DBase test;
-
+        private DBase test;
         tread(TemporaryFolder root, TableProvider prov, DBaseProviderFactory fact) {
             ArrayList<Class<?>> list = new ArrayList<>();
             list.add(String.class);
@@ -76,6 +75,8 @@ public class ParallelTest {
             }
         }
     }
+};
+
+    
 
 
-}
