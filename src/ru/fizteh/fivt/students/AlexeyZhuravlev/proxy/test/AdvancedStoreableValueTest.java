@@ -65,4 +65,19 @@ public class AdvancedStoreableValueTest {
     public void testGetIncorrectType() {
         storeable.getLongAt(0);
     }
+
+    @Test
+    public void testToString() {
+        storeable.setColumnAt(0, 3);
+        storeable.setColumnAt(1, 3L);
+        storeable.setColumnAt(2, 3.2f);
+        storeable.setColumnAt(3, 5.4);
+        storeable.setColumnAt(4, true);
+        storeable.setColumnAt(5, "hello");
+        storeable.setColumnAt(6, (byte) 1);
+        assertEquals(storeable.toString(), "AdvancedStoreableValue[3,3,3.2,5.4,true,hello,1]");
+        storeable.setColumnAt(2, null);
+        storeable.setColumnAt(3, null);
+        assertEquals(storeable.toString(), "AdvancedStoreableValue[3,3,,,true,hello,1]");
+    }
 }

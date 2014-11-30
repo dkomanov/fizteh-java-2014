@@ -10,6 +10,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTable;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProvider;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProviderFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -52,17 +53,17 @@ public class AdvancedTableTest {
         assertEquals("table", table.getName());
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void putNull() {
         table.put(null, null);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void getNull() {
         table.get(null);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void removeNull() {
         table.remove(null);
     }
@@ -95,7 +96,7 @@ public class AdvancedTableTest {
         assertNull(table.remove("key"));
     }
 
-    @Test (expected = ColumnFormatException.class)
+    @Test(expected = ColumnFormatException.class)
     public void testIncorrectPut() throws IOException {
         types.set(1, Boolean.class);
         Object[] values = {false, 6L, 5.2f, 5.4, true, null, (Byte) (byte) 3};
@@ -179,7 +180,7 @@ public class AdvancedTableTest {
         assertEquals(2, table.size());
     }
 
-    @Test (expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testCloseTable() throws Exception {
         Storeable value = provider.createFor(table);
         table.put("1", value);
@@ -199,4 +200,13 @@ public class AdvancedTableTest {
         assertNotNull(table.get("1"));
         assertNull(table.get("2"));
     }
+
+    @Test
+    public void testToString() {
+        File directory = new File(dbDirPath);
+        File curDirectory = new File(directory, table.getName());
+        String path = curDirectory.getPath();
+        assertEquals(table.toString(), path);
+    }
+
 }

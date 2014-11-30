@@ -130,4 +130,11 @@ public class AdvancedTableProvider extends ParallelTableProvider implements Tabl
         }
         lock.writeLock().unlock();
     }
+
+    @Override
+    public String toString() {
+        checkClosed();
+        String path = super.getPath();
+        return this.getClass().getSimpleName() + "[" + path + "]";
+    }
 }

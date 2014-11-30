@@ -203,4 +203,9 @@ public class AdvancedTableProviderTest {
         table2.commit();
     }
 
+    @Test
+    public void testToString() throws Exception {
+        assertEquals(provider.toString(), "AdvancedTableProvider[" + providerPath + "]");
+    }
+
 }

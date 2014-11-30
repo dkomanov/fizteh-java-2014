@@ -5,6 +5,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -31,6 +32,12 @@ public class ParallelTable implements Table {
                 return new Diff(originalTable, lock);
             }
         };
+    }
+
+    public String getPath() {
+        File providerFile = new File(provider.getPath());
+        File table = new File(providerFile, getName());
+        return table.getPath();
     }
 
     public Storeable put(String key, Storeable value) throws ColumnFormatException {

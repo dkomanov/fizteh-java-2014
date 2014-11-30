@@ -46,6 +46,10 @@ public class StructuredTableProvider implements TableProvider {
         }
         return line;
     }
+    
+    public String getPath() {
+        return mainDirectory.getPath();
+    }
 
     private void writeSignature(File signature, String line) throws IOException {
         Charset charset = Charset.forName("UTF-8");

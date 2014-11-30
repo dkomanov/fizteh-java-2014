@@ -2,6 +2,10 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.proxy;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StoreableValue;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author AlexeyZhuravlev
@@ -61,5 +65,18 @@ public class AdvancedStoreableValue implements Storeable {
 
     public Storeable getOrigin() {
         return origin;
+    }
+
+    @Override
+    public String toString() {
+        List<String> parsed = new Vector<>();
+        for (Object value : ((StoreableValue) origin).getValues()) {
+            if (value == null) {
+                parsed.add("");
+            } else {
+                parsed.add(value.toString());
+            }
+        }
+        return this.getClass().getSimpleName() + "[" + String.join(",", parsed) + "]";
     }
 }

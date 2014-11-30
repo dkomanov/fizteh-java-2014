@@ -32,6 +32,10 @@ public class ParallelTableProvider implements TableProvider {
         }
     }
 
+    public String getPath() {
+        return oldProvider.getPath();
+    }
+
     @Override
     public Table getTable(String name) {
         lock.readLock().lock();

@@ -7,6 +7,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.parallel.ParallelTable;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.parallel.ParallelTableProvider;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -111,6 +112,12 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
         checkClosed();
         rollback();
         closed.set(true);
+    }
+
+    @Override
+    public String toString() {
+        checkClosed();
+        return super.getPath();
     }
 
     private void checkClosed() throws IllegalStateException {
