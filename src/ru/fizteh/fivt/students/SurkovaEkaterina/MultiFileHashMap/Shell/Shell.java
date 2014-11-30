@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.SurkovaEkaterina.shell;
+package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,4 +94,3 @@ public class Shell<FilesOperations> {
         return result;
     }
 }
-

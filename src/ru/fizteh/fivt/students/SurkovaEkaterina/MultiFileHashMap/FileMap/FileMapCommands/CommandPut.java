@@ -1,7 +1,8 @@
-package ru.fizteh.fivt.students.SurkovaEkaterina.FileMap;
+package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.FileMap.FileMapCommands;
 
-import ru.fizteh.fivt.students.SurkovaEkaterina.shell.ACommand;
-import ru.fizteh.fivt.students.SurkovaEkaterina.shell.CommandsParser;
+import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell.ACommand;
+import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell.CommandsParser;
+import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.FileMap.FileMapShellOperationsInterface;
 
 public class CommandPut<Table, Key, Value, FileMapShellOperations
         extends FileMapShellOperationsInterface<Table, Key, Value>>
@@ -12,18 +13,17 @@ public class CommandPut<Table, Key, Value, FileMapShellOperations
 
     public final void executeCommand(final String params,
                                      final FileMapShellOperations operations) {
-        if (operations.getTable() == null) {
-            System.err.println("put: Table unavailable!");
-            return;
-        }
-
         String[] parameters = CommandsParser.parseCommandParameters(params);
         if (parameters.length > 2) {
             throw new IllegalArgumentException("put: Too many arguments!");
         }
-
         if (parameters.length < 2) {
             throw new IllegalArgumentException("put: Not enough arguments!");
+        }
+
+        if (operations.getTable() == null) {
+            System.out.println("no table");
+            return;
         }
 
         Key key = operations.parseKey(parameters[0]);

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.SurkovaEkaterina.shell;
+package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell;
 
 public class CommandsParser {
 

@@ -1,6 +1,7 @@
-package ru.fizteh.fivt.students.SurkovaEkaterina.FileMap;
+package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.FileMap.FileMapCommands;
 
-import ru.fizteh.fivt.students.SurkovaEkaterina.shell.ACommand;
+import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell.ACommand;
+import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.FileMap.FileMapShellOperationsInterface;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class CommandList<FileMapShellOperations
         }
 
         if (operations.getTable() == null) {
-            System.err.println("list: Table unavailable!");
+            System.out.println("no table");
             return;
         }
 

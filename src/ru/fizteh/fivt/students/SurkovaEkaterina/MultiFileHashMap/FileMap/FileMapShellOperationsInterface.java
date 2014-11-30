@@ -1,10 +1,7 @@
-package ru.fizteh.fivt.students.SurkovaEkaterina.FileMap;
+package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.FileMap;
 
 import java.util.List;
 
-/**
- * Created by kate on 08.10.14.
- */
 public interface FileMapShellOperationsInterface<Table, Key, Value> {
     Value put(Key key, Value value);
 
@@ -23,6 +20,4 @@ public interface FileMapShellOperationsInterface<Table, Key, Value> {
     Key parseKey(String key);
 
     Value parseValue(String value);
-
-    int exit();
 }

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.SurkovaEkaterina.FileMap;
+package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.FileMap;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -9,7 +9,7 @@ import java.util.List;
 
 public abstract class ATable {
 
-    protected static final Charset CHARSET = StandardCharsets.UTF_8;
+    public static final Charset CHARSET = StandardCharsets.UTF_8;
 
     protected final HashMap<String, String> data;
 
@@ -35,31 +35,35 @@ public abstract class ATable {
     }
 
     public final String get(final String key) {
-        if ((key == null) || (key.equals(""))) {
+        if ("".equals(key)) {
             throw new IllegalArgumentException("Key cannot be empty!");
         }
         return data.get(key);
     }
 
     public final String put(final String key, final String value) {
-        if ((key == null) || (value == null)) {
-            String message = (key == null) ? "Key " : "Value ";
-            throw new IllegalArgumentException(message + "cannot be null");
+        if (key == null) {
+            throw new IllegalArgumentException("Key should not be null!");
         }
-        if ((key.equals("")) || (value.equals(""))
-                || (key.trim().isEmpty()) || (value.trim().isEmpty())) {
-            String message = (key.equals("")) ? "Key " : "Value ";
-            throw new IllegalArgumentException(message + "cannot be empty");
+        if (value == null) {
+            throw new IllegalArgumentException("Value should not be null!");
         }
+        if (key.trim().isEmpty()) {
+            throw new IllegalArgumentException("Key should not be empty!");
+        }
+        if (value.trim().isEmpty()) {
+            throw new IllegalArgumentException("Value should not be empty!");
+        }
+
         String oldValue = data.put(key, value);
         if (oldValue == null) {
-            size += 1;
+            size++;
         }
         return oldValue;
     }
 
     public final String remove(final String key) {
-        if ((key == null) || (key.equals(""))) {
+        if ("".equals(key)) {
             throw new IllegalArgumentException("key cannot be null");
         }
         if (get(key) == null) {
@@ -67,7 +71,7 @@ public abstract class ATable {
         }
         String oldValue = data.remove(key);
         if (oldValue != null) {
-            size -= 1;
+            size--;
         }
 
         return oldValue;
@@ -78,14 +82,12 @@ public abstract class ATable {
         return list;
     }
 
-    public final int exit() {
-        try {
-            save();
-        } catch (IOException e) {
-            System.err.println("exit: " + e.getMessage());
-            return -1;
-        }
-        return 0;
+    public final String getName() {
+        return tableName;
+    }
+
+    public final int getSize() {
+        return size;
     }
 
     protected final String getDirectory() {

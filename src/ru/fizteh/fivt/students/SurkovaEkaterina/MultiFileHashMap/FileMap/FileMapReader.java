@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.SurkovaEkaterina.FileMap;
+package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.FileMap;
 
 import java.io.*;
 import java.util.HashMap;

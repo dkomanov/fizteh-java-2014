@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.SurkovaEkaterina.FileMap;
+package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.FileMap;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -10,7 +10,8 @@ public class FileMapUsage {
         return file.exists();
     }
 
-    public static int getByteCount(final String string, final Charset charset) {
+    public static int getBytesNumber(final String string,
+                                     final Charset charset) {
         return string.getBytes(charset).length;
     }
 
@@ -18,7 +19,7 @@ public class FileMapUsage {
                                     final Charset charset) {
         int keysLength = 0;
         for (final String key : keys) {
-            int keyLength = FileMapUsage.getByteCount(key, charset);
+            int keyLength = FileMapUsage.getBytesNumber(key, charset);
             keysLength += keyLength + 5;
         }
         return keysLength;

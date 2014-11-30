@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.SurkovaEkaterina.shell;
+package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell;
 
 public abstract class ACommand<FilesOperations>
         implements Command<FilesOperations> {
