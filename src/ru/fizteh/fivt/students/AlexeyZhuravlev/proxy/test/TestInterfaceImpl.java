@@ -32,6 +32,11 @@ public class TestInterfaceImpl implements TestInterface {
     }
 
     @Override
+    public void arrayArgumentMethod(String[] args) {
+
+    }
+
+    @Override
     public List<String> listArgumentWithListReturnTypeMethod(List<String> input) {
         return input;
     }

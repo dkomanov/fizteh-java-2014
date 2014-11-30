@@ -157,4 +157,16 @@ public class MyLoggingProxyFactoryTest {
         JSONArray argument = object.getJSONArray("arguments").getJSONArray(0);
         assertEquals(argument.toString(), "[[0,\"cyclic\"],[[0,\"cyclic\"],1]]");
     }
+
+    @Test
+    public void testArrayArgumentCall() {
+        String[] lst = new String[3];
+        lst[0] = "1";
+        lst[1] = "2";
+        lst[2] = "3";
+        wrappedObject.arrayArgumentMethod(lst);
+        JSONObject object = new JSONObject(writer.toString());
+        JSONArray arguments = object.getJSONArray("arguments");
+        assertEquals(arguments.toString(), "[[\"1\",\"2\",\"3\"]]");
+    }
 }

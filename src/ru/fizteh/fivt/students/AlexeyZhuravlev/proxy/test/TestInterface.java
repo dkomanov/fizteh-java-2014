@@ -11,6 +11,7 @@ public interface TestInterface {
     void twoArgumentsVoidMethod(String first, Integer second);
     int noArgumentPrimitiveTypeMethod();
     void listArgumentMethod(List<Object> input);
+    void arrayArgumentMethod(String[] args);
     List<String> listArgumentWithListReturnTypeMethod(List<String> input);
     int onePrimitiveArgumentWithPrimitiveReturnType(int number);
     void throwExceptionMethod() throws Exception;
