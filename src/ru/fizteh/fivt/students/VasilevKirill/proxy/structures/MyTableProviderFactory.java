@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * Created by Kirill on 10.11.2014.
  */
-public class MyTableProviderFactory implements TableProviderFactory {
+public class MyTableProviderFactory implements TableProviderFactory, AutoCloseable {
     private boolean isClosed = false;
 
     public MyTableProviderFactory() {
@@ -30,5 +30,10 @@ public class MyTableProviderFactory implements TableProviderFactory {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public void close() throws Exception {
+        isClosed = true;
     }
 }
