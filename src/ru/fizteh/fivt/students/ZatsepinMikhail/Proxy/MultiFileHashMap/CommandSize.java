@@ -14,7 +14,12 @@ public class CommandSize extends CommandMultiFileHashMap {
         if (currentTable == null) {
             System.out.println("no table");
         } else {
-            System.out.println(currentTable.size());
+            try {
+                System.out.println(currentTable.size());
+            } catch (IllegalStateException e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
         }
         return true;
     }

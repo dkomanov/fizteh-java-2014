@@ -10,12 +10,17 @@ public class FmCommandGet extends CommandFileMap {
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-        Storeable value = myFileMap.get(args[1]);
-        if (value != null) {
-            System.out.println("found\n" + Serializator.serialize(myFileMap, myFileMap.get(args[1])));
-        } else {
-            System.out.println("not found");
+        try{
+            Storeable value = myFileMap.get(args[1]);
+            if (value != null) {
+                System.out.println("found\n" + Serializator.serialize(myFileMap, myFileMap.get(args[1])));
+            } else {
+                System.out.println("not found");
+            }
+            return true;
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+            return false;
         }
-        return true;
     }
 }

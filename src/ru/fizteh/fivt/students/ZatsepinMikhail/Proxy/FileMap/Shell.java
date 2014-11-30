@@ -32,6 +32,12 @@ public class Shell<T> {
                 }
                 for (String oneCommand : parsedCommands) {
                     parsedArguments = oneCommand.trim().split("\\s+");
+                    if (parsedArguments[0].equals("put")) {
+                        if (oneCommand.contains("<")) {
+                            String valueForPut = oneCommand.trim().substring(oneCommand.indexOf('<'));
+                            parsedArguments[2] = valueForPut;
+                        }
+                    }
                     if (parsedArguments.length == 0 || parsedArguments[0].equals("")) {
                         continue;
                     }

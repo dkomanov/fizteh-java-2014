@@ -21,6 +21,9 @@ public class CommandCommit extends CommandMultiFileHashMap {
             } catch (IOException e) {
                 System.err.println("io exception while writing in file");
                 return false;
+            } catch (IllegalStateException e) {
+                System.out.println(e.getMessage());
+                return false;
             }
         }
         return true;
