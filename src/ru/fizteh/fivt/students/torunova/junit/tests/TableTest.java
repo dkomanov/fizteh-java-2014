@@ -12,14 +12,16 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class TableTest {
     TableImpl testTable;
+    File testDirectory;
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     @Before
     public void setUp() throws Exception {
-        File testDirectory = folder.newFolder("table");
+        testDirectory = folder.newFolder("table");
         testTable = new TableImpl(testDirectory.getAbsolutePath());
     }
 
@@ -92,6 +94,15 @@ public class TableTest {
         testTable.remove("key1");
         assertEquals(1, testTable.commit());
     }
+    @Test
+    public void testCommitedKeys() throws Exception {
+        testTable.put("key1", "value1");
+        testTable.put("key2", "value2");
+        testTable.remove("key1");
+        testTable.commit();
+        TableImpl tableAfterCommit = new TableImpl(testDirectory.getAbsolutePath());
+        assertNotEquals(null, tableAfterCommit.get("key2"));
+    }
 
     @Test
     public void testRollback() throws Exception {
@@ -99,6 +110,15 @@ public class TableTest {
         testTable.put("key2", "value2");
         testTable.remove("key1");
         assertEquals(1, testTable.rollback());
+    }
+    @Test
+    public void testRevertedKeys() throws Exception {
+        testTable.put("key1", "value1");
+        testTable.put("key2", "value2");
+        testTable.remove("key1");
+        testTable.rollback();
+        TableImpl tableAfterRollback = new TableImpl(testDirectory.getAbsolutePath());
+        assertEquals(null, tableAfterRollback.get("key2"));
     }
 
     @Test

@@ -39,9 +39,7 @@ public class  Database implements TableProvider{
                                         TableNotCreatedException,
                                         IncorrectFileException,
                                         IncorrectDbException {
-        if (name == null) {
-            throw new IncorrectDbNameException("Name of database not specified.");
-        }
+
         File db = new File(name).getAbsoluteFile();
         if (!db.exists()) {
             db.mkdirs();

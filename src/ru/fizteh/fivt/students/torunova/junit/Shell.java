@@ -5,12 +5,7 @@ package ru.fizteh.fivt.students.torunova.junit;
  */
 
 import ru.fizteh.fivt.students.torunova.junit.actions.Action;
-import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbException;
-import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectDbNameException;
-import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -29,27 +24,9 @@ public class Shell {
         scanner = new Scanner(is);
         try {
             db = new Database(dbfile);
-        } catch (IncorrectDbNameException e) {
-            System.err.println("Caught IncorrectDbNameException: " + e.getMessage());
-            if (e.getMessage().equals("Name of database not specified.")) {
-                System.err.println("Please,specify it via -Dfizteh.db.dir");
-            }
+        } catch (Exception e) {
+            System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
                 abort();
-        } catch (IOException e1) {
-            System.err.println("Caught IOException: " + e1.getMessage());
-            abort();
-        } catch (TableNotCreatedException e2) {
-            if (e2.getMessage() == null || e2.getMessage().isEmpty()) {
-                System.err.println("Caught TableNotCreatedException");
-            } else {
-                System.err.println(e2.getMessage());
-            }
-            abort();
-        } catch (IncorrectFileException e3) {
-            System.err.println(e3.getMessage());
-            abort();
-        } catch (IncorrectDbException e4) {
-            System.err.println(e4.getMessage());
         }
         interactive = isInteractive;
         currentTable = new CurrentTable(db);
@@ -80,28 +57,8 @@ public class Shell {
                     boolean res = false;
                     try {
                          res = commands.get(name).run(args, currentTable);
-                    } catch (IOException e) {
-                        System.err.println("Caught IOException: " + e.getMessage());
-                        if (!interactive || name.equals("exit")) {
-                            abort();
-                        }
-                    } catch (TableNotCreatedException e1) {
-                        String message = e1.getMessage();
-                        if (message == null || message.isEmpty()) {
-                            System.err.println("Caught TableNotCreatedException");
-                        } else {
-                            System.err.println(message);
-                        }
-                        if (!interactive || name.equals("exit")) {
-                            abort();
-                        }
-                    } catch (IncorrectFileException e2) {
-                        System.err.println(e2.getMessage());
-                        if (!interactive || name.equals("exit")) {
-                            abort();
-                        }
-                    } catch (RuntimeException e3) {
-                        System.err.println(e3.getMessage());
+                    } catch (Exception e) {
+                        System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
                         if (!interactive || name.equals("exit")) {
                             abort();
                         }
