@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
@@ -26,7 +28,7 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
  * Suggests that the current version from disk is saved when object instance is creating.
  * Further input and output is performed only at the time of table creation and deletion.
  *
- * This class is not thread safe.
+ * This class is thread safe.
  */
 public final class TableManager implements TableProvider {
     private static final String ERROR_CONNECTING_TO_DATABASE_MSG = "Error connecting to database";
@@ -57,6 +59,7 @@ public final class TableManager implements TableProvider {
         });
         PARSER_METHODS = Collections.unmodifiableMap(unitializerMap);
     }
+    private ReadWriteLock lock;
     private Map<String, Table> tables;
     private Path tablesDirectoryPath;
     
@@ -82,6 +85,7 @@ public final class TableManager implements TableProvider {
                     + ": '" + directoryPath + "' is illegal directory name", e);
         }
         tables = new HashMap<>();
+        lock = new ReentrantReadWriteLock();
         for (String tableDirectoryName : tablesDirectoryPath.toFile().list()) {
             Path tableDirectoryPath = tablesDirectoryPath.resolve(tableDirectoryName);
             if (tableDirectoryPath.toFile().isDirectory()) {
@@ -113,6 +117,7 @@ public final class TableManager implements TableProvider {
         if (tableName == null) {
             throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
         }
+        lock.readLock().lock();
         try {
             tablesDirectoryPath.resolve(tableName);
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
@@ -121,6 +126,8 @@ public final class TableManager implements TableProvider {
             return tables.get(tableName);
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": " + e.getMessage(), e);
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
@@ -142,6 +149,7 @@ public final class TableManager implements TableProvider {
         if (tableName == null) {
             throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
         }
+        lock.writeLock().lock();
         try {
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
                 throw new InvalidPathException(tableName, ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
@@ -160,6 +168,8 @@ public final class TableManager implements TableProvider {
         } catch (DataBaseIOException | IllegalArgumentException e) {
             throw new DataBaseIOException("Unable to create table '" + tableName
                     + "': " + e.getMessage(), e);
+        } finally {
+            lock.writeLock().unlock();
         }
     }
     
@@ -207,6 +217,7 @@ public final class TableManager implements TableProvider {
         if (tableName == null) {
             throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
         }
+        lock.writeLock().lock();
         try {
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
                 throw new InvalidPathException(tableName, ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
@@ -224,6 +235,8 @@ public final class TableManager implements TableProvider {
         } catch (IOException e) {
             throw new DataBaseIOException("Unable to remove table: "
                 + e.getMessage(), e);
+        } finally {
+            lock.writeLock().unlock();
         }
     }
     

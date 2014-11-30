@@ -107,9 +107,9 @@ public final class Interpreter {
         }
     }
     
-    private void parse(String[] cmdWithArgs) throws Exception {
-        if (cmdWithArgs.length > 0 && !cmdWithArgs[0].isEmpty()) {
-            String commandName = cmdWithArgs[0];
+    private void parse(String[] commandWithArgs) throws Exception {
+        if (commandWithArgs.length > 0 && !commandWithArgs[0].isEmpty()) {
+            String commandName = commandWithArgs[0];
             if (commandName.equals("exit")) {
                 if (exitHandler == null) {
                     throw new StopInterpreterException(0);
@@ -124,14 +124,14 @@ public final class Interpreter {
             if (command == null) {
                 throw new StopLineInterpretationException(NO_SUCH_COMMAND_MSG + commandName);
             } else {
-                String[] args = new String[cmdWithArgs.length - 1];
+                String[] args = new String[commandWithArgs.length - 1];
                 //Exclude quotes along the edges of the string, if they presents.
-                for (int i = 1; i < cmdWithArgs.length; i++) {
-                    if (cmdWithArgs[i].charAt(0) == '"'
-                            && cmdWithArgs[i].charAt(cmdWithArgs[i].length() - 1) == '"') {
-                        args[i - 1] = cmdWithArgs[i].substring(1, cmdWithArgs[i].length() - 1);
+                for (int i = 1; i < commandWithArgs.length; i++) {
+                    if (commandWithArgs[i].charAt(0) == '"'
+                            && commandWithArgs[i].charAt(commandWithArgs[i].length() - 1) == '"') {
+                        args[i - 1] = commandWithArgs[i].substring(1, commandWithArgs[i].length() - 1);
                     } else {
-                        args[i - 1] = cmdWithArgs[i];
+                        args[i - 1] = commandWithArgs[i];
                     }
                 }
                 try {

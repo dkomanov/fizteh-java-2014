@@ -22,12 +22,12 @@ import ru.fizteh.fivt.storage.structured.Storeable;
  * Class represents a single file of type *.dir/*.dat.
  */
 final class TablePart {
-    private Map<String, Storeable> data;
-    private boolean changed;
-    private DbTable table;
-    private Path tablePartDirectoryPath;
-    private int fileNumber;
-    private int directoryNumber;
+    private Map<String, Storeable> data; //Keep all data, which this .dat file contains.
+    private boolean changed; //Using this flag, the method learns whether to update the data on the disk.
+    private DbTable table; //Link to table, which stores this .dat file.
+    private Path tablePartDirectoryPath; //Path to table directory.
+    private int fileNumber; //Number of file in directory, which contains data
+    private int directoryNumber; //Number of directory containing file.
     
     /**
      * Constructs a TablePart. Read data from file if it exists.
@@ -147,30 +147,41 @@ final class TablePart {
             ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
             List<Integer> offsets = new LinkedList<>();
             List<String> keys = new LinkedList<>();
+            //File structure is: key1</0>offset[1](4-bytes)key2</0>offset[2](4-bytes)...[1]value1[2]value2...
             byte b;
-            //Reading keys and offsets until reaching
-            //the byte with first offset number.
+            //Reading key bytes and offsets until reaching the byte with number equals to first offset.
             do {
+                //Every key ends by </0>.
                 while ((b = file.readByte()) != 0) {
                     bytesBuffer.write(b);
                 }
+                //Every offset is 4-bytes integer.
                 offsets.add(file.readInt());
+                //Construct string from bytes encoded to specified in Helper class encoding.
                 String key = bytesBuffer.toString(Helper.ENCODING);
                 bytesBuffer.reset();
+                //Key must correspond to file. See checkKey method for more info.
                 checkKey(key);
                 keys.add(key);
             } while (file.getFilePointer() < offsets.get(0));
+            //Last offset is the number of last byte of file + 1.
             offsets.add((int) file.length());
+            //We now we are on the byte with number of the first offset. Remove it from list.
             offsets.remove(0);
             //Reading values until reaching the end of file.
             Iterator<String> keyIter = keys.iterator();
             for (int nextOffset : offsets) {
+                //Value ends when the next value starts.
                 while (file.getFilePointer() < nextOffset) {
                     bytesBuffer.write(file.readByte());
                 }
+                //Value can't be empty string.
                 if (bytesBuffer.size() > 0) {
+                    //Encode value bytes. Construct string.
                     String serializedValue = bytesBuffer.toString(Helper.ENCODING);
+                    //Value stores in JSON format. Deserialize JSON.
                     Storeable value = table.getProvider().deserialize(table, serializedValue);
+                    //Put key, value pair to data map. Key can't repeat in file.
                     if (data.put(keyIter.next(), value) != null) {
                         throw new IllegalArgumentException("Key repeats in file");
                     }
@@ -192,9 +203,11 @@ final class TablePart {
     }
     
     /**
+     * Key places in file with number equals to (key.bytes[0] / NUMBER_OF_FILES) % NUMBER_OF_FILES,
+     * and file places in directory with number equals to key.bytes[0] % NUMBER_OF_FILES.
      * @param key Key.
      * @throws UnsupportedEncodingException If key bytes cannot be encode to {@value #ENCODING}.
-     * @throws IllegalArgumentException If key can't be in this {@link TablePart}.
+     * @throws IllegalArgumentException If key can't be stored in this {@link TablePart}.
      */
     private void checkKey(String key)
             throws UnsupportedEncodingException {
@@ -214,6 +227,7 @@ final class TablePart {
      * @throws IOException If method can't write to file.
      */
     private void writeToFile() throws IOException {
+        //File structure described in readFile() method.
         tablePartDirectoryPath.getParent().toFile().mkdir();
         try (RandomAccessFile file = new RandomAccessFile(tablePartDirectoryPath.toString(), "rw")) {
             file.setLength(0);
