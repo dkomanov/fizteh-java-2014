@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.IvanShafran.multifilehashmap.commands.shell;
 
 
-import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.DBTable;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.MultiFileHashMap;
 import ru.fizteh.fivt.students.IvanShafran.multifilehashmap.abstractShell.Command;
 
