@@ -7,7 +7,6 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.parallel.ParallelTable;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.parallel.ParallelTableProvider;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
