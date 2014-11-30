@@ -9,7 +9,6 @@ import org.w3c.dom.*;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyLoggingProxyFactory;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
