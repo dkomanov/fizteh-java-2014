@@ -38,7 +38,7 @@ public class Table {
     }
 
     private TableNode getNode(String key) {
-        int hash = key.hashCode();
+        int hash = Math.abs(key.hashCode());
         int ndir = hash % 16;
         int nfile = hash / 16 % 16;
         return tableNodes[ndir * constMAX + nfile];
@@ -60,7 +60,7 @@ public class Table {
         getNode(key).remove(key);
     }
 
-    public int getSize() {
+    public int size() {
         int res = 0;
         for (int i = 0; i < constMAX; ++i) {
             for (int j = 0; j < constMAX; ++j) {
