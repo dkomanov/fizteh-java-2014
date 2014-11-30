@@ -1,11 +1,18 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap;
 
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.ProxyPackage.RealLogProxyFactory;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
@@ -37,9 +44,15 @@ public class Main {
         }
 
         try {
+
             MFileHashMap myMFileHashMap = new MFileHashMap(dataBaseDirectory.toString());
-            Shell<MFileHashMap> myShell = new Shell<>(myMFileHashMap);
-            setUpShell(myShell);
+            FileMap simpleFileMap = myMFileHashMap.createTable("simple", );
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+            Ta proxyObj = (TableProvider)(new RealLogProxyFactory()).wrap(bw, myMFileHashMap, TableProvider.class);
+            proxyObj.put("123", "sadasd");
+            //Shell<Object> myShell = new Shell<>(proxyObj);
+            /*setUpShell(myShell);
 
             if (args.length > 0) {
                 allRight = myShell.packetMode(args);
@@ -50,7 +63,7 @@ public class Main {
                 System.exit(0);
             } else {
                 System.exit(1);
-            }
+            }*/
         } catch (IOException e) {
             System.out.println(e.getMessage());
             System.exit(3);
