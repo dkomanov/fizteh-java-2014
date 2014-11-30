@@ -20,12 +20,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Created by Kirill on 19.10.2014.
  */
-public class MultiMap implements TableProvider {
+public class MultiMap implements TableProvider, AutoCloseable {
     private String workingDirectory;
     private String workingTable;
     private Map<String, SharedMyTable> tables;
     private Set<String> closedTables;
     private ReentrantReadWriteLock providerLock;
+    private boolean isClosed = false;
 
     public MultiMap(String directory) throws IOException {
         workingDirectory = directory == null ? new File("").getCanonicalPath() : directory;
@@ -55,6 +56,9 @@ public class MultiMap implements TableProvider {
 
     @Override
     public Table getTable(String name) {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         if (name == null) {
             throw new IllegalArgumentException();
         }
@@ -75,6 +79,9 @@ public class MultiMap implements TableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         if (name == null || columnTypes == null) {
             throw new IllegalArgumentException();
         }
@@ -102,6 +109,9 @@ public class MultiMap implements TableProvider {
 
     @Override
     public void removeTable(String name) {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         if (name == null) {
             throw new IllegalArgumentException();
         }
@@ -119,6 +129,9 @@ public class MultiMap implements TableProvider {
     }
 
     public void setTable(String name) throws IllegalArgumentException, IllegalStateException {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         if (name == null) {
             throw new IllegalArgumentException();
         }
@@ -147,6 +160,9 @@ public class MultiMap implements TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         Class[] typeList = new Class[table.getColumnsCount()];
         for (int i = 0; i < typeList.length; ++i) {
             typeList[i] = table.getColumnType(i);
@@ -156,6 +172,9 @@ public class MultiMap implements TableProvider {
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         List<Object> data = new ArrayList<>();
         int columnsCount = table.getColumnsCount();
         value.getColumnAt(columnsCount - 1); //for checking columns number
@@ -168,6 +187,9 @@ public class MultiMap implements TableProvider {
 
     @Override
     public Storeable createFor(Table table) {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         Class[] typeList = new Class[table.getColumnsCount()];
         for (int i = 0; i < typeList.length; ++i) {
             typeList[i] = table.getColumnType(i);
@@ -177,6 +199,9 @@ public class MultiMap implements TableProvider {
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         Class[] typeList = new Class[table.getColumnsCount()];
         for (int i = 0; i < typeList.length; ++i) {
             typeList[i] = table.getColumnType(i);
@@ -245,6 +270,9 @@ public class MultiMap implements TableProvider {
 
     //Old version of method. Saved for compatibility.
     public boolean handleTable(String[] args) throws IOException, IllegalStateException {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         if (workingTable == null) {
             return false;
         }
@@ -361,5 +389,13 @@ public class MultiMap implements TableProvider {
             throw new IllegalStateException();
         }
         closedTables.add(name);
+    }
+
+    @Override
+    public void close() throws Exception {
+        for (String key: tables.keySet()) {
+            setTableClosed(key);
+        }
+        isClosed = true;
     }
 }
