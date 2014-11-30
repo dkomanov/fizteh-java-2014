@@ -14,5 +14,6 @@ public class StartTelnetCommand extends ServerContextualCommand {
     @Override
     public void execute(String... arguments) throws Exception {
         super.execute(arguments);
+        getContext().getTelnetServer().start();
     }
 }
