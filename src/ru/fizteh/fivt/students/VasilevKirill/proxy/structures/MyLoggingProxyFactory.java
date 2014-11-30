@@ -2,14 +2,8 @@ package ru.fizteh.fivt.students.VasilevKirill.proxy.structures;
 
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.Writer;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
-import java.util.Iterator;
 
 /**
  * Created by Kirill on 29.11.2014.
