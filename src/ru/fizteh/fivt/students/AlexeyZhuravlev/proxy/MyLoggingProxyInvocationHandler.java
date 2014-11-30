@@ -30,23 +30,26 @@ public class MyLoggingProxyInvocationHandler implements InvocationHandler {
             object.put("class", target.getClass().getName());
             object.put("method", method.getName());
             JSONArray arguments = new JSONArray();
-            for (Object argument: args) {
-                arguments.put(JsonConverter.convertObject(argument));
+            if (args != null) {
+                for (Object argument : args) {
+                    arguments.put(JsonConverter.convertObject(argument));
+                }
             }
             object.put("arguments", arguments);
             if (method.getReturnType() == void.class) {
+                method.invoke(target, args);
                 writeToLog(object);
-                return method.invoke(target, args);
+                return null;
             } else {
                 Object result = method.invoke(target, args);
                 object.put("returnValue", JsonConverter.convertObject(result));
                 writeToLog(object);
                 return result;
             }
-        } catch (Exception e) {
-            object.put("thrown", e);
+        } catch (InvocationTargetException e) {
+            object.put("thrown", e.getTargetException());
             writeToLog(object);
-            throw new InvocationTargetException(e);
+            throw e;
         }
     }
 
