@@ -143,7 +143,7 @@ public class Shell {
         } else if (args[1].equals("tables")) {
             for (Map.Entry<String, Table> entry : Main.database.getTables()) {
                 System.out.print(entry.getKey() + " ");
-                System.out.println(entry.getValue().getSize());
+                System.out.println(entry.getValue().size());
             }
         } else {
             System.out.println("unrecognized option");
