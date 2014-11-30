@@ -22,9 +22,10 @@ public class MFileHashMap implements TableProvider {
     private String dataBaseDirectory;
     private HashMap<String, FileMap> tables;
     private FileMap currentTable;
-    public MFileHashMap(String newDirectory) {
+    public MFileHashMap(String newDirectory) throws IOException {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
+        init();
     }
 
     @Override
@@ -151,7 +152,7 @@ public class MFileHashMap implements TableProvider {
         return currentTable;
     }
 
-    public boolean init() {
+    public boolean init() throws IOException {
         String[] listOfFiles = new File(dataBaseDirectory).list();
         for (String oneFile: listOfFiles) {
             Path oneTablePath = Paths.get(dataBaseDirectory, oneFile);
