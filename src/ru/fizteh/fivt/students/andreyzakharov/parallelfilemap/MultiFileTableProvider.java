@@ -14,12 +14,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     private Path dbRoot;
     private Map<String, MultiFileTable> tables;
     private MultiFileTable activeTable;
     private TableEntrySerializer serializer = new TableEntryJsonSerializer();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public MultiFileTableProvider(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
@@ -41,7 +44,10 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-        return tables.get(name);
+        lock.readLock().lock();
+        Table table = tables.get(name);
+        lock.readLock().unlock();
+        return table;
     }
 
     public MultiFileTable getCurrent() {
@@ -49,6 +55,9 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     }
 
     public Map<String, MultiFileTable> getAllTables() {
+        lock.readLock().lock();
+        Map<String, MultiFileTable> tables = this.tables;
+        lock.readLock().unlock();
         return tables;
     }
 
@@ -57,14 +66,18 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
         if (name == null || columnTypes == null || columnTypes.isEmpty()) {
             throw new IllegalArgumentException("null argument");
         }
+        lock.writeLock().lock();
+        Table table;
         Path path = dbRoot.resolve(name);
         if (!tables.containsKey(name)) {
             if (Files.exists(path)) {
                 if (!Files.isDirectory(path)) {
+                    lock.writeLock().unlock();
                     throw new IOException("connection: destination is not a directory");
                 }
                 try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
                     if (stream.iterator().hasNext()) {
+                        lock.writeLock().unlock();
                         throw new IOException("connection: destination is not empty");
                     }
                 }
@@ -72,12 +85,15 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
             try {
                 tables.put(name, new MultiFileTable(dbRoot.resolve(name), columnTypes, serializer));
             } catch (ConnectionInterruptException e) {
+                lock.writeLock().unlock();
                 throw new IOException("connection: " + e.getMessage());
             }
-            return tables.get(name);
+            table = tables.get(name);
         } else {
-            return null;
+            table = null;
         }
+        lock.writeLock().unlock();
+        return table;
     }
 
     @Override
@@ -85,6 +101,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
+        lock.writeLock().lock();
         MultiFileTable table = tables.get(name);
         if (table != null) {
             if (activeTable == table) {
@@ -97,20 +114,25 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
                 //
             }
         } else {
+            lock.writeLock().unlock();
             throw new IllegalStateException("table does not exist");
         }
+        lock.writeLock().unlock();
     }
 
     public void useTable(String name) throws IllegalStateException {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
+        lock.writeLock().lock();
         MultiFileTable table = tables.get(name);
         if (table != null) {
             activeTable = table;
         } else {
+            lock.writeLock().unlock();
             throw new IllegalStateException("table does not exist");
         }
+        lock.writeLock().unlock();
     }
 
     @Override

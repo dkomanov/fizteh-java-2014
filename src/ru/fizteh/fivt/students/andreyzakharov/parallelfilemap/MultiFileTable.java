@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +42,7 @@ public class MultiFileTable implements Table {
             return 0;
         }
     };
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
     private Path dbPath;
     private String name;
 
@@ -103,17 +106,21 @@ public class MultiFileTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
+        lock.readLock().lock();
         sync();
 
+        Storeable value;
         if (diff.get().removed.contains(key)) {
-            return null;
+            value = null;
         } else if (diff.get().added.containsKey(key)) {
-            return diff.get().added.get(key);
+            value = diff.get().added.get(key);
         } else if (diff.get().changed.containsKey(key)) {
-            return diff.get().changed.get(key);
+            value = diff.get().changed.get(key);
         } else {
-            return stableData.get(key);
+            value = stableData.get(key);
         }
+        lock.readLock().unlock();
+        return value;
     }
 
     @Override
@@ -121,36 +128,40 @@ public class MultiFileTable implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
+        lock.readLock().lock();
         sync();
 
+        Storeable result;
         if (diff.get().removed.remove(key)) {
             if (stableData.get(key).equals(value)) {
                 --diff.get().pending;
             } else {
                 diff.get().changed.put(key, value);
             }
-            return null;
+            result = null;
         } else {
             if (stableData.containsKey(key)) {
                 if (diff.get().changed.containsKey(key)) {
                     if (stableData.get(key).equals(value)) {
                         --diff.get().pending;
-                        return diff.get().changed.remove(key);
+                        result = diff.get().changed.remove(key);
                     } else {
-                        return diff.get().changed.put(key, value);
+                        result = diff.get().changed.put(key, value);
                     }
                 } else {
                     ++diff.get().pending;
                     diff.get().changed.put(key, value);
-                    return stableData.get(key);
+                    result = stableData.get(key);
                 }
             } else {
                 if (!diff.get().added.containsKey(key)) {
                     ++diff.get().pending;
                 }
-                return diff.get().added.put(key, value);
+                result = diff.get().added.put(key, value);
             }
         }
+        lock.readLock().unlock();
+        return result;
     }
 
     @Override
@@ -158,44 +169,54 @@ public class MultiFileTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
+        lock.readLock().lock();
         sync();
 
+        Storeable result;
         if (stableData.containsKey(key)) {
             if (diff.get().removed.add(key)) {
                 if (diff.get().changed.containsKey(key)) {
-                    return diff.get().changed.remove(key);
+                    result = diff.get().changed.remove(key);
                 } else {
                     ++diff.get().pending;
-                    return stableData.get(key);
+                    result = stableData.get(key);
                 }
             } else {
-                return null;
+                result = null;
             }
         } else {
             if (diff.get().added.containsKey(key)) {
                 --diff.get().pending;
-                return diff.get().added.remove(key);
+                result = diff.get().added.remove(key);
             } else {
-                return null;
+                result = null;
             }
         }
+        lock.readLock().unlock();
+        return result;
     }
 
     @Override
     public int size() {
+        lock.readLock().lock();
         sync();
 
-        return stableData.size() + diff.get().added.size() - diff.get().removed.size();
+        int s = stableData.size() + diff.get().added.size() - diff.get().removed.size();
+        lock.readLock().unlock();
+        return s;
     }
 
     public int getPending() {
+        lock.readLock().lock();
         sync();
+        lock.readLock().unlock();
 
         return diff.get().pending;
     }
 
     @Override
     public int commit() {
+        lock.writeLock().lock();
         sync();
 
         stableData.keySet().removeAll(diff.get().removed);
@@ -205,6 +226,7 @@ public class MultiFileTable implements Table {
         try {
             unload();
         } catch (ConnectionInterruptException e) {
+            lock.writeLock().unlock();
             return -1;
         }
 
@@ -216,11 +238,13 @@ public class MultiFileTable implements Table {
 
         ++stableVersion;
 
+        lock.writeLock().unlock();
         return p;
     }
 
     @Override
     public int rollback() {
+        lock.readLock().lock();
         sync();
 
         diff.get().removed.clear();
@@ -228,6 +252,7 @@ public class MultiFileTable implements Table {
         diff.get().added.clear();
         int p = diff.get().pending;
         diff.get().pending = 0;
+        lock.readLock().unlock();
         return p;
     }
 
@@ -279,13 +304,15 @@ public class MultiFileTable implements Table {
      * @return List of keys.
      */
     public List<String> list() {
+        lock.readLock().lock();
         List<String> keySet = new ArrayList<>(stableData.keySet());
         keySet.removeAll(diff.get().removed);
         keySet.addAll(diff.get().added.keySet());
+        lock.readLock().unlock();
         return keySet;
     }
 
-    public void clear() {
+    private void clear() {
         stableData.clear();
     }
 
@@ -403,8 +430,6 @@ public class MultiFileTable implements Table {
 
     public void unload() throws ConnectionInterruptException {
         int[][] status = new int[16][16];
-
-        MultiFileTableDiff d = diff.get();
 
         DirFilePair p;
         for (String key : diff.get().added.keySet()) {
