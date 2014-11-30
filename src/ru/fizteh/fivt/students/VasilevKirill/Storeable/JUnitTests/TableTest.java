@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.VasilevKirill.Storeable.JUnitTests;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
@@ -20,7 +22,8 @@ public class TableTest {
     private static String path;
     private static List<Class<?>> typeList;
 
-    static {
+    @BeforeClass
+    public static void beforeClass() {
         try {
             path = new File("").getCanonicalPath();
             multiMap = new MyTableProviderFactory().create(path);
@@ -28,6 +31,7 @@ public class TableTest {
             typeList.add(Integer.class);
             typeList.add(String.class);
             multiMap.createTable("First", typeList);
+            multiMap.createTable("Second", typeList);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
@@ -36,6 +40,16 @@ public class TableTest {
             } else {
                 System.out.println(e.getMessage());
             }
+        }
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        try {
+            multiMap.removeTable("First");
+            multiMap.removeTable("Second");
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -106,7 +120,7 @@ public class TableTest {
 
     @Test
     public void testRollback() throws Exception {
-        Table table = multiMap.getTable("First");
+        Table table = multiMap.getTable("Second");
         Storeable input = new MyStorable(typeList);
         input.setColumnAt(0, 1);
         input.setColumnAt(1, "one");
@@ -114,11 +128,7 @@ public class TableTest {
         input.setColumnAt(0, 2);
         input.setColumnAt(1, "two");
         table.put("key2", input);
-        table.commit();
         assertEquals(2, table.rollback());
-        table.remove("key1");
-        table.remove("key2");
-        table.commit();
     }
 
     @Test
