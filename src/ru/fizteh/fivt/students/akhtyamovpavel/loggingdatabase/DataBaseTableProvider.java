@@ -188,23 +188,36 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
     @Override
     public Table getTable(String name) throws IllegalArgumentException {
         isClosed();
+        boolean isClosedCurrentMap = false;
         if (name == null) {
             throw new IllegalArgumentException("null table name");
         }
-        if (name.equals(openedTableName)) {
-            return fileMap;
+        providerLock.readLock().lock();
+        try {
+            if (fileMap != null) {
+                fileMap.isClosed();
+            }
+            if (name.equals(openedTableName)) {
+                return fileMap;
+            }
+            if (onExistCheck(name, true) != null) {
+                return null;
+            }
+        } catch (IllegalStateException e) {
+            isClosedCurrentMap = true;
+        } finally {
+            providerLock.readLock().unlock();
         }
-        if (onExistCheck(name, true) != null) {
-            return null;
-        }
-        boolean isClosedCurrentMap = false;
+
         providerLock.readLock().lock();
         try {
             try {
-                try {
-                    fileMap.isClosed();
-                } catch (IllegalStateException e) {
-                    isClosedCurrentMap = true;
+                if (fileMap != null) {
+                    try {
+                        fileMap.isClosed();
+                    } catch (IllegalStateException e) {
+                        isClosedCurrentMap = true;
+                    }
                 }
                 if (!isClosedCurrentMap) {
                     if (fileMap != null && fileMap.hasUnsavedChanges()) {
@@ -317,7 +330,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
                 setFileMap(null);
             }
         } finally {
-            providerLock.writeLock().lock();
+            providerLock.writeLock().unlock();
         }
 
     }

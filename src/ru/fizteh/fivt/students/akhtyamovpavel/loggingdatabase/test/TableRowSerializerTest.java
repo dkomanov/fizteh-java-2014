@@ -25,10 +25,12 @@ public class TableRowSerializerTest {
     private DataBaseTable table;
     private ArrayList<Class<?>> signature;
 
+    public static final String DATA_BASE_PATH = "/home/akhtyamovpavel/Development/test/database1";
+
     @BeforeClass
     public static void init() {
         try {
-            provider = new DataBaseTableProvider("D:\\test\\database3");
+            provider = new DataBaseTableProvider(DATA_BASE_PATH);
         } catch (Exception e) {
             assertTrue(false);
         }

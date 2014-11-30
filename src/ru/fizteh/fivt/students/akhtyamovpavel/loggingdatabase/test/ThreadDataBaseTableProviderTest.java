@@ -75,7 +75,7 @@ public class ThreadDataBaseTableProviderTest {
         public DataBaseProviderRunner() {
             factory = new DataBaseTableProviderFactory();
             try {
-                provider = new DataBaseTableProvider("D:\\test\\database4");
+                provider = new DataBaseTableProvider(TableRowSerializerTest.DATA_BASE_PATH);
             } catch (Exception e) {
                 fail();
             }
