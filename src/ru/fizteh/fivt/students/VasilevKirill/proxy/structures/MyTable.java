@@ -25,11 +25,11 @@ public class MyTable implements Table, AutoCloseable {
     Map<String, Storeable> data;
     private Map<String, Storeable> oldData;
     private int numUnsavedChanges;
-    private MultiMap multiMap;
+    private MyTableProvider myTableProvider;
     private Class[] typeList;
 
-    public MyTable(File tableDirectory, MultiMap multiMap, Class[] typeList) throws IOException {
-        this.multiMap = multiMap;
+    public MyTable(File tableDirectory, MyTableProvider myTableProvider, Class[] typeList) throws IOException {
+        this.myTableProvider = myTableProvider;
         this.tableDirectory = tableDirectory;
         this.typeList = typeList;
         files = new FileMap[16][16];
@@ -61,12 +61,12 @@ public class MyTable implements Table, AutoCloseable {
         writeSignatures();
     }
 
-    public MyTable(File tableDirectory, MultiMap multiMap, List<Class<?>> typeList) throws IOException {
+    public MyTable(File tableDirectory, MyTableProvider myTableProvider, List<Class<?>> typeList) throws IOException {
         Class[] typeArray = new Class[typeList.size()];
         for (int i = 0; i < typeArray.length; ++i) {
             typeArray[i] = typeList.get(i);
         }
-        new MyTable(tableDirectory, multiMap, typeArray);
+        new MyTable(tableDirectory, myTableProvider, typeArray);
     }
 
     @Override
@@ -449,6 +449,6 @@ public class MyTable implements Table, AutoCloseable {
     @Override
     public void close() throws Exception {
         rollback();
-        multiMap.setTableClosed(getName());
+        myTableProvider.setTableClosed(getName());
     }
 }

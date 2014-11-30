@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Created by Kirill on 19.10.2014.
  */
-public class MultiMap implements TableProvider, AutoCloseable {
+public class MyTableProvider implements TableProvider, AutoCloseable {
     private String workingDirectory;
     private String workingTable;
     private Map<String, SharedMyTable> tables;
@@ -28,7 +28,7 @@ public class MultiMap implements TableProvider, AutoCloseable {
     private ReentrantReadWriteLock providerLock;
     private boolean isClosed = false;
 
-    public MultiMap(String directory) throws IOException {
+    public MyTableProvider(String directory) throws IOException {
         workingDirectory = directory == null ? new File("").getCanonicalPath() : directory;
         File workingFile = new File(workingDirectory);
         if (!workingFile.exists()) {

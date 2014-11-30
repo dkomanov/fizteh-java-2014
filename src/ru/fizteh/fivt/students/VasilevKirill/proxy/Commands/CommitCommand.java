@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.VasilevKirill.proxy.Commands;
 
 import ru.fizteh.fivt.students.VasilevKirill.proxy.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.Commands.shelldata.Status;
-import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MultiMap;
+import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTableProvider;
 
 import java.io.IOException;
 
@@ -15,7 +15,7 @@ public class CommitCommand implements Command {
         if (!checkArgs(args)) {
             throw new IOException("Wrong arguments");
         }
-        MultiMap tableProvider = status.getMultiMap();
+        MyTableProvider tableProvider = status.getMultiMap();
         if (tableProvider == null) {
             throw new IOException("Status has incorrect object");
         }

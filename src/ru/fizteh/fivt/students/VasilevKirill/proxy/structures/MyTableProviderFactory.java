@@ -24,8 +24,8 @@ public class MyTableProviderFactory implements TableProviderFactory {
             throw new IllegalArgumentException();
         }
         try {
-            MultiMap multiMap = new MultiMap(dir);
-            return multiMap;
+            MyTableProvider myTableProvider = new MyTableProvider(dir);
+            return myTableProvider;
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
