@@ -28,10 +28,11 @@ public class MFileHashMap implements TableProvider {
     private FileMap currentTable;
     private ReentrantReadWriteLock lockForCreateAndGet;
 
-    public MFileHashMap(String newDirectory) {
+    public MFileHashMap(String newDirectory) throws IOException {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
         lockForCreateAndGet = new ReentrantReadWriteLock();
+        init();
     }
 
     @Override

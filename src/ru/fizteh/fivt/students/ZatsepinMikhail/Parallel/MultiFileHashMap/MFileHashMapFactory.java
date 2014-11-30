@@ -27,9 +27,6 @@ public class MFileHashMapFactory implements TableProviderFactory {
         }
 
         MFileHashMap myMFileHashMap = new MFileHashMap(dataBaseDirectory.toString());
-        if (!myMFileHashMap.init()) {
-            throw new IOException("error while initialization");
-        }
         return myMFileHashMap;
     }
 }
