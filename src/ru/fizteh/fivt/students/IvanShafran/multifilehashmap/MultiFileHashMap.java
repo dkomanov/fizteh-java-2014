@@ -78,7 +78,7 @@ public class MultiFileHashMap extends AbstractShell {
     private void initCommands() {
         this.command = new HashMap<>();
 
-        this.command.put("exit", new CommandExit());
+        this.command.put("exit", new CommandExit(this));
         this.command.put("use", new CommandUse(this));
         this.command.put("put", new CommandPut(this));
         this.command.put("get", new CommandGet(this));
