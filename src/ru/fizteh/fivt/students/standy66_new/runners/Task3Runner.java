@@ -6,7 +6,7 @@ import ru.fizteh.fivt.students.standy66_new.commands.Command;
 import ru.fizteh.fivt.students.standy66_new.commands.ExitCommand;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.StringDatabase;
 import ru.fizteh.fivt.students.standy66_new.storage.strings.StringDatabaseFactory;
-import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.CommandFactory;
+import ru.fizteh.fivt.students.standy66_new.storage.strings.commands.StorageCommandFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
@@ -36,7 +36,7 @@ public final class Task3Runner {
             System.exit(1);
         }
         PrintWriter systemOutWriter = new PrintWriter(System.out, true);
-        CommandFactory commandFactory = new CommandFactory(systemOutWriter, provider);
+        StorageCommandFactory commandFactory = new StorageCommandFactory(systemOutWriter, provider);
         Map<String, Command> availableCommands = commandFactory.getCommandsMap();
         availableCommands.put("exit", new ExitCommand(systemOutWriter));
         Interpreter interpreter;
