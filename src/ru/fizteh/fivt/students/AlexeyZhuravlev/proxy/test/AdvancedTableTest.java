@@ -1,10 +1,13 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.test;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTable;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProvider;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProviderFactory;
 
 import java.io.IOException;
@@ -32,6 +35,16 @@ public class AdvancedTableTest {
                 Boolean.class, String.class, Byte.class};
         types = Arrays.asList(arrayTypes);
         table = provider.createTable("table", types);
+    }
+
+    @After
+    public void closeTableAndProvider() throws Exception {
+        try {
+            ((AdvancedTableProvider) provider).close();
+            ((AdvancedTable) table).close();
+        } catch (IllegalStateException e) {
+            e.getMessage();
+        }
     }
 
     @Test
@@ -67,6 +80,7 @@ public class AdvancedTableTest {
         Storeable old = table.put("key", value);
         assertEquals(old.getColumnAt(0), 5);
         assertEquals(table.get("key").getColumnAt(0), 2);
+        assertNull(table.get("nothere"));
     }
 
     @Test
@@ -163,5 +177,26 @@ public class AdvancedTableTest {
         assertEquals(3, table.size());
         assertEquals(1, table.rollback());
         assertEquals(2, table.size());
+    }
+
+    @Test (expected = IllegalStateException.class)
+    public void testCloseTable() throws Exception {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.commit();
+        ((AdvancedTable) table).close();
+        table.get("1");
+    }
+
+    @Test
+    public void testCloseTableAndGetNewFromProvider() throws Exception {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.commit();
+        table.put("2", value);
+        ((AdvancedTable) table).close();
+        table = provider.getTable("table");
+        assertNotNull(table.get("1"));
+        assertNull(table.get("2"));
     }
 }

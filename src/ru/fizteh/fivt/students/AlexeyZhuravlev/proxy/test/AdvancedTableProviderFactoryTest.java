@@ -9,8 +9,10 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProviderFactor
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertNotNull;
+
 public class AdvancedTableProviderFactoryTest {
-    private TableProviderFactory factory;
+    private AdvancedTableProviderFactory factory;
 
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
@@ -22,7 +24,7 @@ public class AdvancedTableProviderFactoryTest {
 
     @Test
     public void create() throws IOException {
-        factory.create(tmpFolder.newFolder().getAbsolutePath());
+        assertNotNull(factory.create(tmpFolder.newFolder().getAbsolutePath()));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -33,5 +35,12 @@ public class AdvancedTableProviderFactoryTest {
     @Test(expected = IOException.class)
     public void createWithIncorrectArgument() throws IllegalArgumentException, IOException {
         factory.create(tmpFolder.newFile().getAbsolutePath());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void closeAndCallMethod() throws Exception {
+        factory.create(tmpFolder.newFolder().getAbsolutePath());
+        factory.close();
+        factory.create(tmpFolder.newFolder().getAbsolutePath());
     }
 }

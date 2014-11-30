@@ -1,10 +1,13 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.test;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTable;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProvider;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProviderFactory;
 
 import java.io.IOException;
@@ -29,6 +32,16 @@ public class AdvancedTableProviderTest {
         factory = new AdvancedTableProviderFactory();
         providerPath = tmpFolder.newFolder().getAbsolutePath();
         provider = factory.create(providerPath);
+    }
+
+    @After
+    public void closeProvider() throws Exception {
+        try {
+            ((AdvancedTableProvider) provider).close();
+            ((AdvancedTableProviderFactory) factory).close();
+        } catch (IllegalStateException e) {
+            e.getMessage();
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -171,4 +184,23 @@ public class AdvancedTableProviderTest {
         assertTrue(provider.getTableNames().containsAll(
                 new LinkedList<>(Arrays.asList("таблица", "табличка"))));
     }
+
+    @Test (expected = IllegalStateException.class)
+    public void closeProviderAndChangeState() throws Exception {
+        Class<?>[] types = {Integer.class};
+        provider.createTable("table", Arrays.asList(types));
+        ((AdvancedTableProvider) provider).close();
+        provider.getTable("table");
+    }
+
+    @Test (expected = IllegalStateException.class)
+    public void closeProvdierAndCloseTables() throws Exception {
+        Class<?>[] types = {Integer.class};
+        Table table1 = provider.createTable("table1", Arrays.asList(types));
+        Table table2 = provider.createTable("table2", Arrays.asList(types));
+        ((AdvancedTable) table1).close();
+        ((AdvancedTableProvider) provider).close();
+        table2.commit();
+    }
+
 }

@@ -109,6 +109,7 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
     @Override
     public void close() throws Exception {
         checkClosed();
+        rollback();
         closed.set(true);
     }
 
