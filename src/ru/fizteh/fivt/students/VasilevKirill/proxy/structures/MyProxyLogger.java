@@ -68,7 +68,7 @@ public class MyProxyLogger implements InvocationHandler {
 
     public void putThrowable(XMLStreamWriter xmlWriter, Throwable e) throws XMLStreamException {
         xmlWriter.writeStartElement("thrown");
-
+        xmlWriter.writeCharacters(e.toString());
         xmlWriter.writeEndElement();
     }
 
@@ -95,7 +95,7 @@ public class MyProxyLogger implements InvocationHandler {
                 }
                 if (it instanceof Iterable) {
                     if (map.containsKey(it)) {
-                        xmlWriter.writeStartElement("cyclic");
+                        xmlWriter.writeCharacters("cyclic");
                     } else {
                         xmlWriter.writeStartElement("list");
                         recursivePrintArgs(xmlWriter, (Iterable) it, map, 1);
