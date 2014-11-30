@@ -54,7 +54,7 @@ public class SaveTable {
                 }
 
             }
-            try (DataOutputStream outStream = new DataOutputStream(new FileOutputStream(filePath))){
+            try (DataOutputStream outStream = new DataOutputStream(new FileOutputStream(filePath))) {
                 for (String key : table.currentKeys[dir][file]) {
                     Storeable tableRawValue = table.currentMap.get(key);
                     String stringValue = table.tableProvider.serialize(table, tableRawValue);
