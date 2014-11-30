@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMapFactory;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.shell.FileUtils;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class TestStoreable {
     public void setUp() throws Exception {
         providerDirectory = Paths.get("").resolve("provider").toString();
         tableName = "testTable2";
-        factory = new ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMapFactory();
+        factory = new MFileHashMapFactory();
         typeList = new ArrayList<>();
         typeList.add(Integer.class);
         typeList.add(String.class);

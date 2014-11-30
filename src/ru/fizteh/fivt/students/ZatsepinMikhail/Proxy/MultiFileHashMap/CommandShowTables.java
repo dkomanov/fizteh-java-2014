@@ -1,13 +1,13 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap;
 
-public class CommandShowTables extends ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.CommandMultiFileHashMap {
+public class CommandShowTables extends CommandMultiFileHashMap {
     public CommandShowTables() {
         name = "show";
         numberOfArguments = 2;
     }
 
     @Override
-    public boolean run(ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap myMap, String[] args) {
+    public boolean run(MFileHashMap myMap, String[] args) {
         if (!args[1].equals("tables")) {
             System.out.println(name + ": wrong arguments");
             return false;

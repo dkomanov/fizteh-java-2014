@@ -5,6 +5,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.AbstractStoreable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.shell.FileUtils;
@@ -23,7 +24,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MFileHashMap implements TableProvider {
     private String dataBaseDirectory;
-    private HashMap<String, ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap> tables;
+    private HashMap<String, FileMap> tables;
     private FileMap currentTable;
     private ReentrantReadWriteLock lockForCreateAndGet;
 
@@ -74,7 +75,7 @@ public class MFileHashMap implements TableProvider {
                 try (FileWriter fileOut = new FileWriter(pathOfNewTableSignatureFile.toString())) {
                     fileOut.write(TypesUtils.toFileSignature(columnTypes));
                 }
-                FileMap newTable = new ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap(pathOfNewTable.toString(), columnTypes, this);
+                FileMap newTable = new FileMap(pathOfNewTable.toString(), columnTypes, this);
                 tables.put(name, newTable);
                 returnValue = newTable;
             } catch (IOException e) {
@@ -138,19 +139,19 @@ public class MFileHashMap implements TableProvider {
                     + ", but got:" + value.getColumnAt(i).getClass());
             }
         }
-        return ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator.serialize(table, value);
+        return Serializator.serialize(table, value);
     }
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        return ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator.deserialize(table, value);
+        return Serializator.deserialize(table, value);
     }
 
     @Override
     public List<String> getTableNames() {
         List<String> result = new ArrayList<>();
-        Collection<ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap> filemaps = tables.values();
-        for (ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap oneTable : filemaps) {
+        Collection<FileMap> filemaps = tables.values();
+        for (FileMap oneTable : filemaps) {
             result.add(oneTable.getName());
         }
         return result;
@@ -158,7 +159,7 @@ public class MFileHashMap implements TableProvider {
 
 
     public void showTables() {
-        Set<Entry<String, ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap>> pairSet = tables.entrySet();
+        Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneTable: pairSet) {
             System.out.println(oneTable.getKey() + " "
                 + oneTable.getValue().size());
@@ -169,7 +170,7 @@ public class MFileHashMap implements TableProvider {
         currentTable = newCurrentTable;
     }
 
-    public ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap getCurrentTable() {
+    public FileMap getCurrentTable() {
         return currentTable;
     }
 
@@ -185,7 +186,7 @@ public class MFileHashMap implements TableProvider {
                         types = input.nextLine().trim().split("\\s+");
                         List<Class<?>> newTypeList = TypesUtils.toTypeList(types);
                         if (newTypeList != null) {
-                            tables.put(oneFile, new ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap(oneTablePath.toString(), newTypeList, this));
+                            tables.put(oneFile, new FileMap(oneTablePath.toString(), newTypeList, this));
                         }
                     }
                 } catch (FileNotFoundException e) {
@@ -196,8 +197,8 @@ public class MFileHashMap implements TableProvider {
             }
         }
         boolean allRight = true;
-        Set<Entry<String, ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap>> pairSet = tables.entrySet();
-        for (Entry<String, ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap> oneFileMap: pairSet) {
+        Set<Entry<String, FileMap>> pairSet = tables.entrySet();
+        for (Entry<String, FileMap> oneFileMap: pairSet) {
             if  (!oneFileMap.getValue().init()) {
                 allRight = false;
             }

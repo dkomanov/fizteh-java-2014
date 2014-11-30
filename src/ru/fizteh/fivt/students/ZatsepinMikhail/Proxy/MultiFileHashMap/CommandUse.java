@@ -9,8 +9,8 @@ public class CommandUse extends CommandMultiFileHashMap {
     }
 
     @Override
-    public boolean run(ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap myMap, String[] args) {
-        ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap newCurrentTable = (ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap) myMap.getTable(args[1]);
+    public boolean run(MFileHashMap myMap, String[] args) {
+        FileMap newCurrentTable = (FileMap) myMap.getTable(args[1]);
         if (newCurrentTable != null) {
             FileMap currentTable = myMap.getCurrentTable();
             if (currentTable == null) {

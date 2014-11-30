@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Shell<T> {
-    private HashMap<String, ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Command<T>> shellCommands;
+    private HashMap<String, Command<T>> shellCommands;
 
     private T objectForShell;
     public Shell(T obj) {
@@ -12,7 +12,7 @@ public class Shell<T> {
         objectForShell = obj;
     }
 
-    public void addCommand(ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Command<T> newCommand) {
+    public void addCommand(Command<T> newCommand) {
         shellCommands.put(newCommand.toString(), newCommand);
     }
 
@@ -39,7 +39,7 @@ public class Shell<T> {
                         ended = true;
                         break;
                     }
-                    ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Command<T> commandToExecute = shellCommands.get(parsedArguments[0]);
+                    Command<T> commandToExecute = shellCommands.get(parsedArguments[0]);
                     if (commandToExecute != null) {
                         if (commandToExecute.numberOfArguments != parsedArguments.length
                                 & commandToExecute.numberOfArguments != -1) {
@@ -84,7 +84,7 @@ public class Shell<T> {
             if (parsedArguments[0].equals("exit")) {
                 return !errorOccuried;
             }
-            ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Command<T> commandToExecute = shellCommands.get(parsedArguments[0]);
+            Command<T> commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {
                 if (commandToExecute.numberOfArguments != parsedArguments.length
                         & commandToExecute.numberOfArguments != -1) {

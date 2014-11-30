@@ -148,7 +148,7 @@ public class TestTable {
             assertTrue(testTable.get(keyForCommit + i).equals(valueForCommit));
         }
 
-        Storeable freshValue = ((ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap) testTable).getTableProvider().createFor(testTable);
+        Storeable freshValue = ((FileMap) testTable).getTableProvider().createFor(testTable);
         freshValue.setColumnAt(0, 123456);
         freshValue.setColumnAt(1, "FRESH!!!");
         freshValue.setColumnAt(2, true);

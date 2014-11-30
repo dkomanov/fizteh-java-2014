@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMapFactory;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.shell.FileUtils;
 
@@ -42,7 +43,7 @@ public class TestTableProvider {
     public void setUp() {
         providerDirectory = Paths.get("").resolve("provider").toString();
         tableName = "testTable";
-        factory = new ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMapFactory();
+        factory = new MFileHashMapFactory();
         try {
             provider = factory.create(providerDirectory);
         } catch (IOException e) {

@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
 
 import javax.xml.stream.*;
 import javax.xml.stream.events.StartElement;
@@ -71,7 +72,7 @@ public class Serializator {
 
     public static Storeable deserialize(Table table, String valueXML) throws ParseException {
         byte[] byteArray = valueXML.getBytes();
-        Storeable result = ((ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap) table).getTableProvider().createFor(table);
+        Storeable result = ((FileMap) table).getTableProvider().createFor(table);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         try {

@@ -6,7 +6,7 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializat
 import java.text.ParseException;
 import java.util.NoSuchElementException;
 
-public class FmCommandPut extends ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.CommandFileMap {
+public class FmCommandPut extends CommandFileMap {
     public FmCommandPut() {
         name = "put";
         numberOfArguments = -1;
@@ -28,7 +28,7 @@ public class FmCommandPut extends ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.
             return false;
         }
         if (oldValue != null) {
-            System.out.println("overwrite\n" + ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator.serialize(myFileMap, oldValue));
+            System.out.println("overwrite\n" + Serializator.serialize(myFileMap, oldValue));
         } else {
             System.out.println("new");
         }

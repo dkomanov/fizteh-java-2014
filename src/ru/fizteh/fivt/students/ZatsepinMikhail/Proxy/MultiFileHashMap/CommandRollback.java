@@ -9,7 +9,7 @@ public class CommandRollback extends CommandMultiFileHashMap {
     }
 
     @Override
-    public boolean run(ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap myMap, String[] args) {
+    public boolean run(MFileHashMap myMap, String[] args) {
         FileMap currentTable = myMap.getCurrentTable();
         if (currentTable == null) {
             System.out.println("no table");

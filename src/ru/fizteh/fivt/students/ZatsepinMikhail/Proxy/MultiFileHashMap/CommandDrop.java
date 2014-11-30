@@ -2,14 +2,14 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap;
 
 import java.io.IOException;
 
-public class CommandDrop extends ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.CommandMultiFileHashMap {
+public class CommandDrop extends CommandMultiFileHashMap {
     public CommandDrop() {
         name = "drop";
         numberOfArguments = 2;
     }
 
     @Override
-    public boolean run(ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap myDataBase, String[] args) {
+    public boolean run(MFileHashMap myDataBase, String[] args) {
         try {
             myDataBase.removeTable(args[1]);
             System.out.println("dropped");

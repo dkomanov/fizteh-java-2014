@@ -1,6 +1,9 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap;
 
-public class CommandRemoveDistribute extends ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.CommandMultiFileHashMap {
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FmCommandRemove;
+
+public class CommandRemoveDistribute extends CommandMultiFileHashMap {
     public CommandRemoveDistribute() {
         name = "remove";
         numberOfArguments = 2;
@@ -8,12 +11,12 @@ public class CommandRemoveDistribute extends ru.fizteh.fivt.students.ZatsepinMik
 
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
-        ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap currentTable = myMap.getCurrentTable();
+        FileMap currentTable = myMap.getCurrentTable();
         if (myMap.getCurrentTable() == null) {
             System.out.println("no table");
             return true;
         }
-        ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FmCommandRemove removeCommand = new ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FmCommandRemove();
+        FmCommandRemove removeCommand = new FmCommandRemove();
         return removeCommand.run(currentTable, args);
     }
 }

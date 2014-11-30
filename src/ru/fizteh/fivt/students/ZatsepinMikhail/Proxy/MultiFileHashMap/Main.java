@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap;
 
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +40,7 @@ public class Main {
             System.exit(3);
         }
 
-        ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell<MFileHashMap> myShell = new ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell<>(myMFileHashMap);
+        Shell<MFileHashMap> myShell = new Shell<>(myMFileHashMap);
         setUpShell(myShell);
 
         if (args.length > 0) {
@@ -54,7 +56,7 @@ public class Main {
     }
 
 
-    public static void setUpShell(ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell<MFileHashMap> myShell) {
+    public static void setUpShell(Shell<MFileHashMap> myShell) {
         myShell.addCommand(new CommandCreate());
         myShell.addCommand(new CommandDrop());
         myShell.addCommand(new CommandUse());

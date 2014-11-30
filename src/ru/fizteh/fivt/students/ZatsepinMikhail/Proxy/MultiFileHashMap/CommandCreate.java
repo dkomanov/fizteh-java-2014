@@ -6,14 +6,14 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesU
 import java.io.IOException;
 import java.util.List;
 
-public class CommandCreate extends ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.CommandMultiFileHashMap {
+public class CommandCreate extends CommandMultiFileHashMap {
     public CommandCreate() {
         name = "create";
         numberOfArguments = -1;
     }
 
     @Override
-    public boolean run(ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap myMultiDataBase, String[] args) {
+    public boolean run(MFileHashMap myMultiDataBase, String[] args) {
         StringBuilder simpleBuilder = new StringBuilder();
         for (int i = 2; i < args.length; ++i) {
             if (i != 2) {
