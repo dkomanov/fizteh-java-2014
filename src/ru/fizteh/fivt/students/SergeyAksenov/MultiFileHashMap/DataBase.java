@@ -136,8 +136,8 @@ public final class DataBase {
     public void drop(String tablename) {
         String tablePath = dataBasePath + File.separator + tablename;
         File fileToRem = new File(tablePath);
-        if (!fileToRem.getParentFile().toString().equals(dataBasePath.toString()) ||
-                !fileToRem.exists()) {
+        if (!fileToRem.getParentFile().toString().equals(dataBasePath.toString())
+                || !fileToRem.exists()) {
             System.out.println(tablename + " not exists");
         }
         if (currentTablePath != null) {
@@ -153,7 +153,7 @@ public final class DataBase {
         return dataBasePath.toFile().list();
     }
 
-    public String getCurrentTablePath () {
+    public String getCurrentTablePath() {
         if (currentTablePath == null) {
             return null;
         }
