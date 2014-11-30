@@ -4,12 +4,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import ru.fizteh.fivt.students.lukina.DataBase.DBase;
 import ru.fizteh.fivt.students.lukina.DataBase.DBaseProvider;
 import ru.fizteh.fivt.students.lukina.DataBase.DBaseProviderFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import static org.junit.Assert.*;
 
@@ -92,6 +95,17 @@ public class DBaseProviderTest {
         test.createTable("table_for_removing", list);
         test.removeTable("table_for_removing");
         assertNull(test.getTable("table_for_removing"));
+    }
+
+    @Test
+    public void testGetTableNames() throws IOException {
+        test.createTable("table_for_removing", list);
+        List<String> names = new Vector<String>();
+        names = test.getTableNames();
+        assertFalse(!names.contains("table_for_removing"));
+        test.removeTable("table_for_removing");
+        names = test.getTableNames();
+        assertFalse(names.contains("table_for_removing"));
     }
 
     @Test(expected = IllegalStateException.class)

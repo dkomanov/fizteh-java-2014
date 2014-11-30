@@ -110,13 +110,13 @@ public class DataBase {
 
     private static void show() {
         if (prov != null) {
-            prov.showTables();
+            prov.getTableNames();
         }
     }
 
     private static void use(String tableName) {
         if (currTable != null) {
-            int changes = currTable.countChanges();
+            int changes = currTable.getNumberOfUncommittedChanges();
             if (changes != 0) {
                 System.out.println(changes + " unsaved changes");
                 return;
@@ -196,44 +196,6 @@ public class DataBase {
         }
     }
 
-    private static void createWithoutPrinting(String args) {
-        args.trim();
-        if (!args.endsWith(")")) {
-            printError("Incorrect arguments. Need types");
-            return;
-        }
-        args = args.replace(")", "");
-        String[] strArray = args.split("[ ]+[/(]", 2);
-        if (strArray.length < 2) {
-            printError("Incorrect arguments. Need types");
-            return;
-        }
-        String tableName = strArray[0];
-        ArrayList<Class<?>> list = new ArrayList<>();
-        Scanner sc = new Scanner(strArray[1]);
-        while (sc.hasNext()) {
-            try {
-                String type = sc.next();
-                Class<?> cl = prov.getClassFromString(type);
-                list.add(cl);
-            } catch (RuntimeException e) {
-                printError("wrong type (" + e.getMessage() + ")");
-                sc.close();
-                return;
-            }
-        }
-        sc.close();
-        try {
-            prov.createTable(tableName, list);
-        } catch (IllegalArgumentException e) {
-            System.out.println("wrong type (" + e.getMessage() + ")");
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-    }
-
-
     private static void doCommit() {
         if (currTable == null) {
             return;
@@ -288,17 +250,17 @@ public class DataBase {
         System.exit(0);
     }
 
-    private void doRollBack() {
-        if (currTable != null) {
-            System.out.println(currTable.rollback());
-        }
-    }
-
     /*
      * сначала аргументы делятся по пробелу.а мы их склеим и поделим по ";"потом
      * вызовем для каждой группы аргументовфункцию разбивающую аргументы снова
      * как нужнои выполняющую программки
      */
+
+    private void doRollBack() {
+        if (currTable != null) {
+            System.out.println(currTable.rollback());
+        }
+    }
 
     public String appendArgs(int num, String[] args) {
         StringBuffer str = new StringBuffer(args[num]);
@@ -390,7 +352,7 @@ public class DataBase {
             }
         }
     }
-
+    
     public void exec(String[] args) {
         File dir = new File(System.getProperty("fizteh.db.dir"));
         if (dir.isAbsolute()) {
@@ -436,6 +398,7 @@ public class DataBase {
                         execProc(getArgsFromString(string));
                     }
                 }
+                scannerParse.close();
                 System.out.print("$ ");
             }
             scanner.close();

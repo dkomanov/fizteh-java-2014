@@ -6,6 +6,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
 import javax.xml.stream.*;
+
 import java.io.*;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Vector;
 
 
 public class DBaseProvider implements TableProvider, AutoCloseable {
@@ -230,13 +232,6 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
         }
     }
 
-    protected void showTables() {
-        Set<String> fileKeySet = tableBase.keySet();
-        for (String key : fileKeySet) {
-            System.out.println(key + " " + tableBase.get(key).size());
-        }
-    }
-
     public Class<?> getClassFromString(String name) {
         switch (name) {
             case "int":
@@ -411,6 +406,16 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
             entry.getValue().close();
         }
         isClosed = true;
+    }
+
+    @Override
+    public List<String> getTableNames() {
+        List<String> tableNames = new Vector<String>();
+        Set<String> fileKeySet = tableBase.keySet();
+        for (String name : fileKeySet) {
+            tableNames.add(name);
+        }
+        return tableNames;
     }
 
 }

@@ -15,7 +15,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DBase implements Table, AutoCloseable {
     private static String rootDir = "";
-    protected ThreadLocal<HashMap<String, Storeable>> dataMap = new ThreadLocal<HashMap<String, Storeable>>() {
+    protected ThreadLocal<HashMap<String, Storeable>> dataMap
+            = new ThreadLocal<HashMap<String, Storeable>>() {
         @Override
         public HashMap<String, Storeable> initialValue() {
             return new HashMap<>();
@@ -294,14 +295,15 @@ public class DBase implements Table, AutoCloseable {
     @Override
     public int commit() throws IOException {
         checkClosed();
-        int changesCount = countChanges();
+        int changesCount = getNumberOfUncommittedChanges();
         mergeMaps();
         dataMap.get().clear();
         unloadData();
         return changesCount;
     }
 
-    public int countChanges() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         int count = 0;
         Set<Map.Entry<String, Storeable>> entries = dataMap.get().entrySet();
         read.lock();
@@ -327,7 +329,7 @@ public class DBase implements Table, AutoCloseable {
     @Override
     public int rollback() {
         checkClosed();
-        int changesCount = countChanges();
+        int changesCount = getNumberOfUncommittedChanges();
         dataMap.get().clear();
         return changesCount;
     }
@@ -358,7 +360,9 @@ public class DBase implements Table, AutoCloseable {
         provider.closeTable(currTable);
     }
 
-    public Set<String> list() {
+    @Override
+    public List<String> list() {
+        List<String> keys = new Vector<String>();
         Set<String> commonFileKeySet = commonDataMap.keySet();
         Set<String> fileKeySet = dataMap.get().keySet();
         Set<String> f = new HashSet<String>(fileKeySet);
@@ -369,12 +373,14 @@ public class DBase implements Table, AutoCloseable {
         }
         if (fileKeySet != null) {
             for (String key : f) {
-                if (key != null) {
-                    System.out.println(key);
+                if (commonDataMap.containsKey(key) && !dataMap.get().containsKey(key)
+                        || dataMap.get().get(key) != null) {
+                    keys.add(key);
                 }
             }
         }
-        return f;
+        return keys;
     }
+
 
 }

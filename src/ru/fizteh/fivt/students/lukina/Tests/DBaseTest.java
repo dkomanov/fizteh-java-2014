@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.lukina.DataBase.DBase;
@@ -215,17 +216,17 @@ public class DBaseTest {
         test.put("z1", row);
         row.setColumnAt(0, "v2");
         test.put("z1", row);
-        assertSame(test.countChanges(), 1);
+        assertSame(test.getNumberOfUncommittedChanges(), 1);
         row.setColumnAt(0, "v1");
         test.put("z2", row);
         test.remove("z2");
-        assertSame(test.countChanges(), 1);
+        assertSame(test.getNumberOfUncommittedChanges(), 1);
         test.commit();
-        assertSame(test.countChanges(), 0);
+        assertSame(test.getNumberOfUncommittedChanges(), 0);
         row.setColumnAt(0, "v3");
         test.put("z1", row);
         test.remove("z1");
-        assertSame(test.countChanges(), 1);
+        assertSame(test.getNumberOfUncommittedChanges(), 1);
     }
 
     @Test
