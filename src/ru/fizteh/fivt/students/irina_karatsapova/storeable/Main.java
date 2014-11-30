@@ -31,6 +31,7 @@ public class Main {
         interpreter.addCommand(new SizeCommand());
         interpreter.addCommand(new CommitCommand());
         interpreter.addCommand(new RollbackCommand());
+        interpreter.addCommand(new ListCommand());
         if (args.length == 0) {
             interpreter.interactiveMode(tableProvider);
         } else {
