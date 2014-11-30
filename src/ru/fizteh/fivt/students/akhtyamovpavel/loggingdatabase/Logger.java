@@ -3,15 +3,11 @@ package ru.fizteh.fivt.students.akhtyamovpavel.loggingdatabase;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
 
 /**
  * Created by akhtyamovpavel on 30.11.14.
@@ -42,7 +38,7 @@ public class Logger implements InvocationHandler {
                 for (int i = 0; i < args.length; ++i) {
                     streamWriter.writeStartElement("argument");
                     if (args[i] instanceof Iterable) {
-                        writeLists((Iterable)args[i], new IdentityHashMap<>(), streamWriter);
+                        writeLists((Iterable) args[i], new IdentityHashMap<>(), streamWriter);
                     } else {
                         streamWriter.writeCharacters(args[i].toString());
                     }
@@ -88,7 +84,7 @@ public class Logger implements InvocationHandler {
         if (method.getReturnType() != void.class) {
             streamWriter.writeStartElement("return");
             if (result instanceof Iterable) {
-                writeLists((Iterable)result, new IdentityHashMap<>(), streamWriter);
+                writeLists((Iterable) result, new IdentityHashMap<>(), streamWriter);
             } else {
                 if (result == null) {
                     streamWriter.writeEmptyElement("null");

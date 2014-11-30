@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Created by user1 on 30.09.2014.
  */
-public class DataBaseTable implements Table {
+public class DataBaseTable implements Table, AutoCloseable {
     public static final int NUMBER_OF_FILES = 16;
     public static final int NUMBER_OF_DIRECTORIES = 16;
 
@@ -28,9 +28,16 @@ public class DataBaseTable implements Table {
     HashMap<String, Storeable> tempData = new HashMap<>();
     ReentrantReadWriteLock lock;
     ThreadLocal<DataBaseTableDiff> diff;
+    boolean closed = false;
     int version = 0;
     private TableRowSerializer serializer;
     private ArrayList<Class<?>> signature = new ArrayList<>();
+
+    public void isClosed() throws IllegalStateException {
+        if (closed) {
+            throw new IllegalStateException("table " + tableName + " is closed");
+        }
+    }
 
     public DataBaseTable(Path path,
                          String tableName,
@@ -77,7 +84,6 @@ public class DataBaseTable implements Table {
         try {
             writeSignature();
             saveMap();
-
         } finally {
             this.lock.writeLock().unlock();
         }
@@ -103,7 +109,7 @@ public class DataBaseTable implements Table {
         }
     }
 
-    public void loadMap() throws IOException {
+    void loadMap() throws IOException {
         for (int directoryIndex = 0; directoryIndex < NUMBER_OF_DIRECTORIES; ++directoryIndex) {
             String directoryName = String.format("%02d.dir", directoryIndex);
             Path directoryPath = Paths.get(dataBasePath.toString(), directoryName);
@@ -153,7 +159,7 @@ public class DataBaseTable implements Table {
         }
     }
 
-    public void saveMap() throws Exception {
+    void saveMap() throws Exception {
         ArrayList<ArrayList<ArrayList<String>>> listOfKeys = new ArrayList<>();
         ArrayList<ArrayList<ArrayList<Storeable>>> listOfValues = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_DIRECTORIES; ++i) {
@@ -212,6 +218,7 @@ public class DataBaseTable implements Table {
     }
 
     private void clearGarbage() throws Exception {
+        isClosed();
         String[] filesList = dataBasePath.toFile().list();
         for (String fileName : filesList) {
             if (!fileName.equals("signature.tsv")) {
@@ -225,11 +232,13 @@ public class DataBaseTable implements Table {
 
     @Override
     public String getName() {
+        isClosed();
         return tableName;
     }
 
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
+        isClosed();
         if (key == null || value == null) {
             throw new IllegalArgumentException("null key or value");
         }
@@ -238,6 +247,7 @@ public class DataBaseTable implements Table {
 
     @Override
     public Storeable get(String key) {
+        isClosed();
         if (key == null) {
             throw new IllegalArgumentException("null key");
         }
@@ -247,6 +257,7 @@ public class DataBaseTable implements Table {
 
     @Override
     public Storeable remove(String key) {
+        isClosed();
         if (key == null) {
             throw new IllegalArgumentException("null key");
         }
@@ -255,11 +266,13 @@ public class DataBaseTable implements Table {
 
     @Override
     public int size() {
+        isClosed();
         return tempData.size() + diff.get().addMap.size() - diff.get().deleteMap.size();
     }
 
     @Override
     public int commit() throws IOException {
+        isClosed();
         int changes = diff.get().changesSize();
         diff.get().commit();
         diff.get().clearDiff();
@@ -268,6 +281,7 @@ public class DataBaseTable implements Table {
 
     @Override
     public int rollback() {
+        isClosed();
         int changes = diff.get().changesSize();
         diff.get().clearDiff();
         return changes;
@@ -276,16 +290,19 @@ public class DataBaseTable implements Table {
 
     @Override
     public int getColumnsCount() {
+        isClosed();
         return signature.size();
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        isClosed();
         return signature.get(columnIndex);
     }
 
     @Override
-    public List<String> list() {
+    public List<String> list() throws IllegalStateException {
+        isClosed();
         ArrayList<String> nameList = new ArrayList<>();
         for (String currentKey : tempData.keySet()) {
             nameList.add(currentKey);
@@ -303,31 +320,49 @@ public class DataBaseTable implements Table {
 
 
     public boolean containsKey(String key) {
+        isClosed();
         return tempData.containsKey(key);
     }
 
     public boolean hasUnsavedChanges() {
+        isClosed();
         return diff.get().changesSize() > 0;
     }
 
     @Override
     public int getNumberOfUncommittedChanges() {
+        isClosed();
         return diff.get().changesSize();
     }
 
-    public Storeable originGet(String key) {
+    Storeable originGet(String key) {
         return tempData.get(key);
     }
 
-    public Storeable originRemove(String key) {
+    Storeable originRemove(String key) {
         return tempData.remove(key);
     }
 
-    public Storeable originPut(String key, Storeable value) {
+    Storeable originPut(String key, Storeable value) {
         return tempData.put(key, value);
     }
 
-    public int getVersion() {
+    int getVersion() {
         return version;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append('[');
+        sb.append(Paths.get(dataBasePath.toString(), tableName).toString());
+        sb.append(']');
+        return sb.toString();
+    }
+
+    @Override
+    public void close() throws Exception {
+        rollback();
+        closed = true;
     }
 }
