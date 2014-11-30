@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MyTable implements Table{
+public class MyTable implements Table {
     File tablePath;
     Map<String, String> committedMap = new HashMap<String, String>();
     Map<String, String> currentMap = new HashMap<String, String>();
@@ -86,6 +86,18 @@ public class MyTable implements Table{
 
     public int changesNumber() {
         return changesNumber;
+    }
+
+    public List<String> list() {
+        List<String> keys = new ArrayList<String>();
+        for (List<String>[] dirKeys: currentKeys) {
+            for (List<String> fileKeys: dirKeys) {
+                for (String key: fileKeys) {
+                    keys.add(key);
+                }
+            }
+        }
+        return keys;
     }
 
     private void initKeysArray() {

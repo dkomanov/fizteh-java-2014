@@ -10,7 +10,7 @@ public class Main {
     public static String mainDir = "fizteh.db.dir";
 
     public static void main(String[] args) {
-        System.setProperty(mainDir, "D:/tmp/db5");
+        //System.setProperty(mainDir, "D:/tmp/db5");
 
         TableProviderFactory tableProviderFactory = new MyTableProviderFactory();
         if (System.getProperty(Main.mainDir) == null) {
@@ -31,6 +31,7 @@ public class Main {
         interpreter.addCommand(new SizeCommand());
         interpreter.addCommand(new CommitCommand());
         interpreter.addCommand(new RollbackCommand());
+        interpreter.addCommand(new ListCommand());
         if (args.length == 0) {
             interpreter.interactiveMode(tableProvider);
         } else {
