@@ -27,7 +27,7 @@ public class MyMap {
     }
 
     private void initMap() {
-        File f = new File(System.getProperty("db.file"));
+        File f = new File(System.getProperty("fizteh.db.dir"));
         String[] s = f.list();
         if (s != null) {
             for (String tmp : s) {
