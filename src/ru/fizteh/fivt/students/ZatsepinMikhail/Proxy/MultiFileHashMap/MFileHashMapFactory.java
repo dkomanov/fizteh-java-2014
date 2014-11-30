@@ -7,11 +7,35 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 
-public class MFileHashMapFactory implements TableProviderFactory {
-    public MFileHashMapFactory() {}
+public class MFileHashMapFactory implements TableProviderFactory, AutoCloseable {
+    private HashSet<MFileHashMap> pullOfMFileHashMap;
+    private boolean isClosed;
 
+    private void assertNotClosed() throws IllegalStateException {
+        if (isClosed) {
+            throw new IllegalStateException("table provider factory is closed");
+        }
+    }
+
+    public MFileHashMapFactory() {
+        pullOfMFileHashMap = new HashSet<>();
+        isClosed = false;
+    }
+
+    @Override
+    public void close() throws Exception {
+        assertNotClosed();
+       isClosed = true;
+        for (MFileHashMap oneTableProvider : pullOfMFileHashMap) {
+            oneTableProvider.close();
+        }
+    }
+
+    @Override
     public TableProvider create(String dir) throws IOException {
+        assertNotClosed();
         if (dir == null) {
             throw new IllegalArgumentException();
         }
@@ -30,6 +54,7 @@ public class MFileHashMapFactory implements TableProviderFactory {
         if (!myMFileHashMap.init()) {
             throw new IOException("error while initialization");
         }
+        pullOfMFileHashMap.add(myMFileHashMap);
         return myMFileHashMap;
     }
 }

@@ -13,26 +13,21 @@ public class FmCommandPut extends CommandFileMap {
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
+        Storeable oldValue = myFileMap.get(args[1]);
         try {
-            Storeable oldValue = myFileMap.get(args[1]);
-            try {
-                myFileMap.put(args[1], Serializator.deserialize(myFileMap, args[2]));
-            } catch (ParseException e) {
-                System.out.println("wrong type (" + e.getMessage() + ")");
-                return false;
-            } catch (NoSuchElementException e) {
-                System.out.println("error: not xml format value");
-                return false;
-            }
-            if (oldValue != null) {
-                System.out.println("overwrite\n" + Serializator.serialize(myFileMap, oldValue));
-            } else {
-                System.out.println("new");
-            }
-            return true;
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
+            myFileMap.put(args[1], Serializator.deserialize(myFileMap, args[2]));
+        } catch (ParseException e) {
+            System.out.println("wrong type (" + e.getMessage() + ")");
+            return false;
+        } catch (NoSuchElementException e) {
+            System.out.println("error: not xml format value");
             return false;
         }
+        if (oldValue != null) {
+            System.out.println("overwrite\n" + Serializator.serialize(myFileMap, oldValue));
+        } else {
+            System.out.println("new");
+        }
+        return true;
     }
 }

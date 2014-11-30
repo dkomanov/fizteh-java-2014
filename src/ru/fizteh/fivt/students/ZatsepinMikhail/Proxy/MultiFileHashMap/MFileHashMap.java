@@ -22,30 +22,52 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class MFileHashMap implements TableProvider {
+public class MFileHashMap implements TableProvider, AutoCloseable {
     private String dataBaseDirectory;
     private HashMap<String, FileMap> tables;
     private FileMap currentTable;
     private ReentrantReadWriteLock lockForCreateAndGet;
+    private boolean isClosed;
 
     public MFileHashMap(String newDirectory) {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
         lockForCreateAndGet = new ReentrantReadWriteLock();
+        isClosed = false;
+        init();
+    }
+
+    private void assertNotClosed() throws IllegalStateException {
+        if (isClosed) {
+            throw new IllegalStateException("table provider is closed");
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        assertNotClosed();
+        isClosed = true;
+        for (FileMap oneTable : tables.values()) {
+            oneTable.close();
+        }
     }
 
     @Override
     public Table getTable(String name) throws IllegalArgumentException {
+        assertNotClosed();
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-
         lockForCreateAndGet.readLock().lock();
-        Table returnValue;
+        FileMap returnValue;
         if (tables.containsKey(name)) {
             returnValue = tables.get(name);
         } else {
             returnValue = null;
+        }
+        if (returnValue.checkIfClosed()) {
+            returnValue = new FileMap(returnValue);
+
         }
         lockForCreateAndGet.readLock().unlock();
         return returnValue;
@@ -53,6 +75,7 @@ public class MFileHashMap implements TableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException, IllegalArgumentException {
+        assertNotClosed();
         if (name == null || columnTypes == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -89,6 +112,7 @@ public class MFileHashMap implements TableProvider {
 
     @Override
     public void removeTable(String name) throws IllegalArgumentException, IllegalStateException, IOException {
+        assertNotClosed();
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -107,12 +131,14 @@ public class MFileHashMap implements TableProvider {
 
     @Override
     public Storeable createFor(Table table) {
+        assertNotClosed();
         Object[] startValues = new Object[table.getColumnsCount()];
         return new AbstractStoreable(startValues, table);
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+        assertNotClosed();
         if (table.getColumnsCount() != values.size()) {
             throw new IndexOutOfBoundsException("number of types");
         }
@@ -130,6 +156,7 @@ public class MFileHashMap implements TableProvider {
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        assertNotClosed();
         if (table.getColumnsCount() != TypesUtils.getSizeOfStoreable(value)) {
             throw new ColumnFormatException("wrong size");
         }
@@ -144,11 +171,13 @@ public class MFileHashMap implements TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
+        assertNotClosed();
         return Serializator.deserialize(table, value);
     }
 
     @Override
     public List<String> getTableNames() {
+        assertNotClosed();
         List<String> result = new ArrayList<>();
         Collection<FileMap> filemaps = tables.values();
         for (FileMap oneTable : filemaps) {
@@ -159,6 +188,7 @@ public class MFileHashMap implements TableProvider {
 
 
     public void showTables() {
+        assertNotClosed();
         Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneTable: pairSet) {
             System.out.println(oneTable.getKey() + " "

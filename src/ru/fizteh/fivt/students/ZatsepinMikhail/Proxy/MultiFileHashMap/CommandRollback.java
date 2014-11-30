@@ -14,12 +14,7 @@ public class CommandRollback extends CommandMultiFileHashMap {
         if (currentTable == null) {
             System.out.println("no table");
         } else {
-            try {
-                System.out.println(currentTable.rollback());
-            } catch (IllegalStateException e) {
-                System.out.println(e.getMessage());
-                return false;
-            }
+            System.out.println(currentTable.rollback());
         }
         return true;
     }

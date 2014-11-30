@@ -32,6 +32,7 @@ public class MFileHashMap implements TableProvider {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
         lockForCreateAndGet = new ReentrantReadWriteLock();
+        init();
     }
 
     @Override

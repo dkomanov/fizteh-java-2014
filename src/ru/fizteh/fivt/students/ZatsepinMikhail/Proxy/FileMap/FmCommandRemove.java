@@ -9,17 +9,12 @@ public class FmCommandRemove extends CommandFileMap {
     }
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-        try {
-            Storeable value = myFileMap.remove(args[1]);
-            if (value != null) {
-                System.out.println("removed");
-            } else {
-                System.out.println("not found");
-            }
-            return true;
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-            return false;
+        Storeable value = myFileMap.remove(args[1]);
+        if (value != null) {
+            System.out.println("removed");
+        } else {
+            System.out.println("not found");
         }
+        return true;
     }
 }

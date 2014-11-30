@@ -64,6 +64,12 @@ public class FileMap implements Table, AutoCloseable {
         return result;
     }
 
+    private void assertNotClosed() throws IllegalStateException {
+        if (isClosed) {
+            throw new IllegalStateException("table is closed");
+        }
+    }
+
     private void clearStaff() {
         removedData.set(new HashSet<>());
         addedData.set(new HashMap<>());
@@ -78,12 +84,13 @@ public class FileMap implements Table, AutoCloseable {
      */
     public FileMap(String newDirectory, List<Class<?>> newTypeList, TableProvider newParent) {
         directoryOfTable = newDirectory;
-        stableData = new HashMap<>();
+        stableData = new HashMap<String, Storeable>();
         typeList = newTypeList;
         numberOfColumns = typeList.size();
         parent = newParent;
         lockForCommit = new ReentrantLock();
         isClosed = false;
+        init();
     }
 
     public TableProvider getTableProvider() {
@@ -92,17 +99,13 @@ public class FileMap implements Table, AutoCloseable {
 
     @Override
     public String getName() {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         return Paths.get(directoryOfTable).getFileName().toString();
     }
 
     @Override
     public Storeable get(String key) throws IllegalArgumentException {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -120,9 +123,7 @@ public class FileMap implements Table, AutoCloseable {
 
     @Override
     public Storeable remove(String key) throws IllegalArgumentException {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -144,9 +145,7 @@ public class FileMap implements Table, AutoCloseable {
 
     @Override
     public Storeable put(String key, Storeable value) throws IllegalArgumentException {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -178,33 +177,25 @@ public class FileMap implements Table, AutoCloseable {
 
     @Override
     public int size() {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         return stableData.size() + addedData.get().size() - removedData.get().size();
     }
 
     @Override
     public int getColumnsCount() {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         return numberOfColumns;
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         return typeList.get(columnIndex);
     }
 
     @Override
     public int rollback() {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         int result = changedData.get().size() + removedData.get().size() + addedData.get().size();
         clearStaff();
         return result;
@@ -212,9 +203,7 @@ public class FileMap implements Table, AutoCloseable {
 
     @Override
     public int commit() throws IOException {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         lockForCommit.lock();
 
         HashMap<String, Storeable> tmpAddedData = new HashMap<>(addedData.get());
@@ -263,9 +252,7 @@ public class FileMap implements Table, AutoCloseable {
     }
 
     public List<String> list() {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         ArrayList<String> keyList = new ArrayList<>(stableData.keySet());
         keyList.removeAll(removedData.get());
         keyList.addAll(addedData.get().keySet());
@@ -274,9 +261,7 @@ public class FileMap implements Table, AutoCloseable {
 
     @Override
     public int getNumberOfUncommittedChanges() {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         return addedData.get().size() + changedData.get().size() + removedData.get().size();
     }
 
@@ -475,10 +460,12 @@ public class FileMap implements Table, AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        if (isClosed) {
-            throw new IllegalStateException("table is closed");
-        }
+        assertNotClosed();
         rollback();
         isClosed = true;
+    }
+
+    public boolean checkIfClosed() {
+        return isClosed;
     }
 }

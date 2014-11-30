@@ -10,23 +10,18 @@ public class FmCommandList extends CommandFileMap {
 
     @Override
     public boolean run(FileMap myFileMap, String[] args) {
-        try {
-            List<String> allKeys = myFileMap.list();
-            int counter = 0;
-            for (String oneKey : allKeys) {
-                if (counter > 0) {
-                    System.out.print(", ");
-                }
-                System.out.print(oneKey);
-                ++counter;
-            }
+        List<String> allKeys = myFileMap.list();
+        int counter = 0;
+        for (String oneKey : allKeys) {
             if (counter > 0) {
-                System.out.println();
+                System.out.print(", ");
             }
-            return true;
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-            return false;
+            System.out.print(oneKey);
+            ++counter;
         }
+        if (counter > 0) {
+            System.out.println();
+        }
+        return true;
     }
 }

@@ -25,6 +25,7 @@ public class MFileHashMap implements TableProvider {
     public MFileHashMap(String newDirectory) {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
+        init();
     }
 
     @Override

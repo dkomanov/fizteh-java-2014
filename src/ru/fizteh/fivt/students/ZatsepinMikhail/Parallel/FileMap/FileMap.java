@@ -82,6 +82,7 @@ public class FileMap implements Table {
         numberOfColumns = typeList.size();
         parent = newParent;
         lockForCommit = new ReentrantLock();
+        init();
     }
 
     public TableProvider getTableProvider() {

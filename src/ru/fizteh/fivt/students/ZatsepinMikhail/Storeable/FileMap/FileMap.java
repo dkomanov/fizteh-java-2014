@@ -63,6 +63,7 @@ public class FileMap implements Table {
         typeList = newTypeList;
         numberOfColumns = typeList.size();
         parent = newParent;
+        init();
     }
 
     public TableProvider getTableProvider() {
