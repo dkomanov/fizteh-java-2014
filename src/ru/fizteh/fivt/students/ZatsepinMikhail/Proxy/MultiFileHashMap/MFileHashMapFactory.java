@@ -51,9 +51,6 @@ public class MFileHashMapFactory implements TableProviderFactory, AutoCloseable 
         }
 
         MFileHashMap myMFileHashMap = new MFileHashMap(dataBaseDirectory.toString());
-        if (!myMFileHashMap.init()) {
-            throw new IOException("error while initialization");
-        }
         pullOfMFileHashMap.add(myMFileHashMap);
         return myMFileHashMap;
     }

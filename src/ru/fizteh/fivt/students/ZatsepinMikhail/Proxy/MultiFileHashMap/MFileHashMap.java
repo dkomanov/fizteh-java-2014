@@ -29,7 +29,7 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
     private ReentrantReadWriteLock lockForCreateAndGet;
     private boolean isClosed;
 
-    public MFileHashMap(String newDirectory) {
+    public MFileHashMap(String newDirectory) throws IOException {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
         lockForCreateAndGet = new ReentrantReadWriteLock();
@@ -64,10 +64,6 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
             returnValue = tables.get(name);
         } else {
             returnValue = null;
-        }
-        if (returnValue.checkIfClosed()) {
-            returnValue = new FileMap(returnValue);
-
         }
         lockForCreateAndGet.readLock().unlock();
         return returnValue;
@@ -204,7 +200,7 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
         return currentTable;
     }
 
-    public boolean init() {
+    public boolean init() throws IOException {
         String[] listOfFiles = new File(dataBaseDirectory).list();
         for (String oneFile: listOfFiles) {
             Path oneTablePath = Paths.get(dataBaseDirectory, oneFile);

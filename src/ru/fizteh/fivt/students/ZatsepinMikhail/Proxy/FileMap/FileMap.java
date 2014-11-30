@@ -82,7 +82,7 @@ public class FileMap implements Table, AutoCloseable {
      * @param newDirectory - directory of this FileMap
      * @param newTypeList - list of types (signature of table)
      */
-    public FileMap(String newDirectory, List<Class<?>> newTypeList, TableProvider newParent) {
+    public FileMap(String newDirectory, List<Class<?>> newTypeList, TableProvider newParent) throws IOException {
         directoryOfTable = newDirectory;
         stableData = new HashMap<String, Storeable>();
         typeList = newTypeList;
@@ -90,7 +90,9 @@ public class FileMap implements Table, AutoCloseable {
         parent = newParent;
         lockForCommit = new ReentrantLock();
         isClosed = false;
-        init();
+        if (!init()) {
+            throw new IOException("error while initialization");
+        }
     }
 
     public TableProvider getTableProvider() {
