@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Parallel;
+package ru.fizteh.fivt.students.ilivanov.Proxy;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

@@ -1,7 +1,7 @@
-package ru.fizteh.fivt.students.ilivanov.Parallel;
+package ru.fizteh.fivt.students.ilivanov.Proxy;
 
-import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.ColumnFormatException;
-import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Storeable;
+import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.ColumnFormatException;
+import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.Storeable;
 
 import java.util.ArrayList;
 import java.util.List;

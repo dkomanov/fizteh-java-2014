@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.ilivanov.Parallel;
+package ru.fizteh.fivt.students.ilivanov.Proxy;
 
-import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.Storeable;
+import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.Storeable;
 
 import java.io.*;
 import java.nio.ByteBuffer;

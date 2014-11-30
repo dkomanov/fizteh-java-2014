@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces;
+package ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces;
 
 public class ConnectionInterruptException extends Exception {
     public ConnectionInterruptException(String message) {

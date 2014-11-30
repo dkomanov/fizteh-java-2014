@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces;
+package ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces;
 
 /**
  * Представляет базу для интерфейс для работы с таблицей, содержащей ключи-значения.
