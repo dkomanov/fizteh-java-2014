@@ -125,7 +125,7 @@ public class AdvancedTableProvider extends ParallelTableProvider implements Tabl
             try {
                 ((AdvancedTable) tables.get(name)).close();
             } catch (IllegalStateException e) {
-                continue;
+                // Do nothing
             }
         }
         lock.writeLock().unlock();
