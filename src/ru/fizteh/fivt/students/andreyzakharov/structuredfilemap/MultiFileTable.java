@@ -86,6 +86,8 @@ public class MultiFileTable implements Table {
     public Storeable get(String key) {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (key.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
 
         if (removed.contains(key)) {
@@ -103,6 +105,8 @@ public class MultiFileTable implements Table {
     public Storeable put(String key, Storeable value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (key.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
 
         if (removed.remove(key)) {
@@ -139,6 +143,8 @@ public class MultiFileTable implements Table {
     public Storeable remove(String key) {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (key.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
 
         if (stableData.containsKey(key)) {
