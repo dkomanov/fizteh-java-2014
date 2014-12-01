@@ -38,7 +38,7 @@ public class MultiFileMapProvider {
         } catch (IOException e) {
             throw new IOException(String.format("Couldn't create %s", tablePath), e);
         }
-        return new MultiFileMap(tablePath);
+        return new MultiFileMapImpl(tablePath);
     }
 
     public boolean removeTable(String name) throws IOException {
@@ -65,6 +65,6 @@ public class MultiFileMapProvider {
         if (!Files.exists(tablePath)) {
             return null;
         }
-        return new MultiFileMap(tablePath);
+        return new MultiFileMapImpl(tablePath);
     }
 }
