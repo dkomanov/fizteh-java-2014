@@ -6,6 +6,7 @@ import ru.fizteh.fivt.students.VasilevKirill.junit.MyTableProviderFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import static org.junit.Assert.*;
 
@@ -15,7 +16,8 @@ public class MultiMapTest {
 
     static {
         try {
-            path = new File("").getCanonicalPath();
+            //path = new File("").getCanonicalPath();
+            path = Files.createTempDirectory("database").toString();
             dataBase = new MyTableProviderFactory().create(path);
         } catch (IOException e) {
             System.out.println(e.getMessage());
