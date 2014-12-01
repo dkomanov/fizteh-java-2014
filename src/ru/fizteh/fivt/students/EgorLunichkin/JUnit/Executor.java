@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 import java.util.Scanner;
 
 public class Executor {
-    public Executor(String[] args) throws JUnitException {
+    public Executor(String[] args) throws Exception {
         String dbPath = System.getProperty("fizteh.db.dir");
         jUnitDataBase = new JUnitDataBase(dbPath);
         if (args.length == 0) {
@@ -15,7 +15,7 @@ public class Executor {
 
     private JUnitDataBase jUnitDataBase;
 
-    void interactiveMode() throws JUnitException {
+    void interactiveMode() throws Exception {
         Scanner in = new Scanner(System.in);
         System.out.print("$ ");
         while (in.hasNextLine()) {
@@ -29,7 +29,7 @@ public class Executor {
         System.out.close();
     }
 
-    void packageMode(String[] args) throws JUnitException {
+    void packageMode(String[] args) throws Exception {
         StringBuilder line = new StringBuilder();
         for (String arg : args) {
             line.append(arg + ' ');
@@ -40,9 +40,9 @@ public class Executor {
         }
     }
 
-    void executeCommand(String cmd) throws JUnitException {
+    void executeCommand(String cmd) throws Exception {
         String[] command = cmd.trim().split("\\s+");
-        Command exec;
+        JUnitCommand exec;
         switch(command[0]) {
             case "put":
                 if (command.length > 3) {

@@ -16,4 +16,6 @@ public class ShowTablesCommand implements Command {
             System.out.println(name + " " + rowCount);
         }
     }
+
+    public void runOnTable(Table table) {}
 }

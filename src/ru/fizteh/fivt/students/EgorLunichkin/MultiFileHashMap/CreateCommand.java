@@ -23,4 +23,6 @@ public class CreateCommand implements Command {
             System.out.println("created");
         }
     }
+
+    public void runOnTable(Table table) {}
 }

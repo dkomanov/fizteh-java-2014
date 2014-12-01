@@ -9,6 +9,11 @@ public class MultiGetCommand implements Command {
         this.multiDataBase = mdb;
     }
 
+    public MultiGetCommand(String key) {
+        this.key = key;
+        this.multiDataBase = null;
+    }
+
     private MultiDataBase multiDataBase;
     private String key;
 
@@ -16,15 +21,19 @@ public class MultiGetCommand implements Command {
         if (multiDataBase.using == null) {
             System.out.println("no table");
         } else {
-            int hashCode = Math.abs(key.hashCode());
-            int dir = hashCode % 16;
-            int file = hashCode / 16 % 16;
-            DataBase dataBase = multiDataBase.getUsing().dataBases[dir][file];
-            if (dataBase == null) {
-                System.out.println("not found");
-            } else {
-                new GetCommand(dataBase, key).run();
-            }
+            this.runOnTable(multiDataBase.getUsing());
+        }
+    }
+
+    public void runOnTable(Table table) {
+        int hashCode = Math.abs(key.hashCode());
+        int dir = hashCode % 16;
+        int file = hashCode / 16 % 16;
+        DataBase dataBase = table.dataBases[dir][file];
+        if (dataBase == null) {
+            System.out.println("not found");
+        } else {
+            new GetCommand(dataBase, key).run();
         }
     }
 }

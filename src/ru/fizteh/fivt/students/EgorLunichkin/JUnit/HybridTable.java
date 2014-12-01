@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 
+import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Command;
 import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Table;
 
 import java.util.ArrayList;
@@ -14,14 +15,14 @@ public class HybridTable {
         rollback();
     }
 
-    private Table cleanTable;
-    private DirtyTable dirtyTable;
-    private ArrayList<Command> commands;
+    public Table cleanTable;
+    public DirtyTable dirtyTable;
+    public ArrayList<Command> commands;
 
-    public int commit() {
+    public int commit() throws Exception {
         int diff = diffTables(cleanTable, dirtyTable);
         for (Command command : commands) {
-            command.run();
+            command.runOnTable(cleanTable);
         }
         commands.clear();
         return diff;

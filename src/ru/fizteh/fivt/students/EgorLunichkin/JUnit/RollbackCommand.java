@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 
-import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Table;
-
-public class RollbackCommand implements Command {
+public class RollbackCommand implements JUnitCommand {
     public RollbackCommand(JUnitDataBase jdb) {
         this.jUnitDataBase = jdb;
     }
@@ -10,10 +8,6 @@ public class RollbackCommand implements Command {
     private JUnitDataBase jUnitDataBase;
 
     public void run() {
-
-    }
-
-    public void runOnTable(Table table) {
 
     }
 }

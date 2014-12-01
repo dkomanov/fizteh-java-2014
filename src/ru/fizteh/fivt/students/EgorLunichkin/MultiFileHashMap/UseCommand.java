@@ -17,4 +17,6 @@ public class UseCommand implements Command {
             System.out.println("using " + tableName);
         }
     }
+
+    public void runOnTable(Table table) {}
 }

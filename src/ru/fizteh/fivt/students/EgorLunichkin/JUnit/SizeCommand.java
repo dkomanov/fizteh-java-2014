@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 
-import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Table;
-
-public class SizeCommand implements Command {
+public class SizeCommand implements JUnitCommand {
     public SizeCommand(JUnitDataBase jdb) {
         this.jUnitDataBase = jdb;
     }
@@ -11,9 +9,5 @@ public class SizeCommand implements Command {
 
     public void run() {
 
-    }
-
-    public void runOnTable(Table table) {
-        
     }
 }

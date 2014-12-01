@@ -13,5 +13,6 @@ public class DirtyDataBase extends DataBase {
         db = new HashMap<String, String>(passedData);
     }
 
+    @Override
     public void writeDataBase() {}
 }

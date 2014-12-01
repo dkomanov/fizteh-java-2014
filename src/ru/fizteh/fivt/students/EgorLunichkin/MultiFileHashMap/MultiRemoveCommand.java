@@ -14,6 +14,11 @@ public class MultiRemoveCommand implements Command {
         this.multiDataBase = mdb;
     }
 
+    public MultiRemoveCommand(String key) {
+        this.key = key;
+        this.multiDataBase = null;
+    }
+
     private MultiDataBase multiDataBase;
     private String key;
 
@@ -21,36 +26,40 @@ public class MultiRemoveCommand implements Command {
         if (multiDataBase.using == null) {
             System.out.println("no table");
         } else {
-            int hashCode = Math.abs(key.hashCode());
-            int dir = hashCode % 16;
-            int file = hashCode / 16 % 16;
-            if (multiDataBase.getUsing().dataBases[dir][file] == null) {
-                System.out.println("not found");
-            } else {
-                DataBase dataBase = multiDataBase.getUsing().dataBases[dir][file];
-                new RemoveCommand(dataBase, key).run();
-                if (dataBase.dbSize() == 0) {
-                    File dbFile = new File(dataBase.dbPath);
+            this.runOnTable(multiDataBase.getUsing());
+        }
+    }
+
+    public void runOnTable(Table table) throws Exception {
+        int hashCode = Math.abs(key.hashCode());
+        int dir = hashCode % 16;
+        int file = hashCode / 16 % 16;
+        if (table.dataBases[dir][file] == null) {
+            System.out.println("not found");
+        } else {
+            DataBase dataBase = table.dataBases[dir][file];
+            new RemoveCommand(dataBase, key).run();
+            if (dataBase.dbSize() == 0) {
+                File dbFile = new File(dataBase.dbPath);
+                try {
+                    Files.delete(dbFile.toPath());
+                } catch (SecurityException | IOException ex) {
+                    throw new MultiFileHashMapException("Access violation: cannot delete database file");
+                }
+                dataBase = null;
+                int notUsedDBs = 0;
+                for (int i = 0; i < 16; ++i) {
+                    if (table.dataBases[dir][i] == null) {
+                        ++notUsedDBs;
+                    }
+                }
+                if (notUsedDBs == 16) {
                     try {
-                        Files.delete(dbFile.toPath());
+                        Files.delete(dbFile.getParentFile().toPath());
+                    } catch (DirectoryNotEmptyException ex) {
+                        throw new MultiFileHashMapException("Cannot delete database subdir: redundant files");
                     } catch (SecurityException | IOException ex) {
-                        throw new MultiFileHashMapException("Access violation: cannot delete database file");
-                    }
-                    dataBase = null;
-                    int notUsedDBs = 0;
-                    for (int i = 0; i < 16; ++i) {
-                        if (multiDataBase.getUsing().dataBases[dir][i] == null) {
-                            ++notUsedDBs;
-                        }
-                    }
-                    if (notUsedDBs == 16) {
-                        try {
-                            Files.delete(dbFile.getParentFile().toPath());
-                        } catch (DirectoryNotEmptyException ex) {
-                            throw new MultiFileHashMapException("Cannot delete database subdir: redundant files");
-                        } catch (SecurityException | IOException ex) {
-                            throw new MultiFileHashMapException("Access violation: cannot delete database subdir");
-                        }
+                        throw new MultiFileHashMapException("Access violation: cannot delete database subdir");
                     }
                 }
             }
