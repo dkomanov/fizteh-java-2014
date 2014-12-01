@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.ryad0m.multifile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -72,12 +73,12 @@ public class Shell {
         } else if (table == null) {
             System.out.println("No table");
         } else {
-            String[] keys = table.getKeys();
-            for (int i = 0; i + 1 < keys.length; ++i) {
-                System.out.print(keys[i] + ", ");
+            List<String> keys = table.getKeys();
+            for (int i = 0; i + 1 < keys.size(); ++i) {
+                System.out.print(keys.get(i) + ", ");
             }
-            if (keys.length > 0) {
-                System.out.println(keys[keys.length - 1]);
+            if (keys.size() > 0) {
+                System.out.println(keys.get(keys.size() - 1));
             }
 
         }

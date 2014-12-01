@@ -70,7 +70,7 @@ public class Table {
         return res;
     }
 
-    public String[] getKeys() {
+    public List<String> getKeys() {
         List<String> str = new ArrayList<>();
         for (int i = 0; i < constMAX; ++i) {
             for (int j = 0; j < constMAX; ++j) {
@@ -81,6 +81,6 @@ public class Table {
 
             }
         }
-        return (String[]) str.toArray();
+        return str;
     }
 }

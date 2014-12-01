@@ -12,7 +12,7 @@ public class Main {
         if (System.getProperty("fizteh.db.dir") != null) {
             database = new DataBase(Paths.get(System.getProperty("fizteh.db.dir")).toAbsolutePath().normalize());
         } else {
-            System.out.println("Obossan!");
+            System.out.println("Please set fizteh.db.dir property!");
             System.exit(1);
         }
         try {
