@@ -9,6 +9,7 @@ import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyStorable;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTableProvider;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,8 @@ public class TableProviderTest {
     @BeforeClass
     public static void beforeClass() {
         try {
-            path = new File("").getCanonicalPath();
+            //path = new File("").getCanonicalPath();
+            path = Files.createTempDirectory("database").toString();
             tableProvider = new MyTableProvider(path);
             typeList = new ArrayList<>();
             typeList.add(Integer.class);
