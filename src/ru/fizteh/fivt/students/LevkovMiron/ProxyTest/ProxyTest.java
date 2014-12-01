@@ -1,14 +1,9 @@
 package ru.fizteh.fivt.students.LevkovMiron.ProxyTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runners.model.TestClass;
 import ru.fizteh.fivt.students.LevkovMiron.Proxy.CLoggingProxyFactory;
-import ru.fizteh.fivt.students.LevkovMiron.Proxy.LoggingProxyFactory;
 
-import java.io.IOException;
 import java.io.StringWriter;
 
 /**

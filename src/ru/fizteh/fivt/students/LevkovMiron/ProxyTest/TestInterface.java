@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.LevkovMiron.ProxyTest;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
