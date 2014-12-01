@@ -1,8 +1,11 @@
 package ru.fizteh.fivt.students.LevkovMiron.ProxyTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import ru.fizteh.fivt.students.LevkovMiron.Proxy.CLoggingProxyFactory;
+import ru.fizteh.fivt.students.LevkovMiron.Proxy.XMLParser;
 
 import java.io.StringWriter;
 
@@ -14,7 +17,7 @@ public class ProxyTest {
     public static CLoggingProxyFactory factory;
     public StringWriter writer;
     public TestInterface obj;
-
+    public XMLParser xmlParser;
     @BeforeClass
     public static void beforeClass() {
         factory = new CLoggingProxyFactory();
@@ -25,14 +28,25 @@ public class ProxyTest {
         writer = new StringWriter();
         obj = (TestInterface)
                 factory.wrap(writer, new TestIntafaceImplementation(), TestInterface.class);
+        xmlParser = new XMLParser();
     }
 
-//    @Test
-//    public void timestampTest() {
-//        obj.noArgumentsMethod();
-//        String log = writer.toString();
-//        Assert.assertTrue(jsonObject.has("timestamp"));
-//    }
+    public boolean correctXML(String log) {
+        try {
+            xmlParser.parseString(log);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Test
+    public void timestampTest() {
+        obj.noArgumentsMethod();
+        String log = writer.toString();
+        assert true : correctXML(log);
+        assert true : log.split("timestamp").length >= 2;
+    }
 //
 //    @Test
 //    public void classTest() {
