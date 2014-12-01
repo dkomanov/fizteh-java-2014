@@ -7,7 +7,7 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.MyStorable;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.multimap.MultiMap;
 
-import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +20,8 @@ public class TableProviderTest {
 
     static {
         try {
-            path = new File("").getCanonicalPath();
+            //path = new File("").getCanonicalPath();
+            path = Files.createTempDirectory("database").toString();
             tableProvider = new MultiMap(path);
             typeList = new ArrayList<>();
             typeList.add(Integer.class);
