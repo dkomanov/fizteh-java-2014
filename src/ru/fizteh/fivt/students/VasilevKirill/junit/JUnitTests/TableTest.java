@@ -7,8 +7,8 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.junit.MyTableProviderFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -20,7 +20,8 @@ public class TableTest {
     @BeforeClass
     public static void beforeClass() {
         try {
-            path = new File("").getCanonicalPath();
+            //path = new File("").getCanonicalPath();//
+            path = Files.createTempDirectory("database").toString();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
