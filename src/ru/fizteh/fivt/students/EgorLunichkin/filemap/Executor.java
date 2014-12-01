@@ -6,21 +6,21 @@ public class Executor {
     public Executor(String[] args) {
         try {
             this.dataBase = new DataBase(System.getProperty("db.file"));
-        } catch (FileMapException ex) {
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
             System.exit(1);
         }
         if (args.length == 0) {
             try {
                 interactiveMode();
-            } catch (FileMapException ex) {
+            } catch (Exception ex) {
                 System.err.println(ex.getMessage());
                 System.exit(1);
             }
         } else {
             try {
                 packageMode(args);
-            } catch (FileMapException ex) {
+            } catch (Exception ex) {
                 System.err.println(ex.getMessage());
                 System.exit(1);
             }
@@ -30,7 +30,7 @@ public class Executor {
 
     private DataBase dataBase;
 
-    private void interactiveMode() throws FileMapException {
+    private void interactiveMode() throws Exception {
         Scanner in = new Scanner(System.in);
         System.out.print("$ ");
         while (in.hasNextLine()) {
@@ -45,7 +45,7 @@ public class Executor {
         System.out.close();
     }
 
-    private void packageMode(String[] args) throws FileMapException {
+    private void packageMode(String[] args) throws Exception {
         StringBuilder line = new StringBuilder();
         for (String arg : args) {
             line.append(arg + ' ');
@@ -56,7 +56,7 @@ public class Executor {
         }
     }
 
-    private void executeCommand(String cmd) throws FileMapException {
+    private void executeCommand(String cmd) throws Exception {
         String[] command = cmd.trim().split("\\s+");
         Command exec;
         switch(command[0]) {
