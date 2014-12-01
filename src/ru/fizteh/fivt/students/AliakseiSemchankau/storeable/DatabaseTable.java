@@ -483,7 +483,12 @@ public class DatabaseTable implements Table {
         return signature.get(columnIndex);
     }
 
-    /*@Override
+    @Override
+    public int getNumberOfUncommittedChanges() {
+        return unsavedChanges;
+    }
+
+    @Override
     public List<String> list() {
         List<String> listOfKeys = new LinkedList<String>();
 
@@ -491,6 +496,6 @@ public class DatabaseTable implements Table {
             listOfKeys.add(currentKey);
         }
         return listOfKeys;
-    }*/
+    }
 
 }
