@@ -53,7 +53,7 @@ public class TransactionDbImpl implements TransactionDb {
                     if (!fileChunk.exists()) {
                         continue;
                     }
-                    if (!fileChunk.isFile()){
+                    if (!fileChunk.isFile()) {
                         throw new IllegalStateException("fileChunk is dir");
                     }
                     FileMap fileMap = new FileMap(fileChunk);
@@ -72,10 +72,6 @@ public class TransactionDbImpl implements TransactionDb {
             private Set<String> deletedKeys = new HashSet<>();
             private Map<String, TableRow> changedKeys = new HashMap<>();
 
-            private int getDiffSize() {
-                return changedKeys.size() + deletedKeys.size();
-            }
-
             @Override
             public TableSignature getSignature() {
                 return signatures.get(tableName);
@@ -91,6 +87,7 @@ public class TransactionDbImpl implements TransactionDb {
                 } finally {
                     dataLock.writeLock().unlock();
                 }
+                rollback();
                 return result;
             }
 
@@ -145,6 +142,10 @@ public class TransactionDbImpl implements TransactionDb {
                 return copy.size();
             }
 
+            private int getDiffSize() {
+                return changedKeys.size() + deletedKeys.size();
+            }
+
             private Map<String, TableRow> apply(Map<String, TableRow> base) {
                 for (String key : deletedKeys) {
                     base.remove(key);
@@ -162,37 +163,31 @@ public class TransactionDbImpl implements TransactionDb {
         Map<File, FileMap> fileMapMap = new HashMap<>();
         for (int i = 0; i < MAX_DIR_CHUNK; i++) {
             File dirChunk = new File(tableDir, i + ".dir");
-            if (!dirChunk.exists()) {
-                continue;
-            }
-            if (!dirChunk.isDirectory()) {
-                throw new IllegalStateException("dirChunk is file");
-            }
             for (int j = 0; j < MAX_FILE_CHUNK; j++) {
                 File fileChunk = new File(dirChunk, j + ".dat");
-                if (!fileChunk.exists()) {
-                    continue;
-                }
-                if (!fileChunk.isFile()){
-                    throw new IllegalStateException("fileChunk is dir");
-                }
-                FileMap fileMap = new FileMap(fileChunk);
-                fileMap.clear();
-                for (Map.Entry<String, TableRow> entry: cachedData.get(table).entrySet()) {
-                    fileMap.put(entry.getKey(), entry.getValue().serialize());
-                }
-                fileMap.commit();
+                fileMapMap.put(fileChunk, new FileMap(fileChunk));
             }
+        }
+
+        fileMapMap.values().forEach(FileMap::clear);
+
+        for (Map.Entry<String, TableRow> entry : cachedData.get(table).entrySet()) {
+            String key = entry.getKey();
+            TableRow value = entry.getValue();
+            File chunkFile = getChunkFileByKey(tableDir, key);
+            fileMapMap.get(chunkFile).put(key, value.serialize());
+        }
+
+        for (FileMap fileMap : fileMapMap.values()) {
+            fileMap.commit();
         }
     }
 
-    @Override
-    public boolean createTable(String tableName) {
-        return false;
-    }
-
-    @Override
-    public boolean removeTable(String tableName) {
-        return false;
+    private File getChunkFileByKey(File tableDirectory, String key) {
+        int hashcode = key.hashCode();
+        int nDirectory = Integer.remainderUnsigned(hashcode, MAX_DIR_CHUNK);
+        int nFile = Integer.remainderUnsigned((hashcode / MAX_DIR_CHUNK), MAX_FILE_CHUNK);
+        File dir = new File(tableDirectory, nDirectory + ".dir");
+        return new File(dir, nFile + ".dat");
     }
 }

@@ -6,6 +6,4 @@ package ru.fizteh.fivt.students.standy66_new.server.tdb;
  */
 public interface TransactionDb {
     Transaction beginTransaction(String tableName);
-    boolean createTable(String tableName);
-    boolean removeTable(String tableName);
 }

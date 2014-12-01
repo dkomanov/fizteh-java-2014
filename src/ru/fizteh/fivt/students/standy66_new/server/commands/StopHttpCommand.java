@@ -14,6 +14,13 @@ public class StopHttpCommand extends ServerContextualCommand {
     @Override
     public void execute(String... arguments) throws Exception {
         super.execute(arguments);
-        getContext().getHttpServer().stop();
+        if (getContext().getHttpServer().isRunning()) {
+            getOutputWriter().write(String.format("stopped at port %d%n",
+                    getContext().getHttpServer().getAddress().getPort()));
+            getOutputWriter().flush();
+            getContext().getHttpServer().stop();
+        } else {
+            getOutputWriter().write("not started");
+        }
     }
 }
