@@ -49,7 +49,7 @@ public class DbTableProvider implements TableProvider {
      */
     @Override
     public Table getTable(String name) {
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty() || !Shell.checkName(name)) {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": getTable: invalid Table name");
         }
         return tables.get(name);
@@ -64,7 +64,7 @@ public class DbTableProvider implements TableProvider {
      */
     public Table createTable(String name) {
 
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty() || !Shell.checkName(name)) {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable: invalid Table name");
         }
 
@@ -87,7 +87,7 @@ public class DbTableProvider implements TableProvider {
      * @throws IllegalStateException Если таблицы с указанным названием не существует.
      */
     public void removeTable(String name) {
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty() || !Shell.checkName(name)) {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": removeTable: invalid Table name");
         }
 
