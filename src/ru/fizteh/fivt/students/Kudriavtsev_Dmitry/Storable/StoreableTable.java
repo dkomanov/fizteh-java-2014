@@ -276,7 +276,8 @@ public class StoreableTable implements Table {
         return dbPath.resolve(nameOfTable + File.separator + i + ".dir" + File.separator);
     }
 
-    public AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<Integer, Integer>> whereToSave(String nameOfTable, String value) {
+    public AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<Integer, Integer>> 
+                                        whereToSave(String nameOfTable, String value) {
         int hashCode = value.hashCode();
         int d = hashCode % DIRECTORIES_COUNT;
         int f = hashCode / DIRECTORIES_COUNT % FILES_COUNT;
