@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.LevkovMiron.Proxy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -9,8 +8,11 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) throws Exception {
         CStoreable storeable = new CStoreable(Arrays.asList(1, "2", "avacd", null, 1.5));
-        System.out.println(storeable.toString());
-        XMLParser parser = new XMLParser();
-        System.out.println(parser.parse(new Object[]{storeable, 2, null, "adsads", new ArrayList<>()}));
+        Parser parser = new Parser();
+        TableProviderFactory factory = new CTableProviderFactory();
+        TableProvider provider = factory.create("C:/Test");
+        Table table = provider.createTable("T1", Arrays.asList(Integer.class, String.class, String.class, Long.class, Double.class));
+        Storeable myStoreable = parser.deserialize(table, "[1,2,avacd,null,1.5]");
+        System.out.println(parser.serialize(table, myStoreable));
     }
 }

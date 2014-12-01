@@ -22,7 +22,7 @@ public class TestIntafaceImplementation implements TestInterface {
     public void twoStringArgumentMethod(String str1, String str2) { }
 
     @Override
-    public void iOExceptionHiMethod() throws IOException {
+    public void iOExceptionHiMethod() throws Exception {
         throw new IOException("hi");
     }
 

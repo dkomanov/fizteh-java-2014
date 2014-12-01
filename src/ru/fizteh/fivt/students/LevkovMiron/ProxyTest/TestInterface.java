@@ -12,7 +12,7 @@ public interface TestInterface {
     void integerArgumentMethod(Integer a);
     void listArgumentMethod(List<Object> list);
     void twoStringArgumentMethod(String str1, String str2);
-    void iOExceptionHiMethod() throws IOException;
+    void iOExceptionHiMethod() throws Exception;
     void voidReturningMethod();
     Integer zeroReturningMethod();
     Object nullReturningMethod();

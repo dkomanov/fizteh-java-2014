@@ -87,10 +87,6 @@ public class CTable implements Table, AutoCloseable {
         return getClass().getSimpleName() + "[" + dbPath.toAbsolutePath() + "]";
     }
 
-    boolean isClosed() {
-        return closed;
-    }
-
     @Override
     public int commit() throws IOException, IllegalStateException {
         if (closed) {
@@ -263,6 +259,9 @@ public class CTable implements Table, AutoCloseable {
     }
 
     public List<String> list() {
+        if (closed) {
+            throw new IllegalStateException("Table is closed");
+        }
         lock.readLock().lock();
         Set<String> res = new HashSet<String>();
         res.addAll(table.keySet());
@@ -273,6 +272,9 @@ public class CTable implements Table, AutoCloseable {
     }
 
     public void drop() throws IOException {
+        if (closed) {
+            throw new IllegalStateException("Table is closed");
+        }
         try {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {

@@ -71,4 +71,12 @@ public class XMLParser {
             return className;
         }
     }
+
+
+    public Document parseString(String s) throws Exception{
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document document = builder.parse(s);
+        System.out.println(document.getFirstChild());
+        return document;
+    }
 }
