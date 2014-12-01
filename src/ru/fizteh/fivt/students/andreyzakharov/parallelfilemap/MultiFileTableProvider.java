@@ -43,6 +43,8 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     public Table getTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (name.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
         lock.readLock().lock();
         Table table = tables.get(name);
@@ -63,8 +65,10 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        if (name == null || columnTypes == null || columnTypes.isEmpty()) {
+        if (name == null || columnTypes == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (name.isEmpty() || columnTypes.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
         lock.writeLock().lock();
         Table table;
@@ -100,6 +104,8 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     public void removeTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (name.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
         lock.writeLock().lock();
         MultiFileTable table = tables.get(name);
@@ -123,6 +129,8 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     public void useTable(String name) throws IllegalStateException {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (name.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
         lock.writeLock().lock();
         MultiFileTable table = tables.get(name);
@@ -137,22 +145,34 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
+        if (table == null || value == null) {
+            throw new IllegalArgumentException("null argument");
+        }
         return serializer.deserialize(table, value);
     }
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        if (table == null || value == null) {
+            throw new IllegalArgumentException("null argument");
+        }
         return serializer.serialize(table, value);
     }
 
     @Override
     public Storeable createFor(Table table) {
+        if (table == null) {
+            throw new IllegalArgumentException("null argument");
+        }
         List<Object> values = new ArrayList<>(table.getColumnsCount());
         return new TableEntry(values);
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+        if (table == null || values == null) {
+            throw new IllegalArgumentException("null argument");
+        }
         List<Object> objValues = new ArrayList<>(values);
         for (int i = 0; i < table.getColumnsCount(); ++i) {
             if (objValues.get(i).getClass() != (table.getColumnType(i))) {
