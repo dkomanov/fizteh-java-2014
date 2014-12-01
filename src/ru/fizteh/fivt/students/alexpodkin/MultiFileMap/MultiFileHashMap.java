@@ -49,12 +49,9 @@ public class MultiFileHashMap {
 
     public MultiFileHashMap() {
         fileMapPath = System.getProperty("fizteh.db.dir");
-        if (fileMapPath == null) {
-            System.exit(1);
-        }
         File parentDir = new File(fileMapPath);
-        if (!parentDir.exists() || !parentDir.isDirectory()) {
-            System.exit(1);
+        if (!parentDir.exists()) {
+            parentDir.mkdir();
         }
         initBase();
     }
