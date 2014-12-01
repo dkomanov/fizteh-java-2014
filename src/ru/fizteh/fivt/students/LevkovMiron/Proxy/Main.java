@@ -14,7 +14,5 @@ public class Main {
 //        Table table = provider.getTable("T1");
 //        Storeable myStoreable = parser.deserialize(table, "[5,6,5.2,5.4,true,null,3]");
 //        System.out.println(parser.serialize(table, myStoreable));
-        XMLParser xmlParser = new XMLParser();
-        xmlParser.parseString("<h><head><asf/></head><null><mytag/></null></h>");
     }
 }

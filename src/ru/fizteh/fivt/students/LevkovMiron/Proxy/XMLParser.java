@@ -80,11 +80,6 @@ public class XMLParser {
     public Document parseString(String s) throws Exception {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = builder.parse(new InputSource(new StringReader(s)));
-        Node node = document.getFirstChild();
-        NodeList nodeList = node.getChildNodes();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            System.out.println(nodeList.item(i));
-        }
         return document;
     }
 }
