@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Executor {
     public Executor(String[] args) throws Exception {
-        String dbPath = System.getProperty("fizteh.db.dir");
+        String dbPath = "db";
         jUnitDataBase = new JUnitDataBase(dbPath);
         if (args.length == 0) {
             interactiveMode();

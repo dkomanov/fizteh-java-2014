@@ -8,6 +8,10 @@ public class RollbackCommand implements JUnitCommand {
     private JUnitDataBase jUnitDataBase;
 
     public void run() {
-
+        if (jUnitDataBase.getUsing() == null) {
+            System.out.println("no table");
+        } else {
+            System.out.println(jUnitDataBase.getUsing().rollback());
+        }
     }
 }

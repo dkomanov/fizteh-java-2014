@@ -7,7 +7,11 @@ public class CommitCommand implements JUnitCommand {
 
     private JUnitDataBase jUnitDataBase;
 
-    public void run() {
-
+    public void run() throws Exception {
+        if (jUnitDataBase.getUsing() == null) {
+            System.out.println("no table");
+        } else {
+            System.out.println(jUnitDataBase.getUsing().commit());
+        }
     }
 }
