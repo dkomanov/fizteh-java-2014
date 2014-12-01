@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.YaronskayaLiubov.JUnit;
 
 import ru.fizteh.fivt.storage.strings.Table;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,22 +46,16 @@ public class JUnitTable extends FileMap implements Table {
     public String put(String key, String value) throws IllegalArgumentException {
         CheckParameters.checkKey(key);
         CheckParameters.checkValue(value);
-        delta.add(key);
         String oldValue = null;
-        if (deltaRemoved.contains(key)) {
-            deltaAdded.put(key, value);
+
+        if (deltaChanged.containsKey(key)) {
+            oldValue = deltaChanged.put(key, value);
         } else {
-            if (deltaAdded.containsKey(key)) {
-                oldValue = deltaAdded.remove(key);
+            if (super.containsKey(key)) {
+                oldValue = super.get(key);
                 deltaChanged.put(key, value);
             } else {
-                if (deltaChanged.containsKey(key)) {
-                    oldValue = deltaChanged.get(key);
-                    deltaChanged.put(key, value);
-                } else {
-                    oldValue = super.get(key);
-                    deltaAdded.put(key, value);
-                }
+                oldValue = deltaAdded.put(key, value);
             }
         }
         return oldValue;
@@ -71,7 +66,7 @@ public class JUnitTable extends FileMap implements Table {
         CheckParameters.checkKey(key);
         delta.add(key);
         String value = null;
-        if (deltaAdded.containsKey(key)) {
+        /*if (deltaAdded.containsKey(key)) {
             value = deltaAdded.remove(key);
         } else {
             if (deltaChanged.containsKey(key)) {
@@ -81,12 +76,25 @@ public class JUnitTable extends FileMap implements Table {
             }
         }
         deltaRemoved.add(key);
+        Storeable value = null;*/
+        if (super.containsKey(key)) {
+            if (deltaChanged.containsKey(key)) {
+                value = deltaChanged.remove(key);
+            } else {
+                deltaRemoved.add(key);
+            }
+        } else {
+            if (deltaAdded.containsKey(key)) {
+                value = deltaAdded.remove(key);
+            }
+        }
+        //return value;
         return value;
     }
 
     @Override
     public int size() {
-        return super.size() + deltaAdded.size() + deltaChanged.size();
+        return super.size() + deltaAdded.size() - deltaRemoved.size();
     }
 
     @Override
@@ -95,7 +103,6 @@ public class JUnitTable extends FileMap implements Table {
         super.putAll(deltaAdded);
         super.putAll(deltaChanged);
         super.keySet().removeAll(deltaRemoved);
-        //save();
         deltaAdded.clear();
         deltaChanged.clear();
         deltaRemoved.clear();
@@ -109,16 +116,14 @@ public class JUnitTable extends FileMap implements Table {
         deltaAdded.clear();
         deltaChanged.clear();
         deltaRemoved.clear();
-        //loadDBData();
         return deltaCount;
     }
 
     @Override
     public List<String> list() {
-        List<String> keys = new ArrayList<String>(keySet());
+        List<String> keys = new ArrayList<>(keySet());
         keys.removeAll(deltaRemoved);
         keys.addAll(deltaAdded.keySet());
-        keys.addAll(deltaChanged.keySet());
         return keys;
     }
 
