@@ -12,6 +12,7 @@ public class Shell {
 
     private Table table;
     private TableProvider database;
+
     public Shell(TableProvider tableProvider) {
         database = tableProvider;
     }

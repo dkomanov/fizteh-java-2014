@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.ryad0m.junit;
 
 import ru.fizteh.fivt.storage.strings.Table;
 
-import java.io.IOException;
 import java.util.*;
 
 public class UserTable implements Table {
@@ -64,7 +63,7 @@ public class UserTable implements Table {
     }
 
     @Override
-    public int commit() throws IOException {
+    public int commit() {
         int res = operations.size() + deleted.size();
         for (Map.Entry<String, String> operation : operations.entrySet()) {
             myTable.put(operation.getKey(), operation.getValue());

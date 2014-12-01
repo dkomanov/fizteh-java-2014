@@ -12,12 +12,16 @@ public class MyTable {
     private Path location;
 
 
-    public MyTable(Path path) throws IOException, BadFormatException {
+    public MyTable(Path path) {
         location = path;
         for (int i = 0; i < constMAX; ++i) {
             for (int j = 0; j < constMAX; ++j) {
                 Path nodePath = path.resolve(Integer.toString(i) + ".dir/" + Integer.toString(j) + ".dat");
-                tableNodes[i * constMAX + j] = new TableNode(nodePath.normalize());
+                try {
+                    tableNodes[i * constMAX + j] = new TableNode(nodePath.normalize());
+                } catch (IOException | BadFormatException e) {
+                    throw new RuntimeException();
+                }
             }
         }
     }
@@ -47,11 +51,15 @@ public class MyTable {
         deleteDir(location.toFile());
     }
 
-    public void save() throws IOException {
+    public void save() {
         deleteData();
         for (int i = 0; i < constMAX; ++i) {
             for (int j = 0; j < constMAX; ++j) {
-                tableNodes[i * constMAX + j].save();
+                try {
+                    tableNodes[i * constMAX + j].save();
+                } catch (IOException e) {
+                    throw new RuntimeException();
+                }
             }
         }
     }

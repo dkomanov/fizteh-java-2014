@@ -4,7 +4,6 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,7 @@ public class MyTableProvider implements TableProvider {
     private Path location;
     private HashMap<String, MyTable> tables;
 
-    public MyTableProvider(Path path) throws IOException, BadFormatException {
+    public MyTableProvider(Path path) {
         location = path;
         tables = new HashMap<String, MyTable>();
         if (!location.toFile().exists()) {
@@ -56,7 +55,7 @@ public class MyTableProvider implements TableProvider {
     }
 
     @Override
-    public Table createTable(String name) throws IOException, BadFormatException {
+    public Table createTable(String name) {
         if (!checkName(name)) {
             throw new IllegalArgumentException();
         }
