@@ -51,5 +51,5 @@ public class JUnitMain {
             System.exit(-1);
         }
     }
-    //c
+    //
 }
