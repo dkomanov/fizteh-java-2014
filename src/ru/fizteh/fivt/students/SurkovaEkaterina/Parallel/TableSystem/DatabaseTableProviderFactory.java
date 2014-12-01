@@ -18,7 +18,8 @@ public class DatabaseTableProviderFactory implements TableProviderFactory {
 
         File databaseDirectory = new File(directory);
         if (databaseDirectory.isFile()) {
-            throw new IllegalArgumentException(this.getClass().toString() + ": Cannot create database in file. Provide a directory, please");
+            throw new IllegalArgumentException(this.getClass().toString()
+                    + ": Cannot create database in file. Provide a directory, please");
         }
 
         if (!databaseDirectory.exists()) {

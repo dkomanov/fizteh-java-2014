@@ -221,7 +221,8 @@ public class ThreadSafeDatabaseTable extends ThreadSafeAbstractTable implements 
         } else {
             File[] children = tableDirectory.listFiles();
             if (children == null || children.length == 0) {
-                throw new IllegalArgumentException(String.format(this.getClass().toString() + ": Table directory %s is empty!",
+                throw new IllegalArgumentException(String.format(this.getClass().toString()
+                                + ": Table directory %s is empty!",
                         tableDirectory.getAbsolutePath()));
             }
         }
