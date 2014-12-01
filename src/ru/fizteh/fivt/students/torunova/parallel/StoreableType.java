@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.torunova.parallel;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.students.torunova.junit.*;
 
 import java.util.Arrays;
 
@@ -52,37 +53,27 @@ public class StoreableType implements ru.fizteh.fivt.storage.structured.Storeabl
 
     @Override
     public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkColumnIndex(columnIndex);
-        checkColumnFormat(columnIndex, Integer.class);
-        return (Integer) values[columnIndex];
+        return  getTypeAt(columnIndex, Integer.class);
     }
 
     @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkColumnIndex(columnIndex);
-        checkColumnFormat(columnIndex, Long.class);
-        return (Long) values[columnIndex];
+        return  getTypeAt(columnIndex, Long.class);
     }
 
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkColumnIndex(columnIndex);
-        checkColumnFormat(columnIndex, Byte.class);
-        return (Byte) values[columnIndex];
+        return  getTypeAt(columnIndex, Byte.class);
     }
 
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkColumnIndex(columnIndex);
-        checkColumnFormat(columnIndex, Float.class);
-        return (Float) values[columnIndex];
+        return  getTypeAt(columnIndex, Float.class);
     }
 
     @Override
     public Double getDoubleAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkColumnIndex(columnIndex);
-        checkColumnFormat(columnIndex, Double.class);
-        return (Double) values[columnIndex];
+        return  getTypeAt(columnIndex, Double.class);
     }
 
     @Override
@@ -94,9 +85,7 @@ public class StoreableType implements ru.fizteh.fivt.storage.structured.Storeabl
 
     @Override
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkColumnIndex(columnIndex);
-        checkColumnFormat(columnIndex, String.class);
-        return (String) values[columnIndex];
+        return  getTypeAt(columnIndex, String.class);
     }
     public int getNumberOfColumns() {
         return types.length;
@@ -113,6 +102,11 @@ public class StoreableType implements ru.fizteh.fivt.storage.structured.Storeabl
         if (columnIndex >= values.length) {
             throw new IndexOutOfBoundsException();
         }
+    }
+    private <T> T getTypeAt(int columnIndex, Class<T> clazz) {
+        checkColumnIndex(columnIndex);
+        checkColumnFormat(columnIndex, clazz);
+        return (T) values[columnIndex];
     }
 
 }
