@@ -42,7 +42,7 @@ public class MultiFileTable implements Table {
             return 0;
         }
     };
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ReadWriteLock lock = new ReentrantReadWriteLock(true);
     private Path dbPath;
     private String name;
 
@@ -237,6 +237,7 @@ public class MultiFileTable implements Table {
         diff.get().pending = 0;
 
         ++stableVersion;
+        version.set(version.get() + 1);
 
         lock.writeLock().unlock();
         return p;

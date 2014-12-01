@@ -58,7 +58,7 @@ public class TableEntryJsonSerializer implements TableEntrySerializer {
                 || value.charAt(0) != '['
                 || value.charAt(value.length() - 1) != ']'
                 || value.charAt(1) == ','
-                || value.charAt(value.length()-2) == ',') {
+                || value.charAt(value.length() - 2) == ',') {
             throw new ParseException("invalid JSON", 0);
         }
 

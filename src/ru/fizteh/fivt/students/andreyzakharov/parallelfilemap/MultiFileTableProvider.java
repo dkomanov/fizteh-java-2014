@@ -22,7 +22,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     private Map<String, MultiFileTable> tables;
     private MultiFileTable activeTable;
     private TableEntrySerializer serializer = new TableEntryJsonSerializer();
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     public MultiFileTableProvider(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
