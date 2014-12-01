@@ -9,7 +9,7 @@ import java.util.HashMap;
  */
 public class DataBaseDir {
 
-    public HashMap<String, Table> tables;
+    public HashMap<String, MultiTable> tables;
     public String using;
     public File parentDirectory;
 
@@ -26,14 +26,14 @@ public class DataBaseDir {
         for (String childName: parentDirectory.list()) {
             File childDirectory = new File(parentDirectory, childName);
             if (childDirectory.isDirectory()) {
-                tables.put(childName, new Table(childDirectory));
+                tables.put(childName, new MultiTable(childDirectory));
             } else {
                 throw new Exception(childName + " from databases directory is not a directory");
             }
         }
     }
 
-    public Table getUsing() {
+    public MultiTable getUsing() {
         return tables.get(using);
     }
 

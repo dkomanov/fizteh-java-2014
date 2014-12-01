@@ -2,19 +2,29 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.*;
 
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author AlexeyZhuravlev
  */
 public class MyTableProvider implements TableProvider {
 
-    private JUnitDataBaseDir directory;
+    HashMap<String, Table> tables;
+    DataBaseDir usualDbDir;
+    String using;
 
     protected MyTableProvider(String path) {
         try {
-            directory = new JUnitDataBaseDir(path);
+            using = null;
+            usualDbDir = new DataBaseDir(path);
+            tables = new HashMap<>();
+            for (Map.Entry<String, MultiTable> entry: usualDbDir.tables.entrySet()) {
+                tables.put(entry.getKey(), new MyTable(entry.getValue(), entry.getKey()));
+            }
         } catch (Exception e) {
             throw new IllegalArgumentException();
         }
@@ -25,8 +35,8 @@ public class MyTableProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException();
         }
-        if (directory.tables.containsKey(name)) {
-            return new MyTable(directory.tables.get(name), name);
+        if (tables.containsKey(name)) {
+            return tables.get(name);
         } else {
             return null;
         }
@@ -37,14 +47,15 @@ public class MyTableProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException();
         }
-        if (directory.tables.containsKey(name)) {
+        if (tables.containsKey(name)) {
             return null;
         } else {
-            JUnitCommand create = new JUnitCreateCommand(name);
             PrintStream out = System.out;
             System.setOut(new PrintStream(new DummyOutputStream()));
             try {
-                create.execute(directory);
+                Command command = new CreateCommand(name);
+                command.execute(usualDbDir);
+                tables.put(name, new MyTable(usualDbDir.tables.get(name), name));
             } catch (Exception e) {
                 throw new IllegalArgumentException();
             }
@@ -58,17 +69,31 @@ public class MyTableProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException();
         }
-        if (!directory.tables.containsKey(name)) {
+        if (!tables.containsKey(name)) {
             throw new IllegalStateException();
         }
-        JUnitCommand drop = new JUnitDropCommand(name);
         PrintStream out = System.out;
         System.setOut(new PrintStream(new DummyOutputStream()));
         try {
-            drop.execute(directory);
+            Command drop = new DropCommand(name);
+            drop.execute(usualDbDir);
+            tables.remove(name);
         } catch (Exception e) {
             throw new IllegalArgumentException();
+        } finally {
+            System.setOut(out);
         }
-        System.setOut(out);
+    }
+
+    public Table getUsing() {
+        return tables.get(using);
+    }
+
+    public void setUsing(String passed) {
+        using = passed;
+    }
+
+    public DataBaseDir getUsual() {
+        return usualDbDir;
     }
 }
