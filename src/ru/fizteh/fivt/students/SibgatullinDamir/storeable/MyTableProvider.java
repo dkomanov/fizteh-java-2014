@@ -26,16 +26,16 @@ public class MyTableProvider implements TableProvider {
     File mainDirectory;
     MyTable usingTable;
 
-    private static final HashMap<Class, deserializer> readMap;
+    private static final HashMap<Class, Deserializer> ReadMap;
 
     static {
-        readMap = new HashMap<>();
-        readMap.put(Integer.class, Integer::valueOf);
-        readMap.put(Long.class, Long::valueOf);
-        readMap.put(Byte.class, Byte::valueOf);
-        readMap.put(Double.class, Double::valueOf);
-        readMap.put(Float.class, Float::valueOf);
-        readMap.put(Boolean.class, string -> {
+        ReadMap = new HashMap<>();
+        ReadMap.put(Integer.class, Integer::valueOf);
+        ReadMap.put(Long.class, Long::valueOf);
+        ReadMap.put(Byte.class, Byte::valueOf);
+        ReadMap.put(Double.class, Double::valueOf);
+        ReadMap.put(Float.class, Float::valueOf);
+        ReadMap.put(Boolean.class, string -> {
             if (string.equals("true")) {
                 return true;
             }
@@ -44,8 +44,8 @@ public class MyTableProvider implements TableProvider {
             }
             throw new ParseException("Wrong boolean type", 0);
         });
-        readMap.put(String.class, string -> {
-                return string;
+        ReadMap.put(String.class, string -> {
+            return string;
         });
     }
 
@@ -163,7 +163,7 @@ public class MyTableProvider implements TableProvider {
                     if (array.get(i).equals(null)) {
                         values.add(null);
                     } else {
-                        values.add(readMap.get(table.getColumnType(i)).getObject(array.get(i).toString()));
+                        values.add(ReadMap.get(table.getColumnType(i)).getObject(array.get(i).toString()));
                     }
                 } catch (ClassCastException e) {
                     throw new ParseException(array.get(i).toString(), 0);
@@ -220,7 +220,7 @@ public class MyTableProvider implements TableProvider {
         return list;
     }
 
-    interface deserializer {
+    interface Deserializer {
         Object getObject(String string) throws ParseException;
     }
 }

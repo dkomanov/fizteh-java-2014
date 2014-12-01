@@ -15,7 +15,9 @@ public class FileMap extends HashMap<String, String> {
 
     String name;
 
-    FileMap(String passedName) { name = passedName; }
+    FileMap(String passedName) {
+        name = passedName;
+    }
 
     FileMap(File tableDirectory) {
         try {
