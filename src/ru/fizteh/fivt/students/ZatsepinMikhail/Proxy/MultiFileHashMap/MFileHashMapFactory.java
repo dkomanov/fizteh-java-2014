@@ -8,10 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MFileHashMapFactory implements TableProviderFactory, AutoCloseable {
     private HashSet<MFileHashMap> pullOfMFileHashMap;
     private boolean isClosed;
+    private Lock lock;
 
     private void assertNotClosed() throws IllegalStateException {
         if (isClosed) {
@@ -22,15 +25,18 @@ public class MFileHashMapFactory implements TableProviderFactory, AutoCloseable 
     public MFileHashMapFactory() {
         pullOfMFileHashMap = new HashSet<>();
         isClosed = false;
+        lock = new ReentrantLock();
     }
 
     @Override
     public void close() throws Exception {
         assertNotClosed();
-       isClosed = true;
+        lock.lock();
+        isClosed = true;
         for (MFileHashMap oneTableProvider : pullOfMFileHashMap) {
             oneTableProvider.close();
         }
+        lock.unlock();
     }
 
     @Override

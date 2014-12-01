@@ -25,6 +25,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class MFileHashMap implements TableProvider, AutoCloseable {
     private String dataBaseDirectory;
     private HashMap<String, FileMap> tables;
+    private HashMap<String, FileMap> closedTables;
     private FileMap currentTable;
     private ReentrantReadWriteLock lockForCreateAndGet;
     private boolean isClosed;
@@ -32,6 +33,7 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
     public MFileHashMap(String newDirectory) throws IOException {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
+        closedTables = new HashMap<>();
         lockForCreateAndGet = new ReentrantReadWriteLock();
         isClosed = false;
         init();
@@ -46,6 +48,10 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
         lockForCreateAndGet.readLock().lock();
         FileMap returnValue;
         if (tables.containsKey(name)) {
+            if (tables.get(name).isClosed()) {
+                returnValue = FileMap.createIdenticalButOpened(tables.get(name));
+                tables.put(name, returnValue);
+            }
             returnValue = tables.get(name);
         } else {
             returnValue = null;
@@ -221,10 +227,12 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
     @Override
     public void close() throws Exception {
         assertNotClosed();
+        lockForCreateAndGet.writeLock().lock();
         isClosed = true;
         for (FileMap oneTable : tables.values()) {
             oneTable.close();
         }
+        lockForCreateAndGet.writeLock().unlock();
     }
 
     @Override

@@ -68,6 +68,16 @@ public class FileMap implements Table, AutoCloseable {
         }
     }
 
+    public static FileMap createIdenticalButOpened(FileMap closedTable) {
+        try {
+            FileMap result = new FileMap(closedTable.directoryOfTable, closedTable.typeList, closedTable.parent);
+            return result;
+        } catch (IOException e) {
+            //suppress
+        }
+        return null;
+    }
+
     @Override
     public String getName() {
         assertNotClosed();
@@ -411,8 +421,10 @@ public class FileMap implements Table, AutoCloseable {
     @Override
     public void close() throws Exception {
         assertNotClosed();
+        lockForCommit.lock();
         rollback();
         isClosed = true;
+        lockForCommit.unlock();
     }
 
     @Override
@@ -420,7 +432,7 @@ public class FileMap implements Table, AutoCloseable {
         return getClass().getSimpleName() + "[" + Paths.get(directoryOfTable).toAbsolutePath().toString() + "]";
     }
 
-    public boolean checkIfClosed() {
+    public boolean isClosed() {
         return isClosed;
     }
 
