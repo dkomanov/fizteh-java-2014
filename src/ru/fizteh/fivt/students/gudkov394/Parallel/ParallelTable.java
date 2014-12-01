@@ -6,6 +6,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.gudkov394.Storable.src.CurrentTable;
 
 import java.io.IOException;
+import java.io.File;
 import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -121,5 +122,11 @@ public class ParallelTable implements Table {
             System.err.println("We have a problem with parse in get()");
         }
         return null;
+    }
+
+    public String getPath() {
+        File providerFile = new File(provider.getPath());
+        File table = new File(providerFile, getName());
+        return table.getPath();
     }
 }

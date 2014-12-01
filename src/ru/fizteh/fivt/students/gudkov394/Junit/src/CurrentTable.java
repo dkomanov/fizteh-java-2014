@@ -66,7 +66,7 @@ public class CurrentTable implements Table {
     }
 
     public String get(String s) {
-        if (s == null) {
+        if (s == null || s.length() == 0) {
             throw new IllegalArgumentException();
         }
         if (!currentTable.containsKey(s)) {
@@ -76,7 +76,7 @@ public class CurrentTable implements Table {
     }
 
     public String put(String key, String value) {
-        if (key == null || value == null) {
+        if (key == null || value == null || key.length() == 0) {
             throw new IllegalArgumentException();
         }
         ++number;
@@ -102,7 +102,7 @@ public class CurrentTable implements Table {
     }
 
     public String remove(String currentArg) {
-        if (currentArg == null) {
+        if (currentArg == null || currentArg.length() == 0) {
             throw new IllegalArgumentException();
         }
         --number;
@@ -147,10 +147,9 @@ public class CurrentTable implements Table {
         if (f.exists()) {
             System.out.println("tablename exists");
         } else if (!f.mkdirs()) {
-            System.err.println("I can't create the directory");
-            System.exit(1);
+            throw new RuntimeException();
         } else {
-            System.out.println("created");
+            //    System.out.println("created");
         }
     }
 

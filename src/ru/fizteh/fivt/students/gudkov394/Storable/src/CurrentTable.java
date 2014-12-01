@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.*;
 
 public class CurrentTable implements Table {
-    private ArrayList<Class<?>> signature = new ArrayList<>();
+    private List<Class<?>> signature = new ArrayList<>();
     private String name;
     private Map currentTable = new HashMap<String, Storeable>();
     private Map newKey = new HashMap<String, Storeable>();
@@ -21,10 +21,10 @@ public class CurrentTable implements Table {
     TableProviderClass tableProviderClass = null;
 
 
-    public CurrentTable(String nameTmp, ArrayList<Class<?>> signatureTmp) {
+    public CurrentTable(String nameTmp, List<Class<?>> signatureTmp) {
         name = nameTmp;
         signature = signatureTmp;
-        //   create();
+        create();
     }
 
     public CurrentTable(String nameTmp) {
@@ -219,7 +219,7 @@ public class CurrentTable implements Table {
             System.err.println("I can't create the directory");
             System.exit(1);
         } else {
-            System.out.println("created");
+//            System.out.println("created");
         }
     }
 
@@ -252,7 +252,17 @@ public class CurrentTable implements Table {
         }
         number = currentTable.size();
     }
+
     public TableProviderClass getTableProviderClass() {
         return tableProviderClass;
+    }
+
+    public List<Object> getSignature() {
+        ArrayList<Object> objects = new ArrayList<>();
+        for(Class<?> tmp : signature)
+        {
+            objects.add((Object) tmp);
+        }
+        return  (List<Object>) objects;
     }
 }

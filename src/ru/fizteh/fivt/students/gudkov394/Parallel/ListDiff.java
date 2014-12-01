@@ -114,8 +114,8 @@ public class ListDiff {
             table.commit();
             return changedKey.size();
         } finally {
-            clear();
             writeLock.unlock();
+            clear();
         }
     }
 

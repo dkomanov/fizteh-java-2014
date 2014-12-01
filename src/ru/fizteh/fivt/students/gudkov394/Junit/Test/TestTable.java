@@ -4,6 +4,7 @@ package ru.fizteh.fivt.students.gudkov394.Junit.Test;
  * Created by kagudkov on 25.10.14.
  */
 
+import javafx.scene.control.Tab;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,8 +18,11 @@ import ru.fizteh.fivt.students.gudkov394.Junit.src.Junit;
 import java.io.File;
 import java.io.IOException;
 
+import static java.nio.file.Files.createTempDirectory;
+
 public class TestTable {
-    private static Table table;
+    private  Table table;
+    private TableProvider provider;
     @Rule
     public TemporaryFolder rootDBDirectory = new TemporaryFolder();
 
@@ -26,7 +30,7 @@ public class TestTable {
     public void createTable() throws IOException {
         File newTable = rootDBDirectory.newFolder("testTable");
         TableProviderFactory factory = new Junit();
-        TableProvider provider = factory.create("/home/kagudkov/fizteh-java-2014/test1");
+        provider = factory.create(createTempDirectory("test1").toString());
         provider.createTable("testTable");
         table = provider.getTable("testTable");
     }
@@ -121,5 +125,33 @@ public class TestTable {
         }
         Assert.assertEquals(0, table.size());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void putEmptyKeyShouldFail() {
+        table.put("", "1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getTableEmptyShouldFail() {
+        table.get("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void RemoveEmpty() {
+        table.remove("");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void createTableBadSymbolShouldFail() {
+        Table tmpTable = provider.createTable(",;ddddddddddddddddddddddd" +
+                "sdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" +
+                "dsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss" +
+                "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
+                "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
+                "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
+                "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
+                "dddddddddddd?");
+    }
+
 
 }
