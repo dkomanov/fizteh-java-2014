@@ -2,6 +2,9 @@ package ru.fizteh.fivt.students.LevkovMiron.Proxy;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,6 +15,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.IdentityHashMap;
 
@@ -73,10 +77,14 @@ public class XMLParser {
     }
 
 
-    public Document parseString(String s) throws Exception{
+    public Document parseString(String s) throws Exception {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document document = builder.parse(s);
-        System.out.println(document.getFirstChild());
+        Document document = builder.parse(new InputSource(new StringReader(s)));
+        Node node = document.getFirstChild();
+        NodeList nodeList = node.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            System.out.println(nodeList.item(i));
+        }
         return document;
     }
 }
