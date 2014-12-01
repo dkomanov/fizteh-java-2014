@@ -10,7 +10,7 @@ public class Main {
     public static String mainDir = "fizteh.db.dir";
 
     public static void main(String[] args) {
-        //System.setProperty(mainDir, "D:/tmp/db6-storeable");
+        System.setProperty(mainDir, "D:/tmp/db6-storeable");
 
         TableProviderFactory tableProviderFactory = new MyTableProviderFactory();
         if (System.getProperty(Main.mainDir) == null) {

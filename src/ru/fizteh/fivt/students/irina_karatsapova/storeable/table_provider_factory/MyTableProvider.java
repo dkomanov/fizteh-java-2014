@@ -18,7 +18,7 @@ import java.text.ParseException;
 import java.util.*;
 
 public class MyTableProvider implements TableProvider {
-    private static final String SIGNATURE_FILENAME = "signature.txt";
+    private static final String SIGNATURE_FILENAME = "signature.tsv";
 
     private File databaseFile;
     private Map<String, MyTable> tables = new HashMap<>();

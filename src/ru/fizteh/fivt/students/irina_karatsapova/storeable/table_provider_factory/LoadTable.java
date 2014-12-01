@@ -7,7 +7,7 @@ import ru.fizteh.fivt.students.irina_karatsapova.storeable.utils.Utils;
 import java.io.*;
 
 public class LoadTable {
-    private static final String SIGNATURE_FILENAME = "signature.txt";
+    private static final String SIGNATURE_FILENAME = "signature.tsv";
 
     public static void start(MyTable table) throws TableException {
         try {
