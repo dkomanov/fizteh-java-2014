@@ -1,20 +1,39 @@
 package util;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import strings.Table;
+import structured.Storeable;
+import structured.Table;
+import structured.TableProvider;
 
 public class MyTable implements Table {
+    TableProvider myTableProvider;
     File tableRoot;
-    HashMap<String, String> data;
+    HashMap<String, Storeable> data;
+    List<Class<?>> types;
 
-    public MyTable(File tableFile) {
-        data = FolderData.loadDb(tableFile);
+    public MyTable(File tableFile, TableProvider tableProvider) {
+        myTableProvider = tableProvider;
+        try {
+            types = FolderData.loadSignature(tableFile);
+
+            HashMap<String, String> hashMap = FolderData.loadDb(tableFile);
+            for (Map.Entry<String, String> entry : hashMap.entrySet()) {
+                data.put(entry.getKey(), myTableProvider.deserialize(this, entry.getValue()));
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to load signature");
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Error while parsing values");
+        }
         tableRoot = tableFile;
     }
 
@@ -39,7 +58,7 @@ public class MyTable implements Table {
     }
 
     @Override
-    public String put(String key, String value) {
+    public String put(String key, Storeable value) {
         if (key == null) {
             throw new IllegalArgumentException("Bad key value");
         }
@@ -99,7 +118,7 @@ public class MyTable implements Table {
         return diffSize;
     }
 
-    public int diff() {
+    private int diff() {
         HashMap<String, String> oldData = FolderData.loadDb(tableRoot);
         Set<String> allKeys = new HashSet<String>(oldData.keySet());
         allKeys.addAll(data.keySet());
@@ -125,5 +144,23 @@ public class MyTable implements Table {
             keyList.add(key);
         }
         return keyList;
+    }
+
+    @Override
+    public int getNumberOfUncommittedChanges() {
+        return diff();
+    }
+
+    @Override
+    public int getColumnsCount() {
+        return types.size();
+    }
+
+    @Override
+    public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        if (columnIndex >= types.size() || columnIndex < 0) {
+            throw new IndexOutOfBoundsException("Index is out of bound");
+        }
+        return types.get(columnIndex);
     }
 }

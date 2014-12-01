@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.storage.structured;
+package structured;
 
 /**
  * Список фиксированной структуры, строка таблицы {@link Table}.

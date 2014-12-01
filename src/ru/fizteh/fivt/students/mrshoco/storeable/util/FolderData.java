@@ -1,7 +1,11 @@
 package util;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
 public class FolderData extends Data {
 
@@ -23,6 +27,49 @@ public class FolderData extends Data {
             }
         }
         return hashMap;
+    }
+
+    public static List<Class<?>> loadSignature(File file) 
+                                throws IOException {
+        File signatureFile = new File(file, "signature.tsv");
+        List<Class<?>> signatures = new ArrayList<Class<?>>();
+        String str = new String();
+        try {
+            Scanner scanner = new Scanner(signatureFile);
+            while (scanner.hasNext()) {
+                str = scanner.next();
+
+                switch (str) {
+                    case "int": 
+                        signatures.add(Integer.class);
+                        break;
+                    case "long": 
+                        signatures.add(Long.class);
+                        break;
+                    case "byte": 
+                        signatures.add(Byte.class);
+                        break;
+                    case "float": 
+                        signatures.add(Float.class);
+                        break;
+                    case "double": 
+                        signatures.add(Double.class);
+                        break;
+                    case "boolean": 
+                        signatures.add(Boolean.class);
+                        break;
+                    case "String": 
+                        signatures.add(String.class);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Error with signature.tsv file");
+                }
+            }
+            scanner.close();
+        } catch (IOException e) {
+            throw new IOException("Error while reading signature.tsv");
+        }
+        return signatures;
     }
 
     public static HashMap<String, String> loadDb(File file) throws IllegalArgumentException {

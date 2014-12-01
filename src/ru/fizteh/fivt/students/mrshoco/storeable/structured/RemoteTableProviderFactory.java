@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.storage.structured;
+package structured;
 
 import java.io.IOException;
 

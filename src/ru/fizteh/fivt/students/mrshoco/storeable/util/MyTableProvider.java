@@ -1,8 +1,9 @@
 package util;
 
 import java.io.File;
+import java.util.List;
 
-import strings.*;
+import structured.*;
 
 public class MyTableProvider implements TableProvider{
     File root;
@@ -32,12 +33,12 @@ public class MyTableProvider implements TableProvider{
             }
                 System.out.println("using " + name);
         }
-        currentTable = new MyTable(tableFile);
+        currentTable = new MyTable(tableFile, this);
         return currentTable;
     }
 
     @Override
-    public Table createTable(String name) {
+    public Table createTable(String name, List<Class<?>> columnTypes) {
         if (name == null) {
             throw new IllegalArgumentException("Bad name");
         }
@@ -50,7 +51,7 @@ public class MyTableProvider implements TableProvider{
             tableFile.mkdir();
             System.out.println("created");
         }
-        currentTable = new MyTable(tableFile);
+        currentTable = new MyTable(tableFile, this);
         return currentTable;
     }
     
@@ -85,4 +86,26 @@ public class MyTableProvider implements TableProvider{
             }
         }
     }
+    
+    @Override
+    public Storeable deserialize(Table table, String value) throws ParseException {
+    }
+
+    @Override
+    public String serialize(Table table, Storeable value) throws ColumnFormatException {
+    }
+
+    @Override
+    public Storeable createFor(Table table) {
+    }
+
+    @Override
+    public Storeable createFor(Table table, List<?> values) 
+                                throws ColumnFormatException, IndexOutOfBoundsException {
+    }
+
+    @Override
+    public List<String> getTableNames() {
+    }
+
 }

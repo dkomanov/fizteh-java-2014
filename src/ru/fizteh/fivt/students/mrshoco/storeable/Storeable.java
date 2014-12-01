@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-import strings.*;
+import structured.*;
 
 import util.*;
 

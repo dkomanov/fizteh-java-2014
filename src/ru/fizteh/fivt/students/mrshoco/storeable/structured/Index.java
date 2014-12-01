@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.storage.structured;
+package structured;
 
 /**
  * Представляет базу для интерфейс для работы с таблицей, содержащей ключи-значения.
