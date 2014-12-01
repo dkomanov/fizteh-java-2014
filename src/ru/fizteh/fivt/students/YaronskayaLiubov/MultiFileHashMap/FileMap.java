@@ -60,7 +60,6 @@ public class FileMap {
                         byteBuffer.get(value, 0, valueLength);
                         data.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
                     }
-                    channel.close();
                 } catch (IOException e) {
                     System.err.println("error reading file: " + e.getMessage()
                     );
