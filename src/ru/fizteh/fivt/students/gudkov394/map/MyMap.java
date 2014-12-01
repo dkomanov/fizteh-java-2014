@@ -36,7 +36,7 @@ public class MyMap {
     public void interactive() {
         Scanner sc = new Scanner(System.in);
         Map currentTable = new HashMap<String, String>();
-        Init init = new Init(currentTable, System.getProperty("db.file"));
+        Init init = new Init(currentTable, System.getProperty("fizteh.db.dir"));
         while (true) {
             String currentString = sc.nextLine();
             currentString = currentString.replaceAll("\\s*;\\s*", ";");
@@ -52,7 +52,7 @@ public class MyMap {
 
     public void packageMode(final String[] args) {
         Map currentTable = new HashMap<String, String>();
-        Init init = new Init(currentTable, System.getProperty("db.file"));
+        Init init = new Init(currentTable, System.getProperty("fizteh.db.dir"));
         StringBuilder builder = new StringBuilder();
         for (String s : args) {
             s = s.replace('\'', ' ');

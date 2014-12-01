@@ -14,11 +14,11 @@ import java.util.Set;
 public class Write {
 
     public Write(final Map currentTable) {
-    if (System.getProperty("db.file") == null) {
+    if (System.getProperty("fizteh.db.dir") == null) {
         System.err.println("You forgot file");
         System.exit(4);
     }
-    File f = new File(System.getProperty("db.file"));
+    File f = new File(System.getProperty("fizteh.db.dir"));
     FileOutputStream output = null;
     try {
         output = new FileOutputStream(f);
