@@ -245,34 +245,34 @@ public class MultiFileTableTest {
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], values[i]);
         }
-        assertEquals(n, f.getPending());
+        assertEquals(n, f.getNumberOfUncommittedChanges());
         assertEquals(n, f.commit());
         for (int i = 0; i < n / 2; ++i) {
             f.put(keys[i], values[n - i - 1]);
         }
-        assertEquals(n / 2, f.getPending());
+        assertEquals(n / 2, f.getNumberOfUncommittedChanges());
         assertEquals(n / 2, f.commit());
         for (int i = 0; i < n; ++i) {
             f.remove(keys[i]);
         }
-        assertEquals(n, f.getPending());
+        assertEquals(n, f.getNumberOfUncommittedChanges());
         assertEquals(n, f.commit());
 
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], values[i]);
         }
-        assertEquals(n, f.getPending());
+        assertEquals(n, f.getNumberOfUncommittedChanges());
         assertEquals(n, f.commit());
         for (int i = 0; i < n; ++i) {
             f.remove(keys[i]);
             f.put(keys[i], values[i]);
-            assertEquals(0, f.getPending());
+            assertEquals(0, f.getNumberOfUncommittedChanges());
             assertEquals(0, f.commit());
         }
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], nonExistentValue);
             f.put(keys[i], values[i]);
-            assertEquals(0, f.getPending());
+            assertEquals(0, f.getNumberOfUncommittedChanges());
             assertEquals(0, f.commit());
         }
     }
@@ -282,12 +282,12 @@ public class MultiFileTableTest {
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], values[i]);
         }
-        assertEquals(n, f.getPending());
+        assertEquals(n, f.getNumberOfUncommittedChanges());
         assertEquals(n, f.rollback());
         for (int i = 0; i < n / 2; ++i) {
             f.put(keys[i], values[n - i - 1]);
         }
-        assertEquals(n / 2, f.getPending());
+        assertEquals(n / 2, f.getNumberOfUncommittedChanges());
         assertEquals(n / 2, f.rollback());
 
         for (int i = 0; i < n; ++i) {
@@ -301,13 +301,13 @@ public class MultiFileTableTest {
         for (int i = 0; i < n; ++i) {
             f.remove(keys[i]);
             f.put(keys[i], values[i]);
-            assertEquals(0, f.getPending());
+            assertEquals(0, f.getNumberOfUncommittedChanges());
             assertEquals(0, f.rollback());
         }
         for (int i = 0; i < n; ++i) {
             f.put(keys[i], nonExistentValue);
             f.put(keys[i], values[i]);
-            assertEquals(0, f.getPending());
+            assertEquals(0, f.getNumberOfUncommittedChanges());
             assertEquals(0, f.rollback());
         }
     }

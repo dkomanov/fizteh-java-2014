@@ -6,8 +6,8 @@ import ru.fizteh.fivt.students.andreyzakharov.parallelfilemap.MultiFileTableProv
 public class ExitCommand implements Command {
     @Override
     public String execute(MultiFileTableProvider connector, String... args) throws CommandInterruptException {
-        if (connector.getCurrent() != null && connector.getCurrent().getPending() > 0) {
-            return connector.getCurrent().getPending() + " unsaved changes";
+        if (connector.getCurrent() != null && connector.getCurrent().getNumberOfUncommittedChanges() > 0) {
+            return connector.getCurrent().getNumberOfUncommittedChanges() + " unsaved changes";
         }
         connector.close();
         System.exit(0);

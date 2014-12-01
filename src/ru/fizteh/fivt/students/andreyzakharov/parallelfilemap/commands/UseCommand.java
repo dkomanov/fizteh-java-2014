@@ -16,8 +16,8 @@ public class UseCommand implements Command {
 
         if (connector.getTable(args[1]) != null) {
             if (connector.getCurrent() != null) {
-                if (connector.getCurrent().getPending() > 0) {
-                    return connector.getCurrent().getPending() + " unsaved changes";
+                if (connector.getCurrent().getNumberOfUncommittedChanges() > 0) {
+                    return connector.getCurrent().getNumberOfUncommittedChanges() + " unsaved changes";
                 }
                 try {
                     connector.getCurrent().unload();

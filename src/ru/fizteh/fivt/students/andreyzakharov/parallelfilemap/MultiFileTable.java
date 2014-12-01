@@ -206,7 +206,8 @@ public class MultiFileTable implements Table {
         return s;
     }
 
-    public int getPending() {
+    @Override
+    public int getNumberOfUncommittedChanges() {
         lock.readLock().lock();
         sync();
         lock.readLock().unlock();
@@ -299,11 +300,7 @@ public class MultiFileTable implements Table {
         return signature.get(columnIndex);
     }
 
-    /**
-     * Returns list of keys in current version of the table.
-     *
-     * @return List of keys.
-     */
+    @Override
     public List<String> list() {
         lock.readLock().lock();
         List<String> keySet = new ArrayList<>(stableData.keySet());
