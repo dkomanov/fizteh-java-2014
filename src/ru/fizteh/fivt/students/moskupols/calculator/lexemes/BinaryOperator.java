@@ -6,7 +6,7 @@ import java.util.Stack;
 /**
  * Created by moskupols on 23.09.14.
  */
-abstract public class BinaryOperator extends Operator {
+public abstract class BinaryOperator extends Operator {
 
     protected abstract Operand apply(Operand left, Operand right) throws Exception;
 

@@ -6,7 +6,7 @@ import java.util.Stack;
 /**
  * Created by moskupols on 23.09.14.
  */
-abstract public class UnaryOperator extends Operator {
+public abstract class UnaryOperator extends Operator {
 
     protected abstract Operand apply(Operand o);
 
