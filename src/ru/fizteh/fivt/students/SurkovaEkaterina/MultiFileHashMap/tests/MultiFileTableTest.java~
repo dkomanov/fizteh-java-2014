@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.tests;
 
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
@@ -11,24 +13,26 @@ import java.util.Random;
 
 public class MultiFileTableTest {
     private static final int KEYS_COUNT = 20;
-    private static final String TABLE_NAME = "testTable";
+    private static final String TABLE_NAME = "testtable";
 
     TableProviderFactory factory = new MultiFileHashMapTableProviderFactory();
+    TableProvider provider = factory.create("C:\\temp\\database_test");
     Table currentTable;
-    TableProvider provider;
-
-    @Rule
-    public final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
-        TableProvider provider = factory.create(tempFolder.newFolder().getAbsolutePath());
         currentTable = provider.createTable(TABLE_NAME);
         prepareData();
     }
 
+    @After
+    public void afterTest() throws Exception {
+        provider.removeTable(TABLE_NAME);
+    }
+
     @Test
     public void testTableExistingData() {
+        // existing data
         for (int index = 0; index < KEYS_COUNT; ++index) {
             String expectedValue = String.format("value%d", index);
             String key = String.format("key%d", index);
@@ -38,6 +42,7 @@ public class MultiFileTableTest {
 
     @Test
     public void testTableNonExistingData() {
+        // non-existing data
         Random random = new Random();
         for (int index = 0; index < KEYS_COUNT; ++index) {
             String key = String.format("k%d", random.nextInt(100));
@@ -47,6 +52,7 @@ public class MultiFileTableTest {
 
     @Test
     public void testTableNewData() {
+        // new data
         for (int index = 0; index < KEYS_COUNT; ++index) {
             String newKey = String.format("new_key%d", index);
             String newValue = String.format("new_value%d", index);
@@ -56,6 +62,7 @@ public class MultiFileTableTest {
 
     @Test
     public void testTableReplaceData() {
+        // replacing
         for (int index = 0; index < KEYS_COUNT; ++index) {
             String key = String.format("key%d", index);
             String oldValue = String.format("value%d", index);
@@ -112,11 +119,14 @@ public class MultiFileTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testTableExceptions() {
+        // get
         currentTable.get(null);
 
+        // put
         currentTable.put(null, "value");
         currentTable.put("key", null);
 
+        // remove
         currentTable.remove(null);
     }
 
