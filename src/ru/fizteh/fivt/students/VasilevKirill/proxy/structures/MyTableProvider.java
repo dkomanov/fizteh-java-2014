@@ -224,7 +224,7 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
 
     //Old version of method. Saved for compatibility.
     public boolean addTable(String name, Class[] typeList) throws IOException {
-        if (name == null) {
+            if (name == null) {
             throw new IOException("Wrong arguments");
         }
         if (!tables.containsKey(name)) {
