@@ -9,8 +9,8 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.MyStorable;
 import ru.fizteh.fivt.students.VasilevKirill.Storeable.junit.MyTableProviderFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +25,8 @@ public class TableTest {
     @BeforeClass
     public static void beforeClass() {
         try {
-            path = new File("").getCanonicalPath();
+            //path = new File("").getCanonicalPath();
+            path = Files.createTempDirectory("database").toString();
             multiMap = new MyTableProviderFactory().create(path);
             typeList = new ArrayList<>();
             typeList.add(Integer.class);
