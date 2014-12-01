@@ -41,7 +41,14 @@ public class Main {
         }
 
         Shell<MFileHashMap> myShell = new Shell<>(myMFileHashMap);
-        setUpShell(myShell);
+        myShell.addCommand(new CommandCreate());
+        myShell.addCommand(new CommandDrop());
+        myShell.addCommand(new CommandUse());
+        myShell.addCommand(new CommandGetDistribute());
+        myShell.addCommand(new CommandPutDistribute());
+        myShell.addCommand(new CommandListDistribute());
+        myShell.addCommand(new CommandRemoveDistribute());
+        myShell.addCommand(new CommandShowTables());
 
         if (args.length > 0) {
             allRight = myShell.packetMode(args);
@@ -53,20 +60,5 @@ public class Main {
         } else {
             System.exit(1);
         }
-    }
-
-
-    public static void setUpShell(Shell<MFileHashMap> myShell) {
-        myShell.addCommand(new CommandCreate());
-        myShell.addCommand(new CommandDrop());
-        myShell.addCommand(new CommandUse());
-        myShell.addCommand(new CommandGetDistribute());
-        myShell.addCommand(new CommandPutDistribute());
-        myShell.addCommand(new CommandListDistribute());
-        myShell.addCommand(new CommandRemoveDistribute());
-        myShell.addCommand(new CommandShowTables());
-        myShell.addCommand(new CommandRollback());
-        myShell.addCommand(new CommandCommit());
-        myShell.addCommand(new CommandSize());
     }
 }

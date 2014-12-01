@@ -14,6 +14,10 @@ public class CommandDrop extends CommandMultiFileHashMap {
 
     @Override
     public boolean run(MFileHashMap myDataBase, String[] args) {
+        if (numberOfArguments != args.length) {
+            System.out.println(name + ": wrong number of arguments");
+            return false;
+        }
         CommandRm myRemover = new CommandRm();
         Path pathForRemoveTable = Paths.get(myDataBase.getDataBaseDirectory(), args[1]);
         if (!Files.exists(pathForRemoveTable)) {

@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.titov.MultiFileHashMap;
 
 import ru.fizteh.fivt.students.titov.FileMap.FileMap;
-import ru.fizteh.fivt.students.titov.FileMap.FmCommandList;
+import ru.fizteh.fivt.students.titov.FileMap.List;
 
 public class CommandListDistribute extends CommandMultiFileHashMap {
     public CommandListDistribute() {
@@ -11,12 +11,17 @@ public class CommandListDistribute extends CommandMultiFileHashMap {
 
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
+        if (numberOfArguments != args.length) {
+            System.out.println(name + ": wrong number of arguments");
+            return false;
+        }
+
         FileMap currentTable = myMap.getCurrentTable();
         if (myMap.getCurrentTable() == null) {
             System.out.println("no table");
             return true;
         }
-        FmCommandList commandList = new FmCommandList();
+        List commandList = new List();
         return commandList.run(currentTable, args);
     }
 }
