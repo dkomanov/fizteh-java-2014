@@ -26,16 +26,16 @@ public class MyTableProvider implements TableProvider {
     File mainDirectory;
     MyTable usingTable;
 
-    private static final HashMap<Class, Deserializer> Readmap;
+    private static final HashMap<Class, Deserializer> READMAP;
 
     static {
-        Readmap = new HashMap<>();
-        Readmap.put(Integer.class, Integer::valueOf);
-        Readmap.put(Long.class, Long::valueOf);
-        Readmap.put(Byte.class, Byte::valueOf);
-        Readmap.put(Double.class, Double::valueOf);
-        Readmap.put(Float.class, Float::valueOf);
-        Readmap.put(Boolean.class, string -> {
+        READMAP = new HashMap<>();
+        READMAP.put(Integer.class, Integer::valueOf);
+        READMAP.put(Long.class, Long::valueOf);
+        READMAP.put(Byte.class, Byte::valueOf);
+        READMAP.put(Double.class, Double::valueOf);
+        READMAP.put(Float.class, Float::valueOf);
+        READMAP.put(Boolean.class, string -> {
             if (string.equals("true")) {
                 return true;
             }
@@ -44,7 +44,7 @@ public class MyTableProvider implements TableProvider {
             }
             throw new ParseException("Wrong boolean type", 0);
         });
-        Readmap.put(String.class, string -> {
+        READMAP.put(String.class, string -> {
             return string;
         });
     }
@@ -163,7 +163,7 @@ public class MyTableProvider implements TableProvider {
                     if (array.get(i).equals(null)) {
                         values.add(null);
                     } else {
-                        values.add(Readmap.get(table.getColumnType(i)).getObject(array.get(i).toString()));
+                        values.add(READMAP.get(table.getColumnType(i)).getObject(array.get(i).toString()));
                     }
                 } catch (ClassCastException e) {
                     throw new ParseException(array.get(i).toString(), 0);
