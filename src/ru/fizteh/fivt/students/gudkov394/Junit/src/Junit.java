@@ -12,7 +12,7 @@ public class Junit implements TableProviderFactory {
             throw new IllegalArgumentException();
         }
         String[] argsForCreate = new String[0];
-        System.setProperty("db.file", dir);
+        System.setProperty("fizteh.db.dir", dir);
         TableProviderClass tableProviderClass = new TableProviderClass();
         return tableProviderClass;
     }
