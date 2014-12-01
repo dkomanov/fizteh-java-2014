@@ -1,16 +1,17 @@
-package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit;
+package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.commands;
 
+import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.MyTableProvider;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.Command;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.ShowTablesCommand;
 
 /**
  * @author AlexeyZhuravlev
  */
-public class JUnitShowTablesCommand extends JUnitCommand {
+public class JShowTablesCommand extends JCommand {
     @Override
-    public void execute(JUnitDataBaseDir base) throws Exception {
+    public void execute(MyTableProvider base) throws Exception {
         Command show = new ShowTablesCommand();
-        show.execute(base.usualDbDir);
+        show.execute(base.getUsual());
     }
 
     @Override

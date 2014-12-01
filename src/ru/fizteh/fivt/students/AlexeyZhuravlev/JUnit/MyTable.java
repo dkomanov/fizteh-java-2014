@@ -1,24 +1,27 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit;
 
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.*;
 
 import java.io.PrintStream;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author AlexeyZhuravlev
  */
 public class MyTable implements Table {
 
-    private SingleTableDataBaseDir fakeDir;
-    private HybridTable table;
-    private String name;
+    MultiTable virginTable;
+    String name;
+    FancyTable dirtyTable;
+    ArrayList<Command> changes;
 
-    public MyTable(HybridTable passedTable, String passedName) {
-        table = passedTable;
+    protected MyTable(MultiTable passedTable, String passedName) {
+        virginTable = passedTable;
         name = passedName;
-        fakeDir = new SingleTableDataBaseDir(table);
+        changes = new ArrayList<>();
+        dirtyTable = new FancyTable();
+        dirtyTable.importMap(passedTable);
     }
 
     @Override
@@ -34,7 +37,7 @@ public class MyTable implements Table {
         int hashCode = Math.abs(key.hashCode());
         int dir = hashCode % 16;
         int file = hashCode / 16 % 16;
-        return table.dirtyTable.databases[dir][file].data.get(key);
+        return dirtyTable.databases[dir][file].data.get(key);
     }
 
     @Override
@@ -43,15 +46,11 @@ public class MyTable implements Table {
             throw new IllegalArgumentException();
         }
         String result = get(key);
-        JUnitCommand putKey = new JUnitPutCommand(key, value);
-        PrintStream out = System.out;
-        System.setOut(new PrintStream(new DummyOutputStream()));
-        try {
-            putKey.execute(fakeDir);
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-        System.setOut(out);
+        int hashCode = Math.abs(key.hashCode());
+        int dir = hashCode % 16;
+        int file = hashCode / 16 % 16;
+        dirtyTable.databases[dir][file].data.put(key, value);
+        changes.add(new MultiPutCommand(key, value));
         return result;
     }
 
@@ -61,21 +60,17 @@ public class MyTable implements Table {
             throw new IllegalArgumentException();
         }
         String result = get(key);
-        JUnitCommand removeByKey = new JUnitRemoveCommand(key);
-        PrintStream out = System.out;
-        System.setOut(new PrintStream(new DummyOutputStream()));
-        try {
-            removeByKey.execute(fakeDir);
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-        System.setOut(out);
+        int hashCode = Math.abs(key.hashCode());
+        int dir = hashCode % 16;
+        int file = hashCode / 16 % 16;
+        dirtyTable.databases[dir][file].data.remove(key);
+        changes.add(new MultiRemoveCommand(key));
         return result;
     }
 
     @Override
     public int size() {
-        return table.dirtyTable.recordsNumber();
+        return dirtyTable.recordsNumber();
     }
 
     @Override
@@ -83,7 +78,12 @@ public class MyTable implements Table {
         PrintStream out = System.out;
         System.setOut(new PrintStream(new DummyOutputStream()));
         try {
-            return table.commit();
+            int ans = diffTables(virginTable, dirtyTable);
+            for (Command command: changes) {
+                command.executeOnTable(virginTable);
+            }
+            changes.clear();
+            return ans;
         } catch (Exception e) {
             throw new RuntimeException();
         } finally {
@@ -93,7 +93,10 @@ public class MyTable implements Table {
 
     @Override
     public int rollback() {
-        return table.rollBack();
+        int ans = diffTables(virginTable, dirtyTable);
+        dirtyTable.importMap(virginTable);
+        changes.clear();
+        return ans;
     }
 
     @Override
@@ -101,13 +104,44 @@ public class MyTable implements Table {
         List<String> result = new LinkedList<>();
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
-                result.addAll(table.dirtyTable.databases[i][j].data.keySet());
+                result.addAll(dirtyTable.databases[i][j].data.keySet());
             }
         }
         return result;
     }
 
     public int unsavedChanges() {
-        return table.changes.size();
+        return diffTables(virginTable, dirtyTable);
+    }
+
+    private static int diffTables(MultiTable first, MultiTable second) {
+        int result = 0;
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < 16; j++) {
+                if (first.databases[i][j] == null && second.databases[i][j] != null) {
+                    result += second.databases[i][j].data.size();
+                } else if (first.databases[i][j] != null && second.databases[i][j] == null) {
+                    result += first.databases[i][j].data.size();
+                } else if (first.databases[i][j] != null && second.databases[i][j] != null) {
+                    result += diffHashMaps(first.databases[i][j].data, second.databases[i][j].data);
+                }
+            }
+        }
+        return result;
+    }
+
+    private static int diffHashMaps(HashMap<String, String> first, HashMap<String, String> second) {
+        int result = 0;
+        for (Map.Entry<String, String> entry: first.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (second.containsKey(key) && !second.get(key).equals(value)) {
+                result++;
+            }
+        }
+        HashSet<String> intersect = new HashSet<>(first.keySet());
+        intersect.retainAll(second.keySet());
+        result += first.size() + second.size() - 2 * intersect.size();
+        return result;
     }
 }

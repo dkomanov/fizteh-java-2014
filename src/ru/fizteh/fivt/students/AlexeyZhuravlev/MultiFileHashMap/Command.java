@@ -51,6 +51,6 @@ public abstract class Command {
     protected void putArguments(String[] args) {
     }
     protected abstract int numberOfArguments();
-    public void executeOnTable(Table table) throws Exception {
+    public void executeOnTable(MultiTable table) throws Exception {
     }
 }
