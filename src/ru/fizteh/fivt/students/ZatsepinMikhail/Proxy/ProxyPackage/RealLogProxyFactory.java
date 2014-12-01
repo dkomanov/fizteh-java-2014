@@ -1,63 +1,85 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.ProxyPackage;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
 
+import javax.json.*;
 import java.io.Writer;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 
 public class RealLogProxyFactory implements LoggingProxyFactory {
+    public RealLogProxyFactory() {}
+
     @Override
     public Object wrap(Writer writer, Object implementation, Class<?> interfaceClass) throws IllegalArgumentException {
         if (writer == null || implementation == null || interfaceClass == null) {
             throw new IllegalArgumentException("null argument");
         }
         return Proxy.newProxyInstance(implementation.getClass().getClassLoader(),
-                implementation.getClass().getInterfaces(), new DebugProxy(writer, implementation));
+                new Class<?>[]{interfaceClass}, new DebugProxy(writer, implementation));
     }
 
-    public static class DebugProxy implements InvocationHandler {
+    public class DebugProxy implements InvocationHandler {
         private Writer writer;
         private Object implementation;
+        //private Method[] methodsInObject;
+
         public DebugProxy(Writer writer, Object implementation) {
             this.writer = writer;
             this.implementation = implementation;
+            //Method[] methodsInObject = Object.class.getMethods();
+            //System.out.println("x");
         }
 
         @Override
-        public Object invoke(Object obj, Method method, Object[] args) throws Throwable {
-            JSONObject logObject = new JSONObject();
-            logObject.put("timestamp", System.currentTimeMillis());
-            logObject.put("class", implementation.getClass().getName());
-            logObject.put("method", method.getName());
-            logObject.put("arguments", deepIntoIterebleArg(Arrays.asList(args), new IdentityHashMap<>()));
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            for (Method oneMethod : Object.class.getMethods()) {
+                if (oneMethod.equals(method)) {
+                    return method.invoke(implementation, args);
+                }
+            }
+            JsonObjectBuilder logObject = Json.createObjectBuilder()
+                    .add("timestamp", System.currentTimeMillis())
+                    .add("class", implementation.getClass().getName())
+                    .add("method", method.getName());
+            if (args != null) {
+                logObject.add("arguments", deepIntoItereableArg(Arrays.asList(args), new IdentityHashMap<>()));
+            } else {
+                logObject.add("arguments", Json.createArrayBuilder().build());
+            }
+
             Object result = null;
             Throwable exceptionThatWillBeThrown = null;
             try {
-                result = method.invoke(obj, args);
+                result = method.invoke(implementation, args);
             } catch (InvocationTargetException e) {
                 exceptionThatWillBeThrown = e.getTargetException();
             } catch (Exception e) {
                 //suppress
             }
-            if (method.getReturnType() != Void.class) {
+
+            if (method.getReturnType() != void.class) {
                 if (result instanceof Iterable) {
-                    logObject.put("returnValue", deepIntoIterebleArg(Arrays.asList(result), new IdentityHashMap<>()));
+                    logObject.add("returnValue",
+                            deepIntoItereableArg(Arrays.asList(result), new IdentityHashMap<>()));
                 } else {
-                    logObject.put("returnValue", result);
+                    if (result != null) {
+                        addNewValueObject(logObject, "returnValue", result);
+                    } else {
+                        logObject.addNull("returnValue");
+                    }
                 }
             }
             if (exceptionThatWillBeThrown != null) {
-                logObject.put("thrown", exceptionThatWillBeThrown.toString());
+                logObject.add("thrown", exceptionThatWillBeThrown.toString());
             }
 
             synchronized (writer) {
                 try {
-                    logObject.write(writer);
+                    JsonWriter writerJson = Json.createWriter(writer);
+                    writerJson.writeObject(logObject.build());
                 } catch (JSONException e) {
                     //suppress
                 }
@@ -70,22 +92,82 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
             return result;
         }
 
-        private JSONArray deepIntoIterebleArg(Iterable iterable, IdentityHashMap<Object, Object> processed) {
-            JSONArray result = new JSONArray();
+        private JsonArray deepIntoItereableArg(Iterable iterable, IdentityHashMap<Object, Object> processed) {
+            JsonArrayBuilder result = Json.createArrayBuilder();
             for (Object oneArg : iterable) {
                 if (processed.containsKey(oneArg)) {
-                    result.put("cyclic");
+                    result.add("cyclic");
                 } else {
                     if (oneArg instanceof Iterable) {
                         IdentityHashMap<Object, Object> copy = new IdentityHashMap<>(processed);
                         copy.put(oneArg, oneArg);
-                        result.put(deepIntoIterebleArg((Iterable) oneArg, copy));
+                        result.add(Json.createArrayBuilder().add(deepIntoItereableArg((Iterable) oneArg, copy)));
                     } else {
-                        result.put(oneArg);
+                        if (oneArg != null) {
+                            addNewValueArray(result, oneArg);
+                        } else {
+                            result.addNull();
+                        }
                     }
                 }
             }
-            return result;
+            return result.build();
+        }
+
+        private void addNewValueObject(JsonObjectBuilder logObject, String category, Object value) {
+            if (value.getClass().equals(Integer.class)) {
+                logObject.add(category, (int) value);
+                return;
+            }
+            if (value.getClass().equals(Long.class)) {
+                logObject.add(category, (long) value);
+                return;
+            }
+            if (value.getClass().equals(Byte.class)) {
+                logObject.add(category, (byte) value);
+                return;
+            }
+            if (value.getClass().equals(Float.class)) {
+                logObject.add(category, (float) value);
+                return;
+            }
+            if (value.getClass().equals(Double.class)) {
+                logObject.add(category, (double) value);
+                return;
+            }
+            if (value.getClass().equals(Boolean.class)) {
+                logObject.add(category, (boolean) value);
+                return;
+            }
+            logObject.add(category, value.toString());
+        }
+
+        private void addNewValueArray(JsonArrayBuilder logObject, Object value) {
+            if (value.getClass().equals(Integer.class)) {
+                logObject.add((int) value);
+                return;
+            }
+            if (value.getClass().equals(Long.class)) {
+                logObject.add((long) value);
+                return;
+            }
+            if (value.getClass().equals(Byte.class)) {
+                logObject.add((byte) value);
+                return;
+            }
+            if (value.getClass().equals(Float.class)) {
+                logObject.add((float) value);
+                return;
+            }
+            if (value.getClass().equals(Double.class)) {
+                logObject.add((double) value);
+                return;
+            }
+            if (value.getClass().equals(Boolean.class)) {
+                logObject.add((boolean) value);
+                return;
+            }
+            logObject.add(value.toString());
         }
     }
 }
