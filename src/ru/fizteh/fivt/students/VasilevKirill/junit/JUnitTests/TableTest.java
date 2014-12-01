@@ -20,7 +20,7 @@ public class TableTest {
     @BeforeClass
     public static void beforeClass() {
         try {
-            //path = new File("").getCanonicalPath();/
+            //path = new File("").getCanonicalPath();//
             path = Files.createTempDirectory("database").toString();
         } catch (IOException e) {
             System.out.println(e.getMessage());
