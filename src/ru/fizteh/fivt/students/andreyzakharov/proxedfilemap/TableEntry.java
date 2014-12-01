@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.andreyzakharov.proxedfilemap;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
+import java.sql.Struct;
 import java.util.List;
 
 public class TableEntry implements Storeable {
@@ -10,6 +11,19 @@ public class TableEntry implements Storeable {
 
     public TableEntry(List<Object> values) {
         fields = values.toArray();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(getClass().getSimpleName() + "[");
+        for (Object object : fields) {
+            if (object != null) {
+                sb.append(object.toString());
+            }
+            sb.append(',');
+        }
+        sb.setCharAt(sb.length() - 1, ']');
+        return sb.toString();
     }
 
     @Override

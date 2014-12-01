@@ -97,6 +97,11 @@ public class MultiFileTable implements Table {
     }
 
     @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[" + dbPath.toAbsolutePath().normalize().toString() + "]";
+    }
+
+    @Override
     public String getName() {
         return name;
     }

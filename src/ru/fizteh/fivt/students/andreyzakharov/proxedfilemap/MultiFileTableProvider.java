@@ -40,6 +40,11 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     }
 
     @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[" + dbRoot.toAbsolutePath().normalize().toString() + "]";
+    }
+
+    @Override
     public Table getTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
