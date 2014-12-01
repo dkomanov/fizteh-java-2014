@@ -17,7 +17,7 @@ public class DatabaseFactory implements TableProviderFactory {
     @Override
     public TableProvider create(String dir) throws IllegalArgumentException {
         TableProvider tp;
-        if (dir == null || dir.equals("..") || dir.equals(".")) {
+        if (dir == null) {
             throw new IllegalArgumentException("Illegal name of database.");
         }
         try {
