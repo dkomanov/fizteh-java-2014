@@ -12,7 +12,7 @@ public class Utils {
 
     ArrayList<Class<?>> readSignature(String name) {
         ArrayList<Class<?>> signature = new ArrayList<Class<?>>();
-        File inputSignature = new File(System.getProperty("db.file") + File.separator + name
+        File inputSignature = new File(System.getProperty("fizteh.db.dir") + File.separator + name
                 + File.separator + "signature.tsv");
         Scanner scanner = null;
         try {
