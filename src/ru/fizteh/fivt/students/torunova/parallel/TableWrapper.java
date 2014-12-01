@@ -6,14 +6,17 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.torunova.parallel.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.parallel.exceptions.TableNotCreatedException;
 
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by nastya on 19.11.14.
  */
-public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table{
+public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table {
+    private static final String SIGNATURE_FILE = "signature.tsv";
     private TableImpl table;
     private StoreableType headOfTable;
     private TableProvider tableProvider;
@@ -31,6 +34,38 @@ public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table{
         table = newTable;
         headOfTable = new StoreableType(newTypes);
         tableProvider = newTableProvider;
+        File tableDir = new File(newTableProvider.getDbName(), table.getName());
+        File signature = new File(tableDir, SIGNATURE_FILE).getAbsoluteFile();
+        if (!signature.exists()) {
+            PrintWriter fos;
+            try {
+                signature.createNewFile();
+                fos = new PrintWriter(new FileOutputStream(signature));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            for (Class<?> type : newTypes) {
+                fos.print(normalSimpleName(type) + " ");
+            }
+            fos.flush();
+        }
+    }
+    public TableWrapper(TableImpl newTable, DatabaseWrapper newTableProvider) {
+        table = newTable;
+        tableProvider = newTableProvider;
+        File tableDir = new File(newTableProvider.getDbName(), table.getName());
+        File signature = new File(tableDir, SIGNATURE_FILE);
+        Scanner scanner;
+        try {
+            scanner = new Scanner(new FileInputStream(signature));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        List<Class<?>> types = new ArrayList<>();
+        while (scanner.hasNext()) {
+            types.add(classForName(scanner.next()));
+        }
+        headOfTable = new StoreableType(types.toArray(new Class[0]));
     }
 
     @Override
@@ -133,6 +168,45 @@ public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table{
             if (value.getColumnType(i) != headOfTable.getColumnType(i)) {
                 throw new ColumnFormatException("Wrong value format");
             }
+        }
+    }
+    private String normalSimpleName(Class<?> type) {
+        String simpleName = type.getSimpleName();
+        switch (simpleName) {
+            case "Integer" :
+                return "int";
+            case "Float" :
+                return "float";
+            case "Double" :
+                return "double";
+            case "Long" :
+                return "long";
+            case "Boolean" :
+                return "boolean";
+            case "Byte" :
+                return "byte";
+            case "String" :
+                return simpleName;
+            default: throw new RuntimeException("Unsupported type " + simpleName);
+        }
+    }
+    public Class<?> classForName(String className) {
+        switch(className) {
+            case "int":
+                return Integer.class;
+            case "double":
+                return Double.class;
+            case "long":
+                return Long.class;
+            case "String":
+                return String.class;
+            case "byte":
+                return Byte.class;
+            case "float":
+                return Float.class;
+            case "boolean":
+                return Boolean.class;
+            default: throw new RuntimeException("Unsupported type " + className);
         }
     }
 }

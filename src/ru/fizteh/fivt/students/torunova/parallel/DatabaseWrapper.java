@@ -21,7 +21,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class DatabaseWrapper implements TableProvider {
     private Database db;
-    private static final String SIGNATURE_FILE = "signature.tsv";
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public DatabaseWrapper(String dbName) throws IncorrectDbException,
                                                  IncorrectDbNameException,
@@ -51,19 +50,7 @@ public class DatabaseWrapper implements TableProvider {
     public Table getTable(String name) {
         readWriteLock.readLock().lock();
         try {
-            File table = new File(db.getDbName(), name);
-            File signature = new File(table, SIGNATURE_FILE);
-            Scanner scanner;
-            try {
-                scanner = new Scanner(new FileInputStream(signature));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            List<Class<?>> types = new ArrayList<>();
-            while (scanner.hasNext()) {
-                types.add(classForName(scanner.next()));
-            }
-            return new TableWrapper(db.getTable(name), this, types.toArray(new Class[0]));
+            return new TableWrapper(db.getTable(name), this);
         } finally {
             readWriteLock.readLock().unlock();
         }
@@ -78,14 +65,6 @@ public class DatabaseWrapper implements TableProvider {
                 return null;
             }
             TableWrapper table = new TableWrapper(t, this, columnTypes.toArray(new Class[0]));
-            File tableDir = new File(db.getDbName(), name);
-            File signature = new File(tableDir, SIGNATURE_FILE);
-            signature.createNewFile();
-            PrintWriter fos = new PrintWriter(new FileOutputStream(signature));
-            for (Class<?> type : columnTypes) {
-                fos.print(normalSimpleName(type) + " ");
-            }
-            fos.flush();
             return table;
         } finally {
             readWriteLock.writeLock().unlock();
@@ -215,7 +194,9 @@ public class DatabaseWrapper implements TableProvider {
             readWriteLock.readLock().unlock();
         }
     }
-
+    public String getDbName() {
+        return db.getDbName();
+    }
     public Class<?> classForName(String className) {
         switch(className) {
             case "int":
@@ -235,24 +216,5 @@ public class DatabaseWrapper implements TableProvider {
             default: throw new RuntimeException("Unsupported type " + className);
         }
     }
-    private String normalSimpleName(Class<?> type) {
-        String simpleName = type.getSimpleName();
-        switch (simpleName) {
-            case "Integer" :
-                return "int";
-            case "Float" :
-                return "float";
-            case "Double" :
-                return "double";
-            case "Long" :
-                return "long";
-            case "Boolean" :
-                return "boolean";
-            case "Byte" :
-                return "byte";
-            case "String" :
-                return simpleName;
-            default: throw new RuntimeException("Unsupported type " + simpleName);
-        }
-    }
+
 }

@@ -45,85 +45,115 @@ public class FileMap {
     }
 
     public String put(String key, String value) {
-        String putInDiffResult = diff.get().put(key, value);
-        String getFromSavedCopyResult = savedCopy.get(key);
-        if (putInDiffResult != null || getFromSavedCopyResult != null) {
-            changes.get().put(key, OVERWRITTEN);
-        } else {
-            changes.get().put(key, ADDED);
+        readWriteLock.readLock().lock();
+        try {
+            String putInDiffResult = diff.get().put(key, value);
+            String getFromSavedCopyResult = savedCopy.get(key);
+            if (putInDiffResult != null || getFromSavedCopyResult != null) {
+                changes.get().put(key, OVERWRITTEN);
+            } else {
+                changes.get().put(key, ADDED);
+            }
+            if (putInDiffResult == null && getFromSavedCopyResult != null) {
+                return getFromSavedCopyResult;
+            }
+            return putInDiffResult;
+        } finally {
+            readWriteLock.readLock().unlock();
         }
-        if (putInDiffResult == null && getFromSavedCopyResult != null) {
-            return getFromSavedCopyResult;
-        }
-       return putInDiffResult;
     }
 
     public String get(String key) {
-        String getFromDiffResult = diff.get().get(key);
-        String getFromSavedCopyResult = savedCopy.get(key);
-        if (getFromDiffResult == null && getFromSavedCopyResult != null) {
-            return getFromSavedCopyResult;
+        readWriteLock.readLock().lock();
+        try {
+            String getFromDiffResult = diff.get().get(key);
+            String getFromSavedCopyResult = savedCopy.get(key);
+            if (getFromDiffResult == null && getFromSavedCopyResult != null) {
+                return getFromSavedCopyResult;
+            }
+            return getFromDiffResult;
+        } finally {
+            readWriteLock.readLock().unlock();
         }
-        return getFromDiffResult;
     }
 
     public String remove(String key) {
-          String removeFromDiffResult = diff.get().remove(key);
-          String getFromSavedCopy = savedCopy.get(key);
-          if (removeFromDiffResult != null || getFromSavedCopy != null) {
-              changes.get().put(key, DELETED);
-          }
-          if (removeFromDiffResult == null && getFromSavedCopy != null) {
-              return getFromSavedCopy;
-          }
-          return  removeFromDiffResult;
+        readWriteLock.readLock().lock();
+        try {
+            String removeFromDiffResult = diff.get().remove(key);
+            String getFromSavedCopy = savedCopy.get(key);
+            if (removeFromDiffResult != null || getFromSavedCopy != null) {
+                changes.get().put(key, DELETED);
+            }
+            if (removeFromDiffResult == null && getFromSavedCopy != null) {
+                return getFromSavedCopy;
+            }
+            return removeFromDiffResult;
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
     public Set<String> list() {
-        Set<String> workingCopyKeySet = savedCopy.keySet();
-        Set<String> diffKeySet = diff.get().keySet();
-        Set<String> keys = new HashSet<>();
-        for (String key:workingCopyKeySet) {
-            if (changes.get().get(key) != DELETED) {
-                keys.add(key);
+        readWriteLock.readLock().lock();
+        try {
+            Set<String> workingCopyKeySet = savedCopy.keySet();
+            Set<String> diffKeySet = diff.get().keySet();
+            Set<String> keys = new HashSet<>();
+            for (String key : workingCopyKeySet) {
+                if (changes.get().get(key) != DELETED) {
+                    keys.add(key);
+                }
             }
-        }
-        for (String key:diffKeySet) {
-            if (changes.get().get(key) != DELETED) {
-                keys.add(key);
+            for (String key : diffKeySet) {
+                if (changes.get().get(key) != DELETED) {
+                    keys.add(key);
+                }
             }
+            return keys;
+        } finally {
+            readWriteLock.readLock().unlock();
         }
-        return keys;
     }
 
     public boolean isEmpty() {
-        Set<String> allKeys = new HashSet<>();
-        allKeys.addAll(savedCopy.keySet());
-        allKeys.addAll(diff.get().keySet());
-        if (allKeys == null) {
-            return true;
-        }
-        for (String key :allKeys) {
-            if (changes != null && changes.get() != null && changes.get().get(key) != null) {
-                if (changes.get().get(key) != DELETED) {
-                    return false;
+        readWriteLock.readLock().lock();
+        try {
+            Set<String> allKeys = new HashSet<>();
+            allKeys.addAll(savedCopy.keySet());
+            allKeys.addAll(diff.get().keySet());
+            if (allKeys == null) {
+                return true;
+            }
+            for (String key : allKeys) {
+                if (changes != null && changes.get() != null && changes.get().get(key) != null) {
+                    if (changes.get().get(key) != DELETED) {
+                        return false;
+                    }
                 }
             }
+            return true;
+        } finally {
+            readWriteLock.readLock().unlock();
         }
-        return true;
     }
 
     public int size() {
-        Set<String> allKeys = new HashSet<>();
-        allKeys.addAll(savedCopy.keySet());
-        allKeys.addAll(diff.get().keySet());
-        int size = allKeys.size();
-        for (String key :allKeys) {
-            if (changes.get().get(key) == DELETED) {
-                size--;
+        readWriteLock.readLock().lock();
+        try {
+            Set<String> allKeys = new HashSet<>();
+            allKeys.addAll(savedCopy.keySet());
+            allKeys.addAll(diff.get().keySet());
+            int size = allKeys.size();
+            for (String key : allKeys) {
+                if (changes.get().get(key) == DELETED) {
+                    size--;
+                }
             }
+            return size;
+        } finally {
+            readWriteLock.readLock().unlock();
         }
-        return size;
     }
 
     public int rollback() {
@@ -133,12 +163,12 @@ public class FileMap {
         return numberOfRevertedChanges;
     }
     public int commit() throws  IOException {
-        DataOutputStream fos = new DataOutputStream(new FileOutputStream(file));
-        Set<String> keys = list();
-        String valueFromSavedCopy;
-        String valueFromDiff;
         readWriteLock.writeLock().lock();
         try {
+            DataOutputStream fos = new DataOutputStream(new FileOutputStream(file));
+            Set<String> keys = list();
+            String valueFromSavedCopy;
+            String valueFromDiff;
             for (String key : keys) {
                 fos.writeInt(key.getBytes(ENCODING).length);
                 fos.write(key.getBytes(ENCODING));
@@ -147,56 +177,71 @@ public class FileMap {
                 fos.writeInt((valueFromDiff == null ? valueFromSavedCopy : valueFromDiff).getBytes(ENCODING).length);
                 fos.write((valueFromDiff == null ? valueFromSavedCopy : valueFromDiff).getBytes(ENCODING));
             }
+            int numberOfChangedEntries = countChangedEntries();
+            Map<String, String> newSavedCopy = savedCopy;
+            for (Map.Entry<String, Integer> entry : changes.get().entrySet()) {
+                if (entry.getValue() == DELETED) {
+                    newSavedCopy.remove(entry.getKey());
+                } else {
+                    newSavedCopy.put(entry.getKey(), diff.get().get(entry.getKey()));
+                }
+            }
+            readWriteLock.writeLock().lock();
+            try {
+                savedCopy = newSavedCopy;
+            } finally {
+                readWriteLock.writeLock().unlock();
+            }
+            diff.get().clear();
+            changes.get().clear();
+            return  numberOfChangedEntries;
         } finally {
             readWriteLock.writeLock().unlock();
         }
-        int numberOfChangedEntries = countChangedEntries();
-        Map<String, String> newSavedCopy = savedCopy;
-        for (Map.Entry<String, Integer> entry : changes.get().entrySet()) {
-            if (entry.getValue() == DELETED) {
-                newSavedCopy.remove(entry.getKey());
-            } else {
-                newSavedCopy.put(entry.getKey(), diff.get().get(entry.getKey()));
-            }
-        }
-        savedCopy = newSavedCopy;
-        diff.get().clear();
-        changes.get().clear();
-        return  numberOfChangedEntries;
     }
     public int countChangedEntries() {
         return diff.get().size();
     }
     private void readFile() throws IncorrectFileException, IOException {
-        DataInputStream fis = new DataInputStream(new FileInputStream(file));
-        int  length;
-        while (fis.available() > 0) {
-            length = fis.readInt();
-            if (length >= Runtime.getRuntime().freeMemory()) {
-                throw new IncorrectFileException("Cannot load file " + file + ". Ran out of memory.");
+        readWriteLock.readLock().lock();
+        try {
+            DataInputStream fis = new DataInputStream(new FileInputStream(file));
+            int length;
+            while (fis.available() > 0) {
+                length = fis.readInt();
+                if (length >= Runtime.getRuntime().freeMemory()) {
+                    throw new IncorrectFileException("Cannot load file " + file + ". Ran out of memory.");
+                }
+                if (length < 0) {
+                    throw new IncorrectFileException("File " + file + " has wrong structure.");
+                }
+                byte[] key = new byte[length];
+                if (fis.read(key) != length) {
+                    throw new IncorrectFileException("File " + file + " has wrong structure.");
+                }
+                if (!checkKey(new String(key, ENCODING))) {
+                    throw new IncorrectFileException("File " + file + " contains illegal key.");
+                }
+                length = fis.readInt();
+                if (length >= Runtime.getRuntime().freeMemory()) {
+                    throw new IncorrectFileException("Cannot load file " + file + ". Ran out of memory.");
+                }
+                if (length < 0) {
+                    throw new IncorrectFileException("File " + file + " has wrong structure.");
+                }
+                byte[] value = new byte[length];
+                if (fis.read(value) != length) {
+                    throw new IncorrectFileException("File " + file + " has wrong structure.");
+                }
+                readWriteLock.writeLock().lock();
+                try {
+                    savedCopy.put(new String(key, ENCODING), new String(value, ENCODING));
+                } finally {
+                    readWriteLock.writeLock().unlock();
+                }
             }
-            if (length < 0) {
-                throw new IncorrectFileException("File " + file + " has wrong structure.");
-            }
-            byte[] key = new byte[length];
-            if (fis.read(key) != length) {
-                throw new IncorrectFileException("File " + file + " has wrong structure.");
-            }
-            if (!checkKey(new String(key, ENCODING))) {
-                throw new IncorrectFileException("File " + file + " contains illegal key.");
-            }
-            length = fis.readInt();
-            if (length >= Runtime.getRuntime().freeMemory()) {
-                throw new IncorrectFileException("Cannot load file " + file + ". Ran out of memory.");
-            }
-            if (length < 0) {
-                throw new IncorrectFileException("File " + file + " has wrong structure.");
-            }
-            byte[] value = new byte[length];
-            if (fis.read(value) != length) {
-                throw new IncorrectFileException("File " + file + " has wrong structure.");
-            }
-            savedCopy.put(new String(key, ENCODING), new String(value, ENCODING));
+        } finally {
+            readWriteLock.readLock().unlock();
         }
     }
     private int getIndexOfFile() {
