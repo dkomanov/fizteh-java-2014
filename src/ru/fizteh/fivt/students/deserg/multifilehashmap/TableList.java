@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.deserg.multifilehashmap;
 
-import java.util.Iterator;
 import java.util.ArrayList;
 
 /**
