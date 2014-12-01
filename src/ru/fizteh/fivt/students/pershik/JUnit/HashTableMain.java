@@ -1,11 +1,13 @@
-package ru.fizteh.fivt.students.pershik.MultiFileHashMap;
+package ru.fizteh.fivt.students.pershik.JUnit;
+
+import ru.fizteh.fivt.students.pershik.FileMap.Runner;
 
 import java.io.File;
 
 /**
- * Created by pershik on 10/18/14.
+ * Created by pershik on 10/29/14.
  */
-public class MultiFileHashMapMain {
+public class HashTableMain {
     public static void main(String[] args) {
         try {
             String dbDirPath = System.getProperty("fizteh.db.dir");
@@ -20,7 +22,7 @@ public class MultiFileHashMapMain {
                     System.exit(-1);
                 }
             }
-            MultiFileHashMap db = new MultiFileHashMap(dbDir);
+            Runner db = new HashTableRunner(dbDir.getAbsolutePath());
             if (args.length == 0) {
                 db.runInteractive();
             } else {
@@ -32,3 +34,4 @@ public class MultiFileHashMapMain {
         }
     }
 }
+
