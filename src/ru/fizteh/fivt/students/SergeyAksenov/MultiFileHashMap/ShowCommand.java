@@ -5,10 +5,13 @@ public class ShowCommand implements Command {
             throws MultiFileMapException {
         if (!Executor.checkArgNumber(1, args.length, 1)) {
             System.out.println("Invalid number of arguments");
+            return;
         }
         String[] tables = dataBase.getTableNames();
         for (String table : tables) {
-            System.out.println(table);
+            if (table.charAt(0) != '.') {
+                System.out.println(table);
+            }
         }
     }
 }

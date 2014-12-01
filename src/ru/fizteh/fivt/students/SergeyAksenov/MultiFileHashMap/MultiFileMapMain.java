@@ -21,7 +21,7 @@ public class MultiFileMapMain {
         try {
             HashMap<String, Command> commandMap = initHashMap();
             DataBase dataBase = new DataBase();
-               Executor.interactiveMode(commandMap, dataBase);
+            Executor.interactiveMode(commandMap, dataBase);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.exit(-1);
