@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 
+import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Table;
+
 public class JUnitListCommand implements Command {
     public JUnitListCommand(JUnitDataBase jdb) {
         this.jUnitDataBase = jdb;
@@ -9,5 +11,9 @@ public class JUnitListCommand implements Command {
 
     public void run() {
         
+    }
+
+    public void runOnTable(Table table) {
+
     }
 }

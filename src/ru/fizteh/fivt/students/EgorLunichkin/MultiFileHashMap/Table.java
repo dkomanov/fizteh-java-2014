@@ -24,6 +24,8 @@ public class Table {
         }
     }
 
+    public Table() {}
+
     public File tableDirectory;
     public DataBase[][] dataBases;
 
