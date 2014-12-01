@@ -23,7 +23,7 @@ public class DbTableProviderFactory implements TableProviderFactory {
     public TableProvider create(String dir) throws IllegalArgumentException {
 
         if (dir == null) {
-            return null;
+            throw new IllegalArgumentException("Database \"" + dir + "\": null path");
         }
 
         Path path = Paths.get(System.getProperty("user.dir")).resolve(dir);
