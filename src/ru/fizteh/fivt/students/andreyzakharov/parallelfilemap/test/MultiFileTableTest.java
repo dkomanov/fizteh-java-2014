@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class MultiFileTableTest {
-    static Path root = Paths.get("test/junit-structured");
+    static Path root = Paths.get("test/junit-parallel");
     static String[] dbNames = {"test-db", "null", "database-01", "*[::]<>|\\?"};
     static List<Class<?>> signature = Arrays.asList(String.class, Integer.class, Long.class,
             Float.class, Double.class, Byte.class, Boolean.class);
