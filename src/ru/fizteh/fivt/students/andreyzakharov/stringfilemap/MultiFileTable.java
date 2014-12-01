@@ -27,7 +27,7 @@ public class MultiFileTable implements Table {
     private static Pattern fileNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dat$");
     private static Pattern directoryNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dir$");
 
-    public MultiFileTable(Path path) {
+    public MultiFileTable(Path path) throws ConnectionInterruptException {
         dbPath = path;
         name = path.getFileName().toString();
         try {
@@ -35,7 +35,7 @@ public class MultiFileTable implements Table {
                 Files.createDirectory(path);
             }
         } catch (IOException e) {
-            //
+            throw new ConnectionInterruptException("database: " + e.getMessage());
         }
     }
 
@@ -48,6 +48,8 @@ public class MultiFileTable implements Table {
     public String get(String key) {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (key.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
 
         if (removed.contains(key)) {
@@ -65,6 +67,8 @@ public class MultiFileTable implements Table {
     public String put(String key, String value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (key.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
 
         if (removed.remove(key)) {
@@ -101,6 +105,8 @@ public class MultiFileTable implements Table {
     public String remove(String key) {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (key.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
 
         if (stableData.containsKey(key)) {

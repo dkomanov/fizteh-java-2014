@@ -34,6 +34,8 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     public Table getTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (name.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
         return tables.get(name);
     }
@@ -50,9 +52,15 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     public Table createTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (name.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
         if (!tables.containsKey(name)) {
-            tables.put(name, new MultiFileTable(dbRoot.resolve(name)));
+            try {
+                tables.put(name, new MultiFileTable(dbRoot.resolve(name)));
+            } catch (ConnectionInterruptException e) {
+                return null;
+            }
             return tables.get(name);
         } else {
             return null;
@@ -63,6 +71,8 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     public void removeTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (name.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
         MultiFileTable table = tables.get(name);
         if (table != null) {
@@ -83,6 +93,8 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     public void useTable(String name) throws IllegalStateException {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
+        } else if (name.isEmpty()) {
+            throw new IllegalArgumentException("empty argument");
         }
         MultiFileTable table = tables.get(name);
         if (table != null) {

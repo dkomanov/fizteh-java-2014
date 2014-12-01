@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.andreyzakharov.stringfilemap.test;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.ConnectionInterruptException;
 import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.MultiFileTable;
 
 import java.nio.file.Path;
@@ -17,12 +18,12 @@ import static org.junit.Assert.assertNull;
 public class MultiFileTableTest {
     static Path root = Paths.get("test/junit");
 
-    static int n = 10000;
+    static int n = 1000;
     static String[] keys = new String[n];
     static String[] vals = new String[n];
 
     static String[] dbNames = {"test-db", "null", "database-01", "*[::]<>|\\?"};
-    static String[] keys3 = {"key", "ключ", "", "\\", "key\twith\nspaces"};
+    static String[] keys3 = {"key", "ключ", "\\", "key\twith\nspaces"};
     static String[] vals3 = {"value", "значение", "", "/", "qwertyuiop"};
     static int n3 = keys3.length;
 
@@ -42,7 +43,7 @@ public class MultiFileTableTest {
     }
 
     @Before
-    public void preRun() {
+    public void preRun() throws ConnectionInterruptException {
         f = new MultiFileTable(root.resolve(dbNames[0]));
         g = new MultiFileTable(root.resolve(dbNames[0]));
     }
