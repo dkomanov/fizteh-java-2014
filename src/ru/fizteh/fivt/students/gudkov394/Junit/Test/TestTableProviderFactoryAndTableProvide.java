@@ -14,7 +14,6 @@ import static java.nio.file.Files.createTempDirectory;
 
 
 /**
- *
  * Created by kagudkov on 20.10.14.
  */
 public class TestTableProviderFactoryAndTableProvide {
@@ -46,6 +45,7 @@ public class TestTableProviderFactoryAndTableProvide {
         Table table1 = provider.getTable("table1");
         Assert.assertEquals(table1, provider.getTable("table1"));
     }
+
     @Test
     public void testCreateTable() throws Exception {
 // non-existing table

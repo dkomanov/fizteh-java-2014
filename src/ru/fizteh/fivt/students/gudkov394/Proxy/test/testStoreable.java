@@ -10,11 +10,10 @@ import ru.fizteh.fivt.students.gudkov394.Proxy.TableProviderFactoryWithCloseAndT
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.IllegalFormatException;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class testStoreable {
     @Rule
@@ -41,6 +40,7 @@ public class testStoreable {
     public void after() {
         tmpFolder.delete();
     }
+
     @Test(expected = ColumnFormatException.class)
     public void testSetAndGetColumns() {
         storeable.setColumnAt(0, 3);

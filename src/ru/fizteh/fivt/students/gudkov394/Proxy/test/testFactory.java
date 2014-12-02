@@ -12,7 +12,6 @@ import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.students.gudkov394.Proxy.TableProviderFactoryWithCloseAndToString;
 
 import java.io.IOException;
-import java.util.IllegalFormatException;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -28,6 +27,7 @@ public class testFactory {
         factory = new TableProviderFactoryWithCloseAndToString();
         dbDirPath = tmpFolder.newFolder("test").getAbsolutePath();
     }
+
     @After
     public void after() {
         tmpFolder.delete();

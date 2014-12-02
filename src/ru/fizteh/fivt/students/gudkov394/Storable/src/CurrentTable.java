@@ -7,7 +7,10 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 public class CurrentTable implements Table {
@@ -259,10 +262,9 @@ public class CurrentTable implements Table {
 
     public List<Object> getSignature() {
         ArrayList<Object> objects = new ArrayList<>();
-        for(Class<?> tmp : signature)
-        {
+        for (Class<?> tmp : signature) {
             objects.add((Object) tmp);
         }
-        return  (List<Object>) objects;
+        return (List<Object>) objects;
     }
 }

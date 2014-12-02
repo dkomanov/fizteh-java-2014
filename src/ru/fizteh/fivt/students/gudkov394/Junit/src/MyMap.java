@@ -1,9 +1,9 @@
 package ru.fizteh.fivt.students.gudkov394.Junit.src;
 
 
+import java.io.File;
 import java.util.Scanner;
 import java.util.Set;
-import java.io.File;
 
 public class MyMap {
     public CurrentTable ct = new CurrentTable();

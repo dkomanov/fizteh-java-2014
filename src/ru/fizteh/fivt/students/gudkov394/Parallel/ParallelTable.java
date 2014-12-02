@@ -5,8 +5,8 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.gudkov394.Storable.src.CurrentTable;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

@@ -12,7 +12,7 @@ public class LoggingProxyFactoryClass implements LoggingProxyFactory {
 
     @Override
     public Object wrap(Writer writer, Object implementation, Class<?> interfaceClass) {
-        return Proxy.newProxyInstance(implementation.getClass().getClassLoader(), new Class[] {interfaceClass},
+        return Proxy.newProxyInstance(implementation.getClass().getClassLoader(), new Class[]{interfaceClass},
                 new MyWriteProxyHandler(writer, implementation));
     }
 }

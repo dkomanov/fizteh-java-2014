@@ -71,7 +71,7 @@ public class Write {
     private void writeWord(final String s, final FileOutputStream output) {
 
 //        String key = ((Integer) s.length()).toString();
-  //      writeBytes(key, output);
+        //      writeBytes(key, output);
         writeBytes(s, output);
     }
 

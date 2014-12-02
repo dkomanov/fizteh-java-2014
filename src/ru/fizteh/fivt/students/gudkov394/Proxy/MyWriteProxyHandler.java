@@ -45,7 +45,7 @@ public class MyWriteProxyHandler implements InvocationHandler {
             xmlStreamWriter.writeCharacters(e.toString());
             xmlStreamWriter.writeEndElement();
         }
-        if(!exception) {
+        if (!exception) {
             if (method.getReturnType() != void.class) {
                 xmlStreamWriter.writeStartElement("return");
                 if (result == null) {

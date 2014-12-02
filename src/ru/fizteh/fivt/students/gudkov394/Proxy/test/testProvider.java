@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
@@ -24,8 +23,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class testProvider {
     @Rule
@@ -38,7 +35,7 @@ public class testProvider {
     @Before
     public void initProvider() throws IOException {
         tmpFolder.create();
-        factory =  new TableProviderFactoryWithCloseAndToString();
+        factory = new TableProviderFactoryWithCloseAndToString();
         providerPath = tmpFolder.newFolder("test").getAbsolutePath();
         provider = (TableProvider) factory.create(providerPath);
     }

@@ -128,6 +128,6 @@ public class TableWithCloseAndToString extends ParallelTable implements Table, A
 
     public String toString() {
         checkIsClosed();
-        return this.getClass().getSimpleName() + "[" + super.getPath()  + "]";
+        return this.getClass().getSimpleName() + "[" + super.getPath() + "]";
     }
 }

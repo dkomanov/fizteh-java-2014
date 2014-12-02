@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class testTable {
     @Rule
@@ -120,7 +119,7 @@ public class testTable {
         assertEquals(1, table.size());
         table.put("2", value);
         table.put("3", value);
-       // table.put("2", value);
+        // table.put("2", value);
         assertEquals(3, table.size());
     }
 

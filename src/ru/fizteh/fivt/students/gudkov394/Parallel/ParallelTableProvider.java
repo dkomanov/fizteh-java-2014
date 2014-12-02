@@ -22,6 +22,7 @@ public class ParallelTableProvider implements TableProvider {
     protected ReentrantReadWriteLock lock = null;
     protected Map<String, ReentrantReadWriteLock> lockForTable = null;
     String path;
+
     public ParallelTableProvider(String dir) {
         path = dir;
         Junit tableProviderFactory = new Junit();

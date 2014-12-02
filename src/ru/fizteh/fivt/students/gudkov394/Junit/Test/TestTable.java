@@ -4,7 +4,6 @@ package ru.fizteh.fivt.students.gudkov394.Junit.Test;
  * Created by kagudkov on 25.10.14.
  */
 
-import javafx.scene.control.Tab;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,7 +20,7 @@ import java.io.IOException;
 import static java.nio.file.Files.createTempDirectory;
 
 public class TestTable {
-    private  Table table;
+    private Table table;
     private TableProvider provider;
     @Rule
     public TemporaryFolder rootDBDirectory = new TemporaryFolder();
