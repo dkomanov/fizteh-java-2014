@@ -19,7 +19,7 @@ public class Commander {
 
     public void startCommand(TableProvider tableProvider, String commandWithArgs) throws Exception {
         String[] args = commandWithArgs.trim().split("\\s+");
-        if (args[0].equals("")) {
+        if (args[0].isEmpty()) {
             return;
         }
         if (!allCommands.containsKey(args[0])) {

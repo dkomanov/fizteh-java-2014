@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.irina_karatsapova.storeable.tests;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.students.irina_karatsapova.storeable.exceptions.ColumnFormatException;
 import ru.fizteh.fivt.students.irina_karatsapova.storeable.exceptions.TableException;
 import ru.fizteh.fivt.students.irina_karatsapova.storeable.interfaces.Storeable;
@@ -11,10 +12,8 @@ import ru.fizteh.fivt.students.irina_karatsapova.storeable.interfaces.TableProvi
 import ru.fizteh.fivt.students.irina_karatsapova.storeable.interfaces.TableProviderFactory;
 import ru.fizteh.fivt.students.irina_karatsapova.storeable.table_provider_factory.MyTableProviderFactory;
 import ru.fizteh.fivt.students.irina_karatsapova.storeable.table_provider_factory.MyTableRaw;
-import ru.fizteh.fivt.students.irina_karatsapova.storeable.utils.Utils;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,7 @@ import static org.junit.Assert.assertNull;
 
 public class MyTableTest {
 
-    String providerDir = "d://tmp-storeable-test";
+    TemporaryFolder tempFolder = new TemporaryFolder();
     Table table;
     String oneMoreTableName = "one-more-table-name";
     TableProvider provider;
@@ -39,8 +38,10 @@ public class MyTableTest {
 
     @Before
     public void setUp() throws Exception {
+        tempFolder.create();
+        File providerDir = tempFolder.newFolder();
         TableProviderFactory factory = new MyTableProviderFactory();
-        provider = factory.create(providerDir);
+        provider = factory.create(providerDir.toString());
         for (Class type: classes) {
             types.add(type);
         }
@@ -49,8 +50,7 @@ public class MyTableTest {
 
     @After
     public void tearDown() throws Exception {
-        File providerDirFile = Paths.get(providerDir).toFile();
-        Utils.rmdirs(providerDirFile);
+        tempFolder.delete();
     }
 
     @Test
