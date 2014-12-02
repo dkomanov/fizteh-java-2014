@@ -20,7 +20,7 @@ public class StringTable implements Table, AutoCloseable {
     private boolean closed = false;
     private StringDatabase database;
 
-    StringTable(File tableDirectory) {
+    public StringTable(File tableDirectory, StringDatabase database) {
         if (tableDirectory == null) {
             throw new IllegalArgumentException("table directory should not be null");
         }
