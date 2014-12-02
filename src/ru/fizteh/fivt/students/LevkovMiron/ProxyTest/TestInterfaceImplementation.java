@@ -7,10 +7,10 @@ import java.util.List;
 /**
  * Created by Мирон on 30.11.2014 ru.fizteh.fivt.students.LevkovMiron.ProxyTest.
  */
-public class TestIntafaceImplementation implements TestInterface {
+public class TestInterfaceImplementation implements TestInterface {
 
     @Override
-    public void noArgumentsMethod() { }
+    public void emptyArgumentMethod() { }
 
     @Override
     public void integerArgumentMethod(Integer a) { }
@@ -19,18 +19,18 @@ public class TestIntafaceImplementation implements TestInterface {
     public void listArgumentMethod(List<Object> list) { }
 
     @Override
-    public void twoStringArgumentMethod(String str1, String str2) { }
+    public void stringArgumentsMethod(String str1, String str2) { }
 
     @Override
-    public void iOExceptionHiMethod() throws Exception {
+    public void exceptionMethod() throws Exception {
         throw new IOException("hi");
     }
 
     @Override
-    public void voidReturningMethod() { }
+    public void voidMethod() { }
 
     @Override
-    public Integer zeroReturningMethod() {
+    public Integer integerReturningMethod() {
         return 0;
     }
 
@@ -44,7 +44,7 @@ public class TestIntafaceImplementation implements TestInterface {
         List<Object> res = new ArrayList<>();
         res.add(res);
         res.add(res);
-        res.add(56);
+        res.add(42);
         return res;
     }
 }

@@ -52,7 +52,6 @@ public class XMLParser {
             throws ParserConfigurationException, TransformerException {
         if (object == null) {
             Element nullElement = document.createElement("null");
-            document.appendChild(nullElement);
             return nullElement;
         } else {
             Element className = document.createElement(object.getClass().getSimpleName());
