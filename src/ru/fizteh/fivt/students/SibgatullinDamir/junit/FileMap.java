@@ -84,6 +84,8 @@ public class FileMap extends HashMap<String, String> {
                         put(new String(key, "UTF-8"), new String(value, "UTF-8"));
 
                     }
+
+                    inputStream.close();
                 } catch (IOException e) {
                     throw new MyException("Reading failed");
                 }
