@@ -2,9 +2,10 @@ package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary.commands.fileshell.RemoveCommand;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -14,14 +15,18 @@ import static org.junit.Assert.*;
 
 
 public class DataBaseTableTest {
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
-    public static final String PATH = "D:\\test\\test";
     private static DataBaseTableProviderFactory factory = new DataBaseTableProviderFactory();
     private static DataBaseTableProvider database;
 
+    String folderName;
+
     @Before
     public void initDataBase() {
-        database = factory.create(PATH);
+        folderName = folder.toString();
+        database = factory.create(folderName);
     }
 
     @Test
@@ -168,7 +173,7 @@ public class DataBaseTableTest {
          */
         DataBaseTable loadedTable = null;
         try {
-            loadedTable = new DataBaseTable(Paths.get(PATH), "table");
+            loadedTable = new DataBaseTable(Paths.get(folderName), "table");
         } catch (Exception e) {
             assertTrue(false);
         }
@@ -179,16 +184,10 @@ public class DataBaseTableTest {
 
     }
 
-
     @After
-    public void releaseTables() {
-        ArrayList<String> arguments = new ArrayList<>();
-        arguments.add("-r");
-        arguments.add("table");
-        try {
-            new RemoveCommand(database.getDataBaseDirectory()).executeCommand(arguments);
-        } catch (Exception e) {
-            assertTrue(false);
-        }
+    public void release() {
+        folder.delete();
     }
+
+
 }

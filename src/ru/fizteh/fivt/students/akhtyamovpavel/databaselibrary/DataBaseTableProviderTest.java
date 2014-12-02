@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.databaselibrary;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.Table;
 
 import java.io.IOException;
@@ -14,10 +15,15 @@ public class DataBaseTableProviderTest {
     private DataBaseTableProvider database;
     private DataBaseTableProviderFactory factory;
 
+    TemporaryFolder folder;
+    String folderName;
+
     @Before
     public void initDatabase() {
+        folder = new TemporaryFolder();
+        folderName = folder.toString();
         factory = new DataBaseTableProviderFactory();
-        database = factory.create("D:\\test\\test");
+        database = factory.create(folderName);
     }
 
     @Test
@@ -86,19 +92,19 @@ public class DataBaseTableProviderTest {
     @Test
     public void testCreatingDatabase() {
         try {
-            Files.createFile(Paths.get("D:\\test\\lol.dir"));
+            Files.createFile(Paths.get(folderName, "lol.dir"));
         } catch (IOException ioe) {
             assertTrue(false);
         }
         try {
-            DataBaseTableProvider database1 = factory.create("D:\\test\\lol.dir", true);
+            DataBaseTableProvider database1 = factory.create(Paths.get(folderName, "lol.dir").toString(), true);
             assertTrue(false);
         } catch (Exception e) {
             assertTrue(true);
         }
 
         try {
-            Files.delete(Paths.get("D:\\test\\lol.dir"));
+            Files.delete(Paths.get(folderName, "lol.dir"));
         } catch (IOException ioe) {
             assertTrue(false);
         }
@@ -160,36 +166,36 @@ public class DataBaseTableProviderTest {
         }
 
         try {
-            DataBaseTableProvider normalDatabase = factory.create("D:\\test\\test", true);
+            DataBaseTableProvider normalDatabase = factory.create(folderName, true);
         } catch (Exception e) {
             assertTrue(false);
         }
 
         try {
-            Files.createFile(Paths.get("D:\\test\\test\\lol.dir"));
-            DataBaseTableProvider brokenDatabase = new DataBaseTableProvider("D:\\test\\test", true);
+            Files.createFile(Paths.get(folderName, "lol.dir"));
+            DataBaseTableProvider brokenDatabase = new DataBaseTableProvider(folderName, true);
         } catch (IOException ioe) {
             assertTrue(false);
         } catch (Exception e) {
             assertTrue(true);
         } finally {
             try {
-                Files.delete(Paths.get("D:\\test\\test\\lol.dir"));
+                Files.delete(Paths.get(folderName, "lol.dir"));
             } catch (IOException ioe) {
                 assertTrue(false);
             }
         }
 
         try {
-            Files.createDirectory(Paths.get("D:\\test\\test\\1\\16.dir"));
-            DataBaseTableProvider brokenDatabase = new DataBaseTableProvider("D:\\test\\test", true);
+            Files.createDirectory(Paths.get(folderName, "1", "16.dir"));
+            DataBaseTableProvider brokenDatabase = new DataBaseTableProvider(folderName, true);
         } catch (IOException ioe) {
             assertTrue(false);
         } catch (Exception e) {
             assertTrue(true);
         } finally {
             try {
-                Files.delete(Paths.get("D:\\test\\test\\1\\16.dir"));
+                Files.delete(Paths.get(folderName, "1", "16.dir"));
             } catch (IOException ioe) {
                 assertTrue(false);
             }
