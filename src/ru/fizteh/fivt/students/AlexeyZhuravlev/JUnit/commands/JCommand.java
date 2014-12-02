@@ -1,30 +1,32 @@
-package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit;
+package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.commands;
+
+import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.MyTableProvider;
 
 import java.util.HashMap;
 
 /**
  * @author AlexeyZhuravlev
  */
-public abstract class JUnitCommand {
-    private static final HashMap<String, JUnitCommand> COMMANDS;
+public abstract class JCommand {
+    private static final HashMap<String, JCommand> COMMANDS;
 
     static {
         COMMANDS = new HashMap<>();
-        COMMANDS.put("create", new JUnitCreateCommand());
-        COMMANDS.put("drop", new JUnitDropCommand());
-        COMMANDS.put("use", new JUnitUseCommand());
-        COMMANDS.put("show_tables", new JUnitShowTablesCommand());
-        COMMANDS.put("put", new JUnitPutCommand());
-        COMMANDS.put("get", new JUnitGetCommand());
-        COMMANDS.put("remove", new JUnitRemoveCommand());
-        COMMANDS.put("list", new JUnitListCommand());
+        COMMANDS.put("create", new CreateCommand());
+        COMMANDS.put("drop", new DropCommand());
+        COMMANDS.put("use", new JUseCommand());
+        COMMANDS.put("show_tables", new JShowTablesCommand());
+        COMMANDS.put("put", new PutCommand());
+        COMMANDS.put("get", new GetCommand());
+        COMMANDS.put("remove", new RemoveCommand());
+        COMMANDS.put("list", new ListCommand());
         COMMANDS.put("exit", new ExitCommand());
         COMMANDS.put("commit", new CommitCommand());
         COMMANDS.put("rollback", new RollBackCommand());
         COMMANDS.put("size", new SizeCommand());
     }
 
-    public static JUnitCommand fromString(String s) throws Exception {
+    public static JCommand fromString(String s) throws Exception {
         if (s.length() < 1) {
             throw new Exception("");
         }
@@ -33,7 +35,7 @@ public abstract class JUnitCommand {
         }
         String[] tokens = s.split("\\s+", 0);
         if (COMMANDS.containsKey(tokens[0])) {
-            JUnitCommand command = COMMANDS.get(tokens[0]);
+            JCommand command = COMMANDS.get(tokens[0]);
             if (tokens.length - 1 != command.numberOfArguments()) {
                 throw new Exception("Unexpected number of arguments: " + command.numberOfArguments() + " required");
             }
@@ -44,7 +46,7 @@ public abstract class JUnitCommand {
         }
     }
 
-    public abstract void execute(JUnitDataBaseDir base) throws Exception;
+    public abstract void execute(MyTableProvider provider) throws Exception;
     protected void putArguments(String[] args) {
     }
     protected abstract int numberOfArguments();

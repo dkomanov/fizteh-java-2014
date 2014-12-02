@@ -32,7 +32,7 @@ public class CreateCommand extends Command {
             if (!newTable.mkdir()) {
                 throw new Exception("Unable to create working directory for new table");
             }
-            base.tables.put(tableName, new Table(newTable));
+            base.tables.put(tableName, new MultiTable(newTable));
             System.out.println("created");
         }
     }
