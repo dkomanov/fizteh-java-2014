@@ -26,44 +26,36 @@ public class LoadTable {
     }
 
     private static void loadFile(MyTable table, File file) throws TableException {
-        DataInputStream inStream;
-        try {
-            inStream = new DataInputStream(new FileInputStream(file));
-        } catch (IOException e) {
+
+        try (FileInputStream fileStream = new FileInputStream(file)) {
+            try (DataInputStream inStream = new DataInputStream(fileStream)) {
+                int filePos = 0;
+                while (filePos < file.length()) {
+                    int keyLength;
+                    int valueLength;
+                    String key;
+                    String value;
+
+                    try {
+                        keyLength = inStream.readInt();
+                        key = readBytes(inStream, keyLength);
+                        valueLength = inStream.readInt();
+                        value = readBytes(inStream, valueLength);
+                    } catch (IOException e) {
+                        throw new TableException("load: Wrong format of providerDir");
+                    }
+
+                    if (table.currentMap.containsKey(key)) {
+                        throw new TableException("load: Two same currentKeys in the providerDir");
+                    }
+                    table.addKey(key);
+                    table.currentMap.put(key, value);
+
+                    filePos += 8 + keyLength + valueLength;
+                }
+            }
+        }  catch (IOException e) {
             throw new TableException("load: Can't read from the file");
-        }
-
-        try {
-            int filePos = 0;
-            while (filePos < file.length()) {
-                int keyLength;
-                int valueLength;
-                String key;
-                String value;
-
-                try {
-                    keyLength = inStream.readInt();
-                    key = readBytes(inStream, keyLength);
-                    valueLength = inStream.readInt();
-                    value = readBytes(inStream, valueLength);
-                } catch (IOException e) {
-                    throw new TableException("load: Wrong format of providerDir");
-                }
-
-                if (table.currentMap.containsKey(key)) {
-                    throw new TableException("load: Two same currentKeys in the providerDir");
-                }
-                table.addKey(key);
-                table.currentMap.put(key, value);
-
-                filePos += 8 + keyLength + valueLength;
-            }
-        } finally {
-            try {
-                inStream.close();
-            } catch (IOException e) {
-                throw new TableException("load: Error while closing the providerDir");
-            }
         }
     }
 

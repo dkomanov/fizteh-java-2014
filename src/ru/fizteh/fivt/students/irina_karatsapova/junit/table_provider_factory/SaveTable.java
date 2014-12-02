@@ -48,22 +48,12 @@ public class SaveTable {
                 }
 
             }
-            DataOutputStream outStream = null;
-            try {
-                outStream = new DataOutputStream(new FileOutputStream(filePath));
+            try (DataOutputStream outStream =  new DataOutputStream(new FileOutputStream(filePath))) {
                 for (String key : table.currentKeys[dir][file]) {
                     writeBytes(outStream, key, table.currentMap.get(key));
                 }
             } catch (Exception e) {
                 throw new TableException("save: Error while writing into the file");
-            } finally {
-                try {
-                    if (outStream != null) {
-                        outStream.close();
-                    }
-                } catch (Exception e) {
-                    throw new TableException("save: Error while closing the file");
-                }
             }
         }
     }
