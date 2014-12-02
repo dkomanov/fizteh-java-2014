@@ -1,30 +1,38 @@
-package ru.fizteh.fivt.students.andreyzakharov.multifilehashmap;
+package ru.fizteh.fivt.students.andreyzakharov.stringfilemap;
+
+import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.andreyzakharov.stringfilemap.commands.CommandRunner;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-public class DbMain {
+public class MultiFileTableShell {
+    private CommandRunner commandrunner = new CommandRunner();
     boolean batch;
     Path dbPath;
+    TableProvider activeConnector;
 
-    public DbMain(String[] args) {
+    public MultiFileTableShell(boolean batch) {
         String property = System.getProperty("fizteh.db.dir");
-        if (property == null || property.equals("")) {
+        if (property == null || property.trim().isEmpty()) {
             System.err.println("Database root directory not set");
             System.exit(1);
         }
         dbPath = Paths.get(System.getProperty("user.dir")).resolve(property);
-        batch = args.length > 0;
-        run(args);
+        this.batch = batch;
+
+        MultiFileTableProviderFactory factory = new MultiFileTableProviderFactory();
+        activeConnector = factory.create(property);
     }
 
     public static void main(String[] args) {
-        DbMain m = new DbMain(args);
+        MultiFileTableShell m = new MultiFileTableShell(args.length > 0);
+        m.run(args);
     }
 
     void run(String[] args) {
-        try (DbConnector connector = new DbConnector(dbPath)) {
+        try (MultiFileTableProvider connector = new MultiFileTableProvider(dbPath)) {
             if (batch) {
                 StringBuilder sb = new StringBuilder();
                 for (String s : args) {
@@ -53,9 +61,9 @@ public class DbMain {
         }
     }
 
-    void execute(DbConnector connector, String s) {
+    void execute(MultiFileTableProvider connector, String argString) {
         try {
-            String out = connector.run(s);
+            String out = commandrunner.run(connector, argString);
             if (out != null) {
                 System.out.println(out);
             }
