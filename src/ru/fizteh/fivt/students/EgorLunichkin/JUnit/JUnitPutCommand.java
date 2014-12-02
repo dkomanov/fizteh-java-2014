@@ -1,8 +1,5 @@
 package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 
-import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Command;
-import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.MultiPutCommand;
-
 public class JUnitPutCommand implements JUnitCommand {
     public JUnitPutCommand(MyTableProvider mtp, String key, String value) {
         this.key = key;

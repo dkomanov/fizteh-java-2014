@@ -119,7 +119,8 @@ public class MyTable implements Table {
                 } else if (first.dataBases[dir][file] != null && second.dataBases[dir][file] == null) {
                     diff += first.dataBases[dir][file].getDataBase().size();
                 } else if (first.dataBases[dir][file] != null && second.dataBases[dir][file] != null) {
-                    diff += diffHashMaps(first.dataBases[dir][file].getDataBase(), second.dataBases[dir][file].getDataBase());
+                    diff += diffHashMaps(first.dataBases[dir][file].getDataBase(),
+                            second.dataBases[dir][file].getDataBase());
                 }
             }
         }

@@ -1,8 +1,5 @@
 package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 
-import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Command;
-import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.UseCommand;
-
 public class JUnitUseCommand implements JUnitCommand {
     public JUnitUseCommand(MyTableProvider mtp, String name) {
         this.tableName = name;
@@ -14,8 +11,8 @@ public class JUnitUseCommand implements JUnitCommand {
 
     @Override
     public void run() {
-       if (myTableProvider.getUsing() != null && ((MyTable)myTableProvider.getUsing()).unsavedChanges() > 0) {
-           System.out.println(((MyTable)myTableProvider.getUsing()).unsavedChanges() + " unsaved changes");
+       if (myTableProvider.getUsing() != null && ((MyTable) myTableProvider.getUsing()).unsavedChanges() > 0) {
+           System.out.println(((MyTable) myTableProvider.getUsing()).unsavedChanges() + " unsaved changes");
        } else {
            if (myTableProvider.getTable(tableName) == null) {
                System.out.println(tableName + " not exists");
