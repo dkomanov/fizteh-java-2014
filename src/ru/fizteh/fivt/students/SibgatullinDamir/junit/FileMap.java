@@ -13,19 +13,6 @@ import java.util.Set;
 /**
  * Created by Lenovo on 10.10.2014.
  */
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-/**
- * Created by Lenovo on 10.10.2014.
- */
 public class FileMap extends HashMap<String, String> {
 
     private Path location;
