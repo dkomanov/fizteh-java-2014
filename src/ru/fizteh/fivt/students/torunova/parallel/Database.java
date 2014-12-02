@@ -88,6 +88,7 @@ public class  Database implements TableProvider {
         File f = new File(dbName, name);
         if (tables.containsKey(name)) {
             removeRecursive(f.getAbsolutePath());
+            tables.get(name).markAsRemoved();
             tables.remove(name);
         } else {
             throw new IllegalStateException("does not exist");
@@ -96,7 +97,7 @@ public class  Database implements TableProvider {
 
     public Map<String, Integer> showTables() {
         Map<String, Integer> tablesWithSize = new HashMap<>();
-        tables.forEach((name, table)->tablesWithSize.put(name, table.numberOfEntries));
+        tables.forEach((name, table)->tablesWithSize.put(name, table.getNumberOfEntries()));
         return tablesWithSize;
     }
     public String getDbName() {

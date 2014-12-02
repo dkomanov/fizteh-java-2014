@@ -14,9 +14,10 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
     private static final int NUMBER_OF_PARTITIONS = 16;
     private static final String DIRECTORY_PATTERN = "([0-9]|1[0-5])\\.dir";
     private static final String FILE_PATTERN = "([0-9]|1[0-5])\\.dat";
-    String tableName;
+    private String tableName;
     private Map<File, FileMap> files = new HashMap<>();
-    int numberOfEntries;
+    private int numberOfEntries;
+    private boolean removed;
 
     @Override
     public boolean equals(Object t) {
@@ -74,9 +75,13 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
                 }
             }
         }
+        removed = false;
     }
     @Override
     public String put(String key, String value) {
+        if (removed) {
+            throw new IllegalStateException("Table already removed.");
+        }
         if (key == null || value == null) {
             throw new IllegalArgumentException("Key or value is null");
         }
@@ -107,12 +112,18 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
 
     @Override
     public String getName() {
+        if (removed) {
+            throw new IllegalStateException("Table already removed.");
+        }
         File ourTable = new File(tableName);
         return ourTable.getName();
     }
 
     @Override
     public String get(String key) {
+        if (removed) {
+            throw new IllegalStateException("Table already removed.");
+        }
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
@@ -133,6 +144,9 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
 
     @Override
     public String remove(String key) {
+        if (removed) {
+            throw new IllegalStateException("Table already removed.");
+        }
         String result;
         String fileName = getFileName(key);
         String dirName = getDirName(key);
@@ -149,10 +163,16 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
 
     @Override
     public int size() {
+        if (removed) {
+            throw new IllegalStateException("Table already removed.");
+        }
         return numberOfEntries;
     }
 
     public List<String> list() {
+        if (removed) {
+            throw new IllegalStateException("Table already removed.");
+        }
         List<String> listOfAllKeys = new ArrayList<>();
         for (FileMap fm : files.values()) {
             listOfAllKeys.addAll(fm.list());
@@ -161,6 +181,9 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
     }
     @Override
     public int commit()  {
+        if (removed) {
+            throw new IllegalStateException("Table already removed.");
+        }
         int numberOfChangedEntries = 0;
         Set<Map.Entry<File, FileMap>> entrySet = new HashSet<>(files.entrySet());
         IOException e = null;
@@ -191,6 +214,9 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
 
     @Override
     public int rollback() {
+        if (removed) {
+            throw new IllegalStateException("Table already removed.");
+        }
         int numberOfRevertedChanges = 0;
         numberOfEntries = 0;
         for (FileMap fm:files.values()) {
@@ -201,11 +227,23 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
     }
 
     public int countChangedEntries() {
+        if (removed) {
+            throw new IllegalStateException("Table already removed.");
+        }
         int numberOfChangedEntries = 0;
         for (FileMap fm:files.values()) {
             numberOfChangedEntries += fm.countChangedEntries();
         }
         return numberOfChangedEntries;
+    }
+    public boolean isRemoved() {
+        return removed;
+    }
+    public void markAsRemoved() {
+        removed = true;
+    }
+    public int getNumberOfEntries() {
+        return numberOfEntries;
     }
 
     private String getDirName(String key) {

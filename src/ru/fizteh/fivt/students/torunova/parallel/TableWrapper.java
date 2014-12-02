@@ -86,6 +86,9 @@ public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table {
 
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         checkValueFormat((StoreableType) value);
         Storeable storeableValue;
         try {
@@ -99,6 +102,9 @@ public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table {
 
     @Override
     public Storeable remove(String key) {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         Storeable storeableValue;
         try {
             storeableValue = tableProvider.deserialize(this, table.remove(key));
@@ -110,46 +116,73 @@ public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table {
 
     @Override
     public int size() {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         return table.size();
     }
 
     @Override
     public List<String> list() {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         return table.list();
     }
 
     @Override
     public int commit() {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         return table.commit();
     }
 
     @Override
     public int rollback() {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         return table.rollback();
     }
 
     @Override
     public int getNumberOfUncommittedChanges() {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         return table.countChangedEntries();
     }
 
     @Override
     public int getColumnsCount() {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         return headOfTable.getNumberOfColumns();
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         return headOfTable.getColumnType(columnIndex);
     }
 
     @Override
     public String getName() {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         return table.getName();
     }
 
     @Override
     public Storeable get(String key) {
+        if (table.isRemoved()) {
+            throw new IllegalStateException("Table already removed.");
+        }
         Storeable storeableValue;
         try {
             storeableValue = tableProvider.deserialize(this, table.get(key));
