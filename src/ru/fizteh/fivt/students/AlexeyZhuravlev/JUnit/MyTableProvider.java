@@ -7,6 +7,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.*;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author AlexeyZhuravlev
@@ -93,11 +94,11 @@ public class MyTableProvider implements TableProvider {
         using = passed;
     }
 
-    public DataBaseDir getUsual() {
-        return usualDbDir;
+    public Set<String> tableNames() {
+        return tables.keySet();
     }
 
-    public JUnitDataBaseDir getJUnitDir() {
-        return directory;
+    public DataBaseDir getUsual() {
+        return usualDbDir;
     }
 }

@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.*;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -143,5 +144,9 @@ public class MyTable implements Table {
         intersect.retainAll(second.keySet());
         result += first.size() + second.size() - 2 * intersect.size();
         return result;
+    }
+
+    public File getDirectory() {
+        return virginTable.mainDir;
     }
 }

@@ -182,7 +182,7 @@ public class StructuredTableTest {
         table.put("2", value);
         table.put("3", value);
         table.remove("1");
-        assertEquals(table.getNumberOfUncommittedChanges(), 4);
+        assertEquals(table.getNumberOfUncommittedChanges(), 2);
         table.commit();
         assertEquals(table.getNumberOfUncommittedChanges(), 0);
     }
