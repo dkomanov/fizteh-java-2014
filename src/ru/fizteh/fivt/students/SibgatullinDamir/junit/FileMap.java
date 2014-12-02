@@ -13,6 +13,19 @@ import java.util.Set;
 /**
  * Created by Lenovo on 10.10.2014.
  */
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+/**
+ * Created by Lenovo on 10.10.2014.
+ */
 public class FileMap extends HashMap<String, String> {
 
     private Path location;
@@ -84,6 +97,8 @@ public class FileMap extends HashMap<String, String> {
                         put(new String(key, "UTF-8"), new String(value, "UTF-8"));
 
                     }
+
+                    inputStream.close();
                 } catch (IOException e) {
                     throw new MyException("Reading failed");
                 }
@@ -126,7 +141,7 @@ public class FileMap extends HashMap<String, String> {
     public void write() throws MyException {
         try {
 
-                for (Entry<String, String> entry : entrySet()) {
+            for (Entry<String, String> entry : entrySet()) {
 
                 int hashcode = entry.getKey().hashCode();
 

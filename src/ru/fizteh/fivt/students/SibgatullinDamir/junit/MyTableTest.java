@@ -115,7 +115,7 @@ public class MyTableTest {
         assertEquals(2, table.size());
         TableProviderFactory factory = new MyTableProviderFactory();
         TableProvider provider = factory.create(path);
-        Table sameTable = provider.getTable("table");
+        Table sameTable = provider.getTable("my_table");
         assertEquals(2, sameTable.size());
     }
 

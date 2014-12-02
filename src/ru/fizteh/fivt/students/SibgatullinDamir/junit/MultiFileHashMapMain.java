@@ -110,18 +110,18 @@ public class MultiFileHashMapMain {
     private static void packageMode(String[] args) {
         LinkedHashSet<String> com = new LinkedHashSet<String>();
 
-        String s = "";
+        StringBuilder str = new StringBuilder();
         for (String string : args) {
-
-            s = s + string + " ";
-
+            str.append(string);
+            str.append(" ");
         }
+        String s = str.toString();
         String[] commands = s.split(";");
 
         for (String string : commands) {
             String[] command = string.trim().split("\\s+");
             try {
-                if (command.length == 1 && command[0].length() == 0) {
+                if (command.length == 1 && command[0].isEmpty()) {
                     continue;
                 } else {
                     switchCommand(command);
