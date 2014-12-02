@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,9 +50,21 @@ public class DbTableProvider implements TableProvider {
      */
     @Override
     public Table getTable(String name) {
-        if (name == null || name.isEmpty() || !Shell.checkName(name)) {
-            throw new IllegalArgumentException("Database \"" + dbPath + "\": getTable: invalid Table name");
+        if (name == null) {
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": getTable: null table name");
         }
+
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": getTable: empty table name");
+        }
+
+        String fileName = Paths.get("").resolve(name).getFileName().toString();
+
+        if (!Shell.checkName(fileName)) {
+            throw new IllegalArgumentException("Database \"" + fileName + "\": getTable: unacceptable table name");
+        }
+
+
         return tables.get(name);
     }
 
@@ -64,8 +77,18 @@ public class DbTableProvider implements TableProvider {
      */
     public Table createTable(String name) {
 
-        if (name == null || name.isEmpty() || !Shell.checkName(name)) {
-            throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable: invalid Table name");
+        if (name == null) {
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable: null table name");
+        }
+
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable:  table name");
+        }
+
+        String fileName = Paths.get("").resolve(name).getFileName().toString();
+
+        if (!Shell.checkName(fileName)) {
+            throw new IllegalArgumentException("Database \"" + fileName + "\": createTable: unacceptable table name");
         }
 
         if (tables.containsKey(name)) {
@@ -87,8 +110,14 @@ public class DbTableProvider implements TableProvider {
      * @throws IllegalStateException Если таблицы с указанным названием не существует.
      */
     public void removeTable(String name) {
-        if (name == null || name.isEmpty() || !Shell.checkName(name)) {
+        if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": removeTable: invalid Table name");
+        }
+
+        String fileName = Paths.get("").resolve(name).getFileName().toString();
+
+        if (!Shell.checkName(fileName)) {
+            throw new IllegalArgumentException("Database \"" + fileName + "\": removeTable: unacceptable table name");
         }
 
         if (!tables.containsKey(name)) {
@@ -150,7 +179,7 @@ public class DbTableProvider implements TableProvider {
 
     public void write() {
 
-        deleteDirectoryContent();
+        Shell.delete(dbPath);
 
         for (HashMap.Entry<String, DbTable> entry: tables.entrySet()) {
 
@@ -165,48 +194,7 @@ public class DbTableProvider implements TableProvider {
 
     }
 
-    public void deleteDirectoryContent() {
 
-        if (!Files.isDirectory(dbPath)) {
-            try {
-                Files.delete(dbPath);
-            } catch (IOException ex) {
-                throw new MyException("Error while deleting " + dbPath.toString());
-            }
-        } else {
-            deleteFinal(dbPath);
-        }
-
-    }
-
-    private void deleteFinal(Path path) {
-
-        File curDir = new File(path.toString());
-        File[] content = curDir.listFiles();
-
-        if (content != null) {
-            for (File item: content) {
-                if (item.isFile()) {
-                    try {
-                        Files.delete(item.toPath());
-                    } catch (IOException ex) {
-                        throw new MyException("I/O error occurs while removing " + item.toPath().toString());
-                    }
-                } else {
-                    deleteFinal(item.toPath());
-                }
-            }
-        }
-
-        if (!path.equals(dbPath)) {
-            try {
-                Files.delete(path);
-            } catch (IOException ex) {
-                throw new MyException("I/O error occurs while removing " + path.toString());
-            }
-        }
-
-    }
 
 
 }

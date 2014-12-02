@@ -1,8 +1,10 @@
 package ru.fizteh.fivt.students.deserg.junit.test;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.students.deserg.junit.DbTableProviderFactory;
+import ru.fizteh.fivt.students.deserg.junit.Shell;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,26 +18,31 @@ import static org.junit.Assert.*;
  */
 public class TableProviderFactoryTest {
 
-    Path curDir;
+    Path testDir;
 
     @Before
     public void init() {
 
-        curDir = Paths.get("").resolve(System.getProperty("user.dir"));
+        Path tempPath = Paths.get("").resolve(System.getProperty("user.dir"));
 
+        try {
+            testDir = Files.createTempDirectory(tempPath, "temp");
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     @Test
-    public void testCreateExitsting() {
+    public void testCreateExisting() {
 
         DbTableProviderFactory factory = new DbTableProviderFactory();
 
         String name = "db1";
 
-        Path path = curDir.resolve(name);
+        Path path = testDir.resolve(name);
 
         try {
-            Files.createDirectories(path);
+            Files.createDirectory(path);
         } catch (IOException ex) {
             System.out.println("Directory was not created");
         }
@@ -56,11 +63,11 @@ public class TableProviderFactoryTest {
 
         String name = "non.existing.directory";
 
-        Path path = curDir.resolve(name);
+        Path path = testDir.resolve(name);
 
         while (Files.exists(path)) {
             name += "/1";
-            path = curDir.resolve(name);
+            path = testDir.resolve(name);
         }
 
         try {
@@ -72,5 +79,9 @@ public class TableProviderFactoryTest {
 
     }
 
+    @After
+    public void finish() {
+        Shell.delete(testDir);
+    }
 
 }

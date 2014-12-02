@@ -21,13 +21,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class TableTest {
 
-    String dbName = "database";
+    String dbName;
     DbTableProvider provider;
 
     @Before
     public void init() {
 
-        String dbName = "database";
+        dbName = "database";
         Path path = Paths.get("").resolve(dbName);
         provider = new DbTableProvider(path);
 
@@ -50,7 +50,14 @@ public class TableTest {
     }
 
     @Test
-    public void testPutGetRemove() {
+    public void testPut() {
+
+
+
+    }
+
+    @Test
+    public void testCombined() {
 
         Map<String, String> map = new HashMap<>();
         DbTable table = (DbTable) provider.createTable("table");
@@ -107,17 +114,19 @@ public class TableTest {
     public void testCommitRollback() {
 
         DbTable table = (DbTable) provider.createTable("table");
-        table.put("123", "kokok");
-        table.put("456", "lololo");
+        table.put("key1", "val1");
+        table.put("key2", "val2");
 
         table.commit();
         table.rollback();
         assertEquals(table.size(), 2);
 
-        table.put("789", "ppopo");
-        table.put("MONDAY", "9:00");
-        table.put("123", "uzuzu");
-        table.put("456", "qwqrq");
+        table.put("key3", "val3");
+        table.put("key4", "val4");
+
+        assertEquals(table.put("key1", "newVal1"), "val1");
+        assertEquals(table.put("key2", "newVal2"), "val2");
+
         table.rollback();
         assertEquals(table.size(), 2);
 
