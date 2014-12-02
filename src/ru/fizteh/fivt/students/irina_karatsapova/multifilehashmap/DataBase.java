@@ -49,9 +49,10 @@ public class DataBase {
                     int valuesNumber = Table.countValues();
                     initInf(tableName, valuesNumber);
                 }
-                DataInputStream inStream = new DataInputStream(new FileInputStream(inf));
-                Integer valuesNumber = inStream.readInt();
-                inStream.close();
+                int valuesNumber;
+                try (DataInputStream inStream = new DataInputStream(new FileInputStream(inf))) {
+                    valuesNumber = inStream.readInt();
+                }
                 tables.put(tableName, valuesNumber);
             }
         } catch (Exception e) {
@@ -62,10 +63,10 @@ public class DataBase {
     public static void initInf(String tableName, int valuesNumber) throws Exception {
         File inf = Utils.makePathAbsolute(tableName + "/inf.txt");
         inf.createNewFile();
-        DataOutputStream outStream = new DataOutputStream(new FileOutputStream(inf));
-        outStream.writeInt(valuesNumber);
-        outStream.flush();
-        outStream.close();
+        try (DataOutputStream outStream = new DataOutputStream(new FileOutputStream(inf))) {
+            outStream.writeInt(valuesNumber);
+            outStream.flush();
+        }
     }
 
     public static void saveInf(File file) throws IOException {

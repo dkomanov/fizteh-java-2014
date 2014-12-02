@@ -9,7 +9,7 @@ public class Main {
     public static String mainDir = "fizteh.db.dir";
 
     public static void main(String[] args) {
-        System.setProperty(mainDir, "D:/tmp/db3-2/");
+        //System.setProperty(mainDir, "D:/tmp/db3-2/");
 
         DataBase.init();
 

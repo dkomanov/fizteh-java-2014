@@ -16,7 +16,7 @@ public class DropCommand implements Command {
             DataBase.tables.remove(tableName);
             System.out.println("dropped");
         } else {
-            System.out.println(tableName + "not exists");
+            System.out.println(tableName + " not exists");
         }
     }
 

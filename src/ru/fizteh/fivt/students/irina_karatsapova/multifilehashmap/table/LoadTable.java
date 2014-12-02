@@ -29,45 +29,36 @@ public class LoadTable {
     }
 
     private static void loadFile(File file) throws TableException {
-        DataInputStream inStream;
-        try {
-            inStream = new DataInputStream(new FileInputStream(file));
+       try (FileInputStream fileStream = new FileInputStream(file)) {
+            try (DataInputStream inStream = new DataInputStream(fileStream)) {
+                int filePos = 0;
+                while (filePos < file.length()) {
+                    int keyLength;
+                    int valueLength;
+                    String key;
+                    String value;
+
+                    try {
+                        keyLength = inStream.readInt();
+                        key = readBytes(inStream, keyLength);
+                        valueLength = inStream.readInt();
+                        value = readBytes(inStream, valueLength);
+                    } catch (IOException e) {
+                        throw new TableException("load: Wrong format of dir");
+                    }
+
+                    if (Table.map.containsKey(key)) {
+                        throw new TableException("load: Two same keys in the dir");
+                    }
+                    Table.addKey(key);
+                    Table.map.put(key, value);
+
+                    filePos += 8 + keyLength + valueLength;
+                }
+            }
         } catch (IOException e) {
-            throw new TableException("load: Can't read from the file");
-        }
-
-        try {
-            int filePos = 0;
-            while (filePos < file.length()) {
-                int keyLength;
-                int valueLength;
-                String key;
-                String value;
-
-                try {
-                    keyLength = inStream.readInt();
-                    key = readBytes(inStream, keyLength);
-                    valueLength = inStream.readInt();
-                    value = readBytes(inStream, valueLength);
-                } catch (IOException e) {
-                    throw new TableException("load: Wrong format of dir");
-                }
-
-                if (Table.map.containsKey(key)) {
-                    throw new TableException("load: Two same keys in the dir");
-                }
-                Table.addKey(key);
-                Table.map.put(key, value);
-
-                filePos += 8 + keyLength + valueLength;
-            }
-        } finally {
-            try {
-                inStream.close();
-            } catch (IOException e) {
-                throw new TableException("load: Error while closing the dir");
-            }
-        }
+           throw new TableException("load: Can't read from the file");
+       }
     }
 
     private static String readBytes(DataInputStream inStream, int length) throws IOException {

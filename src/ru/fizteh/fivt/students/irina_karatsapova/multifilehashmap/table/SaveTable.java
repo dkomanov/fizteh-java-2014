@@ -30,6 +30,8 @@ public class SaveTable {
         DataBase.saveInf(Table.dir);
 
         deleteEmptyDirs();
+
+        Table.loaded = false;
     }
 
     private static void saveFile(int dir, int file) throws TableException {
@@ -52,22 +54,12 @@ public class SaveTable {
                 }
 
             }
-            DataOutputStream outStream = null;
-            try {
-                outStream = new DataOutputStream(new FileOutputStream(filePath));
+            try (DataOutputStream outStream =  new DataOutputStream(new FileOutputStream(filePath))) {
                 for (String key : Table.keys[dir][file]) {
                     writeBytes(outStream, key, Table.map.get(key));
                 }
             } catch (Exception e) {
                 throw new TableException("save: Error while writing into the file");
-            } finally {
-                try {
-                    if (outStream != null) {
-                        outStream.close();
-                    }
-                } catch (Exception e) {
-                    throw new TableException("save: Error while closing the file");
-                }
             }
         }
     }
