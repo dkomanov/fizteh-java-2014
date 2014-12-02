@@ -94,6 +94,10 @@ public class TestAutoCloseable {
             //suppress
         }
         assertTrue(exceptionWas);
+        Table newInstance = provider.getTable(tableName);
+
+        //check getting new instance of table
+        assertTrue(!((FileMap) newInstance).isClosed());
     }
 
     @Test (expected = IllegalStateException.class)
@@ -105,6 +109,17 @@ public class TestAutoCloseable {
            //suppress
        }
        testMFileHashMap.getTable("random");
+    }
+
+    @Test (expected = IllegalStateException.class)
+    public void testMFileHashMapWhetherCloseTables() {
+        MFileHashMap testMFileHashMap = (MFileHashMap) provider;
+        try {
+            testMFileHashMap.close();
+        } catch (Exception e) {
+            //suppress
+        }
+        testTable.rollback();
     }
 
     @Test (expected = IllegalStateException.class)
