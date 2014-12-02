@@ -1,11 +1,11 @@
 package util;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class Launcher {
-    HashMap<String, String> hashMap;
+    Map<String, String> hashMap;
 
-    public Launcher(HashMap<String, String> hm) {
+    public Launcher(Map<String, String> hm) {
         hashMap = hm;
     }
 

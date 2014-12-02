@@ -7,12 +7,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 public class Data {
-    public static HashMap<String, String> load(File fl) throws Exception {
-        HashMap<String, String> hm = new HashMap<String, String>();
+    public static Map<String, String> load(File fl) throws Exception {
+        Map<String, String> hm = new HashMap<String, String>();
         DataInputStream dis = new DataInputStream(new FileInputStream(fl));
 
         while (dis.available() > 0) {
@@ -40,7 +40,7 @@ public class Data {
         return hm;
     }
 
-    public static void save(File fl, HashMap<String, String> hm) throws 
+    public static void save(File fl, Map<String, String> hm) throws 
                                         IOException, FileNotFoundException {
         DataOutputStream dos = new DataOutputStream(new FileOutputStream(fl));
         for (Map.Entry<String, String> element : hm.entrySet()) {

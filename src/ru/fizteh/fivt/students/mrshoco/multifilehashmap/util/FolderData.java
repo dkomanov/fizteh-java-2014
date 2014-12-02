@@ -3,11 +3,12 @@ package util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 import java.util.HashMap;
 
 public class FolderData extends Data {
 
-    private static HashMap<String, String> checkFile(HashMap<String, String> hashMap, 
+    private static Map<String, String> checkFile(Map<String, String> hashMap, 
                                                     int fileNumber) throws Exception {
         for (String key : hashMap.keySet()) {
             if (key.hashCode() / 16 % 16 != fileNumber) {
@@ -17,7 +18,7 @@ public class FolderData extends Data {
         return hashMap;
     }
     
-    private static HashMap<String, String> checkFolder(HashMap<String, String> hashMap, 
+    private static Map<String, String> checkFolder(Map<String, String> hashMap, 
                                                     int fileNumber) throws Exception {
         for (String key : hashMap.keySet()) {
             if (key.hashCode() % 16 != fileNumber) {
@@ -27,19 +28,19 @@ public class FolderData extends Data {
         return hashMap;
     }
 
-    public static HashMap<String, String> loadDb(File file) throws Exception {
+    public static Map<String, String> loadDb(File file) throws Exception {
         if (!file.isDirectory()) {
             throw new Exception("Db isn't a directory !");
         }
-        HashMap<String, String> data = new HashMap<String, String>();
+        Map<String, String> data = new HashMap<String, String>();
         for (int i = 0; i < 16; i++) {
             data.putAll(checkFolder(loadFolder(new File(file, i + ".dir")), i));
         }
         return data;
     }
 
-    private static HashMap<String, String> loadFolder(File file) throws Exception {
-        HashMap<String, String> dataFromFolder = new HashMap<String, String>();
+    private static Map<String, String> loadFolder(File file) throws Exception {
+        Map<String, String> dataFromFolder = new HashMap<String, String>();
         if (!file.exists()) {
             return dataFromFolder;
         }
@@ -52,8 +53,8 @@ public class FolderData extends Data {
         return dataFromFolder;
     }
 
-    private static HashMap<String, String> loadFile(File file) throws Exception {
-        HashMap<String, String> dataFromFile = new HashMap<String, String>();
+    private static Map<String, String> loadFile(File file) throws Exception {
+        Map<String, String> dataFromFile = new HashMap<String, String>();
         if (!file.exists()) {
             return dataFromFile;
         }
@@ -70,9 +71,9 @@ public class FolderData extends Data {
         return  dataFromFile;
     }
 
-    public static void saveDb(HashMap<String, String> data, File file) throws Exception {
+    public static void saveDb(Map<String, String> data, File file) throws Exception {
         @SuppressWarnings("unchecked")
-        HashMap<String, String>[][] sortedData = new HashMap[16][16];
+        Map<String, String>[][] sortedData = new HashMap[16][16];
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 sortedData[i][j] = new HashMap<String, String>();
@@ -89,7 +90,7 @@ public class FolderData extends Data {
         }
     }
 
-    private static void saveFolder(HashMap<String, String>[] dataToFolder, File file) 
+    private static void saveFolder(Map<String, String>[] dataToFolder, File file) 
                                                             throws Exception {
         if (!file.exists()) {
             file.mkdir();
@@ -106,7 +107,7 @@ public class FolderData extends Data {
         }
     }
 
-    private static boolean saveFile(HashMap<String, String> dataToFile, File file) 
+    private static boolean saveFile(Map<String, String> dataToFile, File file) 
                                                             throws Exception {
         if (!file.exists()) {
             file.createNewFile();

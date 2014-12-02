@@ -1,11 +1,11 @@
 package util;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.Map;
 
 public class TableLauncher {
     Launcher launcher;
-    HashMap<String, String> data;
+    Map<String, String> data;
     File file;
     String currentDb;
     
@@ -102,14 +102,18 @@ public class TableLauncher {
                 tableFile.delete();
                 System.out.println("dropped");
                 if (currentDb.equals(tableName)) {
-                    currentDb = "";
-                    launcher = null;
-                    data = null;
+                    init();
                 }
             } catch (Exception e) {
                 System.out.println("Some of directories is not empty");
             }
         }
+    }
+    
+    private void init() {
+        currentDb = "";
+        launcher = null;
+        data = null;
     }
 
     private void use(String[] cmd) throws Exception {
