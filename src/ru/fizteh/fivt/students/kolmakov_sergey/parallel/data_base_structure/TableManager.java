@@ -18,7 +18,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TableManager implements TableProvider {
     private Map<String, Table> tableManagerMap;
-    private Table currentTable;
     private final Path databasePath;
     public static final String CODE_FORMAT = "UTF-8";
     private static final String ILLEGAL_FORMAT_MESSAGE = "Incorrect storeable format. Signature of current table: ";
@@ -30,7 +29,6 @@ public class TableManager implements TableProvider {
     private ReadWriteLock lock;
 
     public TableManager(String path) throws IllegalArgumentException {
-        currentTable = null;
         databasePath = Paths.get(path);
         tableManagerMap = new HashMap<>();
         lock = new ReentrantReadWriteLock();
@@ -114,9 +112,6 @@ public class TableManager implements TableProvider {
             if (removedTable == null) {
                 throw new IllegalStateException("Table not found");
             } else {
-                if (currentTable == removedTable) {
-                    currentTable = null;
-                }
                 ((TableClass) removedTable).setRemovedFlag();
                 deleteRecursively(tableDir.toFile());
             }

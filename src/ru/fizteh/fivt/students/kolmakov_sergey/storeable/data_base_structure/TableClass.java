@@ -47,7 +47,8 @@ public class TableClass implements Table {
             }
             try (PrintWriter writer = new PrintWriter(new FileWriter(currentFolderPath.toString()))) {
                 for (Class<?> currentClass: columnTypes) {
-                    writer.println(CastMaker.classToString(currentClass));
+                    writer.print(CastMaker.classToString(currentClass));
+                    writer.print(' ');
                 }
             } catch (IOException e) {
                 throw new RuntimeException("Can't write columnTypes to table directory: " + e.getMessage());
@@ -92,24 +93,15 @@ public class TableClass implements Table {
     private void readColumnTypes() throws DatabaseCorruptedException {
         columnTypes = new ArrayList<>();
         Path currentFolderPath = this.tablePath.resolve(signatureFileName);
-        List<String> list = new ArrayList<>();
-        boolean fileIsEmpty = true;
+        List<String> list;
         try (Scanner in = new Scanner(new File(currentFolderPath.toString()))) {
-            while (in.hasNextLine()) {
-                list.add(in.nextLine());
-                fileIsEmpty = false;
-            }
-            if (fileIsEmpty) {
-                throw new DatabaseCorruptedException(signatureFileName + " is corrupted in table " + name);
-            }
-        } catch (FileNotFoundException e) {
-            throw new DatabaseCorruptedException("Can't find " + signatureFileName + " in table " + name);
-        }
-        try {
+            list = Arrays.asList(in.nextLine().split("\\s+"));
             for (String currentString : list) {
                 columnTypes.add(CastMaker.stringToClass(currentString));
             }
-        } catch (IllegalArgumentException e) {
+        } catch (FileNotFoundException e) {
+            throw new DatabaseCorruptedException("Can't find " + signatureFileName + " in table " + name);
+        } catch (IllegalArgumentException | NoSuchElementException e) {
             throw new DatabaseCorruptedException(signatureFileName + " is corrupted in table " + name);
         }
     }
