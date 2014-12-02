@@ -6,8 +6,8 @@ import java.nio.file.Paths;
 
 public class JUnitTableProvider implements TableProvider {
 
-    public JUnitTableProvider(String Dir) {
-        directory = Paths.get(Dir);
+    public JUnitTableProvider(String dir) {
+        directory = Paths.get(dir);
         usingTable = null;
     }
 
