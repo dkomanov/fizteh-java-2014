@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class testStoreable {
+public class TestStoreable {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 

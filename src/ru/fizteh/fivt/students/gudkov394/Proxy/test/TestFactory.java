@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertNotNull;
 
-public class testFactory {
+public class TestFactory {
     private TableProviderFactoryWithCloseAndToString factory;
     private String dbDirPath;
     @Rule

@@ -142,14 +142,9 @@ public class TestTable {
 
     @Test(expected = RuntimeException.class)
     public void createTableBadSymbolShouldFail() {
-        Table tmpTable = provider.createTable(",;ddddddddddddddddddddddd" +
-                "sdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" +
-                "dsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss" +
-                "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
-                "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
-                "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
-                "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
-                "dddddddddddd?");
+        Table tmpTable = provider.createTable(",;ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd? "
+                + ",;ddddddddddddddddddddddddddddddddddddddddddddddddddddd,;ddddddddddddddddddddddddddddddddddddddddddd"
+                + "ddddddddddddd,;ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
     }
 
 

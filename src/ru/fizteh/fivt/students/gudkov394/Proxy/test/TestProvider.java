@@ -24,7 +24,7 @@ import java.util.LinkedList;
 
 import static org.junit.Assert.*;
 
-public class testProvider {
+public class TestProvider {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 

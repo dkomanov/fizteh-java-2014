@@ -22,7 +22,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class testTable {
+public class TestTable {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 

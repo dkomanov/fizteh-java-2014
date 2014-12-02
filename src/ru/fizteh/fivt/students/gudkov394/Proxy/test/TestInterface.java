@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by kagudkov on 02.12.14.
  */
-public interface testInterface {
+public interface TestInterface {
     void noArgumentsMethod();
 
     void integerArgumentMethod(Integer a);
