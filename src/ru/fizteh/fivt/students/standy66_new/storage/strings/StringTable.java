@@ -20,9 +20,9 @@ public class StringTable implements Table, AutoCloseable {
     private boolean closed = false;
     private StringDatabase database;
 
-    StringTable(File tableDirectory, StringDatabase database) {
-        if (tableDirectory == null || database == null) {
-            throw new IllegalArgumentException("table directory or database should not be null");
+    StringTable(File tableDirectory) {
+        if (tableDirectory == null) {
+            throw new IllegalArgumentException("table directory should not be null");
         }
         if (tableDirectory.isFile()) {
             throw new IllegalArgumentException("table directory should not point to a regular file");
