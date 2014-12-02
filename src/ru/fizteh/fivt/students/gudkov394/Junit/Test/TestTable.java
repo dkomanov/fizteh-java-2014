@@ -25,6 +25,7 @@ public class TestTable {
     @Rule
     public TemporaryFolder rootDBDirectory = new TemporaryFolder();
 
+
     @Before
     public void createTable() throws IOException {
         File newTable = rootDBDirectory.newFolder("testTable");
