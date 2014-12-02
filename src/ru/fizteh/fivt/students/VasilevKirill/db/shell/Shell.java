@@ -54,7 +54,7 @@ public class Shell {
                     try {
                         currentCommand.execute(cmds, status);
                     } catch (IOException e) {
-                        System.err.println(e.getMessage());
+                        System.err.println(e);
                     }
                 }*/
                 int result = new Shell(commandMap, status).handle(cmds);
