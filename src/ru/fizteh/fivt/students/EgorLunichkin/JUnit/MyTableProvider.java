@@ -15,6 +15,7 @@ public class MyTableProvider implements TableProvider {
         } catch (Exception ex) {
             throw new IllegalArgumentException();
         }
+        tables = new HashMap<>();
         for (Map.Entry<String, MultiTable> entry : multiDataBase.tables.entrySet()) {
             tables.put(entry.getKey(), new MyTable(entry.getValue(), entry.getKey()));
         }

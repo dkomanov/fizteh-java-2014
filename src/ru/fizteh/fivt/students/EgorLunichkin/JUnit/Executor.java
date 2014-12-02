@@ -113,6 +113,12 @@ public class Executor {
                 }
                 exec = new JUnitShowTablesCommand(myTableProvider);
                 break;
+            case "size":
+                if (command.length > 1) {
+                    throw new JUnitException("size: Too many arguments");
+                }
+                exec = new SizeCommand(myTableProvider);
+                break;
             case "commit":
                 if (command.length > 1) {
                     throw new JUnitException("commit: Too many arguments");
