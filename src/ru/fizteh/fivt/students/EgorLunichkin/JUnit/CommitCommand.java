@@ -1,17 +1,18 @@
 package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 
 public class CommitCommand implements JUnitCommand {
-    public CommitCommand(JUnitDataBase jdb) {
-        this.jUnitDataBase = jdb;
+    public CommitCommand(MyTableProvider mtp) {
+        this.myTableProvider = mtp;
     }
 
-    private JUnitDataBase jUnitDataBase;
+    private MyTableProvider myTableProvider;
 
-    public void run() throws Exception {
-        if (jUnitDataBase.getUsing() == null) {
+    @Override
+    public void run() {
+        if (myTableProvider.getUsing() == null) {
             System.out.println("no table");
         } else {
-            System.out.println(jUnitDataBase.getUsing().commit());
+            System.out.println(myTableProvider.getUsing().commit());
         }
     }
 }

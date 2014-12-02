@@ -22,5 +22,5 @@ public class DropCommand implements Command {
         }
     }
 
-    public void runOnTable(Table table) {}
+    public void runOnTable(MultiTable table) {}
 }

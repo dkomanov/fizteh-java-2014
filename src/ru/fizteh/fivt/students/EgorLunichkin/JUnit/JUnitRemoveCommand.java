@@ -4,28 +4,25 @@ import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Command;
 import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.MultiRemoveCommand;
 
 public class JUnitRemoveCommand implements JUnitCommand {
-    public JUnitRemoveCommand(JUnitDataBase jdb, String key) {
+    public JUnitRemoveCommand(MyTableProvider mtp, String key) {
         this.key = key;
-        this.jUnitDataBase = jdb;
+        this.myTableProvider = mtp;
     }
 
-    private JUnitDataBase jUnitDataBase;
+    private MyTableProvider myTableProvider;
     private String key;
 
-    public void run() throws Exception {
-        if (jUnitDataBase.getUsing() == null) {
-            System.out.println("no table");
-        } else {
-            Command remove = new MultiRemoveCommand(key);
-            int hashCode = Math.abs(key.hashCode());
-            int dir = hashCode % 16;
-            int file = hashCode / 16 % 16;
-            if (jUnitDataBase.getUsing().dirtyTable.dataBases[dir][file].getDataBase().get(key) != null) {
-                remove.runOnTable(jUnitDataBase.getUsing().dirtyTable);
-                jUnitDataBase.getUsing().commands.add(remove);
-            } else {
-                System.out.println("not found");
-            }
-        }
+    @Override
+    public void run() {
+       if (myTableProvider.getUsing() == null) {
+           System.out.println("no table");
+       } else {
+           String value = myTableProvider.getUsing().remove(key);
+           if (value == null) {
+               System.out.println("not found");
+           } else {
+               System.out.println("removed");
+           }
+       }
     }
 }

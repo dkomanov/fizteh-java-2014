@@ -4,17 +4,21 @@ import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Command;
 import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.DropCommand;
 
 public class JUnitDropCommand implements JUnitCommand {
-    public JUnitDropCommand(JUnitDataBase jdb, String name) {
+    public JUnitDropCommand(MyTableProvider mtp, String name) {
         this.tableName = name;
-        this.jUnitDataBase = jdb;
+        this.myTableProvider = mtp;
     }
 
-    private JUnitDataBase jUnitDataBase;
+    private MyTableProvider myTableProvider;
     private String tableName;
 
-    public void run() throws Exception {
-        Command drop = new DropCommand(jUnitDataBase.multiDataBase, tableName);
-        drop.run();
-        jUnitDataBase.tables.remove(tableName);
+    @Override
+    public void run() {
+        try {
+            myTableProvider.removeTable(tableName);
+            System.out.println("dropped");
+        } catch (IllegalStateException ex) {
+            System.out.println(tableName + "not exists");
+        }
     }
 }

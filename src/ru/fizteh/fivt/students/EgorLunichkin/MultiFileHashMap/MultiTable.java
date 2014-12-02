@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 
-public class Table {
-    public Table(File tabledir) throws Exception {
+public class MultiTable {
+    public MultiTable(File tabledir) throws Exception {
         tableDirectory = tabledir;
         dataBases = new DataBase[16][16];
         for (int i = 0; i < 16; ++i) {
@@ -24,7 +24,7 @@ public class Table {
         }
     }
 
-    public Table() {}
+    public MultiTable() {}
 
     public File tableDirectory;
     public DataBase[][] dataBases;

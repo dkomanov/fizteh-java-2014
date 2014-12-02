@@ -4,17 +4,20 @@ import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Command;
 import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.CreateCommand;
 
 public class JUnitCreateCommand implements JUnitCommand {
-    public JUnitCreateCommand(JUnitDataBase jdb, String name) {
+    public JUnitCreateCommand(MyTableProvider mtp, String name) {
         this.tableName = name;
-        this.jUnitDataBase = jdb;
+        this.myTableProvider = mtp;
     }
 
-    private JUnitDataBase jUnitDataBase;
+    private MyTableProvider myTableProvider;
     private String tableName;
 
-    public void run() throws Exception {
-        Command create = new CreateCommand(jUnitDataBase.multiDataBase, tableName);
-        create.run();
-        jUnitDataBase.tables.put(tableName, new HybridTable(jUnitDataBase.multiDataBase.tables.get(tableName)));
+    @Override
+    public void run() {
+        if (myTableProvider.createTable(tableName) == null) {
+            System.out.println(tableName + " exists");
+        } else {
+            System.out.println("created");
+        }
     }
 }

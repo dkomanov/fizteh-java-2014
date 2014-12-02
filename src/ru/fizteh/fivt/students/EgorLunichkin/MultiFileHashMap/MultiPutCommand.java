@@ -30,7 +30,7 @@ public class MultiPutCommand implements Command {
         }
     }
 
-    public void runOnTable(Table table) throws Exception {
+    public void runOnTable(MultiTable table) throws Exception {
         int hashCode = Math.abs(key.hashCode());
         int dir = hashCode % 16;
         int file = hashCode / 16 % 16;

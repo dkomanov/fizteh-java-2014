@@ -1,17 +1,18 @@
 package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 
 public class SizeCommand implements JUnitCommand {
-    public SizeCommand(JUnitDataBase jdb) {
-        this.jUnitDataBase = jdb;
+    public SizeCommand(MyTableProvider mtp) {
+        this.myTableProvider = mtp;
     }
 
-    private JUnitDataBase jUnitDataBase;
+    private MyTableProvider myTableProvider;
 
+    @Override
     public void run() {
-        if (jUnitDataBase.getUsing() == null) {
+        if (myTableProvider.getUsing() == null) {
             System.out.println("no table");
         } else {
-            System.out.println(jUnitDataBase.getUsing().dirtyTable.tableSize());
+            System.out.println(myTableProvider.getUsing().size());
         }
     }
 }

@@ -25,7 +25,7 @@ public class MultiGetCommand implements Command {
         }
     }
 
-    public void runOnTable(Table table) {
+    public void runOnTable(MultiTable table) {
         int hashCode = Math.abs(key.hashCode());
         int dir = hashCode % 16;
         int file = hashCode / 16 % 16;

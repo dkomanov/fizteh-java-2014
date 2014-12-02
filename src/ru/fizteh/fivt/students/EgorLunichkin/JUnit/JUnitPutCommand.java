@@ -4,24 +4,27 @@ import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Command;
 import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.MultiPutCommand;
 
 public class JUnitPutCommand implements JUnitCommand {
-    public JUnitPutCommand(JUnitDataBase jdb, String key, String value) {
+    public JUnitPutCommand(MyTableProvider mtp, String key, String value) {
         this.key = key;
         this.value = value;
-        this.jUnitDataBase = jdb;
+        this.myTableProvider = mtp;
     }
 
-    private JUnitDataBase jUnitDataBase;
+    private MyTableProvider myTableProvider;
     private String key;
     private String value;
 
     @Override
-    public void run() throws Exception {
-        if (jUnitDataBase.getUsing() == null) {
+    public void run() {
+        if (myTableProvider.getUsing() == null) {
             System.out.println("no table");
         } else {
-            Command put = new MultiPutCommand(key, value);
-            put.runOnTable(jUnitDataBase.getUsing().dirtyTable);
-            jUnitDataBase.getUsing().commands.add(put);
+            String oldValue = myTableProvider.getUsing().put(key, value);
+            if (oldValue == null) {
+                System.out.println("new");
+            } else {
+                System.out.println("overwrite\n" + oldValue);
+            }
         }
     }
 }

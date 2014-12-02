@@ -6,7 +6,7 @@ public class ExitCommand implements Command {
     public void run() {
         System.exit(0);
     }
-    public void runOnTable(Table table) {
+    public void runOnTable(MultiTable table) {
         this.run();
     }
 }

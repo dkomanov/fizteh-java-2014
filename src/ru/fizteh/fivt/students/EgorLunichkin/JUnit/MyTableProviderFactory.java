@@ -3,8 +3,12 @@ package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 
-public class ExtTableProviderFactory implements TableProviderFactory {
+public class MyTableProviderFactory implements TableProviderFactory {
+    @Override
     public TableProvider create(String dir) {
-        return null;
+        if (dir == null) {
+            throw new IllegalArgumentException();
+        }
+        return new MyTableProvider(dir);
     }
 }

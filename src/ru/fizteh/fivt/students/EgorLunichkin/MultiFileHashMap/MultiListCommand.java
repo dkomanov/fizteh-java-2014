@@ -22,7 +22,7 @@ public class MultiListCommand implements Command {
         }
     }
 
-    public void runOnTable(Table table) {
+    public void runOnTable(MultiTable table) {
         StringBuilder listKeys = new StringBuilder();
         for (int dir = 0; dir < 16; ++dir) {
             for (int file = 0; file < 16; ++file) {

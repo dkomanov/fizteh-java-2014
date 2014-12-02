@@ -11,7 +11,7 @@ public class MultiDataBase {
         }
         dbDirectory = new File(dbDir);
         using = null;
-        tables = new HashMap<String, Table>();
+        tables = new HashMap<String, MultiTable>();
         if (!Files.exists(dbDirectory.toPath()) && !dbDirectory.mkdir()) {
             throw new MultiFileHashMapException("Cannot create working directory");
         }
@@ -21,18 +21,18 @@ public class MultiDataBase {
         for (String tableName : dbDirectory.list()) {
             File tableDirectory = new File(dbDirectory, tableName);
             if (tableDirectory.isDirectory()) {
-                tables.put(tableName, new Table(tableDirectory));
+                tables.put(tableName, new MultiTable(tableDirectory));
             } else {
                 throw new MultiFileHashMapException(tableName + " from database is not a directory");
             }
         }
     }
 
-    public HashMap<String, Table> tables;
+    public HashMap<String, MultiTable> tables;
     public File dbDirectory;
     public String using;
 
-    public Table getUsing() {
+    public MultiTable getUsing() {
         return tables.get(using);
     }
 }

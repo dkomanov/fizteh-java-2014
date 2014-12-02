@@ -4,14 +4,19 @@ import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.Command;
 import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.ShowTablesCommand;
 
 public class JUnitShowTablesCommand implements JUnitCommand {
-    public JUnitShowTablesCommand(JUnitDataBase jdb) {
-        this.jUnitDataBase = jdb;
+    public JUnitShowTablesCommand(MyTableProvider mtp) {
+        this.myTableProvider = mtp;
     }
 
-    private JUnitDataBase jUnitDataBase;
+    private MyTableProvider myTableProvider;
 
-    public void run() throws Exception {
-        Command showTables = new ShowTablesCommand(jUnitDataBase.multiDataBase);
-        showTables.run();
+    @Override
+    public void run() throws JUnitException {
+        Command show = new ShowTablesCommand(myTableProvider.multiDataBase);
+        try {
+            show.run();
+        } catch (Exception ex) {
+            throw new JUnitException(ex.getMessage());
+        }
     }
 }
