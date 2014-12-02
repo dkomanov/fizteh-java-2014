@@ -23,12 +23,8 @@ public class testFactory {
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     @Before
-    public void before() {
-        try {
-            tmpFolder.create();
-        } catch (IOException e) {
-            System.out.println("problem");
-        }
+    public void before() throws IOException {
+        tmpFolder.create();
         factory = new TableProviderFactoryWithCloseAndToString();
         dbDirPath = tmpFolder.newFolder("test").getAbsolutePath();
     }
