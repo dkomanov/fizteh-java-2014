@@ -14,13 +14,18 @@ import java.nio.file.Paths;
  * Created by sautin1 on 10/12/14.
  */
 public class Main {
+    public static final String DB_LOCATION_PROPERTY = "fizteh.db.dir";
 
     public static void main(String[] args) {
         int exitStatus = 0;
         try {
-            Path filePath;
-            String filePathString = "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test";
-            filePath = Paths.get(filePathString);
+            //System.setProperty(DB_LOCATION_PROPERTY,
+            // "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test");
+            String filePathString = System.getProperty(DB_LOCATION_PROPERTY);
+            if (filePathString == null) {
+                throw new IllegalArgumentException("No system property \'" + DB_LOCATION_PROPERTY + "\' found");
+            }
+            Path filePath = Paths.get(filePathString);
 
             StringTableIOToolsMultipleFiles ioTools = new StringTableIOToolsMultipleFiles(16, 16, "UTF-8");
             StringTableProviderFactory providerFactory = new StringTableProviderFactory();

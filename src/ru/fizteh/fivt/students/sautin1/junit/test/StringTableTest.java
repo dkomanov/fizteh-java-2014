@@ -84,6 +84,16 @@ public class StringTableTest {
         assertEquals(answer, firstValue);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testPutNull() throws Exception {
+        table.put(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPutEmpty() throws Exception {
+        table.put("", "value");
+    }
+
     @Test
     public void testGet() throws Exception {
         // get newly added entry
@@ -122,6 +132,16 @@ public class StringTableTest {
         assertEquals(answer, secondValue);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetNull() throws Exception {
+        table.get(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetEmpty() throws Exception {
+        table.get("");
+    }
+
     @Test
     public void testRemove() throws Exception {
         String firstKey = keyPrefix + "1";
@@ -156,6 +176,16 @@ public class StringTableTest {
         answer = table.remove(firstKey);
         assertEquals(table.size(), 0);
         assertNull(answer);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRemoveNull() throws Exception {
+        table.remove(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRemoveEmpty() throws Exception {
+        table.remove("");
     }
 
     @Test

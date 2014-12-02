@@ -2,10 +2,7 @@ package ru.fizteh.fivt.students.sautin1.junit.filemap;
 
 import ru.fizteh.fivt.students.sautin1.junit.shell.FileUtils;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.file.*;
 import java.util.Map;
@@ -59,10 +56,15 @@ public class StringTableIOToolsMultipleFiles extends StringTableIOTools {
      * @return string read from file.
      * @throws java.io.IOException if any IO error occurs.
      */
-    protected String readEncodedString(InputStream inStream) throws IOException {
+    protected String readEncodedString(DataInputStream inStream) throws IOException {
         String string = null;
+        int stringSize;
         try {
-            byte[] intByteBuf = new byte[4];
+            stringSize = inStream.readInt();
+        } catch (IOException e) {
+            throw new IOException("File is corrupted");
+        }
+    /*byte[] intByteBuf = new byte[4];
             int bytesRead = inStream.read(intByteBuf, 0, 4);
             if (bytesRead < 4) {
                 if (bytesRead == -1) {
@@ -71,16 +73,18 @@ public class StringTableIOToolsMultipleFiles extends StringTableIOTools {
                     throw new IOException("File is corrupted");
                 }
             }
-            int stringSize = byteArrayToInt(intByteBuf);
-            byte[] stringByteBuf = new byte[stringSize];
+            int stringSize = byteArrayToInt(intByteBuf);*/
+        byte[] stringByteBuf = new byte[stringSize];
+        int bytesRead;
+        try {
             bytesRead = inStream.read(stringByteBuf, 0, stringSize);
-            if (bytesRead < stringSize) {
-                throw new IOException("File is corrupted");
-            }
-            string = new String(stringByteBuf, encoding);
         } catch (IOException e) {
             throw new IOException("Read error: " + e.getMessage());
         }
+        if (bytesRead < stringSize) {
+            throw new IOException("File is corrupted");
+        }
+        string = new String(stringByteBuf, encoding);
         return string;
     }
 
@@ -91,10 +95,10 @@ public class StringTableIOToolsMultipleFiles extends StringTableIOTools {
      * @param string - string to write to file.
      * @throws java.io.IOException if any IO error occurs.
      */
-    protected void writeEncodedString(OutputStream outStream, String string) throws IOException {
+    protected void writeEncodedString(DataOutputStream outStream, String string) throws IOException {
         try {
             byte[] stringBytes = string.getBytes(encoding);
-            outStream.write(intToByteArray(stringBytes.length));
+            outStream.writeInt(stringBytes.length);
             outStream.write(stringBytes);
         } catch (IOException e) {
             throw new IOException("Write error: " + e.getMessage());
@@ -149,10 +153,12 @@ public class StringTableIOToolsMultipleFiles extends StringTableIOTools {
      */
     public int loadFileToTable(Path filePath, StringTable table) throws IOException {
         int loadedEntriesNumber = 0;
-        try (InputStream inStream = Files.newInputStream(filePath)) {
+        try (DataInputStream inStream = new DataInputStream(Files.newInputStream(filePath))) {
             while (true) {
-                String key = readEncodedString(inStream);
-                if (key == null) {
+                String key;
+                if (inStream.available() > 0) {
+                    key = readEncodedString(inStream);
+                } else {
                     break;
                 }
                 if (!checkKeyPlace(key, filePath)) {
@@ -280,7 +286,7 @@ public class StringTableIOToolsMultipleFiles extends StringTableIOTools {
             if (!Files.exists(filePath)) {
                 Files.createFile(filePath);
             }
-            try (OutputStream outStream = Files.newOutputStream(filePath)) {
+            try (DataOutputStream outStream = new DataOutputStream(Files.newOutputStream(filePath))) {
                 writeEncodedString(outStream, key);
                 writeEncodedString(outStream, value);
             }

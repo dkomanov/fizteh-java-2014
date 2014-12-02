@@ -1,7 +1,8 @@
 package ru.fizteh.fivt.students.sautin1.junit.filemap;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +38,7 @@ public class StringTableIOToolsSingleFile extends StringTableIOToolsMultipleFile
         if (!Files.exists(rootPath)) {
             Files.createFile(rootPath);
         }
-        try (InputStream inStream = Files.newInputStream(rootPath)) {
+        try (DataInputStream inStream = new DataInputStream(Files.newInputStream(rootPath))) {
             while (true) {
                 String key = readEncodedString(inStream);
                 if (key == null) {
@@ -72,7 +73,7 @@ public class StringTableIOToolsSingleFile extends StringTableIOToolsMultipleFile
                 System.err.println(e.getMessage());
             }
         }
-        try (OutputStream outStream = Files.newOutputStream(rootPath)) {
+        try (DataOutputStream outStream = new DataOutputStream(Files.newOutputStream(rootPath))) {
             for (Map.Entry<String, String> entry : table) {
                 writeEncodedString(outStream, entry.getKey());
                 writeEncodedString(outStream, entry.getValue());

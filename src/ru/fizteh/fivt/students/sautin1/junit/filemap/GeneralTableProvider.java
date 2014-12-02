@@ -70,6 +70,9 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
      * @return table with corresponding name.
      */
     public T getTable(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("No name provided");
+        }
         return tableMap.get(name);
     }
 
@@ -79,6 +82,9 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
      * @return new table.
      */
     public T createTable(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("No name provided");
+        }
         Path tablePath = rootDir.resolve(name);
         if (tableMap.get(name) != null) {
             return null;
@@ -102,9 +108,12 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
      * @param name - name of the table.
      */
     public void removeTable(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("No name provided");
+        }
         T oldTable = tableMap.remove(name);
         if (oldTable == null) {
-            throw new IllegalArgumentException("Table " + name + " doesn't exist");
+            throw new IllegalStateException("Table " + name + " doesn't exist");
         }
         try {
             FileUtils.removeDirectory(rootDir.resolve(name));

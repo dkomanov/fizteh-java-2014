@@ -60,6 +60,16 @@ public class StringTableProviderTest {
         provider.createTable(existingDirectoryName + "/" + existingDirectoryName);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateTableNull() throws Exception {
+        provider.createTable(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateTableRubbish() throws Exception {
+        provider.createTable("([/<:>/])");
+    }
+
     @Test
     public void testGetTable() throws Exception {
         StringTable createdTable = provider.createTable(tableName);
@@ -70,6 +80,16 @@ public class StringTableProviderTest {
         assertNull(gotTable);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetTableNull() throws Exception {
+        provider.getTable(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetTableEmpty() throws Exception {
+        provider.getTable("");
+    }
+
     @Test
     public void testRemoveTable() throws Exception {
         provider.createTable(tableName);
@@ -78,9 +98,14 @@ public class StringTableProviderTest {
         assertFalse(Files.exists(testDir.resolve(tableName)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void testRemoveNotExistingTable() throws Exception {
         provider.removeTable(tableName);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRemoveTableNull() throws Exception {
+        provider.removeTable(null);
     }
 
     @Test(expected = IllegalArgumentException.class)

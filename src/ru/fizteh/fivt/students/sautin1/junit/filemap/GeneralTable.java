@@ -61,6 +61,9 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
      * @return overwritten value, if the key existed in the table. null, otherwise.
      */
     public MappedValue put(String key, MappedValue value) {
+        if (key == null || key.isEmpty()) {
+            throw new IllegalArgumentException("null key is not allowed");
+        }
         MappedValue committedValue = committedEntries.get(key);
         MappedValue addedValue = addedEntries.get(key);
         MappedValue overwrittenValue = overwrittenEntries.get(key);
@@ -113,6 +116,9 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
      * @return value, corresponding to the key.
      */
     public MappedValue get(String key) {
+        if (key == null || key.isEmpty()) {
+            throw new IllegalArgumentException("null key is not allowed");
+        }
         MappedValue committedValue = committedEntries.get(key);
         MappedValue addedValue = addedEntries.get(key);
         MappedValue overwrittenValue = overwrittenEntries.get(key);
@@ -135,6 +141,9 @@ public class GeneralTable<MappedValue> implements Iterable<Map.Entry<String, Map
      * @return value, corresponding to the key.
      */
     public MappedValue remove(String key) {
+        if (key == null || key.isEmpty()) {
+            throw new IllegalArgumentException("null key is not allowed");
+        }
         MappedValue committedValue = committedEntries.get(key);
         MappedValue addedValue = addedEntries.get(key);
         MappedValue overwrittenValue = overwrittenEntries.get(key);
