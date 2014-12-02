@@ -45,7 +45,7 @@ public class TableProviderFactoryTest {
 
     @Test(expected = RuntimeException.class)
     public void createProviderUnavailableShouldFail() {
-        factory.create("\\etc\\passwd");
+        factory.create("/etc/passwd");
     }
 
     @Test

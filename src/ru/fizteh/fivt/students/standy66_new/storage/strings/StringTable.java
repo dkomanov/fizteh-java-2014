@@ -18,7 +18,7 @@ public class StringTable implements Table {
     private final File tableDirectory;
     private final Map<File, FileMap> openedFiles;
 
-    StringTable(File tableDirectory) {
+    public StringTable(File tableDirectory) {
         if (tableDirectory == null) {
             throw new IllegalArgumentException("table directory should not be null");
         }
