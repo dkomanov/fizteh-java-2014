@@ -12,9 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -104,6 +102,101 @@ public class TableTest {
         assertEquals(table.put("key1", "val1_"), "val1");
 
     }
+
+
+
+    @Test
+    public void testGet() {
+
+        DbTable table = (DbTable) provider.createTable("justTable");
+
+        try {
+            table.get(null);
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            table.get("");
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        table.put("key1", "val1");
+        table.put("key2", "val2");
+        table.commit();
+
+        table.put("key3", "val3");
+        assertEquals(table.get("key3"), "val3");
+
+        table.put("key2", "val2_");
+        assertEquals(table.get("key2"), "val2_");
+
+        assertEquals(table.get("key1"), "val1");
+
+        assertEquals(table.get("keyX"), null);
+
+    }
+
+
+    @Test
+    public void testRemove() {
+
+        DbTable table = (DbTable) provider.createTable("justTable");
+
+        try {
+            table.remove(null);
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            table.remove("");
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        table.put("key1", "val1");
+        table.put("key2", "val2");
+        table.commit();
+
+        table.put("key3", "val3");
+        assertEquals(table.remove("key3"), "val3");
+
+        table.put("key2", "val2_");
+        assertEquals(table.remove("key2"), "val2_");
+
+        assertEquals(table.remove("key2"), null);
+
+        assertEquals(table.remove("key1"), "val1");
+
+        assertEquals(table.remove("keyX"), null);
+
+    }
+
+    @Test
+    public void testList() {
+
+        DbTable table = (DbTable) provider.createTable("justTable");
+
+        List<String> list = new LinkedList<>();
+        list.add("key1");
+        list.add("key2");
+        list.add("key3");
+        list.add("key4");
+        table.put("key1", "val1");
+        table.put("key2", "val2");
+        table.put("key3", "val3");
+        table.put("key4", "val4");
+
+        assertEquals(list, table.list());
+    }
+
+
 
     @Test
     public void testCombined() {
