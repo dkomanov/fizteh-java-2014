@@ -28,7 +28,6 @@ public class ParallelTable implements Table {
         diff.set(new ListDiff(table, lock));
 
     }
-
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
         lock.writeLock().lock();
