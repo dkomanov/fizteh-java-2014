@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 public class SaveTable {
+
     public static void start() throws TableException, IOException {
         if (!Table.loaded) {
             return;

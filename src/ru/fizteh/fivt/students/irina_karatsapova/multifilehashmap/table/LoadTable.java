@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class LoadTable {
+
     public static void start(File tableDir) throws TableException {
         Table.dir = tableDir;
         Table.map.clear();

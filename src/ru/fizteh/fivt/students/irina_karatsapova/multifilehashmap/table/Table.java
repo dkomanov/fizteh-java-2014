@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Table {
+
     public static File dir;
     public static Map<String, String> map = new HashMap<String, String>();
     public static List<String>[][] keys = new ArrayList[16][16];
