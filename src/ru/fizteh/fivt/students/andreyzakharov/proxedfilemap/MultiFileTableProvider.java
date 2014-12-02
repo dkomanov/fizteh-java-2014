@@ -23,6 +23,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     private MultiFileTable activeTable;
     private TableEntrySerializer serializer = new TableEntryJsonSerializer();
     private ReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private boolean closed;
 
     public MultiFileTableProvider(Path dbPath) throws ConnectionInterruptException {
         if (!Files.exists(dbPath)) {
@@ -45,7 +46,30 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     }
 
     @Override
+    public void close() {
+        if (!closed) {
+            closed = true;
+            if (tables != null) {
+                try {
+                    for (MultiFileTable table : tables.values()) {
+                        table.unload();
+                    }
+                } catch (ConnectionInterruptException e) {
+                    // suppress the exception
+                }
+            }
+        }
+    }
+
+    private void checkClosed() throws IllegalStateException {
+        if (closed) {
+            throw new IllegalStateException("connection: connection was closed");
+        }
+    }
+
+    @Override
     public Table getTable(String name) {
+        checkClosed();
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         } else if (name.isEmpty()) {
@@ -58,10 +82,12 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     }
 
     public MultiFileTable getCurrent() {
+        checkClosed();
         return activeTable;
     }
 
     public Map<String, MultiFileTable> getAllTables() {
+        checkClosed();
         lock.readLock().lock();
         Map<String, MultiFileTable> tables = this.tables;
         lock.readLock().unlock();
@@ -70,6 +96,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
+        checkClosed();
         if (name == null || columnTypes == null) {
             throw new IllegalArgumentException("null argument");
         } else if (name.isEmpty() || columnTypes.isEmpty()) {
@@ -107,6 +134,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public void removeTable(String name) {
+        checkClosed();
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         } else if (name.isEmpty()) {
@@ -132,6 +160,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
     }
 
     public void useTable(String name) throws IllegalStateException {
+        checkClosed();
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         } else if (name.isEmpty()) {
@@ -150,6 +179,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
+        checkClosed();
         if (table == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -158,6 +188,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        checkClosed();
         if (table == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -166,6 +197,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Storeable createFor(Table table) {
+        checkClosed();
         if (table == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -175,6 +207,7 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+        checkClosed();
         if (table == null || values == null) {
             throw new IllegalArgumentException("null argument");
         }
@@ -189,10 +222,12 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public List<String> getTableNames() {
+        checkClosed();
         return new ArrayList<>(tables.keySet());
     }
 
     public void open() throws ConnectionInterruptException {
+        checkClosed();
         if (tables == null) {
             tables = new HashMap<>();
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(dbRoot)) {
@@ -204,19 +239,6 @@ public class MultiFileTableProvider implements AutoCloseable, TableProvider {
                 }
             } catch (IOException e) {
                 throw new ConnectionInterruptException("connection: unable to load the database");
-            }
-        }
-    }
-
-    @Override
-    public void close() {
-        if (tables != null) {
-            try {
-                for (MultiFileTable table : tables.values()) {
-                    table.unload();
-                }
-            } catch (ConnectionInterruptException e) {
-                // suppress the exception
             }
         }
     }

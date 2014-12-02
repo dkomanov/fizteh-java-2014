@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.andreyzakharov.proxedfilemap;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 
 import java.io.*;
 import java.nio.file.DirectoryStream;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -19,7 +21,7 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static ru.fizteh.fivt.students.andreyzakharov.proxedfilemap.MultiFileTableUtils.classToString;
 import static ru.fizteh.fivt.students.andreyzakharov.proxedfilemap.MultiFileTableUtils.stringToClass;
 
-public class MultiFileTable implements Table {
+public class MultiFileTable implements Table, AutoCloseable {
     class MultiFileTableDiff {
         Map<String, Storeable> added = new HashMap<>();
         Map<String, Storeable> changed = new HashMap<>();
@@ -47,6 +49,7 @@ public class MultiFileTable implements Table {
     private String name;
 
     private TableEntrySerializer serializer;
+    private boolean closed;
 
     private static Pattern fileNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dat$");
     private static Pattern directoryNamePattern = Pattern.compile("^([0-9]|1[0-5])\\.dir$");
@@ -102,12 +105,26 @@ public class MultiFileTable implements Table {
     }
 
     @Override
+    public void close() throws Exception {
+        rollback();
+        closed = true;
+    }
+
+    private void checkClosed() throws IllegalStateException {
+        if (closed) {
+            throw new IllegalStateException("database: db was closed");
+        }
+    }
+
+    @Override
     public String getName() {
+        checkClosed();
         return name;
     }
 
     @Override
-    public Storeable get(String key) {
+    public Storeable get(String key) throws IllegalStateException {
+        checkClosed();
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         } else if (key.isEmpty()) {
@@ -132,6 +149,7 @@ public class MultiFileTable implements Table {
 
     @Override
     public Storeable put(String key, Storeable value) {
+        checkClosed();
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         } else if (key.isEmpty()) {
@@ -175,6 +193,7 @@ public class MultiFileTable implements Table {
 
     @Override
     public Storeable remove(String key) {
+        checkClosed();
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         } else if (key.isEmpty()) {
@@ -209,6 +228,7 @@ public class MultiFileTable implements Table {
 
     @Override
     public int size() {
+        checkClosed();
         lock.readLock().lock();
         sync();
 
@@ -219,6 +239,7 @@ public class MultiFileTable implements Table {
 
     @Override
     public int getNumberOfUncommittedChanges() {
+        checkClosed();
         lock.readLock().lock();
         sync();
         lock.readLock().unlock();
@@ -228,6 +249,7 @@ public class MultiFileTable implements Table {
 
     @Override
     public int commit() {
+        checkClosed();
         lock.writeLock().lock();
         sync();
 
@@ -257,6 +279,7 @@ public class MultiFileTable implements Table {
 
     @Override
     public int rollback() {
+        checkClosed();
         lock.readLock().lock();
         sync();
 
@@ -303,16 +326,19 @@ public class MultiFileTable implements Table {
 
     @Override
     public int getColumnsCount() {
+        checkClosed();
         return signature.size();
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+        checkClosed();
         return signature.get(columnIndex);
     }
 
     @Override
     public List<String> list() {
+        checkClosed();
         lock.readLock().lock();
         List<String> keySet = new ArrayList<>(stableData.keySet());
         keySet.removeAll(diff.get().removed);
@@ -375,6 +401,7 @@ public class MultiFileTable implements Table {
     }
 
     public void load() throws ConnectionInterruptException {
+        checkClosed();
         clear();
         try {
             readSignature();
@@ -438,6 +465,7 @@ public class MultiFileTable implements Table {
     }
 
     public void unload() throws ConnectionInterruptException {
+        checkClosed();
         int[][] status = new int[16][16];
 
         DirFilePair p;
