@@ -9,7 +9,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by kagudkov on 30.11.14.
  */
-public class TableProviderFactoryWithCloseAndToString extends ParallelTableProviderFactory implements TableProviderFactory, AutoCloseable {
+public class TableProviderFactoryWithCloseAndToString extends ParallelTableProviderFactory
+        implements TableProviderFactory, AutoCloseable {
     AtomicBoolean closed;
 
     public TableProviderFactoryWithCloseAndToString() {

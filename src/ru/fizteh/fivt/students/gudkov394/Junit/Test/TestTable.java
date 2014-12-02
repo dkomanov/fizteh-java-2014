@@ -136,7 +136,7 @@ public class TestTable {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void RemoveEmpty() {
+    public void removeEmpty() {
         table.remove("");
     }
 
