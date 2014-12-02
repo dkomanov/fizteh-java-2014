@@ -24,7 +24,7 @@ public class MultiGetCommand extends Command {
     public MultiGetCommand() {}
 
     @Override
-    public void executeOnTable(Table table) throws Exception {
+    public void executeOnTable(MultiTable table) throws Exception {
         int hashCode = Math.abs(key.hashCode());
         int dir = hashCode % 16;
         int file = hashCode / 16 % 16;

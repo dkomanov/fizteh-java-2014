@@ -4,8 +4,7 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.HybridTable;
-import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.JUnitDataBaseDir;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.MyTable;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.MyTableProvider;
 
 
@@ -21,7 +20,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author AlexeyZhuravlev
@@ -58,20 +56,20 @@ public class StructuredTableProvider implements TableProvider {
     protected StructuredTableProvider(String path) throws IOException {
         try {
             oldProvider = new MyTableProvider(path);
-            JUnitDataBaseDir unstructuredDbDir = oldProvider.getJUnitDir();
             mainDirectory = new File(path);
             tables = new HashMap<>();
             signatures = new HashMap<>();
-            for (Map.Entry<String, HybridTable> entry: unstructuredDbDir.tables.entrySet()) {
-                File signature = new File(entry.getValue().virginTable.mainDir, "signature.tsv");
+            for (String name: oldProvider.tableNames()) {
+                MyTable oldTable = (MyTable) oldProvider.getTable(name);
+                File signature = new File(oldTable.getDirectory(), "signature.tsv");
                 if (!signature.exists()) {
-                    throw new IOException("No signature file specified in table " + entry.getKey());
+                    throw new IOException("No signature file specified in table " + name);
                 }
-                signatures.put(entry.getKey(), signature);
+                signatures.put(name, signature);
                 String typesInString = readSignature(signature);
                 List<Class<?>> types = TypeTransformer.typeListFromString(typesInString);
-                StructuredTable table = new StructuredTable(entry.getValue(), types, entry.getKey(), this);
-                tables.put(entry.getKey(), table);
+                StructuredTable table = new StructuredTable(oldTable, types, this);
+                tables.put(name, table);
             }
         } catch (Exception e) {
             throw new IOException("Problems while reading from database directory");
@@ -99,14 +97,14 @@ public class StructuredTableProvider implements TableProvider {
         } catch (Exception e) {
             throw new IOException("cannot create table directory");
         }
-        HybridTable hybrid = oldProvider.getJUnitDir().tables.get(name);
+        MyTable oldTable = (MyTable) oldProvider.getTable(name);
         String typesInString = TypeTransformer.stringFromTypeList(columnTypes);
         File signature = new File(new File(mainDirectory, name), "signature.tsv");
         if (!signature.createNewFile()) {
             throw new IOException("cannot create signature file");
         }
         writeSignature(signature, typesInString);
-        Table table = new StructuredTable(hybrid, columnTypes, name, this);
+        Table table = new StructuredTable(oldTable, columnTypes, this);
         tables.put(name, table);
         signatures.put(name, signature);
         return table;

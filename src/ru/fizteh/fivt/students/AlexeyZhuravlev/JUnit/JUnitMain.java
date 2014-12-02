@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit;
 
+import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.commands.JCommand;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.CommandGetter;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.ExitCommandException;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.InteractiveGetter;
@@ -18,7 +20,7 @@ public class JUnitMain {
         }
         boolean interactive = false;
         try {
-            JUnitDataBaseDir jUnitDbDir = new JUnitDataBaseDir(path);
+            TableProvider jUnitDbDir = new MyTableProvider(path);
             CommandGetter getter;
             if (args.length == 0) {
                 interactive = true;
@@ -30,8 +32,8 @@ public class JUnitMain {
             do {
                 try {
                     String s = getter.nextCommand();
-                    JUnitCommand command = JUnitCommand.fromString(s);
-                    command.execute(jUnitDbDir);
+                    JCommand command = JCommand.fromString(s);
+                    command.execute((MyTableProvider) jUnitDbDir);
                 } catch (ExitCommandException e) {
                     exitStatus = true;
                 } catch (Exception e) {

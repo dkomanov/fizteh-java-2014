@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.AlexeyZhuravlev.storeable;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.HybridTable;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.JUnit.MyTable;
 
 import java.io.IOException;
@@ -19,9 +18,9 @@ public class StructuredTable implements Table {
     List<Class<?>> types;
     StructuredTableProvider provider;
 
-    protected StructuredTable(HybridTable hybridTable, List<Class<?>> passedTypes, String name,
+    protected StructuredTable(MyTable passedTable, List<Class<?>> passedTypes,
                               StructuredTableProvider passedProvider) {
-        table = new MyTable(hybridTable, name);
+        table = passedTable;
         types = passedTypes;
         provider = passedProvider;
     }

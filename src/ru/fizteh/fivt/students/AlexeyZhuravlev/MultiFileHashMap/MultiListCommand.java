@@ -13,7 +13,7 @@ public class MultiListCommand extends Command {
     }
 
     @Override
-    public void executeOnTable(Table table) throws Exception {
+    public void executeOnTable(MultiTable table) throws Exception {
         StringBuilder allKeys = new StringBuilder();
         ListCommand list = new ListCommand();
         for (int i = 0; i < 16; i++) {

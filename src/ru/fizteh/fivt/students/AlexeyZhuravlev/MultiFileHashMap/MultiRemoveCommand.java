@@ -29,7 +29,7 @@ public class MultiRemoveCommand extends Command {
     }
 
     @Override
-    public void executeOnTable(Table table) throws Exception {
+    public void executeOnTable(MultiTable table) throws Exception {
         int hashCode = Math.abs(key.hashCode());
         int dir = hashCode % 16;
         int file = hashCode / 16 % 16;
@@ -39,7 +39,7 @@ public class MultiRemoveCommand extends Command {
         } else {
             DataBase db = table.databases[dir][file];
             remove.execute(db);
-            if (table.getClass() == Table.class) {
+            if (table.getClass() == MultiTable.class) {
                 if (db.recordsNumber() == 0) {
                     File dbFile = new File(db.dbFileName);
                     try {

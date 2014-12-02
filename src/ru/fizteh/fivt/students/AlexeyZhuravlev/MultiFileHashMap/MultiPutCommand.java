@@ -30,12 +30,12 @@ public class MultiPutCommand extends Command {
     }
 
     @Override
-    public void executeOnTable(Table table) throws Exception {
+    public void executeOnTable(MultiTable table) throws Exception {
         int hashCode = Math.abs(key.hashCode());
         int dir = hashCode % 16;
         int file = hashCode / 16 % 16;
         PutCommand put = new PutCommand(key, value);
-        if (table.getClass() == Table.class) {
+        if (table.getClass() == MultiTable.class) {
             if (table.databases[dir][file] == null) {
                 File subDir = new File(table.mainDir, String.valueOf(dir) + ".dir");
                 if (!subDir.exists()) {
