@@ -1,10 +1,15 @@
 package ru.fizteh.fivt.students.deserg.junit.test;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.students.deserg.junit.DbTable;
 import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.junit.DbTableProviderFactory;
+import ru.fizteh.fivt.students.deserg.junit.Shell;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -21,17 +26,25 @@ import static org.junit.Assert.assertTrue;
  */
 public class TableTest {
 
-    String dbName;
+    Path dbPath;
+    DbTableProviderFactory factory = new DbTableProviderFactory();
     DbTableProvider provider;
 
     @Before
     public void init() {
 
-        dbName = "database";
-        Path path = Paths.get("").resolve(dbName);
-        provider = new DbTableProvider(path);
+        dbPath = Paths.get("").resolve(System.getProperty("user.dir"));
+
+        try {
+            dbPath = Files.createTempDirectory(dbPath, "test");
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        provider = (DbTableProvider) factory.create(dbPath.toString());
 
     }
+
 
     @Test
     public void testGetName() {
@@ -52,7 +65,43 @@ public class TableTest {
     @Test
     public void testPut() {
 
+        DbTable table = (DbTable) provider.createTable("justTable");
 
+        String smth = "smth";
+
+        try {
+            table.put(null, smth);
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            table.put("", smth);
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            table.put(smth, null);
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+
+        assertEquals(table.put("key1", "val1"), null);
+        assertEquals(table.put("key2", "val2"), null);
+        table.commit();
+
+        table.remove("key1");
+        assertEquals(table.put("key1", "val1_"), null);
+
+        assertEquals(table.put("key1", "val1__"), "val1_");
+        assertEquals(table.put("key1", "val1"), "val1__");
+
+        assertEquals(table.put("key1", "val1_"), "val1");
 
     }
 
@@ -129,6 +178,13 @@ public class TableTest {
 
         table.rollback();
         assertEquals(table.size(), 2);
+
+    }
+
+    @After
+    public void finish() {
+
+        Shell.delete(dbPath);
 
     }
 

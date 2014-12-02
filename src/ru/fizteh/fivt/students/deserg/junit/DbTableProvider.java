@@ -110,8 +110,12 @@ public class DbTableProvider implements TableProvider {
      * @throws IllegalStateException Если таблицы с указанным названием не существует.
      */
     public void removeTable(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Database \"" + dbPath + "\": removeTable: invalid Table name");
+        if (name == null) {
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": removeTable: null Table name");
+        }
+
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": removeTable: empty Table name");
         }
 
         String fileName = Paths.get("").resolve(name).getFileName().toString();

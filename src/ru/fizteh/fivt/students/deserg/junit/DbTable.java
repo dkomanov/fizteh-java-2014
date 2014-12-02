@@ -48,8 +48,12 @@ public class DbTable implements Table {
     @Override
     public String get(String key) throws IllegalArgumentException {
 
-        if (key == null || key.isEmpty()) {
-            throw new IllegalArgumentException("Table \"" + tableName + "\": get: invalid key");
+        if (key == null) {
+            throw new IllegalArgumentException("Table \"" + tableName + "\": get: null key");
+        }
+
+        if (key.isEmpty()) {
+            throw new IllegalArgumentException("Table \"" + tableName + "\": get: empty key");
         }
 
 
@@ -84,8 +88,16 @@ public class DbTable implements Table {
     @Override
     public String put(String key, String value) {
 
-        if (key == null || value == null || key.isEmpty()) {
-            throw new IllegalArgumentException("Table \"" + tableName + "\": put: invalid key or value");
+        if (key == null) {
+            throw new IllegalArgumentException("Table \"" + tableName + "\": put: null key");
+        }
+
+        if (value == null) {
+            throw new IllegalArgumentException("Table \"" + tableName + "\": put: null value");
+        }
+
+        if (key.isEmpty()) {
+            throw new IllegalArgumentException("Table \"" + tableName + "\": put: empty key");
         }
 
         if (commitedData.containsKey(key)) {
@@ -127,8 +139,12 @@ public class DbTable implements Table {
     @Override
     public String remove(String key) {
 
-        if (key == null || key.isEmpty()) {
-            throw new IllegalArgumentException("Table \"" + tableName + "\": remove: invalid key");
+        if (key == null) {
+            throw new IllegalArgumentException("Table \"" + tableName + "\": remove: null key");
+        }
+
+        if (key.isEmpty()) {
+            throw new IllegalArgumentException("Table \"" + tableName + "\": remove: empty key");
         }
 
         if (addedData.containsKey(key)) {

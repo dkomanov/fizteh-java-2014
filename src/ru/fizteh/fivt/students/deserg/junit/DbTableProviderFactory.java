@@ -22,8 +22,12 @@ public class DbTableProviderFactory implements TableProviderFactory {
      */
     public TableProvider create(String dir) throws IllegalArgumentException {
 
-        if (dir == null || dir.contains("\000")) {
-            throw new IllegalArgumentException("Database \"" + dir + "\": invalid path");
+        if (dir == null) {
+            throw new IllegalArgumentException("Database \"" + dir + "\": null path");
+        }
+
+        if (dir.contains("\000")) {
+            throw new IllegalArgumentException("Database \"" + dir + "\": unacceptable path");
         }
 
         Path path = Paths.get(System.getProperty("user.dir")).resolve(dir);
