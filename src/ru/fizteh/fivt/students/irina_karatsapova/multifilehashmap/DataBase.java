@@ -71,10 +71,10 @@ public class DataBase {
 
     public static void saveInf(File file) throws IOException {
         File inf = file.toPath().resolve("inf.txt").toFile();
-        DataOutputStream outStream = new DataOutputStream(new FileOutputStream(inf));
-        Integer valuesNumber = tables.get(file.getName());
-        outStream.writeInt(valuesNumber);
-        outStream.close();
+        try (DataOutputStream outStream = new DataOutputStream(new FileOutputStream(inf))) {
+            Integer valuesNumber = tables.get(file.getName());
+            outStream.writeInt(valuesNumber);
+        }
     }
 
     public static void increaseValuesNumber(String file) {
