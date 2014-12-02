@@ -31,6 +31,8 @@ public class MultiFileHashMapMain {
                     command.execute(dbDir);
                 } catch (ExceptionExitCommand e) {
                     exitStatus = true;
+                } catch (ExceptionEmptyCommand e) {
+                    // do nothing
                 } catch (Exception e) {
                     if (interactive) {
                         System.err.println(e.getMessage());
@@ -43,30 +45,9 @@ public class MultiFileHashMapMain {
         } catch (UnsupportedEncodingException e) {
             System.out.println("Error: UTF-8 encoding is not supported");
             System.exit(1);
-        } catch (ExceptionTwoSameKeys e) {
-            System.out.println("Two same keys in database file");
-            System.exit(1);
-        } catch (ExceptionCannotCreateNewDatabaseFile e) {
-            System.out.println("Can not create new database file");
-            System.exit(1);
-        } catch (ExceptionMyDirectoryNotEmpty e) {
-            System.out.println("Can not remove table directory. Redundant files");
-            System.exit(1);
-        } catch (ExceptionCannotDeleteDataBaseFile e) {
-           System.out.println(e.message);
-           System.exit(1);
-        } catch (ExceptionFileFromDataBaseIsNotDirectory e) {
-           System.out.println(e.childName + " from databases directory is not a directory");
-           System.exit(1);
-        } catch (ExceptionParentDirectoryIsNotDirectory e) {
-            System.out.println("Specified fizteh.db.dir is not a directory");
-            System.exit(1);
-        } catch (ExceptionCannotCreateDirectory e) {
-            System.out.println("Can not create working directory");
-            System.exit(1);
         } catch (Exception e) {
             System.err.println(e.getMessage());
-            System.exit(2);
+            System.exit(1);
         }
     }
 }

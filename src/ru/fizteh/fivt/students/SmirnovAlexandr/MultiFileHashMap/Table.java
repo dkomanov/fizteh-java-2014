@@ -36,7 +36,7 @@ public class Table {
                         try {
                             dbFile.delete();
                         } catch (SecurityException e) {
-                            throw new ExceptionCannotDeleteDataBaseFile("Can not delete database file");
+                            throw new Exception("Can not delete database file");
                         }
                     }
                 }
@@ -45,18 +45,18 @@ public class Table {
                 try {
                     Files.delete(subDir.toPath());
                 } catch (DirectoryNotEmptyException e) {
-                    throw new ExceptionMyDirectoryNotEmpty();
+                    throw new Exception("Can not remove table directory. Redundant files");
                 } catch (SecurityException e) {
-                    throw new ExceptionCannotDeleteDataBaseFile("Can not delete database subdirectory");
+                    throw new Exception("Can not delete database subdirectory");
                 }
             }
         }
         try {
             Files.delete(mainDir.toPath());
         } catch (DirectoryNotEmptyException e) {
-            throw new ExceptionMyDirectoryNotEmpty();
+            throw new Exception("Can not remove table directory. Redundant files");
         } catch (SecurityException e) {
-            throw new ExceptionCannotDeleteDataBaseFile("Сan not delete main database directory");
+            throw new Exception("Сan not delete main database directory");
         }
     }
 

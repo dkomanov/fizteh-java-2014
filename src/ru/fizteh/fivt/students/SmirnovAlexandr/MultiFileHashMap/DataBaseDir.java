@@ -12,11 +12,11 @@ public class DataBaseDir {
     public DataBaseDir(String path) throws Exception {
         parentDirectory = new File(path);
         tables = new HashMap<>();
-        if (!(parentDirectory.exists()) && !parentDirectory.mkdir()) {
-            throw new ExceptionCannotCreateDirectory();
+        if  (!(parentDirectory.exists()) && !parentDirectory.mkdir()) {
+            throw new Exception("Can not create working directory");
         }
         if (!parentDirectory.isDirectory()) {
-            throw new ExceptionParentDirectoryIsNotDirectory();
+            throw new Exception("Specified fizteh.db.dir is not a directory");
         }
         for (String childName: parentDirectory.list()) {
             File childDirectory = new File(parentDirectory, childName);
@@ -26,7 +26,7 @@ public class DataBaseDir {
             if (childDirectory.isDirectory()) {
                 tables.put(childName, new Table(childDirectory));
             } else {
-                throw new ExceptionFileFromDataBaseIsNotDirectory(childName);
+                throw new Exception(childName + " from databases directory is not a directory");
             }
         }
     }

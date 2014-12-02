@@ -24,7 +24,7 @@ public abstract class Command {
 
     public static Command vocabularyGetter(String s, HashMap<String, Command> commands) throws Exception {
         if (s.length() < 1) {
-            throw new Exception("Empty command");
+            throw new ExceptionEmptyCommand();
         }
         if (s.length() > 4 && s.substring(0, 5).equals("show ")) {
             s = s.replaceFirst(" ", "_");

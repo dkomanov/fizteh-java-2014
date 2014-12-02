@@ -23,7 +23,7 @@ class DbReader implements AutoCloseable {
                 String key = readNext();
                 String value = readNext();
                 if (data.containsKey(key)) {
-                    throw new ExceptionTwoSameKeys();
+                    throw new Exception("Two same keys in database file");
                 }
                 data.put(key, value);
             } catch (EOFException e) {
