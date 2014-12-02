@@ -4,7 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.fizteh.fivt.students.gudkov394.Proxy.*;
+import ru.fizteh.fivt.students.gudkov394.Proxy.LoggingProxyFactoryClass;
+import ru.fizteh.fivt.students.gudkov394.Proxy.ParserXML;
 
 import java.io.IOException;
 import java.io.StringWriter;

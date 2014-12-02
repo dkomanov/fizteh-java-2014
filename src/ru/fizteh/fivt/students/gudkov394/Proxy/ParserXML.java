@@ -1,21 +1,21 @@
 package ru.fizteh.fivt.students.gudkov394.Proxy;
 
 import org.w3c.dom.Document;
-        import org.w3c.dom.Element;
-        import org.xml.sax.InputSource;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
-        import javax.xml.parsers.DocumentBuilder;
-        import javax.xml.parsers.DocumentBuilderFactory;
-        import javax.xml.parsers.ParserConfigurationException;
-        import javax.xml.transform.OutputKeys;
-        import javax.xml.transform.Transformer;
-        import javax.xml.transform.TransformerException;
-        import javax.xml.transform.TransformerFactory;
-        import javax.xml.transform.dom.DOMSource;
-        import javax.xml.transform.stream.StreamResult;
-        import java.io.StringReader;
-        import java.io.StringWriter;
-        import java.util.IdentityHashMap;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.IdentityHashMap;
 
 /**
  * Created by kagudkov on 30.11.14.
@@ -62,7 +62,7 @@ public class ParserXML {
                 for (Object obj : (Iterable) object) {
                     Element value = document.createElement("value");
                     className.appendChild(value);
-                    if (obj == null || obj instanceof  Iterable) {
+                    if (obj == null || obj instanceof Iterable) {
                         value.appendChild(parseObject(obj, map, document));
                     } else {
                         value.appendChild(document.createTextNode(obj.toString()));

@@ -8,13 +8,21 @@ import java.util.List;
 public interface TestInterface {
 
     void emptyArgumentMethod();
+
     void integerArgumentMethod(Integer a);
+
     void listArgumentMethod(List<Object> list);
+
     void stringArgumentsMethod(String str1, String str2);
+
     void exceptionMethod() throws Exception;
+
     void voidMethod();
+
     Integer integerReturningMethod();
+
     Object nullReturningMethod();
+
     List<Object> cyclicListReturningMethod();
 }
 

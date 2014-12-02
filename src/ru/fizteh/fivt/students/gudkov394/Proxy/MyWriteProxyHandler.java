@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.gudkov394.Proxy;
 
 
-
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -26,10 +25,12 @@ public class MyWriteProxyHandler implements InvocationHandler {
 
     private Writer writer;
     private Object implementation;
+
     MyWriteProxyHandler(Writer wr, Object impl) {
         writer = wr;
         implementation = impl;
     }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         StringBuilder stringBuilder = new StringBuilder();

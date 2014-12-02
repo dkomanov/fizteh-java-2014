@@ -10,7 +10,6 @@ import java.util.List;
 public class TestImplementation implements TestInterface {
 
 
-
     @Override
     public void emptyArgumentMethod() {
 
