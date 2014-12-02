@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.sautin1.junit.filemap;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
