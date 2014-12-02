@@ -4,6 +4,7 @@ import org.json.JSONException;
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
 
 import javax.json.*;
+import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.*;
 import java.util.Arrays;
@@ -24,13 +25,10 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
     public class DebugProxy implements InvocationHandler {
         private Writer writer;
         private Object implementation;
-        //private Method[] methodsInObject;
 
         public DebugProxy(Writer writer, Object implementation) {
             this.writer = writer;
             this.implementation = implementation;
-            //Method[] methodsInObject = Object.class.getMethods();
-            //System.out.println("x");
         }
 
         @Override
@@ -56,11 +54,10 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
                 result = method.invoke(implementation, args);
             } catch (InvocationTargetException e) {
                 exceptionThatWillBeThrown = e.getTargetException();
-            } catch (Exception e) {
-                //suppress
+                logObject.add("thrown", exceptionThatWillBeThrown.toString());
             }
 
-            if (method.getReturnType() != void.class) {
+            if (method.getReturnType() != void.class & exceptionThatWillBeThrown == null) {
                 if (result instanceof Iterable) {
                     logObject.add("returnValue",
                             deepIntoItereableArg(Arrays.asList(result), new IdentityHashMap<>()));
@@ -71,9 +68,6 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
                         logObject.addNull("returnValue");
                     }
                 }
-            }
-            if (exceptionThatWillBeThrown != null) {
-                logObject.add("thrown", exceptionThatWillBeThrown.toString());
             }
 
             synchronized (writer) {
@@ -101,7 +95,7 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
                     if (oneArg instanceof Iterable) {
                         IdentityHashMap<Object, Object> copy = new IdentityHashMap<>(processed);
                         copy.put(oneArg, oneArg);
-                        result.add(Json.createArrayBuilder().add(deepIntoItereableArg((Iterable) oneArg, copy)));
+                        result.add(deepIntoItereableArg((Iterable) oneArg, copy));
                     } else {
                         if (oneArg != null) {
                             addNewValueArray(result, oneArg);
