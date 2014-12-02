@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class MultiFileTableTest {
-    static Path root = Paths.get("test/junit-parallel");
+    static Path root = Paths.get("test/junit-proxy");
     static String[] dbNames = {"test-db", "null", "database-01", "*[::]<>|\\?"};
     static List<Class<?>> signature = Arrays.asList(String.class, Integer.class, Long.class,
             Float.class, Double.class, Byte.class, Boolean.class);
@@ -65,7 +65,8 @@ public class MultiFileTableTest {
         Table dummyTable;
 
         dummyProvider = factory.create(root.toString());
-        dummyTable = dummyProvider.createTable(dbNames[0], signature);
+        dummyProvider.createTable(dbNames[0], signature);
+        dummyTable = dummyProvider.getTable(dbNames[0]);
 
         for (int i = 0; i < n; ++i) {
             keys[i] = UUID.randomUUID().toString();

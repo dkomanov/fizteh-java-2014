@@ -16,7 +16,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class MultiFileTableProviderConcurrentTest {
-    static String root = "test/junit-parallel";
+    static String root = "test/junit-proxy";
     static String name = "test-db-provider";
     static List<Class<?>> signature;
 

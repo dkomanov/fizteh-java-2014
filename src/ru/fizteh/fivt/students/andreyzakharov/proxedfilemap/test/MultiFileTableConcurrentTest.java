@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class MultiFileTableConcurrentTest {
-    static String root = "test/junit-parallel";
+    static String root = "test/junit-proxy";
     static String name = "test-db-provider";
     static List<Class<?>> signature;
     static String key = "key";

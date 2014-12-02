@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.andreyzakharov.proxedfilemap;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
-import java.sql.Struct;
 import java.util.List;
 
 public class TableEntry implements Storeable {

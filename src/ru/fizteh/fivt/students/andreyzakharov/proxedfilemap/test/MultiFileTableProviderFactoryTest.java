@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class MultiFileTableProviderFactoryTest {
-    String root = "test/junit-parallel";
+    String root = "test/junit-proxy";
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
