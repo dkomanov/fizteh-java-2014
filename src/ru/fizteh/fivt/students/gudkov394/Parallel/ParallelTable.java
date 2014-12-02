@@ -26,6 +26,7 @@ public class ParallelTable implements Table {
         provider = parallelTableProvider;
         diff = new ThreadLocal<ListDiff>();
         diff.set(new ListDiff(table, lock));
+
     }
 
     @Override
