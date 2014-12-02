@@ -108,7 +108,6 @@ public class TestLoggingfactory {
     @Test
     public void testMethodReturnList() {
         testedLoggedTableProvider.getTableNames();
-        System.out.println(writer);
 
         JSONObject result = new JSONObject(writer.toString());
         assertTrue(result.has("timestamp"));
@@ -122,6 +121,8 @@ public class TestLoggingfactory {
         JSONArray args = result.getJSONArray("arguments");
         assertTrue(args.length() == 0);
         JSONArray returnValue = result.getJSONArray("returnValue");
-        System.out.println(returnValue);
+        assertTrue(returnValue.length() == 2);
+        assertTrue(returnValue.get(0).equals("table1"));
+        assertTrue(returnValue.get(1).equals("table2"));
     }
 }

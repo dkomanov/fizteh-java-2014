@@ -4,10 +4,8 @@ import org.json.JSONException;
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
 
 import javax.json.*;
-import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.*;
-import java.util.Arrays;
 import java.util.IdentityHashMap;
 
 public class RealLogProxyFactory implements LoggingProxyFactory {
@@ -43,7 +41,15 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
                     .add("class", implementation.getClass().getName())
                     .add("method", method.getName());
             if (args != null) {
-                logObject.add("arguments", deepIntoItereableArg(Arrays.asList(args), new IdentityHashMap<>()));
+                JsonArrayBuilder arguments = Json.createArrayBuilder();
+                for (Object oneArg : args) {
+                    if (oneArg instanceof Iterable) {
+                        arguments.add(deepIntoIterableArg((Iterable) oneArg, new IdentityHashMap<>()));
+                    } else {
+                        addNewValueArray(arguments, oneArg);
+                    }
+                }
+                logObject.add("arguments", arguments.build());
             } else {
                 logObject.add("arguments", Json.createArrayBuilder().build());
             }
@@ -59,14 +65,9 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
 
             if (method.getReturnType() != void.class & exceptionThatWillBeThrown == null) {
                 if (result instanceof Iterable) {
-                    logObject.add("returnValue",
-                            deepIntoItereableArg(Arrays.asList(result), new IdentityHashMap<>()));
+                    logObject.add("returnValue", deepIntoIterableArg((Iterable) result, new IdentityHashMap<>()));
                 } else {
-                    if (result != null) {
-                        addNewValueObject(logObject, "returnValue", result);
-                    } else {
-                        logObject.addNull("returnValue");
-                    }
+                    addNewValueObject(logObject, "returnValue", result);
                 }
             }
 
@@ -86,7 +87,8 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
             return result;
         }
 
-        private JsonArray deepIntoItereableArg(Iterable iterable, IdentityHashMap<Object, Object> processed) {
+
+        private JsonArrayBuilder deepIntoIterableArg(Iterable iterable, IdentityHashMap<Object, Object> processed) {
             JsonArrayBuilder result = Json.createArrayBuilder();
             for (Object oneArg : iterable) {
                 if (processed.containsKey(oneArg)) {
@@ -95,7 +97,7 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
                     if (oneArg instanceof Iterable) {
                         IdentityHashMap<Object, Object> copy = new IdentityHashMap<>(processed);
                         copy.put(oneArg, oneArg);
-                        result.add(deepIntoItereableArg((Iterable) oneArg, copy));
+                        result.add(deepIntoIterableArg((Iterable) oneArg, copy));
                     } else {
                         if (oneArg != null) {
                             addNewValueArray(result, oneArg);
@@ -105,12 +107,12 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
                     }
                 }
             }
-            return result.build();
+            return result;
         }
 
         private void addNewValueObject(JsonObjectBuilder logObject, String category, Object value) {
-            if (value.getClass().equals(Integer.class)) {
-                logObject.add(category, (int) value);
+            if (value == null) {
+                logObject.addNull(category);
                 return;
             }
             if (value.getClass().equals(Long.class)) {
@@ -133,10 +135,18 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
                 logObject.add(category, (boolean) value);
                 return;
             }
+            if (value.getClass().equals(Integer.class)) {
+                logObject.add(category, (int) value);
+                return;
+            }
             logObject.add(category, value.toString());
         }
 
         private void addNewValueArray(JsonArrayBuilder logObject, Object value) {
+            if (value == null) {
+                logObject.addNull();
+                return;
+            }
             if (value.getClass().equals(Integer.class)) {
                 logObject.add((int) value);
                 return;
