@@ -20,13 +20,13 @@ import java.util.List;
 public class JUnitTest {
 
     TableProvider provider;
-
+    File folder;
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     @Before
     public void init() throws IOException {
-        File folder = tmpFolder.newFolder();
+        folder = tmpFolder.newFolder();
         provider = new TableProviderFactoryClass().create(folder.getAbsolutePath());
     }
 
@@ -34,6 +34,7 @@ public class JUnitTest {
     public void testTableProviderFactory() throws IOException {
         File folder = tmpFolder.newFolder();
         Assert.assertNotNull(new TableProviderFactoryClass().create(folder.getAbsolutePath()));
+        folder.delete();
         Assert.assertNull(new TableProviderFactoryClass().create(folder.getAbsolutePath()));
         Assert.assertNull(new TableProviderFactoryClass().create(null));
     }
@@ -98,7 +99,7 @@ public class JUnitTest {
     public void testTableGetName() {
         provider.createTable("table1");
         Table table = provider.getTable("table1");
-        Assert.assertEquals(table.getName(), "Test");
+        Assert.assertEquals(table.getName(), folder.getName());
         provider.removeTable("table1");
     }
     @Test
