@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.egor_belikov.multifilehashmap;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
