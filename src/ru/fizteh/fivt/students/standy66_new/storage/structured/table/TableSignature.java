@@ -48,7 +48,7 @@ public class TableSignature {
     public void writeToFile(File signatureFile) throws FileNotFoundException {
         try (PrintWriter printWriter = new PrintWriter(new FileOutputStream(signatureFile, false))) {
             for (Class<?> storedObjectClass : storedObjectClasses) {
-                printWriter.println(ClassUtility.toString(storedObjectClass));
+                printWriter.print(ClassUtility.toString(storedObjectClass) + " ");
             }
         }
     }
