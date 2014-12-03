@@ -22,7 +22,7 @@ public class ShowTablesCommand extends ContextualCommand {
             throw new WrongNumberOfArgumentsException("show must be followed by tables");
         }
         StringDatabase db = (StringDatabase) (getContext().getProvider());
-        getOutputWriter().println(String.format("%-20s%s", "table_name", "row_count"));
+        getOutputWriter().printf("%-20s%s", "table_name", "row_count");
         for (String name : db.listTableNames()) {
             getOutputWriter().printf("%-20s%s%n", name, db.getTable(name).size());
         }
