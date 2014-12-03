@@ -30,17 +30,17 @@ public class CurrentTable implements Table {
     }
 
     public String getHomeDirectory() {
-        return System.getProperty("db.file") + File.separator + getName();
+        return System.getProperty("fizteh.db.dir") + File.separator + getName();
     }
 
     private ArrayList<Pair<CurrentTable, File>> currentChanges = new ArrayList<Pair<CurrentTable, File>>();
 
     void write() {
-        if (System.getProperty("db.file") == null) {
+        if (System.getProperty("fizteh.db.dir") == null) {
             System.err.println("You forgot directory");
             System.exit(4);
         }
-        String newPath = System.getProperty("db.file") + File.separator + getName();
+        String newPath = System.getProperty("fizteh.db.dir") + File.separator + getName();
         File f = new File(newPath);
         currentChanges.add(new Pair<CurrentTable, File>(this, f));
     }
@@ -157,7 +157,7 @@ public class CurrentTable implements Table {
     public void delete() {
         String[] s = new String[]{"remove", "-r", getName()};
         CurrentDirectory cd = new CurrentDirectory();
-        cd.changeCurrentDirectory(System.getProperty("db.file"));
+        cd.changeCurrentDirectory(System.getProperty("fizteh.db.dir"));
         RemoveDirectory removeDirectory = new RemoveDirectory(s, cd);
         System.out.println("Deleted");
     }
