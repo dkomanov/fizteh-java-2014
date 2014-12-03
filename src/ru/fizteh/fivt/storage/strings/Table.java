@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.storage.strings;
 
 import java.util.List;
-
 /**
  * @author Fedor Lavrentyev
  * @author Dmitriy Komanov
@@ -51,7 +50,6 @@ public interface Table {
      * @return Количество ключей в таблице.
      */
     int size();
-
     /**
      * Выполняет фиксацию изменений.
      *
@@ -65,7 +63,6 @@ public interface Table {
      * @return Количество отменённых ключей.
      */
     int rollback();
-
     /**
      * Выводит список ключей таблицы
      *
@@ -73,3 +70,4 @@ public interface Table {
      */
     List<String> list();
 }
+
