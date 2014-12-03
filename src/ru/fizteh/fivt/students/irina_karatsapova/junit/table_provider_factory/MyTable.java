@@ -126,7 +126,10 @@ public class MyTable implements Table {
     void copyKeysLists(List<String>[][] from, List<String>[][] to) {
         for (int dir = 0; dir < 16; dir++) {
             for (int file = 0; file < 16; file++) {
-                to[dir][file] = from[dir][file];
+                to[dir][file].clear();
+                for (String key: from[dir][file]) {
+                    to[dir][file].add(key);
+                }
             }
         }
     }
