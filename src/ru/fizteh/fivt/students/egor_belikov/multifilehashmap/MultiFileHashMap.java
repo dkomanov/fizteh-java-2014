@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.egor_belikov.multifilehashmap;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,7 +13,6 @@ public class MultiFileHashMap {
     private static TreeMap<String, Integer> listOfTables;    
     private static TreeMap<String, String> currentFileMap;
     private static String currentTable;    
-    private static int currentNumberOfElements;
     private static String separator;
 
 
@@ -21,8 +21,8 @@ public class MultiFileHashMap {
         listOfTables = new TreeMap<>();
 
         try {
-            //currentPath = System.getProperty("user.dir") + separator + "db";
-            currentPath = Paths.get(System.getProperty("fizteh.db.dir")).toString();
+            currentPath = System.getProperty("user.dir") + separator + "db";
+            //currentPath = Paths.get(System.getProperty("fizteh.db.dir")).toString();
             File directoryFromCurrentPath = new File(currentPath);
             if (directoryFromCurrentPath.exists() && directoryFromCurrentPath.isDirectory()) {
                 regenerateFileMaps();
@@ -236,7 +236,7 @@ public class MultiFileHashMap {
     private static void use(String[] args) throws Exception {
         if (currentTable != null) {
             putCurrentMapToDirectory();
-            listOfTables.put(currentTable, currentNumberOfElements);
+            listOfTables.put(currentTable, currentFileMap.size());
         }
         File currentFile;
         currentFile = new File(currentPath + separator + args[1]);
@@ -248,7 +248,6 @@ public class MultiFileHashMap {
             currentFileMap = new TreeMap<>();
             getMapFromDirectory(currentFile);
             System.out.println("using " + args[1]);
-            currentNumberOfElements = listOfTables.get(args[1]);
         } else {
             throw new Exception(currentFile.toString() + ": is not a directory");
         }
@@ -256,10 +255,10 @@ public class MultiFileHashMap {
 
     private static void show(String[] args) {
         if (currentTable != null) {
-            listOfTables.put(currentTable, currentNumberOfElements);
+            listOfTables.put(currentTable, currentFileMap.size());
         }
         System.out.println("table_name row_count");
-        listOfTables.entrySet().stream().forEach((table) -> {
+        listOfTables.entrySet().stream().forEach((Map.Entry<String, Integer> table) -> {
             System.out.println(table.getKey() + " " + table.getValue());
         });
     }
@@ -270,7 +269,6 @@ public class MultiFileHashMap {
         String temp = currentFileMap.put(key, value);
         if (temp == null) {
             System.out.println("new");
-            currentNumberOfElements++;
         } else {
             System.out.println("overwrite\n" + temp);
         }
@@ -292,8 +290,6 @@ public class MultiFileHashMap {
             System.out.println("not found");
         } else {
             System.out.println("removed");        
-            currentNumberOfElements--;
-
         }
     }
 
@@ -305,17 +301,15 @@ public class MultiFileHashMap {
         System.out.println();
     }
 
-    private static void deleteDirectory(File currentFile) {
-        for (File i : currentFile.listFiles()) {
-            deleteDirectory(i);
-        }
-        if (!currentFile.delete()) {
-            try {
-                throw new Exception("can't delete");
-            } catch (Exception exception) {
-                Logger.getLogger(MultiFileHashMap.class.getName()).log(Level.SEVERE, null, exception);
+    public static void deleteDirectory(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i=0; i<children.length; i++) {
+                File f = new File(dir, children[i]);
+                deleteDirectory(f);
             }
         }
+        dir.delete();
     }
     private static void putCurrentMapToDirectory() throws Exception {
         String stringKey;
