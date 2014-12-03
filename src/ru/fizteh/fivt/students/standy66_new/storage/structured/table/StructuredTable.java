@@ -33,6 +33,10 @@ public class StructuredTable implements Table {
         }
     }
 
+    public TableSignature getTableSignature() {
+        return tableSignature;
+    }
+
     public StringTable getBackendTable() {
         return backendTable;
     }
