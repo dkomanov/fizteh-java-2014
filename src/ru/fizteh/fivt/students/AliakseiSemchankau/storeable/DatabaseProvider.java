@@ -2,16 +2,13 @@
 
 import ru.fizteh.fivt.storage.structured.*;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
  /**
  * Created by Aliaksei Semchankau on 09.11.2014.
@@ -166,7 +163,7 @@ public class DatabaseProvider implements TableProvider {
      public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
          List<Object> objectValues = new ArrayList<>(values);
          if (objectValues.size() != table.getColumnsCount()) {
-             throw new IndexOutOfBoundsException("size of values isn't equal to size of signature of " + table.getName());
+             throw new IndexOutOfBoundsException("values.size != signature.size of " + table.getName());
          }
          for (int i = 0; i < values.size(); ++i) {
              if (objectValues.get(i) == null) {
@@ -177,6 +174,15 @@ public class DatabaseProvider implements TableProvider {
              }
          }
          return new DatabaseStoreable(objectValues);
+     }
+
+     @Override
+     public List<String> getTableNames() {
+         List<String> tableNames = new LinkedList<>();
+         for (String curName : referenceToTableInfo.keySet()) {
+             tableNames.add(curName);
+         }
+         return tableNames;
      }
 
  }

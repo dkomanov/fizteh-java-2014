@@ -1,8 +1,8 @@
 package ru.fizteh.fivt.students.AliakseiSemchankau.storeable;
 
-import com.sun.org.apache.xerces.internal.impl.dv.DatatypeValidator;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
@@ -18,11 +18,16 @@ public class TestDatabaseProvider {
     public DatabaseFactory dFactory;
     public DatabaseProvider dProvider;
 
+    TemporaryFolder tmpFolder;
+    String nameFolder;
+
     @Before
     public void initialization() {
+        tmpFolder = new TemporaryFolder();
+        nameFolder = tmpFolder.toString();
         try {
             dFactory = new DatabaseFactory();
-            dProvider = dFactory.create("C:\\JavaTests\\DatabaseForTests");
+            dProvider = dFactory.create(nameFolder);
         } catch (Exception exc) {
             assertTrue(false);
         }
@@ -230,4 +235,32 @@ public class TestDatabaseProvider {
 
     }
 
+    @Test
+    public void testGetTableNames() throws Exception {
+        List<Class<?>> listToNewTable = new LinkedList<>();
+        listToNewTable.add(Integer.class);
+        listToNewTable.add(String.class);
+        listToNewTable.add(Float.class);
+
+        for (int i = 0; i < 10; ++i) {
+            dProvider.createTable(Integer.toString(i), listToNewTable);
+        }
+
+        List<String> tableList = dProvider.getTableNames();
+
+        assertEquals(tableList.size(), 10);
+
+        for (String curTable : tableList) {
+            Boolean allRight = false;
+            for (int i = 0; i < 10; ++i) {
+                if (Integer.toString(i).equals(curTable)) {
+                    allRight = true;
+                }
+            }
+            assertEquals(allRight, true);
+        }
+        for (int i = 0; i < 10; ++i) {
+            dProvider.removeTable(Integer.toString(i));
+        }
+    }
 }
