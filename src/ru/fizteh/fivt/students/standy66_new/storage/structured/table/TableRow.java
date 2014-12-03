@@ -33,10 +33,17 @@ public class TableRow implements Storeable {
     }
 
     public static TableRow deserialize(TableSignature signature, String serializedValue) throws ParseException {
-        //TODO: test this bullshit
-        serializedValue = serializedValue.replaceAll("[\\]\\s]+$|^[\\[\\s]+", "");
-        //TODO: string can contain ","
-        List<String> tokens = Stream.of(serializedValue.split(","))
+        serializedValue = serializedValue.trim();
+        if (!serializedValue.startsWith("[")) {
+            throw new ParseException(serializedValue + " should start with [", 0);
+        }
+
+        if (!serializedValue.endsWith("]")) {
+            throw new ParseException(serializedValue + " should end with ]", serializedValue.length() - 1);
+        }
+        serializedValue = serializedValue.substring(1, serializedValue.length() - 1).trim();
+
+        List<String> tokens = Stream.of(serializedValue.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"))
                 .map(s -> s.trim())
                 .collect(Collectors.toList());
         if (tokens.size() != signature.size()) {

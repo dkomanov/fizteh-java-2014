@@ -34,7 +34,7 @@ public class Task5Runner {
             System.err.println("Couldn't create TableProvider");
             System.exit(-1);
         }
-        PrintWriter systemOutWriter = new PrintWriter(System.out);
+        PrintWriter systemOutWriter = new PrintWriter(System.out, true);
         StorageCommandFactory commandFactory = new ExtendedCommandFactory(systemOutWriter, provider);
         Map<String, Command> availableCommands = commandFactory.getCommandsMap();
         availableCommands.put("exit", new ExitCommand(systemOutWriter));

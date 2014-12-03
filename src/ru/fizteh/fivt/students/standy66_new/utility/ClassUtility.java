@@ -21,7 +21,7 @@ public class ClassUtility {
             case "String":
                 return String.class;
             default:
-                throw new IllegalArgumentException("className is not supported");
+                throw new IllegalArgumentException(String.format("class %s is not supported", className));
         }
     }
 
@@ -41,7 +41,7 @@ public class ClassUtility {
         } else if (cls == String.class) {
             return "String";
         } else {
-            throw new IllegalArgumentException("class is not supported");
+            throw new IllegalArgumentException(String.format("class %s is not supported", cls.getName()));
         }
     }
 }

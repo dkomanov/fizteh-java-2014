@@ -12,12 +12,19 @@ import java.io.PrintWriter;
  */
 public class StructuredPut extends ExtendedContextualCommand {
     protected StructuredPut(PrintWriter writer, ExtendedContext context) {
-        super(writer, (x -> x == 3), context);
+        super(writer, (x -> x >= 3), context);
     }
 
     @Override
     public void execute(String... arguments) throws Exception {
         super.execute(arguments);
+        StringBuilder mergedArguments = new StringBuilder();
+        for (int i = 2; i < arguments.length; i++) {
+            mergedArguments.append(arguments[i]);
+            if (i != arguments.length - 1) {
+                mergedArguments.append(' ');
+            }
+        }
 
         StructuredTable current = getContext().getCurrentStructuredTable();
         StructuredDatabase database = getContext().getStructuredDatabase();
@@ -25,7 +32,7 @@ public class StructuredPut extends ExtendedContextualCommand {
             throw new NoTableSelectedException();
         }
         Storeable currentValue = current.get(arguments[1]);
-        Storeable newValue = database.deserialize(current, arguments[2]);
+        Storeable newValue = database.deserialize(current, mergedArguments.toString());
         if (currentValue == null) {
             getOutputWriter().println("new");
         } else {
