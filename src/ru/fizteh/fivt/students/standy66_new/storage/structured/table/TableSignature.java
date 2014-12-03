@@ -47,10 +47,21 @@ public class TableSignature {
 
     public void writeToFile(File signatureFile) throws FileNotFoundException {
         try (PrintWriter printWriter = new PrintWriter(new FileOutputStream(signatureFile, false))) {
-            for (Class<?> storedObjectClass : storedObjectClasses) {
-                printWriter.print(ClassUtility.toString(storedObjectClass) + " ");
+            printWriter.write(toString());
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < storedObjectClasses.length; i++) {
+            Class<?> storedClass = storedObjectClasses[i];
+            stringBuilder.append(ClassUtility.toString(storedClass));
+            if (i != storedObjectClasses.length - 1) {
+                stringBuilder.append(' ');
             }
         }
+        return stringBuilder.toString();
     }
 
     public Class<?> getClassAt(int columnIndex) throws IndexOutOfBoundsException {
