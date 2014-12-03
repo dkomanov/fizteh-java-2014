@@ -53,7 +53,7 @@ public class TestImplementation implements TestInterface {
 
     @Override
     public List<Object> cyclicListReturningMethod() {
-        List<Object> res = (List<Object>) new ArrayList<>();
+        List<Object> res = new ArrayList<>();
         res.add(42);
         res.add(res);
         res.add(res);

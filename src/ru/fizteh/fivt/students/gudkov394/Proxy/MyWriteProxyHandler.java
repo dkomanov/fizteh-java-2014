@@ -34,8 +34,7 @@ public class MyWriteProxyHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<invoke timestamp=\"" + System.currentTimeMillis() + "\" class=\""
-                + implementation.getClass().getCanonicalName() + "\" name=\"" + method.getName() + "\">");
+        stringBuilder.append("<invoke timestamp=\"").append(System.currentTimeMillis()).append("\" class=\"").append(implementation.getClass().getCanonicalName()).append("\" name=\"").append(method.getName()).append("\">");
         if (args != null && args.length > 0) {
             stringBuilder.append((new ParserXML()).parse(args));
         } else {
@@ -63,11 +62,11 @@ public class MyWriteProxyHandler implements InvocationHandler {
                 } else {
                     res = result.toString();
                 }
-                stringBuilder.append("<return>" + res + "</return>");
+                stringBuilder.append("<return>").append(res).append("</return>");
             }
             return result;
         } catch (InvocationTargetException e) {
-            stringBuilder.append("<thrown>" + e.getTargetException() + "</thrown>");
+            stringBuilder.append("<thrown>").append(e.getTargetException()).append("</thrown>");
             throw e;
         } finally {
             stringBuilder.append("</invoke>");

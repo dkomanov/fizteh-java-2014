@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNotNull;
 
 public class TestFactory {
     private TableProviderFactoryWithCloseAndToString factory;
-    private String dbDirPath;
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
@@ -25,7 +24,7 @@ public class TestFactory {
     public void before() throws IOException {
         tmpFolder.create();
         factory = new TableProviderFactoryWithCloseAndToString();
-        dbDirPath = tmpFolder.newFolder("test").getAbsolutePath();
+        String dbDirPath = tmpFolder.newFolder("test").getAbsolutePath();
     }
 
     @After

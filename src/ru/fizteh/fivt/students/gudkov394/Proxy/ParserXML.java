@@ -43,7 +43,7 @@ public class ParserXML {
             transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
             return stringWriter.toString();
         } catch (ParserConfigurationException | TransformerException e) {
-            System.err.println("Can't parse XML");
+            System.err.println("I can't parse XML");
             return null;
         }
     }
@@ -51,8 +51,7 @@ public class ParserXML {
     public Element parseObject(Object object, IdentityHashMap<Object, Integer> map, Document document)
             throws ParserConfigurationException, TransformerException {
         if (object == null) {
-            Element nullElement = document.createElement("null");
-            return nullElement;
+            return document.createElement("null");
         } else {
             Element className = document.createElement(object.getClass().getSimpleName());
             if (map.containsKey(object)) {
@@ -76,7 +75,6 @@ public class ParserXML {
 
     public Document parseString(String s) throws Exception {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document document = builder.parse(new InputSource(new StringReader(s)));
-        return document;
+        return builder.parse(new InputSource(new StringReader(s)));
     }
 }
