@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.AliakseiSemchankau.junit;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.Table;
 
 import java.util.*;
@@ -13,12 +14,20 @@ import static org.junit.Assert.*;
  */
 public class DatabaseTableTest {
 
-    private static DatabaseFactory dFactory = new DatabaseFactory();
+    private static DatabaseFactory dFactory;
     private static DatabaseProvider dProvider;
+
+    TemporaryFolder folder;
+    String folderName;
 
     @Before
     public void initialize() {
-        dProvider = dFactory.create("C:\\JavaTests\\newTestingDatabase");
+
+        folder = new TemporaryFolder();
+        folderName = folder.toString();
+        dFactory = new DatabaseFactory();
+        dProvider = dFactory.create(folderName);
+        //dProvider = dFactory.create("C:\\JavaTests\\newTestingDatabase");
 
     }
 
