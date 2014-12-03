@@ -1,9 +1,7 @@
 package ru.fizteh.fivt.students.egor_belikov.multifilehashmap;
 
 import java.io.*;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -304,7 +302,7 @@ public class MultiFileHashMap {
     public static void deleteDirectory(File dir) {
         if (dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i=0; i<children.length; i++) {
+            for (int i = 0; i < children.length; i++) {
                 File f = new File(dir, children[i]);
                 deleteDirectory(f);
             }
