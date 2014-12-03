@@ -1,12 +1,12 @@
 package ru.fizteh.fivt.students.AliakseiSemchankau.junit;
 
-import org.junit.After;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.*;
 
-import java.nio.file.Files;
+
 
 import static org.junit.Assert.*;
 
@@ -30,7 +30,7 @@ public class DatabaseProviderTest {
         dProvider = dFactory.create("C:\\JavaTests\\newTestingDatabase");*/
     }
 
-   @Test
+    @Test
     public void testGetTable() {
         folder = new TemporaryFolder();
         folderName = folder.toString();
