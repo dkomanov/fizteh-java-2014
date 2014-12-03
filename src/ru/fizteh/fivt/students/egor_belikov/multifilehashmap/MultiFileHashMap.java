@@ -19,8 +19,8 @@ public class MultiFileHashMap {
         listOfTables = new TreeMap<>();
 
         try {
-            currentPath = System.getProperty("user.dir") + separator + "db";
-            //currentPath = Paths.get(System.getProperty("fizteh.db.dir")).toString();
+            //currentPath = System.getProperty("user.dir") + separator + "db";
+            currentPath = Paths.get(System.getProperty("fizteh.db.dir")).toString();
             File directoryFromCurrentPath = new File(currentPath);
             if (directoryFromCurrentPath.exists() && directoryFromCurrentPath.isDirectory()) {
                 regenerateFileMaps();
