@@ -14,12 +14,12 @@ import java.util.Collection;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(Parameterized.class)
-public class StructuredDatabaseFactoryTest {
+public class TableProviderFactoryTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     private TableProviderFactory factory;
 
-    public StructuredDatabaseFactoryTest(TableProviderFactory tableProviderFactory) {
+    public TableProviderFactoryTest(TableProviderFactory tableProviderFactory) {
         factory = tableProviderFactory;
     }
 

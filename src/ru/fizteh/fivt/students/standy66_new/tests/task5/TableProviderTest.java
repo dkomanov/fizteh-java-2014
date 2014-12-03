@@ -18,14 +18,14 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class StructuredDatabaseTest {
+public class TableProviderTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     private TableProviderFactory factory;
     private TableProvider db;
     private File testDirectory;
 
-    public StructuredDatabaseTest(TableProviderFactory factory) {
+    public TableProviderTest(TableProviderFactory factory) {
         this.factory = factory;
     }
 
