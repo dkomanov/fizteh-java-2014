@@ -42,6 +42,10 @@ public class StructuredTable implements Table, AutoCloseable {
         }
     }
 
+    public TableSignature getTableSignature() {
+        return tableSignature;
+    }
+
     public StringTable getBackendTable() {
         assertNotClosed();
         return backendTable;

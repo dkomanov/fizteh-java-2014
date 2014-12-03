@@ -42,6 +42,14 @@ public class StructuredDatabase implements TableProvider, AutoCloseable {
     @Override
     public synchronized StructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
         assertNotClosed();
+        if (columnTypes == null) {
+            throw new IllegalArgumentException("columntTypes is null");
+        }
+        for (Class<?> cls : columnTypes) {
+            if (cls == null) {
+                throw new IllegalArgumentException("one of the types in columnTypes is null");
+            }
+        }
         StringTable table = backendDatabase.createTable(name);
         if (table == null) {
             return null;

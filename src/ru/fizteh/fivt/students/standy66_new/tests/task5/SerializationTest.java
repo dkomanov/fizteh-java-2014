@@ -65,6 +65,11 @@ public class SerializationTest {
                         new Object[]{"\"][", null},
                         "[\"\"][\", null]"
                 },
+                {
+                        new TableSignature(String.class, String.class),
+                        new Object[]{"],[", ",,,"},
+                        "[\"],[\", \",,,\"]"
+                }
 
         });
 
