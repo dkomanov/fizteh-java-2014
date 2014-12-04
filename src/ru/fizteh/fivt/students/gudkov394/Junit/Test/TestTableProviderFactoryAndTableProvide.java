@@ -18,6 +18,7 @@ import static java.nio.file.Files.createTempDirectory;
  */
 public class TestTableProviderFactoryAndTableProvide {
     TableProvider provider;
+
     TableProviderFactory factory;
 
     @Before
