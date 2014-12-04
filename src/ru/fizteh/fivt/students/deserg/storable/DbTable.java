@@ -339,7 +339,7 @@ public class DbTable implements Table {
                         throw new MyIOException("Wrong key file");
                     }
 
-                    put(keyStr, valueStr);
+                    committedData.put(keyStr, valueStr);
                 }
 
             } catch (IOException e) {

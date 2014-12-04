@@ -30,7 +30,7 @@ public class Serializer {
             throw new ParseException("Json format error", 0);
         }
 
-        String[] segments = value.substring(1, value.length() - 1).split(",\\s+");
+        String[] segments = value.substring(1, value.length() - 1).split(",\\s*");
         if (segments.length != table.getColumnsCount()) {
             throw new ParseException("invalid number of columns", 0);
         }
