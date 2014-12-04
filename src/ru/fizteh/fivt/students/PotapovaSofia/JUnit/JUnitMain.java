@@ -99,9 +99,10 @@ public class JUnitMain {
                         Table currentTable = state.getUsedTable();
                         if (currentTable != null) {
                             int commitCount = 0;
+                            //commitCount = currentTable.commit();
                             try {
                                 commitCount = currentTable.commit();
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 System.out.println(e.getMessage());
                                 System.exit(1);
                             }
@@ -193,10 +194,14 @@ public class JUnitMain {
         dbInterpreter.run(args);
     }
     public static void exit(TableState state) throws StopInterpretationException {
-        TableProvider tableProvider = state.getTableProvider();
-        DbTable usedTable = (DbTable) state.getUsedTable();
-        if (usedTable != null && (usedTable.getDiffCount() > 0)) {
-            System.out.println(usedTable.getDiffCount() + " unsaved changes");
+        if (state != null) {
+            TableProvider tableProvider = state.getTableProvider();
+            DbTable usedTable = (DbTable) state.getUsedTable();
+            if (usedTable != null && (usedTable.getDiffCount() > 0)) {
+                System.out.println(usedTable.getDiffCount() + " unsaved changes");
+            } else {
+                throw new StopInterpretationException();
+            }
         } else {
             throw new StopInterpretationException();
         }

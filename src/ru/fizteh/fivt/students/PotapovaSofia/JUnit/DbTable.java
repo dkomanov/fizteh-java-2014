@@ -36,9 +36,7 @@ public class DbTable implements Table {
         try {
             readFromDisk();
         } catch (IOException e) {
-            //System.err.println("Error reading table " + tableName);
-            //System.exit(1);
-            throw new RuntimeException("Error reading table '" + tableName);
+            throw new RuntimeException("Error reading table " + tableName + e.getMessage());
         }
     }
 
@@ -128,7 +126,7 @@ public class DbTable implements Table {
     }
 
     @Override
-    public int commit() {
+    public int commit() throws RuntimeException {
         int commitCount = diff.size();
         for (Map.Entry<String, ValueWrapper> f : diff.entrySet()) {
             ValueWrapper valueWrapper = f.getValue();
@@ -180,22 +178,32 @@ public class DbTable implements Table {
 
     public void readFromDisk() throws IOException {
         state = new HashMap<>();
-        for (int dir = 0; dir < DIR_COUNT; ++dir) {
-            for (int file = 0; file < FILE_COUNT; ++file) {
-                Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
-                if (Files.exists(filePath)) {
-                    DataInputStream in = new DataInputStream(Files.newInputStream(filePath));
-                    while (true) {
-                        try {
-                            String key = readWord(in);
-                            String value = readWord(in);
-                            state.put(key, value);
-                        } catch (EOFException e) {
-                            break;
+        try {
+            for (int dir = 0; dir < DIR_COUNT; ++dir) {
+                for (int file = 0; file < FILE_COUNT; ++file) {
+                    Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
+                    if (Files.exists(filePath)) {
+                        DataInputStream in = new DataInputStream(Files.newInputStream(filePath));
+                        while (true) {
+                            try {
+                                String key = readWord(in);
+                                String value = readWord(in);
+                                state.put(key, value);
+                            } catch (EOFException e) {
+                                break;
+                            }
                         }
                     }
                 }
             }
+        } catch (UnsupportedEncodingException e) {
+            throw new IOException("Key or value can't be encoded to " + CODING, e);
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Key is in a wrong file or directory", e);
+        } catch (EOFException e) {
+            throw new IOException("File breaks unexpectedly", e);
+        } catch (IOException e) {
+            throw new IOException("Unable read from file", e);
         }
     }
 
