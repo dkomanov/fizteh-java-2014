@@ -15,12 +15,15 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by andrew on 07.11.14.
  */
 public class StructuredDatabase implements TableProvider {
     private StringDatabase backendDatabase;
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public StructuredDatabase(File databaseFile) {
         StringDatabaseFactory stringDatabaseFactory = new StringDatabaseFactory();
@@ -32,12 +35,17 @@ public class StructuredDatabase implements TableProvider {
     }
 
     @Override
-    public synchronized StructuredTable getTable(String name) {
-        return wrap(backendDatabase.getTable(name));
+    public StructuredTable getTable(String name) {
+        lock.readLock().lock();
+        try {
+            return wrap(backendDatabase.getTable(name));
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
-    public synchronized StructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
+    public StructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
         if (columnTypes == null) {
             throw new IllegalArgumentException("columntTypes is null");
         }
@@ -49,19 +57,29 @@ public class StructuredDatabase implements TableProvider {
         if (columnTypes.size() == 0) {
             throw new IllegalArgumentException("empty type list");
         }
-        StringTable table = backendDatabase.createTable(name);
-        if (table == null) {
-            return null;
+        lock.writeLock().lock();
+        try {
+            StringTable table = backendDatabase.createTable(name);
+            if (table == null) {
+                return null;
+            }
+            TableSignature tableSignature = new TableSignature(columnTypes.toArray(new Class<?>[columnTypes.size()]));
+            File signatureFile = new File(table.getFile(), "signature.tsv");
+            tableSignature.writeToFile(signatureFile);
+            return wrap(table);
+        } finally {
+            lock.writeLock().unlock();
         }
-        TableSignature tableSignature = new TableSignature(columnTypes.toArray(new Class<?>[columnTypes.size()]));
-        File signatureFile = new File(table.getFile(), "signature.tsv");
-        tableSignature.writeToFile(signatureFile);
-        return wrap(table);
     }
 
     @Override
-    public synchronized void removeTable(String name) throws IOException {
-        backendDatabase.removeTable(name);
+    public void removeTable(String name) throws IOException {
+        lock.writeLock().lock();
+        try {
+            backendDatabase.removeTable(name);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -95,7 +113,12 @@ public class StructuredDatabase implements TableProvider {
 
     @Override
     public List<String> getTableNames() {
-        return backendDatabase.listTableNames();
+        lock.readLock().lock();
+        try {
+            return backendDatabase.listTableNames();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     private StructuredTable wrap(ru.fizteh.fivt.storage.strings.Table table) {

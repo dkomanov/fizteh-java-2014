@@ -11,14 +11,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by andrew on 07.11.14.
  */
 public class StructuredTable implements Table {
-    private StringTable backendTable;
-    private StructuredDatabase database;
-    private TableSignature tableSignature;
+    private final StringTable backendTable;
+    private final StructuredDatabase database;
+    private final TableSignature tableSignature;
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 
     public StructuredTable(StringTable backendTable, StructuredDatabase database) {
@@ -42,32 +45,57 @@ public class StructuredTable implements Table {
     }
 
     @Override
-    public synchronized TableRow put(String key, Storeable value) throws ColumnFormatException {
-        TableRow oldValue = get(key);
-        backendTable.put(key, TableRow.fromStoreable(tableSignature, value).serialize());
-        return oldValue;
+    public TableRow put(String key, Storeable value) throws ColumnFormatException {
+        lock.writeLock().lock();
+        try {
+            TableRow oldValue = get(key);
+            backendTable.put(key, TableRow.fromStoreable(tableSignature, value).serialize());
+            return oldValue;
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
-    public synchronized TableRow remove(String key) {
-        TableRow value = get(key);
-        backendTable.remove(key);
-        return value;
+    public TableRow remove(String key) {
+        lock.writeLock().lock();
+        try {
+            TableRow value = get(key);
+            backendTable.remove(key);
+            return value;
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public int size() {
-        return backendTable.size();
+        lock.readLock().lock();
+        try {
+            return backendTable.size();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public int commit() throws IOException {
-        return backendTable.commit();
+        lock.writeLock().lock();
+        try {
+            return backendTable.commit();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public int rollback() {
-        return backendTable.rollback();
+        lock.writeLock().lock();
+        try {
+            return backendTable.rollback();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -87,24 +115,39 @@ public class StructuredTable implements Table {
 
     @Override
     public List<String> list() {
-        return backendTable.list();
+        lock.readLock().lock();
+        try {
+            return backendTable.list();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public int getNumberOfUncommittedChanges() {
-        return backendTable.unsavedChangesCount();
+        lock.readLock().lock();
+        try {
+            return backendTable.unsavedChangesCount();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
-    public synchronized TableRow get(String key) {
-        String value = backendTable.get(key);
-        if (value == null) {
-            return null;
-        }
+    public TableRow get(String key) {
+        lock.readLock().lock();
         try {
-            return database.deserialize(this, value);
-        } catch (ParseException e) {
-            throw new RuntimeException("ParseException occurred", e);
+            String value = backendTable.get(key);
+            if (value == null) {
+                return null;
+            }
+            try {
+                return database.deserialize(this, value);
+            } catch (ParseException e) {
+                throw new RuntimeException("ParseException occurred", e);
+            }
+        } finally {
+            lock.readLock().unlock();
         }
     }
 }
