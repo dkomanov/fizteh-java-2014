@@ -24,10 +24,10 @@ public class DbCreate implements Command {
             String tableName = args.get(1);
             String typeString = "";
             for (int i = 2; i < args.size(); i++) {
-                typeString += args.get(i);
+                typeString += args.get(i) + " ";
             }
 
-            String[] types = typeString.split(" ");
+            String[] types = typeString.split("\\s+");
             List<Class<?>> signature = Serializer.makeSignatureFromStrings(types);
 
             try {
