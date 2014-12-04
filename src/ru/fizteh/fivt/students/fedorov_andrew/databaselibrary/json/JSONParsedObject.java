@@ -15,7 +15,7 @@ import java.util.Map;
  * <li>{@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.json.JSONParsedObject}</li>
  * </ul>
  */
-interface JSONParsedObject {
+public interface JSONParsedObject {
     /**
      * Set some field.
      * @param name
