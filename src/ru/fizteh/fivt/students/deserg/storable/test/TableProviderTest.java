@@ -1,11 +1,12 @@
 package ru.fizteh.fivt.students.deserg.storable.test;
 
+import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
 import ru.fizteh.fivt.students.deserg.storable.DbTableProviderFactory;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -15,21 +16,65 @@ import static org.junit.Assert.*;
 public class TableProviderTest {
 
     DbTableProviderFactory factory = new DbTableProviderFactory();
+    List<Class<?>> signature = new LinkedList<>();
+
+    @Before
+    public void init() {
+        signature.add(Integer.class);
+        signature.add(String.class);
+    }
 
     @Test
     public void testCreateTable() {
 
         DbTableProvider provider = (DbTableProvider) factory.create("db");
 
+        List<Class<?>> otherSignature = new LinkedList<>();
+        otherSignature.add(Integer.class);
+
         try {
-            provider.createTable(null);
+            provider.createTable(null, otherSignature);
             assertTrue(false);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
 
-        assertNotNull(provider.createTable("Moscow"));
-        assertNull(provider.createTable("Moscow"));
+        try {
+            provider.createTable("", otherSignature);
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            provider.createTable("name", null);
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+
+        try {
+            provider.createTable("name\000", otherSignature);
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            assertNotNull(provider.createTable("Moscow", otherSignature));
+            assertNull(provider.createTable("Moscow", otherSignature));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        otherSignature.add(HashMap.class);
+        try {
+            provider.createTable("name", otherSignature);
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
 
     }
 
@@ -46,7 +91,21 @@ public class TableProviderTest {
         }
 
         try {
+            provider.removeTable("");
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
             provider.removeTable("NonExistingTableName");
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            provider.removeTable("Nam\000e");
             assertTrue(false);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -66,8 +125,27 @@ public class TableProviderTest {
             System.out.println(ex.getMessage());
         }
 
+        try {
+            provider.getTable("");
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            provider.getTable("name\000");
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
         String name = "Table1";
-        provider.createTable(name);
+        try {
+            provider.createTable(name, signature);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
         assertNotNull(provider.getTable(name));
     }
 
@@ -76,10 +154,15 @@ public class TableProviderTest {
 
         DbTableProvider provider = (DbTableProvider) factory.create("db");
         ArrayList<String> names = new ArrayList<>();
+
         int size = 100;
         for (int i = 0; i < size; i++) {
             String name = UUID.randomUUID().toString();
-            provider.createTable(name);
+            try {
+                provider.createTable(name, signature);
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
             names.add(name);
         }
 

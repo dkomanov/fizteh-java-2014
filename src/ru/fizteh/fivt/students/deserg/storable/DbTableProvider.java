@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.deserg.storable;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
@@ -101,7 +102,11 @@ public class DbTableProvider implements TableProvider {
         }
 
         if (name.isEmpty()) {
-            throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable:  table name");
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable: empty table name");
+        }
+
+        if (!checkSignature(columnTypes)) {
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable: invalid signature");
         }
 
         String fileName = Paths.get("").resolve(name).getFileName().toString();
@@ -114,7 +119,7 @@ public class DbTableProvider implements TableProvider {
             return null;
         } else {
 
-            DbTable table = new DbTable(dbPath.resolve(name), (ArrayList<Class<?>>) columnTypes);
+            DbTable table = new DbTable(dbPath.resolve(name), columnTypes);
             tables.put(name, table);
             removedTables.remove(name);
             return table;
@@ -261,8 +266,28 @@ public class DbTableProvider implements TableProvider {
 
     }
 
-    public Path getDbPath() {
-        return dbPath;
+    private boolean checkSignature(List<Class<?>> signature) {
+
+        if (signature == null) {
+            return false;
+        }
+
+        Set<Class<?>> set = new HashSet<>();
+        set.add(Integer.class);
+        set.add(Long.class);
+        set.add(Byte.class);
+        set.add(Float.class);
+        set.add(Double.class);
+        set.add(Boolean.class);
+        set.add(String.class);
+
+        for (Class<?> type: signature) {
+            if (!set.contains(type)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 

@@ -3,10 +3,9 @@ package ru.fizteh.fivt.students.deserg.storable.test;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.deserg.storable.DbTable;
-import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
-import ru.fizteh.fivt.students.deserg.storable.DbTableProviderFactory;
-import ru.fizteh.fivt.students.deserg.storable.Shell;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.deserg.storable.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,6 +26,8 @@ public class TableTest {
     Path dbPath;
     DbTableProviderFactory factory = new DbTableProviderFactory();
     DbTableProvider provider;
+    List<Class<?>> signature = new LinkedList<>();
+
 
     @Before
     public void init() {
@@ -41,6 +42,8 @@ public class TableTest {
 
         provider = (DbTableProvider) factory.create(dbPath.toString());
 
+        signature.add(Integer.class);
+        signature.add(String.class);
     }
 
 
@@ -50,7 +53,7 @@ public class TableTest {
 
         try {
             String name = "ABC";
-            DbTable table = (DbTable) provider.createTable(name);
+            DbTable table = (DbTable) provider.createTable(name, signature);
             assertEquals(name, table.getName());
 
         } catch (Exception ex) {
@@ -63,43 +66,63 @@ public class TableTest {
     @Test
     public void testPut() {
 
-        DbTable table = (DbTable) provider.createTable("justTable");
-
-        String smth = "smth";
+        DbTable table;
 
         try {
-            table.put(null, smth);
-            assertTrue(false);
-        } catch (IllegalArgumentException ex) {
+
+            Storeable smth = new TableRow(signature);
+            smth.setColumnAt(0, 140);
+            smth.setColumnAt(1, "dzcx");
+            table = (DbTable) provider.createTable("justTable", signature);
+            try {
+                table.put(null, smth);
+                assertTrue(false);
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            try {
+                table.put("", smth);
+                assertTrue(false);
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            try {
+                table.put("someKey", null);
+                assertTrue(false);
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            Storeable val1 = new TableRow(signature);
+            val1.setColumnAt(0, 123);
+
+            Storeable val2 = new TableRow(signature);
+            val1.setColumnAt(0, 345);
+
+            Storeable val3 = new TableRow(signature);
+            val1.setColumnAt(0, 456);
+
+
+            assertEquals(table.put("key1", val1), null);
+            assertEquals(table.put("key2", val1), null);
+            table.commit();
+
+            table.remove("key1");
+            assertEquals(table.put("key1", val2), null);
+
+            assertEquals(table.put("key1", val3), val2);
+            assertEquals(table.put("key1", val1), val3);
+
+            assertEquals(table.put("key1", val2), val1);
+
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
 
-        try {
-            table.put("", smth);
-            assertTrue(false);
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex.getMessage());
-        }
-
-        try {
-            table.put(smth, null);
-            assertTrue(false);
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex.getMessage());
-        }
 
 
-        assertEquals(table.put("key1", "val1"), null);
-        assertEquals(table.put("key2", "val2"), null);
-        table.commit();
-
-        table.remove("key1");
-        assertEquals(table.put("key1", "val1_"), null);
-
-        assertEquals(table.put("key1", "val1__"), "val1_");
-        assertEquals(table.put("key1", "val1"), "val1__");
-
-        assertEquals(table.put("key1", "val1_"), "val1");
 
     }
 
@@ -108,35 +131,46 @@ public class TableTest {
     @Test
     public void testGet() {
 
-        DbTable table = (DbTable) provider.createTable("justTable");
-
         try {
-            table.get(null);
-            assertTrue(false);
-        } catch (IllegalArgumentException ex) {
+            DbTable table = (DbTable) provider.createTable("justTable", signature);
+
+            try {
+                table.get(null);
+                assertTrue(false);
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            try {
+                table.get("");
+                assertTrue(false);
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            Storeable val1 = new TableRow(signature);
+            val1.setColumnAt(0, 123);
+
+            Storeable val2 = new TableRow(signature);
+            val1.setColumnAt(0, 345);
+
+            table.put("key1", val1);
+            table.put("key2", val1);
+            table.commit();
+
+            table.put("key3", val1);
+            assertEquals(table.get("key3"), val1);
+
+            table.put("key2", val2);
+            assertEquals(table.get("key2"), val2);
+
+            assertEquals(table.get("key1"), val1);
+
+            assertEquals(table.get("keyX"), null);
+
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
-
-        try {
-            table.get("");
-            assertTrue(false);
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex.getMessage());
-        }
-
-        table.put("key1", "val1");
-        table.put("key2", "val2");
-        table.commit();
-
-        table.put("key3", "val3");
-        assertEquals(table.get("key3"), "val3");
-
-        table.put("key2", "val2_");
-        assertEquals(table.get("key2"), "val2_");
-
-        assertEquals(table.get("key1"), "val1");
-
-        assertEquals(table.get("keyX"), null);
 
     }
 
@@ -144,37 +178,42 @@ public class TableTest {
     @Test
     public void testRemove() {
 
-        DbTable table = (DbTable) provider.createTable("justTable");
-
         try {
-            table.remove(null);
-            assertTrue(false);
-        } catch (IllegalArgumentException ex) {
+            DbTable table = (DbTable) provider.createTable("justTable");
+
+            try {
+                table.remove(null);
+                assertTrue(false);
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            try {
+                table.remove("");
+                assertTrue(false);
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            table.put("key1", "val1");
+            table.put("key2", "val2");
+            table.commit();
+
+            table.put("key3", "val3");
+            assertEquals(table.remove("key3"), "val3");
+
+            table.put("key2", "val2_");
+            assertEquals(table.remove("key2"), "val2_");
+
+            assertEquals(table.remove("key2"), null);
+
+            assertEquals(table.remove("key1"), "val1");
+
+            assertEquals(table.remove("keyX"), null);
+
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
-
-        try {
-            table.remove("");
-            assertTrue(false);
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex.getMessage());
-        }
-
-        table.put("key1", "val1");
-        table.put("key2", "val2");
-        table.commit();
-
-        table.put("key3", "val3");
-        assertEquals(table.remove("key3"), "val3");
-
-        table.put("key2", "val2_");
-        assertEquals(table.remove("key2"), "val2_");
-
-        assertEquals(table.remove("key2"), null);
-
-        assertEquals(table.remove("key1"), "val1");
-
-        assertEquals(table.remove("keyX"), null);
 
     }
 
