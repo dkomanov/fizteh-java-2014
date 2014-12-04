@@ -179,7 +179,7 @@ public class TableTest {
     public void testRemove() {
 
         try {
-            DbTable table = (DbTable) provider.createTable("justTable");
+            DbTable table = (DbTable) provider.createTable("justTable", signature);
 
             try {
                 table.remove(null);
@@ -195,19 +195,25 @@ public class TableTest {
                 System.out.println(ex.getMessage());
             }
 
-            table.put("key1", "val1");
-            table.put("key2", "val2");
+            Storeable val1 = new TableRow(signature);
+            val1.setColumnAt(0, 123);
+
+            Storeable val2 = new TableRow(signature);
+            val1.setColumnAt(0, 345);
+
+            table.put("key1", val1);
+            table.put("key2", val1);
             table.commit();
 
-            table.put("key3", "val3");
-            assertEquals(table.remove("key3"), "val3");
+            table.put("key3", val1);
+            assertEquals(table.remove("key3"), val1);
 
-            table.put("key2", "val2_");
-            assertEquals(table.remove("key2"), "val2_");
+            table.put("key2", val2);
+            assertEquals(table.remove("key2"), val2);
 
             assertEquals(table.remove("key2"), null);
 
-            assertEquals(table.remove("key1"), "val1");
+            assertEquals(table.remove("key1"), val1);
 
             assertEquals(table.remove("keyX"), null);
 
@@ -220,19 +226,26 @@ public class TableTest {
     @Test
     public void testList() {
 
-        DbTable table = (DbTable) provider.createTable("justTable");
+        try {
+            DbTable table = (DbTable) provider.createTable("justTable", signature);
 
-        List<String> list = new LinkedList<>();
-        list.add("key1");
-        list.add("key2");
-        list.add("key3");
-        list.add("key4");
-        table.put("key1", "val1");
-        table.put("key2", "val2");
-        table.put("key3", "val3");
-        table.put("key4", "val4");
+            Storeable val1 = new TableRow(signature);
+            val1.setColumnAt(0, 123);
 
-        assertEquals(list, table.list());
+            List<String> list = new LinkedList<>();
+            list.add("key1");
+            list.add("key2");
+            list.add("key3");
+            list.add("key4");
+            table.put("key1", val1);
+            table.put("key2", val1);
+            table.put("key3", val1);
+            table.put("key4", val1);
+
+            assertEquals(list, table.list());
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
 
@@ -240,78 +253,62 @@ public class TableTest {
     @Test
     public void testCombined() {
 
-        Map<String, String> map = new HashMap<>();
-        DbTable table = (DbTable) provider.createTable("table");
+        try {
+            Map<String, Storeable> map = new HashMap<>();
+            DbTable table = (DbTable) provider.createTable("table", signature);
 
-        int size = 1000;
-        for (int i = 0; i < size; i++) {
-            String key = UUID.randomUUID().toString();
-            String value = UUID.randomUUID().toString();
-            map.put(key, value);
-            table.put(key, value);
-            if (i % 100 == 0) {
-                table.commit();
-            }
-        }
+            int size = 1000;
+            for (int i = 0; i < size; i++) {
+                String key = UUID.randomUUID().toString();
+                Storeable value = new TableRow(signature);
+                value.setColumnAt(1, UUID.randomUUID().toString());
 
-        for (HashMap.Entry<String, String> entry: map.entrySet()) {
-
-            String key = entry.getKey();
-            String value = UUID.randomUUID().toString();
-            map.put(key, value);
-            table.put(key, value);
-
-            String val1 = map.get(key);
-            String val2 = table.get(key);
-            assertEquals(val1, val2);
-
-            if (key.hashCode() % 2 == 0) {
-                table.commit();
+                map.put(key, value);
+                table.put(key, value);
+                if (i % 100 == 0) {
+                    table.commit();
+                }
             }
 
+            for (HashMap.Entry<String, Storeable> entry : map.entrySet()) {
+
+                String key = entry.getKey();
+                Storeable value = new TableRow(signature);
+                value.setColumnAt(1, UUID.randomUUID().toString());
+                map.put(key, value);
+                table.put(key, value);
+
+                Storeable val1 = map.get(key);
+                Storeable val2 = table.get(key);
+                assertEquals(val1, val2);
+
+                if (key.hashCode() % 2 == 0) {
+                    table.commit();
+                }
+
+            }
+
+
+            int curSize = size;
+            for (HashMap.Entry<String, Storeable> entry : map.entrySet()) {
+
+                String key = entry.getKey();
+                Storeable value = entry.getValue();
+                Storeable expValue = table.get(key);
+
+                assertNotNull(expValue);
+                assertEquals(expValue, value);
+                assertEquals(table.size(), curSize--);
+                table.remove(key);
+
+            }
+
+            assertTrue(table.size() == 0);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
         }
-
-
-        int curSize = size;
-        for (HashMap.Entry<String, String> entry: map.entrySet()) {
-
-            String key = entry.getKey();
-            String value = entry.getValue();
-            String expValue = table.get(key);
-
-            assertNotNull(expValue);
-            assertEquals(expValue, value);
-            assertEquals(table.size(), curSize--);
-            table.remove(key);
-
-        }
-
-        assertTrue(table.size() == 0);
-
     }
 
-
-    @Test
-    public void testCommitRollback() {
-
-        DbTable table = (DbTable) provider.createTable("table");
-        table.put("key1", "val1");
-        table.put("key2", "val2");
-
-        table.commit();
-        table.rollback();
-        assertEquals(table.size(), 2);
-
-        table.put("key3", "val3");
-        table.put("key4", "val4");
-
-        assertEquals(table.put("key1", "newVal1"), "val1");
-        assertEquals(table.put("key2", "newVal2"), "val2");
-
-        table.rollback();
-        assertEquals(table.size(), 2);
-
-    }
 
     @After
     public void finish() {

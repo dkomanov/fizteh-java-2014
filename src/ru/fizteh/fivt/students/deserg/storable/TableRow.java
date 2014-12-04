@@ -17,6 +17,7 @@ public class TableRow implements Storeable {
 
     public TableRow(List<Class<?>> signature) {
         this.signature = signature;
+        columns.ensureCapacity(signature.size());
     }
 
     /**
@@ -31,7 +32,7 @@ public class TableRow implements Storeable {
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
 
-        if (columnIndex < 0 || columnIndex >= columns.size()) {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("TableRow: setColumnAt: index \"" + columnIndex + "\" out of bounds");
         }
 
@@ -52,7 +53,7 @@ public class TableRow implements Storeable {
     @Override
     public Object getColumnAt(int columnIndex) throws IndexOutOfBoundsException {
 
-        if (columnIndex < 0 || columnIndex >= columns.size()) {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("TableRow: getColumnAt: index \"" + columnIndex + "\" out of bounds");
         }
 
@@ -70,7 +71,7 @@ public class TableRow implements Storeable {
     @Override
     public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
 
-        if (columnIndex < 0 || columnIndex >= columns.size()) {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("TableRow: getIntAt: index \"" + columnIndex + "\" out of bounds");
         }
 
@@ -91,7 +92,7 @@ public class TableRow implements Storeable {
     @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
 
-        if (columnIndex < 0 || columnIndex >= columns.size()) {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("TableRow: getIntAt: index \"" + columnIndex + "\" out of bounds");
         }
 
@@ -113,7 +114,7 @@ public class TableRow implements Storeable {
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
 
-        if (columnIndex < 0 || columnIndex >= columns.size()) {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("TableRow: getIntAt: index \"" + columnIndex + "\" out of bounds");
         }
 
@@ -134,7 +135,7 @@ public class TableRow implements Storeable {
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
 
-        if (columnIndex < 0 || columnIndex >= columns.size()) {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("TableRow: getIntAt: index \"" + columnIndex + "\" out of bounds");
         }
 
@@ -156,7 +157,7 @@ public class TableRow implements Storeable {
     @Override
     public Double getDoubleAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
 
-        if (columnIndex < 0 || columnIndex >= columns.size()) {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("TableRow: getIntAt: index \"" + columnIndex + "\" out of bounds");
         }
 
@@ -178,7 +179,7 @@ public class TableRow implements Storeable {
     @Override
     public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
 
-        if (columnIndex < 0 || columnIndex >= columns.size()) {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("TableRow: getIntAt: index \"" + columnIndex + "\" out of bounds");
         }
 
@@ -200,7 +201,7 @@ public class TableRow implements Storeable {
     @Override
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
 
-        if (columnIndex < 0 || columnIndex >= columns.size()) {
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("TableRow: getIntAt: index \"" + columnIndex + "\" out of bounds");
         }
 
