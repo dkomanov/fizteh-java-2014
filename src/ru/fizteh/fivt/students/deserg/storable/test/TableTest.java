@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.deserg.storable.*;
 
 import java.io.IOException;

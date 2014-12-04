@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.deserg.storable;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;

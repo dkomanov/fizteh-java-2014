@@ -245,7 +245,7 @@ public class DbTable implements Table {
      * @return Количество изменений, ожидающих фиксации.
      */
     @Override
-    public int getNumberOfUncommittedChanges(){
+    public int getNumberOfUncommittedChanges() {
         return addedData.size() + removedData.size() + changedData.size();
     }
 
@@ -273,7 +273,8 @@ public class DbTable implements Table {
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
 
         if (columnIndex < 0 || columnIndex >= signature.size()) {
-            throw new IndexOutOfBoundsException("DbTable: getColumnType: index \"" + columnIndex + "\" is out of bounds");
+            throw new IndexOutOfBoundsException("DbTable: getColumnType: index \""
+                    + columnIndex + "\" is out of bounds");
         }
 
         return signature.get(columnIndex);

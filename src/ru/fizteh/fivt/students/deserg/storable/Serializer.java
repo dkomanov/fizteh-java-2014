@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.deserg.storable;
 
-import com.sun.corba.se.spi.ior.ObjectKey;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
@@ -9,7 +7,6 @@ import ru.fizteh.fivt.storage.structured.Table;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by deserg on 03.12.14.
