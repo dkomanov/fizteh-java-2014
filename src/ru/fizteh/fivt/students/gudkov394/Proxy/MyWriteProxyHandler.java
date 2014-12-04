@@ -24,18 +24,18 @@ import java.util.IdentityHashMap;
 public class MyWriteProxyHandler implements InvocationHandler {
 
     private Writer writer;
-    private Object implementation;
+    private Object object;
 
-    MyWriteProxyHandler(Writer writerTmp, Object implementationTmp) {
+    MyWriteProxyHandler(Writer writerTmp, Object object) {
         writer = writerTmp;
-        implementation = implementationTmp;
+        this.object = object;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("<invoke timestamp=\"").append(System.currentTimeMillis()).
-                append("\" class=\"").append(implementation.getClass().getCanonicalName()).
+                append("\" class=\"").append(object.getClass().getCanonicalName()).
                 append("\" name=\"").append(method.getName()).append("\">");
         if (args != null && args.length > 0) {
             stringBuilder.append((new ParserXML()).parse(args));
@@ -45,9 +45,9 @@ public class MyWriteProxyHandler implements InvocationHandler {
         try {
             Object result;
             if (args != null) {
-                result = method.invoke(implementation, args);
+                result = method.invoke(object, args);
             } else {
-                result = method.invoke(implementation);
+                result = method.invoke(object);
             }
             if (method.getReturnType() != void.class) {
                 String res;
@@ -75,89 +75,9 @@ public class MyWriteProxyHandler implements InvocationHandler {
             try {
                 writer.write(stringBuilder.toString());
             } catch (IOException e) {
-                System.out.println("Can't write log");
+                System.out.println("I can't write log");
             }
             writer.flush();
         }
     }
 }
-  /*  private Writer writer;
-    private Object object;
-
-    public MyWriteProxyHandler(Writer writerTmp, Object implementation) {
-        writer = writerTmp;
-        object = implementation;
-    }
-
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        XMLStreamWriter xmlStreamWriter = factory.createXMLStreamWriter(writer);
-        if (xmlStreamWriter == null) {
-            return null;
-        }
-        xmlStreamWriter.writeStartElement("invoke");
-        xmlStreamWriter.writeAttribute("timestamp", ((Long) System.currentTimeMillis()).toString());
-        xmlStreamWriter.writeAttribute("class", object.getClass().getSimpleName());
-        xmlStreamWriter.writeAttribute("name", method.getName());
-        writeArguments(xmlStreamWriter, args);
-        Object result = null;
-        boolean exception = false;
-        try {
-            result = method.invoke(object, args);
-        } catch (Throwable e) {
-            exception = true;
-            xmlStreamWriter.writeStartElement("thrown");
-            xmlStreamWriter.writeCharacters(e.toString());
-            xmlStreamWriter.writeEndElement();
-        }
-        if (!exception) {
-
-            if (method.getReturnType() != void.class) {
-                xmlStreamWriter.writeStartElement("return");
-                if (result == null) {
-                    xmlStreamWriter.writeEmptyElement("null");
-                } else {
-                    xmlStreamWriter.writeCharacters(result.toString());
-                }
-                xmlStreamWriter.writeEndElement();
-            }
-        }
-        xmlStreamWriter.writeEndElement();
-        return null;
-    }
-
-    private void writeArguments(XMLStreamWriter xmlStreamWriter, Object[] args) throws XMLStreamException {
-        if (args == null) {
-            xmlStreamWriter.writeEmptyElement("arguments");
-        } else {
-            xmlStreamWriter.writeStartElement("arguments");
-            IdentityHashMap<Object, Object> used = new IdentityHashMap<>();
-            List<Object> references = new ArrayList<>();
-            dfs(xmlStreamWriter, references, used, true);
-        }
-    }
-
-    private void dfs(XMLStreamWriter xmlStreamWriter, List<Object> references, IdentityHashMap<Object, Object> used,
-                     boolean argument) throws XMLStreamException {
-        used.put(references, null);
-        for (Object ref : references) {
-            if (argument) {
-                xmlStreamWriter.writeStartElement("argument");
-            } else {
-                xmlStreamWriter.writeStartElement("value");
-            }
-            if (ref instanceof Iterable) {
-                if (used.containsKey(ref)) {
-                    xmlStreamWriter.writeStartElement("cyclic");
-                } else {
-                    xmlStreamWriter.writeStartElement("list");
-                    dfs(xmlStreamWriter, (List<Object>) ref, used, false);
-                }
-            } else {
-                xmlStreamWriter.writeCharacters(ref.toString());
-            }
-            xmlStreamWriter.writeEndElement();
-        }
-    }
-    */
