@@ -3,8 +3,10 @@ package ru.fizteh.fivt.students.EgorLunichkin.Storeable;
 import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.EgorLunichkin.JUnit.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -119,7 +121,7 @@ public class StoreableTableProvider implements TableProvider {
 
     @Override
     public Storeable createFor(Table table, List<?> values) {
-        StoreableEntry entry = (StoreableEntry)this.createFor(table);
+        StoreableEntry entry = (StoreableEntry) this.createFor(table);
         for (int ind = 0; ind < values.size(); ++ind) {
             entry.setColumnAt(ind, values.get(ind));
         }
@@ -133,11 +135,24 @@ public class StoreableTableProvider implements TableProvider {
         return tableNames;
     }
 
-    private String readSignature(File signature) {
-        return null;
+    private String readSignature(File signature) throws IOException {
+        Charset charset = Charset.forName("UTF-8");
+        Path path = signature.toPath();
+        String inputSignature;
+        try (BufferedReader inputStream = Files.newBufferedReader(path, charset)) {
+            inputSignature = inputStream.readLine();
+        }
+        if (inputSignature == null) {
+            throw new IOException("Empty signature file");
+        }
+        return inputSignature;
     }
 
-    private void writeSignature(File signature, String sign) {
-
+    private void writeSignature(File signature, String sign) throws IOException {
+        Charset charset = Charset.forName("UTF-8");
+        Path path = signature.toPath();
+        try (BufferedWriter outputStream = Files.newBufferedWriter(path, charset)) {
+            outputStream.write(sign);
+        }
     }
 }

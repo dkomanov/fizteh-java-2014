@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class StoreableTableProviderFactory implements TableProviderFactory {
     @Override
-    public TableProvider create(String path) throws IOException{
+    public TableProvider create(String path) throws IOException {
         if (path == null) {
             throw new IllegalArgumentException();
         } else {
