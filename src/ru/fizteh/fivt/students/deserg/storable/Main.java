@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.deserg.storable;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.deserg.storable.commands.*;
 
 import java.util.*;

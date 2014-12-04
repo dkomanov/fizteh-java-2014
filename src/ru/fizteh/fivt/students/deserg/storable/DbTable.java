@@ -8,8 +8,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.*;
-
 /**
  * Created by deserg on 04.10.14.
  */
@@ -27,6 +27,12 @@ public class DbTable implements Table {
         tablePath = path;
         tableName = path.getFileName().toString();
         this.signature = signature;
+        try {
+            read();
+        } catch (MyIOException ex) {
+            System.out.println("Table \"" + tableName + "\": error while reading");
+            System.exit(1);
+        }
     }
 
     /**
@@ -275,7 +281,7 @@ public class DbTable implements Table {
     }
 
 
-    public ArrayList<Class<?>> getSignature() {
+    public List<Class<?>> getSignature() {
         return signature;
     }
 
@@ -307,7 +313,13 @@ public class DbTable implements Table {
                     is.read(value, 0, valLen);
 
                     String keyStr = new String(key, "UTF-8");
-                    String valueStr = new String(value, "UTF-8");
+                    Storeable valueStr = new TableRow(signature);
+                    try {
+                         valueStr = Serializer.deserialize(this, new String(value, "UTF-8"));
+                    } catch (ParseException ex) {
+                        System.out.println("Parse exception while reading");
+                        System.exit(1);
+                    }
 
                     int hashValue = keyStr.hashCode();
                     if (hashValue % 16 != dir || hashValue / 16 % 16 != file) {
@@ -328,6 +340,9 @@ public class DbTable implements Table {
     public void read() throws MyIOException {
 
         committedData.clear();
+        addedData.clear();
+        changedData.clear();
+        removedData.clear();
 
         for (int dir = 0; dir < 16; ++dir) {
             for (int file = 0; file < 16; ++file) {
@@ -372,10 +387,10 @@ public class DbTable implements Table {
             }
         }
 
-        for (HashMap.Entry<String, String> entry : committedData.entrySet()) {
+        for (HashMap.Entry<String, Storeable> entry : committedData.entrySet()) {
 
             String key = entry.getKey();
-            String value = entry.getValue();
+            String value = Serializer.serialize(this, entry.getValue());
             int hashCode = key.hashCode();
             int dir = hashCode % 16;
             int file = hashCode / 16 % 16;

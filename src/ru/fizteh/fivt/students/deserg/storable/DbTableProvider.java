@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
-import java.util.logging.FileHandler;
 
 /**
  * Created by deserg on 20.10.14.
@@ -115,7 +114,7 @@ public class DbTableProvider implements TableProvider {
             return null;
         } else {
 
-            DbTable table = new DbTable(dbPath.resolve(name), columnTypes);
+            DbTable table = new DbTable(dbPath.resolve(name), (ArrayList<Class<?>>) columnTypes);
             tables.put(name, table);
             removedTables.remove(name);
             return table;
@@ -288,7 +287,7 @@ public class DbTableProvider implements TableProvider {
 
                     Path tablePath = item.toPath();
                     try {
-                        ArrayList<Class<?>> signature = readSignature(tablePath);
+                        List<Class<?>> signature = readSignature(tablePath);
                         DbTable table = new DbTable(tablePath, signature);
                         table.read();
                         tables.put(item.getName(), table);
@@ -304,33 +303,14 @@ public class DbTableProvider implements TableProvider {
         currentTable = null;
     }
 
-    private ArrayList<Class<?>> readSignature(Path path) throws MyIOException {
+    private List<Class<?>> readSignature(Path path) throws MyIOException {
 
         Path sPath = path.resolve("signature.tsv");
 
         try (DataInputStream is = new DataInputStream(Files.newInputStream(sPath))) {
             String line = is.readUTF().trim();
             String[] types = line.split("\t");
-            ArrayList<Class<?>> list = new ArrayList<>();
-            for (String type: types) {
-                if (type.equals("int")) {
-                    list.add(Integer.class);
-                } else if (type.equals("long")) {
-                    list.add(Long.class);
-                } else if (type.equals("byte")) {
-                    list.add(Byte.class);
-                } else if (type.equals("float")) {
-                    list.add(Float.class);
-                } else if (type.equals("double")) {
-                    list.add(Double.class);
-                } else if (type.equals("boolean")) {
-                    list.add(Boolean.class);
-                } else if (type.equals("String")) {
-                    list.add(String.class);
-                } else {
-                    throw new MyIOException("Database: read: \"signature.tsv\" contains unacceptable types");
-                }
-            }
+            List<Class<?>> list = Serializer.makeSignatureFromStrings(types);
             return list;
 
         } catch (IOException ex) {
@@ -339,7 +319,7 @@ public class DbTableProvider implements TableProvider {
 
     }
 
-    private void writeSignature(ArrayList<Class<?>> signature, Path path) throws MyIOException {
+    private void writeSignature(List<Class<?>> signature, Path path) throws MyIOException {
 
         Path sPath = path.resolve("signature.tsv");
         if (Files.exists(sPath)) {
@@ -395,8 +375,8 @@ public class DbTableProvider implements TableProvider {
             try {
                 DbTable table = entry.getValue();
                 Path path = dbPath.resolve(entry.getKey());
-                writeSignature(table.getSignature(), path);
                 table.write();
+                writeSignature(table.getSignature(), path);
             } catch (MyIOException ex) {
                 System.out.println(ex.getMessage());
                 System.exit(1);
@@ -405,7 +385,6 @@ public class DbTableProvider implements TableProvider {
         }
 
     }
-
 
 
 

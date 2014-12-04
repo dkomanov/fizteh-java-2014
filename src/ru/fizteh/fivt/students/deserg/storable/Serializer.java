@@ -7,6 +7,8 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -28,31 +30,30 @@ public class Serializer {
         if (value.length() < 3
                 || value.charAt(0) != '['
                 || value.charAt(value.length() - 1) != '[') {
-            throw new ParseException("Serializer: deserialize: parse error", 0);
+            throw new ParseException("Json format error", 0);
         }
 
         String[] segments = value.substring(1, value.length() - 2).split(",");
         if (segments.length != table.getColumnsCount()) {
-            throw new ParseException("Serializer: deserialize: parse error: invalid number of columns", 0);
+            throw new ParseException("invalid number of columns", 0);
         }
 
         TableRow row = new TableRow(table.getSignature());
         for (int i = 0; i < segments.length; i++) {
 
             if (segments[i].isEmpty()) {
-                throw new ParseException("Serializer: deserialize: parse error", 0);
+                throw new ParseException("empty column", 0);
             }
 
             try {
                 row.setColumnAt(i, transform(table.getColumnType(i), segments[i]));
             } catch (ColumnFormatException ex) {
-                throw new ParseException("Serializer: deserialize: parse error: invalid type of column " + i, 0);
+                throw new ParseException("invalid type of column " + i, 0);
             }
 
         }
 
-
-
+        return row;
     }
 
     /**
@@ -83,6 +84,32 @@ public class Serializer {
         builder.append("]");
 
         return builder.toString();
+    }
+
+    public static List<Class<?>> makeSignatureFromStrings(String[] types) {
+
+        List<Class<?>> list = new ArrayList<>();
+        for (String type: types) {
+            if (type.equals("int")) {
+                list.add(Integer.class);
+            } else if (type.equals("long")) {
+                list.add(Long.class);
+            } else if (type.equals("byte")) {
+                list.add(Byte.class);
+            } else if (type.equals("float")) {
+                list.add(Float.class);
+            } else if (type.equals("double")) {
+                list.add(Double.class);
+            } else if (type.equals("boolean")) {
+                list.add(Boolean.class);
+            } else if (type.equals("String")) {
+                list.add(String.class);
+            } else {
+                throw new MyException("wrong type");
+            }
+        }
+
+        return list;
     }
 
 
@@ -120,6 +147,7 @@ public class Serializer {
             return pattern;
         }
 
+        return null;
     }
 
 }

@@ -1,9 +1,12 @@
 package ru.fizteh.fivt.students.deserg.storable.commands;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.deserg.storable.DbTable;
 import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
 import ru.fizteh.fivt.students.deserg.storable.MyException;
+import ru.fizteh.fivt.students.deserg.storable.Serializer;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
 /**
@@ -17,7 +20,7 @@ public class TablePut implements Command {
         if (args.size() < 3) {
             throw new MyException("Not enough arguments");
         }
-        if (args.size() == 3) {
+        if (args.size() >= 3) {
 
             DbTable table = db.getCurrentTable();
             if (table == null) {
@@ -26,17 +29,26 @@ public class TablePut implements Command {
             }
 
             String key = args.get(1);
-            String value = args.get(2);
+            String value = "";
+            for (int i = 2; i < args.size(); i++) {
+                value += args.get(i);
+            }
 
-            if (table.put(key, value) != null) {
+            Storeable mValue;
+
+            try {
+                mValue = Serializer.deserialize(table, value);
+            } catch (ParseException ex) {
+                throw new MyException("wrong type " + ex.getMessage());
+            }
+
+            if (table.put(key, mValue) != null) {
                 System.out.println("overwrite");
             } else {
                 System.out.println("new");
 
             }
 
-        } else {
-            System.out.println("Too many arguments");
         }
 
     }
