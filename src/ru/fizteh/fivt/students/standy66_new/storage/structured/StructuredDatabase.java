@@ -46,6 +46,9 @@ public class StructuredDatabase implements TableProvider {
                 throw new IllegalArgumentException("one of the types in columnTypes is null");
             }
         }
+        if (columnTypes.size() == 0) {
+            throw new IllegalArgumentException("empty type list");
+        }
         StringTable table = backendDatabase.createTable(name);
         if (table == null) {
             return null;

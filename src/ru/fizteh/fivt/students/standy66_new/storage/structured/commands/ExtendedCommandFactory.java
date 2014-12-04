@@ -38,6 +38,11 @@ public class ExtendedCommandFactory extends StorageCommandFactory {
         return new StructuredCreate(writer, (ExtendedContext) context);
     }
 
+    @Override
+    protected Command dropCommand() {
+        return new StructuredDrop(writer, (ExtendedContext) context);
+    }
+
     protected Command getShowSignatureCommand() {
         return new ShowSignature(writer, (ExtendedContext) context);
     }
