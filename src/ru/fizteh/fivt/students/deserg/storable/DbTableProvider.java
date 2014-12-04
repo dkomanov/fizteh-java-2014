@@ -5,6 +5,8 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
+import java.util.logging.FileHandler;
 
 /**
  * Created by deserg on 20.10.14.
@@ -111,7 +114,8 @@ public class DbTableProvider implements TableProvider {
         if (tables.containsKey(name)) {
             return null;
         } else {
-            DbTable table = new DbTable(dbPath.resolve(name));
+
+            DbTable table = new DbTable(dbPath.resolve(name), columnTypes);
             tables.put(name, table);
             removedTables.remove(name);
             return table;
@@ -168,7 +172,12 @@ public class DbTableProvider implements TableProvider {
      *
      * @throws java.text.ParseException - при каких-либо несоответстиях в прочитанных данных.
      */
-    Storeable deserialize(Table table, String value) throws ParseException;
+    @Override
+    public Storeable deserialize(Table table, String value) throws ParseException {
+
+        return Serializer.deserialize((DbTable) table, value);
+
+    }
 
     /**
      * Преобразовывает объект {@link Storeable} в строку.
@@ -179,7 +188,12 @@ public class DbTableProvider implements TableProvider {
      *
      * @throws ru.fizteh.fivt.storage.structured.ColumnFormatException При несоответствии типа в {@link Storeable} и типа колонки в таблице.
      */
-    String serialize(Table table, Storeable value) throws ColumnFormatException;
+    @Override
+    public String serialize(Table table, Storeable value) throws ColumnFormatException {
+
+        return Serializer.serialize(table, value);
+
+    }
 
     /**
      * Создает новый пустой {@link Storeable} для указанной таблицы.
@@ -187,7 +201,13 @@ public class DbTableProvider implements TableProvider {
      * @param table Таблица, которой должен принадлежать {@link Storeable}.
      * @return Пустой {@link Storeable}, нацеленный на использование с этой таблицей.
      */
-    Storeable createFor(Table table);
+    @Override
+    public Storeable createFor(Table table) {
+
+        DbTable mTable = (DbTable) table;
+        return new TableRow(mTable.getSignature());
+
+    }
 
     /**
      * Создает новый {@link Storeable} для указанной таблицы, подставляя туда переданные значения.
@@ -198,14 +218,37 @@ public class DbTableProvider implements TableProvider {
      * @throws ColumnFormatException При несоответствии типа переданного значения и колонки.
      * @throws IndexOutOfBoundsException При несоответствии числа переданных значений и числа колонок.
      */
-    Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException;
+    @Override
+    public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+
+        DbTable mTable = (DbTable) table;
+        if (mTable.getColumnsCount() != values.size()) {
+            throw new IndexOutOfBoundsException("Database \"" + dbPath + "\": createFor: invalid number of columns");
+        }
+
+        Storeable row = new TableRow(mTable.getSignature());
+        for (int i = 0; i < values.size(); i++) {
+            row.setColumnAt(i, values.get(i));
+        }
+
+        return row;
+    }
 
     /**
      * Возвращает имена существующих таблиц, которые могут быть получены с помощью {@link #getTable(String)}.
      *
      * @return Имена существующих таблиц.
      */
-    List<String> getTableNames();
+    @Override
+    public List<String> getTableNames() {
+
+        List<String> list = new LinkedList<>();
+        list.addAll(tables.keySet());
+        return list;
+    }
+
+
+
     /**
      * Not-interface methods begin here
      */
@@ -230,7 +273,6 @@ public class DbTableProvider implements TableProvider {
     }
 
 
-
     public void read() {
 
         if (dbPath == null || !Files.exists(dbPath)) {
@@ -244,14 +286,17 @@ public class DbTableProvider implements TableProvider {
             for (File item: content) {
                 if (Files.isDirectory(item.toPath())) {
 
-                    DbTable table = new DbTable(item.toPath());
+                    Path tablePath = item.toPath();
                     try {
+                        ArrayList<Class<?>> signature = readSignature(tablePath);
+                        DbTable table = new DbTable(tablePath, signature);
                         table.read();
+                        tables.put(item.getName(), table);
                     } catch (MyIOException ex) {
                         System.out.println(ex.getMessage());
                         System.exit(1);
                     }
-                    tables.put(item.getName(), table);
+
                 }
             }
         }
@@ -259,14 +304,99 @@ public class DbTableProvider implements TableProvider {
         currentTable = null;
     }
 
+    private ArrayList<Class<?>> readSignature(Path path) throws MyIOException {
+
+        Path sPath = path.resolve("signature.tsv");
+
+        try (DataInputStream is = new DataInputStream(Files.newInputStream(sPath))) {
+            String line = is.readUTF().trim();
+            String[] types = line.split("\t");
+            ArrayList<Class<?>> list = new ArrayList<>();
+            for (String type: types) {
+                if (type.equals("int")) {
+                    list.add(Integer.class);
+                } else if (type.equals("long")) {
+                    list.add(Long.class);
+                } else if (type.equals("byte")) {
+                    list.add(Byte.class);
+                } else if (type.equals("float")) {
+                    list.add(Float.class);
+                } else if (type.equals("double")) {
+                    list.add(Double.class);
+                } else if (type.equals("boolean")) {
+                    list.add(Boolean.class);
+                } else if (type.equals("String")) {
+                    list.add(String.class);
+                } else {
+                    throw new MyIOException("Database: read: \"signature.tsv\" contains unacceptable types");
+                }
+            }
+            return list;
+
+        } catch (IOException ex) {
+            throw new MyIOException("Database: read: failed to read from \"signature.tsv\"");
+        }
+
+    }
+
+    private void writeSignature(ArrayList<Class<?>> signature, Path path) throws MyIOException {
+
+        Path sPath = path.resolve("signature.tsv");
+        if (Files.exists(sPath)) {
+            Shell.delete(sPath);
+        }
+
+        try {
+            Files.createFile(sPath);
+        } catch (IOException ex) {
+            throw new MyIOException("Database: write: failed create \"signature.tsv\"");
+        }
+
+        try (DataOutputStream os = new DataOutputStream(Files.newOutputStream(sPath))) {
+
+            for (Class<?> cl: signature) {
+
+                if (cl == Integer.class) {
+                    os.writeChars("int\t");
+
+                } else if (cl == Long.class) {
+                    os.writeChars("long\t");
+
+                } else if (cl == Byte.class) {
+                    os.writeChars("byte\t");
+
+                } else if (cl == Float.class) {
+                    os.writeChars("float\t");
+
+                } else if (cl == Double.class) {
+                    os.writeChars("double\t");
+
+                } else if (cl == Boolean.class) {
+                    os.writeChars("boolean\t");
+
+                } else if (cl == String.class) {
+                    os.writeChars("String\t");
+                } else {
+                    throw new MyException("Database: write: invalid signature");
+                }
+            }
+
+        } catch (IOException ex) {
+            throw new MyIOException("Database: read: failed write to \"signature.tsv\"");
+        }
+    }
+
     public void write() {
 
-        Shell.delete(dbPath);
+        Shell.deleteContent(dbPath);
 
         for (HashMap.Entry<String, DbTable> entry: tables.entrySet()) {
 
             try {
-                entry.getValue().write();
+                DbTable table = entry.getValue();
+                Path path = dbPath.resolve(entry.getKey());
+                writeSignature(table.getSignature(), path);
+                table.write();
             } catch (MyIOException ex) {
                 System.out.println(ex.getMessage());
                 System.exit(1);

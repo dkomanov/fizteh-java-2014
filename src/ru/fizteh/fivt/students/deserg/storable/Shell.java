@@ -16,6 +16,17 @@ public class Shell {
 
     }
 
+    public static void deleteContent(Path path) {
+
+        if (!Files.isDirectory(path)) {
+                throw new MyException("Database is not located in a directory");
+        } else {
+            deleteFinal(path, false);
+        }
+
+    }
+
+
     public static void delete(Path path) {
 
         if (!Files.isDirectory(path)) {
@@ -25,12 +36,12 @@ public class Shell {
                 throw new MyException("Error while deleting " + path.toString());
             }
         } else {
-            deleteFinal(path);
+            deleteFinal(path, true);
         }
 
     }
 
-    private static void deleteFinal(Path path) {
+    private static void deleteFinal(Path path, boolean deleteParent) {
 
         File curDir = new File(path.toString());
         File[] content = curDir.listFiles();
@@ -44,15 +55,17 @@ public class Shell {
                         throw new MyException("I/O error occurs while removing " + item.toPath().toString());
                     }
                 } else {
-                    deleteFinal(item.toPath());
+                    deleteFinal(item.toPath(), true);
                 }
             }
         }
 
-        try {
-            Files.delete(path);
-        } catch (IOException ex) {
-            throw new MyException("I/O error occurs while removing " + path.toString());
+        if (deleteParent) {
+            try {
+                Files.delete(path);
+            } catch (IOException ex) {
+                throw new MyException("I/O error occurs while removing " + path.toString());
+            }
         }
 
     }

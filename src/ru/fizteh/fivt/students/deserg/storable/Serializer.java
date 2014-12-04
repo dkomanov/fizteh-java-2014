@@ -1,10 +1,13 @@
 package ru.fizteh.fivt.students.deserg.storable;
 
+import com.sun.corba.se.spi.ior.ObjectKey;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
 import java.text.ParseException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by deserg on 03.12.14.
@@ -20,7 +23,7 @@ public class Serializer {
      *
      * @throws java.text.ParseException - при каких-либо несоответстиях в прочитанных данных.
      */
-    public static Storeable deserialize(Table table, String value) throws ParseException {
+    public static Storeable deserialize(DbTable table, String value) throws ParseException {
 
         if (value.length() < 3
                 || value.charAt(0) != '['
@@ -29,13 +32,22 @@ public class Serializer {
         }
 
         String[] segments = value.substring(1, value.length() - 2).split(",");
-        for (String segment: segments) {
+        if (segments.length != table.getColumnsCount()) {
+            throw new ParseException("Serializer: deserialize: parse error: invalid number of columns", 0);
+        }
 
-            if (segment.isEmpty()) {
+        TableRow row = new TableRow(table.getSignature());
+        for (int i = 0; i < segments.length; i++) {
+
+            if (segments[i].isEmpty()) {
                 throw new ParseException("Serializer: deserialize: parse error", 0);
             }
 
-            
+            try {
+                row.setColumnAt(i, transform(table.getColumnType(i), segments[i]));
+            } catch (ColumnFormatException ex) {
+                throw new ParseException("Serializer: deserialize: parse error: invalid type of column " + i, 0);
+            }
 
         }
 
@@ -73,5 +85,41 @@ public class Serializer {
         return builder.toString();
     }
 
+
+    private static Object transform(Class<?> classType, String pattern) {
+
+        if (pattern.equals("null")) {
+            return null;
+        }
+
+        if (classType == Integer.class) {
+            return Integer.valueOf(pattern);
+        }
+
+        if (classType == Long.class) {
+            return Long.valueOf(pattern);
+        }
+
+        if (classType == Byte.class) {
+            return Byte.valueOf(pattern);
+        }
+
+        if (classType == Float.class) {
+            return Float.valueOf(pattern);
+        }
+
+        if (classType == Double.class) {
+            return Double.valueOf(pattern);
+        }
+
+        if (classType == Boolean.class) {
+            return Boolean.valueOf(pattern);
+        }
+
+        if (classType == String.class) {
+            return pattern;
+        }
+
+    }
 
 }

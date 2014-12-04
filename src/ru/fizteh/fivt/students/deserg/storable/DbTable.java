@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class DbTable implements Table {
 
-    private ArrayList<Class<?>> signature = new ArrayList<>();
+    private List<Class<?>> signature = new ArrayList<>();
     private Map<String, Storeable> committedData = new HashMap<>();
     private Map<String, Storeable> addedData = new HashMap<>();
     private Map<String, Storeable> removedData = new HashMap<>();
@@ -23,9 +23,10 @@ public class DbTable implements Table {
     private String tableName;
     private Path tablePath;
 
-    public DbTable(Path path) {
+    public DbTable(Path path, List<Class<?>> signature) {
         tablePath = path;
         tableName = path.getFileName().toString();
+        this.signature = signature;
     }
 
     /**
@@ -273,6 +274,10 @@ public class DbTable implements Table {
 
     }
 
+
+    public ArrayList<Class<?>> getSignature() {
+        return signature;
+    }
 
     private void readKeyValue(Path filePath, int dir, int file) throws MyIOException {
 
