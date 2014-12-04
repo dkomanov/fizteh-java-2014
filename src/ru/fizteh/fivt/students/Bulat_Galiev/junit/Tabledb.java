@@ -27,9 +27,8 @@ public final class Tabledb implements Table {
         try {
             readTableDir();
         } catch (IOException e) {
-            System.err.print("Error reading table " + tableName + ": "
-                    + e.getMessage());
-            System.exit(-1);
+            throw new RuntimeException("Error reading table " + tableName
+                    + ": " + e.getMessage());
         }
     }
 
@@ -37,9 +36,10 @@ public final class Tabledb implements Table {
         return tableName;
     }
 
-    public int getChangedRecordsNumber() throws IOException {
+    public int getChangedRecordsNumber() {
         int diffNumRecords = 0;
-        for (Entry<CellForKey, DatabaseSerializer> databaseFile : databaseFiles.entrySet()) {
+        for (Entry<CellForKey, DatabaseSerializer> databaseFile : databaseFiles
+                .entrySet()) {
             diffNumRecords += databaseFile.getValue().getChangedRecordsNumber();
         }
         return diffNumRecords;
@@ -55,8 +55,8 @@ public final class Tabledb implements Table {
     }
 
     public int rollback() {
-        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles.entrySet()
-                .iterator();
+        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles
+                .entrySet().iterator();
         int diffNumRecords = 0;
         while (it.hasNext()) {
             Entry<CellForKey, DatabaseSerializer> databaseFile = it.next();
@@ -65,7 +65,6 @@ public final class Tabledb implements Table {
                 it.remove();
             }
         }
-        System.out.println(diffNumRecords);
         return diffNumRecords;
     }
 
@@ -117,8 +116,6 @@ public final class Tabledb implements Table {
             } else {
                 throw new IllegalArgumentException("Null key or name.");
             }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -159,7 +156,8 @@ public final class Tabledb implements Table {
 
     public List<String> list() {
         List<String> list = new LinkedList<String>();
-        for (Entry<CellForKey, DatabaseSerializer> pair : databaseFiles.entrySet()) {
+        for (Entry<CellForKey, DatabaseSerializer> pair : databaseFiles
+                .entrySet()) {
             list.addAll(pair.getValue().list());
         }
         return list;
@@ -209,18 +207,18 @@ public final class Tabledb implements Table {
                 try {
                     databaseFile = new DatabaseSerializer(tablePath,
                             ndirectory, nfile);
-                    databaseFiles.put(new CellForKey(ndirectory, nfile), databaseFile);
+                    databaseFiles.put(new CellForKey(ndirectory, nfile),
+                            databaseFile);
                 } catch (Exception e) {
-                    System.err.print(e.getMessage());
-                    System.exit(-1);
+                    throw new RuntimeException(e.getMessage(), e);
                 }
             }
         }
     }
 
     private int writeTableToDir() throws IOException {
-        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles.entrySet()
-                .iterator();
+        Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles
+                .entrySet().iterator();
         int diffNumRecords = 0;
         while (it.hasNext()) {
             Entry<CellForKey, DatabaseSerializer> databaseFile = it.next();

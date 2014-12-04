@@ -45,33 +45,19 @@ public final class TabledbProvider implements TableProvider {
         }
     }
 
-    public static void showTables() {
-        Set<String> keys = tableMap.keySet();
-        for (String current : keys) {
-            System.out.println(current + " " + tableMap.get(current).size());
-        }
+    public Set<String> getKeySet() {
+        return tableMap.keySet();
     }
 
-    public static void changeCurTable(final String name) throws IOException {
+    public static void changeCurTable(final String name) {
         try {
             if (name != null && !name.equals("")) {
                 tablesDirPath.resolve(name);
-                if (currentTable != null) {
-                    int diff = ((Tabledb) currentTable).getChangedRecordsNumber();
-                    if (diff != 0) {
-                        System.out.println(diff + " unsaved changes");
-                        return;
-                    }
-                }
                 Table newTable = tableMap.get(name);
                 if (newTable != null) {
-                    if (currentTable != null) {
-                        currentTable.commit();
-                    }
                     currentTable = newTable;
-                    System.out.println("using " + name);
                 } else {
-                    System.err.println(name + " does not exist");
+                    throw new IllegalStateException(name + " does not exist");
                 }
             } else {
                 throw new IllegalArgumentException("Null name.");
@@ -87,13 +73,11 @@ public final class TabledbProvider implements TableProvider {
             if (name != null && !name.equals("")) {
                 Path newTablePath = tablesDirPath.resolve(name);
                 if (tableMap.get(name) != null) {
-                    System.err.println(name + " exists");
                     return null;
                 }
                 newTablePath.toFile().mkdir();
                 Table newTable = new Tabledb(newTablePath, name);
                 tableMap.put(name, newTable);
-                System.out.println("created");
                 return newTable;
             } else {
                 throw new IllegalArgumentException("Null name.");
@@ -131,6 +115,10 @@ public final class TabledbProvider implements TableProvider {
 
     public Table getDataBase() {
         return currentTable;
+    }
+
+    public Path getTablesDirPath() {
+        return tablesDirPath;
     }
 
     public Table getTable(final String name) {

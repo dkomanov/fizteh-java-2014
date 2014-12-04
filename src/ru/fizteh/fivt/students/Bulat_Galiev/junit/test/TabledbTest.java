@@ -166,7 +166,7 @@ public class TabledbTest {
     }
 
     @Test
-    public void testNumberOfUncommittedChanges1() throws IOException {
+    public final void testNumberOfUncommittedChanges1() throws IOException {
         table.put("key", "value");
         table.put("key", "value2");
 
@@ -175,7 +175,7 @@ public class TabledbTest {
     }
 
     @Test
-    public void testNumberOfUncommittedChanges2() throws IOException {
+    public final void testNumberOfUncommittedChanges2() throws IOException {
         table.put("key", "value");
         table.remove("key");
 
@@ -184,7 +184,7 @@ public class TabledbTest {
     }
 
     @Test
-    public void testNumberOfUncommittedChanges3() throws IOException {
+    public final void testNumberOfUncommittedChanges3() throws IOException {
         table.put("key", "value");
         table.commit();
         table.remove("key");
@@ -194,7 +194,7 @@ public class TabledbTest {
     }
 
     @Test
-    public void testNumberOfUncommittedChanges4() throws IOException {
+    public final void testNumberOfUncommittedChanges4() throws IOException {
         table.put("key", "value");
         table.commit();
         table.remove("key");
@@ -205,7 +205,7 @@ public class TabledbTest {
     }
 
     @Test
-    public void testNumberOfUncommittedChanges5() throws IOException {
+    public final void testNumberOfUncommittedChanges5() throws IOException {
         table.put("key", "value");
         table.commit();
         table.remove("key");
