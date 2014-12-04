@@ -5,8 +5,6 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -311,7 +309,12 @@ public class DbTableProvider implements TableProvider {
 
         if (!Files.exists(dbPath)) {
 
-
+            try {
+                Files.createDirectory(dbPath);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+                System.exit(1);
+            }
 
         }
 
@@ -324,7 +327,7 @@ public class DbTableProvider implements TableProvider {
 
                     Path tablePath = item.toPath();
                     try {
-                        List<Class<?>> signature = readSignature(tablePath);
+                        List<Class<?>> signature = Shell.readSignature(tablePath);
                         DbTable table = new DbTable(tablePath, signature);
                         table.read();
                         tables.put(item.getName(), table);
@@ -340,68 +343,6 @@ public class DbTableProvider implements TableProvider {
         currentTable = null;
     }
 
-    private List<Class<?>> readSignature(Path path) throws MyIOException {
-
-        Path sPath = path.resolve("signature.tsv");
-
-        try (DataInputStream is = new DataInputStream(Files.newInputStream(sPath))) {
-            String line = is.readUTF().trim();
-            String[] types = line.split("\t");
-            List<Class<?>> list = Serializer.makeSignatureFromStrings(types);
-            return list;
-
-        } catch (IOException ex) {
-            throw new MyIOException("Database: read: failed to read from \"signature.tsv\"");
-        }
-
-    }
-
-    private void writeSignature(List<Class<?>> signature, Path path) throws MyIOException {
-
-        Path sPath = path.resolve("signature.tsv");
-        if (Files.exists(sPath)) {
-            Shell.delete(sPath);
-        }
-
-        try {
-            Files.createFile(sPath);
-        } catch (IOException ex) {
-            throw new MyIOException("Database: write: failed create \"signature.tsv\"");
-        }
-
-        try (DataOutputStream os = new DataOutputStream(Files.newOutputStream(sPath))) {
-
-            for (Class<?> cl: signature) {
-
-                if (cl == Integer.class) {
-                    os.writeChars("int\t");
-
-                } else if (cl == Long.class) {
-                    os.writeChars("long\t");
-
-                } else if (cl == Byte.class) {
-                    os.writeChars("byte\t");
-
-                } else if (cl == Float.class) {
-                    os.writeChars("float\t");
-
-                } else if (cl == Double.class) {
-                    os.writeChars("double\t");
-
-                } else if (cl == Boolean.class) {
-                    os.writeChars("boolean\t");
-
-                } else if (cl == String.class) {
-                    os.writeChars("String\t");
-                } else {
-                    throw new MyException("Database: write: invalid signature");
-                }
-            }
-
-        } catch (IOException ex) {
-            throw new MyIOException("Database: read: failed write to \"signature.tsv\"");
-        }
-    }
 
     public void write() {
 
@@ -410,10 +351,7 @@ public class DbTableProvider implements TableProvider {
         for (HashMap.Entry<String, DbTable> entry: tables.entrySet()) {
 
             try {
-                DbTable table = entry.getValue();
-                Path path = dbPath.resolve(entry.getKey());
-                table.write();
-                writeSignature(table.getSignature(), path);
+                entry.getValue().write();
             } catch (MyIOException ex) {
                 System.out.println(ex.getMessage());
                 System.exit(1);

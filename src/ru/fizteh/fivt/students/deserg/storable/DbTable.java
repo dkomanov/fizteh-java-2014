@@ -205,6 +205,12 @@ public class DbTable implements Table {
         removedData.clear();
         changedData.clear();
 
+        try {
+            write();
+        } catch (MyIOException ex) {
+            throw new MyException("Table \"" + tableName + "\": errors while saving commit");
+        }
+
         return changedKeys;
     }
 
@@ -385,7 +391,7 @@ public class DbTable implements Table {
     public void write() throws MyIOException {
 
         if (Files.exists(tablePath)) {
-            throw new MyIOException("Directory exists but it should not");
+            Shell.deleteContent(tablePath);
         } else {
             try {
                 Files.createDirectory(tablePath);
@@ -393,6 +399,8 @@ public class DbTable implements Table {
                 throw new MyIOException("Error has occurred while creating table directory");
             }
         }
+
+        Shell.writeSignature(signature, tablePath);
 
         for (HashMap.Entry<String, Storeable> entry : committedData.entrySet()) {
 

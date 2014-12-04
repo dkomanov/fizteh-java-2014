@@ -1,9 +1,12 @@
 package ru.fizteh.fivt.students.deserg.storable;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Created by deserg on 01.12.14.
@@ -67,7 +70,70 @@ public class Shell {
                 throw new MyException("I/O error occurs while removing " + path.toString());
             }
         }
+    }
 
+
+    public static List<Class<?>> readSignature(Path path) throws MyIOException {
+
+        Path sPath = path.resolve("signature.tsv");
+
+        try (DataInputStream is = new DataInputStream(Files.newInputStream(sPath))) {
+            String line = is.readUTF().trim();
+            String[] types = line.split("\t");
+            List<Class<?>> list = Serializer.makeSignatureFromStrings(types);
+            return list;
+
+        } catch (IOException ex) {
+            throw new MyIOException("Database: read: failed to read from \"signature.tsv\"");
+        }
+
+    }
+
+    public static void writeSignature(List<Class<?>> signature, Path path) throws MyIOException {
+
+        Path sPath = path.resolve("signature.tsv");
+        if (Files.exists(sPath)) {
+            Shell.delete(sPath);
+        }
+
+        try {
+            Files.createFile(sPath);
+        } catch (IOException ex) {
+            throw new MyIOException("Database: write: failed create \"signature.tsv\"");
+        }
+
+        try (DataOutputStream os = new DataOutputStream(Files.newOutputStream(sPath))) {
+
+            for (Class<?> cl: signature) {
+
+                if (cl == Integer.class) {
+                    os.writeChars("int\t");
+
+                } else if (cl == Long.class) {
+                    os.writeChars("long\t");
+
+                } else if (cl == Byte.class) {
+                    os.writeChars("byte\t");
+
+                } else if (cl == Float.class) {
+                    os.writeChars("float\t");
+
+                } else if (cl == Double.class) {
+                    os.writeChars("double\t");
+
+                } else if (cl == Boolean.class) {
+                    os.writeChars("boolean\t");
+
+                } else if (cl == String.class) {
+                    os.writeChars("String\t");
+                } else {
+                    throw new MyException("Database: write: invalid signature");
+                }
+            }
+
+        } catch (IOException ex) {
+            throw new MyIOException("Database: read: failed write to \"signature.tsv\"");
+        }
     }
 
 }

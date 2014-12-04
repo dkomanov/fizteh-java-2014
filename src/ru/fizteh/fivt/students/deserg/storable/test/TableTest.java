@@ -256,7 +256,7 @@ public class TableTest {
             Map<String, Storeable> map = new HashMap<>();
             DbTable table = (DbTable) provider.createTable("table", signature);
 
-            int size = 1000;
+            int size = 100;
             for (int i = 0; i < size; i++) {
                 String key = UUID.randomUUID().toString();
                 Storeable value = new TableRow(signature);
