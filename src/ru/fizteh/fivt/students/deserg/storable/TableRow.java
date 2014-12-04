@@ -3,24 +3,22 @@ package ru.fizteh.fivt.students.deserg.storable;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by deserg on 03.12.14.
  */
 public class TableRow implements Storeable {
 
-    private ArrayList<Object> columns = new ArrayList<>();
+    private Vector<Object> columns = new Vector<>();
     private List<Class<?>> signature = new LinkedList<>();
 
 
     public TableRow(List<Class<?>> signature) {
         this.signature = signature;
-        for (int i = 0; i < signature.size(); i++) {
-            columns.add(null);
-        }
+        columns.setSize(signature.size());
     }
 
     /**
@@ -40,7 +38,7 @@ public class TableRow implements Storeable {
         }
 
         if (value == null || value.getClass() == signature.get(columnIndex)) {
-            columns.add(columnIndex, value);
+            columns.set(columnIndex, value);
         } else {
             throw new ColumnFormatException("TableRow: setColumnAt: value has an incorrect format");
         }

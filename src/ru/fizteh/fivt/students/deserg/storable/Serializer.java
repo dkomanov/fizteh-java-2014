@@ -26,11 +26,11 @@ public class Serializer {
 
         if (value.length() < 3
                 || value.charAt(0) != '['
-                || value.charAt(value.length() - 1) != '[') {
+                || value.charAt(value.length() - 1) != ']') {
             throw new ParseException("Json format error", 0);
         }
 
-        String[] segments = value.substring(1, value.length() - 2).split(",");
+        String[] segments = value.substring(1, value.length() - 1).split(",");
         if (segments.length != table.getColumnsCount()) {
             throw new ParseException("invalid number of columns", 0);
         }
@@ -44,7 +44,7 @@ public class Serializer {
 
             try {
                 row.setColumnAt(i, transform(table.getColumnType(i), segments[i]));
-            } catch (ColumnFormatException ex) {
+            } catch (Exception ex) {
                 throw new ParseException("invalid type of column " + i, 0);
             }
 
@@ -73,7 +73,11 @@ public class Serializer {
             if (obj != null && obj.getClass() != table.getColumnType(i)) {
                 throw new ColumnFormatException("Serializer: serialize: invalid column format at index " + i);
             }
-            builder.append(value.getColumnAt(i));
+            if (obj == null) {
+                builder.append("null");
+            } else {
+                builder.append(obj.toString());
+            }
             builder.append(",");
         }
 

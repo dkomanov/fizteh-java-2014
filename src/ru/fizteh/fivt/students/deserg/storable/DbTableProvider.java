@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -24,26 +25,6 @@ public class DbTableProvider implements TableProvider {
     private Set<String> removedTables = new HashSet<>();
     private Path dbPath;
     private DbTable currentTable = null;
-
-
-    public DbTable getCurrentTable() {
-        return currentTable;
-    }
-
-    public void setCurrentTable(String name) {
-        if (!tables.containsKey(name)) {
-            System.out.println(name + " not exists");
-            return;
-        }
-
-        if (currentTable != null && currentTable.getNumberOfUncommittedChanges() > 0) {
-            System.out.println(currentTable.getNumberOfUncommittedChanges() + " unsaved changes");
-            return;
-        }
-
-        currentTable = tables.get(name);
-        System.out.println("using " + name);
-    }
 
 
     /**
@@ -67,12 +48,13 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": getTable: empty table name");
         }
 
-        String fileName = Paths.get("").resolve(name).getFileName().toString();
+        String fileName;
 
-        if (!Shell.checkName(fileName)) {
-            throw new IllegalArgumentException("Database \"" + fileName + "\": getTable: unacceptable table name");
+        try {
+            fileName = Paths.get("").resolve(name).getFileName().toString();
+        } catch (InvalidPathException ex) {
+            throw new IllegalArgumentException("Database \"" + name + "\": getTable: unacceptable table name");
         }
-
 
         if (removedTables.contains(name)) {
             throw new IllegalStateException("Database \"" + fileName + "\": getTable: table was removed");
@@ -108,10 +90,12 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable: invalid signature");
         }
 
-        String fileName = Paths.get("").resolve(name).getFileName().toString();
+        String fileName;
 
-        if (!Shell.checkName(fileName)) {
-            throw new IllegalArgumentException("Database \"" + fileName + "\": createTable: unacceptable table name");
+        try {
+            fileName = Paths.get("").resolve(name).getFileName().toString();
+        } catch (InvalidPathException ex) {
+            throw new IllegalArgumentException("Database \"" + name + "\": createTable: unacceptable table name");
         }
 
         if (tables.containsKey(name)) {
@@ -149,10 +133,12 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": removeTable: empty Table name");
         }
 
-        String fileName = Paths.get("").resolve(name).getFileName().toString();
+        String fileName;
 
-        if (!Shell.checkName(fileName)) {
-            throw new IllegalArgumentException("Database \"" + fileName + "\": removeTable: unacceptable table name");
+        try {
+            fileName = Paths.get("").resolve(name).getFileName().toString();
+        } catch (InvalidPathException ex) {
+            throw new IllegalArgumentException("Database \"" + name + "\": getTable: unacceptable table name");
         }
 
         if (!tables.containsKey(name)) {
@@ -255,6 +241,26 @@ public class DbTableProvider implements TableProvider {
     /**
      * Not-interface methods begin here
      */
+
+    public DbTable getCurrentTable() {
+        return currentTable;
+    }
+
+    public void setCurrentTable(String name) {
+        if (!tables.containsKey(name)) {
+            System.out.println(name + " not exists");
+            return;
+        }
+
+        if (currentTable != null && currentTable.getNumberOfUncommittedChanges() > 0) {
+            System.out.println(currentTable.getNumberOfUncommittedChanges() + " unsaved changes");
+            return;
+        }
+
+        currentTable = tables.get(name);
+        System.out.println("using " + name);
+    }
+
     public void showTableSet() {
 
         System.out.println("table_name row_count");

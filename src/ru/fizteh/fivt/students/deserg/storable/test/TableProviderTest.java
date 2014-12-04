@@ -2,10 +2,15 @@ package ru.fizteh.fivt.students.deserg.storable.test;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.deserg.storable.DbTable;
 import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
 import ru.fizteh.fivt.students.deserg.storable.DbTableProviderFactory;
+import ru.fizteh.fivt.students.deserg.storable.TableRow;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -16,6 +21,7 @@ import static org.junit.Assert.*;
 public class TableProviderTest {
 
     DbTableProviderFactory factory = new DbTableProviderFactory();
+    DbTableProvider provider = (DbTableProvider) factory.create("db");
     List<Class<?>> signature = new LinkedList<>();
 
     @Before
@@ -147,6 +153,14 @@ public class TableProviderTest {
         }
 
         assertNotNull(provider.getTable(name));
+        provider.removeTable(name);
+
+        try {
+            provider.getTable(name);
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     @Test
@@ -178,5 +192,136 @@ public class TableProviderTest {
         }
 
     }
+
+    @Test
+    public void testCreateFor() {
+
+        try {
+            DbTable table = (DbTable) provider.createTable("table", signature);
+            Storeable row = provider.createFor(table);
+            assertNotNull(row);
+
+            int val1 = 103;
+            String val2 = "123";
+            List<Object> list = new LinkedList<>();
+            list.add(val1);
+            list.add(val2);
+            assertNotNull(provider.createFor(table, list));
+
+            list.add("123");
+            try {
+                provider.createFor(table, list);
+                assertTrue(false);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetTableNames() {
+
+        DbTableProvider provider = (DbTableProvider) factory.create("provider");
+        List<String> names = new LinkedList<>();
+        names.add("name1");
+        names.add("name2");
+        names.add("name3");
+
+        try {
+            provider.createTable("name1", signature);
+            provider.createTable("name2", signature);
+            provider.createTable("name3", signature);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        names.sort(Comparator.<String>naturalOrder());
+        List<String> expNames = provider.getTableNames();
+        expNames.sort(Comparator.<String>naturalOrder());
+        assertEquals(names, expNames);
+    }
+
+    @Test
+    public void testSerialize() {
+
+        DbTableProvider provider = (DbTableProvider) factory.create("provider");
+
+        try {
+            DbTable table = (DbTable) provider.createTable("table", signature);
+
+
+            Storeable val = new TableRow(signature);
+            val.setColumnAt(0, 100500);
+            val.setColumnAt(1, "serialize");
+            assertEquals(provider.serialize(table, val), "[100500,serialize]");
+
+            val.setColumnAt(0, null);
+            assertEquals(provider.serialize(table, val), "[null,serialize]");
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
+
+    @Test
+    public void testDeserialize() {
+
+        DbTableProvider provider = (DbTableProvider) factory.create("provider");
+
+        try {
+            DbTable table = (DbTable) provider.createTable("table", signature);
+
+            try {
+                provider.deserialize(table, "[0.12, \"af\"]");
+                assertTrue(false);
+            } catch (ParseException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            try {
+                provider.deserialize(table, "[]");
+                assertTrue(false);
+            } catch (ParseException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            try {
+                provider.deserialize(table, "[,\"ds\"]");
+                assertTrue(false);
+            } catch (ParseException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+
+            try {
+                provider.deserialize(table, "[124, \"123\", 12.3]");
+                assertTrue(false);
+            } catch (ParseException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            String pattern = "[1234554321,qwertyu]";
+            Object[] objects = {1234554321, "qwertyu"};
+
+            try {
+                Storeable value = provider.deserialize(table, pattern);
+                for (int i = 0; i < signature.size(); i++) {
+                    assertEquals(objects[i], value.getColumnAt(i));
+                }
+            } catch (ParseException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
+
+
 
 }
