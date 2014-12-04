@@ -6,7 +6,6 @@ import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter.Command;
 import ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter.Interpreter;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
