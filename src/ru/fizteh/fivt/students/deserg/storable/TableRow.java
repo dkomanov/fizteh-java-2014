@@ -4,6 +4,7 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -12,12 +13,14 @@ import java.util.List;
 public class TableRow implements Storeable {
 
     private ArrayList<Object> columns = new ArrayList<>();
-    private List<Class<?>> signature = new ArrayList<>();
+    private List<Class<?>> signature = new LinkedList<>();
 
 
     public TableRow(List<Class<?>> signature) {
         this.signature = signature;
-        columns.ensureCapacity(signature.size());
+        for (int i = 0; i < signature.size(); i++) {
+            columns.add(null);
+        }
     }
 
     /**
