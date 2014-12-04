@@ -1,26 +1,25 @@
 package ru.fizteh.fivt.students.deserg.storable;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by deserg on 04.10.14.
  */
 public class DbTable implements Table {
 
-    private Map<String, String> commitedData = new HashMap<>();
-    private Map<String, String> addedData = new HashMap<>();
-    private Map<String, String> removedData = new HashMap<>();
-    private Map<String, String> changedData = new HashMap<>();
+    private ArrayList<Class<?>> signature = new ArrayList<>();
+    private Map<String, Storeable> committedData = new HashMap<>();
+    private Map<String, Storeable> addedData = new HashMap<>();
+    private Map<String, Storeable> removedData = new HashMap<>();
+    private Map<String, Storeable> changedData = new HashMap<>();
     private String tableName;
     private Path tablePath;
 
@@ -46,7 +45,7 @@ public class DbTable implements Table {
      * @throws IllegalArgumentException Если значение параметра key является null.
      */
     @Override
-    public String get(String key) throws IllegalArgumentException {
+    public Storeable get(String key) throws IllegalArgumentException {
 
         if (key == null) {
             throw new IllegalArgumentException("Table \"" + tableName + "\": get: null key");
@@ -57,7 +56,7 @@ public class DbTable implements Table {
         }
 
 
-        String value = addedData.get(key);
+        Storeable value = addedData.get(key);
         if (value != null) {
             return value;
         }
@@ -67,7 +66,7 @@ public class DbTable implements Table {
             return value;
         }
 
-        value = commitedData.get(key);
+        value = committedData.get(key);
         if (value != null) {
             return value;
         }
@@ -86,7 +85,7 @@ public class DbTable implements Table {
      * @throws IllegalArgumentException Если значение параметров key или value является null.
      */
     @Override
-    public String put(String key, String value) {
+    public Storeable put(String key, Storeable value) {
 
         if (key == null) {
             throw new IllegalArgumentException("Table \"" + tableName + "\": put: null key");
@@ -100,17 +99,17 @@ public class DbTable implements Table {
             throw new IllegalArgumentException("Table \"" + tableName + "\": put: empty key");
         }
 
-        if (commitedData.containsKey(key)) {
+        if (committedData.containsKey(key)) {
 
             if (removedData.containsKey(key)) {
                 removedData.remove(key);
-                if (!commitedData.get(key).equals(value)) {
+                if (!committedData.get(key).equals(value)) {
                     changedData.put(key, value);
                 }
                 return null;
             } else if (changedData.containsKey(key)) {
 
-                if (commitedData.get(key).equals(value)) {
+                if (committedData.get(key).equals(value)) {
                     return changedData.remove(key);
                 } else {
                     return changedData.put(key, value);
@@ -118,7 +117,7 @@ public class DbTable implements Table {
             } else {
 
                 changedData.put(key, value);
-                return commitedData.get(key);
+                return committedData.get(key);
 
             }
 
@@ -137,7 +136,7 @@ public class DbTable implements Table {
      * @throws IllegalArgumentException Если значение параметра key является null.
      */
     @Override
-    public String remove(String key) {
+    public Storeable remove(String key) {
 
         if (key == null) {
             throw new IllegalArgumentException("Table \"" + tableName + "\": remove: null key");
@@ -152,7 +151,7 @@ public class DbTable implements Table {
         }
 
         if (changedData.containsKey(key)) {
-            String value = changedData.get(key);
+            Storeable value = changedData.get(key);
             changedData.remove(key);
             removedData.put(key, value);
             return value;
@@ -162,8 +161,8 @@ public class DbTable implements Table {
             return null;
         }
 
-        if (commitedData.containsKey(key)) {
-            String value = commitedData.get(key);
+        if (committedData.containsKey(key)) {
+            Storeable value = committedData.get(key);
             removedData.put(key, value);
             return value;
         }
@@ -178,7 +177,7 @@ public class DbTable implements Table {
      */
     @Override
     public int size() {
-        return commitedData.size() - removedData.size() + addedData.size();
+        return committedData.size() - removedData.size() + addedData.size();
     }
 
     /**
@@ -189,11 +188,11 @@ public class DbTable implements Table {
     @Override
     public int commit() {
 
-        commitedData.keySet().removeAll(removedData.keySet());
-        commitedData.putAll(addedData);
-        commitedData.putAll(changedData);
+        committedData.keySet().removeAll(removedData.keySet());
+        committedData.putAll(addedData);
+        committedData.putAll(changedData);
 
-        int changedKeys = changedNum();
+        int changedKeys = getNumberOfUncommittedChanges();
         addedData.clear();
         removedData.clear();
         changedData.clear();
@@ -209,7 +208,7 @@ public class DbTable implements Table {
     @Override
     public int rollback() {
 
-        int changedKeys = changedNum();
+        int changedKeys = getNumberOfUncommittedChanges();
         addedData.clear();
         removedData.clear();
         changedData.clear();
@@ -226,16 +225,54 @@ public class DbTable implements Table {
     public List<String> list() {
 
         List<String> keyList = new LinkedList<>();
-        keyList.addAll(commitedData.keySet());
+        keyList.addAll(committedData.keySet());
         keyList.addAll(addedData.keySet());
 
         return keyList;
     }
 
 
-    public int changedNum() {
+    /**
+     * Возвращает количество изменений, ожидающих фиксации.
+     *
+     * @return Количество изменений, ожидающих фиксации.
+     */
+    @Override
+    public int getNumberOfUncommittedChanges(){
         return addedData.size() + removedData.size() + changedData.size();
     }
+
+
+    /**
+     * Возвращает количество колонок в таблице.
+     *
+     * @return Количество колонок в таблице.
+     */
+    @Override
+    public int getColumnsCount() {
+        return signature.size();
+    }
+
+
+    /**
+     * Возвращает тип значений в колонке.
+     *
+     * @param columnIndex Индекс колонки. Начинается с нуля.
+     * @return Класс, представляющий тип значения.
+     *
+     * @throws IndexOutOfBoundsException - неверный индекс колонки
+     */
+    @Override
+    public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
+
+        if (columnIndex < 0 || columnIndex >= signature.size()) {
+            throw new IndexOutOfBoundsException("DbTable: getColumnType: index \"" + columnIndex + "\" is out of bounds");
+        }
+
+        return signature.get(columnIndex);
+
+    }
+
 
     private void readKeyValue(Path filePath, int dir, int file) throws MyIOException {
 
@@ -285,7 +322,7 @@ public class DbTable implements Table {
 
     public void read() throws MyIOException {
 
-        commitedData.clear();
+        committedData.clear();
 
         for (int dir = 0; dir < 16; ++dir) {
             for (int file = 0; file < 16; ++file) {
@@ -330,7 +367,7 @@ public class DbTable implements Table {
             }
         }
 
-        for (HashMap.Entry<String, String> entry : commitedData.entrySet()) {
+        for (HashMap.Entry<String, String> entry : committedData.entrySet()) {
 
             String key = entry.getKey();
             String value = entry.getValue();
