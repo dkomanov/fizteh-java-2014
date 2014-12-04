@@ -4,7 +4,6 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Vector;
 
 /**

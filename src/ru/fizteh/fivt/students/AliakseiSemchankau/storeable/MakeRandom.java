@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.AliakseiSemchankau.storeable;
 
-import ru.fizteh.fivt.storage.structured.Storeable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -45,8 +43,7 @@ public class MakeRandom {
                 int randInt = rand.nextInt();
                 if (randInt % 2 == 0) {
                     values.add(true);
-                }
-                else {
+                } else {
                     values.add(false);
                 }
             }
