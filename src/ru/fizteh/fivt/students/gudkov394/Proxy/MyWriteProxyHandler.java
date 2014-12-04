@@ -26,15 +26,17 @@ public class MyWriteProxyHandler implements InvocationHandler {
     private Writer writer;
     private Object implementation;
 
-    MyWriteProxyHandler(Writer wr, Object impl) {
-        writer = wr;
-        implementation = impl;
+    MyWriteProxyHandler(Writer writerTmp, Object implementationTmp) {
+        writer = writerTmp;
+        implementation = implementationTmp;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<invoke timestamp=\"").append(System.currentTimeMillis()).append("\" class=\"").append(implementation.getClass().getCanonicalName()).append("\" name=\"").append(method.getName()).append("\">");
+        stringBuilder.append("<invoke timestamp=\"").append(System.currentTimeMillis()).
+                append("\" class=\"").append(implementation.getClass().getCanonicalName()).
+                append("\" name=\"").append(method.getName()).append("\">");
         if (args != null && args.length > 0) {
             stringBuilder.append((new ParserXML()).parse(args));
         } else {
