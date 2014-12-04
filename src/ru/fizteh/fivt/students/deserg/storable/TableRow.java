@@ -3,22 +3,25 @@ package ru.fizteh.fivt.students.deserg.storable;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Created by deserg on 03.12.14.
  */
 public class TableRow implements Storeable {
 
-    private Vector<Object> columns = new Vector<>();
+    private ArrayList<Object> columns = new ArrayList<>();
     private List<Class<?>> signature = new LinkedList<>();
 
 
     public TableRow(List<Class<?>> signature) {
         this.signature = signature;
-        columns.setSize(signature.size());
+        for (int i = 0; i < signature.size(); i++) {
+            columns.add(null);
+        }
+        //columns.setSize(signature.size());
     }
 
     /**
@@ -213,5 +216,11 @@ public class TableRow implements Storeable {
         return (String) columns.get(columnIndex);
 
     }
+
+
+
+    /**
+     * Not-interface methods begin here
+     */
 
 }

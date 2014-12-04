@@ -308,6 +308,52 @@ public class TableTest {
         }
     }
 
+    @Test
+    public void testCommitRollback() {
+
+        try {
+            DbTable table = (DbTable) provider.createTable("table", signature);
+
+            Storeable val1 = new TableRow(signature);
+            val1.setColumnAt(0, 123);
+
+            table.put("key1", val1);
+            table.put("key2", val1);
+
+            table.commit();
+            table.rollback();
+            assertEquals(table.size(), 2);
+
+            table.put("key3", val1);
+            table.put("key4", val1);
+
+            table.rollback();
+            assertEquals(table.size(), 2);
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetColumnType() {
+
+        try {
+            DbTable table = (DbTable) provider.createTable("table", signature);
+
+            try {
+                table.getColumnType(2);
+                assertTrue(false);
+            } catch (IndexOutOfBoundsException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
+
 
     @After
     public void finish() {

@@ -23,6 +23,7 @@ public class DbTable implements Table {
     private String tableName;
     private Path tablePath;
 
+
     public DbTable(Path path, List<Class<?>> signature) {
         tablePath = path;
         tableName = path.getFileName().toString();
@@ -281,6 +282,11 @@ public class DbTable implements Table {
 
     }
 
+
+
+    /**
+     * Not-interface methods begin here
+     */
 
     public List<Class<?>> getSignature() {
         return signature;

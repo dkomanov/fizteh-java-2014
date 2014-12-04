@@ -27,6 +27,7 @@ public class DbTableProvider implements TableProvider {
     private DbTable currentTable = null;
 
 
+
     /**
      * Возвращает таблицу с указанным названием.
      *
@@ -242,6 +243,11 @@ public class DbTableProvider implements TableProvider {
      * Not-interface methods begin here
      */
 
+    public DbTableProvider(Path inpPath) {
+        dbPath = inpPath;
+        read();
+    }
+
     public DbTable getCurrentTable() {
         return currentTable;
     }
@@ -296,16 +302,17 @@ public class DbTableProvider implements TableProvider {
     }
 
 
-    public DbTableProvider(Path inpPath) {
-        dbPath = inpPath;
-        read();
-    }
-
 
     public void read() {
 
-        if (dbPath == null || !Files.exists(dbPath)) {
+        if (dbPath == null) {
             return;
+        }
+
+        if (!Files.exists(dbPath)) {
+
+
+
         }
 
         File curDir = new File(dbPath.toString());

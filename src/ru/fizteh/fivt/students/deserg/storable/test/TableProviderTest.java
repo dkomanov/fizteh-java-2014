@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.deserg.storable.test;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.deserg.storable.DbTable;
 import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
 import ru.fizteh.fivt.students.deserg.storable.DbTableProviderFactory;
