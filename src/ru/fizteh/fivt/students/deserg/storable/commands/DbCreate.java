@@ -27,7 +27,7 @@ public class DbCreate implements Command {
                 typeString += args.get(i) + " ";
             }
 
-            String[] types = typeString.split("\\s+");
+            String[] types = typeString.substring(1, typeString.length() - 2).split("\\s+");
             List<Class<?>> signature = Serializer.makeSignatureFromStrings(types);
 
             try {

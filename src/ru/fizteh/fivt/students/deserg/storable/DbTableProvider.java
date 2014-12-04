@@ -145,6 +145,9 @@ public class DbTableProvider implements TableProvider {
         }
 
         removedTables.add(name);
+        if (currentTable.getName().equals(name)) {
+            currentTable = null;
+        }
         tables.remove(name);
     }
 

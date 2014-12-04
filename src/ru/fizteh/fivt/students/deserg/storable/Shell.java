@@ -78,8 +78,17 @@ public class Shell {
         Path sPath = path.resolve("signature.tsv");
 
         try (DataInputStream is = new DataInputStream(Files.newInputStream(sPath))) {
-            String line = is.readUTF().trim();
-            String[] types = line.split("\t");
+
+            if (is.available() == 0) {
+                throw new MyIOException("File is empty");
+            }
+
+            String line = "";
+            while (is.available() > 0) {
+                line += is.readChar();
+            }
+
+            String[] types = line.trim().split("\t");
             List<Class<?>> list = Serializer.makeSignatureFromStrings(types);
             return list;
 

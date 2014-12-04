@@ -30,7 +30,7 @@ public class Serializer {
             throw new ParseException("Json format error", 0);
         }
 
-        String[] segments = value.substring(1, value.length() - 1).split(",");
+        String[] segments = value.substring(1, value.length() - 1).split(",\\s+");
         if (segments.length != table.getColumnsCount()) {
             throw new ParseException("invalid number of columns", 0);
         }
@@ -71,10 +71,12 @@ public class Serializer {
         for (int i = 0; i < columnNum; i++) {
             Object obj = value.getColumnAt(i);
             if (obj != null && obj.getClass() != table.getColumnType(i)) {
-                throw new ColumnFormatException("Serializer: serialize: invalid column format at index " + i);
+                throw new ColumnFormatException("Serializer: serialize: invalid column format at index " + (i + 1));
             }
             if (obj == null) {
                 builder.append("null");
+            } else if (obj.getClass() == String.class) {
+                builder.append("\"").append(obj).append("\"");
             } else {
                 builder.append(obj.toString());
             }
@@ -145,7 +147,7 @@ public class Serializer {
         }
 
         if (classType == String.class) {
-            return pattern;
+            return pattern.substring(1, pattern.length() - 1);
         }
 
         return null;

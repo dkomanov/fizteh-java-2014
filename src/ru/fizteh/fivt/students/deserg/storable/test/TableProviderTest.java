@@ -255,10 +255,10 @@ public class TableProviderTest {
             Storeable val = new TableRow(signature);
             val.setColumnAt(0, 100500);
             val.setColumnAt(1, "serialize");
-            assertEquals(provider.serialize(table, val), "[100500,serialize]");
+            assertEquals(provider.serialize(table, val), "[100500,\"serialize\"]");
 
             val.setColumnAt(0, null);
-            assertEquals(provider.serialize(table, val), "[null,serialize]");
+            assertEquals(provider.serialize(table, val), "[null,\"serialize\"]");
 
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -303,7 +303,7 @@ public class TableProviderTest {
                 System.out.println(ex.getMessage());
             }
 
-            String pattern = "[1234554321,qwertyu]";
+            String pattern = "[1234554321,\"qwertyu\"]";
             Object[] objects = {1234554321, "qwertyu"};
 
             try {
