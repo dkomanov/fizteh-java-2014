@@ -3,17 +3,24 @@ package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.json.JSONComplexObject;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.json.JSONField;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * Implementation of Storeable that can be put to the table it is assigned to as a value.<br/>
- * Not thread-safe.
+ * Not thread-safe.<br/>
+ * Not bound to any table.
  */
-public class StoreableImpl implements Storeable {
+@JSONComplexObject(singleField = true)
+public final class StoreableImpl implements Storeable {
+    @JSONField
     private final Object[] values;
 
-    private Table host;
+    private final List<Class<?>> types;
 
     /**
      * Creates a new instance of Storeable with null values as default.
@@ -21,21 +28,28 @@ public class StoreableImpl implements Storeable {
      *         Host table.
      */
     StoreableImpl(Table host) {
-        this.host = host;
+        if (host instanceof StoreableTableImpl) {
+            // Memory optimization.
+            types = ((StoreableTableImpl) host).getColumnTypes();
+        } else {
+            types = new ArrayList<>(host.getColumnsCount());
+            for (int i = 0; i < host.getColumnsCount(); i++) {
+                types.add(host.getColumnType(i));
+            }
+        }
         this.values = new Object[host.getColumnsCount()];
     }
 
-    Table getHost() {
-        return host;
+    List<Class<?>> getTypes() {
+        return types;
     }
 
     private void ensureMatchColumnType(int columnIndex, Class<?> clazz) throws ColumnFormatException {
-        Class<?> columnType = host.getColumnType(columnIndex);
+        Class<?> columnType = types.get(columnIndex);
         if (!columnType.equals(clazz)) {
             throw new ColumnFormatException(
                     String.format(
-                            "wrong type (Table '%s', col %d: Expected instance of %s, but got %s)",
-                            host.getName(),
+                            "wrong type (col %d: Expected instance of %s, but got %s)",
                             columnIndex,
                             columnType.getSimpleName(),
                             clazz.getSimpleName()));
@@ -110,7 +124,7 @@ public class StoreableImpl implements Storeable {
 
     @Override
     public int hashCode() {
-        return host.hashCode();
+        return values.length;
     }
 
     @Override
@@ -120,11 +134,11 @@ public class StoreableImpl implements Storeable {
         }
         StoreableImpl storeable = (StoreableImpl) obj;
 
-        if (host != storeable.host) {
+        if (values.length != storeable.values.length) {
             return false;
         }
 
-        for (int col = 0; col < host.getColumnsCount(); col++) {
+        for (int col = 0; col < storeable.values.length; col++) {
             if (!Objects.equals(values[col], storeable.values[col])) {
                 return false;
             }
@@ -135,9 +149,20 @@ public class StoreableImpl implements Storeable {
 
     @Override
     public String toString() {
-        if (host instanceof StoreableTableImpl) {
-            return ((StoreableTableImpl) host).getProvider().serialize(host, this);
+        StringBuilder sb = new StringBuilder(StoreableImpl.class.getSimpleName()).append('[');
+
+        boolean comma = false;
+        for (Object obj : values) {
+            if (comma) {
+                sb.append(',');
+            }
+            comma = true;
+            if (obj != null) {
+                sb.append(obj.toString());
+            }
         }
-        return super.toString();
+
+        sb.append(']');
+        return sb.toString();
     }
 }

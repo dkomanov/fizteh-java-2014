@@ -102,6 +102,11 @@ public class SingleDatabaseShellState implements ShellState<SingleDatabaseShellS
     public void prepareToExit(int exitCode) throws ExitRequest {
         Log.log(SingleDatabaseShellState.class, "Preparing to exit with code " + exitCode);
         cleanup();
+        try {
+            activeDatabase.close();
+        } catch (Exception exc) {
+            Log.log(SingleDatabaseShellState.class, exc, "Failed to close database properly");
+        }
         Log.close();
         throw new ExitRequest(exitCode);
     }

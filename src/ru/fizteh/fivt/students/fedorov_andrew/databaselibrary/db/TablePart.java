@@ -27,12 +27,11 @@ import java.util.TreeMap;
  * @author phoenix
  */
 public class TablePart {
-    public static final int READ_BUFFER_SIZE = 16 * 1024;
+    private static final int READ_BUFFER_SIZE = 16 * 1024;
     /**
      * A pair (key, value) describes put. A pair (key, null) describes removal.
      */
-    private final ThreadLocal<Map<String, String>> diffMap =
-            ThreadLocal.withInitial(() -> new HashMap<String, String>());
+    private final ThreadLocal<Map<String, String>> diffMap = ThreadLocal.withInitial(HashMap::new);
     private Path tablePartFilePath;
     /**
      * Map with last changes that are written to the file system.<br/>
@@ -63,8 +62,7 @@ public class TablePart {
 
     public String get(String key) {
         if (diffMap.get().containsKey(key)) {
-            String value = diffMap.get().get(key);
-            return value;
+            return diffMap.get().get(key);
         } else {
             return lastCommittedMap.get(key);
         }
@@ -228,7 +226,7 @@ public class TablePart {
      * @return Separate actual version. Changes in this instance have not effect on true database state.
      */
     private Map<String, String> makeNewActualVersion() {
-        return makeActualVersion(new HashMap<String, String>(lastCommittedMap));
+        return makeActualVersion(new HashMap<>(lastCommittedMap));
     }
 
     /**
@@ -249,13 +247,16 @@ public class TablePart {
         return actualVersion;
     }
 
+    /**
+     * Returns actual size for the moment (considering the thread local diff).
+     */
     public int size() {
         return makeNewActualVersion().size();
     }
 
     /**
      * Writes changes to the file.
-     * @throws IOException
+     * @throws java.io.IOException
      */
     private void writeToFile() throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);

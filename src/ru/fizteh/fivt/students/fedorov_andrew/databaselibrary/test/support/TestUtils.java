@@ -30,7 +30,7 @@ public class TestUtils {
         return RANDOM.nextInt(b - a + 1) + a;
     }
 
-    public static int randInt(int n) {
+    private static int randInt(int n) {
         return RANDOM.nextInt(n);
     }
 

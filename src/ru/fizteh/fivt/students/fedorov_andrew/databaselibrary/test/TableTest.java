@@ -85,6 +85,11 @@ public class TableTest extends TestBase {
     }
 
     @Test
+    public void testToString() {
+        assertEquals("StoreableTableImpl[" + DB_ROOT.resolve(TABLE_NAME).normalize() + "]", table.toString());
+    }
+
+    @Test
     public void testPutWithNullKey() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Key must not be null");
@@ -334,17 +339,6 @@ public class TableTest extends TestBase {
         for (ControllableRunner runner : runners) {
             runner.waitUntilEndOfWork();
         }
-    }
-
-    @Test
-    public void testPutOneStoreableToAnotherTable() throws IOException {
-        Table table2 = provider.createTable(TABLE_NAME + "2", DEFAULT_COLUMN_TYPES);
-        Storeable storeable = provider.createFor(table);
-
-        exception.expect(IllegalStateException.class);
-        exception.expectMessage("Cannot put storeable assigned to one table to another table");
-
-        table2.put("key", storeable);
     }
 
     @Test

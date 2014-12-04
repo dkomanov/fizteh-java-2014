@@ -27,8 +27,8 @@ public abstract class ControllableRunnable implements Runnable, ControllableAgen
     }
 
     /**
-     * Call this method after execution finishes. If an {@link java.lang.Exception} or {@link
-     * java.lang.AssertionError} has occurred during execution, it will
+     * Call this method after execution finishes. If an {@link Exception} or {@link
+     * AssertionError} has occurred during execution, it will
      * be rethrown.
      * @throws Exception
      */
