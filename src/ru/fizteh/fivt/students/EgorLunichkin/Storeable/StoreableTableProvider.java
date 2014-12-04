@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.EgorLunichkin.Storeable;
 
 import ru.fizteh.fivt.storage.structured.*;
 
-import java.io.IOException;
 import java.util.List;
 
 public class StoreableTableProvider implements TableProvider {
