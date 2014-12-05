@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.egor_belikov.JUnit.MyTable;
 import ru.fizteh.fivt.students.egor_belikov.JUnit.MyTableProvider;
 
 import java.io.File;
