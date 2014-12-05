@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 public class UnitTestsForTableProvider {
     private final Path testDirectory
-            = Paths.get(System.getProperty("user.dir") + File.separator + "db");//Paths.get(System.getProperty("fizteh.db.dir"));
+            = Paths.get(System.getProperty("user.dir") + File.separator + "db");
     private final String testTableName = "qqq";
 
     @Before
