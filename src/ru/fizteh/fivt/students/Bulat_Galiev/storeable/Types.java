@@ -59,7 +59,15 @@ public class Types {
         classDeserializerMap.put(Byte.class, Byte::valueOf);
         classDeserializerMap.put(Double.class, Double::valueOf);
         classDeserializerMap.put(Float.class, Float::valueOf);
-        classDeserializerMap.put(Boolean.class, Boolean::valueOf);
+        classDeserializerMap.put(Boolean.class, string -> {
+            if (string.trim().toLowerCase().equals("true")) {
+                return true;
+            }
+            if (string.trim().toLowerCase().equals("false")) {
+                return false;
+            }
+            throw new ParseException("Wrong Boolean type", 0);
+        });
         classDeserializerMap.put(String.class,
                 string -> {
                     if (string.length() > 1 && string.charAt(0) == '"'
@@ -74,18 +82,18 @@ public class Types {
     public String serialize(Table table, Storeable value) {
         int numberOfElements = table.getColumnsCount();
         StringBuilder sb = new StringBuilder("[");
+        String prefix = "";
         for (int i = 0; i < numberOfElements; ++i) {
+            sb.append(prefix);
+            prefix = ", ";
             if (value.getColumnAt(i) == null) {
                 sb.append("null");
             } else {
                 sb.append(classSerializerMap.get(table.getColumnType(i))
                         .getString(value.getColumnAt(i)));
             }
-            sb.append(",");
         }
-        if (numberOfElements > 0) {
-            sb.setCharAt(sb.length() - 1, ']');
-        }
+            sb.append("]");
         return sb.toString();
     }
 

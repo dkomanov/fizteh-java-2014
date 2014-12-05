@@ -175,7 +175,7 @@ public class TabledbTest {
     @Test
     public void testRemoveNormalTwoValues() throws Exception {
         put1("1", "2", CHECKNUMBERTHREE);
-        Assert.assertEquals("\"2\",3", remove1("1"));
+        Assert.assertEquals("\"2\", 3", remove1("1"));
     }
 
     @Test
@@ -192,7 +192,7 @@ public class TabledbTest {
     @Test
     public void testGetNormalTwoValues() throws Exception {
         put1("1", "2", CHECKNUMBERTHREE);
-        Assert.assertEquals("\"2\",3", get1("1"));
+        Assert.assertEquals("\"2\", 3", get1("1"));
     }
 
     @Test

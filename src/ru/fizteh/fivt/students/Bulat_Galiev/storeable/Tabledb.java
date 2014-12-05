@@ -40,9 +40,8 @@ public final class Tabledb implements Table {
             readSignature();
             readTableDir();
         } catch (IOException e) {
-            System.err.print("Error reading table " + tableName + ": "
-                    + e.getMessage());
-            System.exit(-1);
+            throw new RuntimeException("Error reading table " + tableName
+                    + ": " + e.getMessage());
         }
     }
 
@@ -54,13 +53,9 @@ public final class Tabledb implements Table {
         return localProvider;
     }
 
-    public int commit() {
-        try {
-            int diffnrecords = writeTableToDir();
-            return diffnrecords;
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing table " + tableName, e);
-        }
+    public int commit() throws IOException {
+        int diffnrecords = writeTableToDir();
+        return diffnrecords;
     }
 
     public int rollback() {
@@ -74,7 +69,6 @@ public final class Tabledb implements Table {
                 it.remove();
             }
         }
-        System.out.println(diffnrecords);
         return diffnrecords;
     }
 
@@ -281,9 +275,7 @@ public final class Tabledb implements Table {
                         databaseFiles.put(new CellForKey(ndirectory, nfile),
                                 databaseFile);
                     } catch (Exception e) {
-                        System.err.print("Error reading table " + tableName
-                                + ": " + e.getMessage());
-                        System.exit(-1);
+                        throw new RuntimeException(e.getMessage(), e);
                     }
                 }
             }

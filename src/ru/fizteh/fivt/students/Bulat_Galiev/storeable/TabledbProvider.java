@@ -57,34 +57,15 @@ public final class TabledbProvider implements TableProvider {
         }
     }
 
-    public static void showTables() {
-        Set<String> keys = tableMap.keySet();
-        for (String current : keys) {
-            System.out.println(current + " " + tableMap.get(current).size());
-        }
-    }
-
-    public static void changeCurTable(final String name) throws IOException {
+    public static void changeCurTable(final String name) {
         try {
             if (name != null && !name.equals("")) {
                 tablesDirPath.resolve(name);
-                if (currentTable != null) {
-                    int diff = ((Tabledb) currentTable)
-                            .getNumberOfUncommittedChanges();
-                    if (diff != 0) {
-                        System.out.println(diff + " unsaved changes");
-                        return;
-                    }
-                }
                 Table newTable = tableMap.get(name);
                 if (newTable != null) {
-                    if (currentTable != null) {
-                        currentTable.commit();
-                    }
                     currentTable = newTable;
-                    System.out.println("using " + name);
                 } else {
-                    System.err.println(name + " does not exist");
+                    throw new IllegalStateException(name + " does not exist");
                 }
             } else {
                 throw new IllegalArgumentException("Null name.");
@@ -163,7 +144,6 @@ public final class TabledbProvider implements TableProvider {
                 Table newTable = new Tabledb(newTablePath, name, this,
                         columnTypes);
                 tableMap.put(name, newTable);
-                System.out.println("created");
                 return newTable;
             } else {
                 throw new IllegalArgumentException("Null name.");
@@ -175,18 +155,9 @@ public final class TabledbProvider implements TableProvider {
     }
 
     public Table createStoreableTable(final String[] arguments) {
-        String[] types = Arrays.copyOfRange(arguments, 2, arguments.length);
-        String name = arguments[1];
+        String[] types = Arrays.copyOfRange(arguments, 1, arguments.length);
+        String name = arguments[0];
 
-        if (types[0].charAt(0) != '('
-                || types[types.length - 1].charAt(types[types.length - 1]
-                        .length() - 1) != ')') {
-            throw new IllegalArgumentException(
-                    "You must specify types in brackets.");
-        }
-        types[0] = types[0].substring(1, types[0].length());
-        types[types.length - 1] = types[types.length - 1].substring(0,
-                types[types.length - 1].length() - 1);
         List<Class<?>> listOfClasses = new ArrayList<Class<?>>();
         for (String string : types) {
             if (Types.stringToClass(string) == null) {
@@ -198,7 +169,7 @@ public final class TabledbProvider implements TableProvider {
         return this.createTable(name, listOfClasses);
     }
 
-    public void removeTable(final String name) {
+    public void removeTable(final String name) throws IOException {
         try {
             if (name != null && !name.equals("")) {
                 tablesDirPath.resolve(name);
@@ -210,7 +181,6 @@ public final class TabledbProvider implements TableProvider {
                         currentTable = null;
                     }
                     ((Tabledb) removedTable).deleteTable();
-                    System.out.println("dropped");
                 }
             } else {
                 throw new IllegalArgumentException("Null name.");
@@ -218,9 +188,7 @@ public final class TabledbProvider implements TableProvider {
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException("table name " + name
                     + " is incorrect. " + e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        } 
     }
 
     public Table getDataBase() {
@@ -328,6 +296,10 @@ public final class TabledbProvider implements TableProvider {
     @Override
     public List<String> getTableNames() {
         return new ArrayList<String>(tableMap.keySet());
+    }
+    
+    public Set<String> getKeySet() {
+        return tableMap.keySet();
     }
 
 }
