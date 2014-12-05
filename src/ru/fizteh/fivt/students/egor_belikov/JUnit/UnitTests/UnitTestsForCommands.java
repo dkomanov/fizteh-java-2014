@@ -8,17 +8,18 @@ import ru.fizteh.fivt.students.egor_belikov.JUnit.JUnit;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Scanner;
 
+import static java.lang.System.out;
 import static org.junit.Assert.assertEquals;
 
 public class UnitTestsForCommands {
     private ByteArrayOutputStream outputStream;
-    private PrintStream printStream;
 
     @Before
     public void setUp() {
         outputStream = new ByteArrayOutputStream();
-        printStream = new PrintStream(outputStream);
+        //outputStream = new ByteArrayOutputStream();
         JUnit.isInteractiveMode = true;
     }
 
@@ -71,9 +72,17 @@ public class UnitTestsForCommands {
         }
     }
 
+    @Test
+    public final void showTablesWithWrongArguments1() throws Exception {
+        try {
+            JUnit.execute("show table");
+        } catch (Exception e) {
+            assertEquals("Invalid args", e.getMessage());
+        }
+    }
+
     @After
     public void tearDown() throws IOException {
         outputStream.close();
-        printStream.close();
     }
 }
