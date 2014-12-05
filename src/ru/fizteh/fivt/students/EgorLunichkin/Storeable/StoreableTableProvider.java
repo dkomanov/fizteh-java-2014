@@ -74,8 +74,11 @@ public class StoreableTableProvider implements TableProvider {
 
     @Override
     public void removeTable(String name) throws IOException {
-        if (name == null || !tables.containsKey(name)) {
+        if (name == null) {
             throw new IllegalArgumentException();
+        }
+        if (!tables.containsKey(name)) {
+            throw new IllegalStateException();
         }
         if (!signatures.get(name).delete()) {
             throw new IOException("Cannot delete signature file");
@@ -170,6 +173,14 @@ public class StoreableTableProvider implements TableProvider {
         if (using == null) {
             return null;
         }
+        return tables.get(using);
+    }
+
+    public Table setUsing(String name) {
+        if (!tables.containsKey(name)) {
+            return null;
+        }
+        using = name;
         return tables.get(using);
     }
 }

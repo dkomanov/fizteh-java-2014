@@ -17,14 +17,14 @@ public class CreateCommand implements Command {
         for (int ind = 0; ind < givenTypeNames.length; ++ind) {
             if (ind == 0) {
                 if (!givenTypeNames[ind].startsWith("(")) {
-                    throw new StoreableException("Typename list must be in brackets");
+                    throw new StoreableException("wrong type (typename list must be in brackets)");
                 } else {
                     typeNames.append(givenTypeNames[ind].substring(1));
                 }
             }
             if (ind == givenTypeNames.length - 1) {
                 if (!givenTypeNames[ind].endsWith(")")) {
-                    throw new StoreableException("Typename list must be in brackets");
+                    throw new StoreableException("wrong type (typename list must be in brackets)");
                 } else {
                     typeNames.append(givenTypeNames[ind].substring(0, givenTypeNames[ind].length() - 1));
                 }

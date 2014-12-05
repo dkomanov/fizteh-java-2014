@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.EgorLunichkin.Storeable.commands;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.students.EgorLunichkin.Storeable.StoreableException;
 import ru.fizteh.fivt.students.EgorLunichkin.Storeable.StoreableTableProvider;
 
 public class GetCommand implements Command {
