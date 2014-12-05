@@ -63,7 +63,7 @@ public class StoreableTableProvider implements TableProvider {
         MyTable jTable = (MyTable) jTableProvider.getTable(name);
         String types = TypeManager.getNames(columnTypes);
         File signature = new File(new File(dbPath, name), "signature.tsv");
-        if (signature.createNewFile()) {
+        if (!signature.createNewFile()) {
             throw new IOException("Cannot create signature file");
         }
         writeSignature(signature, types);

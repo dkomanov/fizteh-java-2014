@@ -13,7 +13,7 @@ public class CommitCommand implements Command {
     private StoreableTableProvider sTableProvider;
 
     @Override
-    public void run() throws StoreableException{
+    public void run() throws StoreableException {
         if (sTableProvider.getUsing() == null) {
             System.out.println("no table");
         } else {

@@ -15,12 +15,14 @@ public class CreateCommand implements Command {
         tableName = givenName;
         StringBuilder typeNames = new StringBuilder();
         for (int ind = 0; ind < givenTypeNames.length; ++ind) {
+            boolean added = false;
             if (ind == 0) {
                 if (!givenTypeNames[ind].startsWith("(")) {
                     throw new StoreableException("wrong type (typename list must be in brackets)");
                 } else {
                     typeNames.append(givenTypeNames[ind].substring(1));
                 }
+                added = true;
             }
             if (ind == givenTypeNames.length - 1) {
                 if (!givenTypeNames[ind].endsWith(")")) {
@@ -28,11 +30,14 @@ public class CreateCommand implements Command {
                 } else {
                     typeNames.append(givenTypeNames[ind].substring(0, givenTypeNames[ind].length() - 1));
                 }
-                continue;
+                added = true;
             }
-            typeNames.append(givenTypeNames[ind]);
+            if (!added) {
+                typeNames.append(givenTypeNames[ind]);
+            }
+            typeNames.append(' ');
         }
-        types = TypeManager.getClasses(typeNames.toString());
+        types = TypeManager.getClasses(typeNames.toString().trim());
     }
 
     private StoreableTableProvider sTableProvider;
