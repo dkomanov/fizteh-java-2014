@@ -274,8 +274,7 @@ public class JUnit {
     }
 
     public static void show(String[] args) throws Exception {
-        if (args[1] != "tables")
-        {
+        if (!args[1].equals("tables")) {
             throw new Exception("Invalid args");
         }
         if (savedFileMap != null) {
@@ -416,16 +415,19 @@ public class JUnit {
         }
     }
     public static Integer countChanges() {
-        if (currentFileMap == null || savedFileMap == null)
+        if (currentFileMap == null || savedFileMap == null) {
             return 0;
+        }
         Integer result = 0;
         for (Map.Entry e : currentFileMap.entrySet()) {
-            if (savedFileMap.get(e.getKey()) != e.getValue())
+            if (savedFileMap.get(e.getKey()) != e.getValue()) {
                 result++;
+            }
         }
         for (Map.Entry e : savedFileMap.entrySet()) {
-            if (currentFileMap.get(e.getKey()) == null)
+            if (currentFileMap.get(e.getKey()) == null) {
                 result++;
+            }
         }
         return result;
     }
