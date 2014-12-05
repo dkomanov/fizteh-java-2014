@@ -14,7 +14,7 @@ public class JUnit {
     public static TreeMap<String, String> savedFileMap;
 
     public static String currentTable;
-    private static String separator;
+    static String separator;
 
 
     public static void main(String[] args) throws Exception {
@@ -22,8 +22,8 @@ public class JUnit {
         listOfTables = new TreeMap<>();
 
         try {
-            currentPath = System.getProperty("user.dir") + separator + "db";
-            //currentPath = Paths.get(System.getProperty("fizteh.db.dir")).toString();
+            //currentPath = System.getProperty("user.dir") + separator + "db";
+            currentPath = Paths.get(System.getProperty("fizteh.db.dir")).toString();
             File directoryFromCurrentPath = new File(currentPath);
             if (directoryFromCurrentPath.exists() && directoryFromCurrentPath.isDirectory()) {
                 regenerateFileMaps();
@@ -273,7 +273,11 @@ public class JUnit {
         }
     }
 
-    public static void show(String[] args) {
+    public static void show(String[] args) throws Exception {
+        if (args[1] != "tables")
+        {
+            throw new Exception("Invalid args");
+        }
         if (savedFileMap != null) {
             listOfTables.put(currentTable, savedFileMap.size());
         }
