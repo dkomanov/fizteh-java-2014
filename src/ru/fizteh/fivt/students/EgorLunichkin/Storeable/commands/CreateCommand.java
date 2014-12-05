@@ -41,7 +41,7 @@ public class CreateCommand implements Command {
 
     @Override
     public void run() throws StoreableException {
-        try{
+        try {
             Table table = sTableProvider.createTable(tableName, types);
             if (table == null) {
                 System.out.println(tableName + " exists");
