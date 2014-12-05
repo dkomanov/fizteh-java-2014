@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.students.egor_belikov.JUnit.JUnit;
 import ru.fizteh.fivt.students.egor_belikov.JUnit.MyTableProviderFactory;
 
 import java.io.File;
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 public class UnitTestsForTableProviderFactory {
     private final Path testDirectory
-            = Paths.get(System.getProperty("fizteh.db.dir"));
+            = Paths.get(System.getProperty("user.dir") + File.separator + "db");
 
     @Before
     public final void setUp() throws Exception {
@@ -23,13 +24,13 @@ public class UnitTestsForTableProviderFactory {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public final void testFactoryThrowsExceptionCreatedNullTableHolder() {
+    public final void factoryNullDir() {
         TableProviderFactory test = new MyTableProviderFactory();
         test.create(null);
     }
 
     @Test
-    public final void testTableHolderFactoryCreatedNewValidTableHolder() throws Exception {
+    public final void factoryGood() throws Exception {
         TableProviderFactory test = new MyTableProviderFactory();
         TableProvider testProvider = test.create(testDirectory.toString());
         testProvider.createTable("a");
@@ -50,5 +51,6 @@ public class UnitTestsForTableProviderFactory {
         } catch (Exception e) {
             assertTrue(false);
         }
+        JUnit.execute("exit");
     }
 }
