@@ -27,11 +27,16 @@ public class MyTableProvider implements TableProvider {
 
     public static TreeMap<String, Table> myTables;
     public static String path;
-    MyTableProvider(String dir) {
+    public MyTableProvider(String dir) {
+        if (dir == null) {
+            throw new IllegalArgumentException("MyTableProvider: null dir");
+        }
         path = dir;
         myTables = new TreeMap<>();
         JUnit.separator = File.separator;
         JUnit.listOfTables = new TreeMap<>();
+        JUnit.currentFileMap = null;
+        JUnit.currentTable = null;
         try {
             //currentPath = System.getProperty("user.dir") + separator + "db";
             JUnit.currentPath = path;
@@ -99,7 +104,7 @@ public class MyTableProvider implements TableProvider {
             listOfTables.put(name, 0);
             Table table = new MyTable(name);
             myTables.put(name, table);
-            return table;
+            return this.getTable(name);
         } else {
             return null;
         }
