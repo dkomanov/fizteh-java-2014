@@ -7,10 +7,6 @@ import ru.fizteh.fivt.students.egor_belikov.JUnit.JUnit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Scanner;
-
-import static java.lang.System.out;
 import static org.junit.Assert.assertEquals;
 
 public class UnitTestsForCommands {
@@ -19,7 +15,6 @@ public class UnitTestsForCommands {
     @Before
     public void setUp() {
         outputStream = new ByteArrayOutputStream();
-        //outputStream = new ByteArrayOutputStream();
         JUnit.isInteractiveMode = true;
     }
 
