@@ -24,7 +24,7 @@ import static ru.fizteh.fivt.students.egor_belikov.JUnit.JUnit.savedFileMap;
 public class MyTable implements Table{
     public static String nameTable;
     
-    MyTable(String name) {
+    public MyTable(String name) {
         nameTable = name;
     }
 
