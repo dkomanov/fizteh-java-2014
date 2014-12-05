@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.EgorLunichkin.Storeable;
 import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.EgorLunichkin.JUnit.*;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -87,8 +88,12 @@ public class StoreableTableProvider implements TableProvider {
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
         List<Class<?>> typesList = ((StoreableTable) table).types;
-        List<Object> values = XMLManager.deserialize(value, typesList);
-        return this.createFor(table);
+        try {
+            List<Object> values = XMLManager.deserialize(value, typesList);
+            return this.createFor(table, values);
+        } catch (ParserConfigurationException ex) {
+            throw new ParseException(ex.getMessage(), 0);
+        }
     }
 
     @Override
@@ -111,7 +116,12 @@ public class StoreableTableProvider implements TableProvider {
                 throw new ColumnFormatException("Column #" + ind + " has incorrect format");
             }
         }
-        return XMLManager.serialize(((StoreableEntry) value).values);
+        try{
+            return XMLManager.serialize(((StoreableEntry) value).values);
+        } catch (StoreableException ex) {
+            System.err.println(ex.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -154,5 +164,11 @@ public class StoreableTableProvider implements TableProvider {
         try (BufferedWriter outputStream = Files.newBufferedWriter(path, charset)) {
             outputStream.write(sign);
         }
+    }
+
+    public Table getUsing() {
+        if (using == null)
+            return null;
+        return tables.get(using);
     }
 }
