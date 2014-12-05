@@ -32,8 +32,8 @@ public class UnitTestsForTableProviderFactory {
     public final void testTableHolderFactoryCreatedNewValidTableHolder() throws Exception {
         TableProviderFactory test = new MyTableProviderFactory();
         TableProvider testProvider = test.create(testDirectory.toString());
-        testProvider.createTable("MyTable");
-        assertTrue(testDirectory.resolve("MyTable").toFile().exists());
+        testProvider.createTable("a");
+        assertTrue(testDirectory.resolve("a").toFile().exists());
     }
     @After
     public final void tearDown() throws Exception {
