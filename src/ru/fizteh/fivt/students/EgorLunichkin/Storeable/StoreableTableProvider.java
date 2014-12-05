@@ -116,7 +116,7 @@ public class StoreableTableProvider implements TableProvider {
                 throw new ColumnFormatException("Column #" + ind + " has incorrect format");
             }
         }
-        try{
+        try {
             return XMLManager.serialize(((StoreableEntry) value).values);
         } catch (StoreableException ex) {
             System.err.println(ex.getMessage());
@@ -167,8 +167,9 @@ public class StoreableTableProvider implements TableProvider {
     }
 
     public Table getUsing() {
-        if (using == null)
+        if (using == null) {
             return null;
+        }
         return tables.get(using);
     }
 }
