@@ -11,7 +11,6 @@ package ru.fizteh.fivt.students.egor_belikov.JUnit;
  */
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
