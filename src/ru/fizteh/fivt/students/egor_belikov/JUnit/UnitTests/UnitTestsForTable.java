@@ -16,7 +16,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class UnitTestsForTable {
-    private final String testDir = System.getProperty("user.dir") + File.separator + "db";//System.getProperty("java.io.tmpdir") + File.separator + "DbTestDir";
+    private final String testDir = System.getProperty("user.dir") + File.separator + "db";
     private final String tableName = "table1";
     private final String testFile = "Тестовый файл.txt";
     private final int dirNumber = 1;
@@ -47,7 +47,8 @@ public class UnitTestsForTable {
 
     @Test(expected = IllegalArgumentException.class)
     public final void getExceptionNull() throws Exception {
-        Table test  = new MyTable(tableName);
+        myTableProvider.createTable(tableName);
+        Table test = myTableProvider.getTable(tableName);
         test.get(null);
         myTableProvider.removeTable(tableName);
 
