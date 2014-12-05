@@ -7,13 +7,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class JUnit {
-    static String currentPath;
-    private static boolean isInteractiveMode;
-    static TreeMap<String, Integer> listOfTables;    
-    static TreeMap<String, String> currentFileMap;
-    static TreeMap<String, String> savedFileMap;
+    public static String currentPath;
+    public static boolean isInteractiveMode;
+    public static TreeMap<String, Integer> listOfTables;
+    public static TreeMap<String, String> currentFileMap;
+    public static TreeMap<String, String> savedFileMap;
 
-    static String currentTable;    
+    public static String currentTable;
     private static String separator;
 
 
