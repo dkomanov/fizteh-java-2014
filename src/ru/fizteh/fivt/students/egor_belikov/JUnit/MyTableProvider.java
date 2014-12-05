@@ -11,6 +11,7 @@ package ru.fizteh.fivt.students.egor_belikov.JUnit;
  */
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +29,23 @@ public class MyTableProvider implements TableProvider {
     public static String path;
     MyTableProvider(String dir) {
         path = dir;
-        
+        myTables = new TreeMap<>();
+        JUnit.separator = File.separator;
+        JUnit.listOfTables = new TreeMap<>();
+        try {
+            //currentPath = System.getProperty("user.dir") + separator + "db";
+            JUnit.currentPath = path;
+            File directoryFromCurrentPath = new File(currentPath);
+            if (directoryFromCurrentPath.exists() && directoryFromCurrentPath.isDirectory()) {
+                JUnit.regenerateFileMaps();
+                JUnit.isInteractiveMode = true;
+            } else {
+                throw new IllegalArgumentException("MyTableProvider: Directory not found");
+            }
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+            System.exit(1);
+        }
     }
     
     @Override
