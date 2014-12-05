@@ -432,8 +432,7 @@ public class JUnit {
         return result;
     }
 
-    public static void size(String[] args)
-    {
+    public static void size(String[] args) {
         System.out.println(currentFileMap.size());
     }
     
