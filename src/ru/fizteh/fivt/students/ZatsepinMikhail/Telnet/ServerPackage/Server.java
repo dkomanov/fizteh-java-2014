@@ -1,14 +1,27 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMapFactory;
+
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Server {
-    private ServerSocket socket;
+    private ServerSocketChannel socket;
     private boolean started;
+    private ArrayList<SocketAddress> clients;
 
     public Server() {
         started = false;
+        clients = new ArrayList<>();
+    }
+
+    public List<SocketAddress> listUsers() {
+        return clients;
     }
 
     public boolean isStarted() {
@@ -17,7 +30,7 @@ public class Server {
 
     public boolean startServer(int port) {
         try {
-            socket = new ServerSocket(port);
+            socket = ServerSocketChannel.open().bind(new InetSocketAddress(port));
             Thread listenThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -38,9 +51,23 @@ public class Server {
 
     public void listen() {
         try {
-            socket.accept();
+            SocketChannel clientChannel = socket.accept();
+
+            clients.add(clientChannel.getRemoteAddress());
+            Thread listenThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    talkWithClient(clientChannel);
+                }
+            });
+            listenThread.start();
         } catch (IOException e) {
 
         }
+    }
+
+    public void talkWithClient(SocketChannel client) {
+        MFileHashMapFactory factory = new MFileHashMapFactory();
+
     }
 }
