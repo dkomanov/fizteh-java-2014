@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.DataBaseTable;
 import ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.DataBaseTableProvider;
@@ -25,14 +26,19 @@ public class TableRowSerializerTest {
     private DataBaseTable table;
     private ArrayList<Class<?>> signature;
 
+    static TemporaryFolder folder;
+    static String folderName;
     @BeforeClass
     public static void init() {
+        folder = new TemporaryFolder();
+        folderName = folder.toString();
         try {
-            provider = new DataBaseTableProvider("D:\\test\\database3");
+            provider = new DataBaseTableProvider(folderName);
         } catch (Exception e) {
-            assertTrue(false);
+            fail();
         }
         serializer = new TableRowSerializer();
+
     }
 
 
@@ -208,9 +214,10 @@ public class TableRowSerializerTest {
         } catch (IOException ioe) {
             assertTrue(false);
         }
-        for (int i = 0; i < 500; ++i) {
+        for (int i = 0; i < 500; ++i)    {
             table.remove(Integer.toString(i));
         }
+
 
         assertEquals(table.size(), 500);
 

@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.test;
 
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.DataBaseTable;
 import ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.DataBaseTableProvider;
@@ -110,7 +111,7 @@ public class ThreadDataBaseTest {
 
         DataBaseTableProviderRunner() {
             try {
-                provider = new DataBaseTableProvider("D:\\test\\database3");
+                provider = new DataBaseTableProvider(new TemporaryFolder().toString());
             } catch (Exception e) {
                 assertTrue(false);
             }

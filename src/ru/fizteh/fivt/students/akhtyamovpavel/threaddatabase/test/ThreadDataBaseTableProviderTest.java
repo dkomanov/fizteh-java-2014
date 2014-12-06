@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.test;
 
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.DataBaseTableProviderFactory;
@@ -71,11 +72,13 @@ public class ThreadDataBaseTableProviderTest {
     abstract class DataBaseProviderRunner implements Runnable {
         DataBaseTableProvider provider;
         DataBaseTableProviderFactory factory;
+        TemporaryFolder folder = new TemporaryFolder();
 
         public DataBaseProviderRunner() {
             factory = new DataBaseTableProviderFactory();
             try {
-                provider = new DataBaseTableProvider("D:\\test\\database4");
+
+                provider = new DataBaseTableProvider(folder.toString());
             } catch (Exception e) {
                 fail();
             }
