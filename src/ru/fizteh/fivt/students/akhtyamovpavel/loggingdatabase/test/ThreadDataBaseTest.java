@@ -21,6 +21,7 @@ public class ThreadDataBaseTest {
         DataBaseTableProviderRunner runner = new DataBaseTableProviderRunner() {
             boolean flag = false;
             boolean flagRemove = false;
+            boolean isClosed = false;
 
             @Override
             public void run() {
@@ -76,6 +77,37 @@ public class ThreadDataBaseTest {
                         fail();
                     }
                 }
+                try {
+                    Thread.sleep(200L);
+                } catch (InterruptedException e) {
+                    fail();
+                }
+
+                synchronized (this.getClass()) {
+                    if (!isClosed) {
+                        try {
+                            table.close();
+                        } catch (Exception e) {
+                            fail();
+                        }
+                        isClosed = true;
+                    } else {
+                        try {
+                            table.getColumnsCount();
+                            fail();
+                        } catch (Exception e) {
+                            assertTrue(true);
+                        }
+
+                        try {
+                            table.get("1");
+                            fail();
+                        } catch (Exception e) {
+                            assertTrue(true);
+                        }
+                    }
+                }
+
                 try {
                     Thread.sleep(200L);
                 } catch (InterruptedException e) {

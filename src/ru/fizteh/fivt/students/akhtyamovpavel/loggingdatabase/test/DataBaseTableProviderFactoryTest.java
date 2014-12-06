@@ -6,6 +6,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.students.akhtyamovpavel.loggingdatabase.DataBaseTableProviderFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
@@ -34,6 +35,31 @@ public class DataBaseTableProviderFactoryTest {
         }
 
         assertNull(factory.create(Paths.get(folderName, "non_exist", "non_exist").toString(), true));
+    }
+
+    @Test
+    public void testClose() {
+        DataBaseTableProviderFactory factory = new DataBaseTableProviderFactory();
+        try {
+            folder = new TemporaryFolder();
+            assertNotNull(factory.create(folder.toString()));
+        } catch (IOException e) {
+            fail();
+        }
+        try {
+            factory.close();
+        } catch (Exception e) {
+            fail();
+        }
+
+        try {
+            factory.create(folder.toString());
+            fail();
+        } catch (IOException e) {
+            fail();
+        } catch (IllegalStateException e) {
+            assertTrue(true);
+        }
     }
 
 

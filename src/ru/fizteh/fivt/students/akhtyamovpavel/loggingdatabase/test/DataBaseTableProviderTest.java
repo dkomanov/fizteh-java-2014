@@ -258,4 +258,71 @@ public class DataBaseTableProviderTest {
         }
 
     }
+
+    @Test
+    public void testClose() {
+        DataBaseTableProvider provider = null;
+        try {
+            folder = new TemporaryFolder();
+            provider = factory.create(folder.toString());
+        } catch (IOException e) {
+            fail();
+        }
+        HashMap<String, ArrayList<Class<?>>> signature = new HashMap<>();
+        ArrayList<Table> tables = new ArrayList<>();
+        for (int i = 0; i < 20; ++i) {
+            signature.put(Integer.toString(i), TableRowGenerator.generateSignature());
+            try {
+                tables.add(provider.createTable(Integer.toString(i),
+                        signature.get(Integer.toString(i))));
+            } catch (IOException e) {
+                fail();
+            }
+        }
+
+
+        for (int i = 0; i < 20; ++i) {
+            tables.get(i).put("test", TableRowGenerator.generateRow(provider, (DataBaseTable) tables.get(i),
+                    signature.get(Integer.toString(i))));
+        }
+        try {
+            provider.close();
+        } catch (Exception e) {
+            fail();
+        }
+
+        for (int i = 0; i < 20; ++i) {
+            try {
+                tables.get(i).put("ok", TableRowGenerator.generateRow(provider,
+                        (DataBaseTable) tables.get(i),
+                        signature.get(Integer.toString(i))));
+                fail();
+            } catch (IllegalStateException e) {
+                assertTrue(true);
+            }
+        }
+        DataBaseTableProvider provider1 = null;
+        try {
+            provider1 = factory.create(folder.toString());
+        } catch (IOException e) {
+            fail();
+        }
+
+        for (int i = 0; i < 20; ++i) {
+            assertEquals(provider1.getTable(Integer.toString(i)).size(), 0);
+        }
+
+        DataBaseTable table1 = (DataBaseTable) provider1.getTable(Integer.toString(0));
+        try {
+            table1.close();
+        } catch (Exception e) {
+            fail();
+        }
+        DataBaseTable table2 = (DataBaseTable) provider1.getTable(Integer.toString(0));
+        assertNotEquals(table1, table2);
+
+        for (int i = 0; i < 20; ++i) {
+            provider1.removeTable(Integer.toString(i));
+        }
+    }
 }
