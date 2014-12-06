@@ -4,26 +4,36 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.text.ParseException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class RealRemoteTableProvider implements RemoteTableProvider {
-    private SocketChannel server;
+    private AsynchronousSocketChannel server;
+    private boolean connected;
 
     public RealRemoteTableProvider(String hostname, int port) {
         try {
-            InetSocketAddress serverAddress = new InetSocketAddress("localhost", 10001);
-            SocketChannel server = SocketChannel.open();
-            boolean connected = server.connect(serverAddress);
+            connected = false;
+            server = AsynchronousSocketChannel.open();
+            Future<Void> connection = server.connect(new InetSocketAddress(hostname, port));
+            connection.get();
+            connected = true;
         } catch (IOException e) {
             //supress tmp
+        } catch (ExecutionException e) {
+            //
+        } catch (InterruptedException e) {
+            //
         }
     }
 
@@ -39,10 +49,37 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        ByteBuffer message = ByteBuffer.allocate(1000);
+        if (!connected) {
+            throw new IllegalStateException("not connected");
+        }
+        ByteBuffer message = ByteBuffer.allocate(1024);
+        message.put("create ".getBytes());
         message.put(name.getBytes());
-        message.put(columnTypes.toString().getBytes());
-        System.out.println(message);
+        message.put(" (".getBytes());
+        message.put(TypesUtils.toFileSignature(columnTypes).getBytes());
+        message.put(")".getBytes());
+        message.put((byte) 13);
+        message.put((byte) 10);
+        try {
+            server.write(message).get();
+        } catch (ExecutionException e) {
+            System.out.println(e.getMessage());
+            //
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+            //
+        }
+        System.out.println(new String(message.array(), "UTF-8"));
+        Future<Integer> reading = server.read(message);
+        try {
+            server.read(message).get();
+        } catch (ExecutionException e) {
+            System.out.println(e.getMessage());
+            //
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+            //
+        }
         return null;
     }
 

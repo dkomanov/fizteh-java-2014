@@ -1,17 +1,19 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMapFactory;
-
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class Server {
-    private ServerSocketChannel socket;
+    private AsynchronousServerSocketChannel server;
     private boolean started;
     private ArrayList<SocketAddress> clients;
 
@@ -30,7 +32,7 @@ public class Server {
 
     public boolean startServer(int port) {
         try {
-            socket = ServerSocketChannel.open().bind(new InetSocketAddress(port));
+            server = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(port));
             Thread listenThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -51,23 +53,46 @@ public class Server {
 
     public void listen() {
         try {
-            SocketChannel clientChannel = socket.accept();
-
-            clients.add(clientChannel.getRemoteAddress());
-            Thread listenThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    talkWithClient(clientChannel);
-                }
-            });
-            listenThread.start();
-        } catch (IOException e) {
-
+            while (true) {
+                Future<AsynchronousSocketChannel> acceptFuture = server.accept();
+                AsynchronousSocketChannel client = acceptFuture.get();
+                Thread talkWithclient = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        talk(client);
+                    }
+                });
+                talkWithclient.start();
+            }
+        } catch (InterruptedException e) {
+            //
+        } catch (ExecutionException e) {
+            //
         }
     }
 
-    public void talkWithClient(SocketChannel client) {
-        MFileHashMapFactory factory = new MFileHashMapFactory();
+    public void talk(AsynchronousSocketChannel client) {
+        ByteBuffer bufferForMessage = ByteBuffer.allocate(1024);
+        while (client.isOpen()) {
+            Future<Integer> message = client.read(bufferForMessage);
+            try {
+                message.get();
+                System.out.println(new String(bufferForMessage.array(), "UTF-8"));
+            } catch (InterruptedException e) {
+                //
+            } catch (ExecutionException e) {
+                //
+            } catch (UnsupportedEncodingException e) {
+                //
+            }
+            for (int i = 0; i < 1024; ++i) {
+                bufferForMessage.put(i, (byte) 0);
+            }
+        }
+        try {
+            client.close();
+        } catch (IOException e) {
 
+        }
     }
 }
