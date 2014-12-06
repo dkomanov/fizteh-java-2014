@@ -347,7 +347,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void putLogTest() {
+    public void putLogTest() throws JSONException {
         Table wrappedTable = (Table) wrapper.wrap(stringWriter, table, Table.class);
         long timestampBefore = System.currentTimeMillis();
         wrappedTable.put("key", makeStoreable(5));
