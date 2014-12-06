@@ -137,8 +137,8 @@ public class MyTableProvider implements TableProvider {
             array = new JSONArray(value);
 
             if (types.size() != array.length()) {
-                throw new ParseException(types.size() + " values expected, but " +
-                        array.length() + " values received", 0);
+                throw new ParseException(types.size() + " values expected, but "
+                        + array.length() + " values received", 0);
             }
 
             for (int i = 0; i < array.length(); ++i) {
