@@ -1,9 +1,10 @@
 package ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet;
 
-import ru.fizteh.fivt.students.VasilevKirill.db.shell.Command;
-import ru.fizteh.fivt.students.VasilevKirill.db.shell.Status;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 
 /**
  * Created by Kirill on 06.12.2014.
@@ -14,6 +15,11 @@ public class StopCommand implements Command {
         if (!checkArgs(args)) {
             throw new IOException("stop: wrong arguments");
         }
+        ServerSocket ss = status.getServerSocket();
+        if (ss == null) {
+            throw new IOException("not started");
+        }
+        ss.close();
         return 0;
     }
 

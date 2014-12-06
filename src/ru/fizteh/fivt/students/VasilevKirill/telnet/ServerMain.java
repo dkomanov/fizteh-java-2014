@@ -6,6 +6,7 @@ import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Shell;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.StartCommand;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.StopCommand;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProviderFactory;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class ServerMain {
         try {
             Map<String, Command> commands = new HashMap<String, Command>();
             commands.put(new StartCommand().toString(), new StartCommand());
-
+            commands.put(new StopCommand().toString(), new StopCommand());
             try {
                 int retValue = 0;
                 String rootDirectory = System.getProperty("fizteh.db.dir");

@@ -44,7 +44,7 @@ public class Shell {
     public void handle(InputStream stream) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String command = "";
-            while (!command.equals("exit")) {
+            while (!command.equals("exit") && command.equals("stop")) {
                 System.out.print("$ ");
                 command = reader.readLine();
                 String[] cmds = command.split("\\s+");
@@ -98,7 +98,7 @@ public class Shell {
                 if (it[0] == null) {
                     continue;
                 }
-                if (it[0].equals("exit")) {
+                if (it[0].equals("exit") || it[0].equals("stop")) {
                     return 2;
                 }
                 if ((currentCommand = commandMap.get(it[0])) != null) {
