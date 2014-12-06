@@ -343,4 +343,10 @@ public class DataBaseTableProvider extends AbstractTableProvider implements Auto
         }
         return new TableRow(objectValues);
     }
+
+    @Override
+    public List<String> getTableNames() {
+        //don't need, only for Travis Compile
+        return null;
+    }
 }

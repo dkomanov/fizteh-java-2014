@@ -1,41 +1,42 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.test;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.DataBaseTableProviderFactory;
 
-import java.io.IOException;
+import java.io.File;
+import java.nio.file.Paths;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DataBaseTableProviderFactoryTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreate() throws IOException {
-        DataBaseTableProviderFactory factory = new DataBaseTableProviderFactory();
-        factory.create(null);
-    }
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
-    public void testCreateNotNull() {
+    public void testCreate() throws Exception {
         DataBaseTableProviderFactory factory = new DataBaseTableProviderFactory();
         try {
-            assertNotNull(factory.create("D:\\test\\database5"));
-        } catch (IOException e) {
-            assertTrue(false);
-        }
-    }
-
-    @Test
-    public void testCreateNotExists() {
-        DataBaseTableProviderFactory factory = new DataBaseTableProviderFactory();
-        try {
-            assertNull(factory.create("D:\\test\\database6\\not_exist", true));
+            factory.create(null);
+            fail();
         } catch (Exception e) {
-            assertTrue(false);
+            assertTrue(true);
         }
+        folder.create();
+        String folderName = folder.getRoot().toPath().toString();
+        File result = folder.newFolder("test");
+        try {
+            factory.create(Paths.get(folderName, "test").toString(), true);
+        } catch (Exception e) {
+            fail();
+        }
+
+        assertNull(factory.create(Paths.get(folderName, "non_exist", "non_exist").toString(), true));
     }
+
 
 }
+
 

@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.DataBaseTable;
 import ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.DataBaseTableProvider;
@@ -24,9 +25,13 @@ public class TableRowSerializerTest {
     private DataBaseTable table;
     private ArrayList<Class<?>> signature;
 
+    static TemporaryFolder folder;
+    static String folderName;
     @BeforeClass
     public static void init() {
-        provider = new DataBaseTableProvider("D:\\test\\database3");
+        folder = new TemporaryFolder();
+        folderName = folder.toString();
+        provider = new DataBaseTableProvider(folderName);
         serializer = new TableRowSerializer();
     }
 

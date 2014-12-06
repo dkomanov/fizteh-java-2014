@@ -268,6 +268,12 @@ public class DataBaseTable implements Table {
     }
 
     @Override
+    public int getNumberOfUncommittedChanges() {
+        //don't need, only for compile
+        return 0;
+    }
+
+    @Override
     public int getColumnsCount() {
         return signature.size();
     }
