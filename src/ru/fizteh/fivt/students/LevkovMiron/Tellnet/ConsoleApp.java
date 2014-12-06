@@ -30,7 +30,7 @@ public class ConsoleApp {
     private void runCommand(String command) {
         String[] cmd = command.split("\\s(?![^\\(]*\\))(?![^\\[]*\\])");
         if (command.equals("show tables")) {
-            provider.showTables();
+            provider.listTables();
             return;
         }
         if (command.equals("get columns count")) {
