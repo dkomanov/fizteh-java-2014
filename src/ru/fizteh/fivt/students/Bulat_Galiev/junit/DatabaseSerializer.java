@@ -97,52 +97,50 @@ public class DatabaseSerializer {
         }
     }
 
-    public final int commit() {
-        int diffrecordsNumber = fileMap.size();
+    public final int commit() throws IOException {
+        int diffrecordsNumber = Math.abs(unsavedRecordsNumber);
         if ((recordsNumber == 0) && (fileMap.size() == 0)) {
             filePathdb.toFile().delete();
             filePathdb.getParent().toFile().delete();
         } else {
-            try (RandomAccessFile filedb = new RandomAccessFile(
-                    filePathdb.toString(), "rw")) {
+            RandomAccessFile filedb = new RandomAccessFile(
+                    filePathdb.toString(), "rw");
 
-                Set<Map.Entry<String, String>> rows = fileMap.entrySet();
-                for (Map.Entry<String, String> row : rows) {
-                    if (row.getValue() == null) {
-                        savedFileMap.remove(row.getKey());
-                        recordsNumber -= 2;
-                    } else {
-                        savedFileMap.put(row.getKey(), row.getValue());
-                    }
+            Set<Map.Entry<String, String>> rows = fileMap.entrySet();
+            for (Map.Entry<String, String> row : rows) {
+                if (row.getValue() == null) {
+                    savedFileMap.remove(row.getKey());
+                    recordsNumber -= 2;
+                } else {
+                    savedFileMap.put(row.getKey(), row.getValue());
                 }
-                this.putData(filedb);
-                recordsNumber += fileMap.size();
-                unsavedRecordsNumber = 0;
-                fileMap.clear();
-                outputStream.close();
-            } catch (IOException e) {
-                System.err.print(e.getMessage());
-                System.exit(-1);
             }
+            this.putData(filedb);
+            recordsNumber += unsavedRecordsNumber;
+            unsavedRecordsNumber = 0;
+            fileMap.clear();
+            outputStream.close();
         }
         return diffrecordsNumber;
     }
 
     public final int rollback() {
-        int diffrecordsNumber = fileMap.size();
+        int diffrecordsNumber = Math.abs(unsavedRecordsNumber);
         fileMap.clear();
         unsavedRecordsNumber = 0;
         return diffrecordsNumber;
     }
 
     public final String put(final String key, final String value) {
+        if ((fileMap.containsKey(key)) && (fileMap.get(key) == null)
+                && (savedFileMap.get(key) != null)
+                && (!savedFileMap.get(key).equals(value))) {
+            unsavedRecordsNumber++;
+        }
         String putValue = fileMap.put(key, value);
         if (putValue == null) {
             unsavedRecordsNumber++;
-        }
-        if ((putValue == null) && (savedFileMap.get(key) != null)
-                && (!savedFileMap.get(key).equals(value))) {
-            unsavedRecordsNumber++;
+            putValue = savedFileMap.get(key);
         }
         return putValue;
     }

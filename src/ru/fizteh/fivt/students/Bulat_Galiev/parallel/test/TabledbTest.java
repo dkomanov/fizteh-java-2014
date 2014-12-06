@@ -494,13 +494,10 @@ public class TabledbTest {
             public void run() {
                 try {
                     put("key", "value");
-                    Thread.sleep(SLEEPTIME);
                     ref1.set(table.commit());
                 } catch (ParseException e) {
                     // Disable exception processing.
                 } catch (IOException e) {
-                    // Disable exception processing.
-                } catch (InterruptedException e) {
                     // Disable exception processing.
                 }
             }
@@ -511,13 +508,10 @@ public class TabledbTest {
                 try {
                     put("key", "value");
                     put("key1", "value1");
-                    Thread.sleep(SLEEPTIME);
                     ref2.set(table.commit());
                 } catch (ParseException e) {
                     // Disable exception processing.
                 } catch (IOException e) {
-                    // Disable exception processing.
-                } catch (InterruptedException e) {
                     // Disable exception processing.
                 }
             }

@@ -112,7 +112,7 @@ public class DatabaseSerializer {
     }
 
     public final int commit() {
-        int diffrecordsNumber = Math.abs(unsavedRecordsNumber);
+        int diffRecordsNumber = Math.abs(unsavedRecordsNumber);
         if ((recordsNumber == 0) && (fileMap.size() == 0)) {
             filePathdb.toFile().delete();
             filePathdb.getParent().toFile().delete();
@@ -138,18 +138,17 @@ public class DatabaseSerializer {
                 throw new RuntimeException(e.getMessage(), e);
             }
         }
-        return diffrecordsNumber;
+        return diffRecordsNumber;
     }
 
     public final int rollback() {
-        int diffrecordsNumber = Math.abs(unsavedRecordsNumber);
+        int diffRecordsNumber = Math.abs(unsavedRecordsNumber);
         fileMap.clear();
         unsavedRecordsNumber = 0;
-        return diffrecordsNumber;
+        return diffRecordsNumber;
     }
 
     public final Storeable put(final String key, final Storeable value) {
-        
 
         String serializedValue1 = null;
 

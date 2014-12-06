@@ -275,7 +275,8 @@ public final class Tabledb implements Table {
                         databaseFiles.put(new CellForKey(ndirectory, nfile),
                                 databaseFile);
                     } catch (Exception e) {
-                        throw new RuntimeException(e.getMessage(), e);
+                        throw new RuntimeException("Error reading table "
+                                + tableName + ": " + e.getMessage(), e);
                     }
                 }
             }

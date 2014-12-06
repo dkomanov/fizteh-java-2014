@@ -123,7 +123,7 @@ public class DatabaseSerializer {
     }
 
     public final int commit() {
-        int diffRecordsNumber = fileMap.get().size();
+        int diffRecordsNumber = Math.abs(unsavedRecordsNumber.get());
         if ((recordsNumber == 0) && (fileMap.get().size() == 0)) {
             filePathdb.toFile().delete();
             filePathdb.getParent().toFile().delete();
@@ -142,32 +142,26 @@ public class DatabaseSerializer {
                     }
                 }
                 this.putData(filedb);
-                recordsNumber += fileMap.get().size();
+                recordsNumber += unsavedRecordsNumber.get();
                 unsavedRecordsNumber.set(0);
                 fileMap.get().clear();
                 outputStream.close();
             } catch (IOException e) {
-                System.err.print(e.getMessage());
-                System.exit(-1);
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
         return diffRecordsNumber;
     }
 
     public final int rollback() {
-        int diffRecordsNumber = fileMap.get().size();
+        int diffRecordsNumber = Math.abs(unsavedRecordsNumber.get());
         fileMap.get().clear();
         unsavedRecordsNumber.set(0);
         return diffRecordsNumber;
     }
 
     public final Storeable put(final String key, final Storeable value) {
-        Storeable putValue = fileMap.get().put(key, value);
-        if (putValue == null) {
-            unsavedRecordsNumber.set(unsavedRecordsNumber.get() + 1);
-        }
         String serializedValue1 = null;
-
         if (savedFileMap.get(key) != null) {
             serializedValue1 = localtable.getLocalProvider().serialize(
                     localtable, savedFileMap.get(key));
@@ -175,11 +169,17 @@ public class DatabaseSerializer {
         String serializedValue2 = localtable.getLocalProvider().serialize(
                 localtable, value);
 
-        if ((putValue == null) && (serializedValue1 != null)
-                && (serializedValue2 != null)
+        if ((fileMap.get().containsKey(key))
+                && (fileMap.get().get(key) == null)
+                && (serializedValue1 != null) && (serializedValue2 != null)
                 && (!serializedValue1.equals(serializedValue2))
                 && (savedFileMap.get(key) != null)) {
             unsavedRecordsNumber.set(unsavedRecordsNumber.get() + 1);
+        }
+        Storeable putValue = fileMap.get().put(key, value);
+        if (putValue == null) {
+            unsavedRecordsNumber.set(unsavedRecordsNumber.get() + 1);
+            putValue = savedFileMap.get(key);
         }
         return putValue;
     }

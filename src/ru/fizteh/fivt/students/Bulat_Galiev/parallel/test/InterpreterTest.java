@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Bulat_Galiev.storeable.test;
+package ru.fizteh.fivt.students.Bulat_Galiev.parallel.test;
 
 import static org.junit.Assert.*;
 
@@ -12,9 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ru.fizteh.fivt.students.Bulat_Galiev.storeable.InterpreterPackage.Command;
-import ru.fizteh.fivt.students.Bulat_Galiev.storeable.InterpreterPackage.Interpreter;
-import ru.fizteh.fivt.students.Bulat_Galiev.storeable.InterpreterPackage.ExitException;
+import ru.fizteh.fivt.students.Bulat_Galiev.parallel.InterpreterPackage.Command;
+import ru.fizteh.fivt.students.Bulat_Galiev.parallel.InterpreterPackage.Interpreter;
+import ru.fizteh.fivt.students.Bulat_Galiev.parallel.InterpreterPackage.ExitException;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
 public class InterpreterTest {

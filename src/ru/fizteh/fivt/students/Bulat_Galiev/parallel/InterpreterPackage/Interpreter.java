@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Bulat_Galiev.storeable.InterpreterPackage;
+package ru.fizteh.fivt.students.Bulat_Galiev.parallel.InterpreterPackage;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
 

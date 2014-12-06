@@ -304,7 +304,8 @@ public class TabledbTest {
         put("key", "value");
         put("key2", "value2");
 
-        Assert.assertEquals(CHECKNUMBERTWO, table.getNumberOfUncommittedChanges());
+        Assert.assertEquals(CHECKNUMBERTWO,
+                table.getNumberOfUncommittedChanges());
     }
 
     @Test
@@ -312,7 +313,8 @@ public class TabledbTest {
         put("key", "value");
         put("key", "value2");
 
-        Assert.assertEquals(CHECKNUMBERONE, table.getNumberOfUncommittedChanges());
+        Assert.assertEquals(CHECKNUMBERONE,
+                table.getNumberOfUncommittedChanges());
     }
 
     @Test
@@ -320,7 +322,8 @@ public class TabledbTest {
         put("key", "value");
         remove("key");
 
-        Assert.assertEquals(CHECKNUMBERZERO, table.getNumberOfUncommittedChanges());
+        Assert.assertEquals(CHECKNUMBERZERO,
+                table.getNumberOfUncommittedChanges());
     }
 
     @Test
@@ -330,7 +333,8 @@ public class TabledbTest {
         table.commit();
         remove("key");
 
-        Assert.assertEquals(CHECKNUMBERONE, table.getNumberOfUncommittedChanges());
+        Assert.assertEquals(CHECKNUMBERONE,
+                table.getNumberOfUncommittedChanges());
     }
 
     @Test
@@ -341,7 +345,8 @@ public class TabledbTest {
         remove("key");
         put("key", "value");
 
-        Assert.assertEquals(CHECKNUMBERZERO, table.getNumberOfUncommittedChanges());
+        Assert.assertEquals(CHECKNUMBERZERO,
+                table.getNumberOfUncommittedChanges());
     }
 
     @Test
@@ -352,7 +357,8 @@ public class TabledbTest {
         remove("key");
         put("key", "value2");
 
-        Assert.assertEquals(CHECKNUMBERONE, table.getNumberOfUncommittedChanges());
+        Assert.assertEquals(CHECKNUMBERONE,
+                table.getNumberOfUncommittedChanges());
     }
 
     @Test(expected = ColumnFormatException.class)

@@ -166,11 +166,6 @@ public class TabledbProviderTest {
     }
 
     @Test
-    public final void testShowTables() throws Exception {
-        ((TabledbProvider) provider).showTables();
-    }
-
-    @Test
     public final void testChangeCurTable() throws Exception {
         Table singletable = provider.createTable("table", typeList);
         ((TabledbProvider) provider).changeCurTable("table");

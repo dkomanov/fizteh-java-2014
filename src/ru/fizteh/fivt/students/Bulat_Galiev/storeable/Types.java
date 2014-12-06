@@ -93,7 +93,7 @@ public class Types {
                         .getString(value.getColumnAt(i)));
             }
         }
-            sb.append("]");
+        sb.append("]");
         return sb.toString();
     }
 

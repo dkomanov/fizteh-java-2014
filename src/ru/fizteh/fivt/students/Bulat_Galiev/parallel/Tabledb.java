@@ -42,9 +42,8 @@ public final class Tabledb implements Table {
             readSignature();
             readTableDir();
         } catch (IOException e) {
-            System.err.print("Error reading table " + tableName + ": "
-                    + e.getMessage());
-            System.exit(-1);
+            throw new RuntimeException("Error reading table " + tableName
+                    + ": " + e.getMessage());
         }
     }
 
@@ -84,7 +83,6 @@ public final class Tabledb implements Table {
                     it.remove();
                 }
             }
-            System.out.println(diffNumberRecords);
             return diffNumberRecords;
         } finally {
             lock.readLock().unlock();
@@ -120,36 +118,43 @@ public final class Tabledb implements Table {
     }
 
     public Storeable put(final String oldkey, final Storeable value) {
-        if ((oldkey != null) && (value != null)) {
-            try {
-                String key = oldkey.trim();
-                if (!key.isEmpty()) {
-                    DatabaseSerializer databaseFile = databaseFiles
-                            .get(new CellForKey(key));
-                    if (databaseFile == null) {
+        lock.writeLock().lock();
+        try {
+            if ((oldkey != null) && (value != null)) {
+                try {
+                    String key = oldkey.trim();
+                    if (!key.isEmpty()) {
+                        DatabaseSerializer databaseFile = databaseFiles
+                                .get(new CellForKey(key));
+                        if (databaseFile == null) {
 
-                        int nbytes = key.getBytes("UTF-8")[0];
-                        int ndirectory = Math.abs(nbytes % KEYNUMBER);
-                        int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
-                        databaseFile = new DatabaseSerializer(tablePath,
-                                ndirectory, nfile, this);
-                        databaseFiles.put(new CellForKey(ndirectory, nfile),
-                                databaseFile);
+                            int nbytes = key.getBytes("UTF-8")[0];
+                            int ndirectory = Math.abs(nbytes % KEYNUMBER);
+                            int nfile = Math.abs((nbytes / KEYNUMBER)
+                                    % KEYNUMBER);
+                            databaseFile = new DatabaseSerializer(tablePath,
+                                    ndirectory, nfile, this);
+                            databaseFiles.put(
+                                    new CellForKey(ndirectory, nfile),
+                                    databaseFile);
+                        }
+                        if (!checkValue(this, value)) {
+                            throw new ColumnFormatException("invalid value");
+                        }
+                        return databaseFile.put(key, value);
+                    } else {
+                        throw new IllegalArgumentException("Empty key or name.");
                     }
-                    if (!checkValue(this, value)) {
-                        throw new ColumnFormatException("invalid value");
-                    }
-                    return databaseFile.put(key, value);
-                } else {
-                    throw new IllegalArgumentException("Empty key or name.");
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e.getMessage(), e);
                 }
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e.getMessage(), e);
-            } catch (IOException e) {
-                throw new RuntimeException(e.getMessage(), e);
+            } else {
+                throw new IllegalArgumentException("Null key or name.");
             }
-        } else {
-            throw new IllegalArgumentException("Null key or name.");
+        } finally {
+            lock.writeLock().unlock();
         }
 
     }
@@ -231,7 +236,7 @@ public final class Tabledb implements Table {
     }
 
     public int size() {
-        lock.readLock().lock();
+        lock.writeLock().lock();
         try {
             int numrecords = 0;
             for (Entry<CellForKey, DatabaseSerializer> databaseFile : databaseFiles
@@ -241,7 +246,7 @@ public final class Tabledb implements Table {
 
             return numrecords;
         } finally {
-            lock.readLock().unlock();
+            lock.writeLock().unlock();
         }
     }
 
@@ -310,9 +315,8 @@ public final class Tabledb implements Table {
                         databaseFiles.put(new CellForKey(ndirectory, nfile),
                                 databaseFile);
                     } catch (Exception e) {
-                        System.err.print("Error reading table " + tableName
-                                + ": " + e.getMessage());
-                        System.exit(-1);
+                        throw new RuntimeException("Error reading table "
+                                + tableName + ": " + e.getMessage(), e);
                     }
                 }
             }

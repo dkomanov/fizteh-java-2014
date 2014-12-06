@@ -80,7 +80,6 @@ public final class TabledbProvider implements TableProvider {
         try {
             if (name != null && !name.equals("")) {
                 if (tableMap.get(name) != null) {
-                    System.err.println(name + " exists");
                     return null;
                 }
 
@@ -188,7 +187,7 @@ public final class TabledbProvider implements TableProvider {
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException("table name " + name
                     + " is incorrect. " + e.getMessage());
-        } 
+        }
     }
 
     public Table getDataBase() {
@@ -297,7 +296,7 @@ public final class TabledbProvider implements TableProvider {
     public List<String> getTableNames() {
         return new ArrayList<String>(tableMap.keySet());
     }
-    
+
     public Set<String> getKeySet() {
         return tableMap.keySet();
     }
