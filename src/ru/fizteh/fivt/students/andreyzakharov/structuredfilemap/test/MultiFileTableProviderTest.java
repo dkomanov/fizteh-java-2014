@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class MultiFileTableProviderTest {
-    String root = "test/junit-structured";
+    String root = "test-junit-structured";
     String[] names = {"test-db-provider", "null", "database-01", "*[::]<>|\\?"};
     String otherName = "*()doesn't match any other name";
     static List<Class<?>> signature;

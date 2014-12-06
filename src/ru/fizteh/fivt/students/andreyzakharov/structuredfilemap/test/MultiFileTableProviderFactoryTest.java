@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class MultiFileTableProviderFactoryTest {
-    String root = "test/junit-structured";
+    String root = "test-junit-structured";
 
     @Test
     public void testCreate() throws Exception {
