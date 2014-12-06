@@ -1,17 +1,12 @@
 package ru.fizteh.fivt.students.VasilevKirill.telnet;
 
-
-import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
-import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Shell;
-import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
-import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.StartCommand;
-import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.StopCommand;
-import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProviderFactory;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.Threads.ClientThread;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.Threads.MainThread;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kirill on 03.12.2014.
@@ -19,35 +14,30 @@ import java.util.Map;
 public class ServerMain {
     public static void main(String[] args) {
         try {
-            Map<String, Command> commands = new HashMap<String, Command>();
-            commands.put(new StartCommand().toString(), new StartCommand());
-            commands.put(new StopCommand().toString(), new StopCommand());
-            try {
-                int retValue = 0;
-                String rootDirectory = System.getProperty("fizteh.db.dir");
-                if (rootDirectory == null) {
-                    throw new IOException("Can't find the directory");
-                }
-                TableProvider dataBase = new MyTableProviderFactory().create(rootDirectory);
-                Status status = new Status(dataBase);
-                if (args.length == 0) {
-                    new Shell(commands, status).handle(System.in);
-                } else {
-                    retValue = new Shell(commands, status).handle(args);
-                }
-                System.exit(retValue);
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-                System.exit(-1);
+            Object monitor = new Object();
+            List<Thread> clients = new ArrayList<>();
+            MainThread serverThread = new MainThread(args, monitor);
+            Thread mainThread = new Thread(serverThread);
+            mainThread.start();
+            synchronized (monitor) {
+                monitor.wait();
             }
+            ServerSocket ss = serverThread.getServerSocket();
+            if (ss == null) {
+                throw new IOException("Server socket wasn't initialized");
+            }
+            for (int i = 0; i < 2; ++i) {
+                Thread clientThread = new Thread(new ClientThread(ss));
+                clients.add(clientThread);
+                clientThread.start();
+            }
+            for (Thread it : clients) {
+                it.join();
+            }
+            mainThread.join();
         } catch (Exception e) {
-            if (e.getMessage().equals("")) {
-                System.out.println(e);
-            } else {
-                System.out.println(e.getMessage());
-            }
-            System.exit(-1);
-        }//
+            e.printStackTrace();
+        }
     }
 }
 

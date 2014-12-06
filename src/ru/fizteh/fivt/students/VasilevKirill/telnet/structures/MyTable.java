@@ -291,7 +291,7 @@ public class MyTable implements Table, AutoCloseable {
             Map<String, Command> cmds = new HashMap<String, Command>();
             cmds.put(new GetCommand().toString(), new GetCommand());
             cmds.put(new RemoveCommand().toString(), new RemoveCommand());
-            new Shell(cmds, status).handle(args);
+            new Shell(cmds, status, new Object()).handle(args);
             files[numDirectory][numFile].close();
             removeEmptyFiles();
         }

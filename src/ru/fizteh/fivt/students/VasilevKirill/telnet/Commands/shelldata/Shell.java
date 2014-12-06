@@ -11,52 +11,25 @@ public class Shell {
     static String currentPath;
     private Map<String, Command> commandMap = new HashMap<>();
     private Status status;
+    private Object monitor;
 
     static {
         currentPath = new File("").getAbsolutePath();
     }
-
-    public static void main(String[] args) {
-        Status newStatus = null;
-        int returnValue = 0;
-        Map<String, Command> commands = new HashMap<>();
-        commands.put(new CdCommand().toString(), new CdCommand());
-        commands.put(new MkdirCommand().toString(), new MkdirCommand());
-        commands.put(new PwdCommand().toString(), new PwdCommand());
-        commands.put(new RmCommand().toString(), new RmCommand());
-        commands.put(new CpCommand().toString(), new CpCommand());
-        commands.put(new MvCommand().toString(), new MvCommand());
-        commands.put(new LsCommand().toString(), new LsCommand());
-        commands.put(new CatCommand().toString(), new CatCommand());
-        if (args.length == 0) {
-            new Shell(commands, newStatus).handle(System.in);
-        } else {
-            returnValue = new Shell(commands, newStatus).handle(args);
-        }
-        System.exit(returnValue);
-    }
-
-    public Shell(Map<String, Command> commandMap, Status status) {
+    public Shell(Map<String, Command> commandMap, Status status, Object monitor) {
         this.commandMap = commandMap;
         this.status = status;
+        this.monitor = monitor;
     }
 
     public void handle(InputStream stream) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String command = "";
-            while (!command.equals("exit") && !command.equals("stop")) {
+            while (!command.equals("exit")) {
                 System.out.print("$ ");
                 command = reader.readLine();
                 String[] cmds = command.split("\\s+");
-                /*Command currentCommand;
-                if ((currentCommand = commandMap.get(cmds[0])) != null) {
-                    try {
-                        currentCommand.execute(cmds, status);
-                    } catch (IOException e) {
-                        System.err.println(e.getMessage());
-                    }
-                }*/
-                int result = new Shell(commandMap, status).handle(cmds);
+                int result = new Shell(commandMap, status, monitor).handle(cmds);
                 if (result == 2) {
                     break;
                 }
@@ -98,12 +71,23 @@ public class Shell {
                 if (it[0] == null) {
                     continue;
                 }
-                if (it[0].equals("exit") || it[0].equals("stop")) {
+                if (it[0].equals("exit")) {
+                    return 2;
+                }
+                if (it[0].equals("stop")) {
+                    if ((currentCommand = commandMap.get(it[0])) != null) {
+                        currentCommand.execute(it, status);
+                    }
                     return 2;
                 }
                 if ((currentCommand = commandMap.get(it[0])) != null) {
                     if (currentCommand.execute(it, status) == 1) {
                         return 1;
+                    }
+                    if (it[0].equals("start")) {
+                        synchronized (monitor) {
+                            monitor.notifyAll();
+                        }
                     }
                 } else {
                     return 1;
