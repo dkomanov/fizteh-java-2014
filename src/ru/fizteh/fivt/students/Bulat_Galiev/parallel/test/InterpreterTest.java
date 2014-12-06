@@ -43,7 +43,7 @@ public class InterpreterTest {
     @Test
     public final void testInterpreterRunInInteractiveMode() throws Exception {
         Interpreter interpreter = new Interpreter(null,
-                new Command[] { new Command("test", 0,
+                new Command[] {new Command("test", 0,
                         new BiConsumer<TableProvider, String[]>() {
                             @Override
                             public void accept(
@@ -65,7 +65,7 @@ public class InterpreterTest {
     @Test
     public final void testInterpreterRunInBatchMode() throws Exception {
         Interpreter interpreter = new Interpreter(null,
-                new Command[] { new Command("test", 0,
+                new Command[] {new Command("test", 0,
                         new BiConsumer<TableProvider, String[]>() {
                             @Override
                             public void accept(
@@ -76,7 +76,7 @@ public class InterpreterTest {
                         }) }, new ByteArrayInputStream(new byte[] {}),
                 printStream, errorStream);
         try {
-            interpreter.run(new String[] { testCommand + ";", testCommand });
+            interpreter.run(new String[] {testCommand + ";", testCommand });
         } catch (ExitException e) {
             assertEquals(testOutput + newLine + testOutput + newLine,
                     outputStream.toString());
@@ -90,7 +90,7 @@ public class InterpreterTest {
                 new ByteArrayInputStream(new byte[] {}), printStream,
                 errorStream);
         try {
-            interpreter.run(new String[] { testCommand + ";", testCommand });
+            interpreter.run(new String[] {testCommand + ";", testCommand });
         } catch (ExitException e) {
             String expectedOutput = testCommand + " is incorrect command"
                     + newLine;
@@ -118,7 +118,7 @@ public class InterpreterTest {
     public final void testInterpreterForCommandWithWrongNumberOfArguments()
             throws Exception {
         Interpreter interpreter = new Interpreter(null,
-                new Command[] { new Command("test", 0,
+                new Command[] {new Command("test", 0,
                         new BiConsumer<TableProvider, String[]>() {
                             @Override
                             public void accept(
@@ -129,7 +129,7 @@ public class InterpreterTest {
                         }) }, new ByteArrayInputStream(new byte[] {}),
                 printStream, errorStream);
         try {
-            interpreter.run(new String[] { testCommand + " some_argument" });
+            interpreter.run(new String[] {testCommand + " some_argument" });
         } catch (ExitException e) {
             String expectedOutput = testCommand
                     + ": Incorrect number of arguments: 0 expected, but 1 found."

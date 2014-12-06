@@ -9,9 +9,6 @@ import java.util.function.BiConsumer;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.Bulat_Galiev.parallel.Tabledb;
-import ru.fizteh.fivt.students.Bulat_Galiev.parallel.TabledbProvider;
-import ru.fizteh.fivt.students.Bulat_Galiev.parallel.TabledbProviderFactory;
 import ru.fizteh.fivt.students.Bulat_Galiev.parallel.InterpreterPackage.Command;
 import ru.fizteh.fivt.students.Bulat_Galiev.parallel.InterpreterPackage.Interpreter;
 import ru.fizteh.fivt.students.Bulat_Galiev.parallel.InterpreterPackage.StopInterpretationException;
@@ -37,7 +34,7 @@ public final class MainParallel {
     }
 
     private static void run(final TableProvider provider, final String[] arg) throws Exception {
-        new Interpreter(provider, new Command[] { new Command("put", 2, new BiConsumer<TableProvider, String[]>() {
+        new Interpreter(provider, new Command[] {new Command("put", 2, new BiConsumer<TableProvider, String[]>() {
             @Override
             public void accept(final TableProvider state, final String[] arg) {
                 Table curTable = ((TabledbProvider) provider).getDataBase();
