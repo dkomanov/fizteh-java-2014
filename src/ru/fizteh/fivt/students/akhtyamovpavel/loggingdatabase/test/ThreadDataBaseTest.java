@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.loggingdatabase.test;
 
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.akhtyamovpavel.loggingdatabase.DataBaseTable;
 import ru.fizteh.fivt.students.akhtyamovpavel.loggingdatabase.DataBaseTableProvider;
@@ -20,7 +21,6 @@ public class ThreadDataBaseTest {
         DataBaseTableProviderRunner runner = new DataBaseTableProviderRunner() {
             boolean flag = false;
             boolean flagRemove = false;
-            boolean isClosed = false;
 
             @Override
             public void run() {
@@ -81,37 +81,6 @@ public class ThreadDataBaseTest {
                 } catch (InterruptedException e) {
                     fail();
                 }
-
-                synchronized (this.getClass()) {
-                    if (!isClosed) {
-                        try {
-                            table.close();
-                        } catch (Exception e) {
-                            fail();
-                        }
-                        isClosed = true;
-                    } else {
-                        try {
-                            table.getColumnsCount();
-                            fail();
-                        } catch (Exception e) {
-                            assertTrue(true);
-                        }
-
-                        try {
-                            table.get("1");
-                            fail();
-                        } catch (Exception e) {
-                            assertTrue(true);
-                        }
-                    }
-                }
-
-                try {
-                    Thread.sleep(200L);
-                } catch (InterruptedException e) {
-                    fail();
-                }
             }
         };
         Thread th1 = new Thread(runner);
@@ -142,9 +111,9 @@ public class ThreadDataBaseTest {
 
         DataBaseTableProviderRunner() {
             try {
-                provider = new DataBaseTableProvider(TableRowSerializerTest.DATA_BASE_PATH);
+                provider = new DataBaseTableProvider(new TemporaryFolder().toString());
             } catch (Exception e) {
-                fail();
+                assertTrue(false);
             }
             serializer = new TableRowSerializer();
             String tableName = UUID.randomUUID().toString();
