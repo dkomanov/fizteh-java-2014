@@ -12,7 +12,7 @@ public class StopCommand implements Command {
     @Override
     public int execute(String[] args, Status status) throws IOException {
         if (!checkArgs(args)) {
-
+            throw new IOException("stop: wrong arguments");
         }
         return 0;
     }
