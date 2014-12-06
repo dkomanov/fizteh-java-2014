@@ -4,6 +4,8 @@ import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.FileMap;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTable;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProvider;
 
+import java.net.ServerSocket;
+
 /**
  * Created by Kirill on 19.10.2014.
  */
@@ -24,5 +26,13 @@ public class Status {
 
     public MyTable getMultiTable() {
         return object instanceof MyTable ? (MyTable) object : null;
+    }
+
+    public ServerSocket getServerSocket() {
+        return object instanceof ServerSocket ? (ServerSocket) object : null;
+    }
+
+    public void setServerSocket(ServerSocket ss) {
+        object = ss;
     }
 }
