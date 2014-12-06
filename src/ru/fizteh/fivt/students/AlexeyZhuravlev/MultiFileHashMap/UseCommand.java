@@ -15,6 +15,12 @@ public class UseCommand extends Command {
         return 1;
     }
 
+    public UseCommand() {}
+
+    public UseCommand(String passedTableName) {
+        tableName = passedTableName;
+    }
+
     @Override
     public void execute(DataBaseDir base) throws Exception {
         if (!base.tables.containsKey(tableName)) {

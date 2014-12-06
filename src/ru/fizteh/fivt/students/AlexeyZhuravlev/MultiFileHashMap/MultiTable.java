@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 
-public class Table {
-    DataBase[][] databases;
-    File mainDir;
+public class MultiTable {
+    public DataBase[][] databases;
+    public File mainDir;
 
-    public Table(File tableDir) throws Exception {
+    public MultiTable(File tableDir) throws Exception {
         databases = new DataBase[16][16];
         mainDir = tableDir;
         for (int i = 0; i < 16; i++) {
@@ -29,6 +29,8 @@ public class Table {
             }
         }
     }
+
+    public MultiTable() {}
 
     public void drop() throws Exception {
         for (int i = 0; i < 16; i++) {
