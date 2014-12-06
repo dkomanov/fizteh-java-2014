@@ -44,7 +44,7 @@ public class Shell {
     public void handle(InputStream stream) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String command = "";
-            while (!command.equals("exit") && command.equals("stop")) {
+            while (!command.equals("exit") && !command.equals("stop")) {
                 System.out.print("$ ");
                 command = reader.readLine();
                 String[] cmds = command.split("\\s+");

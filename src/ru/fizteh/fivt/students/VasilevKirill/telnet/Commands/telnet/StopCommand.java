@@ -20,6 +20,7 @@ public class StopCommand implements Command {
             throw new IOException("not started");
         }
         ss.close();
+        System.out.println("stopped at " + ss.getLocalPort());
         return 0;
     }
 
@@ -28,6 +29,7 @@ public class StopCommand implements Command {
         if (args == null || args.length != 1) {
             return false;
         }
+        return true;
     }
 
     @Override

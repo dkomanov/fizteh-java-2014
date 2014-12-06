@@ -25,10 +25,14 @@ public class StartCommand implements Command {
             throw new IOException("not started: already started");
         }
         int port = 0;
-        try {
-            port = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            throw new IOException("not started: wrong port number");
+        if (args.length == 1) {
+            port = 10001;
+        } else {
+            try {
+                port = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                throw new IOException("not started: wrong port number");
+            }
         }
         status.setServerSocket(new ServerSocket(port));
         System.out.println("started at " + port);
@@ -37,7 +41,7 @@ public class StartCommand implements Command {
 
     @Override
     public boolean checkArgs(String[] args) {
-        if (args == null || args.length != 2) {
+        if (args == null || args.length > 2) {
             return false;
         }
         return true;
