@@ -21,7 +21,11 @@ public class JSONLogCreator {
     }
 
     public void writeClass(Class<?> clazz) {
-        jsonObject = jsonObject.put(JSONFieldsNames.CLASS.name, clazz.getName());
+        try {
+            jsonObject = jsonObject.put(JSONFieldsNames.CLASS.name, clazz.getName());
+        } catch (JSONException e) {
+            System.out.println(getClass().getSimpleName() + ": Cannot put into JSONObject!");
+        }
     }
 
     public void writeMethod(Method method) {
