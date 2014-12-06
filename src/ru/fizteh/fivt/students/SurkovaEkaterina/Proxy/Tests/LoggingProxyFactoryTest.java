@@ -83,7 +83,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void interfaceExecLogTest() {
+    public void interfaceExecLogTest() throws JSONException {
         implementation = new JUnitTestInterface() {
             @Override
             public void execute() {
@@ -122,7 +122,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void interfaceSupportFuncLogTest() throws Exception {
+    public void interfaceSupportFuncLogTest() throws Exception, JSONException {
         implementation = new JUnitTestInterface() {
             @Override
             public void execute() {
@@ -167,7 +167,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void getAmountLogTest() {
+    public void getAmountLogTest() throws JSONException {
         implementation = new JUnitTestInterface() {
             @Override
             public void execute() {
@@ -214,7 +214,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void anotherGetAmountLogTest() {
+    public void anotherGetAmountLogTest() throws JSONException {
         implementation = new JUnitTestInterface() {
             @Override
             public void execute() {
@@ -260,7 +260,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void arrayLogTest() {
+    public void arrayLogTest() throws JSONException {
         implementation = new JUnitTestInterface() {
             @Override
             public void execute() {
@@ -304,7 +304,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void sizeLogTest() {
+    public void sizeLogTest() throws JSONException {
         Table wrappedTable = (Table) wrapper.wrap(stringWriter, table, Table.class);
         long timestampBefore = System.currentTimeMillis();
         wrappedTable.size();
@@ -324,7 +324,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void getLogTest() {
+    public void getLogTest() throws JSONException {
         table.put("key", makeStoreable(5));
         Table wrappedTable = (Table) wrapper.wrap(stringWriter, table, Table.class);
         long timestampBefore = System.currentTimeMillis();
@@ -368,7 +368,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void removeLogTest() {
+    public void removeLogTest() throws JSONException {
         table.put("key", makeStoreable(5));
         Table wrappedTable = (Table) wrapper.wrap(stringWriter, table, Table.class);
         long timestampBefore = System.currentTimeMillis();
@@ -390,7 +390,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void commitLogTest() {
+    public void commitLogTest() throws JSONException {
         table.put("key1", makeStoreable(1));
         table.put("key2", makeStoreable(2));
         table.put("key3", makeStoreable(3));
@@ -421,7 +421,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void rollbackLogTest() {
+    public void rollbackLogTest() throws JSONException {
         table.put("key1", makeStoreable(1));
         table.put("key2", makeStoreable(2));
         table.put("key3", makeStoreable(3));
@@ -448,7 +448,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void getNameLogTest() {
+    public void getNameLogTest() throws JSONException {
         Table wrappedTable = (Table) wrapper.wrap(stringWriter, table, Table.class);
         long timestampBefore = System.currentTimeMillis();
         wrappedTable.getName();
@@ -468,7 +468,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void getColumnsCountLogTest() {
+    public void getColumnsCountLogTest() throws JSONException {
         Table wrappedTable = (Table) wrapper.wrap(stringWriter, table, Table.class);
         long timestampBefore = System.currentTimeMillis();
         wrappedTable.getColumnsCount();
@@ -488,7 +488,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void getColumnTypeLogTest() {
+    public void getColumnTypeLogTest() throws JSONException {
         Table wrappedTable = (Table) wrapper.wrap(stringWriter, table, Table.class);
         long timestampBefore = System.currentTimeMillis();
         wrappedTable.getColumnType(0);
@@ -509,7 +509,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void getColumnTypeExceptionLogTest() {
+    public void getColumnTypeExceptionLogTest() throws JSONException {
         Table wrappedTable = (Table) wrapper.wrap(stringWriter, table, Table.class);
         long timestampBefore = System.currentTimeMillis();
         wrappedTable.getColumnType(1);
@@ -530,7 +530,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void createTableLogTest() {
+    public void createTableLogTest() throws JSONException {
         TableProvider wrappedProvider = (TableProvider) wrapper.wrap(stringWriter,
                 provider, TableProvider.class);
         List<Class<?>> list = new ArrayList<Class<?>>();
@@ -568,7 +568,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void getTableLogTest() {
+    public void getTableLogTest() throws JSONException {
         List<Class<?>> list = new ArrayList<Class<?>>();
         list.add(Integer.class);
         try {
@@ -606,7 +606,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void removeTableLogTest() {
+    public void removeTableLogTest() throws JSONException {
         List<Class<?>> list = new ArrayList<Class<?>>();
         list.add(Integer.class);
         try {
@@ -639,7 +639,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void serializeTableLogTest() {
+    public void serializeTableLogTest() throws JSONException {
         TableProvider wrappedProvider = (TableProvider) wrapper.wrap(stringWriter,
                 provider, TableProvider.class);
         long timestampBefore = System.currentTimeMillis();
@@ -665,7 +665,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void deserializeTableLogTest() {
+    public void deserializeTableLogTest() throws JSONException {
         TableProvider wrappedProvider = (TableProvider) wrapper.wrap(stringWriter,
                 provider, TableProvider.class);
         long timestampBefore = System.currentTimeMillis();
@@ -695,7 +695,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void createForLogTest() {
+    public void createForLogTest() throws JSONException {
         TableProvider wrappedProvider = (TableProvider) wrapper.wrap(stringWriter,
                 provider, TableProvider.class);
         long timestampBefore = System.currentTimeMillis();
@@ -721,7 +721,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void createForSeveralColumnsTableLogTest() {
+    public void createForSeveralColumnsTableLogTest() throws JSONException {
         List<Class<?>> list = new ArrayList<Class<?>>();
         list.add(Integer.class);
         TableProvider wrappedProvider = (TableProvider) wrapper.wrap(stringWriter,
@@ -749,7 +749,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void getExceptionLogTest() {
+    public void getExceptionLogTest() throws JSONException {
         TableProvider wrappedProveder = (TableProvider) wrapper.wrap(stringWriter,
                 provider, TableProvider.class);
         long timestampBefore = System.currentTimeMillis();
@@ -775,7 +775,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void anotherGetColumnTypeExceptionLogTest() {
+    public void anotherGetColumnTypeExceptionLogTest() throws JSONException {
         Table wrappedTable = (Table) wrapper.wrap(stringWriter, table, Table.class);
         long timestampBefore = System.currentTimeMillis();
         try {
@@ -800,7 +800,7 @@ public class LoggingProxyFactoryTest {
     }
 
     @Test
-    public void removeTableExceptionLogTest() {
+    public void removeTableExceptionLogTest() throws JSONException {
         List<Class<?>> list = new ArrayList<Class<?>>();
         list.add(Integer.class);
         try {
