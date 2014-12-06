@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.SurkovaEkaterina.Proxy;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
@@ -12,7 +13,11 @@ public class JSONLogCreator {
     private final IdentityHashMap<Object, Boolean> objects = new IdentityHashMap<Object, Boolean>();
 
     public void writeTimestamp() {
-        jsonObject = jsonObject.put(JSONFieldsNames.TIMESTAMP.name, System.currentTimeMillis());
+        try {
+            jsonObject = jsonObject.put(JSONFieldsNames.TIMESTAMP.name, System.currentTimeMillis());
+        } catch (JSONException e) {
+            System.out.println(getClass().getSimpleName() + ": Cannot put into JSONObject!");
+        }
     }
 
     public void writeClass(Class<?> clazz) {
@@ -20,16 +25,24 @@ public class JSONLogCreator {
     }
 
     public void writeMethod(Method method) {
-        jsonObject = jsonObject.put(JSONFieldsNames.METHOD.name, method.getName());
+        try {
+            jsonObject = jsonObject.put(JSONFieldsNames.METHOD.name, method.getName());
+        } catch (JSONException e) {
+            System.out.println(getClass().getSimpleName() + ": Cannot put into JSONObject!");
+        }
     }
 
     public void writeArguments(Object[] arguments) {
-        if (arguments == null) {
-            jsonObject = jsonObject.put(JSONFieldsNames.ARGUMENTS.name, new JSONArray());
-            return;
+        try {
+            if (arguments == null) {
+                jsonObject = jsonObject.put(JSONFieldsNames.ARGUMENTS.name, new JSONArray());
+                return;
+            }
+            jsonObject = jsonObject.put(JSONFieldsNames.ARGUMENTS.name, makeJSONArray(Arrays.asList(arguments)));
+            objects.clear();
+        } catch (JSONException e) {
+            System.out.println(getClass().getSimpleName() + ": Cannot put into JSONObject!");
         }
-        jsonObject = jsonObject.put(JSONFieldsNames.ARGUMENTS.name, makeJSONArray(Arrays.asList(arguments)));
-        objects.clear();
     }
 
     public void writeReturnValue(Object returnValue) {
@@ -43,15 +56,29 @@ public class JSONLogCreator {
         } else {
             toWrite = JSONObject.NULL;
         }
-        jsonObject = jsonObject.put(JSONFieldsNames.RETURN_VALUE.name, toWrite);
+        try {
+            jsonObject = jsonObject.put(JSONFieldsNames.RETURN_VALUE.name, toWrite);
+        } catch (JSONException e) {
+            System.out.println(getClass().getSimpleName() + ": Cannot put into JSONObject!");
+        }
     }
 
     public void writeThrown(Throwable cause) {
-        jsonObject = jsonObject.put(JSONFieldsNames.THROWN.name, cause.toString());
+        try {
+            jsonObject = jsonObject.put(JSONFieldsNames.THROWN.name, cause.toString());
+        } catch (JSONException e) {
+            System.out.println(getClass().getSimpleName() + ": Cannot put into JSONObject!");
+        }
     }
 
     public String getStringRepresentation() {
-        return jsonObject.toString(2);
+        String str = null;
+        try {
+            str = jsonObject.toString(2);
+        } catch (JSONException e) {
+            System.out.println(getClass().getSimpleName() + ": Cannot convert JSONObject into string!");
+        }
+        return str;
     }
 
     private JSONArray makeJSONArray(Iterable collection) {
