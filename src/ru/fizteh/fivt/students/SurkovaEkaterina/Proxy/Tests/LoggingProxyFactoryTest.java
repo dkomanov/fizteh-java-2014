@@ -313,7 +313,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "size");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -333,7 +334,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "get");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -354,7 +356,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "put");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -375,7 +378,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "remove");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -402,7 +406,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "commit");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -452,7 +457,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "getName");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -471,7 +477,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "getColumnsCount");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -490,7 +497,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "getColumnType");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -510,7 +518,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "getColumnType");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -537,7 +546,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals("ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
+        Assert.assertEquals(
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
                 parser.getString("class"));
         Assert.assertEquals("createTable", parser.getString("method"));
         JSONArray args = parser.getJSONArray("arguments");
@@ -547,7 +557,8 @@ public class LoggingProxyFactoryTest {
         Assert.assertTrue(!parser.isNull("returnValue"));
         String fold = folder.getRoot().getPath();
         String dir = new File(fold, "new").toString();
-        Assert.assertEquals(String.format("ThreadSafeDatabaseTable[%s]", dir), parser.get("returnValue").toString());
+        Assert.assertEquals(String.format("ThreadSafeDatabaseTable[%s]", dir),
+                parser.get("returnValue").toString());
         try {
             provider.removeTable("new");
         } catch (IOException e) {
@@ -574,7 +585,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals("ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
+        Assert.assertEquals(
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
                 parser.getString("class"));
         Assert.assertEquals("getTable", parser.getString("method"));
         JSONArray args = parser.getJSONArray("arguments");
@@ -583,7 +595,8 @@ public class LoggingProxyFactoryTest {
         Assert.assertTrue(!parser.isNull("returnValue"));
         String fold = folder.getRoot().getPath();
         String dir = new File(fold, "new").toString();
-        Assert.assertEquals(String.format("ThreadSafeDatabaseTable[%s]", dir), parser.get("returnValue").toString());
+        Assert.assertEquals(String.format("ThreadSafeDatabaseTable[%s]", dir),
+                parser.get("returnValue").toString());
         try {
             provider.removeTable("new");
         } catch (IOException e) {
@@ -614,7 +627,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals("ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
+        Assert.assertEquals(
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
                 parser.getString("class"));
         Assert.assertEquals("removeTable", parser.getString("method"));
         JSONArray args = parser.getJSONArray("arguments");
@@ -635,7 +649,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals("ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
+        Assert.assertEquals(
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
                 parser.getString("class"));
         Assert.assertEquals("serialize", parser.getString("method"));
         JSONArray args = parser.getJSONArray("arguments");
@@ -664,7 +679,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals("ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
+        Assert.assertEquals(
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
                 parser.getString("class"));
         Assert.assertEquals("deserialize", parser.getString("method"));
         JSONArray args = parser.getJSONArray("arguments");
@@ -689,7 +705,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals("ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
+        Assert.assertEquals(
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
                 parser.getString("class"));
         Assert.assertEquals("createFor", parser.getString("method"));
         JSONArray args = parser.getJSONArray("arguments");
@@ -716,7 +733,8 @@ public class LoggingProxyFactoryTest {
         JSONObject parser = new JSONObject(result);
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals("ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
+        Assert.assertEquals(
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
                 parser.getString("class"));
         Assert.assertEquals("createFor", parser.getString("method"));
         JSONArray args = parser.getJSONArray("arguments");
@@ -771,7 +789,8 @@ public class LoggingProxyFactoryTest {
         Assert.assertEquals(parser.get("thrown"), "java.lang.IndexOutOfBoundsException: Index: 1, Size: 1");
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals(parser.getString("class"), "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
+        Assert.assertEquals(parser.getString("class"),
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTable");
         Assert.assertEquals(parser.getString("method"), "getColumnType");
         JSONArray args = parser.getJSONArray("arguments");
         Assert.assertTrue(args instanceof JSONArray);
@@ -805,7 +824,8 @@ public class LoggingProxyFactoryTest {
         Assert.assertEquals(parser.get("thrown"), "java.lang.IllegalStateException: newTable not exists");
         Assert.assertTrue(parser.getLong("timestamp") >= timestampBefore
                 && parser.getLong("timestamp") <= timestampAfter);
-        Assert.assertEquals("ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
+        Assert.assertEquals(
+                "ru.fizteh.fivt.students.SurkovaEkaterina.Proxy.TableSystem.ThreadSafeDatabaseTableProvider",
                 parser.getString("class"));
         Assert.assertEquals("removeTable", parser.getString("method"));
         JSONArray args = parser.getJSONArray("arguments");

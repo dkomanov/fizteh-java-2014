@@ -18,11 +18,13 @@ public class Wrapper implements LoggingProxyFactory {
         }
 
         if (!interfaceClass.isInstance(implementation)) {
-            throw new IllegalArgumentException(getClass().getSimpleName() + "Target object does not implementing interface class!");
+            throw new IllegalArgumentException(getClass().getSimpleName()
+                    + "Target object does not implementing interface class!");
         }
 
         if (!interfaceClass.isInterface()) {
-            throw new IllegalArgumentException(getClass().getSimpleName() + "Interface class is not exactly interface!");
+            throw new IllegalArgumentException(getClass().getSimpleName()
+                    + "Interface class is not exactly interface!");
         }
 
         return Proxy.newProxyInstance(
