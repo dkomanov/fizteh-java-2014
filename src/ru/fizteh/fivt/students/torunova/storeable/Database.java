@@ -39,6 +39,9 @@ public class  Database implements TableProvider {
                                         TableNotCreatedException,
                                         IncorrectFileException,
                                         IncorrectDbException {
+        if (name == null || name.equals("..") || name.equals(".")) {
+            throw new IllegalArgumentException("Illegal name of database.");
+        }
         File db = new File(name).getAbsoluteFile();
         if (!db.exists()) {
             db.mkdirs();

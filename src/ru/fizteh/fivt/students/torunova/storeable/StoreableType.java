@@ -26,9 +26,10 @@ public class StoreableType implements ru.fizteh.fivt.storage.structured.Storeabl
             return false;
         }
         for (int i = 0; i < values.length; i++) {
-            //TODO: fix equals.
             if (values[i] != null
                     && !values[i].equals(((StoreableType) obj).getColumnAt(i))) {
+                return false;
+            } else if (values[i] == null && ((StoreableType) obj).getColumnAt(i) != null) {
                 return false;
             }
         }

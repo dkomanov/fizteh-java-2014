@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.torunova.storeable.actions;
 
 import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.TableNotCreatedException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -13,9 +11,7 @@ import java.util.Map;
 public class ShowTables extends Action {
     @Override
     public boolean run(String[] args, CurrentTable currentTable)
-                               throws IOException,
-                               IncorrectFileException,
-                               TableNotCreatedException {
+                               throws IOException {
         if (args.length > 1) {
             tooManyArguments();
             return false;
@@ -26,9 +22,9 @@ public class ShowTables extends Action {
             System.err.println("Command not found");
             return false;
         } else {
-            System.out.println("table_name row_count");
+            System.out.println(String.format("%s%20s", "table_name", "row_count"));
             Map<String, Integer> tables = currentTable.getDb().showTables();
-            tables.forEach((tableName, rowCount)->System.out.println(tableName + " " + rowCount));
+            tables.forEach((tableName, rowCount)->System.out.println(String.format("%s%20s", tableName, rowCount)));
             return true;
         }
 

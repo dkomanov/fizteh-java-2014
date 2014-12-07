@@ -13,6 +13,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created by nastya on 20.11.14.
@@ -20,6 +21,7 @@ import java.util.*;
 public class DatabaseWrapper implements TableProvider {
     private Database db;
     private static final String SIGNATURE_FILE = "signature.tsv";
+    private static final String REGEXP_TO_SPLIT_JSON = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
     public DatabaseWrapper(String dbName) throws IncorrectDbException,
                                                  IncorrectDbNameException,
                                                  IncorrectFileException,
@@ -96,7 +98,8 @@ public class DatabaseWrapper implements TableProvider {
         }
         value = value.substring(value.indexOf('[') + 1, value.lastIndexOf(']'));
         value = value.trim();
-        String[] values = value.split("\\s*,\\s*");
+        String[] values = Stream.of(value.split(REGEXP_TO_SPLIT_JSON)).
+                map(s -> s.trim()).toArray(size -> new String[size]);
         if (values.length != types.length) {
             throw new ColumnFormatException("Wrong number of values");
         }

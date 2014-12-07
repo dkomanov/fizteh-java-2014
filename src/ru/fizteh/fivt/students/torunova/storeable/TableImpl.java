@@ -36,6 +36,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
 
     public TableImpl(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
         File table = new File(newTableName).getAbsoluteFile();
+        checkTableName(table.getName());
         if (!table.exists()) {
             if (!table.mkdirs()) {
                 throw new TableNotCreatedException();
@@ -223,6 +224,12 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
         builder.append(nfile).append(".dat");
         return  builder.toString();
 
+    }
+    private void checkTableName(String name) {
+        if (name == null || Pattern.matches(".*" + Pattern.quote(File.separator) + ".*", name)
+                || name.equals("..") || name.equals(".")) {
+            throw new IllegalArgumentException("illegal table name");
+        }
     }
 
 }
