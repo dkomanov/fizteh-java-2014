@@ -67,20 +67,17 @@ public class DataBaseTable implements Table {
         this.serializer = serializer;
         this.signature = new ArrayList<>(signature);
         this.lock = lock;
-        this.lock.writeLock().lock();
+
         diff = new ThreadLocal<DataBaseTableDiff>() {
             @Override
             protected DataBaseTableDiff initialValue() {
                 return new DataBaseTableDiff(DataBaseTable.this, lock);
             }
         };
-        try {
-            writeSignature();
-            saveMap();
 
-        } finally {
-            this.lock.writeLock().unlock();
-        }
+        writeSignature();
+        saveMap();
+
     }
 
     private void writeSignature() throws IOException {
