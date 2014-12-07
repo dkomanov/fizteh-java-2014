@@ -11,7 +11,7 @@ public class PutCommand implements Command {
     private String value;
     private DataBase dataBase;
 
-    public void run() throws FileMapException {
+    public void run() throws Exception {
         if (!dataBase.getDataBase().containsKey(key)) {
             System.out.println("new");
         } else {

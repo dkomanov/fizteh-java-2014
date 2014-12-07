@@ -19,6 +19,9 @@ public class FileMap extends Runner {
         }
     }
 
+    public FileMap() {
+    }
+
     @Override
     protected void execute(String command) {
         String[] tokens = parseCommand(command);

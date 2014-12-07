@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-class DbReader {
+class DbReader implements AutoCloseable {
 
     private DataInputStream stream;
 
@@ -17,26 +17,25 @@ class DbReader {
         }
     }
 
-    public void load(HashMap<String, String> data) throws Exception {
+    public void readData(HashMap<String, String> data) throws Exception {
         while (true) {
             try {
                 String key = readNext();
                 String value = readNext();
                 if (data.containsKey(key)) {
-                    throw new Exception("Double key");
+                    throw new TwoSameKeysException();
                 }
                 data.put(key, value);
             } catch (EOFException e) {
                 break;
             }
         }
-        stream.close();
     }
 
     private String readNext() throws Exception {
         int length = stream.readInt();
         if (length < 0) {
-            throw new Exception("Invalid length in database found");
+            throw new Exception("Incorrect data base file: negative length of word");
         }
         ArrayList<Byte> wordBuilder = new ArrayList<>();
         try {
@@ -45,12 +44,21 @@ class DbReader {
                 wordBuilder.add(symbol);
             }
         } catch (EOFException e) {
-            throw new Exception("End of file");
+            throw new Exception("Incorrect data base file: unexpected end of file");
         }
         byte[] word = new byte[length];
         for (int i = 0; i < length; i++) {
             word[i] = wordBuilder.get(i);
         }
         return new String(word, "UTF-8");
+    }
+
+    @Override
+    public void close() throws Exception {
+        try {
+            stream.close();
+        } catch (IOException e) {
+            throw new Exception("Unable to close database file");
+        }
     }
 }

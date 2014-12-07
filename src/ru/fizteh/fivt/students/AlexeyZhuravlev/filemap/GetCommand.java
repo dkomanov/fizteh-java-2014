@@ -15,6 +15,13 @@ public class GetCommand extends Command {
         key = args[1];
     }
 
+    public GetCommand(String passedKey) {
+        key = passedKey;
+    }
+
+    public GetCommand() {
+    }
+
     @Override
     public void execute(DataBase base) {
         String value = base.data.get(key);

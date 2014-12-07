@@ -30,6 +30,7 @@ public class DatabaseFactoryTest {
     public void factoryCreateForExistingFolder() {
         TableProviderFactory test = new DatabaseFactory();
         test.create(testDirectory.toString());
+        assertTrue(testDirectory.toFile().exists());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.database;
 
 import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.ContainsWrongFilesException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.TableDoesNotExistException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
@@ -21,7 +22,7 @@ public class Database implements TableProvider {
     private String activeTable;
     private Path databasePath;
 
-    public Database(String dbPath) throws IllegalArgumentException {
+    public Database(String dbPath) {
         try {
             databasePath = Paths.get(dbPath);
             if (!Files.exists(databasePath)) {
@@ -31,19 +32,18 @@ public class Database implements TableProvider {
                 throw new IllegalArgumentException();
             }
         } catch (IllegalArgumentException | IOException e) {
-            throw new IllegalArgumentException(
-                    "Illegal database directory name: " + databasePath.toString(), e);
+            throw new IllegalArgumentException("Cannot create database here: " + databasePath.toString(), e);
         }
         tables = new HashMap<>();
 
         try (DirectoryStream<Path> directory = Files.newDirectoryStream(databasePath)) {
             for (Path entry : directory) {
                 if (!Files.isDirectory(entry)) {
-                    throw new IllegalArgumentException("Database directory contains illegal files");
+                    throw new ContainsWrongFilesException(databasePath.toString());
                 }
 
-                Table curTable = new MultiFileTable(databasePath, entry.getFileName().toString());
-                tables.put(entry.getFileName().toString(), curTable);
+                Table currentTable = new MultiFileTable(databasePath, entry.getFileName().toString());
+                tables.put(entry.getFileName().toString(), currentTable);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -77,7 +77,7 @@ public class Database implements TableProvider {
             tables.put(name, newTable);
             return newTable;
         } catch (IOException e) {
-            throw new InputMistakeException("Illegal table name: " + e.getMessage());
+            throw new InputMistakeException("Cannot create table: " + e.getMessage());
         }
     }
 
@@ -93,8 +93,7 @@ public class Database implements TableProvider {
         try {
             Utils.rm(databasePath.resolve(name));
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Cannot remove directory (" + name + ") from disk: " + e.getMessage(), e);
+            throw new RuntimeException("Cannot remove directory (" + name + ") from disk: " + e.getMessage(), e);
         }
     }
 
@@ -114,15 +113,6 @@ public class Database implements TableProvider {
     }
 
     private boolean isNameCorrect(String name) {
-        if (name == null) {
-            return false;
-        }
-        String[] reservedCharacters = {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", "%"};
-        for (String character : reservedCharacters) {
-            if (name.contains(character)) {
-                return false;
-            }
-        }
-        return !(name.matches(".*\\.|\\..*|.*(/|\\\\).*"));
+        return (name != null) && !(name.matches(".*[</\"*%|\\\\:?>].*|.*\\."));
     }
 }

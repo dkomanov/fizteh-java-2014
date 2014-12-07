@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.data
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.TableDoesNotExistException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.AbstractCommand;
+import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
 
 import java.io.PrintStream;
@@ -14,11 +15,13 @@ public class Use extends AbstractCommand<TableProvider> {
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) throws InputMistakeException {
+    public void exec(String[] param, PrintStream out) {
         int diffSize = 0;
-        if (context.getActiveTable() != null) {
-            diffSize = context.getActiveTable().getDiff().size();
+        Table active = context.getActiveTable();
+        if (active != null) {
+            diffSize = active.getNumberOfUncommittedChanges();
         }
+
         if (diffSize != 0) {
             throw new InputMistakeException(diffSize + " unsaved changes");
         } else {

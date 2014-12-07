@@ -7,37 +7,52 @@ public class MultiPutCommand extends Command {
     private String key;
     private String value;
 
-    public MultiPutCommand(String newKey, String newValue) {
-        key = newKey;
-        value = newValue;
+    protected void putArguments(String[] args) {
+        key = args[1];
+        value = args[2];
+    }
+
+    public MultiPutCommand(String passedKey, String passedValue) {
+        key = passedKey;
+        value = passedValue;
+    }
+
+    public MultiPutCommand() {}
+
+    protected int numberOfArguments() {
+        return 2;
     }
 
     @Override
-    public void execute(DataBaseOneDir base) throws Exception {
+    public void executeOnTable(Table table) throws Exception {
+        int hashCode = Math.abs(key.hashCode());
+        int dir = hashCode % ConstClass.NUM_DIRECTORIES;
+        int file = hashCode / ConstClass.NUM_FILES % ConstClass.NUM_FILES;
+        PutCommand put = new PutCommand(key, value);
+        if (table.getClass() == Table.class) {
+            if (table.databases[dir][file] == null) {
+                File subDir = new File(table.mainDir, String.valueOf(dir) + ".dir");
+                if (!subDir.exists()) {
+                    if (!subDir.mkdir()) {
+                        throw new Exception("Unable to create directories in working catalog");
+                    }
+                }
+                File dbFile = new File(subDir, String.valueOf(file) + ".dat");
+                if (!dbFile.exists() && !dbFile.createNewFile()) {
+                    throw new Exception("Unable to create database files in working catalog");
+                }
+                table.databases[dir][file] = new DataBase(dbFile.toString());
+            }
+        }
+        put.execute(table.databases[dir][file]);
+    }
+
+    @Override
+    public void execute(DataBaseDir base) throws Exception {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
-            int hashCode = Math.abs(key.hashCode());
-            int ndirectory = hashCode % NUM_DIRECTORIES;
-            int nfile = hashCode / NUM_FILES % NUM_FILES;
-            //System.out.println(ndirectory + " " + nfile);
-            PutCommand put = new PutCommand(key, value);
-            if (base.getUsing().databases[ndirectory][nfile] == null) {
-                File insideMainDir = new File(base.getUsing().insideMainDir, String.valueOf(ndirectory) + ".dir");
-                if (!insideMainDir.exists()) {
-                    if (!insideMainDir.mkdir()) {
-                        throw new Exception("You cann't create directory in working catalog");
-                    }
-                }
-                File dataBaseFile = new File(insideMainDir, String.valueOf(nfile) + ".dat");
-                if (!dataBaseFile.exists()) {
-                    if (!dataBaseFile.createNewFile()) {
-                        throw new Exception("You cann't create database of files in working catalog");
-                    }
-                }
-                base.getUsing().databases[ndirectory][nfile] = new DataBaseOneFile(dataBaseFile.toString());
-            }
-            put.execute(base.getUsing().databases[ndirectory][nfile], false);
+            executeOnTable(base.getUsing());
         }
     }
 }

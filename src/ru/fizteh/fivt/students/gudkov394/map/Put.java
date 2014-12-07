@@ -9,7 +9,7 @@ public class Put {
             System.exit(1);
         }
         if (ct.containsKey(currentArgs[1])) {
-            System.out.println("overwrite\n" + "old value = " + ct.get(currentArgs[1]));
+            System.out.println("overwrite\n" + ct.get(currentArgs[1]));
         } else {
             System.out.println("new");
         }

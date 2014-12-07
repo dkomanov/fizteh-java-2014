@@ -16,6 +16,14 @@ public class PutCommand extends Command {
         return 2;
     }
 
+    public PutCommand(String passedKey, String passedValue) {
+        key = passedKey;
+        value = passedValue;
+    }
+
+    public PutCommand() {
+    }
+
     @Override
     public void execute(DataBase base) throws Exception {
         String baseValue = base.data.get(key);

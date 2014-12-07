@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.database;
 
-import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.ContainsWrongFilesException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.NullArgumentException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
@@ -15,7 +14,7 @@ import java.util.Map.Entry;
 
 public class MultiFileTable implements Table {
 
-    class MultiFileMap {
+    private class MultiFileMap {
         public Map<String, String> map;
 
         public MultiFileMap() {
@@ -24,20 +23,23 @@ public class MultiFileTable implements Table {
     }
 
     private static final int FOLDERS = 16;
+    private static final String FOLDERS_REGEXP = "(1[0-5]|[0-9])\\.dir";
     private static final int FILES = 16;
+    private static final String FILES_REGEXP = "(1[0-5]|[0-9])\\.dat";
     private static final String ENCODING = "UTF-8";
 
     private String name;
     private Path directory;
-    private int size = 0;
+    private int size;
     private MultiFileMap[] content;
-    private Map<String, String> diff = new HashMap<>();
+    private Map<String, String> diff;
 
     public MultiFileTable(Path databaseDirectory, String tableName) throws IOException {
         name = tableName;
         if (!Files.exists(databaseDirectory)) {
             throw new RuntimeException(databaseDirectory.toString() + ": database doesn't exist");
         }
+        size = 0;
         directory = databaseDirectory.resolve(tableName);
         content = new MultiFileMap[FOLDERS * FILES];
         for (int i = 0; i < FOLDERS * FILES; ++i) {
@@ -45,10 +47,17 @@ public class MultiFileTable implements Table {
         }
 
         if (!Files.exists(directory)) {
-            Files.createDirectory(directory);
+            try {
+                Files.createDirectory(directory);
+            } catch (IOException | SecurityException e) {
+                throw new IOException("Cannot create " + directory.getFileName());
+            }
+
         } else {
             load();
         }
+
+        diff = new HashMap<>();
     }
 
     @Override
@@ -72,16 +81,23 @@ public class MultiFileTable implements Table {
         if (key == null || value == null) {
             throw new NullArgumentException("put");
         }
-        if (!diff.containsKey(key) && content[getPlace(key)].map.containsKey(key)) {
+
+        int place = getPlace(key);
+        String oldValue;
+        if (!diff.containsKey(key) && content[place].map.containsKey(key)) {
+            oldValue = content[place].map.get(key);
+            if (oldValue.equals(value)) {
+                return oldValue;
+            }
             diff.put(key, value);
-            return content[getPlace(key)].map.get(key);
+            return oldValue;
         }
 
-        String retVal = diff.put(key, value);
-        if (retVal == null) {
+        oldValue = diff.put(key, value);
+        if (oldValue == null) {
             ++size;
         }
-        return retVal;
+        return oldValue;
     }
 
     @Override
@@ -89,17 +105,28 @@ public class MultiFileTable implements Table {
         if (key == null) {
             throw new NullArgumentException("remove");
         }
-        if (!diff.containsKey(key) && content[getPlace(key)].map.containsKey(key)) {
-            diff.put(key, null);
-            --size;
-            return content[getPlace(key)].map.get(key);
+
+        int place = getPlace(key);
+        String oldValue;
+        if (!diff.containsKey(key)) {
+            if (!content[place].map.containsKey(key)) { // No such key.
+                return null;
+            } else { // Key is saved on disk.
+                oldValue = content[place].map.get(key);
+                diff.put(key, null);
+            }
+        } else { // Some unsaved changes with this key.
+            if (!content[place].map.containsKey(key)) {
+                oldValue = diff.remove(key);
+            } else {
+                oldValue = diff.put(key, null);
+            }
         }
 
-        String retVal = diff.put(key, null);
-        if (retVal != null) {
+        if (oldValue != null) {
             --size;
         }
-        return retVal;
+        return oldValue;
     }
 
     @Override
@@ -108,27 +135,29 @@ public class MultiFileTable implements Table {
     }
 
     @Override
-    public int commit() {
+    public int commit() throws IOException {
+        Set<Integer> changedFiles = new HashSet<>();
         for (Entry<String, String> entry : diff.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
+            changedFiles.add(getPlace(key));
+            int place = getPlace(key);
 
             if (value == null) {
-                content[getPlace(key)].map.remove(key);
+                content[place].map.remove(key);
             } else {
-                content[getPlace(key)].map.put(key, value);
+                content[place].map.put(key, value);
             }
+        }
+
+        try {
+            save(changedFiles);
+        } catch (SecurityException e) {
+            throw new IOException(e);
         }
 
         int retVal = diff.size();
         diff.clear();
-
-        try {
-            save();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         return retVal;
     }
 
@@ -168,27 +197,22 @@ public class MultiFileTable implements Table {
     }
 
     @Override
-    public List<String> getDiff() {
-        List<String> list = new LinkedList<>();
-        list.addAll(diff.keySet());
-        return list;
+    public int getNumberOfUncommittedChanges() {
+        return diff.size();
     }
 
     private void load() throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
             for (Path entry : stream) {
-                if (!Files.isDirectory(entry)) {
-                    throw new ContainsWrongFilesException(directory.toString());
-                }
-                boolean correctDir = false;
-                for (int i = 0; i < FOLDERS; ++i) {
-                    if (entry.endsWith(Integer.toString(i) + ".dir")) {
-                        readDir(entry, i);
-                        correctDir = true;
-                        break;
+                String directoryName = entry.getFileName().toString();
+                if (directoryName.matches(FOLDERS_REGEXP) && Files.isDirectory(entry)) {
+                    int fileNumber = Integer.parseInt(directoryName.substring(0, directoryName.indexOf('.')));
+                    if (fileNumber < FOLDERS) {
+                        readDir(entry, fileNumber);
+                    } else {
+                        throw new ContainsWrongFilesException(directory.toString());
                     }
-                }
-                if (!correctDir) {
+                } else {
                     throw new ContainsWrongFilesException(directory.toString());
                 }
             }
@@ -198,15 +222,15 @@ public class MultiFileTable implements Table {
     private void readDir(Path entry, int dirNum) throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(entry)) {
             for (Path path : stream) {
-                boolean correctFile = false;
-                for (int i = 0; i < FILES; ++i) {
-                    if (path.endsWith(Integer.toString(i) + ".dat")) {
-                        readFile(path.toString(), dirNum, i);
-                        correctFile = true;
-                        break;
+                String fileName = entry.getFileName().toString();
+                if (fileName.matches(FILES_REGEXP) && Files.isRegularFile(path)) {
+                    int fileNumber = Integer.parseInt(fileName.substring(0, fileName.indexOf('.')));
+                    if (fileNumber < FILES) {
+                        readFile(path.toString(), dirNum, fileNumber);
+                    } else {
+                        throw new ContainsWrongFilesException(directory.toString());
                     }
-                }
-                if (!correctFile) {
+                } else {
                     throw new ContainsWrongFilesException(directory.toString());
                 }
             }
@@ -214,8 +238,8 @@ public class MultiFileTable implements Table {
     }
 
     private void readFile(String fileName, int dirNum, int fileNum) throws IOException {
-        try (DataInputStream stream = new DataInputStream(new FileInputStream(fileName))) {
-            while (true) {
+        try (RandomAccessFile stream = new RandomAccessFile(new File(fileName), "r")) {
+            while (stream.getFilePointer() < stream.length()) {
                 String key = readWord(stream);
                 String value = readWord(stream);
                 int hashCode = Math.abs(key.hashCode());
@@ -223,60 +247,77 @@ public class MultiFileTable implements Table {
                     throw new ContainsWrongFilesException(directory.toString());
                 }
 
-                content[dirNum * FILES + fileNum].map.put(key, value);
+                if (content[dirNum * FILES + fileNum].map.put(key, value) != null) { // The same key. Twice.
+                    throw new ContainsWrongFilesException(directory.toString());
+                }
                 ++size;
             }
         } catch (EOFException e) {
-            // File is read.
+            throw new ContainsWrongFilesException(directory.toString());
         }
     }
 
-    private String readWord(DataInputStream stream) throws IOException {
+    private String readWord(RandomAccessFile stream) throws IOException {
         int length = stream.readInt();
-        byte[] word = new byte[length];
-        stream.readFully(word);
-        return new String(word, ENCODING);
+        try {
+            byte[] word = new byte[length];
+            stream.readFully(word);
+            return new String(word, ENCODING);
+        } catch (OutOfMemoryError | NegativeArraySizeException e) {
+            throw new ContainsWrongFilesException(directory.toString());
+        }
     }
 
-    private void save() throws IOException {
-        Utils.rm(directory);
-        Files.createDirectory(directory);
-        for (int i = 0; i < FOLDERS * FILES; ++i) {
-            if (content[i].map.size() > 0) {
-                Path dir = getDirectoryPath(i);
-                if (!Files.exists(dir)) {
-                    Files.createDirectory(dir);
+    private void save(Set<Integer> changedFiles) throws IOException {
+        for (int number : changedFiles) {
+            Path subdirectoryPath = getDirectoryPath(number);
+            if (!Files.exists(subdirectoryPath)) {
+                Files.createDirectory(subdirectoryPath);
+            }
+
+            if (content[number].map.size() > 0) {
+                writeFile(number);
+            } else {
+                if (Files.exists(getFilePath(number))) {
+                    Files.delete(getFilePath(number));
                 }
-                writeFile(i);
+            }
+        }
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+            for (Path entry : stream) {
+                if (entry.toFile().list().length == 0) {
+                    Files.delete(entry);
+                }
             }
         }
     }
 
-    private void writeFile(int fileNum) throws IOException {
-        Path filePath = getFilePath(fileNum);
+    private void writeFile(int fileNumber) throws IOException {
+        Path filePath = getFilePath(fileNumber);
         if (!Files.exists(filePath)) {
             Files.createFile(filePath);
         }
 
-        Set<String> keyList = content[fileNum].map.keySet();
-        ByteBuffer buffer = ByteBuffer.allocate(4);
-        Iterator<String> it = keyList.iterator();
-        try (FileOutputStream output = new FileOutputStream(getFilePath(fileNum).toString())) {
-            while (it.hasNext()) {
-                String key = it.next();
-                byte[] keyByte = key.getBytes(ENCODING);
-                byte[] valueByte = content[fileNum].map.get(key).getBytes(ENCODING);
+        Set<String> keyList = content[fileNumber].map.keySet();
+        try (FileOutputStream output = new FileOutputStream(filePath.toString())) {
+            for (String entry : keyList) {
+                byte[] keyByte = entry.getBytes(ENCODING);
+                byte[] valueByte = content[fileNumber].map.get(entry).getBytes(ENCODING);
 
-                output.write(buffer.putInt(0, keyByte.length).array());
-                output.write(keyByte);
-
-                output.write(buffer.putInt(0, valueByte.length).array());
-                output.write(valueByte);
+                writeBytes(output, keyByte);
+                writeBytes(output, valueByte);
             }
         } catch (Exception e) {
-            throw new IOException("Cannot write into a file: " + getFilePath(fileNum).toString(),
-                    e);
+            throw new IOException("Cannot write into a file: " + filePath.toString());
         }
+    }
+
+    private void writeBytes(FileOutputStream output, byte[] bytes) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+
+        output.write(buffer.putInt(0, bytes.length).array());
+        output.write(bytes);
     }
 
     private int getPlace(String key) {
@@ -285,14 +326,10 @@ public class MultiFileTable implements Table {
     }
 
     private Path getDirectoryPath(int fileNumber) {
-        String directoryName = new StringBuilder().append(fileNumber / FOLDERS).append(".dir")
-                .toString();
-        return directory.resolve(directoryName);
+        return directory.resolve(String.valueOf(fileNumber / FOLDERS) + ".dir");
     }
 
     private Path getFilePath(int fileNumber) {
-        String fileName = new StringBuilder().append(fileNumber % FOLDERS).append(".dat")
-                .toString();
-        return getDirectoryPath(fileNumber).resolve(fileName);
+        return getDirectoryPath(fileNumber).resolve(String.valueOf(fileNumber % FOLDERS) + ".dat");
     }
 }

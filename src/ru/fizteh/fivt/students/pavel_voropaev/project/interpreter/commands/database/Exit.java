@@ -14,9 +14,9 @@ public class Exit extends AbstractCommand<TableProvider> {
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) throws InputMistakeException {
+    public void exec(String[] param, PrintStream out) {
         Table activeTable = context.getActiveTable();
-        if (activeTable != null && activeTable.getDiff().size() > 0) {
+        if (activeTable != null && activeTable.getNumberOfUncommittedChanges() > 0) {
             throw new InputMistakeException("Still have unsaved changes. Use commit or rollback before exit");
         }
     }

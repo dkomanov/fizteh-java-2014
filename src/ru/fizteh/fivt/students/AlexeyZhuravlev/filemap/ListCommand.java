@@ -9,8 +9,10 @@ public class ListCommand extends Command {
         return 0;
     }
 
-    @Override
-    public void execute(DataBase base) {
+    public ListCommand() {
+    }
+
+    public String getList(DataBase base) {
         StringBuilder allKeys = new StringBuilder();
         for (String key : base.data.keySet()) {
             if (allKeys.length() > 0) {
@@ -18,6 +20,11 @@ public class ListCommand extends Command {
             }
             allKeys.append(key);
         }
-        System.out.println(allKeys.toString());
+        return allKeys.toString();
+    }
+
+    @Override
+    public void execute(DataBase base) {
+        System.out.println(getList(base));
     }
 }

@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project;
 
-import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.database.DatabaseFactory;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Command;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Interpreter;
@@ -10,7 +9,6 @@ import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
 import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProviderFactory;
 
 public class Main {
-
     public static void main(String[] args) {
         String dbPath = System.getProperty("fizteh.db.dir");
         if (dbPath == null) {
@@ -38,7 +36,7 @@ public class Main {
         Interpreter interpreter = new Interpreter(commands);
         try {
             interpreter.run(args);
-        } catch (InputMistakeException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             System.exit(-1);
         }

@@ -21,7 +21,7 @@ public class InterpreterTest extends InterpreterTestBase<AlternativeShellState> 
     }
 
     @Test
-    public void testUnexpectedMethodError() {
+    public void testUnexpectedMethodError() throws TerminalException {
         runBatchExpectNonZero(AlternativeShellState.THROW_RUNTIME.getName());
 
         assertThat("Improper error report", getOutput(), containsString("Method execution error"));
@@ -42,7 +42,7 @@ public class InterpreterTest extends InterpreterTestBase<AlternativeShellState> 
     }
 
     @Test
-    public void testErrorInPersistOnExit() {
+    public void testErrorInPersistOnExit() throws TerminalException {
         state.setMakeExceptionOnPersist(true);
 
         runBatchExpectNonZero();

@@ -8,8 +8,8 @@ import java.util.HashMap;
 
 public class DataBase {
 
-    private String dbFileName;
-    HashMap<String, String> data;
+    public String dbFileName;
+    public HashMap<String, String> data;
 
     public DataBase(String path) throws Exception {
         dbFileName = path;
@@ -19,10 +19,16 @@ public class DataBase {
         }
     }
 
+    public DataBase() {}
+
     public void sync() throws Exception {
         try (DbWriter writer = new DbWriter(dbFileName)) {
             writer.writeData(data);
         }
+    }
+
+    public int recordsNumber() {
+        return data.size();
     }
 
 }
