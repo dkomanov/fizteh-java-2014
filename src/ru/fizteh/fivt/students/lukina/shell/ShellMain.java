@@ -42,11 +42,10 @@ public/* abstract */class ShellMain {
         }
     }
 
-    private static void mkdir(String arg) {
+    public static void mkdir(String arg) {
         File currFile = createFile(arg);
         if (currFile.exists()) {
-            printError("mkdir: cannot create a directory '" + arg
-                    + "': such directory exists");
+            printError("mkdir: cannot create a directory '" + arg + "': such directory exists");
         } else if (!currFile.mkdir()) {
             printError("mkdir cannot create a directory'" + arg + "'");
         }
@@ -69,7 +68,7 @@ public/* abstract */class ShellMain {
         }
     }
 
-    private static void rm(String fileName, boolean isRecursive) {
+    public static void rm(String fileName, boolean isRecursive) {
         File currFile = createFile(fileName);
         if (!currFile.exists()) {
             printError("rm: cannot remove '" + fileName

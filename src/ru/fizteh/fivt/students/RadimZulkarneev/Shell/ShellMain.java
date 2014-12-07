@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.RadimZulkaneev.shell;
+package ru.fizteh.fivt.students.RadimZulkarneev.Shell;
 
  
 public final class ShellMain {

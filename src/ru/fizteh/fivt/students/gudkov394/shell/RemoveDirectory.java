@@ -29,7 +29,7 @@ public class RemoveDirectory {
     }
 
     public RemoveDirectory(final String[] currentArgs, final CurrentDirectory cd) {
-        if (currentArgs.length > 3  || currentArgs.length < 2) {
+        if (currentArgs.length > 3 || currentArgs.length < 2) {
             System.err.println("wrong number of arguments to rm");
             System.exit(1);
         } else if (currentArgs.length == 2) {

@@ -4,6 +4,7 @@ package ru.fizteh.fivt.students.torunova.shell;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -347,7 +348,7 @@ final class Shell {
         if (f.exists()) {
             Scanner scanner = null;
             try {
-                scanner = new Scanner(f);
+                scanner = new Scanner(new FileInputStream(f));
             } catch (FileNotFoundException e) {
                 System.err.println("cat: caught FileNotFoundException " + e.getMessage());
                 return FUNCTION_ERROR;

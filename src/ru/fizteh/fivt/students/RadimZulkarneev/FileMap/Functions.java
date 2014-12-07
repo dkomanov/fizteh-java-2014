@@ -11,9 +11,6 @@ public final class Functions {
 
     public static void makeDbFile(final String fileName) throws MapExcept {
         File ctFile = new File(fileName);
-        if (ctFile.isDirectory()) {
-            throw new MapExcept("It is a directory");
-        }
         if (ctFile.exists()) {
             throw new MapExcept("MakeDbFile: File already exist");
         } else {
