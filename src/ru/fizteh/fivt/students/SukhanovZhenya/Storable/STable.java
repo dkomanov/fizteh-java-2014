@@ -5,6 +5,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class STable implements Table {
     private Map<String, String> fMap;
@@ -23,7 +24,7 @@ public class STable implements Table {
                 System.exit(1);
             }
 
-            typesList = new Vector<Class<?>>(columnTypes.size());
+            typesList = new Vector<>(columnTypes.size());
             FileWriter writer = new FileWriter(typesFile);
             for (Class<?> type : columnTypes) {
                 writer.write(type.getSimpleName() + " ");
@@ -105,10 +106,7 @@ public class STable implements Table {
 
     @Override
     public List<String> list() {
-        List<String> keys = new ArrayList<>();
-        for (String key :fMap.keySet()) {
-            keys.add(key);
-        }
+        List<String> keys = fMap.keySet().stream().collect(Collectors.toList());
         return keys;
     }
 
@@ -126,7 +124,7 @@ public class STable implements Table {
         try {
             Scanner reader = new Scanner(new FileReader(typesFile));
             String[] getTypes = reader.nextLine().split(" +");
-            typesList = new Vector<Class<?>>(getTypes.length);
+            typesList = new Vector<>(getTypes.length);
             for (String name : getTypes) {
                 typesList.add(Class.forName(name));
             }

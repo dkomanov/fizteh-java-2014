@@ -87,7 +87,7 @@ public class SProvider implements TableProvider {
     @Override
     public Storeable createFor(Table table) {
         int size = ((STable) table).getTypesList().size();
-        List<Object> values = new ArrayList<Object>(size);
+        List<Object> values = new ArrayList<>(size);
         return new SStoreable(values, ((STable) table).getTypesList());
     }
 
@@ -109,8 +109,12 @@ public class SProvider implements TableProvider {
 
     @Override
     public String[] getTableNames() {
-        return currentDir.list();
+        int length = currentDir.list().length;
+        String[] result = new String[length];
+        for (int i = 0; i < length; ++i) {
+            result[i] = currentDir.list()[i];
+        }
+        return result;
     }
-
 
 }
