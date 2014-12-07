@@ -14,7 +14,7 @@ class LoggingInvocationHandler implements InvocationHandler {
     private Object implementation;
 
     public LoggingInvocationHandler(Writer writer, Object implementation) {
-        if (writer == null || implementation == null){
+        if (writer == null || implementation == null) {
             throw new IllegalArgumentException("Invocation handler constructor: null arguments");
         }
         this.writer = writer;
@@ -23,11 +23,16 @@ class LoggingInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        boolean itIsMethodOfObject= true;
         try { // If it's method of Object, we just invoke it without logging.
             Object.class.getMethod(method.getName());
+        } catch (NoSuchMethodException e) {
+            itIsMethodOfObject = false;
+        }
+        if (itIsMethodOfObject) {
             return method.invoke(args);
-        } catch (NoSuchMethodException e) {}
-
+        }
+        // Else we'll log it.
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
         try {
             xmlWriter.writeStartElement("invoke");
@@ -96,7 +101,7 @@ class LoggingInvocationHandler implements InvocationHandler {
                 xmlWriter.writeEmptyElement("null");
                 xmlWriter.writeEndElement();
             } else if (currentObject instanceof Iterable) {
-                if (antiCyclicMap.containsKey(currentObject)){
+                if (antiCyclicMap.containsKey(currentObject)) {
                     xmlWriter.writeCharacters("cyclic");
                 } else {
                     recoursiveIterableWriting(xmlWriter, (Iterable) currentObject, antiCyclicMap);
