@@ -16,10 +16,10 @@ public class Shell {
     static {
         currentPath = new File("").getAbsolutePath();
     }
-    public Shell(Map<String, Command> commandMap, Status status, Object monitor) {
+    public Shell(Map<String, Command> commandMap, Status status) {
         this.commandMap = commandMap;
         this.status = status;
-        this.monitor = monitor;
+        //this.monitor = monitor;
     }
 
     public void handle(InputStream stream) {
@@ -29,7 +29,7 @@ public class Shell {
                 System.out.print("$ ");
                 command = reader.readLine();
                 String[] cmds = command.split("\\s+");
-                int result = new Shell(commandMap, status, monitor).handle(cmds);
+                int result = new Shell(commandMap, status).handle(cmds);
                 if (result == 2) {
                     break;
                 }
@@ -84,11 +84,11 @@ public class Shell {
                     if (currentCommand.execute(it, status) == 1) {
                         return 1;
                     }
-                    if (it[0].equals("start")) {
+                    /*if (it[0].equals("start")) {
                         synchronized (monitor) {
                             monitor.notifyAll();
                         }
-                    }
+                    }*/
                 } else {
                     return 1;
                 }

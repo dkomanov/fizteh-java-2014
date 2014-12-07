@@ -5,6 +5,7 @@ import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTable;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProvider;
 
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Created by Kirill on 19.10.2014.
@@ -34,5 +35,13 @@ public class Status {
 
     public void setServerSocket(ServerSocket ss) {
         object = ss;
+    }
+
+    public Socket getSocket() {
+        return object instanceof Socket ? (Socket) object : null;
+    }
+
+    public void setSocket(Socket socket) {
+        object = socket;
     }
 }
