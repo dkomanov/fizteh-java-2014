@@ -208,8 +208,8 @@ public class CurrentTable extends HashMap<String, String> implements Table {
                     if (streams[i][j] != null) {
                         try {
                             streams[i][j].close();
-                        } catch (IOException ignored1) {
-                            System.err.prinln("Error: " + ignore1.getMessage());
+                        } catch (IOException ignore) {
+                            System.err.println("Error: " + ignore.getMessage());
                         }
                     }
                 }
