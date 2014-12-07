@@ -26,11 +26,6 @@ public class CommandRemove<Table, Key, Value, FileMapShellOperations
             return;
         }
 
-        if (operations.getTable() == null) {
-            System.out.println("no table");
-            return;
-        }
-
         Key key = operations.parseKey(parameters[0]);
         Value value = operations.remove(key);
 
