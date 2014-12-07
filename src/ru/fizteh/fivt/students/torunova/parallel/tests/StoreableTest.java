@@ -64,7 +64,7 @@ public class StoreableTest {
     @Test
     public void testGetFloatAt() throws Exception {
         storeable.setColumnAt(3, 1.42f);
-        assertEquals(1.42, (float) storeable.getFloatAt(3), 0.001);
+        assertEquals(1.42, storeable.getFloatAt(3), 0.001);
     }
     @Test(expected = ColumnFormatException.class)
     public void testGetFloatAtWithException() throws Exception {
@@ -74,7 +74,7 @@ public class StoreableTest {
     @Test
     public void testGetDoubleAt() throws Exception {
         storeable.setColumnAt(4, 1.42);
-        assertEquals(1.42, (double) storeable.getDoubleAt(4), 0.001);
+        assertEquals(1.42, storeable.getDoubleAt(4), 0.001);
     }
 
     @Test(expected = ColumnFormatException.class)

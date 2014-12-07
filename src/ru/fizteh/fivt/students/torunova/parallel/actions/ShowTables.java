@@ -1,9 +1,6 @@
 package ru.fizteh.fivt.students.torunova.parallel.actions;
 
 import ru.fizteh.fivt.students.torunova.parallel.CurrentTable;
-import ru.fizteh.fivt.students.torunova.parallel.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.parallel.exceptions.TableNotCreatedException;
-
 import java.io.IOException;
 import java.util.Map;
 
@@ -13,9 +10,7 @@ import java.util.Map;
 public class ShowTables extends Action {
     @Override
     public boolean run(String[] args, CurrentTable currentTable)
-                               throws IOException,
-                               IncorrectFileException,
-                               TableNotCreatedException {
+                               throws IOException {
         if (args.length > 1) {
             tooManyArguments();
             return false;
