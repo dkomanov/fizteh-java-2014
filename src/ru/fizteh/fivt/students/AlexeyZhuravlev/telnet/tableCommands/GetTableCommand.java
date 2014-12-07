@@ -15,14 +15,14 @@ public class GetTableCommand extends TableCommand {
     @Override
     public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         if (base.getUsing() == null) {
-            System.out.println("no table");
+            out.println("no table");
         } else {
             Storeable value = base.getUsing().get(key);
             if (value == null) {
-                System.out.println("not found");
+                out.println("not found");
             } else {
-                System.out.println("found");
-                System.out.println(base.serialize(base.getUsing(), value));
+                out.println("found");
+                out.println(base.serialize(base.getUsing(), value));
             }
         }
     }

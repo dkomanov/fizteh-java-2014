@@ -23,10 +23,10 @@ public class PutTableCommand extends TableCommand {
                 Storeable storeable = base.deserialize(base.getUsing(), value);
                 Storeable old = base.getUsing().put(key, storeable);
                 if (old == null) {
-                    System.out.println("new");
+                    out.println("new");
                 } else {
-                    System.out.println("overwrite");
-                    System.out.println(base.serialize(base.getUsing(), old));
+                    out.println("overwrite");
+                    out.println(base.serialize(base.getUsing(), old));
                 }
             } catch (ParseException e) {
                 throw new Exception("wrong type (" + e.getMessage() + ")");

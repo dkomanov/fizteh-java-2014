@@ -1,12 +1,13 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.AlexeyZhuravlev.filemap.ExitCommandException;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.ExitCommandException;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands.TableCommand;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 
 /**
  * @author AlexeyZhuravlev
@@ -25,6 +26,11 @@ public class ClientCommunicator extends Thread {
 
     public void serverShutdown() {
         serverAlive = false;
+        try {
+            socket.close();
+        } catch (IOException e) {
+            //do nothing
+        }
     }
 
     @Override
@@ -44,8 +50,9 @@ public class ClientCommunicator extends Thread {
                     out.println(e.getMessage());
                 }
             }
-        } catch (IOException e) {
-            serverAlive = false;
+            serverShutdown();
+        } catch (IOException | NoSuchElementException e) {
+            serverShutdown();
         }
     }
 }

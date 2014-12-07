@@ -12,10 +12,10 @@ public class ListTableCommand extends TableCommand {
     @Override
     public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         if (base.getUsing() == null) {
-            System.out.println("no table");
+            out.println("no table");
         } else {
             List<String> list = base.getUsing().list();
-            System.out.println(String.join(", ", list));
+            out.println(String.join(", ", list));
         }
     }
 

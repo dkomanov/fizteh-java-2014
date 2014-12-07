@@ -30,6 +30,7 @@ public class ServerLogic {
         ServerSocket targetSocket = listeners.get(listeners.size() - 1).socket;
         int port = targetSocket.getLocalPort();
         targetSocket.close();
+        listeners.remove(listeners.size() - 1);
         return port;
     }
 

@@ -20,9 +20,9 @@ public class CreateTableCommand extends TableCommand {
     public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         Table newtable = base.createTable(name, types);
         if (newtable == null) {
-            System.out.println(name + " exists");
+            out.println(name + " exists");
         } else {
-            System.out.println("created");
+            out.println("created");
         }
     }
 

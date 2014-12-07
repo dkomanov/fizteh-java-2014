@@ -39,9 +39,14 @@ public class TelnetMain {
                         System.err.println("Unknown command");
                     } catch (ExitCommandException t) {
                         exit = true;
+                        while (server.isStarted()) {
+                            server.stop();
+                        }
                     } catch (Exception t) {
                         System.err.println(t.getMessage());
                     }
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
                 }
             }
         } catch (Exception e) {

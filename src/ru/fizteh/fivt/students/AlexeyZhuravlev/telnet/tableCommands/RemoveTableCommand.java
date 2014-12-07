@@ -19,10 +19,10 @@ public class RemoveTableCommand extends TableCommand {
         } else {
             Storeable result = base.getUsing().remove(key);
             if (result == null) {
-                System.out.println("not found");
+                out.println("not found");
             } else {
-                System.out.println("removed");
-                System.out.println(base.serialize(base.getUsing(), result));
+                out.println("removed");
+                out.println(base.serialize(base.getUsing(), result));
             }
         }
     }
