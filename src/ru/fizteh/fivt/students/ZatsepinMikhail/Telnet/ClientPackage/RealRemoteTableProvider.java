@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
-import org.mockito.cglib.core.TypeUtils;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.storage.structured.Storeable;
@@ -10,15 +9,10 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesU
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousSocketChannel;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class RealRemoteTableProvider implements RemoteTableProvider {
     private Socket server;
@@ -44,6 +38,7 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
             server.close();
             input.close();
             output.close();
+            System.out.println("close");
         } catch (IOException e) {
             System.err.println("error while closing socket");
         }
@@ -60,9 +55,9 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
             throw new IllegalStateException("not connected");
         }
         String message = "create " + name + " (" + TypesUtils.toFileSignature(columnTypes) + ")";
-
         output.print(message);
         System.out.println(message);
+        System.out.println("answer: " + input.nextLine());
         return null;
     }
 

@@ -25,6 +25,7 @@ public class TalkingThread extends Thread {
             while (!client.isClosed() & input.hasNext()) {
                 String message = input.nextLine();
                 System.out.println(message);
+                output.print("get message!");
             }
         } catch (IOException e) {
             //
