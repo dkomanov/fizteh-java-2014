@@ -35,7 +35,7 @@ public class MyLoggingProxyFactoryTest {
         assertTrue(object.has("class"));
         assertTrue(object.has("arguments"));
         assertTrue(object.has("timestamp"));
-        assertEquals(object.keySet().size(), 4);
+        assertEquals(object.length(), 4);
         assertEquals(object.get("method"), "noArgumentVoidMethod");
         assertEquals(object.get("class"), "ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.test.TestInterfaceImpl");
         JSONArray args = object.getJSONArray("arguments");
@@ -66,7 +66,7 @@ public class MyLoggingProxyFactoryTest {
         int result = wrappedObject.noArgumentPrimitiveTypeMethod();
         JSONObject object = new JSONObject(writer.toString());
         assertTrue(object.has("returnValue"));
-        assertEquals(object.keySet().size(), 5);
+        assertEquals(object.length(), 5);
         assertEquals(object.get("returnValue"), result);
     }
 
@@ -121,7 +121,7 @@ public class MyLoggingProxyFactoryTest {
             assertTrue(object.has("arguments"));
             assertTrue(object.has("timestamp"));
             assertTrue(object.has("thrown"));
-            assertEquals(object.keySet().size(), 5);
+            assertEquals(object.length(), 5);
             assertEquals(object.get("thrown"), e.getTargetException().toString());
         }
     }
