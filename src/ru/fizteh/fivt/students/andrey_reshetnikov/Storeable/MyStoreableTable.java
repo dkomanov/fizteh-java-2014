@@ -111,4 +111,8 @@ public class MyStoreableTable implements Table {
         return table.unsavedChanges();
     }
 
+    public MyStoreableTableProvider getProvider() {
+        return provider;
+    }
+
 }
