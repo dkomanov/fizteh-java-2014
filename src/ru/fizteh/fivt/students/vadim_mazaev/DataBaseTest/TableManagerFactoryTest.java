@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.vadim_mazaev.DataBaseTest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +11,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManagerFactory;
 
+@SuppressWarnings("resource")
 public class TableManagerFactoryTest {
-    private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DbTestDir");
+    private final Path testDir = Paths.get(
+            System.getProperty("java.io.tmpdir"), "DbTestDir");
 
     @Before
     public void setUp() {
@@ -23,17 +24,20 @@ public class TableManagerFactoryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testTableManagerFactoryThrowsExceptionCreatedNullTableManager() throws IOException {
-        TableProviderFactory test = new TableManagerFactory();
+    public void testTableManagerFactoryThrowsExceptionCreatedNullTableManager()
+            throws IOException {
+        TableManagerFactory test = new TableManagerFactory();
         test.create(null);
     }
-    
+
     @Test
-    public void testTableManagerFactoryCreatedNewTableManager() throws IOException {
-        TableProviderFactory test = new TableManagerFactory();
+    public void testTableManagerFactoryCreatedNewTableManager()
+            throws IOException {
+        TableManagerFactory test = new TableManagerFactory();
         assertNotNull(test.create(testDir.toString()));
+        test.close();
     }
-    
+
     @After
     public void tearDown() {
         for (File curFile : testDir.toFile().listFiles()) {

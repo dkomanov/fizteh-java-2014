@@ -9,24 +9,24 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 public class Serializer implements Storeable {
     List<Class<?>> structure;
     List<Object> storage;
-    
+
     public Serializer(List<Class<?>> structure) {
         storage = new ArrayList<>(structure.size());
         this.structure = new ArrayList<>(structure);
     }
-    
+
     private void checkIndexInBounds(int columnIndex)
             throws IndexOutOfBoundsException {
         if (columnIndex < 0 || columnIndex >= structure.size()) {
             throw new IndexOutOfBoundsException();
         }
     }
-    
+
     private void checkColumnFormat(int columnIndex, Class<?> classType) {
         if (structure.get(columnIndex) != classType) {
             throw new ColumnFormatException("Expected '"
-                    + structure.get(columnIndex).getSimpleName() + "' but found '"
-                    + classType.getSimpleName() + "'");
+                    + structure.get(columnIndex).getSimpleName()
+                    + "' but found '" + classType.getSimpleName() + "'");
         }
     }
 
@@ -45,7 +45,7 @@ public class Serializer implements Storeable {
         checkIndexInBounds(columnIndex);
         return storage.get(columnIndex);
     }
-    
+
     private <T> T checkAndGetType(int columnIndex, Class<T> type) {
         Object value = getColumnAt(columnIndex);
         checkColumnFormat(columnIndex, type);
@@ -104,4 +104,19 @@ public class Serializer implements Storeable {
         return checkAndGetType(columnIndex, String.class);
     }
 
+    @Override
+    public String toString() {
+        String[] values = new String[storage.size()];
+        int i = 0;
+        for (Object value : storage) {
+            if (value != null) {
+                values[i] = value.toString();
+            } else {
+                values[i] = "";
+            }
+            i++;
+        }
+        return getClass().getSimpleName() + "[" + String.join(",", values)
+                + "]";
+    }
 }

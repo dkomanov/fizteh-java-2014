@@ -24,12 +24,13 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
 /**
- * Represents the data table containing pairs key-value. The keys must be unique.
- * Transactionality: changes are committed or rolled back using the methods {@link #commit()} or {@link #rollback()}.
- * It is assumed that among calls of these methods there aren't any I/O operations.
- * This interface is not thread safe.
+ * Represents the data table containing pairs key-value. The keys must be
+ * unique.  * Transactionality: changes are committed or rolled back using the
+ * methods {@link #commit()} or {@link #rollback()}. It is assumed that among
+ * calls of these methods there aren't any I/O operations.  * This interface is
+ * not thread safe.
  */
-public final class DbTable implements Table {
+public final class DbTable implements Table, AutoCloseable {
     private TableProvider provider;
     private String name;
     private AtomicBoolean invalid;
@@ -38,12 +39,16 @@ public final class DbTable implements Table {
     private Map<Long, TablePart> parts;
     private ReadWriteLock lock;
     private ThreadLocal<Map<String, Storeable>> diff;
-    
+
     /**
-     * @param provider Link to TableProvider, which created the table. 
-     * @param tableDirectoryPath Path to table directory.
-     * @throws DataBaseIOException If table directory is corrupted.
-     * @throws IllegalArgumentException If 
+     * @param provider
+     *            Link to TableProvider, which created the table.
+     * @param tableDirectoryPath
+     *            Path to table directory.
+     * @throws DataBaseIOException
+     *             If table directory is corrupted.
+     * @throws IllegalArgumentException
+     *             If
      */
     public DbTable(TableProvider provider, Path tableDirectoryPath)
             throws DataBaseIOException {
@@ -57,7 +62,8 @@ public final class DbTable implements Table {
         lock = new ReentrantReadWriteLock(true);
         this.provider = provider;
         this.tableDirectoryPath = tableDirectoryPath;
-        this.name = tableDirectoryPath.getName(tableDirectoryPath.getNameCount() - 1).toString();
+        this.name = tableDirectoryPath.getName(
+                tableDirectoryPath.getNameCount() - 1).toString();
         invalid = new AtomicBoolean(false);
         try {
             readTableDir();
@@ -66,17 +72,19 @@ public final class DbTable implements Table {
                     + "': " + e.getMessage(), e);
         }
     }
-    
+
     /**
-     * Commit the changes.
-     * Thread safe.
+     * Commit the changes. Thread safe.
+     * 
      * @return Number of committed changes.
-     * @throws IOException If an I/O error occurred. The integrity of the table can not be guaranteed.
+     * @throws IOException
+     *             If an I/O error occurred. The integrity of the table can not
+     *             be guaranteed.
      */
     @Override
     public int commit() throws IOException {
-        checkTableIsNotRemoved();
         lock.writeLock().lock();
+        checkTableIsNotRemoved();
         int savedChangesCounter = diff.get().size();
         try {
             for (Entry<String, Storeable> pair : diff.get().entrySet()) {
@@ -88,7 +96,8 @@ public final class DbTable implements Table {
                         long hash = getHash(pair.getKey());
                         int dirNumber = Helper.unhashFirstIntFromLong(hash);
                         int fileNumber = Helper.unhashSecondIntFromLong(hash);
-                        part = new TablePart(this, tableDirectoryPath, dirNumber, fileNumber);
+                        part = new TablePart(this, tableDirectoryPath,
+                                dirNumber, fileNumber);
                         parts.put(hash, part);
                     }
                     part.put(pair.getKey(), pair.getValue());
@@ -104,22 +113,28 @@ public final class DbTable implements Table {
             lock.writeLock().unlock();
         }
     }
-    
-    /** 
-     * Rolls back the changes since the last commit.
-     * Thread safe.
+
+    /**
+     * Rolls back the changes since the last commit. Thread safe.
+     * 
      * @return Number of rolled back changes.
      */
     @Override
     public int rollback() {
+        lock.readLock().lock();
         checkTableIsNotRemoved();
-        int rolledChangesCounter = diff.get().size();
-        diff.get().clear();
-        return rolledChangesCounter;
+        try {
+            int rolledChangesCounter = diff.get().size();
+            diff.get().clear();
+            return rolledChangesCounter;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
-    
+
     /**
      * Thread safe.
+     * 
      * @return Name of the table.
      */
     @Override
@@ -127,10 +142,11 @@ public final class DbTable implements Table {
         checkTableIsNotRemoved();
         return name;
     }
-    
+
     /**
      * Thread safe.
-     * @return Number of columns in table. 
+     * 
+     * @return Number of columns in table.
      */
     @Override
     public int getColumnsCount() {
@@ -140,9 +156,12 @@ public final class DbTable implements Table {
 
     /**
      * Thread safe.
-     * @param columnIndex Index of column. Starts from zero.
+     * 
+     * @param columnIndex
+     *            Index of column. Starts from zero.
      * @return Class representing type of value.
-     * @throws IndexOutOfBoundsException Wrong index of column.
+     * @throws IndexOutOfBoundsException
+     *             Wrong index of column.
      */
     @Override
     public Class<?> getColumnType(int columnIndex)
@@ -155,59 +174,74 @@ public final class DbTable implements Table {
         }
         return structure.get(columnIndex);
     }
-    
+
     /**
-     * Thread safe.
-     * Returns hashed file and directory numbers where the key should be placed.
-     * @param key Key.
+     * Thread safe. Returns hashed file and directory numbers where the key
+     * should be placed.
+     * 
+     * @param key
+     *            Key.
      * @return Long hash of file number and its directory number.
      */
     private long getHash(String key) {
         int dirNumber;
         int fileNumber;
         try {
-            dirNumber = Math.abs(key.getBytes(Helper.ENCODING)[0] % Helper.NUMBER_OF_PARTITIONS);
-            fileNumber = Math.abs((key.getBytes(Helper.ENCODING)[0] / Helper.NUMBER_OF_PARTITIONS)
-                % Helper.NUMBER_OF_PARTITIONS);
+            dirNumber = Math.abs(key.getBytes(Helper.ENCODING)[0]
+                    % Helper.NUMBER_OF_PARTITIONS);
+            fileNumber = Math
+                    .abs((key.getBytes(Helper.ENCODING)[0] / Helper.NUMBER_OF_PARTITIONS)
+                            % Helper.NUMBER_OF_PARTITIONS);
         } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unable to encode key to " + Helper.ENCODING, e);
+            throw new IllegalArgumentException("Unable to encode key to "
+                    + Helper.ENCODING, e);
         }
         return Helper.hashIntPairAsLong(dirNumber, fileNumber);
     }
-    
+
     /**
-     * Thread safe.
-     * Checks if object doesn't refer to removed table.
-     * @throws IllegalStateException If table has already removed.
+     * Thread safe. Checks if object doesn't refer to removed table.
+     * 
+     * @throws IllegalStateException
+     *             If table has already removed.
      */
     private void checkTableIsNotRemoved() {
         if (invalid.get()) {
-            throw new IllegalStateException("This table '" + name + "' has already removed");
+            throw new IllegalStateException("This table '" + name
+                    + "' has already removed");
         }
     }
-    
+
     /**
-     * Thread safe.
-     * Set this DbTable object to removed state.
+     * Thread safe. Set this DbTable object to removed state.
      */
-    public void invalidate() {
-        invalid.set(true);
+    @Override
+    public void close() {
+        lock.writeLock().lock();
+        checkTableIsNotRemoved();
+        try {
+            rollback();
+            invalid.set(true);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
-    
+
     /**
-     * Gets the value of the specified key.
-     * Thread safe.
-     * @param key The key is for searching the value. Can not be null.
-     * For indexes on non-string fields parameter is a serialized column value.
-     * It is required to parse.
+     * Gets the value of the specified key. Thread safe.
+     * 
+     * @param key
+     *            The key is for searching the value. Can not be null. For
+     *            indexes on non-string fields parameter is a serialized column
+     *            value. It is required to parse.
      * @return Value. If not found, returns null.
-     * @throws IllegalArgumentException If {@link TablePart#get(String)
-     * TablePart.get} method fails.
+     * @throws IllegalArgumentException
+     *             If {@link TablePart#get(String) TablePart.get} method fails.
      */
     @Override
     public Storeable get(String key) {
-        checkTableIsNotRemoved();
         lock.readLock().lock();
+        checkTableIsNotRemoved();
         try {
             if (key == null) {
                 throw new IllegalArgumentException("Key is null");
@@ -232,39 +266,46 @@ public final class DbTable implements Table {
             lock.readLock().unlock();
         }
     }
-    
+
     /**
-     * Sets the value of the specified key.
-     * Thread safe.
-     * @param key Key for a new value. Can't be null.
-     * @param value New value. Can't be null.
+     * Sets the value of the specified key. Thread safe.
+     * 
+     * @param key
+     *            Key for a new value. Can't be null.
+     * @param value
+     *            New value. Can't be null.
      * @return Previous value associated with the key or null if the key is new.
-     * @throws IllegalArgumentException If key or value is null.
-     * @throws ColumnFormatException If types of columns in Storeable aren't equal to
-     * types of columns of table.
+     * @throws IllegalArgumentException
+     *             If key or value is null.
+     * @throws ColumnFormatException
+     *             If types of columns in Storeable aren't equal to types of
+     *             columns of table.
      */
     @Override
-    public Storeable put(String key, Storeable value) throws ColumnFormatException {
-        checkTableIsNotRemoved();
+    public Storeable put(String key, Storeable value)
+            throws ColumnFormatException {
         lock.readLock().lock();
+        checkTableIsNotRemoved();
         try {
             if (key == null || value == null) {
-                throw new IllegalArgumentException("Key or value is a null-string");
+                throw new IllegalArgumentException(
+                        "Key or value is a null-string");
             }
-            //TODO how to check length of Storeable?
-            //Check Storeable structure.
+            // Check Storeable structure.
             try {
                 for (int i = 0; i < structure.size(); i++) {
-                    if (value.getColumnAt(i) != null && structure.get(i) != value.getColumnAt(i).getClass()) {
-                        throw new ColumnFormatException("Storeable has a wrong "
-                                + "column format");
+                    if (value.getColumnAt(i) != null
+                            && structure.get(i) != value.getColumnAt(i)
+                                    .getClass()) {
+                        throw new ColumnFormatException(
+                                "Storeable has a wrong column format");
                     }
                 }
             } catch (IndexOutOfBoundsException e) {
                 throw new ColumnFormatException("Storeable has a wrong "
                         + "column format: " + e.getMessage(), e);
             }
-            //End of checking section.
+            // End of checking section.
             Storeable oldValue;
             if (!diff.get().containsKey(key)) {
                 TablePart part = parts.get(getHash(key));
@@ -286,18 +327,20 @@ public final class DbTable implements Table {
             lock.readLock().unlock();
         }
     }
-    
+
     /**
-     * Removes the associated with the key value.
-     * Thread safe.
-     * @param key Key for looking for value. Can't be null.
+     * Removes the associated with the key value. Thread safe.
+     * 
+     * @param key
+     *            Key for looking for value. Can't be null.
      * @return Removed value or null if there wasn't such key in this table.
-     * @throws IllegalArgumentException If key is null.
+     * @throws IllegalArgumentException
+     *             If key is null.
      */
     @Override
     public Storeable remove(String key) {
-        checkTableIsNotRemoved();
         lock.readLock().lock();
+        checkTableIsNotRemoved();
         try {
             if (key == null) {
                 throw new IllegalArgumentException("Key is null");
@@ -323,15 +366,16 @@ public final class DbTable implements Table {
             lock.readLock().unlock();
         }
     }
-    
+
     /**
      * Thread safe.
+     * 
      * @return Number of records stored in this table.
      */
     @Override
     public int size() {
-        checkTableIsNotRemoved();
         lock.readLock().lock();
+        checkTableIsNotRemoved();
         try {
             int numberOfRecords = 0;
             for (Entry<Long, TablePart> part : parts.entrySet()) {
@@ -349,15 +393,16 @@ public final class DbTable implements Table {
             lock.readLock().unlock();
         }
     }
-    
+
     /**
      * Thread safe.
+     * 
      * @return List of the keys stored in this table in all parts.
      */
     @Override
     public List<String> list() {
-        checkTableIsNotRemoved();
         lock.readLock().lock();
+        checkTableIsNotRemoved();
         try {
             Set<String> keySet = new HashSet<>();
             for (Entry<Long, TablePart> pair : parts.entrySet()) {
@@ -377,9 +422,10 @@ public final class DbTable implements Table {
             lock.readLock().unlock();
         }
     }
-    
+
     /**
      * Thread safe.
+     * 
      * @return Number of changes after the last commit.
      */
     @Override
@@ -387,30 +433,43 @@ public final class DbTable implements Table {
         checkTableIsNotRemoved();
         return diff.get().size();
     }
-    
+
     /**
      * Method has package-private modifier. Expects to use with TablePart class.
      * Thread safe.
+     * 
      * @return TableProvider which provided this table.
      */
     TableProvider getProvider() {
         checkTableIsNotRemoved();
         return provider;
     }
-    
+
     /**
-     * Read and check table directory.
-     * Not thread safe.
-     * @throws DataBaseIOException If directory checking fails.
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "["
+                + tableDirectoryPath.toAbsolutePath() + "]";
+    }
+
+    /**
+     * Read and check table directory. Not thread safe.
+     * 
+     * @throws DataBaseIOException
+     *             If directory checking fails.
      */
     private void readTableDir() throws DataBaseIOException {
         readSignature();
         String[] dirList = tableDirectoryPath.toFile().list();
         for (String dir : dirList) {
             Path dirPath = tableDirectoryPath.resolve(dir);
-            if (!dir.matches(Helper.DIR_NAME_REGEX) || !dirPath.toFile().isDirectory()) {
-                if (dir.equals(Helper.SIGNATURE_FILE_NAME) && dirPath.toFile().isFile()) {
-                    //Ignore signature file.
+            if (!dir.matches(Helper.DIR_NAME_REGEX)
+                    || !dirPath.toFile().isDirectory()) {
+                if (dir.equals(Helper.SIGNATURE_FILE_NAME)
+                        && dirPath.toFile().isFile()) {
+                    // Ignore signature file.
                     continue;
                 }
                 throw new DataBaseIOException(String.format("File '" + dir
@@ -420,40 +479,51 @@ public final class DbTable implements Table {
             }
             String[] fileList = dirPath.toFile().list();
             if (fileList.length == 0) {
-                throw new DataBaseIOException("Directory '" + dir + "' is empty.");
+                throw new DataBaseIOException("Directory '" + dir
+                        + "' is empty.");
             }
             for (String file : fileList) {
                 Path filePath = dirPath.resolve(file);
-                if (!file.matches(Helper.FILE_NAME_REGEX) || !filePath.toFile().isFile()) {
-                    throw new DataBaseIOException(String.format("File '" + file + "'"
-                            + " in directory '" + dir + "' is not a regular file or"
+                if (!file.matches(Helper.FILE_NAME_REGEX)
+                        || !filePath.toFile().isFile()) {
+                    throw new DataBaseIOException(String.format("File '" + file
+                            + "'" + " in directory '" + dir
+                            + "' is not a regular file or"
                             + " doesn't match required name '[0-%1$d].dat'",
                             Helper.NUMBER_OF_PARTITIONS - 1));
                 }
-                int dirNumber = Integer.parseInt(dir.substring(0, dir.length() - 4));
-                int fileNumber = Integer.parseInt(file.substring(0, file.length() - 4));
-                TablePart part = new TablePart(this, tableDirectoryPath, dirNumber, fileNumber);
+                int dirNumber = Integer.parseInt(dir.substring(0,
+                        dir.length() - 4));
+                int fileNumber = Integer.parseInt(file.substring(0,
+                        file.length() - 4));
+                TablePart part = new TablePart(this, tableDirectoryPath,
+                        dirNumber, fileNumber);
                 parts.put(Helper.hashIntPairAsLong(dirNumber, fileNumber), part);
             }
         }
     }
-    
+
     /**
      * Reads {@value #SIGNATURE_FILE_NAME} and save table signature into memory.
      * Not thread safe.
-     * @param filePath Path to {@value #SIGNATURE_FILE_NAME} file.
-     * @throws DataBaseIOException If file is corrupted or can't be read.
+     * 
+     * @param filePath
+     *            Path to {@value #SIGNATURE_FILE_NAME} file.
+     * @throws DataBaseIOException
+     *             If file is corrupted or can't be read.
      */
     private void readSignature() throws DataBaseIOException {
-        Path signatureFilePath = tableDirectoryPath.resolve(Helper.SIGNATURE_FILE_NAME);
+        Path signatureFilePath = tableDirectoryPath
+                .resolve(Helper.SIGNATURE_FILE_NAME);
         if (!signatureFilePath.toFile().isFile()) {
-            throw new DataBaseIOException("Signature file '" + Helper.SIGNATURE_FILE_NAME
-                    + "' is missing");
+            throw new DataBaseIOException("Signature file '"
+                    + Helper.SIGNATURE_FILE_NAME + "' is missing");
         }
         try (Scanner scanner = new Scanner(signatureFilePath)) {
             String[] types = scanner.nextLine().split("\\s+");
             for (String typeName : types) {
-                Class<?> typeClass = Helper.SUPPORTED_NAMES_TO_TYPES.get(typeName);
+                Class<?> typeClass = Helper.SUPPORTED_NAMES_TO_TYPES
+                        .get(typeName);
                 if (typeClass == null) {
                     throw new IOException("file contains wrong type names");
                 }
@@ -464,12 +534,13 @@ public final class DbTable implements Table {
                     + signatureFilePath.toString() + ": " + e.getMessage(), e);
         }
     }
-    
+
     /**
-     * Write all data to table directory.
-     * Not thread safe.
-     * @throws DataBaseIOException If table directory cannot be cleared
-     * or some files cannot be wrote. 
+     * Write all data to table directory. Not thread safe.
+     * 
+     * @throws DataBaseIOException
+     *             If table directory cannot be cleared or some files cannot be
+     *             wrote.
      */
     private void writeTableToDir() throws DataBaseIOException {
         Iterator<Entry<Long, TablePart>> it = parts.entrySet().iterator();
