@@ -13,6 +13,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProviderFactor
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -156,6 +157,7 @@ public class AdvancedTableTest {
         TableProviderFactory factory = new AdvancedTableProviderFactory();
         TableProvider provider = factory.create(dbDirPath);
         Table sameTable = provider.getTable("table");
+        assertEquals(provider.serialize(table, table.get("1")), provider.serialize(table, value));
         assertEquals(2, sameTable.size());
     }
 
@@ -207,6 +209,32 @@ public class AdvancedTableTest {
         File curDirectory = new File(directory, table.getName());
         String path = curDirectory.getPath();
         assertEquals(table.toString(), path);
+    }
+
+    @Test
+    public void testList() throws IOException {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
+        assertEquals(3, table.list().size());
+        assertTrue(table.list().containsAll(new LinkedList<>(Arrays.asList("1", "2", "3"))));
+        table.commit();
+        table.remove("1");
+        assertEquals(2, table.list().size());
+        assertTrue(table.list().containsAll(new LinkedList<>(Arrays.asList("2", "3"))));
+    }
+
+    @Test
+    public void testUnsavedChanges() throws IOException {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
+        table.remove("1");
+        assertEquals(table.getNumberOfUncommittedChanges(), 2);
+        table.commit();
+        assertEquals(table.getNumberOfUncommittedChanges(), 0);
     }
 
 }
