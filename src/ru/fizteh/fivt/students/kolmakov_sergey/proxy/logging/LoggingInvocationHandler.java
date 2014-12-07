@@ -23,7 +23,7 @@ class LoggingInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        boolean itIsMethodOfObject= true;
+        boolean itIsMethodOfObject = true;
         try { // If it's method of Object, we just invoke it without logging.
             Object.class.getMethod(method.getName());
         } catch (NoSuchMethodException e) {
