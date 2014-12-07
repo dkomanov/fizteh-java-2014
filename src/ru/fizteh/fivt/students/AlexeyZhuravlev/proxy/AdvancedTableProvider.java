@@ -20,7 +20,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class AdvancedTableProvider extends ParallelTableProvider implements TableProvider, AutoCloseable {
 
     private AtomicBoolean closed;
-    private HashMap<String, Table> tables;
 
     protected AdvancedTableProvider(String path) throws IOException {
         super(path);
@@ -28,8 +27,7 @@ public class AdvancedTableProvider extends ParallelTableProvider implements Tabl
         tables = new HashMap<>();
         for (String name: oldProvider.getTableNames()) {
             StructuredTable origin = (StructuredTable) oldProvider.getTable(name);
-            tables.put(name, new AdvancedTable(origin, this, tableLocks.get(name)));
-            tableLocks.put(name, new ReentrantReadWriteLock(true));
+            tables.put(name, new AdvancedTable(origin, this, new ReentrantReadWriteLock(true)));
         }
     }
 
@@ -46,7 +44,7 @@ public class AdvancedTableProvider extends ParallelTableProvider implements Tabl
                 return null;
             } else {
                 if (((AdvancedTable) tables.get(name)).isClosed()) {
-                    tables.put(name, new AdvancedTable(origin, this, tableLocks.get(name)));
+                    tables.put(name, new AdvancedTable(origin, this, new ReentrantReadWriteLock(true)));
                 }
                 return tables.get(name);
             }
@@ -64,8 +62,7 @@ public class AdvancedTableProvider extends ParallelTableProvider implements Tabl
             if (origin == null) {
                 return null;
             } else {
-                tableLocks.put(name, new ReentrantReadWriteLock(true));
-                Table newTable = new AdvancedTable(origin, this, tableLocks.get(name));
+                Table newTable = new AdvancedTable(origin, this, new ReentrantReadWriteLock(true));
                 tables.put(name, newTable);
                 return newTable;
             }
