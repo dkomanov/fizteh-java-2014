@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
-import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
 
 import java.io.PrintStream;
