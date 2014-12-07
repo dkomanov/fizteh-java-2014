@@ -7,7 +7,7 @@ import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell.Shell;
 
 import java.util.ArrayList;
 
-public class MultiFileHashMapMain {
+public class JUnitMain {
     public static void main(final String[] args) {
         Shell<MultiFileHashMapOperations> shell =
                 new Shell<MultiFileHashMapOperations>();
@@ -23,6 +23,9 @@ public class MultiFileHashMapMain {
         commands.add(new CommandDrop());
         commands.add(new CommandUse());
         commands.add(new CommandShowTables());
+        commands.add(new CommandSize());
+        commands.add(new CommandCommit());
+        commands.add(new CommandRollback());
 
         shell.setShellCommands(commands);
         shell.setArguments(args);
@@ -30,11 +33,15 @@ public class MultiFileHashMapMain {
         try {
             String databaseDirectory =
                     System.getProperty("fizteh.db.dir");
-            MultiFileHashMapTableOperations tableOperations =
-                    new MultiFileHashMapTableOperations(databaseDirectory);
+
             MultiFileHashMapOperations operations =
                     new MultiFileHashMapOperations();
-            operations.tableOperations = tableOperations;
+
+            MultiFileHashMapTableProviderFactory factory =
+                    new MultiFileHashMapTableProviderFactory();
+
+            operations.tableProvider = factory.create(databaseDirectory);
+
             shell.setShellOperations(operations);
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());

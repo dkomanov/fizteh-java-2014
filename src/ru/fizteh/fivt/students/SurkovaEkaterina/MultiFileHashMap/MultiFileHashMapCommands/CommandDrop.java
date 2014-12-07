@@ -1,12 +1,10 @@
 package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.MultiFileHashMapCommands;
 
-import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.MultiFileHashMapOperationsInterface;
+import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.MultiFileHashMapOperations;
 import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell.ACommand;
 import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell.CommandsParser;
 
-public class CommandDrop<ATable, MultiFileHashMapOperations
-        extends MultiFileHashMapOperationsInterface<ATable>>
-        extends ACommand<MultiFileHashMapOperations> {
+public class CommandDrop extends ACommand<MultiFileHashMapOperations> {
     public CommandDrop() {
         super("drop", "drop <table name>");
     }
