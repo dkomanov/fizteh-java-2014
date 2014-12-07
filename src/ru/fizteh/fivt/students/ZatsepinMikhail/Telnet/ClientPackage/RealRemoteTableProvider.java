@@ -55,7 +55,7 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
             throw new IllegalStateException("not connected");
         }
         String message = "create " + name + " (" + TypesUtils.toFileSignature(columnTypes) + ")";
-        output.print(message);
+        output.println(message);
         System.out.println(message);
         System.out.println("answer: " + input.nextLine());
         return null;

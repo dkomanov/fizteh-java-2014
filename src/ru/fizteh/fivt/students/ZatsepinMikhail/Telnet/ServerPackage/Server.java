@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
+import ru.fizteh.fivt.storage.structured.TableProvider;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -10,9 +12,11 @@ public class Server {
     private boolean started;
     private ListenThread listener;
     private int activePort;
+    private TableProvider dataBase;
 
-    public Server() {
+    public Server(TableProvider newDataBase) {
         started = false;
+        dataBase = newDataBase;
     }
 
     public boolean isStarted() {
@@ -23,7 +27,7 @@ public class Server {
         try {
             server = new ServerSocket(port);
             activePort = port;
-            listener = new ListenThread(server);
+            listener = new ListenThread(server, dataBase);
             listener.start();
             started = true;
             return true;
