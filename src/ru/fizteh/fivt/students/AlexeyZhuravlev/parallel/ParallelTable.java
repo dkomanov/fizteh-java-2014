@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 /**
  * @author AlexeyZhuravlev
@@ -68,6 +67,7 @@ public class ParallelTable implements Table {
         try {
             return provider.deserialize(this, old);
         } catch (ParseException e) {
+            System.err.println(e.getMessage());
             return null;
         }
     }
@@ -88,8 +88,8 @@ public class ParallelTable implements Table {
         lock.readLock().lock();
         try {
             List<String> list = originalTable.list();
-            list.addAll(diff.get().getCreated().stream().collect(Collectors.toList()));
-            list.removeAll(diff.get().getRemoved().stream().collect(Collectors.toList()));
+            list.addAll(diff.get().getCreated());
+            list.removeAll(diff.get().getRemoved());
             return list;
         } finally {
             lock.readLock().unlock();
@@ -143,6 +143,7 @@ public class ParallelTable implements Table {
         try {
             return provider.deserialize(this, old);
         } catch (ParseException e) {
+            e.printStackTrace();
             return null;
         }
     }

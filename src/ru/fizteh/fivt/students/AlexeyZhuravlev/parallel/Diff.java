@@ -13,9 +13,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 
 public class Diff {
-    HashMap<String, String> creations;
-    HashSet<String> deletions;
-    HashMap<String, String> overwrites;
+    Map<String, String> creations;
+    Set<String> deletions;
+    Map<String, String> overwrites;
     StructuredTable origin;
     ReentrantReadWriteLock lock;
 
