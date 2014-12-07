@@ -17,12 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Stream;
 
 /**
  * Created by nastya on 20.11.14.
  */
 public class DatabaseWrapper implements TableProvider, AutoCloseable {
     private Database db;
+    private static final String REGEXP_TO_SPLIT_JSON = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private boolean closed;
     public DatabaseWrapper(String dbName) throws IncorrectDbException,
@@ -112,7 +114,8 @@ public class DatabaseWrapper implements TableProvider, AutoCloseable {
         }
         value = value.substring(value.indexOf('[') + 1, value.lastIndexOf(']'));
         value = value.trim();
-        String[] values = value.split("\\s*,\\s*");
+        String[] values = Stream.of(value.split(REGEXP_TO_SPLIT_JSON)).
+                map(s -> s.trim()).toArray(size -> new String[size]);
         if (values.length != types.length) {
             throw new ColumnFormatException("Wrong number of values");
         }

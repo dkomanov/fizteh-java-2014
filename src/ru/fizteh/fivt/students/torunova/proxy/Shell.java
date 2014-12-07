@@ -105,7 +105,7 @@ public class Shell {
             throw new RuntimeException("create: wrong command format");
         }
         StringBuilder builder = new StringBuilder();
-        builder = builder.append(tableName + ' ').append(typesWithoutBrakets);
+        builder = builder.append(tableName).append(' ').append(typesWithoutBrakets);
         return builder.toString().trim().split("\\s+");
     }
 

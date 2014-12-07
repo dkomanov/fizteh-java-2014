@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.torunova.proxy.actions;
 
 import ru.fizteh.fivt.students.torunova.proxy.CurrentTable;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectFileException;
-
 import java.io.IOException;
 
 /**
@@ -10,7 +8,7 @@ import java.io.IOException;
  */
 public class UseTable extends Action {
     @Override
-    public boolean run(String[] args, CurrentTable currentTable) throws IOException, IncorrectFileException {
+    public boolean run(String[] args, CurrentTable currentTable) throws IOException {
         if (!checkNumberOfArguments(1, args.length)) {
             return false;
         }

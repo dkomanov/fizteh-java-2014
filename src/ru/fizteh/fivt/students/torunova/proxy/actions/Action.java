@@ -1,9 +1,6 @@
 package ru.fizteh.fivt.students.torunova.proxy.actions;
 
 import ru.fizteh.fivt.students.torunova.proxy.CurrentTable;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.TableNotCreatedException;
-
 import java.io.IOException;
 
 /**
@@ -30,10 +27,7 @@ public abstract class Action {
     }
 
     public abstract boolean run(String[] args, CurrentTable currentTable)
-                                  throws IOException,
-            IncorrectFileException,
-            TableNotCreatedException;
-
+                                  throws IOException;
     public abstract String getName();
 
     public String getDisplayName() {

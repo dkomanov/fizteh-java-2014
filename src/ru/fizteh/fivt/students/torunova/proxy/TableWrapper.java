@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.torunova.proxy;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectFileException;
 import ru.fizteh.fivt.students.torunova.proxy.exceptions.TableNotCreatedException;
 

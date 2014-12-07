@@ -80,7 +80,9 @@ public class ProxyFactory implements LoggingProxyFactory {
             }
             returnTag.appendChild(document.createTextNode(result.toString()));
             invoke.appendChild(returnTag);
-            transformer.transform(new DOMSource(document), new StreamResult(writer));
+            synchronized (writer) {
+                transformer.transform(new DOMSource(document), new StreamResult(writer));
+            }
             return result;
         }
         private void logIterable(Element parent, Iterable iterable, IdentityHashMap elements) {
@@ -106,6 +108,7 @@ public class ProxyFactory implements LoggingProxyFactory {
     }
     @Override
     public Object wrap(Writer writer, Object implementation, Class<?> interfaceClass) {
-        return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[] {interfaceClass}, new Logger(implementation, writer));
+        return Proxy.newProxyInstance(interfaceClass.getClassLoader(),
+                new Class[] {interfaceClass}, new Logger(implementation, writer));
     }
 }

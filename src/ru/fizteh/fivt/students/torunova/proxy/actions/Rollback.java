@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.torunova.proxy.actions;
 
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.TableNotCreatedException;
 import ru.fizteh.fivt.students.torunova.proxy.CurrentTable;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectFileException;
 
 import java.io.IOException;
 
@@ -12,7 +10,7 @@ import java.io.IOException;
 public class Rollback extends Action {
     @Override
     public boolean run(String[] args, CurrentTable currentTable)
-            throws IOException, IncorrectFileException, TableNotCreatedException {
+            throws IOException {
         if (checkNumberOfArguments(0, args.length)) {
             if (currentTable.get() == null) {
                 System.err.println("no table");

@@ -18,10 +18,7 @@ public class CurrentTable {
     }
     public boolean set(String name) {
         currentTable.set((TableWrapper) db.getTable(name));
-        if (currentTable.get() == null) {
-            return false;
-        }
-        return true;
+        return currentTable != null;
     }
     public void reset() {
         currentTable.set(null);
