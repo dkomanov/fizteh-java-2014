@@ -108,6 +108,6 @@ public class MyTable implements Table {
     }
 
     public int unsavedChanges() {
-        return table.changes.size();
+        return table.uncommitedChanges();
     }
 }
