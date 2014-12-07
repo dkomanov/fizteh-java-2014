@@ -63,68 +63,83 @@ public class FileMap {
     }
 
     public boolean interactiveMode() {
-        String[] args;
+        Scanner sc = new Scanner(System.in);
         while (true) {
-            Scanner sc = new Scanner(System.in);
             try {
                 System.out.print("$ ");
                 String s1 = sc.nextLine();
-                args = s1.split("\\s+");
+                s1 = s1.trim();
+                if (s1.startsWith("'") && s1.endsWith("'")) {
+                    s1 = s1.replaceAll("'", "");
+                    StringBuffer argStr = new StringBuffer(s1);
+                    Scanner mainScanner = new Scanner(argStr.toString());
+                    mainScanner.useDelimiter("[ ]*;[ ]*");
+                    while (mainScanner.hasNext()) {
+                        String str = mainScanner.next();
+                        if (!execProc(getArgsFromString(str))) {
+                            return false;
+                        }
+                    }
+                } else {
+                    String[] args = s1.split("\\s+");
+                    if (args[0].equals("put")) {
+                        if (!put(args)) {
+                            System.out.println("Error on put");
+                            System.exit(-1);
+                            sc.close();
+                            return false;
+                        }
+
+                    } else if (args[0].equals("get")) {
+                        if (!get(args)) {
+                            System.out.println("Error on get");
+                            System.exit(-1);
+                            sc.close();
+                            return false;
+                        }
+
+                    } else if (args[0].equals("list")) {
+                        if (!list(args)) {
+                            System.out.println("Error on list");
+                            System.exit(-1);
+                            sc.close();
+                            return false;
+                        }
+
+                    } else if (args[0].equals("remove")) {
+                        if (!remove(args)) {
+                            System.out.println("Error on remove");
+                            System.exit(-1);
+                            sc.close();
+                            return false;
+                        }
+
+                    } else if (args[0].equals("exit")) {
+                        sc.close();
+                        System.exit(-1);
+
+                    } else {
+                        System.out.println("Not found command: " + args[0]);
+                        System.exit(-1);
+                        sc.close();
+                        return false;
+                    }
+                    if (!writeToFile()) {
+                        System.out.println("can't write to file");
+                        System.exit(-1);
+                        sc.close();
+                        return false;
+                    }
+                }
             } catch (Exception e) {
                 System.err.println("Exception: " + e.getMessage());
                 System.exit(-1);
                 sc.close();
                 return false;
             }
-            switch (args[0]) {
-            case "put":
-                if (!put(args)) {
-                    System.out.println("Error on put");
-                    System.exit(-1);
-                    sc.close();
-                    return false;
-                }
-                break;
-            case "get":
-                if (!get(args)) {
-                    System.out.println("Error on get");
-                    System.exit(-1);
-                    sc.close();
-                    return false;
-                }
-                break;
-            case "list":
-                if (!list(args)) {
-                    System.out.println("Error on list");
-                    System.exit(-1);
-                    sc.close();
-                    return false;
-                }
-                break;
-            case "remove":
-                if (!remove(args)) {
-                    System.out.println("Error on remove");
-                    System.exit(-1);
-                    sc.close();
-                    return false;
-                }
-                break;
-            case "exit":
-                sc.close();
-                System.exit(-1);
-                break;
-            default:
-                System.out.println("Not found command: " + args[0]);
-                System.exit(-1);
-                sc.close();
-                return false;
-            }
-            if (!writeToFile()) {
-                System.out.println("can't write to file");
-                System.exit(-1);
-                sc.close();
-                return false;
-            }
+            /*
+
+            */
         }
     }
 
@@ -167,39 +182,38 @@ public class FileMap {
     }
 
     private boolean execProc(String[] args) {
-        switch (args[0]) {
-        case "put":
+        if (args[0].equals("put")) {
             if (!put(args)) {
                 System.out.println("Error on put");
                 System.exit(-1);
                 return false;
             }
-            break;
-        case "get":
+
+        } else if (args[0].equals("get")) {
             if (!get(args)) {
                 System.out.println("Error on get");
                 System.exit(-1);
                 return false;
             }
-            break;
-        case "list":
+
+        } else if (args[0].equals("list")) {
             if (!list(args)) {
                 System.out.println("Error on list");
                 System.exit(-1);
                 return false;
             }
-            break;
-        case "remove":
+
+        } else if (args[0].equals("remove")) {
             if (!remove(args)) {
                 System.out.println("Error on remove");
                 System.exit(-1);
                 return false;
             }
-            break;
-        case "exit":
+
+        } else if (args[0].equals("exit")) {
             System.exit(-1);
-            break;
-        default:
+
+        } else {
             System.out.println("Not found command: " + args[0]);
             System.exit(-1);
             return false;
