@@ -21,14 +21,16 @@ public class ParallelTableProvider implements TableProvider {
 
     protected StructuredTableProvider oldProvider;
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    protected HashMap<String, ReentrantReadWriteLock> tableLocks;
+    protected HashMap<String, Table> tables;
 
     protected ParallelTableProvider(String path) throws IOException {
         StructuredTableProviderFactory factory = new StructuredTableProviderFactory();
-        tableLocks = new HashMap<>();
         oldProvider = (StructuredTableProvider) factory.create(path);
+        tables = new HashMap<>();
         for (String name: oldProvider.getTableNames()) {
-            tableLocks.put(name, new ReentrantReadWriteLock(true));
+            ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+            StructuredTable origin = (StructuredTable) oldProvider.getTable(name);
+            tables.put(name, new ParallelTable(origin, this, lock));
         }
     }
 
@@ -36,15 +38,18 @@ public class ParallelTableProvider implements TableProvider {
         return oldProvider.getPath();
     }
 
+
     @Override
     public Table getTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
         lock.readLock().lock();
         try {
-            StructuredTable origin = (StructuredTable) oldProvider.getTable(name);
-            if (origin == null) {
+            if (!tables.containsKey(name)) {
                 return null;
             } else {
-                return new ParallelTable(origin, this, tableLocks.get(name));
+                return tables.get(name);
             }
         } finally {
             lock.readLock().unlock();
@@ -55,12 +60,13 @@ public class ParallelTableProvider implements TableProvider {
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
         lock.writeLock().lock();
         try {
-            StructuredTable origin = (StructuredTable) oldProvider.createTable(name, columnTypes);
-            if (origin == null) {
+            if (tables.containsKey(name)) {
                 return null;
             } else {
-                tableLocks.put(name, new ReentrantReadWriteLock(true));
-                return new ParallelTable(origin, this, tableLocks.get(name));
+                StructuredTable origin = (StructuredTable) oldProvider.createTable(name, columnTypes);
+                ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+                tables.put(name, new ParallelTable(origin, this, lock));
+                return tables.get(name);
             }
         } finally {
             lock.writeLock().unlock();
@@ -72,7 +78,7 @@ public class ParallelTableProvider implements TableProvider {
         lock.writeLock().lock();
         try {
             oldProvider.removeTable(name);
-            tableLocks.remove(name);
+            tables.remove(name);
         } finally {
             lock.writeLock().unlock();
         }
