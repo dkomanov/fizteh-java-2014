@@ -1,9 +1,9 @@
 package ru.fizteh.fivt.students.irina_karatsapova.proxy.table_provider_factory;
 
-import com.sun.deploy.util.StringUtils;
 import ru.fizteh.fivt.students.irina_karatsapova.proxy.exceptions.ColumnFormatException;
 import ru.fizteh.fivt.students.irina_karatsapova.proxy.interfaces.Storeable;
 import ru.fizteh.fivt.students.irina_karatsapova.proxy.utils.TypeTransformer;
+import ru.fizteh.fivt.students.irina_karatsapova.proxy.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,15 +70,17 @@ public class MyTableRaw implements Storeable {
     public String toString() {
         String rawStr = getClass().getSimpleName();
         rawStr += '[';
-        List<String> strValues = new ArrayList<>();
+        String[] strValues = new String[values.size()];
+        int index = 0;
         for (Object value: values) {
             if (value != null) {
-                strValues.add(value.toString());
+                strValues[index] = value.toString();
             } else {
-                strValues.add("");
+                strValues[index] = "";
             }
+            index++;
         }
-        rawStr += StringUtils.join(strValues, ",");
+        rawStr += Utils.concatStrings(strValues, ",");
         rawStr += ']';
         return rawStr;
     }
