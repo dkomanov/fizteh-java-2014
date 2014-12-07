@@ -23,3 +23,5 @@ workbench.xmi
 
 .settings
 .checkstyle
+/MultiFileHashMap/nbproject/private/
+/MultiFileHashMap/build/
