@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
 public class Shell {
+    private static final String REGEXP_TO_SPLIT_JSON =  ",(?=([^\"]\"[^\"]\")[^\"]$)";
     private Map<String, Action> commands;
     private Scanner scanner;
     private Database db;
@@ -25,6 +26,7 @@ public class Shell {
         try {
             db = new Database(dbfile);
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
             abort();
         }
@@ -61,6 +63,7 @@ public class Shell {
                         }
                          res = commands.get(name).run(args, currentTable);
                     } catch (Exception e) {
+                        e.printStackTrace();
                         System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
                         if (!interactive || name.equals("exit")) {
                             abort();
@@ -103,9 +106,10 @@ public class Shell {
         } catch (StringIndexOutOfBoundsException e) {
             throw new RuntimeException("create: wrong command format");
         }
-        StringBuilder builder = new StringBuilder();
-        builder = builder.append(tableName + ' ').append(typesWithoutBrakets);
-        return builder.toString().trim().split("\\s+");
+        List<String> normalArgs = new ArrayList<>();
+        normalArgs.add(tableName);
+        normalArgs.addAll(Arrays.asList(typesWithoutBrakets.split("\\s+")));
+        return normalArgs.toArray(new String[0]);
     }
 
     private String[] parseArguments(String arg) {

@@ -25,7 +25,7 @@ public class TableProviderFactoryTest {
     @Test
     public void testCreate() throws Exception {
         Database db = new Database(testDirectory.getAbsolutePath());
-        assertEquals(db, (Database) tableProviderFactory.create(testDirectory.getAbsolutePath()));
+        assertEquals(db, tableProviderFactory.create(testDirectory.getAbsolutePath()));
     }
     @Test(expected = IllegalArgumentException.class)
     public void testCreateTableProviderWithNullName() throws Exception {

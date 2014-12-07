@@ -2,8 +2,6 @@ package ru.fizteh.fivt.students.torunova.storeable.actions;
 
 import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
 import ru.fizteh.fivt.students.torunova.storeable.TableWrapper;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.TableNotCreatedException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,10 +12,7 @@ import java.util.List;
  */
 public class CreateTable extends Action{
     @Override
-    public boolean run(String[] args, CurrentTable currentTable)
-                                throws IOException,
-                                IncorrectFileException,
-                                TableNotCreatedException {
+    public boolean run(String[] args, CurrentTable currentTable) throws IOException {
         if (!checkNumberOfArguments(2, args.length)) {
             return false;
         }
