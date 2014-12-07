@@ -41,6 +41,9 @@ public class TableSignature {
             while (scanner.hasNext()) {
                 columnClasses.add(ClassUtility.forName(scanner.next()));
             }
+            if (columnClasses.isEmpty()) {
+                throw new IllegalStateException("empty signature file");
+            }
             return new TableSignature(columnClasses.toArray(new Class<?>[columnClasses.size()]));
         }
     }

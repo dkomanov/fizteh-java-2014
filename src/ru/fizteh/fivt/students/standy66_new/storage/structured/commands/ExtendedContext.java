@@ -26,6 +26,10 @@ public class ExtendedContext extends Context {
 
     public void setCurrentStructuredTable(StructuredTable currentStructuredTable) {
         this.currentStructuredTable = currentStructuredTable;
-        setCurrentTable(currentStructuredTable.getBackendTable());
+        if (currentStructuredTable != null) {
+            setCurrentTable(currentStructuredTable.getBackendTable());
+        } else {
+            setCurrentTable(null);
+        }
     }
 }
