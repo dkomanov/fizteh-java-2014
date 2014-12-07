@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 /** TableProvider implementation
@@ -20,8 +22,8 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     private static final boolean FILE_BASED_LOCK_MECHANISM = (System.getProperty("use_locks") != null);
     private final File dbDirectory;
     private final Map<String, StringTable> tableInstances;
-    private File lockFile;
-    private boolean closed = false;
+    private final File lockFile;
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     StringDatabase(File directory) {
         if (directory == null) {
@@ -52,7 +54,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
         }
         dbDirectory = directory;
 
-        tableInstances = Collections.synchronizedMap(new HashMap<>());
+        tableInstances = new HashMap<>();
 
         initTableInstances(directory);
     }
@@ -81,7 +83,12 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     public StringTable getTable(String name) {
         assertNotClosed();
         throwIfIncorrectTableName(name);
-        return tableInstances.get(name);
+        readWriteLock.readLock().lock();
+        try {
+            return tableInstances.get(name);
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
     @Override
@@ -89,23 +96,29 @@ public class StringDatabase implements TableProvider, AutoCloseable {
         assertNotClosed();
         throwIfIncorrectTableName(name);
         File tableDirectory = new File(dbDirectory, name);
-        synchronized (tableInstances) {
+        readWriteLock.writeLock().lock();
+        try {
             if (tableInstances.get(name) != null) {
                 return null;
             }
             if (!tableDirectory.mkdirs()) {
                 throw new IllegalArgumentException("table cannot be created");
             }
-            tableInstances.put(name, new StringTable(tableDirectory, this));
+            tableInstances.put(name, new StringTable(tableDirectory));
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
         return tableInstances.get(name);
     }
 
     public List<String> listTableNames() {
         assertNotClosed();
-        synchronized (tableInstances) {
+        readWriteLock.readLock().lock();
+        try {
             return tableInstances.values().stream()
                     .map(Table::getName).collect(Collectors.toList());
+        } finally {
+            readWriteLock.readLock().unlock();
         }
     }
 
@@ -113,7 +126,8 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     public void removeTable(String name) {
         assertNotClosed();
         throwIfIncorrectTableName(name);
-        synchronized (tableInstances) {
+        readWriteLock.writeLock().lock();
+        try {
             if (tableInstances.get(name) == null) {
                 throw new IllegalStateException("table doesn't exist");
             }
@@ -121,20 +135,28 @@ public class StringDatabase implements TableProvider, AutoCloseable {
             if (!FileUtility.deleteRecursively(new File(dbDirectory, name))) {
                 throw new IllegalArgumentException("failed to remove table");
             }
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
     }
 
     public void commit() {
         assertNotClosed();
-        synchronized (tableInstances) {
+        readWriteLock.writeLock().lock();
+        try {
             tableInstances.values().forEach(Table::commit);
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
     }
 
     public void rollback() {
         assertNotClosed();
-        synchronized (tableInstances) {
+        readWriteLock.writeLock().lock();
+        try {
             tableInstances.values().forEach(Table::rollback);
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
     }
 

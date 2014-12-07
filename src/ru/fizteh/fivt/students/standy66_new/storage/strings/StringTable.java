@@ -7,6 +7,8 @@ import ru.fizteh.fivt.students.standy66_new.storage.FileMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 /**
@@ -17,6 +19,7 @@ public class StringTable implements Table, AutoCloseable {
     private static final int MAX_DIR_CHUNK = 16;
     private final File tableDirectory;
     private final Map<File, FileMap> openedFiles;
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private boolean closed = false;
     private StringDatabase database;
 
@@ -71,7 +74,12 @@ public class StringTable implements Table, AutoCloseable {
         }
 
         FileMap fm = getFileMapByKey(key);
-        return (fm == null) ? null : fm.get(key);
+        readWriteLock.readLock().lock();
+        try {
+            return (fm == null) ? null : fm.get(key);
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
     @Override
@@ -82,7 +90,12 @@ public class StringTable implements Table, AutoCloseable {
         }
 
         FileMap fm = getFileMapByKey(key);
-        return (fm == null) ? null : fm.put(key, value);
+        readWriteLock.writeLock().lock();
+        try {
+            return (fm == null) ? null : fm.put(key, value);
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -93,63 +106,93 @@ public class StringTable implements Table, AutoCloseable {
         }
 
         FileMap fm = getFileMapByKey(key);
-        return (fm == null) ? null : fm.remove(key);
+        readWriteLock.writeLock().lock();
+        try {
+            return (fm == null) ? null : fm.remove(key);
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
     }
 
     public int unsavedChangesCount() {
         assertNotClosed();
-        return openedFiles.values().stream().collect(Collectors.summingInt(FileMap::unsavedChangesCount));
+        readWriteLock.readLock().lock();
+        try {
+            return openedFiles.values().stream().collect(Collectors.summingInt(FileMap::unsavedChangesCount));
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
     @Override
     public int size() {
         assertNotClosed();
-        return openedFiles.values().stream().collect(Collectors.summingInt(FileMap::size));
+        readWriteLock.readLock().lock();
+        try {
+            return openedFiles.values().stream().collect(Collectors.summingInt(FileMap::size));
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
     @Override
-    public synchronized int commit() {
+    public int commit() {
         assertNotClosed();
-        int keyChangedCount = 0;
-        for (FileMap fm : openedFiles.values()) {
-            try {
-                keyChangedCount += fm.commit();
-            } catch (IOException e) {
-                throw new CheckedExceptionCaughtException("IOException occurred", e);
+        readWriteLock.writeLock().lock();
+        try {
+            int keyChangedCount = 0;
+            for (FileMap fm : openedFiles.values()) {
+                try {
+                    keyChangedCount += fm.commit();
+                } catch (IOException e) {
+                    throw new CheckedExceptionCaughtException("IOException occurred", e);
+                }
             }
-        }
-        for (int i = 0; i < MAX_DIR_CHUNK; i++) {
-            File dir = new File(tableDirectory, String.format("%d.dir", i));
+            for (int i = 0; i < MAX_DIR_CHUNK; i++) {
+                File dir = new File(tableDirectory, String.format("%d.dir", i));
 
-            if (dir.exists() && (dir.listFiles() != null) && (dir.listFiles().length == 0)) {
-                dir.delete();
+                if (dir.exists() && (dir.listFiles() != null) && (dir.listFiles().length == 0)) {
+                    dir.delete();
+                }
             }
+            return keyChangedCount;
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
-        return keyChangedCount;
     }
 
     @Override
-    public synchronized int rollback() {
+    public int rollback() {
         assertNotClosed();
-        int keyChangedCount = 0;
-        for (FileMap fm : openedFiles.values()) {
-            try {
-                keyChangedCount += fm.rollback();
-            } catch (IOException e) {
-                throw new CheckedExceptionCaughtException("IOException occurred", e);
+        readWriteLock.writeLock().lock();
+        try {
+            int keyChangedCount = 0;
+            for (FileMap fm : openedFiles.values()) {
+                try {
+                    keyChangedCount += fm.rollback();
+                } catch (IOException e) {
+                    throw new CheckedExceptionCaughtException("IOException occurred", e);
+                }
             }
+            return keyChangedCount;
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
-        return keyChangedCount;
     }
 
     @Override
     public List<String> list() {
         assertNotClosed();
-        return new ArrayList<>(openedFiles.values().stream().map(FileMap::keySet)
-                .reduce(new HashSet<>(), (accumulator, set) -> {
-                    accumulator.addAll(set);
-                    return accumulator;
-                }));
+        readWriteLock.readLock().lock();
+        try {
+            return new ArrayList<>(openedFiles.values().stream().map(FileMap::keySet)
+                    .reduce(new HashSet<>(), (accumulator, set) -> {
+                        accumulator.addAll(set);
+                        return accumulator;
+                    }));
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
     @Override
