@@ -10,6 +10,7 @@ import java.io.PrintStream;
 public class ShowTablesTableCommand extends TableCommand {
     @Override
     public void execute(ShellTableProvider base, PrintStream out) throws Exception {
+        out.println(base.getTableNames().size());
         for (String name: base.getTableNames()) {
             out.println(name + " " + base.getTable(name).size());
         }
