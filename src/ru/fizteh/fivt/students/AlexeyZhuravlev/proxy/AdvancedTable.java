@@ -32,7 +32,11 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
         if (origin == null) {
             return null;
         } else {
-            return new AdvancedStoreableValue(origin);
+            if (origin.getClass() == AdvancedStoreableValue.class) {
+                return origin;
+            } else {
+                return new AdvancedStoreableValue(origin);
+            }
         }
     }
 
@@ -43,7 +47,11 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
         if (origin == null) {
             return null;
         } else {
-            return new AdvancedStoreableValue(origin);
+            if (origin.getClass() == AdvancedStoreableValue.class) {
+                return origin;
+            } else {
+                return new AdvancedStoreableValue(origin);
+            }
         }
     }
 
@@ -102,7 +110,11 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
         if (origin == null) {
             return null;
         } else {
-            return new AdvancedStoreableValue(origin);
+            if (origin.getClass() == AdvancedStoreableValue.class) {
+                return origin;
+            } else {
+                return new AdvancedStoreableValue(origin);
+            }
         }
     }
 
@@ -127,5 +139,9 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
 
     public boolean isClosed() {
         return closed.get();
+    }
+
+    public StructuredTable getStructuredTable() {
+        return (StructuredTable) super.getStructuredTable();
     }
 }

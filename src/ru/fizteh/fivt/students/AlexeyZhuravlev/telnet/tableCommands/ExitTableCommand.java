@@ -1,12 +1,17 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
+import ru.fizteh.fivt.students.AlexeyZhuravlev.MultiFileHashMap.ExitCommandException;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
+
+import java.io.PrintStream;
+
 /**
  * @author AlexeyZhuravlev
  */
 public class ExitTableCommand extends TableCommand {
 
     @Override
-    public void execute(StructuredTableProvider base) throws Exception {
+    public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         throw new ExitCommandException();
     }
 

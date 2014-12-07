@@ -1,5 +1,9 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
+
+import java.io.PrintStream;
+
 /**
  * @author AlexeyZhuravlev
  */
@@ -8,12 +12,12 @@ public class DropTableCommand extends TableCommand {
     String name;
 
     @Override
-    public void execute(StructuredTableProvider base) throws Exception {
+    public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         try {
             base.removeTable(name);
-            System.out.println("dropped");
+            out.println("dropped");
         } catch (IllegalStateException e) {
-            System.out.println(name + " not exists");
+            out.println(name + " not exists");
         }
     }
 

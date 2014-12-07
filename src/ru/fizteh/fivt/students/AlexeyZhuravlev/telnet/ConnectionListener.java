@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet;
 
+import ru.fizteh.fivt.storage.structured.TableProvider;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,11 +14,13 @@ import java.util.List;
 public class ConnectionListener extends Thread {
 
     ServerSocket socket;
-    List<Socket> connections;
+    List<ClientCommunicator> connections;
+    TableProvider provider;
 
-    ConnectionListener(ServerSocket server) {
+    ConnectionListener(ServerSocket server, TableProvider passedProvider) {
         socket = server;
         connections = new ArrayList<>();
+        provider = passedProvider;
     }
 
     @Override
@@ -25,10 +29,14 @@ public class ConnectionListener extends Thread {
         while (!finished) {
             try {
                 Socket communication = socket.accept();
-                connections.add(communication);
-
+                ClientCommunicator community = new ClientCommunicator(communication, provider);
+                community.start();
+                connections.add(community);
             } catch (IOException e) {
                 finished = true;
+                for (ClientCommunicator thread: connections) {
+                    thread.serverShutdown();
+                }
             }
         }
     }

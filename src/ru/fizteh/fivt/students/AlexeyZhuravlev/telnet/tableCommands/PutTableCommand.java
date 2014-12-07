@@ -1,5 +1,11 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
+
+import java.io.PrintStream;
+import java.text.ParseException;
+
 /**
  * @author AlexeyZhuravlev
  */
@@ -9,7 +15,7 @@ public class PutTableCommand extends TableCommand {
     String value;
 
     @Override
-    public void execute(StructuredTableProvider base) throws Exception {
+    public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {

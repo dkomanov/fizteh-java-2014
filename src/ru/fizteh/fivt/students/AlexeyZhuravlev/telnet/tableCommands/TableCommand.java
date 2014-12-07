@@ -1,7 +1,11 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
-import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProvider;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.UnknownCommandException;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 
 /**
@@ -74,11 +78,11 @@ public abstract class TableCommand {
             command.putArguments(tokens);
             return command;
         } else {
-            throw new Exception(tokens[0] + " is unknown command");
+            throw new UnknownCommandException();
         }
     }
 
-    public abstract void execute(AdvancedTableProvider base) throws Exception;
+    public abstract void execute(ShellTableProvider base, PrintStream stream) throws Exception;
     protected void putArguments(String[] args) throws Exception {
     }
     protected abstract int numberOfArguments();

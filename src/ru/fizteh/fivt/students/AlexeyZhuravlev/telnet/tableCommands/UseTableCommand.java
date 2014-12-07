@@ -1,5 +1,9 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
+
+import java.io.PrintStream;
+
 /**
  * @author AlexeyZhuravlev
  */
@@ -8,13 +12,13 @@ public class UseTableCommand extends TableCommand {
     String name;
 
     @Override
-    public void execute(StructuredTableProvider base) throws Exception {
+    public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         if (base.getUsing() != null && base.getUsing().getNumberOfUncommittedChanges() != 0) {
-            System.out.println(base.getUsing().getNumberOfUncommittedChanges() + " unsaved changes");
-        } else if (base.setUsing(name) == null) {
-            System.out.println(name + " not exists");
+            out.println(base.getUsing().getNumberOfUncommittedChanges() + " unsaved changes");
+        } else if (base.use(name) == null) {
+            out.println(name + " not exists");
         } else {
-            System.out.println("using " + name);
+            out.println("using " + name);
         }
     }
 

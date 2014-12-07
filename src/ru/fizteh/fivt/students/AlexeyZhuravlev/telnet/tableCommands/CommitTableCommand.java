@@ -1,7 +1,8 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
 
-import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProvider;
+import java.io.PrintStream;
 
 /**
  * @author AlexeyZhuravlev
@@ -9,11 +10,11 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.AdvancedTableProvider;
 public class CommitTableCommand extends TableCommand {
 
     @Override
-    public void execute(AdvancedTableProvider base) throws Exception {
+    public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         if (base.getUsing() == null) {
-            System.out.println("no table");
+            out.println("no table");
         } else {
-            System.out.println(base.getUsing().commit());
+            out.println(base.getUsing().commit());
         }
     }
 

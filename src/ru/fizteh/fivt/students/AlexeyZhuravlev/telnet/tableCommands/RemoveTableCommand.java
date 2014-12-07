@@ -1,5 +1,10 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
+
+import java.io.PrintStream;
+
 /**
  * @author AlexeyZhuravlev
  */
@@ -8,7 +13,7 @@ public class RemoveTableCommand extends TableCommand {
     String key;
 
     @Override
-    public void execute(StructuredTableProvider base) throws Exception {
+    public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
@@ -17,6 +22,7 @@ public class RemoveTableCommand extends TableCommand {
                 System.out.println("not found");
             } else {
                 System.out.println("removed");
+                System.out.println(base.serialize(base.getUsing(), result));
             }
         }
     }

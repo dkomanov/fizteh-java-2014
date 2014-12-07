@@ -1,16 +1,22 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
+
+import java.io.PrintStream;
+
 /**
  * @author AlexeyZhuravlev
  */
 public class RollBackTableCommand extends TableCommand {
 
     @Override
-    public void execute(StructuredTableProvider base) throws Exception {
+    public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         if (base.getUsing() == null) {
-            System.out.println("no table");
+            out.println("no table");
         } else {
-            System.out.println(base.getUsing().rollback());
+            out.println(base.getUsing().rollback());
         }
     }
 

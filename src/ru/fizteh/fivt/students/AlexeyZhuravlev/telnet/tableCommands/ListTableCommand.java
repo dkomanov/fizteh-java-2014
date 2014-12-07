@@ -1,5 +1,8 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
+
+import java.io.PrintStream;
 import java.util.List;
 
 /**
@@ -7,19 +10,12 @@ import java.util.List;
  */
 public class ListTableCommand extends TableCommand {
     @Override
-    public void execute(StructuredTableProvider base) throws Exception {
+    public void execute(ShellTableProvider base, PrintStream out) throws Exception {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
-            List<String> list = ((StructuredTable) base.getUsing()).list();
-            StringBuilder result = new StringBuilder();
-            for (String key: list) {
-                if (result.length() > 0) {
-                    result.append(", ");
-                }
-                result.append(key);
-            }
-            System.out.println(result.toString());
+            List<String> list = base.getUsing().list();
+            System.out.println(String.join(", ", list));
         }
     }
 
