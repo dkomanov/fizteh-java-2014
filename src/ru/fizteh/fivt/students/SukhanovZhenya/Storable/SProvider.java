@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SProvider implements TableProvider {
@@ -108,12 +109,9 @@ public class SProvider implements TableProvider {
     }
 
     @Override
-    public String[] getTableNames() {
-        int length = currentDir.list().length;
-        String[] result = new String[length];
-        for (int i = 0; i < length; ++i) {
-            result[i] = currentDir.list()[i];
-        }
+    public List<String> getTableNames() {
+        List<String> result = new ArrayList<>();
+        Collections.addAll(result, currentDir.list());
         return result;
     }
 

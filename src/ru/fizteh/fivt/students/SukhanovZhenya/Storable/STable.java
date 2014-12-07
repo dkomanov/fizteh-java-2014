@@ -106,8 +106,7 @@ public class STable implements Table {
 
     @Override
     public List<String> list() {
-        List<String> keys = fMap.keySet().stream().collect(Collectors.toList());
-        return keys;
+        return fMap.keySet().stream().collect(Collectors.toList());
     }
 
     void getFile() {
