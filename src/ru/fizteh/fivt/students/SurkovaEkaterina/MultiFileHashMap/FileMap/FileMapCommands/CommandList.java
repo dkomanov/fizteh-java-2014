@@ -19,7 +19,7 @@ public class CommandList<FileMapShellOperations
         }
 
         if (operations.getTable() == null) {
-            System.out.println("no table");
+            System.out.println("list: No table!");
             return;
         }
 

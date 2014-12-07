@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap;
 
+import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.FileMap.ATable;
 
 import java.io.File;
@@ -7,7 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MultiFileHashMapTableOperations {
+public class MultiFileHashMapTableProvider implements TableProvider {
 
     private static final int MAX_TABLES_NUMBER = 16;
     private String multiFileMapDirectoryPath;
@@ -15,7 +16,7 @@ public class MultiFileHashMapTableOperations {
     HashMap<String, MultiFileTable> tables =
             new HashMap<String, MultiFileTable>();
 
-    public MultiFileHashMapTableOperations(final String directory) {
+    public MultiFileHashMapTableProvider(final String directory) {
         if ((directory == null)
                 || (directory.equals(""))) {
             throw new IllegalArgumentException(
@@ -44,6 +45,7 @@ public class MultiFileHashMapTableOperations {
         }
     }
 
+    @Override
     public final ATable getTable(final String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException(
@@ -60,6 +62,7 @@ public class MultiFileHashMapTableOperations {
         return table;
     }
 
+    @Override
     public final ATable createTable(final String name) {
         if ((name == null) || (name.isEmpty())) {
             throw new IllegalArgumentException(
@@ -96,6 +99,7 @@ public class MultiFileHashMapTableOperations {
         fileToDelete.delete();
     }
 
+    @Override
     public final void removeTable(final String name) {
         if ((name == null) || (name.isEmpty())) {
             throw new IllegalArgumentException(

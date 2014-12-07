@@ -18,11 +18,11 @@ public class CommandRemove<Table, Key, Value, FileMapShellOperations
             throw new IllegalArgumentException("remove: Too many arguments!");
         }
         if (parameters.length < 1) {
-            throw new IllegalArgumentException("remove: not enough arguments!");
+            throw new IllegalArgumentException("remove: Not enough arguments!");
         }
 
         if (operations.getTable() == null) {
-            System.out.println("no table");
+            System.out.println("remove: No table!");
             return;
         }
 

@@ -115,7 +115,7 @@ public class MultiFileHashMapTableOperations {
 
     public final void showTables() {
         for (final Map.Entry<String, MultiFileTable> map: tables.entrySet()) {
-            System.out.println(map.getKey() + ' ' + map.getValue().size());
+            System.out.println(map.getKey() + ' ' + map.getValue().getSize());
         }
     }
 

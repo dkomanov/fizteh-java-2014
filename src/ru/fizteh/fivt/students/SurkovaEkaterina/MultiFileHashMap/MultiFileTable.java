@@ -38,7 +38,7 @@ public class MultiFileTable extends ATable {
             }
             fileIsEmpty = true;
 
-            for (final String key : data.keySet()) {
+            for (final String key : oldData.keySet()) {
                 if (getDirNumber(key) == currentFileNumber) {
                     int fileNumber = getFileNumber(key);
                     unsavedKeys.get(fileNumber).add(key);
@@ -47,7 +47,7 @@ public class MultiFileTable extends ATable {
             }
 
             if (fileIsEmpty) {
-                MultiFileHashMapTableOperations.
+                MultiFileHashMapTableProvider.
                         deleteFile(currentFileDirectory);
             }
 
@@ -56,14 +56,14 @@ public class MultiFileTable extends ATable {
                 String fileName = String.format("%d.dat", fileNumber);
                 File file = new File(currentFileDirectory, fileName);
                 if (unsavedKeys.get(fileNumber).isEmpty()) {
-                    MultiFileHashMapTableOperations.deleteFile(file);
+                    MultiFileHashMapTableProvider.deleteFile(file);
                     continue;
                 }
                 if (!currentFileDirectory.exists()) {
                     currentFileDirectory.mkdir();
                 }
                 FileMapWriter.saveToFile(file.getAbsolutePath(),
-                        unsavedKeys.get(fileNumber), data);
+                        unsavedKeys.get(fileNumber), oldData);
             }
         }
     }
@@ -72,7 +72,7 @@ public class MultiFileTable extends ATable {
         File tableDirectory = getTableDirectory();
         for (final File dirs : tableDirectory.listFiles()) {
             for (final File file : dirs.listFiles()) {
-                FileMapReader.loadFromFile(file.getAbsolutePath(), data);
+                FileMapReader.loadFromFile(file.getAbsolutePath(), oldData);
             }
         }
     }

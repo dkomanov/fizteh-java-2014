@@ -22,7 +22,7 @@ public class CommandGet<Table, Key, Value, FileMapShellOperations
         }
 
         if (operations.getTable() == null) {
-            System.out.println("no table");
+            System.out.println("get: No table!");
             return;
         }
 
