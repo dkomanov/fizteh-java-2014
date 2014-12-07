@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.tonmit.fileMap;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
@@ -15,6 +17,14 @@ public class FileMap {
     public FileMap(String nameOfFile) {
         this.dBase = new HashMap<>();
         this.nameOfFile = nameOfFile;
+        File f = new File(nameOfFile);
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                System.out.println("Exception :" + e.getMessage());
+            }
+        }
     }
 
     public boolean readFromFile() {
