@@ -35,7 +35,7 @@ public class ParallelTableProvider implements TableProvider {
     }
 
     @Override
-    public Table getTable(String name) {
+    public Table getTable(String name) throws IllegalArgumentException {
         lock.readLock().lock();
         try {
             Table table = providerFromStoreable.getTable(name);
