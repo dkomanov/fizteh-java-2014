@@ -27,63 +27,25 @@ public class MySerialize implements Serializable {
     private Map<Class, Write> writeMap = new HashMap<>();
 
     public MySerialize() {
-        readMap.put(Integer.class, new Read() {
-            @Override
-            public Object getObject(String string) throws ParseException {
-                return Integer.valueOf(string);
+        readMap.put(Integer.class, (String s) -> Integer.valueOf(s));
+        readMap.put(Long.class, (String s) -> Long.valueOf(s));
+        readMap.put(Float.class, (String s) -> Float.valueOf(s));
+        readMap.put(Double.class, (String s) -> Double.valueOf(s));
+        readMap.put(Byte.class, (String s) -> Byte.valueOf(s));
+        readMap.put(Boolean.class, (String s) -> {
+            if (s.trim().toLowerCase().equals("true")) {
+                return true;
+            } else if (s.trim().toLowerCase().equals("false")) {
+                return false;
             }
+            throw new ParseException("not valid boolean value", 0);
         });
-
-        readMap.put(Long.class, new Read() {
-            @Override
-            public Object getObject(String string) throws ParseException {
-                return Long.valueOf(string);
+        readMap.put(String.class, (String s) -> {
+            if (s.length() > 1 && s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"') {
+                return s.substring(1, s.length() - 1);
             }
+            throw new ParseException("not valid String value", 0);
         });
-
-        readMap.put(Float.class, new Read() {
-            @Override
-            public Object getObject(String string) throws ParseException {
-                return Float.valueOf(string);
-            }
-        });
-
-        readMap.put(Double.class, new Read() {
-            @Override
-            public Object getObject(String string) throws ParseException {
-                return Double.valueOf(string);
-            }
-        });
-
-        readMap.put(Byte.class, new Read() {
-            @Override
-            public Object getObject(String string) throws ParseException {
-                return Byte.valueOf(string);
-            }
-        });
-
-        readMap.put(Boolean.class, new Read() {
-            @Override
-            public Object getObject(String string) throws ParseException {
-                if (string.trim().toLowerCase().equals("true")) {
-                    return true;
-                } else if (string.trim().toLowerCase().equals("false")) {
-                    return false;
-                }
-                throw new ParseException("not a valid boolean value", 0);
-            }
-        });
-
-        readMap.put(String.class, new Read() {
-            @Override
-            public Object getObject(String string) throws ParseException {
-                if (string.length() > 1 && string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"') {
-                    return string.substring(1, string.length() - 1);
-                }
-                throw new ParseException("not a valid String value", 0);
-            }
-        });
-
         writeMap.put(Integer.class, new Write() {
             @Override
             public String getString(Object object) {
@@ -163,10 +125,12 @@ public class MySerialize implements Serializable {
         int columnsCount = table.getColumnsCount();
         StringBuilder stringBuilder = new StringBuilder("[");
         for (int i = 0; i < columnsCount; i++) {
-            if (value.getColumnAt(i) != null) {
-                stringBuilder.append(writeMap.get(table.getColumnType(i)).getString(value.getColumnAt(i)));
-            } else {
-                stringBuilder.append("null");
+            if (value != null) {
+                if (value.getColumnAt(i) != null) {
+                    stringBuilder.append(writeMap.get(table.getColumnType(i)).getString(value.getColumnAt(i)));
+                } else {
+                    stringBuilder.append("null");
+                }
             }
             stringBuilder.append(',');
         }

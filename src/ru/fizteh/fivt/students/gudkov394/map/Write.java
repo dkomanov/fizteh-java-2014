@@ -14,27 +14,28 @@ import java.util.Set;
 public class Write {
 
     public Write(final Map currentTable) {
-    if (System.getProperty("fizteh.db.dir") == null) {
-        System.err.println("You forgot file");
-        System.exit(4);
+        if (System.getProperty("fizteh.db.dir") == null) {
+            System.err.println("You forgot file");
+            System.exit(4);
+        }
+        File f = new File(System.getProperty("fizteh.db.dir"));
+        FileOutputStream output = null;
+        try {
+            output = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            System.err.println("Input file didn't find");
+        }
+        Set<String> set = currentTable.keySet();
+        for (String s : set) {
+            writeWord(s, output);
+            String tmp = currentTable.get(s).toString();
+            writeWord(tmp, output);
+        }
     }
-    File f = new File(System.getProperty("fizteh.db.dir"));
-    FileOutputStream output = null;
-    try {
-        output = new FileOutputStream(f);
-    } catch (FileNotFoundException e) {
-        System.err.println("Input file didn't find");
-    }
-    Set<String> set = currentTable.keySet();
-    for (String s : set) {
-        writeWord(s, output);
-        String tmp = currentTable.get(s).toString();
-        writeWord(tmp, output);
-    }
-}
+
     private void writeWord(final String s, final FileOutputStream output) {
-     //   String key = ((Integer) s.length()).toString();
-       // writeBytes(key, output);
+        //   String key = ((Integer) s.length()).toString();
+        // writeBytes(key, output);
         writeBytes(s, output);
     }
 

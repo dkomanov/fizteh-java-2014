@@ -8,19 +8,23 @@ import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.gudkov394.Junit.src.Junit;
 
+import java.io.IOException;
+
+import static java.nio.file.Files.createTempDirectory;
+
 
 /**
- *
  * Created by kagudkov on 20.10.14.
  */
 public class TestTableProviderFactoryAndTableProvide {
     TableProvider provider;
+
     TableProviderFactory factory;
 
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
         factory = new Junit();
-        provider = factory.create("/home/kagudkov/fizteh-java-2014/test1");
+        provider = factory.create(createTempDirectory("test1").toString());
         provider.createTable("table1");
         provider.createTable("table2");
     }
@@ -42,6 +46,7 @@ public class TestTableProviderFactoryAndTableProvide {
         Table table1 = provider.getTable("table1");
         Assert.assertEquals(table1, provider.getTable("table1"));
     }
+
     @Test
     public void testCreateTable() throws Exception {
 // non-existing table

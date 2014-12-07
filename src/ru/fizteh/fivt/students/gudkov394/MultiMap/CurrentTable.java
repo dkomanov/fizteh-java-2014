@@ -4,7 +4,10 @@ import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.IllegalFormatCodePointException;
+import java.util.Map;
+import java.util.Set;
 
 public class CurrentTable {
     String name;

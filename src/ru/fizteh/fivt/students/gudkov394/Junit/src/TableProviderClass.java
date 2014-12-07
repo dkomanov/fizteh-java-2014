@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by kagudkov on 25.10.14.
  */
-public class TableProviderClass  implements TableProvider{
+public class TableProviderClass implements TableProvider {
     public Map<String, CurrentTable> tables = new HashMap<String, CurrentTable>();
 
     @Override
