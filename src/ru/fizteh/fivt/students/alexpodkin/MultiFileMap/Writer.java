@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.alexpodkin.FileMap;
+package ru.fizteh.fivt.students.alexpodkin.MultiFileHashMap;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
@@ -14,8 +14,9 @@ public class Writer {
     }
 
     private void writeWord(DataOutputStream dataOutputStream, String word) throws IOException {
-        dataOutputStream.writeInt(word.length());
-        dataOutputStream.writeChars(word);
+        byte[] byteWord = word.getBytes("UTF-8");
+        dataOutputStream.writeInt(byteWord.length);
+        dataOutputStream.write(byteWord);
     }
 
     public void writeDataToFile(HashMap<String, String> fileMap) throws IOException {
