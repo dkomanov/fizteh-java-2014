@@ -1,8 +1,9 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands.TelnetCmdListusers;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands.TelnetCmdListUsers;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands.TelnetCmdStart;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands.TelnetCmdStop;
 
 public class ServerMain {
     public static void main(String[] args) {
@@ -14,7 +15,7 @@ public class ServerMain {
 
     private static void setUpShell(Shell<Server> myShell) {
         myShell.addCommand(new TelnetCmdStart());
-        //myShell.addCommand(new TelnetCmdStop());
-        myShell.addCommand(new TelnetCmdListusers());
+        myShell.addCommand(new TelnetCmdStop());
+        myShell.addCommand(new TelnetCmdListUsers());
     }
 }

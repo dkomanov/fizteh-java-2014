@@ -5,8 +5,8 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Server;
 import java.net.SocketAddress;
 import java.util.List;
 
-public class TelnetCmdListusers extends TelnetCommand {
-    public TelnetCmdListusers() {
+public class TelnetCmdListUsers extends TelnetCommand {
+    public TelnetCmdListUsers() {
         name = "listusers";
         numberOfArguments = 1;
     }
@@ -17,10 +17,9 @@ public class TelnetCmdListusers extends TelnetCommand {
             System.out.println("not started");
             return false;
         }
-        List<SocketAddress> clients = myServer.listUsers();
-
-        for (SocketAddress oneClient : clients) {
-            System.out.println(oneClient);
+        List<String> userList = myServer.getUserList();
+        for (String oneUser : userList) {
+            System.out.println(oneUser);
         }
         return true;
     }
