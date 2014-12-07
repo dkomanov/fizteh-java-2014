@@ -9,7 +9,8 @@ public class StopCommand extends ServerCommand {
     @Override
     public void execute(ServerLogic base) throws Exception {
         if (base.isStarted()) {
-            base.stop();
+            int port = base.stop();
+            System.out.println("stopped at " + port);
         } else {
             System.out.println("not started");
         }

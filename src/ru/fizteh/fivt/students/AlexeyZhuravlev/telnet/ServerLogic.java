@@ -39,8 +39,9 @@ public class ServerLogic {
         for (ConnectionListener listener: listeners) {
             for (ClientCommunicator connection: listener.connections) {
                 if (connection.serverAlive) {
-                    String user = connection.socket.getInetAddress().toString();
-                    result.add(user);
+                    String user = connection.socket.getInetAddress().getHostName();
+                    int port = listener.socket.getLocalPort();
+                    result.add(user + ":" + port);
                 }
             }
         }
