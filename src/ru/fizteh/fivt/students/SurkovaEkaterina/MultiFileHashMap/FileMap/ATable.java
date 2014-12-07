@@ -41,10 +41,12 @@ public abstract class ATable implements Table {
         }
     }
 
+
     public final int getUncommittedChangesNumber() {
         return uncommittedChangesNumber;
     }
 
+    @Override
     public final String get(final String key) {
         if (key == null || key.equals("")) {
             throw new IllegalArgumentException("key cannot be null!");
@@ -56,6 +58,7 @@ public abstract class ATable implements Table {
         return oldData.get(key);
     }
 
+    @Override
     public final String put(final String key, final String value) {
         if (key == null) {
             throw new IllegalArgumentException("Key should not be null!");
@@ -80,6 +83,7 @@ public abstract class ATable implements Table {
         return oldValue;
     }
 
+    @Override
     public final String remove(final String key) {
         if ((key == null) || (key.equals(""))) {
             throw new IllegalArgumentException("key cannot be null");
@@ -96,6 +100,7 @@ public abstract class ATable implements Table {
         return oldValue;
     }
 
+    @Override
     public final List<String> list() {
         HashMap<String, String> currentData = new HashMap<String, String>(oldData);
 
@@ -115,6 +120,7 @@ public abstract class ATable implements Table {
         return list;
     }
 
+    @Override
     public final int commit() {
         int recordsCommitted = 0;
         for (final String key : changedData.keySet()) {
@@ -141,6 +147,7 @@ public abstract class ATable implements Table {
         return recordsCommitted;
     }
 
+    @Override
     public final int rollback() {
         int recordsDeleted = 0;
         for (final String key : changedData.keySet()) {
@@ -157,10 +164,12 @@ public abstract class ATable implements Table {
         return recordsDeleted;
     }
 
+    @Override
     public final String getName() {
         return tableName;
     }
 
+    @Override
     public final int size() {
         return size;
     }

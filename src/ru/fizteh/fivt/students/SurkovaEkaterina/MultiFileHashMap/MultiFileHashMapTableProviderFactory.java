@@ -5,6 +5,7 @@ import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import java.io.File;
 
 public class MultiFileHashMapTableProviderFactory implements TableProviderFactory {
+    @Override
     public MultiFileHashMapTableProvider create(String directory) {
         if (directory == null || directory.equals("")) {
             throw new IllegalArgumentException("directory name cannot be empty");
