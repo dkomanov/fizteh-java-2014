@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.torunova.parallel.actions;
 
 import ru.fizteh.fivt.students.torunova.parallel.CurrentTable;
-import ru.fizteh.fivt.students.torunova.parallel.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.parallel.exceptions.TableNotCreatedException;
 
 import java.io.IOException;
 
@@ -30,9 +28,7 @@ public abstract class Action {
     }
 
     public abstract boolean run(String[] args, CurrentTable currentTable)
-                                  throws IOException,
-                                  IncorrectFileException,
-                                  TableNotCreatedException;
+                                  throws IOException;
 
     public abstract String getName();
 

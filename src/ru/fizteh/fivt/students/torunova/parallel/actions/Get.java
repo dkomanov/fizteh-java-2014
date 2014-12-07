@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.torunova.parallel.actions;
 
 import ru.fizteh.fivt.students.torunova.parallel.CurrentTable;
-import ru.fizteh.fivt.students.torunova.parallel.exceptions.IncorrectFileException;
 
 import java.io.IOException;
 
@@ -10,7 +9,7 @@ import java.io.IOException;
  */
 public class Get extends Action {
     @Override
-    public boolean run(String[] args, CurrentTable currentTable) throws IOException, IncorrectFileException {
+    public boolean run(String[] args, CurrentTable currentTable) throws IOException {
         if (!checkNumberOfArguments(1, args.length)) {
             return false;
         }
