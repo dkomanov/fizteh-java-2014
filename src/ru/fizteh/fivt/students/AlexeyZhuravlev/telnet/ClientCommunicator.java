@@ -46,6 +46,8 @@ public class ClientCommunicator extends Thread {
                     interpret.execute(localProvider, out);
                 } catch (ExitCommandException e) {
                     serverAlive = false;
+                } catch (UnknownCommandException e) {
+                    out.println("Unknown command");
                 } catch (Exception e) {
                     out.println(e.getMessage());
                 }
