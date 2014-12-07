@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.akhtyamovpavel.structureddatabase.test;
+package ru.fizteh.fivt.students.akhtyamovpavel.threaddatabase.test;
 
 import org.junit.Rule;
 import org.junit.Test;
