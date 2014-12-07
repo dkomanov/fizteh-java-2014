@@ -6,6 +6,8 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.andreyzakharov.parallelfilemap.MultiFileTableProviderFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class MultiFileTableProviderTest {
-    String root = "test/junit-parallel";
     String[] names = {"test-db-provider", "null", "database-01", "*[::]<>|\\?"};
     String otherName = "*()doesn't match any other name";
     static List<Class<?>> signature;
@@ -33,7 +34,7 @@ public class MultiFileTableProviderTest {
     @Before
     public void preRun() {
         f = new MultiFileTableProviderFactory();
-        d = f.create(root);
+        d = f.create(MultiFileTableTest.rootName);
     }
 
     @After
@@ -44,6 +45,15 @@ public class MultiFileTableProviderTest {
             } catch (IllegalStateException | IOException e) {
                 //
             }
+        }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        try {
+            Files.deleteIfExists(Paths.get(MultiFileTableTest.rootName));
+        } catch (IOException e) {
+            //
         }
     }
 

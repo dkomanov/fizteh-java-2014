@@ -8,6 +8,8 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.andreyzakharov.parallelfilemap.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -16,7 +18,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class MultiFileTableTest {
-    static Path root = Paths.get("test/junit-parallel");
+    static String rootName = "test-junit-parallel";
+    static Path root = Paths.get(rootName);
     static String[] dbNames = {"test-db", "null", "database-01", "*[::]<>|\\?"};
     static List<Class<?>> signature = Arrays.asList(String.class, Integer.class, Long.class,
             Float.class, Double.class, Byte.class, Boolean.class);
@@ -94,6 +97,15 @@ public class MultiFileTableTest {
             } catch (IllegalStateException | ConnectionInterruptException e) {
                 //
             }
+        }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        try {
+            Files.deleteIfExists(Paths.get(MultiFileTableTest.rootName));
+        } catch (IOException e) {
+            //
         }
     }
 
