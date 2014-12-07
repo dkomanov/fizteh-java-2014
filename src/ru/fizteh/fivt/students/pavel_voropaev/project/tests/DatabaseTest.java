@@ -19,7 +19,7 @@ public class DatabaseTest {
     private final String databaseDirectory = "test";
     private final String tableName = "testTable";
     private final String fileName = "testFile";
-    private final String stringWithBannedSymbols = "Где\\Моя|Любимая<Папка?";
+    private final String stringWithBannedSymbol = "Моя<Папка";
 
     @Rule
     public TemporaryFolder testDirectory = new TemporaryFolder();
@@ -32,6 +32,7 @@ public class DatabaseTest {
     @Test
     public void databaseInitializationForNewDirectory() {
         new Database(databasePath.toString());
+        assertTrue(databasePath.toFile().exists());
     }
 
     @Test
@@ -79,7 +80,7 @@ public class DatabaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void getTableForWrongNamedTable() {
         TableProvider test = new Database(databasePath.toString());
-        test.getTable(stringWithBannedSymbols);
+        test.getTable(stringWithBannedSymbol);
     }
 
     @Test
@@ -99,7 +100,7 @@ public class DatabaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void createTableForWrongNamedTable() {
         TableProvider test = new Database(databasePath.toString());
-        test.createTable(stringWithBannedSymbols);
+        test.createTable(stringWithBannedSymbol);
     }
 
     @Test
@@ -111,6 +112,7 @@ public class DatabaseTest {
         testTable.put("key2", "v");
         testTable.commit();
         test.removeTable(tableName);
+        assertFalse(databasePath.resolve(tableName).toFile().exists());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -122,7 +124,7 @@ public class DatabaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void removeTableForWrongTableName() {
         TableProvider test = new Database(databasePath.toString());
-        test.removeTable(stringWithBannedSymbols);
+        test.removeTable(stringWithBannedSymbol);
     }
 
     //Tests for unofficial metods in TableProvider

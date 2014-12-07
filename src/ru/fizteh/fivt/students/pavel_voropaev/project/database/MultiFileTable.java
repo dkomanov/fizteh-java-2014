@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 
 public class MultiFileTable implements Table {
 
-    class MultiFileMap {
+    private class MultiFileMap {
         public Map<String, String> map;
 
         public MultiFileMap() {
@@ -23,7 +23,9 @@ public class MultiFileTable implements Table {
     }
 
     private static final int FOLDERS = 16;
+    private static final String FOLDERS_REGEXP = "(1[0-5]|[0-9])\\.dir";
     private static final int FILES = 16;
+    private static final String FILES_REGEXP = "(1[0-5]|[0-9])\\.dat";
     private static final String ENCODING = "UTF-8";
 
     private String name;
@@ -202,18 +204,15 @@ public class MultiFileTable implements Table {
     private void load() throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
             for (Path entry : stream) {
-                if (!Files.isDirectory(entry)) {
-                    throw new ContainsWrongFilesException(directory.toString());
-                }
-                boolean correctDir = false;
-                for (int i = 0; i < FOLDERS; ++i) {
-                    if (entry.endsWith(Integer.toString(i) + ".dir")) {
-                        readDir(entry, i);
-                        correctDir = true;
-                        break;
+                String directoryName = entry.getFileName().toString();
+                if (directoryName.matches(FOLDERS_REGEXP) && Files.isDirectory(entry)) {
+                    int fileNumber = Integer.parseInt(directoryName.substring(0, directoryName.indexOf('.')));
+                    if (fileNumber < FOLDERS) {
+                        readDir(entry, fileNumber);
+                    } else {
+                        throw new ContainsWrongFilesException(directory.toString());
                     }
-                }
-                if (!correctDir) {
+                } else {
                     throw new ContainsWrongFilesException(directory.toString());
                 }
             }
@@ -223,15 +222,15 @@ public class MultiFileTable implements Table {
     private void readDir(Path entry, int dirNum) throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(entry)) {
             for (Path path : stream) {
-                boolean isFileCorrect = false;
-                for (int i = 0; i < FILES; ++i) {
-                    if (path.endsWith(Integer.toString(i) + ".dat") && Files.isRegularFile(path)) {
-                        readFile(path.toString(), dirNum, i);
-                        isFileCorrect = true;
-                        break;
+                String fileName = entry.getFileName().toString();
+                if (fileName.matches(FILES_REGEXP) && Files.isRegularFile(path)) {
+                    int fileNumber = Integer.parseInt(fileName.substring(0, fileName.indexOf('.')));
+                    if (fileNumber < FILES) {
+                        readFile(path.toString(), dirNum, fileNumber);
+                    } else {
+                        throw new ContainsWrongFilesException(directory.toString());
                     }
-                }
-                if (!isFileCorrect) {
+                } else {
                     throw new ContainsWrongFilesException(directory.toString());
                 }
             }
@@ -243,7 +242,6 @@ public class MultiFileTable implements Table {
             while (stream.getFilePointer() < stream.length()) {
                 String key = readWord(stream);
                 String value = readWord(stream);
-
                 int hashCode = Math.abs(key.hashCode());
                 if (hashCode % FOLDERS != dirNum || hashCode / FOLDERS % FILES != fileNum) {
                     throw new ContainsWrongFilesException(directory.toString());
@@ -255,7 +253,7 @@ public class MultiFileTable implements Table {
                 ++size;
             }
         } catch (EOFException e) {
-                throw new ContainsWrongFilesException(directory.toString());
+            throw new ContainsWrongFilesException(directory.toString());
         }
     }
 
@@ -302,13 +300,10 @@ public class MultiFileTable implements Table {
         }
 
         Set<String> keyList = content[fileNumber].map.keySet();
-        Iterator<String> it = keyList.iterator();
-
         try (FileOutputStream output = new FileOutputStream(filePath.toString())) {
-            while (it.hasNext()) {
-                String key = it.next();
-                byte[] keyByte = key.getBytes(ENCODING);
-                byte[] valueByte = content[fileNumber].map.get(key).getBytes(ENCODING);
+            for (String entry : keyList) {
+                byte[] keyByte = entry.getBytes(ENCODING);
+                byte[] valueByte = content[fileNumber].map.get(entry).getBytes(ENCODING);
 
                 writeBytes(output, keyByte);
                 writeBytes(output, valueByte);
