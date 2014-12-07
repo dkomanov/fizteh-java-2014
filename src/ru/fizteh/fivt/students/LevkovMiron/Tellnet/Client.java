@@ -14,17 +14,21 @@ public class Client {
     private DataInputStream in;
     private DataOutputStream out;
 
+    public String getHost() {
+        return socket.getInetAddress().toString();
+    }
+
+    public int getPort() {
+        return socket.getPort();
+    }
+
     public void connect(String host, int port) throws IOException {
-        try {
-            if (socket != null && socket.isConnected()) {
-                throw new IOException("already connected");
-            }
-            socket = new Socket(host, port);
-            in = new DataInputStream(socket.getInputStream());
-            out = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            throw new IOException("isn't connected : " + e.getMessage());
+        if (socket != null && socket.isConnected()) {
+            throw new IOException("already connected");
         }
+        socket = new Socket(host, port);
+        in = new DataInputStream(socket.getInputStream());
+        out = new DataOutputStream(socket.getOutputStream());
     }
 
     public int disconnect() throws IOException {

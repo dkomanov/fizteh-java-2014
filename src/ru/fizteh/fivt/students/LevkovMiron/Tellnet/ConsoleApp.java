@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.LevkovMiron.Tellnet;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.Socket;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -12,23 +13,158 @@ import java.util.Scanner;
  */
 public class ConsoleApp {
 
-    private int applicationType = -1;
+    private int applicationType;
 
     private CTable currentT;
 
     private CTableProvider provider;
 
-    public ConsoleApp(int type) {
-        File f = new File("TelnetDir");
+    private Server server;
+    private Client client;
+
+    public void run() {
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+        String[] commands = input.split(";");
+        for (String cmd : commands) {
+            runCommand(cmd.trim());
+        }
+        run();
+    }
+
+    public ConsoleApp() {
+        File f = new File(System.getProperty("fiztech.db.dir"));
         f.mkdir();
         provider = (CTableProvider) new CTableProviderFactory().create(f.getAbsolutePath());
-        applicationType = type;
+        applicationType = 0;
     }
 
     public void runCommand(String command) {
         String[] cmd = command.split("\\s(?![^\\(]*\\))(?![^\\[]*\\])");
+        if (cmd[0].equals("start")) {
+            if (applicationType == 1) {
+                System.out.println("Already started");
+                return;
+            }
+            if (applicationType == 0) {
+                if (cmd.length > 2) {
+                    System.out.println("wrong command format");
+                    return;
+                }
+                try {
+                    int port = 10001;
+                    if (cmd.length == 2) {
+                        port = Integer.valueOf(cmd[1]);
+                    }
+                    server = new Server(port);
+                    applicationType = 1;
+                    System.out.println("started at port " + port);
+                    return;
+                } catch (IOException e) {
+                    System.out.println("Can't start");
+                    return;
+                }
+            }
+            System.out.println("Unsupported command : start");
+            return;
+        }
+        if (command.equals("stop")) {
+            if (applicationType == 1) {
+                try {
+                    server.stop();
+                    applicationType = 0;
+                    System.out.println("stopped at port " + server.getPort());
+                } catch (IOException e) {
+                    System.out.println("Can't stop");
+                }
+                return;
+            }
+            System.out.println("Unsupported command : stop");
+            return;
+        }
+        if (command.equals("listusers")) {
+            if (applicationType == 1) {
+                ArrayList<Socket> list = server.listUsers();
+                for (Socket socket : list) {
+                    System.out.println(socket.getInetAddress() + ":" + socket.getPort());
+                }
+                return;
+            }
+            System.out.println("Unsupported command : listusers");
+            return;
+        }
+        if (applicationType == 1) {
+            System.out.println("Unsupported command : " + cmd[0]);
+            return;
+        }
+
+        if (cmd[0].equals("connect")) {
+            if (applicationType != 0) {
+                System.out.println("Already connected");
+                return;
+            }
+            if (cmd.length != 3) {
+                System.out.println("wrong command format");
+                return;
+            }
+            try {
+                client = new Client();
+                client.connect(cmd[1], Integer.valueOf(cmd[2]));
+                applicationType = 2;
+                System.out.println("connected");
+            } catch (IOException e) {
+                System.out.println("can't connect " + e.getMessage());
+            }
+            return;
+        }
+        if (command.equals("disconnect")) {
+            if (applicationType == 2) {
+                try {
+                    client.disconnect();
+                    client = null;
+                    applicationType = 0;
+                    System.out.println("diconnected");
+                } catch (IOException e) {
+                    System.out.println("can't disconnect " + e.getMessage());
+                }
+                return;
+            } else {
+                System.out.println("not connected");
+                return;
+            }
+        }
+        if (command.equals("whereami")) {
+            if (applicationType == 0) {
+                System.out.println("local");
+            } else {
+                try {
+                    client.send(";");
+                    System.out.println("remote " + client.getHost() + " " + client.getPort());
+                } catch (IOException e) {
+                    applicationType = 0;
+                    System.out.println("local");
+                }
+            }
+            return;
+        }
+        if (applicationType == 2) {
+            try {
+                client.send(command);
+                System.out.println(client.read());
+            } catch (IOException e) {
+                System.out.println("can't connect to the server : " + e.getMessage());
+            }
+            return;
+        }
+        runTableCommand(command);
+    }
+
+    public void runTableCommand(String command) {
+        String[] cmd = command.split("\\s(?![^\\(]*\\))(?![^\\[]*\\])");
         if (command.equals("show tables")) {
-            provider.listTables();
+            for (String table : provider.listTables()) {
+                System.out.println(table);
+            }
             return;
         }
         if (command.equals("get columns count")) {
@@ -44,7 +180,7 @@ public class ConsoleApp {
                 System.out.println("No tables in usage");
                 return;
             }
-            currentT.getName();
+            System.out.println(currentT.getName());
         }
         try {
             if (cmd[0].equals("use")) {
