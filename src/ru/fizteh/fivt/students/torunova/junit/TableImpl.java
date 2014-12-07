@@ -92,10 +92,8 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
             try {
                 file.createNewFile();
                 fm = new FileMap(file.getAbsolutePath());
-            } catch (IOException e) {
+            } catch (IOException | IncorrectFileException e) {
                 throw new RuntimeException(e);
-            } catch (IncorrectFileException e1) {
-                throw new RuntimeException(e1);
             }
                 result = fm.put(key, value);
                 files.put(file, fm);

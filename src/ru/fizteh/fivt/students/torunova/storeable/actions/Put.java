@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.torunova.storeable.actions;
 
 import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.storeable.StoreableType;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -12,7 +12,7 @@ import java.util.Arrays;
  */
 public class Put extends Action {
     @Override
-    public boolean run(String[] args, CurrentTable currentTable) throws IOException, IncorrectFileException {
+    public boolean run(String[] args, CurrentTable currentTable) throws IOException {
         String[] arguments = new String[2];
         arguments[0] = args[0];
         arguments[1] = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
@@ -23,13 +23,15 @@ public class Put extends Action {
             System.out.println("no table");
             return false;
         }
-        String oldValue = null;
+        String oldValue;
+        StoreableType deserializedValue = null;
         try {
-            oldValue = currentTable.getDb().serialize(currentTable.get(), currentTable.get().put(args[0],
-                    currentTable.getDb().deserialize(currentTable.get(), args[1])));
+            deserializedValue = (StoreableType) currentTable.getDb().deserialize(currentTable.get(), arguments[1]);
         } catch (ParseException e) {
             //it is never thrown.
         }
+        oldValue = currentTable.getDb().serialize(currentTable.get(),
+                currentTable.get().put(args[0], deserializedValue));
         if (oldValue == null) {
             System.out.println("new");
         } else {
