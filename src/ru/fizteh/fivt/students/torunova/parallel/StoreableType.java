@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.torunova.parallel;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
-import ru.fizteh.fivt.students.torunova.junit.*;
-
 import java.util.Arrays;
 
 /**
