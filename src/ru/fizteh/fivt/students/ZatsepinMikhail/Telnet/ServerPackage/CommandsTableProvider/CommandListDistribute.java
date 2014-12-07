@@ -1,23 +1,35 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FmCommandList;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap;
 
-public class CommandListDistribute extends CommandMultiFileHashMap {
+import java.io.PrintStream;
+import java.util.List;
+
+public class CommandListDistribute extends CommandTableProvider {
     public CommandListDistribute() {
         name = "list";
         numberOfArguments = 1;
     }
 
     @Override
-    public boolean run(MFileHashMap myMap, String[] args) {
+    public boolean run(MFileHashMap myMap, String[] args, PrintStream output) {
         FileMap currentTable = myMap.getCurrentTable();
         if (myMap.getCurrentTable() == null) {
-            System.out.println("no table");
+            output.println("no table");
             return true;
         }
-        FmCommandList commandList = new FmCommandList();
-        return commandList.run(currentTable, args);
+        List<String> allKeys = currentTable.list();
+        StringBuilder newMessage = new StringBuilder();
+        int counter = 0;
+        for (String oneKey : allKeys) {
+            if (counter > 0) {
+                newMessage.append(", ");
+            }
+            newMessage.append(oneKey);
+            ++counter;
+        }
+        output.println(newMessage.toString());
+        return true;
     }
 }

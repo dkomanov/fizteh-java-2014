@@ -14,16 +14,17 @@ public class ServerMain {
     public static void main(String[] args) {
         String baseDir = System.getProperty("fizteh.db.dir");
         TableProviderFactory dataBaseFactory = new MFileHashMapFactory();
+        TableProvider dataBase;
         try {
-            TableProvider dataBase = dataBaseFactory.create(baseDir);
+            dataBase = dataBaseFactory.create(baseDir);
+            Server myServer = new Server(dataBase);
+            Shell<Server> myShell = new Shell<>(myServer);
+            setUpShell(myShell);
+            myShell.interactiveMode();
         } catch (IOException e) {
             System.out.println("incorrect directory");
             System.exit(2);
         }
-        Server myServer = new Server(dataBaseFactory);
-        Shell<Server> myShell = new Shell<>(myServer);
-        setUpShell(myShell);
-        myShell.interactiveMode();
     }
 
     private static void setUpShell(Shell<Server> myShell) {

@@ -1,23 +1,42 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FmCommandPut;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
 
-public class CommandPutDistribute extends CommandMultiFileHashMap {
+import java.io.PrintStream;
+import java.text.ParseException;
+import java.util.NoSuchElementException;
+
+public class CommandPutDistribute extends CommandTableProvider {
     public CommandPutDistribute() {
         name = "put";
         numberOfArguments = -1;
     }
 
     @Override
-    public boolean run(MFileHashMap myMap, String[] args) {
+    public boolean run(MFileHashMap myMap, String[] args, PrintStream output) {
         FileMap currentTable = myMap.getCurrentTable();
         if (myMap.getCurrentTable() == null) {
-            System.out.println("no table");
+            output.println("no table");
             return true;
         }
-        FmCommandPut commandPut = new FmCommandPut();
-        return commandPut.run(currentTable, args);
+        Storeable oldValue = currentTable.get(args[1]);
+        try {
+            currentTable.put(args[1], Serializator.deserialize(currentTable, args[2]));
+        } catch (ParseException e) {
+            output.println("wrong type (" + e.getMessage() + ")");
+            return false;
+        } catch (NoSuchElementException e) {
+            output.println("error: not xml format value");
+            return false;
+        }
+        if (oldValue != null) {
+            output.println("overwrite\n" + Serializator.serialize(currentTable, oldValue));
+        } else {
+            output.println("new");
+        }
+        return true;
     }
 }

@@ -13,4 +13,12 @@ public abstract class CommandTableProvider {
     public final String toString() {
             return name;
         }
+
+    public int getNumberOfArguments() {
+        return numberOfArguments;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

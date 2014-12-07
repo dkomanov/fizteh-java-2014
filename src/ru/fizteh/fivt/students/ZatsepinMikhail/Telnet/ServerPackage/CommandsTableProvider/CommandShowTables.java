@@ -2,19 +2,21 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTab
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap;
 
-public class CommandShowTables extends CommandMultiFileHashMap {
+import java.io.PrintStream;
+
+public class CommandShowTables extends CommandTableProvider {
     public CommandShowTables() {
         name = "show";
         numberOfArguments = 2;
     }
 
     @Override
-    public boolean run(MFileHashMap myMap, String[] args) {
+    public boolean run(MFileHashMap myMap, String[] args, PrintStream output) {
         if (!args[1].equals("tables")) {
-            System.out.println(name + ": wrong arguments");
+            output.println(name + ": wrong arguments");
             return false;
         }
-        System.out.println("table_name row_count");
+        output.println("table_name row_count");
         myMap.showTables();
         return true;
     }

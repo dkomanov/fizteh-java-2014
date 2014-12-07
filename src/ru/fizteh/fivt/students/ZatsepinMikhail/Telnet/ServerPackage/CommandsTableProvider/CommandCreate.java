@@ -5,16 +5,17 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashM
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 
-public class CommandCreate extends CommandMultiFileHashMap {
+public class CommandCreate extends CommandTableProvider {
     public CommandCreate() {
         name = "create";
         numberOfArguments = -1;
     }
 
     @Override
-    public boolean run(MFileHashMap myMultiDataBase, String[] args) {
+    public boolean run(MFileHashMap myMap, String[] args, PrintStream output) {
         StringBuilder simpleBuilder = new StringBuilder();
         for (int i = 2; i < args.length; ++i) {
             if (i != 2) {
@@ -25,7 +26,7 @@ public class CommandCreate extends CommandMultiFileHashMap {
         String concatArgs = simpleBuilder.toString();
         if (concatArgs.lastIndexOf("(") != 0
                 || concatArgs.indexOf(")") != concatArgs.length() - 1) {
-            System.out.println("types should be in format: \"<name> (type1 type2 ... typeN)\"");
+            output.println("types should be in format: \"<name> (type1 type2 ... typeN)\"");
             return false;
         }
 
@@ -34,19 +35,19 @@ public class CommandCreate extends CommandMultiFileHashMap {
         try {
             types = TypesUtils.toTypeList(concatArgs.split("\\s+"));
         } catch (ColumnFormatException e) {
-            System.out.println(e.getMessage());
+            output.println(e.getMessage());
             return false;
         }
         try {
-            if (myMultiDataBase.createTable(args[1], types) != null) {
-                System.out.println("created");
+            if (myMap.createTable(args[1], types) != null) {
+                output.println("created");
             } else {
-                System.out.println("\'" + args[1] + "\' already exists");
+                output.println("\'" + args[1] + "\' already exists");
             }
         } catch (IOException e) {
             return false;
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            output.println(e.getMessage());
         }
         return true;
     }

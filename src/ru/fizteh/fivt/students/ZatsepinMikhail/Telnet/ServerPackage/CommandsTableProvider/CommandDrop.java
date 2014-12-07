@@ -3,25 +3,26 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTab
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
-public class CommandDrop extends CommandMultiFileHashMap {
+public class CommandDrop extends CommandTableProvider {
     public CommandDrop() {
         name = "drop";
         numberOfArguments = 2;
     }
 
     @Override
-    public boolean run(MFileHashMap myDataBase, String[] args) {
+    public boolean run(MFileHashMap myMap, String[] args, PrintStream output) {
         try {
-            myDataBase.removeTable(args[1]);
-            System.out.println("dropped");
+            myMap.removeTable(args[1]);
+            output.println("dropped");
         } catch (IOException e) {
-            System.err.println("io exception while removing directory");
+            output.println("io exception while removing directory");
             return false;
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            output.println(e.getMessage());
         } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
+            output.println(e.getMessage());
         }
         return true;
     }
