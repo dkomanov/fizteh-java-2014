@@ -174,6 +174,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Table getTable(String name) throws IllegalArgumentException {
+        providerLock.readLock().lock();
         if (name == null) {
             throw new IllegalArgumentException("null table name");
         }
@@ -183,7 +184,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
         if (onExistCheck(name, true) != null) {
             return null;
         }
-        providerLock.readLock().lock();
+
         try {
             try {
                 if (fileMap != null && fileMap.hasUnsavedChanges()) {
