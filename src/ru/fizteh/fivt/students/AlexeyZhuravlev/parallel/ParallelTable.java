@@ -136,6 +136,7 @@ public class ParallelTable implements Table {
         try {
             return provider.deserialize(this, old);
         } catch (ParseException e) {
+            e.printStackTrace();
             return null;
         }
     }
