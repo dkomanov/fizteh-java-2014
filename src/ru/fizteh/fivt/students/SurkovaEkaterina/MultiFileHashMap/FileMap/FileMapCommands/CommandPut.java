@@ -22,7 +22,11 @@ public class CommandPut<Table, Key, Value, FileMapShellOperations
         }
 
         if (operations.getTable() == null) {
+<<<<<<< HEAD:src/ru/fizteh/fivt/students/SurkovaEkaterina/MultiFileHashMap/FileMap/FileMapCommands/CommandPut.java
             System.out.println("put: No table!");
+=======
+            System.out.println("no table");
+>>>>>>> 6d17719c033094ecccc993d00c60a86a6b18d8e4:src/ru/fizteh/fivt/students/SurkovaEkaterina/MultiFileHashMap/FileMap/FileMapCommands/CommandPut.java
             return;
         }
 

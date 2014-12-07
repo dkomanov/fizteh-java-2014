@@ -19,7 +19,11 @@ public class CommandList<FileMapShellOperations
         }
 
         if (operations.getTable() == null) {
+<<<<<<< HEAD:src/ru/fizteh/fivt/students/SurkovaEkaterina/MultiFileHashMap/FileMap/FileMapCommands/CommandList.java
             System.out.println("list: No table!");
+=======
+            System.out.println("no table");
+>>>>>>> 6d17719c033094ecccc993d00c60a86a6b18d8e4:src/ru/fizteh/fivt/students/SurkovaEkaterina/MultiFileHashMap/FileMap/FileMapCommands/CommandList.java
             return;
         }
 

@@ -38,7 +38,11 @@ public class MultiFileTable extends ATable {
             }
             fileIsEmpty = true;
 
+<<<<<<< HEAD
             for (final String key : oldData.keySet()) {
+=======
+            for (final String key : data.keySet()) {
+>>>>>>> 6d17719c033094ecccc993d00c60a86a6b18d8e4
                 if (getDirNumber(key) == currentFileNumber) {
                     int fileNumber = getFileNumber(key);
                     unsavedKeys.get(fileNumber).add(key);
@@ -47,7 +51,11 @@ public class MultiFileTable extends ATable {
             }
 
             if (fileIsEmpty) {
+<<<<<<< HEAD
                 MultiFileHashMapTableProvider.
+=======
+                MultiFileHashMapTableOperations.
+>>>>>>> 6d17719c033094ecccc993d00c60a86a6b18d8e4
                         deleteFile(currentFileDirectory);
             }
 
@@ -56,14 +64,22 @@ public class MultiFileTable extends ATable {
                 String fileName = String.format("%d.dat", fileNumber);
                 File file = new File(currentFileDirectory, fileName);
                 if (unsavedKeys.get(fileNumber).isEmpty()) {
+<<<<<<< HEAD
                     MultiFileHashMapTableProvider.deleteFile(file);
+=======
+                    MultiFileHashMapTableOperations.deleteFile(file);
+>>>>>>> 6d17719c033094ecccc993d00c60a86a6b18d8e4
                     continue;
                 }
                 if (!currentFileDirectory.exists()) {
                     currentFileDirectory.mkdir();
                 }
                 FileMapWriter.saveToFile(file.getAbsolutePath(),
+<<<<<<< HEAD
                         unsavedKeys.get(fileNumber), oldData);
+=======
+                        unsavedKeys.get(fileNumber), data);
+>>>>>>> 6d17719c033094ecccc993d00c60a86a6b18d8e4
             }
         }
     }
@@ -72,7 +88,11 @@ public class MultiFileTable extends ATable {
         File tableDirectory = getTableDirectory();
         for (final File dirs : tableDirectory.listFiles()) {
             for (final File file : dirs.listFiles()) {
+<<<<<<< HEAD
                 FileMapReader.loadFromFile(file.getAbsolutePath(), oldData);
+=======
+                FileMapReader.loadFromFile(file.getAbsolutePath(), data);
+>>>>>>> 6d17719c033094ecccc993d00c60a86a6b18d8e4
             }
         }
     }
