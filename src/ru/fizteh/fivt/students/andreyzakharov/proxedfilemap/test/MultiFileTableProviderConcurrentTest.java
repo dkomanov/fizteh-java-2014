@@ -1,22 +1,20 @@
 package ru.fizteh.fivt.students.andreyzakharov.proxedfilemap.test;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.andreyzakharov.proxedfilemap.MultiFileTableProviderFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class MultiFileTableProviderConcurrentTest {
-    static String root = "test/junit-proxy";
     static String name = "test-db-provider";
     static List<Class<?>> signature;
 
@@ -31,7 +29,7 @@ public class MultiFileTableProviderConcurrentTest {
         TableProvider dummyProvider;
 
         try {
-            dummyProvider = factory.create(root);
+            dummyProvider = factory.create(MultiFileTableTest.rootName);
             dummyProvider.removeTable(name);
         } catch (IllegalStateException e) {
             //
@@ -44,7 +42,7 @@ public class MultiFileTableProviderConcurrentTest {
     public void preRun() {
         factory = new MultiFileTableProviderFactory();
         try {
-            provider = factory.create(root);
+            provider = factory.create(MultiFileTableTest.rootName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,6 +55,15 @@ public class MultiFileTableProviderConcurrentTest {
         try {
             provider.removeTable(name);
         } catch (IllegalStateException | IOException e) {
+            //
+        }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        try {
+            Files.deleteIfExists(Paths.get(MultiFileTableTest.rootName));
+        } catch (IOException e) {
             //
         }
     }
