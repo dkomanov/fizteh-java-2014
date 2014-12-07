@@ -26,9 +26,10 @@ public class TalkingThread extends Thread {
             Scanner input = new Scanner(client.getInputStream());
             PrintStream output = new PrintStream(client.getOutputStream());
             System.err.println("i am talking");
+            CommandExecutor executor = new CommandExecutor();
             while (!client.isClosed() & input.hasNext()) {
                 String message = input.nextLine();
-
+                executor.run(message, output, dataBase);
             }
         } catch (IOException e) {
             //

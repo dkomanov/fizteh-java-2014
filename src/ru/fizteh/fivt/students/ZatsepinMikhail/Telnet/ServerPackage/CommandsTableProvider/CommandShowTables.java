@@ -1,8 +1,10 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap;
+
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.MFileHashMap;
 
 import java.io.PrintStream;
+import java.util.List;
 
 public class CommandShowTables extends CommandTableProvider {
     public CommandShowTables() {
@@ -17,7 +19,10 @@ public class CommandShowTables extends CommandTableProvider {
             return false;
         }
         output.println("table_name row_count");
-        myMap.showTables();
+        List<String> tables = myMap.showTables();
+        for (String oneTableName : tables) {
+            output.println(oneTableName);
+        }
         return true;
     }
 }

@@ -1,28 +1,27 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider.*;
 
 import java.io.PrintStream;
 import java.util.HashMap;
 
 public class CommandExecutor {
-    private final HashMap<String, CommandTableProvider> SHELL_COMMANDS;
+    private final HashMap<String, CommandTableProvider> shellCommands;
 
     public CommandExecutor() {
-        SHELL_COMMANDS = new HashMap<>();
-        SHELL_COMMANDS.put("commit", new CommandCommit());
-        SHELL_COMMANDS.put("create", new CommandCreate());
-        SHELL_COMMANDS.put("drop", new CommandDrop());
-        SHELL_COMMANDS.put("get", new CommandGetDistribute());
-        SHELL_COMMANDS.put("list", new CommandListDistribute());
-        SHELL_COMMANDS.put("put", new CommandPutDistribute());
-        SHELL_COMMANDS.put("remove", new CommandRemoveDistribute());
-        SHELL_COMMANDS.put("rollback", new CommandRollback());
-        SHELL_COMMANDS.put("show", new CommandShowTables());
-        SHELL_COMMANDS.put("size", new CommandSize());
-        SHELL_COMMANDS.put("use", new CommandUse());
+        shellCommands = new HashMap<>();
+        shellCommands.put("commit", new CommandCommit());
+        shellCommands.put("create", new CommandCreate());
+        shellCommands.put("drop", new CommandDrop());
+        shellCommands.put("get", new CommandGetDistribute());
+        shellCommands.put("list", new CommandListDistribute());
+        shellCommands.put("put", new CommandPutDistribute());
+        shellCommands.put("remove", new CommandRemoveDistribute());
+        shellCommands.put("rollback", new CommandRollback());
+        shellCommands.put("show", new CommandShowTables());
+        shellCommands.put("size", new CommandSize());
+        shellCommands.put("use", new CommandUse());
     }
 
     public void run(String message, PrintStream output, TableProvider dataBase) {
@@ -45,7 +44,7 @@ public class CommandExecutor {
             if (parsedArguments[0].equals("exit")) {
                 //do smth
             }
-            CommandTableProvider commandToExecute = SHELL_COMMANDS.get(parsedArguments[0]);
+            CommandTableProvider commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {
                 try {
                     if (commandToExecute.getNumberOfArguments() != parsedArguments.length
@@ -64,7 +63,7 @@ public class CommandExecutor {
                 errorOccuried = true;
             }
             if (errorOccuried) {
-                throw new IllegalStateException();
+                //throw new IllegalStateException();
             }
         }
     }

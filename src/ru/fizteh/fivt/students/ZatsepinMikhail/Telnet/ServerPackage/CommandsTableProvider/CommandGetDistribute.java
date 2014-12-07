@@ -2,8 +2,9 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTab
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap;
+
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.MFileHashMap;
 
 import java.io.PrintStream;
 
