@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.AliakseiSemchankau.storeable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
@@ -14,15 +15,23 @@ import static org.junit.Assert.*;
 
 public class TestDatabaseTable {
 
+    public static DatabaseFactory dFactory;
     public static DatabaseProvider dProvider;
     public static Table dTable;
     SerializeFunctions serializer;
     MakeRandom randomizer;
     List<Class<?>> signature;
 
+    TemporaryFolder tmp;
+    String tmpName;
+
     @Before
     public void init() {
-        dProvider = new DatabaseProvider("C:\\JavaTests\\DatabaseForTests");
+        /*dProvider = new DatabaseProvider("C:\\JavaTests\\DatabaseForTests");*/
+        tmp = new TemporaryFolder();
+        tmpName = tmp.toString();
+        dFactory = new DatabaseFactory();
+        dProvider = dFactory.create(tmpName);
         signature = new LinkedList<>();
         signature.add(Integer.class);
         signature.add(String.class);

@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.AliakseiSemchankau.storeable;
 
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import static org.junit.Assert.*;
 
@@ -14,9 +15,13 @@ public class TestDatabaseFactory {
 
     @Test
     public void testCreatedNotNull() {
+        TemporaryFolder tmp;
+        String tmpName;
+        tmp = new TemporaryFolder();
+        tmpName = tmp.toString();
         DatabaseFactory dFactory = new DatabaseFactory();
         try {
-            assertNotNull(dFactory.create("C:\\JavaTests\\NewCoolDatabase"));
+            assertNotNull(dFactory.create(tmpName));
         } catch (Exception exc) {
             assertTrue(false);
         }
