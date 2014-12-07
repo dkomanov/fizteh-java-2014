@@ -151,8 +151,8 @@ public class CurrentTable extends HashMap<String, String> implements Table {
                         if (Files.exists(nameOfPath(nameOfTable, i, j))) {
                             Files.delete(nameOfPath(nameOfTable, i, j));
                         }
-                        if (Files.exists(nameOfPath(nameOfTable, i)) && 
-                        nameOfPath(nameOfTable, i).toFile().list().length == 0) {
+                        if (Files.exists(nameOfPath(nameOfTable, i)) 
+                        && nameOfPath(nameOfTable, i).toFile().list().length == 0) {
                             Files.delete(nameOfPath(nameOfTable, i));
                         }
                     }
