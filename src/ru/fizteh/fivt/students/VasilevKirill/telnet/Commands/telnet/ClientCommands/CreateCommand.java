@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.ClientComma
 import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
-import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyRemoteTableProvider;
 
 import java.io.IOException;
 import java.util.ArrayList;

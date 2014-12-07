@@ -190,7 +190,7 @@ public class MyStorable implements Storeable {
     public String toString() {
         JSONArray arr = new JSONArray(dataList);
         String result = arr.toString();
-        result = result.replace("null", "");
+        //result = result.replace("null", "");
         return result;
     }
 

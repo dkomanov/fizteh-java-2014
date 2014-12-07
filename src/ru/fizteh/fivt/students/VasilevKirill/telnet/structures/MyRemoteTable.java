@@ -27,7 +27,7 @@ public class MyRemoteTable implements Table {
         this.socket = socket;
         this.name = name;
         this.typeList = typeList;
-        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        out = new DataOutputStream(socket.getOutputStream());
     }
 
     public void fulfilData(String key, Storeable value) {
@@ -42,7 +42,7 @@ public class MyRemoteTable implements Table {
         Storeable retValue = data.get(key);
         data.put(key, value);
         try {
-            out.writeUTF("put key " + value.toString());
+            out.writeUTF("put " + key + " " + value.toString());
         } catch (IOException e) {
             System.out.println("Put: failed to send data");
         }
@@ -61,7 +61,7 @@ public class MyRemoteTable implements Table {
         }
         data.remove(key);
         try {
-            out.writeUTF("remove key");
+            out.writeUTF("remove " + key);
         } catch (IOException e) {
             System.out.println("Remove: failed to send data");
         }
@@ -81,7 +81,12 @@ public class MyRemoteTable implements Table {
 
     @Override
     public int commit() throws IOException {
-        out.writeUTF("commit");
+        try {
+            out.writeUTF("commit");
+        } catch (IOException e) {
+            System.out.println("Commit: failed to send data");
+            throw new IOException(e.getMessage());
+        }
         int retValue = numUnsavedChanges;
         numUnsavedChanges = 0;
         return retValue;

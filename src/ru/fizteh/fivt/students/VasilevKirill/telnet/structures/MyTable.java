@@ -329,13 +329,13 @@ public class MyTable implements Table, AutoCloseable {
             System.out.println();
         }
         if (args[0].equals("size")) {
-            System.out.println(size());
+            size();
         }
         if (args[0].equals("commit")) {
-            System.out.println(commit());
+            commit();
         }
         if (args[0].equals("rollback")) {
-            System.out.println(rollback());
+            rollback();
         }
     }
 

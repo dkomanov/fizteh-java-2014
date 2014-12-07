@@ -21,7 +21,8 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
-    private String workingTable;
+    private String workingTableName;
+    private Map<String, Table> tables = new HashMap<>();
 
     MyRemoteTableProvider(Socket socket) throws IOException {
         this.socket = socket;
@@ -85,6 +86,7 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
                 String receivedError = in.readUTF();
                 throw new IOException(receivedError);
             }
+            tables.put(name, new MyRemoteTable(socket, name, columnTypes));
         } catch (IOException e) {
             System.out.println(e.getMessage());
             return null;
@@ -94,7 +96,7 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
 
     @Override
     public void removeTable(String name) throws IOException {
-        out.writeUTF("remove " + name);
+        out.writeUTF("removetable " + name);
         int num = in.readInt();
         if (num == -1) {
             String receivedError = in.readUTF();
@@ -175,31 +177,37 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
         out.close();
     }
 
-    public Table getWorkingTable() {
-        return getTable(workingTable);
+    public Table getWorkingTableName() {
+        return getTable(workingTableName);
     }
 
-    public void setWorkingTable(String name) {
-        if (name == workingTable) {
+    public void setWorkingTableName(String name) {
+        if (name == workingTableName) {
             return;
         }
-        System.out.println(getTable(workingTable).getNumberOfUncommittedChanges() + " unsaved");
-        System.out.println("using " + name);
-        workingTable = name;
+        if (workingTableName != null) {
+            System.out.println(tables.get(name).getNumberOfUncommittedChanges() + " unsaved");
+        }
+        workingTableName = name;
+        try {
+            out.writeUTF("set " + name);
+        } catch (IOException e) {
+            System.out.println("Use: failed to send data");
+        }
     }
 
     public void handleTable(String[] args) throws IOException {
-        if (workingTable == null) {
+        if (workingTableName == null) {
             System.out.println("no table");
             return;
         }
-        Table workingTable = getWorkingTable();
+        Table workingTable = tables.get(workingTableName);
         Class[] typeList = new Class[workingTable.getColumnsCount()];
         for (int i = 0; i < typeList.length; ++i) {
             typeList[i] = workingTable.getColumnType(i);
         }
         try {
-            //I was too lazy when I was doing it
+            //I was really tired when I was doing it
             Storeable result = null;
             switch (args[0]) {
                 case "put":
@@ -212,6 +220,7 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
                     } else {
                         System.out.println("overwrite");
                     }
+                    out.writeUTF("put" + args[1] + new JSONArray(args[2]).toString());
                     break;
                 case "get":
                     if (args.length != 2) {
@@ -223,6 +232,7 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
                     } else {
                         System.out.println("found\n" + result.toString());
                     }
+                    out.writeUTF("temp");
                     break;
                 case "remove":
                     if (args.length != 2) {
@@ -234,6 +244,7 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
                     } else {
                         System.out.println("removed");
                     }
+                    out.writeUTF("remove" + args[1]);
                     break;
                 case "size":
                     if (args.length != 1) {
@@ -245,12 +256,14 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
                     if (args.length != 1) {
                         throw new IOException("Commit: wrong arguments");
                     }
+                    out.writeUTF("commit");
                     System.out.println(workingTable.commit());
                     break;
                 case "rollback":
                     if (args.length != 1) {
                         throw new IOException("Rollback: wrong arguments");
                     }
+                    out.writeUTF("rollback");
                     System.out.println(workingTable.rollback());
                     break;
                 case "list":
@@ -266,6 +279,14 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             }
         } catch (ParseException e) {
             System.out.println("Failed to parse");
+        }
+    }
+
+    public void disconnect() throws IOException {
+        try {
+            out.writeUTF("disconnect");
+        } catch (IOException e) {
+            throw new IOException("Disconnect: failed to send data");
         }
     }
 

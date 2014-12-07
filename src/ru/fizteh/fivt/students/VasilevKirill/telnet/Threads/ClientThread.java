@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.VasilevKirill.telnet.Threads;
 import org.json.JSONArray;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProvider;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -18,6 +19,7 @@ import java.util.List;
 public class ClientThread implements Runnable {
     private ServerSocket serverSocket;
     private TableProvider tableProvider;
+    private List<Class<?>> currentTypeList = new ArrayList<>();
 
     public ClientThread(ServerSocket serverSocket, TableProvider tableProvider) {
         this.serverSocket = serverSocket;
@@ -30,16 +32,43 @@ public class ClientThread implements Runnable {
             Socket socket = serverSocket.accept();
             DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            String firstCommand = in.readUTF();
-            String[] args = firstCommand.split("\\s+");
-            switch (args[0]) {
-                case "get":
-                    getCommand(out, args);
-                    break;
-                case "create":
-                    createCommand(out, args);
-                    break;
-                default:
+            boolean endOfCycle = false;
+            while (!endOfCycle) {
+                String firstCommand = in.readUTF();
+                String[] args = firstCommand.split("\\s+");
+                switch (args[0]) {
+                    case "get":
+                        getCommand(out, args);
+                        break;
+                    case "create":
+                        createCommand(out, args);
+                        break;
+                    case "removetable":
+                        removeCommand(out, args);
+                        break;
+                    case "close":
+                        closeCommand();
+                        break;
+                    case "put":
+                        tableCommand(args);
+                        break;
+                    case "remove":
+                        tableCommand(args);
+                        break;
+                    case "commit":
+                        tableCommand(args);
+                        break;
+                    case "rollback":
+                        tableCommand(args);
+                        break;
+                    case "disconnect":
+                        endOfCycle = true;
+                        break;
+                    case "set":
+                        setCommand(args);
+                        break;
+                    default:
+                }
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
@@ -73,7 +102,7 @@ public class ClientThread implements Runnable {
     public void createCommand(DataOutputStream out, String[] args) throws IOException {
         try {
             if (args.length < 3) {
-                throw new IOException("Incorrect arguments");
+                throw new IOException("Create: Incorrect arguments");
             }
             List<Class<?>> types = new ArrayList<>();
             for (int i = 2; i < args.length; ++i) {
@@ -85,5 +114,34 @@ public class ClientThread implements Runnable {
             out.writeInt(-1);
             out.writeUTF(e.getMessage());
         }
+    }
+
+    public void removeCommand(DataOutputStream out, String[] args) throws IOException {
+        try {
+            if (args.length != 2) {
+                throw new IOException("Remove: incorrect arguments");
+            }
+            tableProvider.removeTable(args[1]);
+            out.writeInt(0);
+        } catch (Exception e) {
+            out.writeInt(-1);
+            out.writeUTF(e.getMessage());
+        }
+    }
+
+    public void closeCommand() {
+        try {
+            ((MyTableProvider) tableProvider).close();
+        } catch (Exception e) {
+            System.out.println("Failed to close");
+        }
+    }
+
+    public void tableCommand(String[] args) throws IOException {
+        ((MyTableProvider) tableProvider).handleTable(args);
+    }
+
+    public void setCommand(String[] args) throws IOException {
+        ((MyTableProvider) tableProvider).setWorkingTable(args[1]);
     }
 }

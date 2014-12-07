@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.ClientCommands;
 
-import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyRemoteTableProvider;
@@ -18,7 +17,7 @@ public class UseCommand implements Command {
         }
         try {
             MyRemoteTableProvider myTableProvider = (MyRemoteTableProvider) status.getTableProvider();
-            myTableProvider.setWorkingTable(args[1]);
+            myTableProvider.setWorkingTableName(args[1]);
             status.setTableProvider(myTableProvider);
             System.out.println("using " + args[1]);
         } catch (IllegalStateException e) {
