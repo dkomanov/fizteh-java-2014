@@ -352,7 +352,7 @@ public class DataBase {
             }
         }
     }
-    
+
     public void exec(String[] args) {
         File dir = new File(System.getProperty("fizteh.db.dir"));
         if (dir.isAbsolute()) {
