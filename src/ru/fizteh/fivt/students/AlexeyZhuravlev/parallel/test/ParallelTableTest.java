@@ -9,6 +9,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.parallel.ParallelTableProviderFac
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -163,5 +164,31 @@ public class ParallelTableTest {
         assertEquals(3, table.size());
         assertEquals(1, table.rollback());
         assertEquals(2, table.size());
+    }
+
+    @Test
+    public void testList() throws IOException {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
+        assertEquals(3, table.list().size());
+        assertTrue(table.list().containsAll(new LinkedList<>(Arrays.asList("1", "2", "3"))));
+        table.commit();
+        table.remove("1");
+        assertEquals(2, table.list().size());
+        assertTrue(table.list().containsAll(new LinkedList<>(Arrays.asList("2", "3"))));
+    }
+
+    @Test
+    public void testUnsavedChanges() throws IOException {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
+        table.remove("1");
+        assertEquals(table.getNumberOfUncommittedChanges(), 2);
+        table.commit();
+        assertEquals(table.getNumberOfUncommittedChanges(), 0);
     }
 }

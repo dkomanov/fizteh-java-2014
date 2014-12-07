@@ -5,9 +5,7 @@ import ru.fizteh.fivt.students.AlexeyZhuravlev.storeable.StructuredTable;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -129,5 +127,13 @@ public class Diff {
         } finally {
             lock.writeLock().unlock();
         }
+    }
+
+    public Set<String> getCreated() {
+        return creations.keySet();
+    }
+
+    public Set<String> getRemoved() {
+        return deletions;
     }
 }
