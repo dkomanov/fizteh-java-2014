@@ -171,6 +171,7 @@ class MyRemoteTable implements Table, Closeable {
 
     @Override
     public void close() throws IOException {
+        rollback();
         socket.close();
     }
 

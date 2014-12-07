@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,6 +26,7 @@ class MyRemoteTableProvider implements RemoteTableProvider {
     Socket socket;
     String host;
     int port;
+    HashSet<MyRemoteTable> providedTables;
 
     MyRemoteTableProvider(String passedHost, int passedPort) throws IOException {
         host = passedHost;
@@ -32,10 +34,18 @@ class MyRemoteTableProvider implements RemoteTableProvider {
         socket = new Socket(host, port);
         in =  new Scanner(socket.getInputStream());
         out = new PrintStream(socket.getOutputStream());
+        providedTables = new HashSet<>();
     }
 
     @Override
     public void close() throws IOException {
+        for (MyRemoteTable table: providedTables) {
+            try {
+                table.close();
+            } catch (Exception e) {
+                //do nothing
+            }
+        }
         socket.close();
     }
 
@@ -46,7 +56,9 @@ class MyRemoteTableProvider implements RemoteTableProvider {
         }
         if (getTableNames().contains(name)) {
             try {
-                return new MyRemoteTable(host, port, name, this);
+                MyRemoteTable table = new MyRemoteTable(host, port, name, this);
+                providedTables.add(table);
+                return table;
             } catch (IOException e) {
                 return null;
             }
