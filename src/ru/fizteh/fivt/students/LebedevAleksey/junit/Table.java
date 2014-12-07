@@ -119,7 +119,6 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashM
     public int rollback() {
         int changes = changesCount();
         changedKeys.clear();
-        initParts();
         return changes;
     }
 }
