@@ -11,23 +11,21 @@ import java.util.Scanner;
  * Created by Мирон on 10.11.2014 ru.fizteh.fivt.students.LevkovMiron.Storeable.
  */
 public class ConsoleApp {
+
+    private int applicationType = -1;
+
     private CTable currentT;
+
     private CTableProvider provider;
-    public ConsoleApp() {
-        File f = new File("StoreableTestDir");
+
+    public ConsoleApp(int type) {
+        File f = new File("TelnetDir");
         f.mkdir();
         provider = (CTableProvider) new CTableProviderFactory().create(f.getAbsolutePath());
+        applicationType = type;
     }
-    public void run() {
-        Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        String[] commands = input.split(";");
-        for (String cmd : commands) {
-            runCommand(cmd.trim());
-        }
-        run();
-    }
-    private void runCommand(String command) {
+
+    public void runCommand(String command) {
         String[] cmd = command.split("\\s(?![^\\(]*\\))(?![^\\[]*\\])");
         if (command.equals("show tables")) {
             provider.listTables();
@@ -60,11 +58,6 @@ public class ConsoleApp {
                 } else {
                     System.out.println("Table doesn't exist");
                 }
-            } else if (cmd[0].equals("exit")) {
-                if (currentT != null && currentT.changesNumber() > 0) {
-                    currentT.commit();
-                }
-                System.exit(1);
             } else if (cmd[0].equals("drop")) {
                 if (provider.getTable(cmd[1]) != null) {
                     if (currentT == provider.getTable(cmd[1])) {

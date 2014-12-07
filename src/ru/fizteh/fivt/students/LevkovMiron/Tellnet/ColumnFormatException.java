@@ -1,9 +1,5 @@
 package ru.fizteh.fivt.students.LevkovMiron.Tellnet;
 
-/**
- * Бросается при попытке извлечь из колонки {@link ru.fizteh.fivt.students.LevkovMiron.Proxy.Storeable} значение не соответствующего типа,
- * либо подставить в колонку значение несоответствующего типа.
- */
 public class ColumnFormatException extends IllegalArgumentException {
 
     public ColumnFormatException() {
