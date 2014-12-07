@@ -21,6 +21,7 @@ public class CommitCommand extends ContextualCommand {
         if (currentTable == null) {
             throw new NoTableSelectedException();
         }
-        currentTable.commit();
+        int numberOfUnsavedChanges = currentTable.commit();
+        getOutputWriter().format("%d%n", numberOfUnsavedChanges);
     }
 }

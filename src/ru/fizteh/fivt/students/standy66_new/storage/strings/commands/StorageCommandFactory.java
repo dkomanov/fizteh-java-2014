@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class StorageCommandFactory implements CommandFactory {
     protected Context context;
-    private PrintWriter writer;
+    protected PrintWriter writer;
 
     public StorageCommandFactory(PrintWriter writer, TableProvider provider) throws IllegalArgumentException {
         if (provider == null) {
