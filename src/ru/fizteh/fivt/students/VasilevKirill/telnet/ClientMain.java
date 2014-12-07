@@ -4,6 +4,10 @@ package ru.fizteh.fivt.students.VasilevKirill.telnet;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Shell;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.ConnectCommand;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.DisconnectCommand;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.HandleCommand;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.WhereamiCommand;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +21,10 @@ public class ClientMain {
         try {
             Status status = new Status(null);
             Map<String, Command> commands = new HashMap<String, Command>();
+            commands.put(new ConnectCommand().toString(), new ConnectCommand());
+            commands.put(new DisconnectCommand().toString(), new DisconnectCommand());
+            commands.put(new WhereamiCommand().toString(), new WhereamiCommand());
+            commands.put("handle", new HandleCommand());
             int retValue = 0;
             if (args.length == 0) {
                 new Shell(commands, status).handle(System.in);

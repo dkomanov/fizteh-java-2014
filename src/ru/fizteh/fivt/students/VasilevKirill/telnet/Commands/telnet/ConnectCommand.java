@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet;
 
+import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyRemoteTableProviderFactory;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -20,7 +22,8 @@ public class ConnectCommand implements Command {
         }
         int port = Integer.parseInt(args[2]);
         Socket socket = new Socket(args[1], port);
-        status.setSocket(socket);
+        RemoteTableProviderFactory factory = new MyRemoteTableProviderFactory(socket);
+        status.setTableProvider(factory.connect(args[1], port));
         System.out.println("connected");
         return 0;
     }

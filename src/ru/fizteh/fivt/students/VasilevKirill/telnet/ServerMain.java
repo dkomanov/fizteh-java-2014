@@ -26,7 +26,7 @@ public class ServerMain {
             if (ss == null) {
                 throw new IOException("Server socket wasn't initialized");
             }
-            for (int i = 0; i < 2; ++i) {
+            for (int i = 0; i < 1; ++i) {
                 Thread clientThread = new Thread(new ClientThread(ss));
                 clients.add(clientThread);
                 clientThread.start();
