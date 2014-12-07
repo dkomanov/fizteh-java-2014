@@ -12,9 +12,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Kirill on 07.12.2014.
@@ -23,6 +21,7 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
+    private String workingTable;
 
     MyRemoteTableProvider(Socket socket) throws IOException {
         this.socket = socket;
@@ -171,5 +170,99 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    public Table getWorkingTable() {
+        return getTable(workingTable);
+    }
+
+    public void setWorkingTable(String name) {
+        if (name == workingTable) {
+            return;
+        }
+        System.out.println(getTable(workingTable).getNumberOfUncommittedChanges() + " unsaved");
+        System.out.println("using " + name);
+        workingTable = name;
+    }
+
+    public void handleTable(String[] args) throws IOException {
+        if (workingTable == null) {
+            System.out.println("no table");
+            return;
+        }
+        Table workingTable = getWorkingTable();
+        Class[] typeList = new Class[workingTable.getColumnsCount()];
+        for (int i = 0; i < typeList.length; ++i) {
+            typeList[i] = workingTable.getColumnType(i);
+        }
+        try {
+            //I was too lazy when I was doing it
+            Storeable result = null;
+            switch (args[0]) {
+                case "put":
+                    if (args.length != 3) {
+                        throw new IOException("Put: wrong arguments");
+                    }
+                    result = workingTable.put(args[1], StoreableParser.stringToStoreable(args[2], typeList));
+                    if (result == null) {
+                        System.out.println("new");
+                    } else {
+                        System.out.println("overwrite");
+                    }
+                    break;
+                case "get":
+                    if (args.length != 2) {
+                        throw new IOException("Get: wrong arguments");
+                    }
+                    result = workingTable.get(args[1]);
+                    if (result == null) {
+                        System.out.println("not found");
+                    } else {
+                        System.out.println("found\n" + result.toString());
+                    }
+                    break;
+                case "remove":
+                    if (args.length != 2) {
+                        throw new IOException("Remove: wrong arguments");
+                    }
+                    result = workingTable.remove(args[1]);
+                    if (result == null) {
+                        System.out.println("not found");
+                    } else {
+                        System.out.println("removed");
+                    }
+                    break;
+                case "size":
+                    if (args.length != 1) {
+                        throw new IOException("Size: wrong arguments");
+                    }
+                    System.out.println(workingTable.size());
+                    break;
+                case "commit":
+                    if (args.length != 1) {
+                        throw new IOException("Commit: wrong arguments");
+                    }
+                    System.out.println(workingTable.commit());
+                    break;
+                case "rollback":
+                    if (args.length != 1) {
+                        throw new IOException("Rollback: wrong arguments");
+                    }
+                    System.out.println(workingTable.rollback());
+                    break;
+                case "list":
+                    if (args.length != 1) {
+                        throw new IOException("List: wrong arguments");
+                    }
+                    List<String> keys = workingTable.list();
+                    for (String key : keys) {
+                        System.out.print(key + " ");
+                    }
+                    break;
+                default:
+            }
+        } catch (ParseException e) {
+            System.out.println("Failed to parse");
+        }
     }
 }
