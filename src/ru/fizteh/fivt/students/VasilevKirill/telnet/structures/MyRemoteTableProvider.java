@@ -34,13 +34,6 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
     }
 
     @Override
-    public void close() throws IOException {
-        out.writeUTF("close");
-        out.flush();
-        out.close();
-    }
-
-    @Override
     public Table getTable(String name) {
         MyRemoteTable table = null;
         if (name == null) {
@@ -83,18 +76,20 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
         StringBuilder types = new StringBuilder();
         for (Class it : columnTypes) {
             types.append(it.getSimpleName());
+            types.append(" ");
         }
         try {
-            out.writeUTF("create " + name + new String(types));
+            out.writeUTF("create " + name + " " + new String(types));
             int num = in.readInt();
             if (num == -1) {
                 String receivedError = in.readUTF();
                 throw new IOException(receivedError);
             }
         } catch (IOException e) {
-            System.out.println("Create: failed to send data");
+            System.out.println(e.getMessage());
+            return null;
         }
-        return null;
+        return new MyRemoteTable(socket, name, columnTypes);
     }
 
     @Override
@@ -170,6 +165,14 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+
+    @Override
+    public void close() throws IOException {
+        out.writeUTF("close");
+        out.flush();
+        out.close();
     }
 
     public Table getWorkingTable() {
@@ -265,4 +268,5 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             System.out.println("Failed to parse");
         }
     }
+
 }

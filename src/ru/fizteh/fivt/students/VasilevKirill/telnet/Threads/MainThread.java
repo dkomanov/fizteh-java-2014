@@ -1,10 +1,13 @@
 package ru.fizteh.fivt.students.VasilevKirill.telnet.Threads;
 
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.StartCommand;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.StopCommand;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProvider;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 
@@ -15,12 +18,14 @@ public class MainThread implements Runnable {
     private String[] args;
     private Object monitor;
     private volatile Status status;
+    private volatile TableProvider tableProvider;
 
-    public MainThread(String[] args, Object monitor) {
+    public MainThread(String[] args, Object monitor, String directory) throws IOException {
         this.args = args;
         this.monitor = monitor;
         ServerSocket ss = null;
         status = new Status(ss);
+        this.tableProvider = new MyTableProvider(directory);
     }
 
     /*@Override
@@ -88,5 +93,9 @@ public class MainThread implements Runnable {
 
     public ServerSocket getServerSocket() {
         return status.getServerSocket();
+    }
+
+    public TableProvider getTableProvider() {
+        return tableProvider;
     }
 }

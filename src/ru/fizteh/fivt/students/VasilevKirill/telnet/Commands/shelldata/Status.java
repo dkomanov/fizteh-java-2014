@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata;
 
 import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.FileMap;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTable;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProvider;
@@ -13,7 +14,8 @@ import java.net.Socket;
  */
 public class Status {
     Object object;
-    private RemoteTableProvider tableProvider;
+    private RemoteTableProvider remote;
+    private TableProvider serverTable;
 
     public Status(Object object) {
         this.object = object;
@@ -48,10 +50,18 @@ public class Status {
     }
 
     public RemoteTableProvider getTableProvider() {
-        return tableProvider;
+        return remote;
     }
 
     public void setTableProvider(RemoteTableProvider tableProvider) {
-        this.tableProvider = tableProvider;
+        this.remote = tableProvider;
+    }
+
+    public TableProvider getServerProvider() {
+        return serverTable;
+    }
+
+    public void setServerTable(TableProvider serverTable) {
+        this.serverTable = serverTable;
     }
 }

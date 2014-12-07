@@ -21,9 +21,9 @@ public class MyRemoteTable implements Table {
     private String name;
     private Map<String, Storeable> data = new HashMap<>();
     int numUnsavedChanges = 0;
-    private List<Class> typeList;
+    private List<Class<?>> typeList;
 
-    MyRemoteTable(Socket socket, String name, List<Class> typeList) throws IOException {
+    MyRemoteTable(Socket socket, String name, List<Class<?>> typeList) throws IOException {
         this.socket = socket;
         this.name = name;
         this.typeList = typeList;

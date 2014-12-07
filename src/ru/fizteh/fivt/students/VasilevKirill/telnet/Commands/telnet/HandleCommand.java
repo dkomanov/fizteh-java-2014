@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet;
 import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyRemoteTableProvider;
 
 import java.io.IOException;
 
@@ -16,6 +17,8 @@ public class HandleCommand implements Command {
         if (tableProvider == null) {
             throw new IOException("Can't find the table provider");
         }
+        MyRemoteTableProvider myTableProvider = (MyRemoteTableProvider) tableProvider;
+        myTableProvider.handleTable(args);
         return 0;
     }
 

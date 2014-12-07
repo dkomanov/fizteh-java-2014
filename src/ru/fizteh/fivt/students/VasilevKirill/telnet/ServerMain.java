@@ -14,9 +14,13 @@ import java.util.List;
 public class ServerMain {
     public static void main(String[] args) {
         try {
+            String rootDirectory = System.getProperty("fizteh.db.dir");
+            if (rootDirectory == null) {
+                throw new IOException("Can't find the directory");
+            }
             Object monitor = new Object();
             List<Thread> clients = new ArrayList<>();
-            MainThread serverThread = new MainThread(args, monitor);
+            MainThread serverThread = new MainThread(args, monitor, rootDirectory);
             Thread mainThread = new Thread(serverThread);
             mainThread.start();
             synchronized (monitor) {
@@ -27,7 +31,7 @@ public class ServerMain {
                 throw new IOException("Server socket wasn't initialized");
             }
             for (int i = 0; i < 1; ++i) {
-                Thread clientThread = new Thread(new ClientThread(ss));
+                Thread clientThread = new Thread(new ClientThread(ss, serverThread.getTableProvider()));
                 clients.add(clientThread);
                 clientThread.start();
             }
@@ -36,7 +40,7 @@ public class ServerMain {
             }
             mainThread.join();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }
