@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.proxy.test;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void testMethodCall() {
+    public void testMethodCall() throws JSONException {
         wrappedObject.noArgumentVoidMethod();
         JSONObject object = new JSONObject(writer.toString());
         assertTrue(object.has("method"));
@@ -43,7 +44,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void testArgumentMethodCall() {
+    public void testArgumentMethodCall() throws JSONException {
         wrappedObject.singleArgumentVoidMethod(2);
         JSONObject object = new JSONObject(writer.toString());
         JSONArray args = object.getJSONArray("arguments");
@@ -52,7 +53,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void twoArgumentsMethodCall() {
+    public void twoArgumentsMethodCall() throws JSONException {
         wrappedObject.twoArgumentsVoidMethod("hello", 0);
         JSONObject object = new JSONObject(writer.toString());
         JSONArray args = object.getJSONArray("arguments");
@@ -62,7 +63,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void noArgumentPrimitiveTypeMethodCall() {
+    public void noArgumentPrimitiveTypeMethodCall() throws JSONException {
         int result = wrappedObject.noArgumentPrimitiveTypeMethod();
         JSONObject object = new JSONObject(writer.toString());
         assertTrue(object.has("returnValue"));
@@ -71,7 +72,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void listArgumentMethodCall() {
+    public void listArgumentMethodCall() throws JSONException {
         List<Object> list = new Vector<>();
         list.add("a");
         list.add("b");
@@ -85,7 +86,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void listArgumentWithListReturn() {
+    public void listArgumentWithListReturn() throws JSONException {
         List<String> list = new Vector<>();
         list.add("a");
         list.add("b");
@@ -100,7 +101,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void onePrimitiveArgumentWithPrimitiveReturnTypeCall() {
+    public void onePrimitiveArgumentWithPrimitiveReturnTypeCall() throws JSONException {
         wrappedObject.onePrimitiveArgumentWithPrimitiveReturnType(5);
         JSONObject object = new JSONObject(writer.toString());
         JSONArray argument = object.getJSONArray("arguments");
@@ -127,7 +128,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void cyclicReturnTypeMethodCall() {
+    public void cyclicReturnTypeMethodCall() throws JSONException {
         List<Object> res = wrappedObject.cyclicReturnTypeMethod();
         JSONObject object = new JSONObject(writer.toString());
         JSONArray ret = object.getJSONArray("returnValue");
@@ -142,7 +143,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void testNonPrimitiveCyclicLinksTestCall() {
+    public void testNonPrimitiveCyclicLinksTestCall() throws JSONException {
         List<Object> list = new Vector<>();
         List<Object> firstChildList = new Vector<>();
         List<Object> secondChildList = new Vector<>();
@@ -159,7 +160,7 @@ public class MyLoggingProxyFactoryTest {
     }
 
     @Test
-    public void testArrayArgumentCall() {
+    public void testArrayArgumentCall() throws JSONException {
         String[] lst = new String[3];
         lst[0] = "1";
         lst[1] = "2";
