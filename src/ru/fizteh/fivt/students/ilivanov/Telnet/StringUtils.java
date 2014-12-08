@@ -29,23 +29,23 @@ public class StringUtils {
     public static ArrayList<Class<?>> stringToClassList(String types) {
         ArrayList<Class<?>> columnTypes = new ArrayList<>();
         String[] typeNames = types.split("\\s+");
-        for (int i = 0; i < typeNames.length; i++) {
-            if (typeNames[i].equals("int")) {
+        for (String typeName : typeNames) {
+            if (typeName.equals("int")) {
                 columnTypes.add(Integer.class);
-            } else if (typeNames[i].equals("long")) {
+            } else if (typeName.equals("long")) {
                 columnTypes.add(Long.class);
-            } else if (typeNames[i].equals("byte")) {
+            } else if (typeName.equals("byte")) {
                 columnTypes.add(Byte.class);
-            } else if (typeNames[i].equals("float")) {
+            } else if (typeName.equals("float")) {
                 columnTypes.add(Float.class);
-            } else if (typeNames[i].equals("double")) {
+            } else if (typeName.equals("double")) {
                 columnTypes.add(Double.class);
-            } else if (typeNames[i].equals("boolean")) {
+            } else if (typeName.equals("boolean")) {
                 columnTypes.add(Boolean.class);
-            } else if (typeNames[i].equals("String")) {
+            } else if (typeName.equals("String")) {
                 columnTypes.add(String.class);
             } else {
-                throw new RuntimeException(String.format("Unknown type %s", typeNames[i]));
+                throw new RuntimeException(String.format("Unknown type %s", typeName));
             }
         }
         return columnTypes;

@@ -28,12 +28,7 @@ public class ShellFinal {
         remoteProvider = null;
         remoteCurrent = null;
         local = true;
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                close();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> close()));
     }
 
     void printException(Throwable e, PrintStream errorLog) {
@@ -49,7 +44,7 @@ public class ShellFinal {
     }
 
     ArrayList<String> parseArguments(int argCount, String argString) {
-        ArrayList<String> args = new ArrayList<String>();
+        ArrayList<String> args = new ArrayList<>();
         int argsRead = 0;
         String last = "";
         int start = 0;
@@ -101,24 +96,24 @@ public class ShellFinal {
                         }
                         String[] typeNames = args.get(1).substring(1, args.get(1).length() - 1).trim().split("\\s+");
                         ArrayList<Class<?>> columnTypes = new ArrayList<>();
-                        for (int i = 0; i < typeNames.length; i++) {
-                            if (typeNames[i].equals("int")) {
+                        for (String typeName : typeNames) {
+                            if (typeName.equals("int")) {
                                 columnTypes.add(Integer.class);
-                            } else if (typeNames[i].equals("long")) {
+                            } else if (typeName.equals("long")) {
                                 columnTypes.add(Long.class);
-                            } else if (typeNames[i].equals("byte")) {
+                            } else if (typeName.equals("byte")) {
                                 columnTypes.add(Byte.class);
-                            } else if (typeNames[i].equals("float")) {
+                            } else if (typeName.equals("float")) {
                                 columnTypes.add(Float.class);
-                            } else if (typeNames[i].equals("double")) {
+                            } else if (typeName.equals("double")) {
                                 columnTypes.add(Double.class);
-                            } else if (typeNames[i].equals("boolean")) {
+                            } else if (typeName.equals("boolean")) {
                                 columnTypes.add(Boolean.class);
-                            } else if (typeNames[i].equals("String")) {
+                            } else if (typeName.equals("String")) {
                                 columnTypes.add(String.class);
                             } else {
                                 shell.writer.println(String.format("wrong type (%s is not supported)",
-                                        typeNames[i]));
+                                        typeName));
                                 return -1;
                             }
                         }
@@ -340,9 +335,7 @@ public class ShellFinal {
                             shell.writer.printf("overwrite%s%s%s",
                                     System.lineSeparator(), answer, System.lineSeparator());
                         }
-                    } catch (ColumnFormatException e) {
-                        shell.writer.printf("wrong type (%s)%s", e.getMessage(), System.lineSeparator());
-                    } catch (ParseException e) {
+                    } catch (ColumnFormatException | ParseException e) {
                         shell.writer.printf("wrong type (%s)%s", e.getMessage(), System.lineSeparator());
                     } catch (Exception e) {
                         printException(e, shell.writer);
@@ -667,15 +660,12 @@ public class ShellFinal {
     }
 
     public void integrate(Shell shell) {
-        for (int i = 0; i < commands.length; i++) {
-            shell.addCommand(commands[i]);
+        for (Shell.ShellCommand command : commands) {
+            shell.addCommand(command);
         }
-        shell.addExitFunction(new Shell.ShellCommand(null, new Shell.ShellExecutable() {
-            @Override
-            public int execute(Shell shell, ArrayList<String> args) {
-                close();
-                return 0;
-            }
+        shell.addExitFunction(new Shell.ShellCommand(null, (shell1, args) -> {
+            close();
+            return 0;
         }));
     }
 }
