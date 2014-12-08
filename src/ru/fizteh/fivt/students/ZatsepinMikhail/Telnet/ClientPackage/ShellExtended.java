@@ -1,20 +1,25 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider.CommandTableProviderExtended;
+import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell;
 
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class InnerShell {
-    private HashMap<String, CommandTableProviderExtended> shellCommands;
-    private RealRemoteTableProviderFactory objectForShell;
+public class ShellExtended extends Shell<RemoteTableProviderFactory> {
+    private HashMap<String, CommandExtended<RemoteTableProviderFactory>> shellCommands;
 
-    public InnerShell(RealRemoteTableProviderFactory obj) {
-        objectForShell = obj;
-        shellCommands = new HashMap<>();
+    private RemoteTableProviderFactory objectForShell;
+    public ShellExtended(RemoteTableProviderFactory obj) {
+        super(obj);
+    }
+
+    public void addCommand(CommandExtended<RemoteTableProviderFactory> newCommand) {
+        shellCommands.put(newCommand.toString(), newCommand);
     }
 
     public boolean interactiveMode() {
+        CommandExecutor interpeter = new CommandExecutor();
         System.out.print("$ ");
         boolean ended = false;
         boolean errorOccuried = false;
@@ -43,14 +48,14 @@ public class InnerShell {
                         ended = true;
                         break;
                     }
-                    CommandTableProviderExtended commandToExecute = shellCommands.get(parsedArguments[0]);
+                    CommandExtended<RemoteTableProviderFactory> commandToExecute = shellCommands.get(parsedArguments[0]);
                     if (commandToExecute != null) {
                         try {
                             if (commandToExecute.getNumberOfArguments() != parsedArguments.length
                                     & commandToExecute.getNumberOfArguments() != -1) {
                                 System.out.println(commandToExecute.getName() + ": wrong number of arguments");
                                 errorOccuried = true;
-                            } else if (!commandToExecute.run(objectForShell.getCurrentProvider(), parsedArguments, System.out)) {
+                            } else if (!commandToExecute.run(objectForShell, parsedArguments)) {
                                 errorOccuried = true;
                             }
                         } catch (IllegalStateException e) {
@@ -58,8 +63,7 @@ public class InnerShell {
                             errorOccuried = true;
                         }
                     } else {
-                        System.out.println(parsedArguments[0] + ": command not found");
-                        errorOccuried = true;
+                        interpeter.run(oneCommand, System.out, ((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider());
                     }
                 }
                 if (!ended) {
@@ -93,13 +97,13 @@ public class InnerShell {
             if (parsedArguments[0].equals("exit")) {
                 return !errorOccuried;
             }
-            CommandTableProviderExtended commandToExecute = shellCommands.get(parsedArguments[0]);
+            CommandExtended<RemoteTableProviderFactory> commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {
                 if (commandToExecute.getNumberOfArguments() != parsedArguments.length
                         & commandToExecute.getNumberOfArguments() != -1) {
                     System.out.println(commandToExecute.getName() + " wrong number of arguments");
                     errorOccuried = true;
-                } else if (!commandToExecute.run(objectForShell.getCurrentProvider(), parsedArguments, System.out)) {
+                } else if (!commandToExecute.run(objectForShell, parsedArguments)) {
                     errorOccuried = true;
                 }
             } else {

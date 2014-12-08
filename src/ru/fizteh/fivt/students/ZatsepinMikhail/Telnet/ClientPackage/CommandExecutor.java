@@ -1,8 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider.*;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.MFileHashMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -26,7 +25,7 @@ public class CommandExecutor {
         shellCommands.put("describe", new CommandDescribe());
     }
 
-    public void run(String message, PrintStream output, TableProvider dataBase) {
+    public void run(String message, PrintStream output, TableProviderExtended dataBase) {
         String[] parsedCommands;
         String[] parsedArguments;
         boolean errorOccuried = false;
@@ -53,7 +52,7 @@ public class CommandExecutor {
                             & commandToExecute.getNumberOfArguments() != -1) {
                         output.println(commandToExecute.getName() + ": wrong number of arguments");
                         errorOccuried = true;
-                    } else if (!commandToExecute.run((MFileHashMap) dataBase, parsedArguments, output)) {
+                    } else if (!commandToExecute.run(dataBase, parsedArguments, output)) {
                         errorOccuried = true;
                     }
                 } catch (IllegalStateException e) {
