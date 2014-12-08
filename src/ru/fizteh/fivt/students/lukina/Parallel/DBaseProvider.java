@@ -85,7 +85,6 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
         }
         DBase getTable = null;
         lock.lock();
-        ;
         try {
             getTable = tableBase.get(name);
             if (getTable == null) {
