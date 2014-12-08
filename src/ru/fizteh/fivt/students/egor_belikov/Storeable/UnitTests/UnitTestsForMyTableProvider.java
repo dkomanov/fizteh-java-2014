@@ -9,6 +9,7 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.egor_belikov.Storeable.MyTableProvider;
 import ru.fizteh.fivt.students.egor_belikov.Storeable.MyStoreable;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -74,52 +75,6 @@ public class UnitTestsForMyTableProvider {
     public final void getNotExists() {
         TableProvider pv = new MyTableProvider(testDirectory.toFile().getAbsolutePath());
         assertNull(pv.getTable(testTableName));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public final void removeNotExists() throws IOException {
-        TableProvider pv = new MyTableProvider(testDirectory.toFile().getAbsolutePath());
-        pv.removeTable(testTableName);
-    }
-
-    @Test
-    public final void serializerGood() throws IOException, ParseException {
-        TableProvider pv = new MyTableProvider(testDirectory.toFile().getAbsolutePath());
-        Storeable storeable = new MyStoreable(obj, sig);
-        String p = pv.serialize(pv.createTable(testTableName, sig), storeable);
-        assertEquals(tempString, p);
-    }
-
-    @Test
-    public final void deserializerGood() throws IOException, ParseException {
-        TableProvider pv = new MyTableProvider(testDirectory.toFile().getAbsolutePath());
-        Storeable storeable = new MyStoreable(obj, sig);
-        Storeable storeable1 = pv.deserialize(pv.createTable(testTableName, sig), tempString);
-        assertEquals(storeable.getIntAt(0), storeable1.getIntAt(0));
-        assertEquals(storeable.getStringAt(1), storeable1.getStringAt(1));
-    }
-
-    @Test(expected = ColumnFormatException.class)
-    public final void serializerException() throws IOException, ParseException {
-        TableProvider pv = new MyTableProvider(testDirectory.toFile().getAbsolutePath());
-        obj.add(true);
-        Storeable storeable = new MyStoreable(obj, sig);
-        String p = pv.serialize(pv.createTable(testTableName, sig), storeable);
-        assertEquals(tempString, p);
-    }
-
-    @Test(expected = ParseException.class)
-    public final void testDeerialiserParseExceptionWithWrongNumbersOfColumns() throws IOException, ParseException {
-        TableProvider pv = new MyTableProvider(testDirectory.toFile().getAbsolutePath());
-        String wrongNumS = "[1,\"1\", true]";
-        pv.deserialize(pv.createTable(testTableName, sig), wrongNumS);
-    }
-
-    @Test(expected = ParseException.class)
-    public final void testDeerialiserParseExceptionWithWrongValues() throws IOException, ParseException {
-        TableProvider pv = new MyTableProvider(testDirectory.toFile().getAbsolutePath());
-        String wrongValueS = "[1, true]";
-        pv.deserialize(pv.createTable(testTableName, sig), wrongValueS);
     }
 
     @After
