@@ -3,17 +3,12 @@ package ru.fizteh.fivt.students.egor_belikov.Storeable.UnitTests;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.storage.structured.ColumnFormatException;
-import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.egor_belikov.Storeable.MyTableProvider;
-import ru.fizteh.fivt.students.egor_belikov.Storeable.MyStoreable;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
