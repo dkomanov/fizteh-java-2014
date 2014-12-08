@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.kolmakov_sergey.proxy.data_base_structure;
 
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;

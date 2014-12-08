@@ -10,16 +10,16 @@ public class StoreableClass implements Storeable {
 
     private List<Object> values;
     private List<Class<?>> columnTypes;
-    private static final Set<Class<?>> validTypes;
+    private static final Set<Class<?>> VALID_TYPES;
     static {
-        validTypes = new HashSet<>();
-        validTypes.add(Integer.class);
-        validTypes.add(Long.class);
-        validTypes.add(Byte.class);
-        validTypes.add(Double.class);
-        validTypes.add(Float.class);
-        validTypes.add(Boolean.class);
-        validTypes.add(String.class);
+        VALID_TYPES = new HashSet<>();
+        VALID_TYPES.add(Integer.class);
+        VALID_TYPES.add(Long.class);
+        VALID_TYPES.add(Byte.class);
+        VALID_TYPES.add(Double.class);
+        VALID_TYPES.add(Float.class);
+        VALID_TYPES.add(Boolean.class);
+        VALID_TYPES.add(String.class);
     }
 
     public StoreableClass(Table table) {
@@ -28,7 +28,7 @@ public class StoreableClass implements Storeable {
             newColumnTypes.add(table.getColumnType(currentIndex));
         }
         for (Class<?> type : newColumnTypes) {
-            if (!validTypes.contains(type)) {
+            if (!VALID_TYPES.contains(type)) {
                 throw new ColumnFormatException("Invalid column type");
             }
         }
@@ -63,10 +63,10 @@ public class StoreableClass implements Storeable {
         values.set(columnIndex, value);
     }
 
-    private <T> T getTypedAt (int columnIndex, Class<T> clazz) {
+    private <T> T getTypedAt(int columnIndex, Class<T> clazz) {
         checkBounds(columnIndex);
         checkFormat(columnIndex, clazz);
-        return (T)values.get(columnIndex);
+        return (T) values.get(columnIndex);
     }
 
     @Override

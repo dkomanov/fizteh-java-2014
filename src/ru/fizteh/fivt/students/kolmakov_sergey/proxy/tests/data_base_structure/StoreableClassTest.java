@@ -12,7 +12,6 @@ import ru.fizteh.fivt.students.kolmakov_sergey.proxy.util.DirectoryKiller;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;

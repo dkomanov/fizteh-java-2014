@@ -300,7 +300,8 @@ public class TableClass implements Table, AutoCloseable {
             try {
                 return columnTypes.get(columnIndex);
             } catch (IndexOutOfBoundsException e) {
-                throw new IndexOutOfBoundsException("Column with index " + columnIndex + " doesn't exist in this table");
+                throw new IndexOutOfBoundsException("Column with index " + columnIndex
+                        + " doesn't exist in this table");
             }
         } finally {
             lock.readLock().unlock();
