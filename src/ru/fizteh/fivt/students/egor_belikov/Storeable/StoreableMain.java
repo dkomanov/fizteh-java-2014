@@ -21,7 +21,7 @@ public class StoreableMain {
 
     public static void main(String[] args) throws Exception {
         separator = File.separator;
-        currentPath = System.getProperty("user.dir") + separator + "db";//System.getProperty("fizteh.db.dir");
+        currentPath = System.getProperty("fizteh.db.dir");
 
         MyTableProviderFactory myTableProviderFactory = new MyTableProviderFactory();
         myTableProvider = (MyTableProvider) myTableProviderFactory.create(currentPath);
