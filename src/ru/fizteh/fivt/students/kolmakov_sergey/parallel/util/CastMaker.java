@@ -69,18 +69,18 @@ public final class CastMaker {
         return  answer;
     }
 
-    public static String makeJSON(String[] stringsWhichHoldsSignature, int firstSignificantStringIndex) {
+    public static String makeJSON(String[] signatureString, int firstSignificantStringIndex) {
         StringBuilder builder = new StringBuilder();
-        for (int counter = firstSignificantStringIndex; counter < stringsWhichHoldsSignature.length; counter++) {
-            builder.append(stringsWhichHoldsSignature[counter]).append(" ");
+        for (int counter = firstSignificantStringIndex; counter < signatureString.length; counter++) {
+            builder.append(signatureString[counter]).append(" ");
         }
         builder.deleteCharAt(builder.length() - 1);
         return builder.toString();
     }
 
-    public static List<Class<?>> signatureToClassesList(String[] stringsWhichHoldsSignature,
+    public static List<Class<?>> signatureToClassesList(String[] signatureString,
                                                         int firstSignificantStringIndex) {
-        String string = makeJSON(stringsWhichHoldsSignature, firstSignificantStringIndex);
+        String string = makeJSON(signatureString, firstSignificantStringIndex);
         List<Class<?>> signature = new ArrayList<>();
         string = string.trim();
         if (!string.startsWith("(") || !string.endsWith(")")) {

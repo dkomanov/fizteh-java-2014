@@ -31,7 +31,7 @@ public final class Main {
     }
 
     private static void run(DataBaseState state, String[] args) {
-        Interpreter dbInterpreter = new Interpreter(state, new Command[] {
+        Interpreter dbInterpreter = new Interpreter(new Command[] {
             new Command("show", 1, 1, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -47,7 +47,7 @@ public final class Main {
                         throw new RuntimeException(Interpreter.BAD_COMMAND + "show " + args[0]);
                     }
                 }
-            }),
+            }, state),
             new Command("list", 0, 0, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -58,7 +58,7 @@ public final class Main {
                         throw new RuntimeException("no table");
                     }
                 }
-            }),
+            }, state),
             new Command("create", 2, Integer.MAX_VALUE, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -74,7 +74,7 @@ public final class Main {
                         throw new RuntimeException("Error while creating table. " + e.getMessage());
                     }
                 }
-            }),
+            }, state),
             new Command("use", 1, 1, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -93,7 +93,7 @@ public final class Main {
                         System.out.println("using " + args[0]);
                     }
                 }
-            }),
+            }, state),
             new Command("put", 2, Integer.MAX_VALUE, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -117,7 +117,7 @@ public final class Main {
                         throw new RuntimeException(e.getMessage());
                     }
                 }
-            }),
+            }, state),
             new Command("get", 1, 1, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -134,7 +134,7 @@ public final class Main {
                         throw new RuntimeException("no table");
                     }
                 }
-            }),
+            }, state),
             new Command("remove", 1, 1, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -150,7 +150,7 @@ public final class Main {
                         throw new RuntimeException("no table");
                     }
                 }
-            }),
+            }, state),
             new Command("drop", 1, 1, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -168,7 +168,7 @@ public final class Main {
                         throw new RuntimeException("Can't drop : " + e.getMessage());
                     }
                 }
-            }),
+            }, state),
             new Command("size", 0, 0, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -179,7 +179,7 @@ public final class Main {
                         throw new RuntimeException("no table");
                     }
                 }
-            }),
+            }, state),
             new Command("commit", 0, 0, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -194,7 +194,7 @@ public final class Main {
                         throw new RuntimeException("no table");
                     }
                 }
-            }),
+            }, state),
             new Command("rollback", 0, 0, new BiConsumer<DataBaseState, String[]>() {
                 @Override
                 public void accept(DataBaseState state, String[] args) {
@@ -205,7 +205,7 @@ public final class Main {
                         throw new RuntimeException("no table");
                     }
                 }
-            })
+            }, state)
         });
 
         dbInterpreter.setExitHandler(new Callable<Boolean>() {

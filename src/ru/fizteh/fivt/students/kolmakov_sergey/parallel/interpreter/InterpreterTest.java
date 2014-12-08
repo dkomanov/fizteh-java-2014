@@ -27,50 +27,50 @@ public class InterpreterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testInterpreterThrowsExceptionConstructedForNullStream() {
-        new Interpreter(null, new Command[] {}, null, null);
+        new Interpreter(new Command[] {}, null, null);
     }
 
     @Test
     public void testTryUseInterpreterWithoutExitHandler() throws Exception {
-        Interpreter interpreter = new Interpreter(null, new Command[] {
+        Interpreter interpreter = new Interpreter(new Command[] {
                 new Command(testCommandName, 0, 0, new BiConsumer<DataBaseState, String[]>() {
                     @Override
                     public void accept(DataBaseState state, String[] arguments) {
                     }
-                })}, new ByteArrayInputStream((testCommandName + newLine).getBytes()), printStream);
+                }, null)}, new ByteArrayInputStream((testCommandName + newLine).getBytes()), printStream);
         interpreter.run(new String[]{"exit"});
         assertEquals("", outputStream.toString());
     }
 
     @Test
     public void testInterpreterRunInInteractiveMode() throws Exception {
-        Interpreter interpreter = new Interpreter(null, new Command[] {
+        Interpreter interpreter = new Interpreter(new Command[] {
                 new Command("test", 0, 0, new BiConsumer<DataBaseState, String[]>() {
                     @Override
                     public void accept(DataBaseState testConnector, String[] arguments) {
                         printStream.println(testOutput);
                     }
-                })}, new ByteArrayInputStream((testCommandName + newLine + "exit" + newLine).getBytes()), printStream);
+                }, null)}, new ByteArrayInputStream((testCommandName + newLine + "exit" + newLine).getBytes()), printStream);
         interpreter.run(new String[] {});
         assertEquals(Interpreter.PROMPT + testOutput + newLine + Interpreter.PROMPT, outputStream.toString());
     }
 
     @Test
     public void testInterpreterRunInBatchMode() throws Exception {
-        Interpreter interpreter = new Interpreter(null, new Command[] {
+        Interpreter interpreter = new Interpreter(new Command[] {
                 new Command("test", 0, 0, new BiConsumer<DataBaseState, String[]>() {
                     @Override
                     public void accept(DataBaseState testConnector, String[] arguments) {
                         printStream.println(testOutput);
                     }
-                })}, new ByteArrayInputStream(new byte[] {}), printStream);
+                }, null)}, new ByteArrayInputStream(new byte[] {}), printStream);
         interpreter.run(new String[] {testCommandName + Interpreter.STATEMENT_DELIMITER, testCommandName});
         assertEquals(testOutput + newLine + testOutput + newLine, outputStream.toString());
     }
 
     @Test
     public void testRunInterpreterInButchModeForUnexpectedCommand() throws Exception {
-        Interpreter interpreter = new Interpreter(null, new Command[] {},
+        Interpreter interpreter = new Interpreter(new Command[] {},
                 new ByteArrayInputStream(new byte[] {}), printStream);
         interpreter.run(new String[] {testCommandName + Interpreter.STATEMENT_DELIMITER, testCommandName});
         assertEquals(Interpreter.BAD_COMMAND + testCommandName + newLine, outputStream.toString());
@@ -80,7 +80,7 @@ public class InterpreterTest {
     public void testRunInterpreterInInteractiveModeForUnexpectedCommand()
             throws Exception {
         String testInput = testCommandName + newLine + testCommandName + newLine + "exit";
-        Interpreter interpreter = new Interpreter(null, new Command[] {},
+        Interpreter interpreter = new Interpreter(new Command[] {},
                 new ByteArrayInputStream(testInput.getBytes()), printStream);
         interpreter.run(new String[] {});
         String expectedOutput
@@ -93,13 +93,13 @@ public class InterpreterTest {
     @Test
     public void testInterpreterForCommandWithWrongNumberOfArguments()
             throws Exception {
-        Interpreter interpreter = new Interpreter(null, new Command[] {
+        Interpreter interpreter = new Interpreter(new Command[] {
                 new Command("test", 0, 0, new BiConsumer<DataBaseState, String[]>() {
                     @Override
                     public void accept(DataBaseState testConnector, String[] arguments) {
                         printStream.println(testOutput);
                     }
-                })}, new ByteArrayInputStream(new byte[] {}), printStream);
+                }, null)}, new ByteArrayInputStream(new byte[] {}), printStream);
         interpreter.run(new String[] {testCommandName + " unexpected"});
         assertEquals(testCommandName + ": incorrect number of arguments" + newLine, outputStream.toString());
     }
