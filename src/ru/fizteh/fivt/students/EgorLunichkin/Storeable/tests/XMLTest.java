@@ -6,14 +6,14 @@ import ru.fizteh.fivt.students.EgorLunichkin.Storeable.XMLManager;
 import javax.xml.parsers.ParserConfigurationException;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
 public class XMLTest {
     @Test
     public void testSerialize() throws Exception {
-        List<Object> objects = new Vector<>();
+        List<Object> objects = new ArrayList<>();
         Integer a = 3;
         objects.add(a);
         Double b = 3.05;
@@ -28,7 +28,7 @@ public class XMLTest {
     @Test
     public void testDeSerialize() throws Exception {
         String xml = "<row><col>3</col><col>3.05</col><col>true</col><null/><col> test string </col></row>";
-        List<Class<?>> types = new Vector<>();
+        List<Class<?>> types = new ArrayList<>();
         types.add(Integer.class);
         types.add(Double.class);
         types.add(Boolean.class);
@@ -45,7 +45,7 @@ public class XMLTest {
     @Test
     public void testDeSerializeIncorrectType() throws ParserConfigurationException {
         String xml = "<row><col>aba</col></row>";
-        List<Class<?>> types = new Vector<>();
+        List<Class<?>> types = new ArrayList<>();
         types.add(Double.class);
         try {
             XMLManager.deserialize(xml, types);
@@ -59,7 +59,7 @@ public class XMLTest {
     public void testIncorrectXml() throws ParserConfigurationException {
         String xml = "<row><cool></cool></row>";
         try {
-            List<Class<?>> types = new Vector<>();
+            List<Class<?>> types = new ArrayList<>();
             types.add(String.class);
             XMLManager.deserialize(xml, types);
             assertEquals(0, 1);
