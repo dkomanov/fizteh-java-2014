@@ -4,7 +4,6 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 
 import java.io.*;
 import java.net.ServerSocket;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Server {
@@ -40,8 +39,9 @@ public class Server {
         return activePort;
     }
 
-    public boolean stopServer() {
-        return false;
+    public void stopServer() throws IOException {
+        listener.stopExecution();
+        started = false;
     }
 
     public List<String> getUserList() {

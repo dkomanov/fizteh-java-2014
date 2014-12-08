@@ -12,6 +12,7 @@ public class ListenThread extends Thread {
     ServerSocket server;
     List<TalkingThread> clients;
     TableProvider dataBase;
+    boolean started;
 
     public ListenThread(ServerSocket newServer, TableProvider newDataBase) {
         server = newServer;
@@ -21,7 +22,7 @@ public class ListenThread extends Thread {
 
     @Override
     public void run() {
-        boolean started = true;
+        started = true;
         while (started) {
             System.err.println("i am listening");
             try {
@@ -42,5 +43,13 @@ public class ListenThread extends Thread {
             result.add(oneClient.getClientName());
         }
         return result;
+    }
+
+    public void stopExecution() throws IOException {
+        for (TalkingThread client : clients) {
+            client.stopExecution();
+        }
+        server.close();
+        started = false;
     }
 }

@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Server;
 
+import java.io.IOException;
+
 public class TelnetCmdStop extends TelnetCommand {
     public TelnetCmdStop() {
         name = "stop";
@@ -11,11 +13,15 @@ public class TelnetCmdStop extends TelnetCommand {
     @Override
     public boolean run(Server myServer, String[] args) {
         if (!myServer.isStarted()) {
-            System.out.println("not started");
+            System.err.println("not started");
             return false;
         }
-        myServer.stopServer();
-        System.out.println("stopped at port " + myServer.getActivePort());
+        try {
+            myServer.stopServer();
+            System.err.println("stopped at port " + myServer.getActivePort());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
         return true;
     }
 }
