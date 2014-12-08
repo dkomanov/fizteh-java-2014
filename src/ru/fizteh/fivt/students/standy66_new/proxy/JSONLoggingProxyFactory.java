@@ -40,7 +40,9 @@ public class JSONLoggingProxyFactory implements LoggingProxyFactory {
             log.put("timestamp", System.currentTimeMillis());
             log.put("class", implementation.getClass().getName());
             log.put("method", method.getName());
-            log.put("arguments", unwindIterable(Arrays.asList(args), new IdentityHashMap<>()));
+            if (args != null) {
+                log.put("arguments", unwindIterable(Arrays.asList(args), new IdentityHashMap<>()));
+            }
             Throwable targetException = null;
             Object returnValue = null;
             try {
@@ -57,7 +59,7 @@ public class JSONLoggingProxyFactory implements LoggingProxyFactory {
                 }
             }
             if (targetException != null) {
-                log.put("thrown", targetException);
+                log.put("thrown", targetException.getClass().getName());
             }
             synchronized (writer) {
                 try {

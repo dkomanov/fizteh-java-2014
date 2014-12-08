@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by andrew on 07.11.14.
@@ -177,7 +179,7 @@ public class StructuredTable implements Table, AutoCloseable {
     
     private void assertNotClosed() {
         if (closed) {
-            throw new IllegalStateException("Structured table had been closed, but then the method was invoked.")
+            throw new IllegalStateException("Structured table had been closed, but then the method was invoked.");
         }
     }
 }

@@ -7,7 +7,6 @@ import ru.fizteh.fivt.students.standy66_new.utility.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     private final Map<String, StringTable> tableInstances;
     private final File lockFile;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private boolean closed = false;
 
     StringDatabase(File directory) {
         if (directory == null) {
@@ -104,7 +104,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
             if (!tableDirectory.mkdirs()) {
                 throw new IllegalArgumentException("table cannot be created");
             }
-            tableInstances.put(name, new StringTable(tableDirectory));
+            tableInstances.put(name, new StringTable(tableDirectory, this));
         } finally {
             readWriteLock.writeLock().unlock();
         }
