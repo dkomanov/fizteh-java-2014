@@ -10,19 +10,22 @@ public class Command {
     private int minArguments;
     private int maxArguments;
     private BiConsumer<DataBaseState, String[]> callback;
+    DataBaseState dbState;
 
-    public Command(String name, int minArguments, int maxArguments, BiConsumer<DataBaseState, String[]> callback) {
+    public Command(String name, int minArguments, int maxArguments, BiConsumer<DataBaseState, String[]> callback,
+                   DataBaseState dbState) {
         this.name = name;
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
         this.callback = callback;
+        this.dbState = dbState;
     }
 
     public String getName() {
         return name;
     }
 
-    public void execute(DataBaseState dbState, String[] params) throws WrongNumberOfArgumentsException {
+    public void execute(String[] params) throws WrongNumberOfArgumentsException {
         if (!(minArguments <= params.length && params.length <= maxArguments)) {
             throw new WrongNumberOfArgumentsException(name + ": incorrect number of arguments");
         } else {

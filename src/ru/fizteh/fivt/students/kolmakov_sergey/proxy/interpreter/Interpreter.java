@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.kolmakov_sergey.proxy.interpreter;
 
 import ru.fizteh.fivt.students.kolmakov_sergey.proxy.data_base_exceptions.WrongNumberOfArgumentsException;
-import ru.fizteh.fivt.students.kolmakov_sergey.proxy.data_base_structure.DataBaseState;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -18,25 +17,23 @@ public final class Interpreter {
     private static final String PARAM_REGEXP = "\\s+";
     private InputStream in;
     private PrintStream out;
-    private DataBaseState dbState;
     private Map<String, Command> commands;
     private Callable<Boolean> exitHandler;
 
-    public Interpreter(DataBaseState dbState, Command[] commands, InputStream in, PrintStream out) {
+    public Interpreter(Command[] commands, InputStream in, PrintStream out) {
         if (in == null || out == null) {
             throw new IllegalArgumentException("Input or Output stream is null");
         }
         this.commands = new HashMap<>();
         this.in = in;
         this.out = out;
-        this.dbState = dbState;
         for (Command currentCommand : commands) {
             this.commands.put(currentCommand.getName(), currentCommand);
         }
     }
 
-    public Interpreter(DataBaseState connector, Command[] commands) {
-        this(connector, commands, System.in, System.out);
+    public Interpreter(Command[] commands) {
+        this(commands, System.in, System.out);
     }
 
     public void setExitHandler(Callable<Boolean> callable) {
@@ -51,7 +48,7 @@ public final class Interpreter {
                 batchMode(args);
             }
         } catch (StopInterpreterException e) {
-          return e.exitCode; //  Just stop Interpreter.
+            return e.exitCode; //  Just stop Interpreter.
         }
         return 0;
     }
@@ -113,7 +110,7 @@ public final class Interpreter {
             } else {
                 String[] cuttedArgs = Arrays.copyOfRange(cmdWithArgs, 1, cmdWithArgs.length);
                 try {
-                    command.execute(dbState, cuttedArgs);
+                    command.execute(cuttedArgs);
                 } catch (RuntimeException e) {
                     out.println(e.getMessage());
                     if (batchModeOn) {
