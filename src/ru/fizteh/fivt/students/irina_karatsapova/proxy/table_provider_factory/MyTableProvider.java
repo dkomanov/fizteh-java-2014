@@ -44,10 +44,14 @@ public class MyTableProvider implements TableProvider {
     public List<String> getTableNames() {
         checkLoaded();
         databaseAccessLock.readLock().lock();
-        Set<String> tableNamesSet = tables.keySet();
-        List<String> tableNamesList = new ArrayList<>();
-        tableNamesList.addAll(tableNamesSet);
-        databaseAccessLock.readLock().unlock();
+        List<String> tableNamesList;
+        try {
+            Set<String> tableNamesSet = tables.keySet();
+            tableNamesList = new ArrayList<>();
+            tableNamesList.addAll(tableNamesSet);
+        } finally {
+            databaseAccessLock.readLock().unlock();
+        }
         return tableNamesList;
     }
 
@@ -56,16 +60,19 @@ public class MyTableProvider implements TableProvider {
         Utils.checkNotNull(name);
         MyTable lookedForTable = null;
         databaseAccessLock.writeLock().lock();
-        if (tables.containsKey(name)) {
-            lookedForTable = (MyTable) tables.get(name);
-            if (!lookedForTable.loaded) {
-                lookedForTable = new MyTable(lookedForTable);
+        try {
+            if (tables.containsKey(name)) {
+                lookedForTable = (MyTable) tables.get(name);
+                if (!lookedForTable.loaded) {
+                    lookedForTable = new MyTable(lookedForTable);
+                }
+                tables.remove(name);
+                tables.put(name, lookedForTable);
+                lookedForTable.renewDiff();
             }
-            tables.remove(name);
-            tables.put(name, lookedForTable);
-            lookedForTable.renewDiff();
+        } finally {
+            databaseAccessLock.writeLock().unlock();
         }
-        databaseAccessLock.writeLock().unlock();
         return lookedForTable;
     }
 
@@ -180,11 +187,14 @@ public class MyTableProvider implements TableProvider {
     public void close() {
         checkLoaded();
         databaseAccessLock.writeLock().lock();
-        for (Table table: tables.values()) {
-            table.close();
+        try {
+            for (Table table: tables.values()) {
+                table.close();
+            }
+            loaded = false;
+        } finally {
+            databaseAccessLock.writeLock().unlock();
         }
-        loaded = false;
-        databaseAccessLock.writeLock().unlock();
     }
 
 
