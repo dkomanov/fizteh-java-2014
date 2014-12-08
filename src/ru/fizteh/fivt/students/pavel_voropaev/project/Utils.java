@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -30,5 +31,20 @@ public class Utils {
             occurrences.add(matcher.group());
         }
         return occurrences.toArray(new String[occurrences.size()]);
+    }
+
+    public static String[] splitArguments(String text) throws ParseException {
+        List<String> split = new ArrayList<>();
+
+        Parser parser = new Parser(text, ' ', '(', ')');
+        while (true) {
+            String entry = parser.getNext();
+            if (entry == null) {
+                break;
+            }
+            split.add(entry);
+        }
+
+        return split.toArray(new String[split.size()]);
     }
 }

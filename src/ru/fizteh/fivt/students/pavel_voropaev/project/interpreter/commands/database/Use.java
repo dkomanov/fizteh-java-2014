@@ -1,36 +1,29 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.database;
 
+import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
-import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.TableDoesNotExistException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.AbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.Table;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
+import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
 
-import java.io.PrintStream;
+public class Use extends AbstractCommand {
 
-public class Use extends AbstractCommand<TableProvider> {
-
-    public Use(TableProvider context) {
-        super("use", 1, context);
+    public Use(DatabaseInterpreterState state) {
+        super("use", 1, state);
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) {
-        int diffSize = 0;
-        Table active = context.getActiveTable();
-        if (active != null) {
-            diffSize = active.getNumberOfUncommittedChanges();
+    public void exec(String[] param) {
+        if (!state.isExitSafe()) {
+            throw new InputMistakeException(
+                    state.getActiveTable().getNumberOfUncommittedChanges() + " unsaved changes");
         }
 
-        if (diffSize != 0) {
-            throw new InputMistakeException(diffSize + " unsaved changes");
+        Table active = state.getDatabase().getTable(param[0]);
+        if (active == null) {
+            state.getOutputStream().println(param[0] + " not exists");
         } else {
-            try {
-                context.setActiveTable(param[0]);
-                out.println("using " + param[0]);
-            } catch (TableDoesNotExistException e) {
-                out.println(param[0] + " not exists");
-            }
+            state.setActiveTable(active);
+            state.getOutputStream().println("using " + param[0]);
         }
     }
 }

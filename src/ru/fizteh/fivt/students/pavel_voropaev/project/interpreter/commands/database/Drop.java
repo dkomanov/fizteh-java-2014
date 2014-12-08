@@ -1,26 +1,33 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.database;
 
+import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.*;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.AbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
+import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
 
-import java.io.PrintStream;
+import java.io.IOException;
 
-public class Drop extends AbstractCommand<TableProvider> {
+public class Drop extends AbstractCommand {
 
-    public Drop(TableProvider context) {
-        super("drop", 1, context);
+    public Drop(DatabaseInterpreterState state) {
+        super("drop", 1, state);
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) {
+    public void exec(String[] param) throws IOException {
+        Table active = state.getActiveTable();
+        if (active != null && active.getName().equals(param[0])) {
+            state.setActiveTable(null);
+        }
+
         try {
-            context.removeTable(param[0]);
+            state.getDatabase().removeTable(param[0]);
         } catch (TableDoesNotExistException e) {
-            out.println(param[0] + " not exists");
+            state.getOutputStream().println(param[0] + " not exists");
             return;
         }
 
-        out.println("dropped");
+        state.getOutputStream().println("dropped");
     }
 }
+

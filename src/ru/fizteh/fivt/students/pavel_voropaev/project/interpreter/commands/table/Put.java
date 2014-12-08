@@ -1,24 +1,58 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.table;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.pavel_voropaev.project.Parser;
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.WrongTypeException;
+import ru.fizteh.fivt.students.pavel_voropaev.project.database.Serializer;
+import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.TableAbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
 
 import java.io.PrintStream;
+import java.text.ParseException;
 
 public class Put extends TableAbstractCommand {
 
-    public Put(TableProvider context) {
-        super("put", 2, context);
+    public Put(DatabaseInterpreterState state) {
+        super("put", 2, state);
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) {
-        String retVal = super.getActiveTable().put(param[0], param[1]);
-        if (retVal == null) {
+    public void exec(String[] param) {
+        isTableAvailable();
+
+        TableProvider provider = state.getDatabase();
+        Table table = state.getActiveTable();
+        PrintStream out = state.getOutputStream();
+
+        param[1] = param[1].trim();
+        int length = param[1].length();
+        if (length < 3) {
+            throw new WrongTypeException("list of values expected");
+        }
+        if (param[1].charAt(0) != '(') {
+            throw new WrongTypeException("No ( found");
+        }
+        if (param[1].charAt(length - 1) != ')') {
+            throw new WrongTypeException("No ) found");
+        }
+        String parameter = param[1].substring(1, length - 1); // Delete brackets
+        Parser parser = new Parser(parameter, ' ', '\"');
+        Storeable value = provider.createFor(table);
+
+        try {
+            Serializer.deserialize(table, value, parser);
+        } catch (ParseException e) {
+            throw new WrongTypeException(e.getMessage());
+        }
+
+        value = table.put(param[0], value);
+        if (value == null) {
             out.println("new");
         } else {
             out.println("overwrite");
-            out.println(retVal);
+            out.println('(' + Serializer.serialize(table, value, ' ', '\"') + ')');
         }
     }
 }

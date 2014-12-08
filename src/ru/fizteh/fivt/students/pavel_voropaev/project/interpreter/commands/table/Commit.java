@@ -1,21 +1,22 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.table;
 
+import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.TableAbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
 
 import java.io.IOException;
-import java.io.PrintStream;
 
 public class Commit extends TableAbstractCommand {
 
-    public Commit(TableProvider context) {
-        super("commit", 0, context);
+    public Commit(DatabaseInterpreterState state) {
+        super("commit", 0, state);
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) {
+    public void exec(String[] param) {
+        isTableAvailable();
+
         try {
-            out.println(super.getActiveTable().commit());
+            state.getOutputStream().println(state.getActiveTable().commit());
         } catch (IOException e) {
             throw new RuntimeException("Commit failed (cannot write to the disk): " + e.getMessage());
         }

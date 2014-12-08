@@ -1,24 +1,32 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.table;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.pavel_voropaev.project.database.Serializer;
+import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.TableAbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
 
 import java.io.PrintStream;
 
 public class Get extends TableAbstractCommand {
 
-    public Get(TableProvider context) {
-        super("get", 1, context);
+    public Get(DatabaseInterpreterState state) {
+        super("get", 1, state);
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) {
-        String retVal = super.getActiveTable().get(param[0]);
-        if (retVal == null) {
+    public void exec(String[] param) {
+        isTableAvailable();
+
+        PrintStream out = state.getOutputStream();
+        Table table = state.getActiveTable();
+        Storeable storeable = table.get(param[0]);
+
+        if (storeable == null) {
             out.println("not found");
         } else {
             out.println("found");
-            out.println(retVal);
+            out.println("(" + Serializer.serialize(table, storeable, ' ', '\"') + ")");
         }
     }
 }

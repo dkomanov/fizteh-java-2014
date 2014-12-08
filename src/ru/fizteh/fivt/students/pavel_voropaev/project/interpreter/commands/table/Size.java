@@ -1,18 +1,17 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.table;
 
+import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.TableAbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.master.TableProvider;
-
-import java.io.PrintStream;
 
 public class Size extends TableAbstractCommand {
 
-    public Size(TableProvider context) {
-        super("size", 0, context);
+    public Size(DatabaseInterpreterState state) {
+        super("size", 0, state);
     }
 
     @Override
-    public void exec(String[] param, PrintStream out) {
-        out.println(super.getActiveTable().size());
+    public void exec(String[] param) {
+        isTableAvailable();
+        state.getOutputStream().println(state.getActiveTable().size());
     }
 }
