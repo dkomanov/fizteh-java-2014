@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 public class UnitTestsForMyTableProviderFactory {
 
     private final Path testDirectory
-            = Paths.get(System.getProperty("java.io.tmpdir"));
+            = Paths.get(System.getProperty("user.dir"));
 
     @Before
     public final void setUp()
