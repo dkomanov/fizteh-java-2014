@@ -25,12 +25,16 @@ class LoggingInvocationHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         boolean itIsMethodOfObject = true;
         try { // If it's method of Object, we just invoke it without logging.
-            Object.class.getMethod(method.getName());
+            Object.class.getMethod(method.getName(), method.getParameterTypes());
         } catch (NoSuchMethodException e) {
             itIsMethodOfObject = false;
         }
         if (itIsMethodOfObject) {
-            return method.invoke(args);
+            try {
+                return method.invoke(implementation, args);
+            } catch (InvocationTargetException exc) {
+                throw exc.getTargetException();
+            }
         }
         // Else we'll log it.
         XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
