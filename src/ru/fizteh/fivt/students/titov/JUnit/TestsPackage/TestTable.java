@@ -43,16 +43,16 @@ public class TestTable {
 
     @Test
     public void testGetName() throws Exception {
-        assertTrue(testTable.getName().equals(tableName));
+        assertEquals(testTable.getName(), tableName);
     }
 
     @Test
     public void testGet() throws Exception {
         assertNull(testTable.get(key));
         testTable.put(key, value);
-        assertTrue(testTable.get(key).equals(value));
+        assertEquals(testTable.get(key), value);
         testTable.put(key, newValue);
-        assertTrue(testTable.get(key).equals(newValue));
+        assertEquals(testTable.get(key), newValue);
         testTable.remove(key);
         assertNull(testTable.get(key));
         testTable.rollback();
@@ -60,7 +60,7 @@ public class TestTable {
         testTable.put(key, value);
         testTable.commit();
         testTable.put(key, newValue);
-        assertTrue(testTable.get(key).equals(newValue));
+        assertEquals(testTable.get(key), newValue);
         testTable.remove(key);
         assertNull(testTable.get(key));
     }
@@ -69,24 +69,24 @@ public class TestTable {
     public void testRemove() throws Exception {
         assertNull(testTable.remove(key));
         testTable.put(key, value);
-        assertTrue(testTable.remove(key).equals(value));
+        assertEquals(testTable.remove(key), value);
 
         testTable.rollback();
         testTable.put(key, value);
-        assertTrue(testTable.remove(key).equals(value));
+        assertEquals(testTable.remove(key), value);
         testTable.put(key, value);
         testTable.commit();
-        assertTrue(testTable.remove(key).equals(value));
+        assertEquals(testTable.remove(key), value);
         assertNull(testTable.remove(key));
     }
 
     @Test
     public void testPut() throws Exception {
         assertNull(testTable.put(key, value));
-        assertTrue(testTable.put(key, value).equals(value));
-        assertTrue(testTable.get(key).equals(value));
-        assertTrue(testTable.put(key, newValue).equals(value));
-        assertTrue(testTable.get(key).equals(newValue));
+        assertEquals(testTable.put(key, value), value);
+        assertEquals(testTable.get(key), value);
+        assertEquals(testTable.put(key, newValue), value);
+        assertEquals(testTable.get(key), newValue);
         testTable.remove(key);
         assertNull(testTable.put(key, value));
 
@@ -98,15 +98,15 @@ public class TestTable {
         }
         testTable.commit();
         for (int i = 0; i < size; ++i) {
-            assertTrue(testTable.get(keyForCommit + i).equals(valueForCommit + i));
+            assertEquals(testTable.get(keyForCommit + i), valueForCommit + i);
         }
 
         String freshValue = "addValue";
         testTable.rollback();
         testTable.remove(keyForCommit + 1);
         assertNull(testTable.put(keyForCommit + 1, valueForCommit + 1));
-        assertTrue(testTable.put(keyForCommit + 2, freshValue).equals(valueForCommit + 2));
-        assertTrue(testTable.put(keyForCommit + 2, freshValue + "*").equals(freshValue));
+        assertEquals(testTable.put(keyForCommit + 2, freshValue), valueForCommit + 2);
+        assertEquals(testTable.put(keyForCommit + 2, freshValue + "*"), freshValue);
     }
 
     @Test
@@ -180,10 +180,22 @@ public class TestTable {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void nullInput() {
+    public void nullGet() {
         testTable.get(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void nullRemove() {
         testTable.remove(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void nullPutValue() {
         testTable.put(null, value);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void nullPutKey() {
         testTable.put(key, null);
     }
 }

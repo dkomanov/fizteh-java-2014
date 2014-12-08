@@ -114,7 +114,7 @@ public class MFileHashMap implements TableProvider {
         Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneFileMap: pairSet) {
             if  (!oneFileMap.getValue().init()) {
-                allRight = false;
+                System.exit(3);
             }
         }
         return allRight;

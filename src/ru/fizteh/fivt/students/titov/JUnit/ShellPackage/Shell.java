@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 public class Shell {
 
+    private static final String SYMBOLINITATION = "$ ";
     private HashMap<String, Command> shellCommands;
 
     public Shell() {
@@ -16,7 +17,7 @@ public class Shell {
     }
 
     public boolean interactiveMode() {
-        System.out.print("$ ");
+        System.out.print(SYMBOLINITATION);
         boolean ended = false;
         boolean errorOccuried = false;
 
@@ -49,7 +50,7 @@ public class Shell {
                     }
                 }
                 if (!ended) {
-                    System.out.print("$ ");
+                    System.out.print(SYMBOLINITATION);
                 }
             }
         }

@@ -8,14 +8,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Main {
+    private static final String PROJECTPROPERTY = "fizteh.db.dir";
+
     public static void main(String[] args) {
 
-        if (System.getProperty("fizteh.db.dir") == null) {
+        if (System.getProperty(PROJECTPROPERTY) == null) {
             System.out.println("we need working directory");
             System.exit(6);
         }
         Path dataBaseDirectory
-                = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty("fizteh.db.dir"));
+                = Paths.get(System.getProperty("user.dir")).resolve(System.getProperty(PROJECTPROPERTY));
 
         boolean allRight = true;
         if (Files.exists(dataBaseDirectory)) {
