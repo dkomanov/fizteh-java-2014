@@ -102,9 +102,9 @@ public class Server {
                 String input = in.readUTF();
                 String[] commands = input.split(";");
                 for (String cmd : commands) {
-                    System.out.println("agr : " + cmd);
+//                    System.out.println("agr : " + cmd);
                     String s = runCommand(cmd.trim());
-                    System.out.println("res : " + s);
+//                    System.out.println("res : " + s);
                     if (cmd.equals("exit")) {
                         return;
                     }
