@@ -29,7 +29,7 @@ public class StoreableTableProvider implements TableProvider {
                 signatures.put(tableName, signature);
                 String types = readSignature(signature);
                 List<Class<?>> typesList = TypeManager.getClasses(types);
-                Table table = new StoreableTable(jTable, typesList, this);
+                StoreableTable table = new StoreableTable(jTable, typesList, this);
                 tables.put(tableName, table);
             }
         } catch (Exception ex) {
@@ -69,6 +69,7 @@ public class StoreableTableProvider implements TableProvider {
         writeSignature(signature, types);
         Table table = new StoreableTable(jTable, columnTypes, this);
         tables.put(name, table);
+        signatures.put(name, signature);
         return table;
     }
 
@@ -93,7 +94,7 @@ public class StoreableTableProvider implements TableProvider {
         List<Class<?>> typesList = ((StoreableTable) table).types;
         try {
             List<Object> values = XMLManager.deserialize(value, typesList);
-            return this.createFor(table, values);
+            return createFor(table, values);
         } catch (ParserConfigurationException ex) {
             throw new ParseException(ex.getMessage(), 0);
         }
@@ -109,12 +110,6 @@ public class StoreableTableProvider implements TableProvider {
         for (int ind = 0; ind < table.getColumnsCount(); ++ind) {
             Class own = table.getColumnType(ind);
             Class given = ((StoreableEntry) value).types.get(ind);
-            String typeName;
-            if (value.getColumnAt(ind) == null) {
-                typeName = "null";
-            } else {
-                typeName = value.getColumnAt(ind).toString();
-            }
             if (own != given) {
                 throw new ColumnFormatException("Column #" + ind + " has incorrect format");
             }
