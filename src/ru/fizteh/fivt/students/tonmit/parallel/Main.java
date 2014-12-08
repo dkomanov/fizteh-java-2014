@@ -1,18 +1,9 @@
 package ru.fizteh.fivt.students.tonmit.parallel;
 
-import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.tonmit.parallel.data_base_structure.*;
 import ru.fizteh.fivt.students.tonmit.parallel.interpreter.Interpreter;
-import ru.fizteh.fivt.students.tonmit.parallel.interpreter.Command;
-import ru.fizteh.fivt.students.tonmit.parallel.util.CastMaker;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.function.BiConsumer;
 
 public final class Main {
 
