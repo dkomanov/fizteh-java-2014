@@ -37,6 +37,7 @@ public class MyTable implements Table {
         currentTableFile = new File(currentPath);
         currentTableName = name;
         numberOfUnsavedChanges = 0;
+        numberOfElements = 0;
         if (columnTypes != null) {
             signature = new ArrayList<>(columnTypes);
             numberOfColumns = signature.size();
