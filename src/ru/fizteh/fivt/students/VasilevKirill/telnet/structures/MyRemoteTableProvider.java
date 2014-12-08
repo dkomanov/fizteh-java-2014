@@ -41,6 +41,13 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             throw new IllegalArgumentException();
         }
         try {
+            /*out.writeUTF("alive");
+            String isAlive = in.readUTF();
+            if (isAlive.equals("no")) {
+                System.out.println("Server was closed");
+                String[] disconnectArgs = {"disconnect", "please"};
+                new DisconnectCommand().execute(disconnectArgs, new Status(null));
+            }*/
             out.writeUTF("get " + name);
             out.flush();
             int numRows = in.readInt(); //number
@@ -74,6 +81,13 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
+        /*out.writeUTF("alive");
+        String isAlive = in.readUTF();
+        if (isAlive.equals("no")) {
+            System.out.println("Server was closed");
+            String[] disconnectArgs = {"disconnect", "please"};
+            new DisconnectCommand().execute(disconnectArgs, new Status(null));
+        }*/
         StringBuilder types = new StringBuilder();
         for (Class it : columnTypes) {
             types.append(it.getSimpleName());
@@ -88,7 +102,13 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             }
             tables.put(name, new MyRemoteTable(socket, name, columnTypes));
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            String[] errorMessage = e.getMessage().split("\\s+");
+            if (errorMessage[0].equals("Software")) {
+                System.out.println("Server was closed");
+                System.exit(0);
+            } else {
+                System.out.println(e.getMessage());
+            }
             return null;
         }
         return new MyRemoteTable(socket, name, columnTypes);
@@ -96,8 +116,24 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
 
     @Override
     public void removeTable(String name) throws IOException {
-        out.writeUTF("removetable " + name);
-        int num = in.readInt();
+        /*out.writeUTF("alive");
+        String isAlive = in.readUTF();
+        if (isAlive.equals("no")) {
+            System.out.println("Server was closed");
+            String[] disconnectArgs = {"disconnect", "please"};
+            new DisconnectCommand().execute(disconnectArgs, new Status(null));
+        }
+        out.writeUTF("removetable " + name);*/
+        int num = 0;
+        try {
+            num = in.readInt();
+        } catch (IOException e) {
+            String[] errorMessage = e.getMessage().split("\\s+");
+            if (errorMessage[0].equals("Software")) {
+                System.out.println("Server was closed");
+                System.exit(0);
+            }
+        }
         if (num == -1) {
             String receivedError = in.readUTF();
             throw new IOException(receivedError);
@@ -153,6 +189,13 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
     @Override
     public List<String> getTableNames() {
         try {
+            /*out.writeUTF("alive");
+            String isAlive = in.readUTF();
+            if (isAlive.equals("no")) {
+                System.out.println("Server was closed");
+                String[] disconnectArgs = {"disconnect", "please"};
+                new DisconnectCommand().execute(disconnectArgs, new Status(null));
+            }*/
             List<String> retValue = new ArrayList<>();
             out.writeUTF("show");
             int numTables = in.readInt();
@@ -164,6 +207,11 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             }
             return retValue;
         } catch (IOException e) {
+            String[] errorMessage = e.getMessage().split("\\s+");
+            if (errorMessage[0].equals("Software")) {
+                System.out.println("Server was closed");
+                System.exit(0);
+            }
             System.out.println(e.getMessage());
         }
         return null;
@@ -172,6 +220,13 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
 
     @Override
     public void close() throws IOException {
+        /*out.writeUTF("alive");
+        String isAlive = in.readUTF();
+        if (isAlive.equals("no")) {
+            System.out.println("Server was closed");
+            String[] disconnectArgs = {"disconnect", "please"};
+            new DisconnectCommand().execute(disconnectArgs, new Status(null));
+        }*/
         out.writeUTF("close");
         out.flush();
         out.close();
@@ -182,16 +237,36 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
     }
 
     public void setWorkingTableName(String name) {
+        /*try {
+            out.writeUTF("alive");
+            String isAlive = in.readUTF();
+            if (isAlive.equals("no")) {
+                System.out.println("Server was closed");
+                String[] disconnectArgs = {"disconnect", "please"};
+                new DisconnectCommand().execute(disconnectArgs, new Status(null));
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }*/
         if (name == workingTableName) {
             return;
         }
+        if (tables.get(name) == null) {
+            System.out.println("not found");
+            return;
+        }
         if (workingTableName != null) {
-            System.out.println(tables.get(name).getNumberOfUncommittedChanges() + " unsaved");
+            System.out.println(tables.get(workingTableName).getNumberOfUncommittedChanges() + " unsaved");
         }
         workingTableName = name;
         try {
             out.writeUTF("set " + name);
         } catch (IOException e) {
+            String[] errorMessage = e.getMessage().split("\\s+");
+            if (errorMessage[0].equals("Software")) {
+                System.out.println("Server was closed");
+                System.exit(0);
+            }
             System.out.println("Use: failed to send data");
         }
     }
@@ -281,15 +356,25 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             }
         } catch (ParseException e) {
             System.out.println("Failed to parse");
+        } catch (IOException e) {
+            System.out.println("Server was closed");
+            System.exit(0);
         }
     }
 
     public void disconnect() throws IOException {
+        /*out.writeUTF("alive");
+        String isAlive = in.readUTF();
+        if (isAlive.equals("no")) {
+            System.out.println("Server was closed");
+            String[] disconnectArgs = {"disconnect", "please"};
+            new DisconnectCommand().execute(disconnectArgs, new Status(null));
+        }
         try {
             out.writeUTF("disconnect");
         } catch (IOException e) {
             throw new IOException("Disconnect: failed to send data");
-        }
+        }*/
     }
 
 }

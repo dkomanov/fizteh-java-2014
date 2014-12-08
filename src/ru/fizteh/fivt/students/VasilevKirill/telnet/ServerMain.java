@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class ServerMain {
     private static volatile List<String> userInformation = new ArrayList<>();
+    private static volatile boolean isClosed = false;
 
     public static void main(String[] args) {
         try {
@@ -32,7 +33,7 @@ public class ServerMain {
             if (ss == null) {
                 throw new IOException("Server socket wasn't initialized");
             }
-            for (int i = 0; i < 1; ++i) {
+            while (!isClosed) {
                 Object isClientConnected = new Object();
                 ClientThread client = new ClientThread(ss, serverThread.getTableProvider(), isClientConnected);
                 Thread clientThread = new Thread(client);
@@ -40,6 +41,9 @@ public class ServerMain {
                 clientThread.start();
                 synchronized (isClientConnected) {
                     isClientConnected.wait();
+                }
+                if (isClosed) {
+                    break;
                 }
                 userInformation.add(client.getClientInformation());
             }
@@ -54,6 +58,14 @@ public class ServerMain {
 
     public static List<String> getUserInformation() {
         return userInformation;
+    }
+
+    public static void closeServer() {
+        isClosed = true;
+    }
+
+    public static boolean isServerClosed() {
+        return isClosed;
     }
 }
 

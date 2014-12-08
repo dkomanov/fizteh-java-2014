@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.VasilevKirill.telnet.Threads;
 import org.json.JSONArray;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.ServerMain;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProvider;
 
 import java.io.DataInputStream;
@@ -22,6 +23,7 @@ public class ClientThread implements Runnable {
     private List<Class<?>> currentTypeList = new ArrayList<>();
     private volatile String clientInformation;
     private Object isClientConnected;
+    private volatile boolean isClosed = false;
 
     public ClientThread(ServerSocket serverSocket, TableProvider tableProvider, Object isClientConnected) {
         this.serverSocket = serverSocket;
@@ -36,6 +38,11 @@ public class ClientThread implements Runnable {
             StringBuilder clientInformationBuilder = new StringBuilder();
             clientInformationBuilder.append(socket.getInetAddress().toString() + ":" + socket.getLocalPort());
             clientInformation = new String(clientInformationBuilder).substring(1);
+            if (ServerMain.isServerClosed()) {
+                synchronized (isClientConnected) {
+                    isClientConnected.notifyAll();
+                }
+            }
             synchronized (isClientConnected) {
                 isClientConnected.notifyAll();
             }
@@ -75,6 +82,9 @@ public class ClientThread implements Runnable {
                         break;
                     case "set":
                         setCommand(args);
+                        break;
+                    case "alive":
+                        isAlive(out);
                         break;
                     default:
                 }
@@ -156,5 +166,21 @@ public class ClientThread implements Runnable {
 
     public String getClientInformation() {
         return clientInformation;
+    }
+
+    public void isAlive(DataOutputStream out) {
+        try {
+            if (isClosed) {
+                out.writeUTF("no");
+            } else {
+                out.writeUTF("yes");
+            }
+        } catch (IOException e) {
+            System.out.println("isAlive: failed to send data");
+        }
+    }
+
+    public void closeConnection() {
+        isClosed = true;
     }
 }

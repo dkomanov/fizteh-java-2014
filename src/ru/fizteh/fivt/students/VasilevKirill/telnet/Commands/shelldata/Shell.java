@@ -81,9 +81,7 @@ public class Shell {
                     return 2;
                 }
                 if ((currentCommand = commandMap.get(it[0])) != null) {
-                    if (currentCommand.execute(it, status) == 1) {
-                        return 1;
-                    }
+                    return currentCommand.execute(it, status);
                     /*if (it[0].equals("start")) {
                         synchronized (monitor) {
                             monitor.notifyAll();

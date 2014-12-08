@@ -83,6 +83,7 @@ public class ServerConsoleThread implements Runnable {
                     case "stop":
                         new StopCommand().execute(args, status);
                         endOfCycle = true;
+                        ServerMain.closeServer();
                         break;
                     case "list":
                         if (!args[1].equals("users")) {
@@ -97,6 +98,8 @@ public class ServerConsoleThread implements Runnable {
                         continue;
                 }
             }
+            ((MyTableProvider) tableProvider).close();
+            System.exit(0);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
