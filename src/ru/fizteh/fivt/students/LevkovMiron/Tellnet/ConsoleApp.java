@@ -153,8 +153,10 @@ public class ConsoleApp {
                 if (command.equals("exit")) {
                     applicationType = 0;
                     client.disconnect();
-                    return;
+                    System.out.println("exited");
+                    System.exit(0);
                 }
+                client.send(command);
                 System.out.println(client.read());
             } catch (IOException e) {
                 System.out.println("can't connect to the server : " + e.getMessage());

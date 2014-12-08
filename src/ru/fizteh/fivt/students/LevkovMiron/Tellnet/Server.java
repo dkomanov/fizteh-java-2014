@@ -248,9 +248,12 @@ public class Server {
             } catch (IOException e) {
                 return ("IOException " + e.getMessage());
             } catch (ParseException e) {
-                builder.append("Wrong JSON format. Expected: ");
-                for (int i = 0; i < currentT.getColumnsCount(); i++) {
-                    builder.append(currentT.getColumnType(i).getName() + " ");
+                builder.append("Wrong JSON format.");
+                if (currentT != null) {
+                    builder.append(" Expected: ");
+                    for (int i = 0; i < currentT.getColumnsCount(); i++) {
+                        builder.append(currentT.getColumnType(i).getName() + " ");
+                    }
                 }
                 return builder.toString();
             } catch (IndexOutOfBoundsException e) {
