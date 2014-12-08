@@ -21,7 +21,7 @@ public class CommandShowTables extends CommandTableProviderExtended {
         List<String> tables = myMap.getTableNames();
         output.println(tables.size());
         for (String oneTableName : tables) {
-            output.println(oneTableName);
+            output.println(oneTableName + " " + myMap.getCurrentTable().size());
         }
         return true;
     }
