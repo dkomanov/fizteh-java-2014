@@ -105,7 +105,6 @@ public class DataBaseTable implements Table {
         }
         diffs.put(key, value);
         return oldValue;
-
     }
 
     @Override

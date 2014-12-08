@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.dnovikov.junit;
 
-import javafx.util.Pair;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
@@ -14,7 +13,6 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class DataBaseProvider implements TableProvider {
-    private DataBaseTable currentTable;
     private Path rootDirectory;
 
     private ArrayList<Table> tables = new ArrayList<>();
@@ -33,17 +31,10 @@ public class DataBaseProvider implements TableProvider {
         return rootDirectory;
     }
 
-    public DataBaseTable getCurrentTable() {
-        return currentTable;
-    }
-    public void setCurrentTable(Table table) {
-        currentTable = (DataBaseTable) table;
-    }
-
     @Override
     public Table getTable(String name) {
         if (name == null) {
-            throw new IllegalArgumentException("cannot get table: null");
+            throw new IllegalArgumentException("cannot get table: name should be non-null string");
         }
         return tableNames.get(name);
     }
@@ -80,21 +71,18 @@ public class DataBaseProvider implements TableProvider {
         if (table == null) {
             throw new TableNotFoundException();
         } else {
-            if (table.equals(currentTable)) {
-                currentTable = null;
-            }
             tableNames.remove(name);
             table.drop();
             tables.remove(table);
         }
     }
 
-    public List<Pair<String, Integer>> showTable() {
-        List<Pair<String, Integer>> result = new ArrayList<>();
+    public List<TableInfo> showTable() {
+        List<TableInfo> result = new ArrayList<>();
         for (Table table : tables) {
             String tableName = table.getName();
             int size = table.size();
-            result.add(new Pair<>(tableName, size));
+            result.add(new TableInfo(tableName, size));
         }
         return result;
     }
@@ -102,7 +90,7 @@ public class DataBaseProvider implements TableProvider {
     public void loadTables() {
         if (rootDirectory.toFile().isDirectory()) {
             File[] foldersInRoot = rootDirectory.toFile().listFiles();
-            if (foldersInRoot == null)  {
+            if (foldersInRoot == null) {
                 throw new LoadOrSaveException("can't load database");
             }
             for (File folder : foldersInRoot) {
@@ -119,12 +107,6 @@ public class DataBaseProvider implements TableProvider {
             throw new LoadOrSaveException("root directory '" + rootDirectory.getFileName() + "' not found");
         } else {
             throw new LoadOrSaveException("root directory '" + rootDirectory.getFileName() + "' is not directory");
-        }
-    }
-
-    public void saveTable() {
-        if (currentTable != null) {
-            currentTable.save();
         }
     }
 }

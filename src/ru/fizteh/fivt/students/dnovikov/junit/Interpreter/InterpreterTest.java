@@ -4,7 +4,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import ru.fizteh.fivt.students.dnovikov.junit.DataBaseCommand;
 import ru.fizteh.fivt.students.dnovikov.junit.DataBaseProvider;
+import ru.fizteh.fivt.students.dnovikov.junit.DataBaseState;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,6 +25,7 @@ public class InterpreterTest {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
     public DataBaseProvider provider;
+    public DataBaseState state;
     private ByteArrayOutputStream outputStream;
     private ByteArrayOutputStream outputStreamError;
     private PrintStream printStream;
@@ -31,6 +34,7 @@ public class InterpreterTest {
     @Before
     public void setUp() throws IOException {
         provider = new DataBaseProvider(tmpFolder.getRoot().getPath());
+        state = new DataBaseState(provider);
         outputStream = new ByteArrayOutputStream();
         outputStreamError = new ByteArrayOutputStream();
         printStream = new PrintStream(outputStream);
@@ -39,18 +43,18 @@ public class InterpreterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void initializationWithNullArgumentsThrowsException() {
-        new Interpreter(null, null, null, null, new Command[]{});
+        new Interpreter(null, null, null, null, new DataBaseCommand[]{});
     }
 
     @Test
     public void runInterpreterInteractiveMode() throws IOException {
 
-        Interpreter interpreter = new Interpreter(provider, new ByteArrayInputStream(
-                (testCommand + commandSeparator + "exit").getBytes()), printStream, printStream, new Command[]{
-                new Command("test", 0, new BiConsumer<DataBaseProvider, String[]>() {
+        Interpreter interpreter = new Interpreter(state, new ByteArrayInputStream(
+                (testCommand + commandSeparator + "exit").getBytes()), printStream, printStream, new DataBaseCommand[]{
+                new DataBaseCommand("test", 0, new BiConsumer<InterpreterState, String[]>() {
 
                     @Override
-                    public void accept(DataBaseProvider dataBaseProvider, String[] arguments) {
+                    public void accept(InterpreterState state, String[] arguments) {
                         printStream.println(testMessage);
                     }
                 })
@@ -63,12 +67,12 @@ public class InterpreterTest {
 
     @Test
     public void runInterpreterBatchMode() throws IOException {
-        Interpreter interpreter = new Interpreter(provider, new ByteArrayInputStream(new byte[]{}),
-                printStream, printStream, new Command[]{
-                new Command("test", 0, new BiConsumer<DataBaseProvider, String[]>() {
+        Interpreter interpreter = new Interpreter(state, new ByteArrayInputStream(new byte[]{}),
+                printStream, printStream, new DataBaseCommand[]{
+                new DataBaseCommand("test", 0, new BiConsumer<InterpreterState, String[]>() {
 
                     @Override
-                    public void accept(DataBaseProvider dataBaseProvider, String[] arguments) {
+                    public void accept(InterpreterState state, String[] arguments) {
                         printStream.println(testMessage);
                     }
                 })
@@ -83,13 +87,13 @@ public class InterpreterTest {
 
     @Test
     public void runInterpreterInteractiveModeWithWrongNumberOfArguments() throws IOException {
-        Interpreter interpreter = new Interpreter(provider, new ByteArrayInputStream(
+        Interpreter interpreter = new Interpreter(state, new ByteArrayInputStream(
                 (testCommand + " argument" + lineSeparator + "exit").getBytes()), printStream, printStreamError,
-                new Command[]{
-                        new Command("test", 0, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand[]{
+                        new DataBaseCommand("test", 0, new BiConsumer<InterpreterState, String[]>() {
 
                             @Override
-                            public void accept(DataBaseProvider dataBaseProvider, String[] arguments) {
+                            public void accept(InterpreterState state, String[] arguments) {
                             }
                         })
                 });
@@ -101,14 +105,14 @@ public class InterpreterTest {
 
     @Test
     public void runInterpreterInteractiveModeWithWrongCommand() throws IOException {
-        Interpreter interpreter = new Interpreter(provider, new ByteArrayInputStream(
-                ("wrongCommand" + lineSeparator + "exit").getBytes()), printStream, printStreamError, new Command[]{
-                new Command("test", 0, new BiConsumer<DataBaseProvider, String[]>() {
+        Interpreter interpreter = new Interpreter(state, new ByteArrayInputStream(
+                ("wrongCommand" + lineSeparator + "exit").getBytes()), printStream, printStreamError,
+                new DataBaseCommand[]{new DataBaseCommand("test", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseProvider, String[] arguments) {
+                    public void accept(InterpreterState state, String[] arguments) {
                     }
                 })
-        });
+                });
         interpreter.run(new String[]{});
         String actual = outputStreamError.toString();
         String expected = new String("wrongCommand: no such command" + lineSeparator);

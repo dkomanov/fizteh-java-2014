@@ -5,15 +5,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;;
+import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
+import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.WrongNumberOfArgumentsException;;
 import java.io.IOException;
+import java.util.function.BiConsumer;
 
 public class DataBaseProviderFactoryTest {
 
-    private TableProviderFactory factory;
-
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
+    private TableProviderFactory factory;
 
     @Before
     public void setUp() {
@@ -27,7 +28,7 @@ public class DataBaseProviderFactoryTest {
 
     @Test(expected = LoadOrSaveException.class)
     public void createNotExistingDirectory() throws IOException {
-       factory.create(tmpFolder.newFolder().toPath().resolve("test").toString());
+        factory.create(tmpFolder.newFolder().toPath().resolve("test").toString());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -39,4 +40,5 @@ public class DataBaseProviderFactoryTest {
     public void createWithIllegalArgumentThrowsException() throws IOException {
         factory.create(tmpFolder.newFile().getAbsolutePath());
     }
+
 }

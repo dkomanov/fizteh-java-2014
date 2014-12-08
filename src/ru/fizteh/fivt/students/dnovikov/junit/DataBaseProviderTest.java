@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.dnovikov.junit;
 
-import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,6 +32,7 @@ public class DataBaseProviderTest {
         provider.loadTables();
         assertEquals(0, provider.showTable().size());
     }
+
     @Test
     public void initializationNewDirectory() throws IOException {
         new DataBaseProvider(tmpFolder.getRoot().toString());
@@ -87,21 +87,6 @@ public class DataBaseProviderTest {
     }
 
     @Test
-    public void testCurrentTable() throws IOException {
-        DataBaseTable table = (DataBaseTable) provider.createTable("table");
-        provider.setCurrentTable(table);
-        assertEquals(table, provider.getCurrentTable());
-    }
-
-    @Test
-    public void removeCurrentTable() throws IOException {
-        DataBaseTable table = (DataBaseTable) provider.createTable("newTable");
-        provider.setCurrentTable(table);
-        provider.removeTable("newTable");
-        assertNull(provider.getTable("newTable"));
-    }
-
-    @Test
     public void creationExistingTable() throws IOException {
         assertNotNull(provider.createTable("newTable"));
         assertNull(provider.createTable("newTable"));
@@ -111,27 +96,10 @@ public class DataBaseProviderTest {
     public void testShowTable() throws IOException {
         provider.createTable("table1");
         provider.createTable("table2");
-        provider.setCurrentTable(provider.getTable("table1"));
-        provider.getCurrentTable().put("key", "value");
-        List<Pair<String, Integer>> expected = new ArrayList<>();
-        expected.add(new Pair<>("table1", 1));
-        expected.add(new Pair<>("table2", 0));
+        List<TableInfo> expected = new ArrayList<>();
+        expected.add(new TableInfo("table1", 0));
+        expected.add(new TableInfo("table2", 0));
         assertTrue(provider.showTable().containsAll(expected));
     }
 
-    @Test
-    public void testSaveAndLoad() throws IOException {
-        provider.createTable("table1");
-        provider.createTable("table2");
-        DataBaseTable table1 = (DataBaseTable) provider.getTable("table1");
-        provider.setCurrentTable(table1);
-        table1.put("key", "value");
-        table1.commit();
-        provider.saveTable();
-        provider.loadTables();
-        provider.setCurrentTable(provider.getTable("table1"));
-        assertEquals("value", provider.getCurrentTable().get("key"));
-        provider.setCurrentTable(provider.getTable("table2"));
-        assertEquals(0, provider.getCurrentTable().size());
-    }
 }
