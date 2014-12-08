@@ -27,12 +27,13 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
         return port;
     }
 
-    public RealRemoteTableProvider(String hostname, int port) throws IOException {
+    public RealRemoteTableProvider(String hostName, int port) throws IOException {
         tables = new HashMap<>();
-        server = new Socket(InetAddress.getByName(hostname), port);
-        server = new Socket(InetAddress.getByName(hostname), port);
+        server = new Socket(InetAddress.getByName(hostName), port);
         input = new Scanner(server.getInputStream());
         output = new PrintStream(server.getOutputStream());
+        this.hostName = hostName;
+        this.port = port;
     }
 
     @Override

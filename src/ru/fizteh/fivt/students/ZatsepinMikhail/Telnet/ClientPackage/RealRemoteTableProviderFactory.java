@@ -16,6 +16,11 @@ public class RealRemoteTableProviderFactory implements RemoteTableProviderFactor
     }
 
     public void disconnectCurrentProvider() {
+        try {
+            currentProvider.close();
+        } catch (IOException e) {
+            System.err.println("error while closing table provider");
+        }
         currentProvider = null;
     }
 

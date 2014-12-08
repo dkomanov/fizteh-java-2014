@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class ClientCmdWhereAmI extends ClientCommand {
     public ClientCmdWhereAmI() {
-        name = "stop";
+        name = "whereami";
         numberOfArguments = 1;
     }
 
