@@ -1,28 +1,31 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
 import ru.fizteh.fivt.storage.structured.*;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.AbstractStoreable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.shell.FileUtils;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class RealRemoteTableProvider implements RemoteTableProvider {
     private HashMap<String, RealRemoteTable> tables;
     private Socket server;
     private Scanner input;
     private PrintStream output;
+    private String hostName;
+    private int port;
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public int getPort() {
+        return port;
+    }
 
     public RealRemoteTableProvider(String hostname, int port) throws IOException {
         tables = new HashMap<>();
@@ -39,9 +42,16 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
         }
         output.println("show tables");
         int numberOfTables = Integer.parseInt(input.nextLine());
+        tables.clear();
         for (int i = 0; i < numberOfTables; ++i) {
-
+            String tableName = input.nextLine().split(" ")[0];
+            try {
+                tables.put(tableName, new RealRemoteTable(tableName, hostName, port, this));
+            } catch (IOException e) {
+                System.err.println("error while creating real remote table");
+            }
         }
+        return tables.get(name);
     }
 
     @Override
@@ -55,6 +65,14 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
         } else {
             output.println("create " + name + " (" + TypesUtils.toFileSignature(columnTypes) + ")");
             String message = input.nextLine();
+            if ("created".equals(message)) {
+                try {
+                    tables.put(name, new RealRemoteTable(name, hostName, port, this));
+                } catch (IOException e) {
+                    System.err.println("error while creating real remote table");
+                }
+            }
+            return tables.get(name);
         }
     }
 
@@ -63,12 +81,9 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-        if (tables.containsKey(name)) {
-            Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
-            tables.remove(name);
-            currentTable = null;
-            FileUtils.rmdir(pathForRemoveTable);
-        } else {
+        output.println("remove " + name);
+        String message = input.nextLine();
+        if (!"dropped".equals(message)) {
             throw new IllegalStateException("table \'" + name + "\' doesn't exist");
         }
     }
@@ -76,7 +91,7 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
     @Override
     public Storeable createFor(Table table) {
         Object[] startValues = new Object[table.getColumnsCount()];
-        return new ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.AbstractStoreable(startValues, table);
+        return new AbstractStoreable(startValues, table);
     }
 
     @Override
@@ -93,7 +108,7 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
             typeList.add(table.getColumnType(i));
         }
         TypesUtils.checkNewStorableValue(typeList, objValues);
-        return new ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.AbstractStoreable(objValues.toArray(), table);
+        return new AbstractStoreable(objValues.toArray(), table);
     }
 
     @Override
@@ -107,69 +122,33 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
                         + ", but got:" + value.getColumnAt(i).getClass());
             }
         }
-        return ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.Serializator.serialize(table, value);
+        return Serializator.serialize(table, value);
     }
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        return ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.Serializator.deserialize(table, value);
+        return Serializator.deserialize(table, value);
     }
 
     @Override
     public List<String> getTableNames() {
         List<String> result = new ArrayList<>();
-        Collection<ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap.FileMap> filemaps = tables.values();
-        for (ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap.FileMap oneTable : filemaps) {
+        Collection<RealRemoteTable> filemaps = tables.values();
+        for (RealRemoteTable oneTable : filemaps) {
             result.add(oneTable.getName());
         }
         return result;
     }
 
     public void showTables() {
-        Set<Entry<String, ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap.FileMap>> pairSet = tables.entrySet();
-        for (Entry<String, ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap.FileMap> oneTable: pairSet) {
-            System.out.println(oneTable.getKey() + " "
-                    + oneTable.getValue().size());
-        }
+
     }
 
-    public void setCurrentTable(ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap.FileMap newCurrentTable) {
-        currentTable = newCurrentTable;
-    }
-
-    public ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap.FileMap getCurrentTable() {
-        return currentTable;
-    }
-
-    public boolean init() {
-        String[] listOfFiles = new File(dataBaseDirectory).list();
-        for (String oneFile: listOfFiles) {
-            Path oneTablePath = Paths.get(dataBaseDirectory, oneFile);
-            Path oneTableSignaturePath = Paths.get(dataBaseDirectory, oneFile, "signature.tsv");
-            if (Files.isDirectory(oneTablePath) & Files.exists(oneTableSignaturePath)) {
-                try (Scanner input = new Scanner(oneTableSignaturePath)) {
-                    String[] types;
-                    if (input.hasNext()) {
-                        types = input.nextLine().trim().split("\\s+");
-                        List<Class<?>> newTypeList = TypesUtils.toTypeList(types);
-                        if (newTypeList != null) {
-                            tables.put(oneFile, new ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap.FileMap(oneTablePath.toString(), newTypeList, this));
-                        }
-                    }
-                } catch (FileNotFoundException e) {
-                    return false;
-                } catch (IOException e) {
-                    return false;
-                }
-            }
+    @Override
+    public void close() throws IOException {
+        for (RealRemoteTable oneTable : tables.values()) {
+            oneTable.close();
         }
-        boolean allRight = true;
-        Set<Entry<String, ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap.FileMap>> pairSet = tables.entrySet();
-        for (Entry<String, ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.FileMap.FileMap> oneFileMap: pairSet) {
-            if  (!oneFileMap.getValue().init()) {
-                allRight = false;
-            }
-        }
-        return allRight;
+        server.close();
     }
 }

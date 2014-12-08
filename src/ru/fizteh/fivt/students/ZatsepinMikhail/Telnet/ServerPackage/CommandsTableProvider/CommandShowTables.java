@@ -20,6 +20,7 @@ public class CommandShowTables extends CommandTableProvider {
         }
         output.println("table_name row_count");
         List<String> tables = myMap.showTables();
+        output.println(tables.size());
         for (String oneTableName : tables) {
             output.println(oneTableName);
         }
