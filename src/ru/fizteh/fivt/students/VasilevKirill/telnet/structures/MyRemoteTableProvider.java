@@ -122,8 +122,8 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             System.out.println("Server was closed");
             String[] disconnectArgs = {"disconnect", "please"};
             new DisconnectCommand().execute(disconnectArgs, new Status(null));
-        }
-        out.writeUTF("removetable " + name);*/
+        }*/
+        out.writeUTF("drop " + name);
         int num = 0;
         try {
             num = in.readInt();
@@ -362,19 +362,12 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
         }
     }
 
-    public void disconnect() throws IOException {
-        /*out.writeUTF("alive");
-        String isAlive = in.readUTF();
-        if (isAlive.equals("no")) {
-            System.out.println("Server was closed");
-            String[] disconnectArgs = {"disconnect", "please"};
-            new DisconnectCommand().execute(disconnectArgs, new Status(null));
-        }
+    public void disconnect() {
         try {
             out.writeUTF("disconnect");
         } catch (IOException e) {
-            throw new IOException("Disconnect: failed to send data");
-        }*/
+            System.out.println("Disconnect: failed to send data");
+        }
     }
 
 }

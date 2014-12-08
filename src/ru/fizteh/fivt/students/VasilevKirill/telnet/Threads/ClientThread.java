@@ -59,7 +59,7 @@ public class ClientThread implements Runnable {
                     case "create":
                         createCommand(out, args);
                         break;
-                    case "removetable":
+                    case "drop":
                         removeCommand(out, args);
                         break;
                     case "close":
@@ -90,7 +90,11 @@ public class ClientThread implements Runnable {
                 }
             }
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            if (e.getMessage().equals("socket closed")) {
+                System.exit(0);
+            } else {
+                System.err.println(e.getMessage());
+            }
         }
     }
 

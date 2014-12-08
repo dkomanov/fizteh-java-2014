@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet;
 
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyRemoteTableProvider;
 
 import java.io.IOException;
 
@@ -17,7 +18,7 @@ public class DisconnectCommand implements Command {
         if (status.getTableProvider() == null) {
             throw new IOException("not connected");
         }
-        //((MyRemoteTableProvider) status.getTableProvider()).disconnect();
+        ((MyRemoteTableProvider) status.getTableProvider()).disconnect();
         status.setTableProvider(null);
         System.out.println("disconnected");
         return 0;
