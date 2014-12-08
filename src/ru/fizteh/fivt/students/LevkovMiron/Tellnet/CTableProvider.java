@@ -43,7 +43,7 @@ public class CTableProvider implements TableProvider, AutoCloseable {
                         CTable table = new CTable(file, tableLocks.get(file.getFileName().toString()));
                         listTables.put(file.getFileName().toString(), table);
                     } finally {
-                        lock.writeLock().unlock();
+                        lock.readLock().unlock();
                     }
                 }
             }
