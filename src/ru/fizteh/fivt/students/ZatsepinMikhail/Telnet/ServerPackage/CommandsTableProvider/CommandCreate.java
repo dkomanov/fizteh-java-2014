@@ -3,20 +3,20 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTab
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.MFileHashMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 
-public class CommandCreate extends CommandTableProvider {
+public class CommandCreate extends CommandTableProviderExtended {
     public CommandCreate() {
         name = "create";
         numberOfArguments = -1;
     }
 
     @Override
-    public boolean run(MFileHashMap myMap, String[] args, PrintStream output) {
+    public boolean run(TableProviderExtended myMap, String[] args, PrintStream output) {
         StringBuilder simpleBuilder = new StringBuilder();
         for (int i = 2; i < args.length; ++i) {
             if (i != 2) {

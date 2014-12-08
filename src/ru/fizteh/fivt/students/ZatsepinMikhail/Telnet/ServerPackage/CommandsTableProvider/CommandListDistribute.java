@@ -1,21 +1,21 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.MFileHashMap;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 
 import java.io.PrintStream;
 import java.util.List;
 
-public class CommandListDistribute extends CommandTableProvider {
+public class CommandListDistribute extends CommandTableProviderExtended {
     public CommandListDistribute() {
         name = "list";
         numberOfArguments = 1;
     }
 
     @Override
-    public boolean run(MFileHashMap myMap, String[] args, PrintStream output) {
-        FileMap currentTable = myMap.getCurrentTable();
+    public boolean run(TableProviderExtended myMap, String[] args, PrintStream output) {
+        Table currentTable = myMap.getCurrentTable();
         if (myMap.getCurrentTable() == null) {
             output.println("no table");
             return true;

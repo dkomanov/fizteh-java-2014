@@ -8,7 +8,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 
 public class CommandExecutor {
-    private final HashMap<String, CommandTableProvider> shellCommands;
+    private final HashMap<String, CommandTableProviderExtended> shellCommands;
 
     public CommandExecutor() {
         shellCommands = new HashMap<>();
@@ -46,7 +46,7 @@ public class CommandExecutor {
             if (parsedArguments[0].equals("exit")) {
                 //do smth
             }
-            CommandTableProvider commandToExecute = shellCommands.get(parsedArguments[0]);
+            CommandTableProviderExtended commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {
                 try {
                     if (commandToExecute.getNumberOfArguments() != parsedArguments.length

@@ -1,12 +1,10 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
 import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.*;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClient.ClientCmdConnect;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClient.ClientCmdDisconnect;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClient.ClientCmdWhereAmI;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClientConnections.ClientCmdConnect;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClientConnections.ClientCmdDisconnect;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClientConnections.ClientCmdWhereAmI;
 
 public class ClientMain {
     public static void main(String[] args) {

@@ -4,6 +4,7 @@ import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.AbstractStoreable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -11,7 +12,7 @@ import java.net.Socket;
 import java.text.ParseException;
 import java.util.*;
 
-public class RealRemoteTableProvider implements RemoteTableProvider {
+public class RealRemoteTableProvider implements RemoteTableProvider, TableProviderExtended {
     private HashMap<String, RealRemoteTable> tables;
     private Socket server;
     private Scanner input;
@@ -25,6 +26,21 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
 
     public int getPort() {
         return port;
+    }
+
+    public RealRemoteTable getCurrentTable() {
+        getTable("simple");
+        output.println("current");
+        String answer = input.nextLine();
+        if (answer.length() > 1) {
+            return tables.get(answer);
+        }
+        return null;
+    }
+
+    @Override
+    public void setCurrentTable(Table newTable) {
+        output.println("use " + newTable.getName());
     }
 
     public RealRemoteTableProvider(String hostName, int port) throws IOException {
@@ -70,7 +86,7 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
                 try {
                     tables.put(name, new RealRemoteTable(name, hostName, port, this));
                 } catch (IOException e) {
-                    System.err.println("error while creating real remote table");
+                    System.err.println("error while creating real remote table: " + e.getMessage());
                 }
             }
             return tables.get(name);
@@ -141,8 +157,9 @@ public class RealRemoteTableProvider implements RemoteTableProvider {
         return result;
     }
 
-    public void showTables() {
-
+    public String describeTable(String name) {
+        output.println("describe " + name);
+        return input.nextLine();
     }
 
     @Override

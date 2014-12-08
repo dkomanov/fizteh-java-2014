@@ -1,11 +1,8 @@
-package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClient;
+package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClientConnections;
 
-import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Server;
 
 import java.io.IOException;
-import java.util.List;
 
 public class ClientCmdConnect extends ClientCommand {
     public ClientCmdConnect() {

@@ -2,12 +2,13 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider.*;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Exceptions.ExitException;
 
 import java.io.PrintStream;
 import java.util.HashMap;
 
 public class CommandExecutor {
-    private final HashMap<String, CommandTableProvider> shellCommands;
+    private final HashMap<String, CommandTableProviderExtended> shellCommands;
 
     public CommandExecutor() {
         shellCommands = new HashMap<>();
@@ -23,9 +24,10 @@ public class CommandExecutor {
         shellCommands.put("size", new CommandSize());
         shellCommands.put("use", new CommandUse());
         shellCommands.put("describe", new CommandDescribe());
+        shellCommands.put("current", new CommandCurrentTable());
     }
 
-    public void run(String message, PrintStream output, TableProvider dataBase) {
+    public void run(String message, PrintStream output, TableProvider dataBase) throws ExitException {
         String[] parsedCommands;
         String[] parsedArguments;
         boolean errorOccuried = false;
@@ -43,9 +45,9 @@ public class CommandExecutor {
                 continue;
             }
             if (parsedArguments[0].equals("exit")) {
-                //do smth
+                throw new ExitException();
             }
-            CommandTableProvider commandToExecute = shellCommands.get(parsedArguments[0]);
+            CommandTableProviderExtended commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {
                 try {
                     if (commandToExecute.getNumberOfArguments() != parsedArguments.length
@@ -65,6 +67,7 @@ public class CommandExecutor {
             }
             if (errorOccuried) {
                 //throw new IllegalStateException();
+                //непонятно, зачем эти значения
             }
         }
     }

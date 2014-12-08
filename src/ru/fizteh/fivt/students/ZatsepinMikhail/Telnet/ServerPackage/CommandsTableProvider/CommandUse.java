@@ -1,21 +1,21 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.MFileHashMap;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.PrintStream;
 
-public class CommandUse extends CommandTableProvider {
+public class CommandUse extends CommandTableProviderExtended {
     public CommandUse() {
         name = "use";
         numberOfArguments = 2;
     }
 
     @Override
-    public boolean run(MFileHashMap myMap, String[] args, PrintStream output) {
-        FileMap newCurrentTable = (FileMap) myMap.getTable(args[1]);
+    public boolean run(TableProviderExtended myMap, String[] args, PrintStream output) {
+        Table newCurrentTable = myMap.getTable(args[1]);
         if (newCurrentTable != null) {
-            FileMap currentTable = myMap.getCurrentTable();
+            Table currentTable = myMap.getCurrentTable();
             if (currentTable == null) {
                 myMap.setCurrentTable(newCurrentTable);
                 output.println("using " + args[1]);

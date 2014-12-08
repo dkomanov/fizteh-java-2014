@@ -7,7 +7,7 @@ import java.io.IOException;
 
 
 public class RealRemoteTableProviderFactory implements RemoteTableProviderFactory {
-    private RemoteTableProvider currentProvider;
+    private RealRemoteTableProvider currentProvider;
 
     @Override
     public RemoteTableProvider connect(String hostname, int port) throws IOException {
@@ -24,7 +24,7 @@ public class RealRemoteTableProviderFactory implements RemoteTableProviderFactor
         currentProvider = null;
     }
 
-    public RemoteTableProvider getCurrentProvider() {
+    public RealRemoteTableProvider getCurrentProvider() {
         return currentProvider;
     }
 }

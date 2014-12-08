@@ -2,19 +2,19 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTab
 
 
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.MFileHashMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class CommandDrop extends CommandTableProvider {
+public class CommandDrop extends CommandTableProviderExtended {
     public CommandDrop() {
         name = "drop";
         numberOfArguments = 2;
     }
 
     @Override
-    public boolean run(MFileHashMap myMap, String[] args, PrintStream output) {
+    public boolean run(TableProviderExtended myMap, String[] args, PrintStream output) {
         try {
             myMap.removeTable(args[1]);
             output.println("dropped");

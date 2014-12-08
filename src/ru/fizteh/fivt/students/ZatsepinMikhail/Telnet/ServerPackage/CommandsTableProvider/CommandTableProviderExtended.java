@@ -1,14 +1,16 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider;
 
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.MFileHashMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.PrintStream;
 
-public abstract class CommandTableProvider {
+public abstract class CommandTableProviderExtended {
     protected String name;
     protected int numberOfArguments;
 
-    public abstract boolean run(MFileHashMap dataBase, String[] args, PrintStream output);
+    public abstract boolean run(TableProviderExtended dataBase, String[] args, PrintStream output);
     @Override
     public final String toString() {
             return name;

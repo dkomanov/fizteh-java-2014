@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Exceptions.ExitException;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -31,7 +32,11 @@ public class TalkingThread extends Thread {
             CommandExecutor executor = new CommandExecutor();
             while (!client.isClosed() & input.hasNext()) {
                 String message = input.nextLine();
-                executor.run(message, output, dataBase);
+                try {
+                    executor.run(message, output, dataBase);
+                } catch (ExitException e) {
+                    stopExecution();
+                }
             }
         } catch (IOException e) {
             System.err.println("error while getting streams");

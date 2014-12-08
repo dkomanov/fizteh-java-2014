@@ -1,23 +1,21 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider;
 
-import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.PrintStream;
 
-public class CommandRollback extends CommandTableProviderExtended {
-    public CommandRollback() {
-        name = "rollback";
+public class CommandCurrentTable extends CommandTableProviderExtended {
+    public CommandCurrentTable() {
+        name = "current";
         numberOfArguments = 1;
     }
 
     @Override
     public boolean run(TableProviderExtended myMap, String[] args, PrintStream output) {
-        Table currentTable = myMap.getCurrentTable();
-        if (currentTable == null) {
-            output.println("no table");
+        if (myMap.getCurrentTable() == null) {
+            output.println();
         } else {
-            output.println(currentTable.rollback());
+            output.println(myMap.getCurrentTable().getName());
         }
         return true;
     }

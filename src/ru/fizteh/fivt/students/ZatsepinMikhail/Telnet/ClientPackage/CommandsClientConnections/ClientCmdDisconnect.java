@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClient;
+package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClientConnections;
 
 import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProviderFactory;
