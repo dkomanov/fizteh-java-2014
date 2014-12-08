@@ -9,11 +9,20 @@ import java.util.*;
 public class StoreableClass implements Storeable {
 
     private List<Object> values;
-    private static Set<Class<?>> validTypes;
     private List<Class<?>> columnTypes;
+    private static final Set<Class<?>> validTypes;
+    static {
+        validTypes = new HashSet<>();
+        validTypes.add(Integer.class);
+        validTypes.add(Long.class);
+        validTypes.add(Byte.class);
+        validTypes.add(Double.class);
+        validTypes.add(Float.class);
+        validTypes.add(Boolean.class);
+        validTypes.add(String.class);
+    }
 
     public StoreableClass(Table table) {
-        initializeValidTypesList();
         List<Class<?>> newColumnTypes = new ArrayList<>();
         for (int currentIndex = 0; currentIndex < table.getColumnsCount(); ++currentIndex) {
             newColumnTypes.add(table.getColumnType(currentIndex));
@@ -42,19 +51,6 @@ public class StoreableClass implements Storeable {
                     this.values.set(i, values.get(i));
                 }
             }
-        }
-    }
-
-    private void initializeValidTypesList() {
-        if (validTypes == null) {
-            validTypes = new HashSet<>();
-            validTypes.add(Integer.class);
-            validTypes.add(Long.class);
-            validTypes.add(Byte.class);
-            validTypes.add(Double.class);
-            validTypes.add(Float.class);
-            validTypes.add(Boolean.class);
-            validTypes.add(String.class);
         }
     }
 
