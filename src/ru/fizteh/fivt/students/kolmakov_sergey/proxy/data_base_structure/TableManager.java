@@ -301,7 +301,4 @@ public class TableManager implements TableProvider, AutoCloseable {
     public boolean isClosed() {
         return closed;
     }
-    public void superFunc(){
-        System.out.println(lock.toString());
-    }
 }

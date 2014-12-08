@@ -94,7 +94,7 @@ class DataFile {
                 bytes.reset();
                 try {
                     checkKey(key, null);
-                } catch (IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
                     throw new DatabaseCorruptedException("Wrong key found in file " + filePath.toString());
                 }
                 keys.add(key);
