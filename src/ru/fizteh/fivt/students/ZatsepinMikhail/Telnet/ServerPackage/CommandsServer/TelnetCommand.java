@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands;
+package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsServer;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Command;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Server;

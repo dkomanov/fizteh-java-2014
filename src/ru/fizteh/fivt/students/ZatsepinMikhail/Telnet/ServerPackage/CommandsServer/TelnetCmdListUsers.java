@@ -1,8 +1,7 @@
-package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands;
+package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsServer;
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Server;
 
-import java.net.SocketAddress;
 import java.util.List;
 
 public class TelnetCmdListUsers extends TelnetCommand {

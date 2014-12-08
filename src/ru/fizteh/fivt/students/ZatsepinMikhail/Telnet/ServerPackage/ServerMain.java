@@ -1,11 +1,10 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands.TelnetCmdListUsers;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands.TelnetCmdStart;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Commands.TelnetCmdStop;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsServer.TelnetCmdListUsers;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsServer.TelnetCmdStart;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsServer.TelnetCmdStop;
 
 import java.io.IOException;
 
