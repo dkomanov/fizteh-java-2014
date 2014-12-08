@@ -65,9 +65,9 @@ class DataFile {
                     file.writeInt(offsetIterator.next());
                 }
             } catch (FileNotFoundException e) {
-                throw new IOException("File not found: " + filePath.toString());
+                throw new IOException("File not found: " + filePath);
             } catch (UnsupportedEncodingException e) {
-                throw new IOException("Can't encode file: " + filePath.toString());
+                throw new IOException("Can't encode file: " + filePath);
             }
         }
     }
@@ -92,9 +92,7 @@ class DataFile {
                 counter += 4;
                 String key = bytes.toString(TableManager.CODE_FORMAT);
                 bytes.reset();
-                if (!checkKey(key)) {
-                    throw new DatabaseCorruptedException("Wrong key found in file " + filePath.toString());
-                }
+                checkKey(key, "Wrong key found in file " + filePath);
                 keys.add(key);
             } while (counter < offsets.get(0));
 
@@ -112,11 +110,11 @@ class DataFile {
                                 provider.deserialize(table, bytes.toString(TableManager.CODE_FORMAT)));
                     } catch (ParseException e) {
                         throw new RuntimeException("Data corrupted in file "
-                                + filePath.toString() + " : " + e.getMessage());
+                                + filePath + " : " + e.getMessage());
                     }
                     bytes.reset();
                 } else {
-                    throw new DatabaseCorruptedException("Data corrupted in file " + filePath.toString());
+                    throw new DatabaseCorruptedException("Data corrupted in file " + filePath);
                 }
             }
             bytes.close();
@@ -124,26 +122,20 @@ class DataFile {
     }
 
     protected Storeable put(String key, Storeable value) {
-        if (!checkKey(key)) {
-            throw new IllegalArgumentException("trying to put unexpected key in file " + filePath.toString());
-        }
+        checkKey(key, "trying to put unexpected key in file " + filePath);
         if (value == null) {
-            throw new IllegalArgumentException("trying to put null value in file " + filePath.toString());
+            throw new IllegalArgumentException("trying to put null value in file " + filePath);
         }
         return fileMap.put(key, value);
     }
 
     protected Storeable get(String key) {
-        if (!checkKey(key)) {
-            throw new IllegalArgumentException("trying to read unexpected key in file " + filePath.toString());
-        }
+        checkKey(key, "trying to read unexpected key in file " + filePath);
         return fileMap.get(key);
     }
 
     protected Storeable remove(String key) {
-        if (!checkKey(key)) {
-            throw new IllegalArgumentException("trying to remove unexpected key from file " + filePath.toString());
-        }
+        checkKey(key, "trying to remove unexpected key from file " + filePath);
         return fileMap.remove(key);
     }
 
@@ -157,21 +149,22 @@ class DataFile {
 
     private Path makeAbsolutePath(Path tablePath, Coordinates folderFileIndexes) {
         return tablePath.resolve(
-                Paths.get(Integer.toString(folderFileIndexes.getFolderIndex()) + ".dir",
-                        Integer.toString(folderFileIndexes.getFileIndex()) + ".dat"));
+                Paths.get(folderFileIndexes.getFolderIndex() + ".dir", folderFileIndexes.getFileIndex() + ".dat"));
     }
 
-    private boolean checkKey(String key) {
+    private void checkKey(String key, String message) {
         if (key == null) {
             throw new IllegalArgumentException("checkKey: key == null");
         }
         try {
-            return ((folderFileIndexes.getFolderIndex() == Math.abs(key.getBytes(TableManager.CODE_FORMAT)[0]
+            if (!((folderFileIndexes.getFolderIndex() == Math.abs(key.getBytes(TableManager.CODE_FORMAT)[0]
                     % TableManager.NUMBER_OF_PARTITIONS) && folderFileIndexes.getFileIndex()
                     == Math.abs((key.getBytes(TableManager.CODE_FORMAT)[0] / TableManager.NUMBER_OF_PARTITIONS)
-                    % TableManager.NUMBER_OF_PARTITIONS)));
+                    % TableManager.NUMBER_OF_PARTITIONS)))) {
+                throw new IllegalArgumentException(message);
+            }
         } catch (UnsupportedEncodingException e) {
-            return false;
+            throw new IllegalArgumentException(message);
         }
     }
 }
