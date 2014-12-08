@@ -389,7 +389,11 @@ public class DbTable implements Table {
 
 
     public List<Class<?>> getSignature() {
-        return signature;
+        lock.readLock().lock();
+        List<Class<?>> retSignature = signature;
+        lock.readLock().unlock();
+
+        return retSignature;
     }
 
     private void readKeyValue(Path filePath, int dir, int file) throws MyIOException {
@@ -446,6 +450,7 @@ public class DbTable implements Table {
 
     public void read() throws MyIOException {
 
+        lock.writeLock().lock();
         for (int dir = 0; dir < 16; ++dir) {
             for (int file = 0; file < 16; ++file) {
                 Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
@@ -457,6 +462,7 @@ public class DbTable implements Table {
                 }
             }
         }
+        lock.writeLock().unlock();
     }
 
     private void writeKeyValue(Path filePath, String keyStr, String valueStr) throws MyIOException {
@@ -478,12 +484,15 @@ public class DbTable implements Table {
 
     public void write() throws MyIOException {
 
+        lock.writeLock().lock();
+
         if (Files.exists(tablePath)) {
             Shell.deleteContent(tablePath);
         } else {
             try {
                 Files.createDirectory(tablePath);
             } catch (IOException ex) {
+                lock.writeLock().unlock();
                 throw new MyIOException("Error has occurred while creating table directory");
             }
         }
@@ -505,6 +514,7 @@ public class DbTable implements Table {
                 try {
                     Files.createDirectory(dirPath);
                 } catch (IOException ex) {
+                    lock.writeLock().unlock();
                     throw new MyIOException(dirPath + ": unable to create");
                 }
             }
@@ -512,6 +522,7 @@ public class DbTable implements Table {
                 try {
                     Files.createFile(filePath);
                 } catch (IOException ex) {
+                    lock.writeLock().unlock();
                     throw new MyIOException(filePath + ": unable to create");
                 }
             }
@@ -519,6 +530,8 @@ public class DbTable implements Table {
             writeKeyValue(filePath, key, value);
 
         }
+
+        lock.writeLock().unlock();
 
     }
 
