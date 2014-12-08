@@ -50,8 +50,8 @@ public class InterpreterTest {
                     public void accept(DataBaseState testConnector, String[] arguments) {
                         printStream.println(testOutput);
                     }
-                }, null)}, new ByteArrayInputStream((testCommandName + newLine +
-                "exit" + newLine).getBytes()), printStream);
+                }, null)}, new ByteArrayInputStream((testCommandName + newLine
+                + "exit" + newLine).getBytes()), printStream);
         interpreter.run(new String[] {});
         assertEquals(Interpreter.PROMPT + testOutput + newLine + Interpreter.PROMPT, outputStream.toString());
     }
