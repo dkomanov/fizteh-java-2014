@@ -223,20 +223,6 @@ public final class Utility {
     }
 
     /**
-     * Forms a regular expression for a string inside quotes.
-     * @param quotes
-     *         Sequence of symbols that plays role of quotes [regex-style].
-     * @param escapeSequence
-     *         Inside quotes escapeSequence and quotes must occur only after escapeSequence [regex-style].
-     */
-    public static String getQuotedStringRegex(String quotes, String escapeSequence) {
-        // Regex: "((plain text)|(escaped symbols))*"
-
-        return quotes + "([^" + quotes + escapeSequence + "]|(" + escapeSequence + escapeSequence + ")|("
-               + escapeSequence + quotes + "))*" + quotes;
-    }
-
-    /**
      * Returns string between two quotes. All quote and escape sequences inside the string are escaped by
      * escape sequence.
      * @param s
@@ -253,10 +239,8 @@ public final class Utility {
         if (s == null) {
             return null;
         }
-        s = s.replace(
-                escapeSequence, escapeSequence + escapeSequence);
-        s = s.replaceAll(
-                quoteSequence, escapeSequence + quoteSequence);
+        s = s.replace(escapeSequence, escapeSequence + escapeSequence);
+        s = s.replace(quoteSequence, escapeSequence + quoteSequence);
         return quoteSequence + s + quoteSequence;
     }
 

@@ -370,7 +370,7 @@ public final class JSONParser {
         }
     }
 
-    @JSONComplexObject(singleField = true)
+    @JSONComplexObject(wrapper = true)
     private static class MapObject implements JSONParsedObject {
         @JSONField
         private final Map<String, Object> map;
@@ -438,7 +438,7 @@ public final class JSONParser {
         }
     }
 
-    @JSONComplexObject(singleField = true)
+    @JSONComplexObject(wrapper = true)
     private static class ArrayObject implements JSONParsedObject {
         @JSONField
         private final Object[] array;

@@ -33,11 +33,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 final class DBTableProvider implements AutoCloseableProvider {
-    public static final char ESCAPE_CHARACTER = '\\';
     private static final char QUOTE_CHARACTER = '\"';
-    //    public static final String QUOTED_STRING_REGEX =
-    //            Utility.getQuotedStringRegex(QUOTE_CHARACTER + "", ESCAPE_CHARACTER + "" +
-    // ESCAPE_CHARACTER);
+
     private static final Collection<Class<?>> SUPPORTED_TYPES = new ConvenientCollection<>(
             new HashSet<Class<?>>()).addNext(Integer.class).addNext(Long.class).addNext(Byte.class)
                                     .addNext(Double.class).addNext(Float.class).addNext(Boolean.class)
@@ -222,16 +219,6 @@ final class DBTableProvider implements AutoCloseableProvider {
             Utility.checkNotNull(table, "Table");
             Utility.checkNotNull(value, "Value");
 
-            //            String partRegex = "null|true|false|-?[0-9]+(\\.[0-9]+)?";
-            //            partRegex += "|" + QUOTED_STRING_REGEX;
-            //            partRegex = "\\s*(" + partRegex + ")\\s*";
-            //            String regex = "^\\s*\\[" + partRegex + "(," + partRegex + ")*" + "\\]\\s*$";
-            //
-            //            if (!value.matches(regex)) {
-            //                throw new ParseException(
-            //                        "wrong type (Does not match JSON simple list regular expression)", -1);
-            //            }
-            //
             int leftBound = value.indexOf('[');
             int rightBound = value.lastIndexOf(']');
 
@@ -281,79 +268,6 @@ final class DBTableProvider implements AutoCloseableProvider {
             }
 
             return storeable;
-            //            int currentColumn = 0;
-            //
-            //            int index = leftBound + 1;
-            //
-            //            for (; index < rightBound; ) {
-            //                char currentChar = value.charAt(index);
-            //
-            //                if (Character.isSpaceChar(currentChar)) {
-            //                    // Space that does not mean anything.
-            //
-            //                    index++;
-            //                } else if (LIST_SEPARATOR_CHARACTER == currentChar) {
-            //                    // Next list element.
-            //
-            //                    currentColumn++;
-            //                    if (currentColumn >= columnsCount) {
-            //                        throw new ParseException(
-            //                                "wrong type (Too many elements in the list; expected: " +
-            // columnsCount + ")",
-            //                                index);
-            //                    }
-            //                    index++;
-            //                } else {
-            //                    // Boolean, Number, Null, String.
-            //
-            //                    // End of element (exclusive).
-            //                    int elementEnd;
-            //
-            //                    if (QUOTE_CHARACTER == currentChar) {
-            //                        // As soon as the given value matches JSON format, closing quotes
-            //                        // are guaranteed to
-            //                        // have been found and no exception can be thrown here -> so format
-            //                        // 'wrong type(..
-            //                        // .)' support is not necessary here.
-            //
-            //                        elementEnd = Utility.findClosingQuotes(
-            //                                value, index + 1, rightBound, QUOTE_CHARACTER,
-            // ESCAPE_CHARACTER) + 1;
-            //                    } else {
-            //                        elementEnd = value.indexOf(LIST_SEPARATOR_CHARACTER, index + 1);
-            //                        if (elementEnd == -1) {
-            //                            elementEnd = rightBound;
-            //                        }
-            //                    }
-            //
-            //                    // Parsing the value.
-            //                    Object elementObj;
-            //
-            //                    String elementStr = value.substring(index, elementEnd).trim();
-            //                    if ("null".equals(elementStr)) {
-            //                        elementObj = null;
-            //                    } else {
-            //                        Class<?> elementClass = table.getColumnType(currentColumn);
-            //                        try {
-            //                            elementObj = PARSERS.get(elementClass).apply(elementStr);
-            //                        } catch (RuntimeException exc) {
-            //                            throw new ParseException(
-            //                                    "wrong type (" + exc.getMessage() + ")", index);
-            //                        }
-            //                    }
-            //
-            //                    storeable.setColumnAt(currentColumn, elementObj);
-            //                    index = elementEnd;
-            //                }
-            //            }
-            //
-            //            if (currentColumn + 1 != columnsCount) {
-            //                throw new ParseException(
-            //                        "wrong type (Too few elements in the list; expected: " + columnsCount
-            // + ")", -1);
-            //            }
-            //
-            //            return storeable;
         }
     }
 

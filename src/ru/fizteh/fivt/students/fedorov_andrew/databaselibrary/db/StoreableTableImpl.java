@@ -62,7 +62,7 @@ public final class StoreableTableImpl implements AutoCloseableTable {
         this.provider = provider;
         this.onTableClosedListener = onTableClosedListener;
         this.store = store;
-        this.columnTypes = Collections.unmodifiableList(new ArrayList<Class<?>>(columnTypes));
+        this.columnTypes = Collections.unmodifiableList(new ArrayList<>(columnTypes));
     }
 
     static AutoCloseableTable createTable(TableProvider provider,

@@ -8,7 +8,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that objects of the annotated type contain multiple JSON fields.
+ * This annotation indicates that objects of the annotated type contain JSON fields that need to be converted
+ * to json as parts of these objects.
  * @author Phoenix
  */
 @Target({ElementType.TYPE})
@@ -19,5 +20,5 @@ public @interface JSONComplexObject {
     /**
      * If true, this object will not be converted to JSON directly. Its single field will be taken instead.
      */
-    boolean singleField() default false;
+    boolean wrapper() default false;
 }

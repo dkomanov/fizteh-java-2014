@@ -22,8 +22,6 @@ public class UtilityTest {
     private static final char QUOTE_CHARACTER = '"';
     private static final char ESCAPE_CHARACTER = '\\';
 
-    private static final String QUOTED_STRING_REGEX =
-            Utility.getQuotedStringRegex(QUOTE_CHARACTER + "", ESCAPE_CHARACTER + "" + ESCAPE_CHARACTER);
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -54,21 +52,6 @@ public class UtilityTest {
 
     private static String[] supplyArray(String... strings) {
         return strings;
-    }
-
-    @Test
-    public void testMatchQuotedStringRegex() {
-        assertFalse("\"/\"".matches(QUOTED_STRING_REGEX));
-    }
-
-    @Test
-    public void testMatchQuotedStringRegex1() {
-        assertTrue("\"//\"".matches(QUOTED_STRING_REGEX));
-    }
-
-    @Test
-    public void testMatchQuotedStringRegex2() {
-        assertFalse("\"//\"\"".matches(QUOTED_STRING_REGEX));
     }
 
     @Test
@@ -113,7 +96,7 @@ public class UtilityTest {
 
     @Test
     public void testSplitString5() {
-        String part = quoteString("\"/ word \"/\"");
+        String part = quoteString("\"\\ word \"\\\"");
         assertArrayEquals(
                 "Invalid string split",
                 supplyArray("create", "table", "(" + part + "," + "1,", "null", ")"),

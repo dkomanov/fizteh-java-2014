@@ -19,7 +19,7 @@ public class Log {
     /**
      * If logging is disabled, no messages are output
      */
-    private static boolean enableLogging = true;
+    private static boolean enableLogging = false;
     /**
      * Writer to the log file.
      */
@@ -61,13 +61,14 @@ public class Log {
     }
 
     public static synchronized void log(Class<?> logger, Throwable throwable, String message) {
-        if (writer == null) {
-            reopen();
-            if (writer == null) {
-                return;
-            }
-        }
         if (enableLogging) {
+            if (writer == null) {
+                reopen();
+                if (writer == null) {
+                    return;
+                }
+            }
+
             StringBuilder sb = new StringBuilder(message == null ? 100 : message.length() * 2);
 
             boolean appendSpace = false;

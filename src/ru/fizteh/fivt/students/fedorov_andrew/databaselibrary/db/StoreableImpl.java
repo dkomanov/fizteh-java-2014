@@ -15,7 +15,7 @@ import java.util.Objects;
  * Not thread-safe.<br/>
  * Not bound to any table.
  */
-@JSONComplexObject(singleField = true)
+@JSONComplexObject(wrapper = true)
 public final class StoreableImpl implements Storeable {
     @JSONField
     private final Object[] values;

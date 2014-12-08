@@ -138,7 +138,7 @@ public final class JSONMaker {
             if (annotatedFields.isEmpty()) {
                 throw new IllegalArgumentException(
                         "Illegal annotation @JSONComplexObject: there are no @JSONField annotated fields");
-            } else if (objClass.getAnnotation(JSONComplexObject.class).singleField()) {
+            } else if (objClass.getAnnotation(JSONComplexObject.class).wrapper()) {
                 if (annotatedFields.size() > 1) {
                     throw new IllegalArgumentException(
                             "Illegal annotation @JSONComplexObject: there are more then one @JSONField");
