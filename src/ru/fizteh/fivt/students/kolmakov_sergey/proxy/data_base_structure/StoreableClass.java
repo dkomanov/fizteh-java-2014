@@ -63,6 +63,12 @@ public class StoreableClass implements Storeable {
         values.set(columnIndex, value);
     }
 
+    private <T> T getTypedAt (int columnIndex, Class<T> clazz) {
+        checkBounds(columnIndex);
+        checkFormat(columnIndex, clazz);
+        return (T)values.get(columnIndex);
+    }
+
     @Override
     public Object getColumnAt(int columnIndex) throws IndexOutOfBoundsException {
         checkBounds(columnIndex);
@@ -71,51 +77,37 @@ public class StoreableClass implements Storeable {
 
     @Override
     public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkBounds(columnIndex);
-        checkFormat(columnIndex, Integer.class);
-        return (Integer) values.get(columnIndex);
+        return getTypedAt(columnIndex, Integer.class);
     }
 
     @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkBounds(columnIndex);
-        checkFormat(columnIndex, Long.class);
-        return (Long) values.get(columnIndex);
+        return getTypedAt(columnIndex, Long.class);
     }
 
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkBounds(columnIndex);
-        checkFormat(columnIndex, Byte.class);
-        return (Byte) values.get(columnIndex);
+        return getTypedAt(columnIndex, Byte.class);
     }
 
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkBounds(columnIndex);
-        checkFormat(columnIndex, Float.class);
-        return (Float) values.get(columnIndex);
+        return getTypedAt(columnIndex, Float.class);
     }
 
     @Override
     public Double getDoubleAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkBounds(columnIndex);
-        checkFormat(columnIndex, Double.class);
-        return (Double) values.get(columnIndex);
+        return getTypedAt(columnIndex, Double.class);
     }
 
     @Override
     public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkBounds(columnIndex);
-        checkFormat(columnIndex, Boolean.class);
-        return (Boolean) values.get(columnIndex);
+        return getTypedAt(columnIndex, Boolean.class);
     }
 
     @Override
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkBounds(columnIndex);
-        checkFormat(columnIndex, String.class);
-        return (String) values.get(columnIndex);
+        return getTypedAt(columnIndex, String.class);
     }
 
     @Override
