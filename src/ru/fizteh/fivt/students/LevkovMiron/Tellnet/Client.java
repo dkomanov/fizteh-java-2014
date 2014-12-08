@@ -35,8 +35,12 @@ public class Client {
         if (socket == null || !socket.isConnected()) {
             return 0;
         }
-        socket.close();
-        return 1;
+        try {
+            send("exit");
+        } finally {
+            socket.close();
+            return 1;
+        }
     }
 
     public String whereAmI() {

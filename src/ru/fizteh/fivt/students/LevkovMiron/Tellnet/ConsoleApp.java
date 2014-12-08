@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Created by Мирон on 10.11.2014 ru.fizteh.fivt.students.LevkovMiron.Storeable.
@@ -84,7 +85,7 @@ public class ConsoleApp {
         }
         if (command.equals("listusers")) {
             if (applicationType == 1) {
-                ArrayList<Socket> list = server.listUsers();
+                Set<Socket> list = server.listUsers();
                 for (Socket socket : list) {
                     System.out.println(socket.getInetAddress() + ":" + socket.getPort());
                 }
@@ -149,7 +150,11 @@ public class ConsoleApp {
         }
         if (applicationType == 2) {
             try {
-                client.send(command);
+                if (command.equals("exit")) {
+                    applicationType = 0;
+                    client.disconnect();
+                    return;
+                }
                 System.out.println(client.read());
             } catch (IOException e) {
                 System.out.println("can't connect to the server : " + e.getMessage());
@@ -183,97 +188,114 @@ public class ConsoleApp {
             System.out.println(currentT.getName());
         }
         try {
-            if (cmd[0].equals("use")) {
-                if (currentT != null && currentT.changesNumber() > 0) {
-                    System.out.println("Can't use: " + currentT.changesNumber() + " unsaved shanges");
-                    return;
-                }
-                if (provider.getTable(cmd[1]) != null) {
-                    currentT = (CTable) provider.getTable(cmd[1]);
-                    System.out.println("Using " + cmd[1]);
-                } else {
-                    System.out.println("Table doesn't exist");
-                }
-            } else if (cmd[0].equals("drop")) {
-                if (provider.getTable(cmd[1]) != null) {
-                    if (currentT == provider.getTable(cmd[1])) {
-                        currentT = null;
+            switch (cmd[0]) {
+                case "use":
+                    if (currentT != null && currentT.changesNumber() > 0) {
+                        System.out.println("Can't use: " + currentT.changesNumber() + " unsaved shanges");
+                        return;
                     }
-                    provider.removeTable(cmd[1]);
-                } else {
-                    System.out.println(cmd[1] + " doesn't exist");
-                }
-            } else if (cmd[0].equals("create")) {
-                if (cmd.length != 3) {
-                    System.err.println("wrong number of argument to Create");
+                    if (provider.getTable(cmd[1]) != null) {
+                        currentT = (CTable) provider.getTable(cmd[1]);
+                        System.out.println("Using " + cmd[1]);
+                    } else {
+                        System.out.println("Table doesn't exist");
+                    }
+                    break;
+                case "drop":
+                    if (provider.getTable(cmd[1]) != null) {
+                        if (currentT == provider.getTable(cmd[1])) {
+                            currentT = null;
+                        }
+                        provider.removeTable(cmd[1]);
+                    } else {
+                        System.out.println(cmd[1] + " doesn't exist");
+                    }
+                    break;
+                case "create":
+                    if (cmd.length != 3) {
+                        System.err.println("wrong number of argument to Create");
+                        return;
+                    }
+                    String name = cmd[1];
+                    if (provider.getTable(name) != null) {
+                        System.out.println("Already exists");
+                        return;
+                    }
+                    String forSignature = cmd[2].replaceFirst("\\(", "");
+                    forSignature = forSignature.trim();
+                    forSignature = forSignature.substring(0, forSignature.length() - 1);
+                    Utils utils = new Utils();
+                    ArrayList<Class<?>> signature = utils.signature(forSignature);
+                    try {
+                        provider.createTable(name, signature);
+                        System.out.println("created");
+                    } catch (IOException e) {
+                        System.err.println("I can't create table" + " " + e.getMessage());
+                        System.exit(-1);
+                    }
+                    break;
+                case "exit":
+                    if (currentT != null) {
+                        currentT.rollback();
+                    }
+                    System.exit(0);
+                    break;
+                case "get":
+                    if (currentT == null) {
+                        System.out.println("No tables in usage");
+                        return;
+                    }
+                    if (cmd.length == 4 && cmd[1].equals("column") && cmd[2].equals("type")) {
+                        System.out.println(currentT.getColumnType(Integer.parseInt(cmd[3])));
+                        return;
+                    }
+                    currentT.get(cmd[1]);
+                    break;
+                case "put":
+                    if (currentT == null) {
+                        System.out.println("No tables in usage");
+                        return;
+                    }
+                    currentT.put(cmd[1], new Parser().deserialize(currentT, cmd[2]));
+                    break;
+                case "list":
+                    if (currentT == null) {
+                        System.out.println("No tables in usage");
+                        return;
+                    }
+                    currentT.list();
+                    break;
+                case "remove":
+                    if (currentT == null) {
+                        System.out.println("No tables in usage");
+                        return;
+                    }
+                    currentT.remove(cmd[1]);
+                    break;
+                case "size":
+                    if (currentT == null) {
+                        System.out.println("No tables in usage");
+                        return;
+                    }
+                    currentT.size();
+                    break;
+                case "commit":
+                    if (currentT == null) {
+                        System.out.println("No tables in usage");
+                        return;
+                    }
+                    currentT.commit();
+                    break;
+                case "rollback":
+                    if (currentT == null) {
+                        System.out.println("No tables in usage");
+                        return;
+                    }
+                    currentT.rollback();
+                    break;
+                default:
+                    System.out.println("Unknown command");
                     return;
-                }
-                String name = cmd[1];
-                if (provider.getTable(name) != null) {
-                    System.out.println("Already exists");
-                    return;
-                }
-                String forSignature = cmd[2].replaceFirst("\\(", "");
-                forSignature = forSignature.trim();
-                forSignature = forSignature.substring(0, forSignature.length() - 1);
-                Utils utils = new Utils();
-                ArrayList<Class<?>> signature = utils.signature(forSignature);
-                try {
-                    provider.createTable(name, signature);
-                    System.out.println("created");
-                } catch (IOException e) {
-                    System.err.println("I can't create table" + " " + e.getMessage());
-                    System.exit(-1);
-                }
-            } else if (cmd[0].equals("get")) {
-                if (currentT == null) {
-                    System.out.println("No tables in usage");
-                    return;
-                }
-                if (cmd.length == 4 && cmd[1].equals("column") && cmd[2].equals("type")) {
-                    System.out.println(currentT.getColumnType(Integer.parseInt(cmd[3])));
-                    return;
-                }
-                currentT.get(cmd[1]);
-            } else if (cmd[0].equals("put")) {
-                if (currentT == null) {
-                    System.out.println("No tables in usage");
-                    return;
-                }
-                currentT.put(cmd[1], new Parser().deserialize(currentT, cmd[2]));
-            } else if (cmd[0].equals("list")) {
-                if (currentT == null) {
-                    System.out.println("No tables in usage");
-                    return;
-                }
-                currentT.list();
-            } else if (cmd[0].equals("remove")) {
-                if (currentT == null) {
-                    System.out.println("No tables in usage");
-                    return;
-                }
-                currentT.remove(cmd[1]);
-            } else if (cmd[0].equals("size")) {
-                if (currentT == null) {
-                    System.out.println("No tables in usage");
-                    return;
-                }
-                currentT.size();
-            } else if (cmd[0].equals("commit")) {
-                if (currentT == null) {
-                    System.out.println("No tables in usage");
-                    return;
-                }
-                currentT.commit();
-            } else if (cmd[0].equals("rollback")) {
-                if (currentT == null) {
-                    System.out.println("No tables in usage");
-                    return;
-                }
-                currentT.rollback();
-            } else {
-                System.out.println("Unknown command");
-                return;
             }
         } catch (IOException e) {
             System.out.println("IOException " + e.getMessage());

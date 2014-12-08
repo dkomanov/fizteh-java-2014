@@ -110,8 +110,11 @@ public class CTableProvider implements TableProvider, AutoCloseable {
         }
         try {
             lock.readLock().lock();
-            listTables.get(name).open();
-            return listTables.get(name);
+            CTable result = listTables.get(name);
+            if (result != null) {
+                result.open();
+            }
+            return result;
         } finally {
              lock.readLock().unlock();
         }

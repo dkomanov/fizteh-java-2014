@@ -46,6 +46,7 @@ public class CTable implements Table, AutoCloseable {
             }
         } catch (IOException e) {
             throw new IOException("Directory creation failed: " + e.getMessage());
+
         }
         loadData();
     }
@@ -70,6 +71,9 @@ public class CTable implements Table, AutoCloseable {
     }
 
     void open() {
+        removed.set(new HashSet<>());
+        put.set(new HashMap<>());
+        changed.set(new HashMap<>());
         closed = false;
     }
 
@@ -169,7 +173,7 @@ public class CTable implements Table, AutoCloseable {
             put.get().put(key, value);
         }
         lock.readLock().unlock();
-        return value;
+        return valueBefore;
     }
 
     @Override
@@ -180,23 +184,26 @@ public class CTable implements Table, AutoCloseable {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        Storeable value = null;
-        lock.readLock().lock();
-        if (table.keySet().contains(key)) {
-            value = table.get(key);
+        try {
+            Storeable value = null;
+            lock.readLock().lock();
+            if (table.keySet().contains(key)) {
+                value = table.get(key);
+            }
+            if (removed.get().contains(key)) {
+                value = null;
+            }
+            if (put.get().keySet().contains(key)) {
+                value = put.get().remove(key);
+            }
+            if (changed.get().keySet().contains(key)) {
+                value = changed.get().remove(key);
+            }
+            removed.get().add(key);
+            return value;
+        } finally {
+            lock.readLock().unlock();
         }
-        if (removed.get().contains(key)) {
-            value = null;
-        }
-        if (put.get().keySet().contains(key)) {
-            value = put.get().remove(key);
-        }
-        if (changed.get().keySet().contains(key)) {
-            value = changed.get().remove(key);
-        }
-        removed.get().add(key);
-        lock.readLock().unlock();
-        return value;
     }
 
     public String getName() throws IllegalStateException {
@@ -262,13 +269,17 @@ public class CTable implements Table, AutoCloseable {
         if (closed) {
             throw new IllegalStateException("Table is closed");
         }
-        lock.readLock().lock();
-        Set<String> res = new HashSet<String>();
-        res.addAll(table.keySet());
-        res.addAll(put.get().keySet());
-        res.removeAll(removed.get());
-        lock.readLock().unlock();
-        return new ArrayList<String>(res);
+        try {
+            lock.readLock().lock();
+            Set<String> res = new HashSet<String>();
+            res.addAll(table.keySet());
+            res.addAll(changed.get().keySet());
+            res.addAll(put.get().keySet());
+            res.removeAll(removed.get());
+            return new ArrayList<String>(res);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void drop() throws IOException {
