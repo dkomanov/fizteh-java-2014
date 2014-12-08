@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.kolmakov_sergey.parallel.interpreter;
 
 import ru.fizteh.fivt.students.kolmakov_sergey.parallel.data_base_exceptions.WrongNumberOfArgumentsException;
-import ru.fizteh.fivt.students.kolmakov_sergey.parallel.data_base_structure.DataBaseState;
 
 import java.io.InputStream;
 import java.io.PrintStream;

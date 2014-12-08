@@ -220,7 +220,7 @@ public class TableManager implements TableProvider {
             directory.delete();
         }
     }
-    private void checkName(String name, String message){
+    private void checkName(String name, String message) {
         if (name == null) {
             throw new IllegalArgumentException(message);
         }
