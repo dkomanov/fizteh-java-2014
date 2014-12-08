@@ -9,7 +9,6 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.egor_belikov.Storeable.MyTableProvider;
 import ru.fizteh.fivt.students.egor_belikov.Storeable.MyStoreable;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
