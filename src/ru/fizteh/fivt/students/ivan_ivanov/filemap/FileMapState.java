@@ -21,4 +21,8 @@ public class FileMapState {
         dataBase = new HashMap<String, String>();
         dataFile = currentFile;
     }
+    
+    public void setDataBase(Map<String, String> map) {
+        dataBase = map;
+    }
 }

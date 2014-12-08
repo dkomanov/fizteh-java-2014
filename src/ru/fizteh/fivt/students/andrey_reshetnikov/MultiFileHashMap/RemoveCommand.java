@@ -4,12 +4,23 @@ public class RemoveCommand extends CommandFileMap {
 
     private String key;
 
+    public void putArguments(String[] args) {
+        key = args[1];
+    }
+
+    public int numberOfArguments() {
+        return 1;
+    }
+
     public RemoveCommand(String passedKey) {
         key = passedKey;
     }
 
+    public RemoveCommand() {
+    }
+
     @Override
-    public void execute(DataBaseOneFile base, Boolean exitStatus) throws Exception {
+    public void execute(DataBase base) throws Exception {
         if (base.data.containsKey(key)) {
             base.data.remove(key);
             base.dump();

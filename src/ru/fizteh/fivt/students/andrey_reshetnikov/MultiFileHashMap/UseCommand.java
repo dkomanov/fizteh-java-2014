@@ -4,12 +4,22 @@ public class UseCommand extends Command {
 
     private String tableName;
 
-    public UseCommand(String newTableName) {
-        tableName = newTableName;
+    protected void putArguments(String[] args) {
+        tableName = args[1];
+    }
+
+    protected int numberOfArguments() {
+        return 1;
+    }
+
+    public UseCommand() {}
+
+    public UseCommand(String passedTableName) {
+        tableName = passedTableName;
     }
 
     @Override
-    public void execute(DataBaseOneDir base) throws Exception {
+    public void execute(DataBaseDir base) throws Exception {
         if (!base.tables.containsKey(tableName)) {
             System.out.println(tableName + " not exists");
         } else {
@@ -18,3 +28,4 @@ public class UseCommand extends Command {
         }
     }
 }
+

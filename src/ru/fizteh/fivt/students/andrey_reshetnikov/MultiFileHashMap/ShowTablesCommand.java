@@ -1,13 +1,18 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
+
 import java.util.Map;
 
 public class ShowTablesCommand extends Command {
 
+    protected int numberOfArguments() {
+        return 0;
+    }
+
     @Override
-    public void execute(DataBaseOneDir base) throws Exception {
-        for (Map.Entry<String, Table> i: base.tables.entrySet()) {
-            String name = i.getKey();
-            int size = i.getValue().recordsNumber();
+    public void execute(DataBaseDir base) throws Exception {
+        for (Map.Entry<String, Table> entry: base.tables.entrySet()) {
+            String name = entry.getKey();
+            int size = entry.getValue().recordsNumber();
             System.out.println(name + " " + size);
         }
     }

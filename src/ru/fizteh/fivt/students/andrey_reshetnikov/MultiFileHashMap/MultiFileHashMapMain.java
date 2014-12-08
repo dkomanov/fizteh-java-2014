@@ -1,38 +1,38 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
-public class MultiFileHashMapMain {
-    private static boolean selectMode;
+import java.io.UnsupportedEncodingException;
 
+public class MultiFileHashMapMain {
     public static void main(String[] args) {
-        new MultiFileHashMapMain().run(args);
+        run(args);
     }
 
     public static void run(String[] args) {
         String path = System.getProperty("fizteh.db.dir");
         if (path == null) {
-            System.err.println("Specify the database in properties");
+            System.err.println("No database directory name specified");
             System.exit(1);
         }
-
-        selectMode = (args.length == 0);
+        boolean interactive = false;
         try {
-            DataBaseOneDir dataBaseDir = new DataBaseOneDir(path);
-            CommandGetter getNewCommand;
-            if (selectMode) {
-                getNewCommand = new InteractiveGetter();
+            DataBaseDir dbDir = new DataBaseDir(path);
+            CommandGetter getter;
+            if (args.length == 0) {
+                interactive = true;
+                getter = new InteractiveGetter();
             } else {
-                getNewCommand = new BatchGetter(args);
+                getter = new BatchGetter(args);
             }
             boolean exitStatus = false;
             do {
                 try {
-                    String s = getNewCommand.nextCommand();
+                    String s = getter.nextCommand();
                     Command command = Command.fromString(s);
-                    command.execute(dataBaseDir);
+                    command.execute(dbDir);
                 } catch (ExitCommandException e) {
                     exitStatus = true;
                 } catch (Exception e) {
-                    if (selectMode) {
+                    if (interactive) {
                         System.err.println(e.getMessage());
                         System.err.flush();
                     } else {
@@ -40,15 +40,33 @@ public class MultiFileHashMapMain {
                     }
                 }
             } while (!exitStatus);
-        } catch (MkdirException e) {
-            System.err.println("You cann't create a directory for the new table");
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("Error: UTF-8 encoding is not supported");
             System.exit(1);
-        } catch (ExistsException e) {
-            System.err.println("Database directory does not exists");
+        } catch (TwoSameKeysException e) {
+            System.out.println("Two same keys in database file");
+            System.exit(1);
+        } catch (CannotCreateNewDatabaseFileException e) {
+            System.out.println("Can not create new database file");
+            System.exit(1);
+        } catch (MyDirectoryNotEmptyException e) {
+            System.out.println("Can not remove table directory. Redundant files");
+            System.exit(1);
+        } catch (CannotDeleteDataBaseFileException e) {
+           System.out.println(e.message);
+           System.exit(1);
+        } catch (FileFromDataBaseIsNotDirectoryException e) {
+           System.out.println(e.childName + " from databases directory is not a directory");
+           System.exit(1);
+        } catch (ParentDirectoryIsNotDirectory e) {
+            System.out.println("Specified fizteh.db.dir is not a directory");
+            System.exit(1);
+        } catch (CannotCreateDirectoryException e) {
+            System.out.println("Can not create working directory");
             System.exit(1);
         } catch (Exception e) {
             System.err.println(e.getMessage());
-            System.exit(1);
+            System.exit(2);
         }
     }
 }

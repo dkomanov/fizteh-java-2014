@@ -9,7 +9,7 @@ public class Get {
             System.exit(1);
         }
         if (ct.containsKey(currentArgs[1])) {
-            System.out.println("Found\nvalue = " + ct.get(currentArgs[1]));
+            System.out.println("found\n" + ct.get(currentArgs[1]));
         } else {
             System.out.println("Not found");
         }

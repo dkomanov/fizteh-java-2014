@@ -1,4 +1,4 @@
-﻿# Программирование на языке JAVA
+﻿﻿# Программирование на языке JAVA
 
 Курс лекций и семинаров для студентов второго курса ФизТеха, факультет
 [ФИВТ](http://fivt.fizteh.ru) на 2014 год.
@@ -22,6 +22,10 @@ Code Conventions.
 5. [Reflection, Proxy, JUnit](https://yadi.sk/i/Ku-C6VYOc4icJ)
 6. [Сериализация, XML, JSON](https://yadi.sk/d/8upuEG2ecRknU)
 7. [Многопоточность](https://yadi.sk/i/FsBB-AXVcRkoH)
+8. [Многопоточность](https://yadi.sk/i/IY2kKLoacgaBr)
+9. [Многопоточность](https://yadi.sk/i/4HUVI5rBcyvbh)
+10. [Сборщик мусора](https://yadi.sk/i/nkQu-3tMcyvaJ)
+11. [Работа с сетью](https://yadi.sk/i/D71n2oLGcyvb9)
 
 ## Список литературы
 * Брюс Эккель &mdash; Философия Java  (Thinking in Java)

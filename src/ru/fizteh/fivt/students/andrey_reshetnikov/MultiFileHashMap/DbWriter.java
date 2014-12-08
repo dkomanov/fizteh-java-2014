@@ -1,10 +1,11 @@
 package ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap;
 
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-class DbWriter {
+class DbWriter implements AutoCloseable {
 
     private DataOutputStream stream;
 
@@ -12,7 +13,9 @@ class DbWriter {
         try {
             stream = new DataOutputStream(new FileOutputStream(path));
         } catch (FileNotFoundException e) {
-            throw new Exception("Database file not found");
+            throw new Exception("Unable to write to database file: file not found");
+        } catch (SecurityException e) {
+            throw new Exception("Unable to write to database file");
         }
     }
 
@@ -22,10 +25,9 @@ class DbWriter {
                 writeNext(entry.getKey());
                 writeNext(entry.getValue());
             } catch (IOException e) {
-                throw new Exception("Problems with writing");
+                throw new Exception("Problems with writing to database file");
             }
         }
-        stream.close();
     }
 
     private void writeNext(String word) throws IOException {
@@ -33,4 +35,14 @@ class DbWriter {
         stream.writeInt(byteWord.length);
         stream.write(byteWord);
     }
+
+    @Override
+    public void close() throws Exception {
+        try {
+            stream.close();
+        } catch (IOException e) {
+            throw new Exception("Unable to close database file");
+        }
+    }
+
 }
