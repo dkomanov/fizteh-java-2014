@@ -42,7 +42,7 @@ public class CTableProvider implements TableProvider {
                         CTable table = new CTable(file, tableLocks.get(file.getFileName().toString()));
                         listTables.put(file.getFileName().toString(), table);
                     } finally {
-                        lock.writeLock().unlock();
+                        lock.readLock().unlock();
                     }
                 }
             }
