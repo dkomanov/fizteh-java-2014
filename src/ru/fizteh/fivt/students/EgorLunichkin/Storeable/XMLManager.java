@@ -1,14 +1,22 @@
 package ru.fizteh.fivt.students.EgorLunichkin.Storeable;
 
+
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +33,7 @@ public class XMLManager {
                     Element nullElement = document.createElement("null");
                     row.appendChild(nullElement);
                 } else {
-                    Element col = document.createElement("column");
+                    Element col = document.createElement("col");
                     Text text = document.createTextNode(object.toString());
                     col.appendChild(text);
                     row.appendChild(col);
@@ -60,7 +68,7 @@ public class XMLManager {
             List<Object> objectList = new ArrayList<>();
             for (int ind = 0; ind < row.getChildNodes().getLength(); ++ind) {
                 Node currentNode = cols.item(ind);
-                if (currentNode.getNodeName().equals("column")) {
+                if (currentNode.getNodeName().equals("col")) {
                     if (currentNode.getChildNodes().getLength() > 1) {
                         throw new ParseException("COLUMN must have text content only", ind);
                     }

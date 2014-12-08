@@ -9,34 +9,26 @@ import java.io.IOException;
 import java.util.List;
 
 public class CreateCommand implements Command {
+    private static String removeFirst(String s) {
+        return s.substring(1);
+    }
+
+    private static String removeLast(String s) {
+        return s.substring(0, s.length() - 1);
+    }
+
     public CreateCommand(StoreableTableProvider stp, String givenName, String[] givenTypeNames)
             throws StoreableException {
         sTableProvider = stp;
         tableName = givenName;
         StringBuilder typeNames = new StringBuilder();
-        for (int ind = 0; ind < givenTypeNames.length; ++ind) {
-            boolean added = false;
-            if (ind == 0) {
-                if (!givenTypeNames[ind].startsWith("(")) {
-                    throw new StoreableException("wrong type (typename list must be in brackets)");
-                } else {
-                    typeNames.append(givenTypeNames[ind].substring(1));
-                }
-                added = true;
-            }
-            if (ind == givenTypeNames.length - 1) {
-                if (!givenTypeNames[ind].endsWith(")")) {
-                    throw new StoreableException("wrong type (typename list must be in brackets)");
-                } else {
-                    typeNames.append(givenTypeNames[ind].substring(0, givenTypeNames[ind].length() - 1));
-                }
-                added = true;
-            }
-            if (!added) {
-                typeNames.append(givenTypeNames[ind]);
-            }
-            typeNames.append(' ');
+        if (!givenTypeNames[0].startsWith("(") || !givenTypeNames[givenTypeNames.length - 1].endsWith(")")) {
+            throw new StoreableException("wrong type (Typename list must be in brackets)");
         }
+        givenTypeNames[0] = removeFirst(givenTypeNames[0]);
+        givenTypeNames[givenTypeNames.length - 1] = removeLast(givenTypeNames[givenTypeNames.length - 1]);
+        for (int ind = 0; ind < givenTypeNames.length; ++ind)
+            typeNames.append(givenTypeNames[ind] + ' ');
         types = TypeManager.getClasses(typeNames.toString().trim());
     }
 
