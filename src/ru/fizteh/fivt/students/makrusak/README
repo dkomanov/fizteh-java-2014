@@ -1,0 +1,4 @@
+Чтобы запустить, например, multi_file_map:
+1. зайдите в мою директорию со списком всех моих задач
+2. javac multi_file_map/MultiFileMap.java
+3. java multi_file_map.MultiFileMap
