@@ -38,9 +38,12 @@ public class MyTable implements Table {
         protected Diff initialValue() {
             Diff newDiff = new Diff();
             tableAccessLock.readLock().lock();
-            copyMaps(committedMap, newDiff.currentMap);
-            copyKeysLists(committedKeys, newDiff.currentKeys);
-            tableAccessLock.readLock().unlock();
+            try {
+                copyMaps(committedMap, newDiff.currentMap);
+                copyKeysLists(committedKeys, newDiff.currentKeys);
+            } finally {
+                tableAccessLock.readLock().unlock();
+            }
             return newDiff;
         }
     };
@@ -109,10 +112,13 @@ public class MyTable implements Table {
 
     public int commit() throws ThreadInterruptException {
         tableAccessLock.writeLock().lock();
-        SaveTable.start(this);
-        copyMaps(currentMap(), committedMap);
-        copyKeysLists(currentKeys(), committedKeys);
-        tableAccessLock.writeLock().unlock();
+        try {
+            SaveTable.start(this);
+            copyMaps(currentMap(), committedMap);
+            copyKeysLists(currentKeys(), committedKeys);
+        } finally {
+            tableAccessLock.writeLock().unlock();
+        }
         int happenedChanges = changesNumber();
         diff.get().changesNumber = 0;
         return happenedChanges;
@@ -143,7 +149,6 @@ public class MyTable implements Table {
     private void initKeysArray(List<String>[][] keys) {
         for (int dir = 0; dir < 16; dir++) {
             for (int file = 0; file < 16; file++) {
-//                currentKeys()[dir][file] = new ArrayList<>();
                 keys[dir][file] = new ArrayList<>();
             }
         }
@@ -194,9 +199,12 @@ public class MyTable implements Table {
     void renewDiff() {
         Diff newDiff = new Diff();
         tableAccessLock.readLock().lock();
-        copyMaps(committedMap, newDiff.currentMap);
-        copyKeysLists(committedKeys, newDiff.currentKeys);
-        tableAccessLock.readLock().unlock();
+        try {
+            copyMaps(committedMap, newDiff.currentMap);
+            copyKeysLists(committedKeys, newDiff.currentKeys);
+        } finally {
+            tableAccessLock.readLock().unlock();
+        }
         diff.set(newDiff);
     }
 }

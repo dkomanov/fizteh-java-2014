@@ -76,7 +76,7 @@ public class LoadTable {
             try {
                 table.currentMap().put(key, table.tableProvider.deserialize(table, value));
             } catch (Exception e) {
-                throw new ThreadInterruptException("Not suitable values in file" + file.toString());
+                throw new ThreadInterruptException("Not suitable values in file " + file.toString());
             }
 
             filePos += 8 + keyLength + valueLength;

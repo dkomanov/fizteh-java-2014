@@ -17,7 +17,7 @@ public class Server {
     TableProvider tableProvider;
 
     public Server() {
-        //System.setProperty(mainDir, "D:/tmp/db6-storeable");
+        System.setProperty(mainDir, "D:/tmp/db7-proxy");
 
         tableProviderFactory = new MyTableProviderFactory();
         if (System.getProperty(ServerMain.mainDir) == null) {

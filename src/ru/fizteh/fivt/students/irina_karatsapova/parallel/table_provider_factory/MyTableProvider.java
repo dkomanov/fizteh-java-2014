@@ -40,11 +40,15 @@ public class MyTableProvider implements TableProvider {
     }
 
     public List<String> getTableNames() {
+        List<String> tableNamesList;
         databaseAccessLock.readLock().lock();
-        Set<String> tableNamesSet = tables.keySet();
-        List<String> tableNamesList = new ArrayList<>();
-        tableNamesList.addAll(tableNamesSet);
-        databaseAccessLock.readLock().unlock();
+        try {
+            Set<String> tableNamesSet = tables.keySet();
+            tableNamesList = new ArrayList<>();
+            tableNamesList.addAll(tableNamesSet);
+        } finally {
+            databaseAccessLock.readLock().unlock();
+        }
         return tableNamesList;
     }
 
@@ -52,11 +56,14 @@ public class MyTableProvider implements TableProvider {
         Utils.checkNotNull(name);
         MyTable lookedForTable = null;
         databaseAccessLock.readLock().lock();
-        if (tables.containsKey(name)) {
-            lookedForTable = tables.get(name);
-            lookedForTable.renewDiff();
+        try {
+            if (tables.containsKey(name)) {
+                lookedForTable = tables.get(name);
+                lookedForTable.renewDiff();
+            }
+        } finally {
+            databaseAccessLock.readLock().unlock();
         }
-        databaseAccessLock.readLock().unlock();
         return lookedForTable;
     }
 
