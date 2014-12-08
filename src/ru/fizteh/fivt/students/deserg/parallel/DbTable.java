@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Created by deserg on 04.10.14.
  */
@@ -17,11 +19,34 @@ public class DbTable implements Table {
 
     private List<Class<?>> signature = new ArrayList<>();
     private Map<String, Storeable> committedData = new HashMap<>();
-    private Map<String, Storeable> addedData = new HashMap<>();
-    private Map<String, Storeable> removedData = new HashMap<>();
-    private Map<String, Storeable> changedData = new HashMap<>();
+
+    class TableDiff {
+        public Map<String, Storeable> addedData = new HashMap<>();
+        public Map<String, Storeable> changedData = new HashMap<>();
+        public Set<String> removedData = new HashSet<>();
+    }
+
+    private ThreadLocal<TableDiff> diff = new ThreadLocal<TableDiff>() {
+        @Override
+        protected TableDiff initialValue(){
+            return new TableDiff();
+        }
+    };
+
+    private ThreadLocal<Integer> version = new ThreadLocal<Integer>() {
+
+        @Override
+        protected Integer initialValue() {
+            return 0;
+        }
+
+    };
+    private Integer commitedVersion = 0;
+
+
     private String tableName;
     private Path tablePath;
+    private ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
 
     public DbTable(Path path, List<Class<?>> signature) {
@@ -64,17 +89,24 @@ public class DbTable implements Table {
         }
 
 
-        Storeable value = addedData.get(key);
+        lock.readLock().lock();
+        sync();
+        lock.readLock().unlock();
+
+        Storeable value = diff.get().addedData.get(key);
         if (value != null) {
             return value;
         }
 
-        value = changedData.get(key);
+        value = diff.get().changedData.get(key);
         if (value != null) {
             return value;
         }
 
+        lock.readLock().lock();
         value = committedData.get(key);
+        lock.readLock().unlock();
+
         if (value != null) {
             return value;
         }
@@ -107,30 +139,45 @@ public class DbTable implements Table {
             throw new IllegalArgumentException("Table \"" + tableName + "\": put: empty key");
         }
 
+        lock.readLock().lock();
+        sync();
+        lock.readLock().unlock();
+
+        lock.readLock().lock();
         if (committedData.containsKey(key)) {
 
-            if (removedData.containsKey(key)) {
-                removedData.remove(key);
+            if (diff.get().removedData.contains(key)) {
+                diff.get().removedData.remove(key);
                 if (!committedData.get(key).equals(value)) {
-                    changedData.put(key, value);
+                    diff.get().changedData.put(key, value);
                 }
+
+                lock.readLock().unlock();
                 return null;
-            } else if (changedData.containsKey(key)) {
+            } else if (diff.get().changedData.containsKey(key)) {
 
                 if (committedData.get(key).equals(value)) {
-                    return changedData.remove(key);
+
+                    lock.readLock().unlock();
+                    return diff.get().changedData.remove(key);
                 } else {
-                    return changedData.put(key, value);
+
+                    lock.readLock().unlock();
+                    return diff.get().changedData.put(key, value);
                 }
             } else {
 
-                changedData.put(key, value);
+                diff.get().changedData.put(key, value);
+
+                lock.readLock().unlock();
                 return committedData.get(key);
 
             }
 
         } else {
-            return addedData.put(key, value);
+
+            lock.readLock().unlock();
+            return diff.get().addedData.put(key, value);
         }
 
     }
@@ -154,24 +201,29 @@ public class DbTable implements Table {
             throw new IllegalArgumentException("Table \"" + tableName + "\": remove: empty key");
         }
 
-        if (addedData.containsKey(key)) {
-            return addedData.remove(key);
+        lock.readLock().lock();
+        sync();
+        lock.readLock().unlock();
+
+
+        if (diff.get().addedData.containsKey(key)) {
+            return diff.get().addedData.remove(key);
         }
 
-        if (changedData.containsKey(key)) {
-            Storeable value = changedData.get(key);
-            changedData.remove(key);
-            removedData.put(key, value);
+        if (diff.get().changedData.containsKey(key)) {
+            Storeable value = diff.get().changedData.get(key);
+            diff.get().changedData.remove(key);
+            diff.get().removedData.add(key);
             return value;
         }
 
-        if (removedData.containsKey(key)) {
+        if (diff.get().removedData.contains(key)) {
             return null;
         }
 
         if (committedData.containsKey(key)) {
             Storeable value = committedData.get(key);
-            removedData.put(key, value);
+            diff.get().removedData.add(key);
             return value;
         }
 
@@ -185,7 +237,7 @@ public class DbTable implements Table {
      */
     @Override
     public int size() {
-        return committedData.size() - removedData.size() + addedData.size();
+        return committedData.size() - diff.get().removedData.size() + diff.get().addedData.size();
     }
 
     /**
@@ -196,21 +248,27 @@ public class DbTable implements Table {
     @Override
     public int commit() {
 
-        committedData.keySet().removeAll(removedData.keySet());
-        committedData.putAll(addedData);
-        committedData.putAll(changedData);
+        lock.writeLock().lock();
+
+        committedData.keySet().removeAll(diff.get().removedData);
+        committedData.putAll(diff.get().addedData);
+        committedData.putAll(diff.get().changedData);
 
         int changedKeys = getNumberOfUncommittedChanges();
-        addedData.clear();
-        removedData.clear();
-        changedData.clear();
+        diff.get().addedData.clear();
+        diff.get().removedData.clear();
+        diff.get().changedData.clear();
+        version.set(version.get() + 1);
+        commitedVersion++;
 
         try {
             write();
         } catch (MyIOException ex) {
+            lock.writeLock().unlock();
             throw new MyException("Table \"" + tableName + "\": errors while saving commit");
         }
 
+        lock.writeLock().unlock();
         return changedKeys;
     }
 
@@ -223,9 +281,9 @@ public class DbTable implements Table {
     public int rollback() {
 
         int changedKeys = getNumberOfUncommittedChanges();
-        addedData.clear();
-        removedData.clear();
-        changedData.clear();
+        diff.get().addedData.clear();
+        diff.get().removedData.clear();
+        diff.get().changedData.clear();
 
         return changedKeys;
     }
@@ -240,7 +298,7 @@ public class DbTable implements Table {
 
         List<String> keyList = new LinkedList<>();
         keyList.addAll(committedData.keySet());
-        keyList.addAll(addedData.keySet());
+        keyList.addAll(diff.get().addedData.keySet());
 
         return keyList;
     }
@@ -253,7 +311,7 @@ public class DbTable implements Table {
      */
     @Override
     public int getNumberOfUncommittedChanges() {
-        return addedData.size() + removedData.size() + changedData.size();
+        return diff.get().addedData.size() + diff.get().removedData.size() + diff.get().changedData.size();
     }
 
 
@@ -293,6 +351,42 @@ public class DbTable implements Table {
     /**
      * Not-interface methods begin here
      */
+
+    private void sync() {
+
+        if (version.get() < commitedVersion) {
+            for (String key : diff.get().removedData) {
+                if (committedData.containsKey(key)) {
+                    diff.get().removedData.remove(key);
+                }
+            }
+
+
+            for (HashMap.Entry<String, Storeable> entry: diff.get().addedData.entrySet()) {
+                String key = entry.getKey();
+                Storeable value = entry.getValue();
+                if (value.equals(committedData.get(key))) {
+                    diff.get().addedData.remove(key);
+                }
+            }
+
+            for (HashMap.Entry<String, Storeable> entry: diff.get().changedData.entrySet()) {
+                String key = entry.getKey();
+                Storeable value = entry.getValue();
+
+                if (value.equals(committedData.get(key))) {
+                    diff.get().changedData.remove(key);
+                }
+
+            }
+
+        }
+
+
+
+
+    }
+
 
     public List<Class<?>> getSignature() {
         return signature;
@@ -352,11 +446,6 @@ public class DbTable implements Table {
 
     public void read() throws MyIOException {
 
-        committedData.clear();
-        addedData.clear();
-        changedData.clear();
-        removedData.clear();
-
         for (int dir = 0; dir < 16; ++dir) {
             for (int file = 0; file < 16; ++file) {
                 Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
@@ -368,7 +457,6 @@ public class DbTable implements Table {
                 }
             }
         }
-
     }
 
     private void writeKeyValue(Path filePath, String keyStr, String valueStr) throws MyIOException {

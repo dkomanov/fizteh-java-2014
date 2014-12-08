@@ -15,6 +15,14 @@ public class TableRow implements Storeable {
     private ArrayList<Object> columns = new ArrayList<>();
     private List<Class<?>> signature = new LinkedList<>();
 
+    public List<Class<?>> getSignature() {
+        return signature;
+    }
+
+    public ArrayList<Object> getColumns() {
+        return columns;
+    }
+
 
     public TableRow(List<Class<?>> signature) {
         this.signature = signature;
@@ -218,9 +226,33 @@ public class TableRow implements Storeable {
     }
 
 
+    @Override
+    public int hashCode() {
+        int result = columns != null ? columns.hashCode() : 0;
+        result = 31 * result + (signature != null ? signature.hashCode() : 0);
+        return result;
+    }
 
     /**
      * Not-interface methods begin here
      */
+    @Override
+    public boolean equals(Object other) {
+
+        if (other == null) {
+            return false;
+        }
+        if (other == this) {
+            return true;
+        }
+
+        if (!(other instanceof TableRow)) {
+            return false;
+        }
+
+        TableRow otherRow = (TableRow) other;
+
+        return (this.signature.equals(otherRow.getSignature()) && this.columns.equals(otherRow.getColumns()));
+    }
 
 }
