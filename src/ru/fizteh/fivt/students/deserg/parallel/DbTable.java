@@ -28,7 +28,7 @@ public class DbTable implements Table {
 
     private ThreadLocal<TableDiff> diff = new ThreadLocal<TableDiff>() {
         @Override
-        protected TableDiff initialValue(){
+        protected TableDiff initialValue() {
             return new TableDiff();
         }
     };
