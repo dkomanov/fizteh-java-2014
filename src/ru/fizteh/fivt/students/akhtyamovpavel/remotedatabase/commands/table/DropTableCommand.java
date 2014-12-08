@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.table;
 
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 
 public class DropTableCommand extends TableCommand implements Command {
 
-    public DropTableCommand(DataBaseTableProvider shell) {
+    public DropTableCommand(RemoteDataBaseTableProvider shell) {
         super(shell);
     }
 

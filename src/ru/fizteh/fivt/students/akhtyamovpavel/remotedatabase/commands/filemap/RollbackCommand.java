@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.filemap;
 
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
 import java.util.ArrayList;
 
@@ -10,9 +11,9 @@ import java.util.ArrayList;
  */
 public class RollbackCommand implements Command {
 
-    private DataBaseTableProvider table;
+    private RemoteDataBaseTableProvider table;
 
-    public RollbackCommand(DataBaseTableProvider table) {
+    public RollbackCommand(RemoteDataBaseTableProvider table) {
         this.table = table;
     }
 

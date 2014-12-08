@@ -4,6 +4,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.TableRowSerializer;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -15,12 +16,13 @@ import java.util.List;
 public class CreateTableCommand extends TableCommand implements Command {
 
 
-    public CreateTableCommand(DataBaseTableProvider shell) {
+    public CreateTableCommand(RemoteDataBaseTableProvider shell) {
         super(shell);
     }
 
     @Override
     public String executeCommand(ArrayList<String> arguments) throws Exception {
+
         if (arguments.size() != 2) {
             throw new Exception("usage create tablename [JSON types]");
         }
@@ -51,6 +53,10 @@ public class CreateTableCommand extends TableCommand implements Command {
                 }
 
                 types.add(currentClass);
+            }
+
+            if (shell.isGuested()) {
+                shell.sendCommand(String.join(" ", arguments));
             }
 
             Table table = shell.createTable(arguments.get(0), types);

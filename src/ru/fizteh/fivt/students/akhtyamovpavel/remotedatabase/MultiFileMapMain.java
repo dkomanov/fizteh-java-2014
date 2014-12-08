@@ -34,6 +34,6 @@ public class MultiFileMapMain {
         } catch (IOException | ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-
+        remoteProvider.waitCommands();
     }
 }

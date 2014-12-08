@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.filemap;
 
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
 import java.util.ArrayList;
 
@@ -9,9 +10,9 @@ import java.util.ArrayList;
  * Created by user1 on 06.10.2014.
  */
 public class ListCommand implements Command {
-    private DataBaseTableProvider shell;
+    private RemoteDataBaseTableProvider shell;
 
-    public ListCommand(DataBaseTableProvider shell) {
+    public ListCommand(RemoteDataBaseTableProvider shell) {
         this.shell = shell;
     }
 

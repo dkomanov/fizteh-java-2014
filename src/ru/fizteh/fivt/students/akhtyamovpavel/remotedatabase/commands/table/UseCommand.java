@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.table;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 public class UseCommand extends TableCommand implements Command {
     private boolean isSilent;
 
-    public UseCommand(DataBaseTableProvider shell, boolean isSilent) {
+    public UseCommand(RemoteDataBaseTableProvider shell, boolean isSilent) {
         super(shell);
         this.isSilent = isSilent;
     }

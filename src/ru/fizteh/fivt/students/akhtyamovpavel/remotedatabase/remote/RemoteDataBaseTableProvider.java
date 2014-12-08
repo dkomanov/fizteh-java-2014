@@ -4,7 +4,9 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTable;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.Shell;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,6 +16,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -22,27 +26,42 @@ import java.util.concurrent.ExecutionException;
  */
 public class RemoteDataBaseTableProvider implements RemoteTableProvider{
     DataBaseTableProvider localProvider;
+
+    public boolean isGuested() {
+        return guested;
+    }
+
     boolean guested = false;
     String host;
     int port;
 
     ServerSocketChannel asyncChannel;
-    SocketChannel socketChannel;
+    SocketChannel socketServerChannel;
+    SocketChannel socketClientChannel;
+
+    Shell shell;
+
 
     public RemoteDataBaseTableProvider(DataBaseTableProvider provider) {
         localProvider = provider;
+        shell = new Shell();
+        shell.setProvider(this);
     }
+
     public RemoteDataBaseTableProvider(DataBaseTableProvider provider, String host, int port) throws IOException {
         localProvider = provider;
         try {
-            socketChannel = SocketChannel.open();
+            shell = new Shell();
+            socketClientChannel = SocketChannel.open();
             InetSocketAddress address = new InetSocketAddress(host, port);
-            socketChannel.connect(address);
+            socketClientChannel.connect(address);
+            shell.setProvider(this);
 
             //catch exception
         } catch (IOException e) {
             throw new IOException("socket hasn't opened");
         }
+        guested = true;
     }
 
 
@@ -61,10 +80,21 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         guested = false;
         boolean accepted = false;
 
-        asyncChannel.accept();
 
         System.out.println(asyncChannel.getLocalAddress());
         return "started at" + port;
+    }
+
+    public void waitCommands() {
+        while (true) {
+            try {
+                socketServerChannel = asyncChannel.accept();
+                sendMessage(getMessage());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     public String getRoot() {
@@ -85,30 +115,46 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         } catch (UnsupportedEncodingException e) {
             throw new IOException("encoding error");
         }
-
-        if (socketChannel.write(buffer) != 4 + string.getBytes().length) {
-            throw new IOException("writing to socket error");
+        buffer.flip();
+        if (guested) {
+            socketClientChannel.write(buffer);
+        } else {
+            socketServerChannel.write(buffer);
         }
     }
 
+
+
     public String readString(ByteBuffer buffer, int length) throws IOException {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < length; ++i) {
             try {
-                result.append(buffer.getChar());
+                result.append((char)buffer.get());
             } catch (BufferUnderflowException e) {
                 throw new IOException("socket error");
             }
         }
+        System.out.println(result.toString());
         return result.toString();
-
     }
+
+
 
     public String getMessage() throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-        socketChannel.read(buffer);
+        if (guested) {
+            socketClientChannel.read(buffer);
+        } else {
+            socketServerChannel.read(buffer);
+        }
+        buffer.flip();
         int messageLength = buffer.getInt();
-        return readString(buffer, messageLength);
+        if (!guested) {
+            ArrayList<String> result = shell.processInteractiveRequest(readString(buffer, messageLength), true);
+            return String.join("\n", result);
+        } else {
+            return readString(buffer, messageLength);
+        }
     }
 
     @Override
@@ -131,6 +177,7 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
     public String sendCommand(String command) throws IOException {
         if (guested) {
             sendMessage(command);
+            return getMessage();
         }
         return getMessage();
     }
@@ -181,4 +228,18 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
     }
 
 
+    public DataBaseTable getOpenedTable() {
+        if (!guested) {
+            return localProvider.getOpenedTable();
+        }
+        return null;
+    }
+
+
+    public HashMap<String, Integer> getTableList() {
+        if (!guested) {
+            return localProvider.getTableList();
+        }
+        return null;
+    }
 }

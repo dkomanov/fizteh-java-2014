@@ -5,12 +5,11 @@ import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.CommandPar
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.CommandStorage;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.filemap.*;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.table.*;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProviderFactory;
 
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by akhtyamovpavel on 29.09.2014.
@@ -20,7 +19,7 @@ public class Shell {
     public static final int ERROR_STOP = -1;
     protected Map<String, Command> commandNames;
     private boolean isInteractive;
-    private DataBaseTableProvider provider;
+    private RemoteDataBaseTableProvider provider;
 
     public void startInteractiveMode() {
         isInteractive = true;
@@ -30,7 +29,7 @@ public class Shell {
             while (true) {
                 System.out.print("$ ");
                 String request = in.nextLine();
-                processInteractiveRequest(request);
+                processInteractiveRequest(request, false);
             }
         } catch (NoSuchElementException exception) {
             System.err.println("Emergency stop of program");
@@ -42,12 +41,13 @@ public class Shell {
         isInteractive = false;
         try {
             for (CommandStorage currentCommand : CommandParser.parseUserRequest(arguments)) {
-                processCommand(currentCommand);
+                processCommand(currentCommand, false);
             }
         } catch (ParseException pe) {
             printException(pe.getMessage());
         }
     }
+
 
     protected void printException(String exceptionText) {
         if (isInteractive) {
@@ -58,30 +58,45 @@ public class Shell {
         }
     }
 
-    private void processCommand(CommandStorage command) {
+    private String processCommand(CommandStorage command, boolean hosted) {
         try {
             if (commandNames.containsKey(command.getCommandName())) {
                 String message = commandNames.get(command.getCommandName())
                         .executeCommand(command.getArgumentsList());
                 if (message != null) {
-                    System.out.println(message);
+                    if (!hosted) {
+                        System.out.println(message);
+                    }
+                    return message;
+                } else {
+                    return "";
                 }
+
             } else {
-                printException(command.getCommandName() + ": command not found");
+                if (!hosted) {
+                    printException(command.getCommandName() + ": command not found");
+                }
+                return command.getCommandName() + ": command not found";
             }
         } catch (Exception e) {
-            printException(command.getCommandName() + ": " + e.getMessage());
+            if (!hosted) {
+                printException(command.getCommandName() + ": " + e.getMessage());
+            }
+            return command.getCommandName() + ": " + e.getMessage();
         }
     }
 
-    private void processInteractiveRequest(String request) {
+    public ArrayList<String> processInteractiveRequest(String request, boolean hosted) {
+        ArrayList<String> result = new ArrayList<>();
         try {
             for (CommandStorage currentCommand : CommandParser.parseUserRequest(request)) {
-                processCommand(currentCommand);
+                result.add(processCommand(currentCommand, hosted));
             }
         } catch (ParseException pe) {
             printException(pe.getMessage());
+            result.add(pe.getMessage());
         }
+        return result;
     }
 
     private void initCommands() {
@@ -104,9 +119,9 @@ public class Shell {
         commandNames.put(command.getName(), command);
     }
 
-    public void setProvider(DataBaseTableProviderFactory factory, String dir) {
+    public void setProvider(RemoteDataBaseTableProviderFactory factory, String dir) {
         try {
-            provider = new DataBaseTableProvider(dir);
+            provider = new RemoteDataBaseTableProvider(new DataBaseTableProvider(dir));
             initCommands();
         } catch (Exception e) {
             System.err.println("Connection error");
@@ -114,5 +129,10 @@ public class Shell {
         }
     }
 
+
+    public void setProvider(RemoteDataBaseTableProvider localProvider) {
+        provider = localProvider;
+        initCommands();
+    }
 }
 

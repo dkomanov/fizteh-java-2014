@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.table;
 
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
  * Created by user1 on 17.10.2014.
  */
 public class ShowTablesCommand extends TableCommand implements Command {
-    public ShowTablesCommand(DataBaseTableProvider shell) {
+    public ShowTablesCommand(RemoteDataBaseTableProvider shell) {
         super(shell);
     }
 
