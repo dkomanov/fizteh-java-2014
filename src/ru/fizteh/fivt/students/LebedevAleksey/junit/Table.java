@@ -96,7 +96,7 @@ public class Table extends ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashM
                 items.add(key);
             }
         }
-        ArrayList<String> result = new ArrayList<>(items.size());
+        final ArrayList<String> result = new ArrayList<>(items.size());
         items.forEach(new Consumer<String>() {
             @Override
             public void accept(String s) {
