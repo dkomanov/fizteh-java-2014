@@ -228,7 +228,6 @@ public final class Main {
                 System.out.println(e.getMessage());
             } else {
                 System.out.println("Unexpected error in function run");
-                e.printStackTrace();
             }
             System.exit(1);
         }

@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
@@ -18,13 +19,10 @@ import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 public class TableManagerFactoryTest {
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DataBaseTestDirectory");
     private final String tableName = "table";
-    private List<String> values = new ArrayList<>();
-    private List<Class<?>> columnTypes = new ArrayList<>();
+    private List<Class<?>> columnTypes = Arrays.asList(String.class);
 
     @Before
     public void setUp() {
-        columnTypes.add(String.class);
-        values.add("\"string value\"");
         testDir.toFile().mkdir();
     }
 

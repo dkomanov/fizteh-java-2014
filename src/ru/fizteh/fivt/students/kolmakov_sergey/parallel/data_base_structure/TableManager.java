@@ -58,9 +58,7 @@ public class TableManager implements TableProvider {
     public Table getTable(String name) {
         lock.readLock().lock();
         try {
-            if (name == null) {
-                throw new IllegalArgumentException("getTable: null argument");
-            }
+            checkName(name, "getTable: null argument");
             if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
                 throw new IllegalArgumentException("getTable: wrong name of table");
             }
@@ -72,9 +70,7 @@ public class TableManager implements TableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        if (name == null) {
-            throw new IllegalArgumentException("createTable: null argument");
-        }
+        checkName(name, "createTable: null argument");
         lock.writeLock().lock();
         try {
             if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
@@ -99,9 +95,7 @@ public class TableManager implements TableProvider {
 
     @Override
     public void removeTable(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Table name is null");
-        }
+        checkName(name, "Table name is null");
         lock.writeLock().lock();
         try {
             if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
@@ -224,6 +218,11 @@ public class TableManager implements TableProvider {
             directory.delete();
         } else {
             directory.delete();
+        }
+    }
+    private void checkName(String name, String message){
+        if (name == null) {
+            throw new IllegalArgumentException(message);
         }
     }
 }

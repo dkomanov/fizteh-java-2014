@@ -14,35 +14,24 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class StoreableClassTest {
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DataBaseTestDirectory");
-    private List<Class<?>> listWhichHoldsAllTypes = new ArrayList<>();
     private TableProvider provider = new TableManager(testDir.toString());
-    private List<Object> listWhichHoldsAllValues = new ArrayList<>();
     private Storeable megaStoreable;
     private Table tableWhichHoldsAllTypes;
+
+    private final List<Object> listWhichHoldsAllValues
+            = Arrays.asList(1, (long) 2, (byte) 3, 7.62f, 3.14, false, "string");
+
+    private List listWhichHoldsAllTypes = new ArrayList<>(Arrays.asList(Integer.class, Long.class, Byte.class,
+            Float.class, Double.class, Boolean.class, String.class));
 
     @Before
     public void setUp() throws DatabaseCorruptedException {
         testDir.toFile().mkdir();
-
-        listWhichHoldsAllValues.add(1); // int = 0
-        listWhichHoldsAllValues.add((long) 2); // long = 1
-        listWhichHoldsAllValues.add((byte) 3); // byte = 2
-        listWhichHoldsAllValues.add(7.62f); // float = 3
-        listWhichHoldsAllValues.add(3.14); // double = 4
-        listWhichHoldsAllValues.add(false); // boolean = 5
-        listWhichHoldsAllValues.add("string"); // string = 6
-
-        listWhichHoldsAllTypes.add(Integer.class);
-        listWhichHoldsAllTypes.add(Long.class);
-        listWhichHoldsAllTypes.add(Byte.class);
-        listWhichHoldsAllTypes.add(Float.class);
-        listWhichHoldsAllTypes.add(Double.class);
-        listWhichHoldsAllTypes.add(Boolean.class);
-        listWhichHoldsAllTypes.add(String.class);
 
         tableWhichHoldsAllTypes = new TableClass(testDir, "table name", provider, listWhichHoldsAllTypes);
         megaStoreable = new StoreableClass(tableWhichHoldsAllTypes, listWhichHoldsAllValues);

@@ -138,7 +138,7 @@ public class StoreableClass implements Storeable {
     }
 
     private void checkBounds(int columnIndex) throws IndexOutOfBoundsException {
-        if (columnIndex >= columnTypes.size()) {
+        if (columnIndex >= columnTypes.size() || columnIndex < 0) {
             throw new IndexOutOfBoundsException("Invalid column index");
         }
     }

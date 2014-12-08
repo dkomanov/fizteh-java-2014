@@ -9,7 +9,6 @@ public final class DataBaseState {
 
     public DataBaseState(TableProvider manager) {
         this.manager = manager;
-        currentTable = null;
     }
 
     public Table getCurrentTable() {
