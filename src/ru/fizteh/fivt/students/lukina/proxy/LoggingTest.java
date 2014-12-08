@@ -1,15 +1,16 @@
 package ru.fizteh.fivt.students.lukina.proxy;
 
-import static org.junit.Assert.*;
-
-import java.io.*;
-import java.util.ArrayList;
-
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.lukina.proxy.DbLoggingProxyFactory;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 
 public class LoggingTest {
     DbLoggingProxyFactory factory;
@@ -29,13 +30,19 @@ public class LoggingTest {
     @Test
     public void takeIntReturnVoidTest() {
         wrapped.takeIntReturnVoid(8);
-        JSONObject log = new JSONObject(writer.toString());
-        String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[8],"
-                + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
-                + "\"method\":\"takeIntReturnVoid\"}";
-        JSONObject rightLog = new JSONObject(rightResult);
-        rightLog.put("timestamp", log.get("timestamp"));
-        assertEquals("incorrect log", log.toString(), rightLog.toString());
+        try {
+            JSONObject log = new JSONObject(writer.toString());
+            String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[8],"
+                    + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
+                    + "\"method\":\"takeIntReturnVoid\"}";
+            JSONObject rightLog = null;
+            rightLog = new JSONObject(rightResult);
+
+            rightLog.put("timestamp", log.get("timestamp"));
+            assertEquals("incorrect log", log.toString(), rightLog.toString());
+        } catch (JSONException j) {
+            //not OK
+        }
     }
 
     @Test(expected = Exception.class)
@@ -78,55 +85,71 @@ public class LoggingTest {
 
     @Test
     public void takeIterableReturnArraySimpleTest() {
-        ArrayList<?> list = new ArrayList<>();
-        wrapped.takeIterableReturnArray(list);
-        JSONObject log = new JSONObject(writer.toString());
-        String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[[]],\"returnValue\":[],"
-                + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
-                + "\"method\":\"takeIterableReturnArray\"}";
-        JSONObject rightLog = new JSONObject(rightResult);
-        rightLog.put("timestamp", log.get("timestamp"));
-        assertEquals("incorrect log", log.toString(), rightLog.toString());
+        try {
+            ArrayList<?> list = new ArrayList<>();
+            wrapped.takeIterableReturnArray(list);
+            JSONObject log = new JSONObject(writer.toString());
+            String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[[]],\"returnValue\":[],"
+                    + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
+                    + "\"method\":\"takeIterableReturnArray\"}";
+            JSONObject rightLog = new JSONObject(rightResult);
+            rightLog.put("timestamp", log.get("timestamp"));
+            assertEquals("incorrect log", log.toString(), rightLog.toString());
+        } catch (JSONException j) {
+            //not OK
+        }
     }
 
     @Test
     public void takeIterableReturnArrayCyclicTest() {
-        ArrayList<Object> list = new ArrayList<>(2);
-        list.add(2);
-        list.add(list);
-        list.add(3);
-        wrapped.takeIterableReturnArray(list);
-        JSONObject log = new JSONObject(writer.toString());
-        String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[[2,\"cyclic\",3]],\"returnValue\":[],"
-                + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
-                + "\"method\":\"takeIterableReturnArray\"}";
-        JSONObject rightLog = new JSONObject(rightResult);
-        rightLog.put("timestamp", log.get("timestamp"));
-        assertEquals("incorrect log", log.toString(), rightLog.toString());
+        try {
+            ArrayList<Object> list = new ArrayList<>(2);
+            list.add(2);
+            list.add(list);
+            list.add(3);
+            wrapped.takeIterableReturnArray(list);
+            JSONObject log = new JSONObject(writer.toString());
+            String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[[2,\"cyclic\",3]],\"returnValue\":[],"
+                    + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
+                    + "\"method\":\"takeIterableReturnArray\"}";
+            JSONObject rightLog = new JSONObject(rightResult);
+            rightLog.put("timestamp", log.get("timestamp"));
+            assertEquals("incorrect log", log.toString(), rightLog.toString());
+        } catch (JSONException j) {
+            //not OK
+        }
     }
 
     @Test
     public void takeNothingReturnNothingTest() {
-        wrapped.takeNothingReturnNothing();
-        JSONObject log = new JSONObject(writer.toString());
-        String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[],"
-                + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
-                + "\"method\":\"takeNothingReturnNothing\"}";
-        JSONObject rightLog = new JSONObject(rightResult);
-        rightLog.put("timestamp", log.get("timestamp"));
-        assertEquals("incorrect log", log.toString(), rightLog.toString());
+        try {
+            wrapped.takeNothingReturnNothing();
+            JSONObject log = new JSONObject(writer.toString());
+            String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[],"
+                    + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
+                    + "\"method\":\"takeNothingReturnNothing\"}";
+            JSONObject rightLog = new JSONObject(rightResult);
+            rightLog.put("timestamp", log.get("timestamp"));
+            assertEquals("incorrect log", log.toString(), rightLog.toString());
+        } catch (JSONException j) {
+            //not OK
+        }
     }
 
     @Test
     public void takeNothingReturnInt() {
-        wrapped.takeNothingReturnInt();
-        JSONObject log = new JSONObject(writer.toString());
-        String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[],\"returnValue\":17,"
-                + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
-                + "\"method\":\"takeNothingReturnInt\"}";
-        JSONObject rightLog = new JSONObject(rightResult);
-        rightLog.put("timestamp", log.get("timestamp"));
-        assertEquals("incorrect log", log.toString(), rightLog.toString());
+        try {
+            wrapped.takeNothingReturnInt();
+            JSONObject log = new JSONObject(writer.toString());
+            String rightResult = "{\"timestamp\":1385753633506,\"arguments\":[],\"returnValue\":17,"
+                    + "\"class\":\"ru.fizteh.fivt.students.lukina.proxy.LoggingTestClass\","
+                    + "\"method\":\"takeNothingReturnInt\"}";
+            JSONObject rightLog = new JSONObject(rightResult);
+            rightLog.put("timestamp", log.get("timestamp"));
+            assertEquals("incorrect log", log.toString(), rightLog.toString());
+        } catch (JSONException j) {
+            //not OK
+        }
     }
 
     @After
