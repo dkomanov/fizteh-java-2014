@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces;
+package ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces;
 
 /**
  * Представляет базу для интерфейс для работы с таблицей, содержащей ключи-значения.

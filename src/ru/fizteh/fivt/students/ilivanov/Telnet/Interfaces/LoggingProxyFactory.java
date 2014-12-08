@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces;
+package ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces;
 
 import java.io.Writer;
 

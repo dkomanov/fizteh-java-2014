@@ -1,7 +1,7 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy;
+package ru.fizteh.fivt.students.ilivanov.Telnet;
 
-import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.ColumnFormatException;
-import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.Storeable;
+import ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces.ColumnFormatException;
+import ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces.Storeable;
 
 import java.util.ArrayList;
 import java.util.List;
