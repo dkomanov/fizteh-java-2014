@@ -6,10 +6,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.LoadOrSaveException;
-import ru.fizteh.fivt.students.dnovikov.junit.Exceptions.WrongNumberOfArgumentsException;;
 import java.io.IOException;
-import java.util.function.BiConsumer;
-
 public class DataBaseProviderFactoryTest {
 
     @Rule
