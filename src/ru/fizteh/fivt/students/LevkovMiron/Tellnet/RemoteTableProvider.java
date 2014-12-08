@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.LevkovMiron.Tellnet;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
-
 import java.io.Closeable;
 
 /**

@@ -11,6 +11,7 @@ import java.net.SocketException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -84,6 +85,7 @@ public class Server {
         private DataOutputStream out;
         private CTable currentT;
         private ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+
         public ClientTask(Socket clientSocket) throws IOException {
             socket = clientSocket;
             in = new DataInputStream(socket.getInputStream());
@@ -148,6 +150,26 @@ public class Server {
             }
             try {
                 switch (cmd[0]) {
+                    case "CREATABLE":
+                        List<Class<?>> columnTypes = new ArrayList<>();
+                        try {
+                            for (int i = 2; i < cmd.length; i++) {
+                                columnTypes.add(Class.forName(cmd[i]));
+                            }
+                        } catch (ClassNotFoundException e) {
+                            return "0";
+                        }
+                        if (provider.createTable(cmd[1], columnTypes) != null) {
+                            return "1";
+                        } else {
+                            return "0";
+                        }
+                    case "GETTABLE":
+                        if (provider.getTable(cmd[1]) != null) {
+                            return "1";
+                        } else {
+                            return "0";
+                        }
                     case "exit":
                         if (currentT != null) {
                             currentT.rollback();

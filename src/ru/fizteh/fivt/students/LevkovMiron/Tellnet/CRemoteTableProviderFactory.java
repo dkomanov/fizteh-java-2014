@@ -9,6 +9,6 @@ public class CRemoteTableProviderFactory implements RemoteTableProviderFactory {
 
     @Override
     public RemoteTableProvider connect(String hostname, int port) throws IOException {
-        return null;
+        return new CRemoteTableProvider(hostname, port);
     }
 }
