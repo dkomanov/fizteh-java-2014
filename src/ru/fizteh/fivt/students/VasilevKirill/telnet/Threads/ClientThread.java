@@ -20,16 +20,25 @@ public class ClientThread implements Runnable {
     private ServerSocket serverSocket;
     private TableProvider tableProvider;
     private List<Class<?>> currentTypeList = new ArrayList<>();
+    private volatile String clientInformation;
+    private Object isClientConnected;
 
-    public ClientThread(ServerSocket serverSocket, TableProvider tableProvider) {
+    public ClientThread(ServerSocket serverSocket, TableProvider tableProvider, Object isClientConnected) {
         this.serverSocket = serverSocket;
         this.tableProvider = tableProvider;
+        this.isClientConnected = isClientConnected;
     }
 
     @Override
     public void run() {
         try {
             Socket socket = serverSocket.accept();
+            StringBuilder clientInformationBuilder = new StringBuilder();
+            clientInformationBuilder.append(socket.getInetAddress().toString() + ":" + socket.getLocalPort());
+            clientInformation = new String(clientInformationBuilder).substring(1);
+            synchronized (isClientConnected) {
+                isClientConnected.notifyAll();
+            }
             DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             boolean endOfCycle = false;
@@ -143,5 +152,9 @@ public class ClientThread implements Runnable {
 
     public void setCommand(String[] args) throws IOException {
         ((MyTableProvider) tableProvider).setWorkingTable(args[1]);
+    }
+
+    public String getClientInformation() {
+        return clientInformation;
     }
 }

@@ -211,16 +211,18 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             Storeable result = null;
             switch (args[0]) {
                 case "put":
-                    if (args.length != 3) {
-                        throw new IOException("Put: wrong arguments");
+                    StringBuilder inputString = new StringBuilder();
+                    for (int i = 2; i < args.length; ++i) {
+                        inputString.append(args[i]);
                     }
-                    result = workingTable.put(args[1], StoreableParser.stringToStoreable(args[2], typeList));
+                    Storeable inputValue = StoreableParser.stringToStoreable(new String(inputString), typeList);
+                    result = workingTable.put(args[1], inputValue);
                     if (result == null) {
                         System.out.println("new");
                     } else {
                         System.out.println("overwrite");
                     }
-                    out.writeUTF("put" + args[1] + new JSONArray(args[2]).toString());
+                    out.writeUTF("put" + args[1] + new JSONArray(new String(inputString)).toString());
                     break;
                 case "get":
                     if (args.length != 2) {
