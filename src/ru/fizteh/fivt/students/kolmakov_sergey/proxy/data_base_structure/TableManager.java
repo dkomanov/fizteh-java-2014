@@ -6,6 +6,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.kolmakov_sergey.proxy.data_base_exceptions.DatabaseCorruptedException;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.kolmakov_sergey.proxy.util.CastMaker;
+import ru.fizteh.fivt.students.kolmakov_sergey.proxy.util.DirectoryKiller;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,7 +124,7 @@ public class TableManager implements TableProvider, AutoCloseable {
                 throw new IllegalStateException("Table not found");
             } else {
                 ((TableClass) removedTable).setRemovedFlag();
-                deleteRecursively(tableDir.toFile());
+                DirectoryKiller.delete(tableDir.toFile());
             }
         } finally {
             lock.writeLock().unlock();
@@ -226,21 +227,6 @@ public class TableManager implements TableProvider, AutoCloseable {
     }
     static int excludeDataFileNumber(String fileName) {
         return Integer.parseInt(fileName.substring(0, fileName.length() - 4));
-    }
-
-    private static void deleteRecursively(File directory) {
-        if (directory.isDirectory()) {
-            try {
-                for (File currentFile : directory.listFiles()) {
-                    deleteRecursively(currentFile);
-                }
-            } catch (NullPointerException e) {
-                System.out.println("Error while recursive deleting directory.");
-            }
-            directory.delete();
-        } else {
-            directory.delete();
-        }
     }
 
     @Override

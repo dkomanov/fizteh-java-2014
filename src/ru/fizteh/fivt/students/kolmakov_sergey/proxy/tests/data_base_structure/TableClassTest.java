@@ -20,6 +20,7 @@ import java.util.HashSet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.fizteh.fivt.students.kolmakov_sergey.proxy.util.DirectoryKiller;
 
 public class TableClassTest {
     private final int offsetLength = 4;
@@ -328,20 +329,6 @@ public class TableClassTest {
 
     @After
     public void tearDown() {
-        deleteRecursively(testDir.toFile());
-    }
-    private static void deleteRecursively(File directory) {
-        if (directory.isDirectory()) {
-            try {
-                for (File currentFile : directory.listFiles()) {
-                    deleteRecursively(currentFile);
-                }
-            } catch (NullPointerException e) {
-                System.out.println("Error while recursive deleting directory.");
-            }
-            directory.delete();
-        } else {
-            directory.delete();
-        }
+        DirectoryKiller.delete(testDir.toFile());
     }
 }

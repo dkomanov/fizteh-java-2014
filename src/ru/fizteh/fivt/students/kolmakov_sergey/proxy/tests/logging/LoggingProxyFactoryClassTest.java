@@ -6,6 +6,7 @@ import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.kolmakov_sergey.proxy.data_base_structure.TableManager;
 import ru.fizteh.fivt.students.kolmakov_sergey.proxy.logging.LoggingProxyFactoryClass;
+import ru.fizteh.fivt.students.kolmakov_sergey.proxy.util.DirectoryKiller;
 
 import java.io.StringWriter;
 import java.nio.file.Path;
@@ -34,7 +35,7 @@ public class LoggingProxyFactoryClassTest {
     @Test
     public void testLoggingWithoutException() throws IOException {
         provider.createTable("table1", signature);
-        //System.out.println(writer.toString());
+        System.out.println(writer.toString());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -42,28 +43,12 @@ public class LoggingProxyFactoryClassTest {
         try {
             provider.removeTable("non-existent");
         } finally {
-            //System.out.println(writer.toString());
+            System.out.println(writer.toString());
         }
     }
-
 
     @After
     public void tearDown() {
-        deleteRecursively(testDir.toFile());
-    }
-
-    private static void deleteRecursively(File directory) {
-        if (directory.isDirectory()) {
-            try {
-                for (File currentFile : directory.listFiles()) {
-                    deleteRecursively(currentFile);
-                }
-            } catch (NullPointerException e) {
-                System.out.println("Error while recursive deleting directory.");
-            }
-            directory.delete();
-        } else {
-            directory.delete();
-        }
+        DirectoryKiller.delete(testDir.toFile());
     }
 }

@@ -20,6 +20,7 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.kolmakov_sergey.proxy.data_base_exceptions.DatabaseCorruptedException;
 import ru.fizteh.fivt.students.kolmakov_sergey.proxy.util.CastMaker;
+import ru.fizteh.fivt.students.kolmakov_sergey.proxy.util.DirectoryKiller;
 
 public class TableManagerTest {
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DataBaseTestDirectory");
@@ -312,21 +313,6 @@ public class TableManagerTest {
 
     @After
     public void tearDown() {
-        deleteRecursively(testDir.toFile());
-    }
-
-    private static void deleteRecursively(File directory) {
-        if (directory.isDirectory()) {
-            try {
-                for (File currentFile : directory.listFiles()) {
-                    deleteRecursively(currentFile);
-                }
-            } catch (NullPointerException e) {
-                System.out.println("Error while recursive deleting directory.");
-            }
-            directory.delete();
-        } else {
-            directory.delete();
-        }
+        DirectoryKiller.delete(testDir.toFile());
     }
 }
