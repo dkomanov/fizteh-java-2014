@@ -83,6 +83,10 @@ public class TableManager implements TableProvider, AutoCloseable {
         }
     }
 
+    public ReadWriteLock getLock() {
+        return lock;
+    }
+
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
         if (name == null) {
@@ -268,10 +272,10 @@ public class TableManager implements TableProvider, AutoCloseable {
         lock.writeLock().lock();
         try {
             if (!closed) {
+                closed = true;
                 for (Table currentTable : tableManagerMap.values()) {
                     ((TableClass) currentTable).close();
                 }
-                closed = true;
             } else {
                 throw new IllegalStateException("TableProvider has already been closed");
             }
@@ -294,5 +298,8 @@ public class TableManager implements TableProvider, AutoCloseable {
         if (closed) {
             throw new IllegalStateException("TableProvider has already been closed");
         }
+    }
+    public boolean isClosed() {
+        return closed;
     }
 }

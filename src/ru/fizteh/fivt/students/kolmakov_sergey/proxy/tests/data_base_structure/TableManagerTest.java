@@ -255,15 +255,15 @@ public class TableManagerTest {
 
     @Test
     public void testExcludeFolderNumber() {
-        assertEquals(2, TableManager.excludeFolderNumber("2.dir"));
-        assertEquals(42, TableManager.excludeFolderNumber("42.dir"));
-        assertEquals(442, TableManager.excludeFolderNumber("442.dir"));
+        assertEquals(2, TableManager.extractFolderNumber("2.dir"));
+        assertEquals(42, TableManager.extractFolderNumber("42.dir"));
+        assertEquals(442, TableManager.extractFolderNumber("442.dir"));
     }
     @Test
     public void testExcludeFileNumber() {
-        assertEquals(2, TableManager.excludeDataFileNumber("2.dat"));
-        assertEquals(42, TableManager.excludeDataFileNumber("42.dat"));
-        assertEquals(442, TableManager.excludeDataFileNumber("442.dat"));
+        assertEquals(2, TableManager.extractDataFileNumber("2.dat"));
+        assertEquals(42, TableManager.extractDataFileNumber("42.dat"));
+        assertEquals(442, TableManager.extractDataFileNumber("442.dat"));
     }
 
     @Test

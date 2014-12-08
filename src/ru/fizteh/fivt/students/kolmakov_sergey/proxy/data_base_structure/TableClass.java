@@ -356,7 +356,14 @@ public class TableClass implements Table, AutoCloseable {
     public void close() throws Exception {
         rollback();
         if (!wasRemoved.getAndSet(true)) {
-            ((TableManager) tableProvider).replaceClosedTableWithNew(name, this);
+            ((TableManager) tableProvider).getLock().writeLock().lock();
+            try {
+                if (!((TableManager) tableProvider).isClosed()) {
+                    ((TableManager) tableProvider).replaceClosedTableWithNew(name, this);
+                }
+            } finally {
+                ((TableManager) tableProvider).getLock().writeLock().unlock();
+            }
         } else {
             throw new IllegalStateException("Table '" + name + "' was closed already.");
         }
