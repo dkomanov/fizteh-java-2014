@@ -3,17 +3,14 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.AbstractStoreable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.shell.FileUtils;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,7 +19,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class MFileHashMap implements TableProvider, AutoCloseable {
+public class MFileHashMap implements TableProviderExtended, AutoCloseable {
     private String dataBaseDirectory;
     private HashMap<String, FileMap> tables;
     private HashMap<String, FileMap> closedTables;
@@ -193,6 +190,11 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
         return currentTable;
     }
 
+    @Override
+    public void setCurrentTable(Table newTable) {
+        currentTable = (FileMap) newTable;
+    }
+
     public boolean init() throws IOException {
         String[] listOfFiles = new File(dataBaseDirectory).list();
         for (String oneFile: listOfFiles) {
@@ -226,16 +228,7 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
     }
 
 
-    @Override
-    public void close() throws Exception {
-        assertNotClosed();
-        lockForCreateAndGet.writeLock().lock();
-        isClosed = true;
-        for (FileMap oneTable : tables.values()) {
-            oneTable.close();
-        }
-        lockForCreateAndGet.writeLock().unlock();
-    }
+
 
     @Override
     public String toString() {
@@ -250,5 +243,20 @@ public class MFileHashMap implements TableProvider, AutoCloseable {
         if (isClosed) {
             throw new IllegalStateException("table provider is closed");
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        assertNotClosed();
+        lockForCreateAndGet.writeLock().lock();
+        isClosed = true;
+        for (FileMap oneTable : tables.values()) {
+            try {
+                oneTable.close();
+            } catch (Exception e) {
+                //
+            }
+        }
+        lockForCreateAndGet.writeLock().unlock();
     }
 }

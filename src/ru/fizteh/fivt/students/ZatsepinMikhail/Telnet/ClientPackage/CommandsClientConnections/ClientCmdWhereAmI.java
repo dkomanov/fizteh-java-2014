@@ -1,10 +1,11 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClientConnections;
 
 import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandExtended;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProviderFactory;
 
-public class ClientCmdWhereAmI extends ClientCommand {
+public class ClientCmdWhereAmI extends CommandExtended<RemoteTableProviderFactory> {
     public ClientCmdWhereAmI() {
         name = "whereami";
         numberOfArguments = 1;

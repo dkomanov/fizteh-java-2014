@@ -1,9 +1,10 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClientConnections;
 
 import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandExtended;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProviderFactory;
 
-public class ClientCmdDisconnect extends ClientCommand {
+public class ClientCmdDisconnect extends CommandExtended<RemoteTableProviderFactory> {
     public ClientCmdDisconnect() {
         name = "disconnect";
         numberOfArguments = 1;

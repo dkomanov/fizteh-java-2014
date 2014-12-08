@@ -12,6 +12,8 @@ public class ShellExtended extends Shell<RemoteTableProviderFactory> {
     private RemoteTableProviderFactory objectForShell;
     public ShellExtended(RemoteTableProviderFactory obj) {
         super(obj);
+        shellCommands = new HashMap<>();
+        objectForShell = obj;
     }
 
     public void addCommand(CommandExtended<RemoteTableProviderFactory> newCommand) {
@@ -63,7 +65,11 @@ public class ShellExtended extends Shell<RemoteTableProviderFactory> {
                             errorOccuried = true;
                         }
                     } else {
-                        interpeter.run(oneCommand, System.out, ((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider());
+                        if (((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider() == null) {
+                            System.out.println("you are disconnected now");
+                        } else {
+                            interpeter.run(oneCommand, System.out, ((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider());
+                        }
                     }
                 }
                 if (!ended) {

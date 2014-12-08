@@ -58,6 +58,7 @@ public class RealRemoteTableProvider implements RemoteTableProvider, TableProvid
             throw new IllegalArgumentException("null argument");
         }
         output.println("show tables");
+        input.nextLine();
         int numberOfTables = Integer.parseInt(input.nextLine());
         tables.clear();
         for (int i = 0; i < numberOfTables; ++i) {
@@ -149,6 +150,7 @@ public class RealRemoteTableProvider implements RemoteTableProvider, TableProvid
 
     @Override
     public List<String> getTableNames() {
+        getTable("simple");
         List<String> result = new ArrayList<>();
         Collection<RealRemoteTable> filemaps = tables.values();
         for (RealRemoteTable oneTable : filemaps) {
