@@ -80,8 +80,8 @@ public class TableClass implements Table, AutoCloseable {
                 if (!currentFileName.matches(TableManager.FILE_NAME_PATTERN) || !filePath.toFile().isFile()) {
                     throw new DatabaseCorruptedException(unexpectedFilesMessage + tablePath.toString());
                 }
-                int folderIndex = TableManager.excludeFolderNumber(currentFolderName);
-                int fileIndex = TableManager.excludeDataFileNumber(currentFileName);
+                int folderIndex = TableManager.extractFolderNumber(currentFolderName);
+                int fileIndex = TableManager.extractDataFileNumber(currentFileName);
                 try {
                     DataFile currentDataFile;
                     currentDataFile = new DataFile(this.tablePath,

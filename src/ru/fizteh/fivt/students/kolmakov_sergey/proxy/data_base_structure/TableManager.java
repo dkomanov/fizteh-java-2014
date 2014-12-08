@@ -8,7 +8,6 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.kolmakov_sergey.proxy.util.CastMaker;
 import ru.fizteh.fivt.students.kolmakov_sergey.proxy.util.DirectoryKiller;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -146,7 +145,7 @@ public class TableManager implements TableProvider, AutoCloseable {
         int currentIndex;
         for (currentIndex = 0; currentIndex < parsedValues.length; ++currentIndex) {
             answer.setColumnAt(currentIndex,
-                    CastMaker.excludeValue(parsedValues[currentIndex],
+                    CastMaker.extractValue(parsedValues[currentIndex],
                             table.getColumnType(currentIndex), table, ILLEGAL_FORMAT_MESSAGE));
         }
         if (currentIndex < table.getColumnsCount()) {
@@ -160,7 +159,7 @@ public class TableManager implements TableProvider, AutoCloseable {
         checkIfClosed();
         StringBuilder answer = new StringBuilder("[");
         for (int currentIndex = 0; currentIndex < table.getColumnsCount(); ++currentIndex) {
-            answer.append(excludeFromStoreable(table, value, currentIndex)).append(", ");
+            answer.append(extractFromStoreable(table, value, currentIndex)).append(", ");
         }
         answer.deleteCharAt(answer.length() - 1);
         answer.deleteCharAt(answer.length() - 1);
@@ -168,7 +167,7 @@ public class TableManager implements TableProvider, AutoCloseable {
         return answer.toString();
     }
 
-    private String excludeFromStoreable(Table table, Storeable storeable, int index) {
+    private String extractFromStoreable(Table table, Storeable storeable, int index) {
         checkIfClosed();
         Object answer = null;
         Class<?> currentClass = table.getColumnType(index);
@@ -222,10 +221,10 @@ public class TableManager implements TableProvider, AutoCloseable {
         return answer;
     }
 
-    static int excludeFolderNumber(String folderName) {
+    static int extractFolderNumber(String folderName) {
         return Integer.parseInt(folderName.substring(0, folderName.length() - 4));
     }
-    static int excludeDataFileNumber(String fileName) {
+    static int extractDataFileNumber(String fileName) {
         return Integer.parseInt(fileName.substring(0, fileName.length() - 4));
     }
 

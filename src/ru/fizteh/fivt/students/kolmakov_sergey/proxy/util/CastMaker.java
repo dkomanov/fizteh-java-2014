@@ -97,7 +97,7 @@ public final class CastMaker {
         }
     }
 
-    public static Object excludeValue(String string, Class<?> type, Table table, String illegalFormatMessage)
+    public static Object extractValue(String string, Class<?> type, Table table, String illegalFormatMessage)
             throws ParseException {
         string = string.trim();
         if (string.equals("null")) {
