@@ -13,6 +13,10 @@ import java.util.Scanner;
  * Created by akhtyamovpavel on 08.12.14.
  */
 public class ServerResponder extends Thread {
+    public Socket getSocket() {
+        return socket;
+    }
+
     Socket socket;
     Shell shell;
     Scanner stream;

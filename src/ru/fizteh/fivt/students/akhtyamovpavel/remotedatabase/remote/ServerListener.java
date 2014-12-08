@@ -14,6 +14,10 @@ public class ServerListener extends Thread {
     ServerSocket serverSocket;
     Shell shell;
 
+    public ArrayList<ServerResponder> getResponders() {
+        return responders;
+    }
+
     ArrayList<ServerResponder> responders;
 
     public ServerListener(Shell shell, ServerSocket serverSocket) {

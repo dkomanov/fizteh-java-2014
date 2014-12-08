@@ -10,14 +10,9 @@ import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.Shell;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +31,7 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
     }
 
     boolean guested = false;
+    boolean serverStarted = false;
     String host;
     int port;
 
@@ -71,7 +67,7 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         guested = true;
     }
 
-git
+
     public String connect(String host, int port) throws IOException {
         if (isGuested()) {
             return "not connected: already connected";
@@ -108,7 +104,7 @@ git
 
     public String startServer(int port) throws IOException, ExecutionException, InterruptedException {
         if (guested) {
-            throw new IOException("client mode is on");
+            throw new IOException("not started: client mode is on");
         }
         asyncChannel = new ServerSocket();
         asyncChannel.bind(new InetSocketAddress(port));
@@ -116,7 +112,8 @@ git
         ServerListener listener = new ServerListener(shell, asyncChannel);
         listener.start();
         listeners.add(listener);
-        return "started at " + port;
+        serverStarted = true;
+        return String.valueOf(port);
     }
 
     public void waitCommands() {
@@ -233,5 +230,25 @@ git
             return localProvider.getTableList();
         }
         return null;
+    }
+
+    public int stopServer() {
+        return 0;
+    }
+
+
+    public List<String> getUsersList() throws Exception {
+        if (!serverStarted) {
+            throw new Exception("not started");
+        }
+        ArrayList<String> users = new ArrayList<>();
+        for (ServerListener listener: listeners) {
+            for (ServerResponder responder: listener.getResponders()) {
+                String user = responder.getSocket().getInetAddress().getHostName();
+                int port = listener.serverSocket.getLocalPort();
+                users.add(user + ":" + port);
+            }
+        }
+        return users;
     }
 }
