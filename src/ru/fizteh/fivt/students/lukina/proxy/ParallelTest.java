@@ -1,17 +1,16 @@
 package ru.fizteh.fivt.students.lukina.proxy;
 
-import static org.junit.Assert.assertSame;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.TableProvider;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertSame;
 
 public class ParallelTest {
     @Rule
@@ -49,17 +48,17 @@ public class ParallelTest {
         test.put("3", row);
         test.put("4", row);
         test.put("5", row);
-        tread t = new tread(root, prov, fact);
+        Tread t = new Tread(root, prov, fact);
         t.run(row);
         assertSame(test.get("6").getStringAt(0), "3");
     }
 
     ;
 
-    private class tread extends Thread {
+    private class Tread extends Thread {
         private DBase test;
 
-        tread(TemporaryFolder root, TableProvider prov, DBaseProviderFactory fact) {
+        Tread(TemporaryFolder root, TableProvider prov, DBaseProviderFactory fact) {
             ArrayList<Class<?>> list = new ArrayList<>();
             list.add(String.class);
             test = (DBase) prov.getTable("testTable");
