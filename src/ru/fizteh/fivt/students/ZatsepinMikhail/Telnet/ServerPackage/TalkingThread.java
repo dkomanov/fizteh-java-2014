@@ -33,13 +33,17 @@ public class TalkingThread extends Thread {
                 String message = input.nextLine();
                 executor.run(message, output, dataBase);
             }
-            return;
         } catch (IOException e) {
-            //
+            System.err.println("error while getting streams");
         }
     }
 
     public void stopExecution() throws IOException {
+        try {
+            ((MFileHashMap) dataBase).close();
+        } catch (Exception e) {
+            //suppress
+        }
         output.println("S: server has been stopped!");
         client.close();
     }

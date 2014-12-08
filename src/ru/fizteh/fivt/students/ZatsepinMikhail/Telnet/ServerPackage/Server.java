@@ -47,5 +47,4 @@ public class Server {
     public List<String> getUserList() {
         return listener.getClients();
     }
-
 }

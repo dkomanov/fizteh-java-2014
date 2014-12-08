@@ -19,6 +19,7 @@ public class ServerMain {
             Shell<Server> myShell = new Shell<>(myServer);
             setUpShell(myShell);
             myShell.interactiveMode();
+            myServer.stopServer();
         } catch (IOException e) {
             System.out.println("incorrect directory");
             System.exit(2);

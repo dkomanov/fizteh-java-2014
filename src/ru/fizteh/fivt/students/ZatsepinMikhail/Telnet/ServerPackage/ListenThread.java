@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class ListenThread extends Thread {
     ServerSocket server;
@@ -38,6 +39,13 @@ public class ListenThread extends Thread {
     }
 
     public List<String> getClients() {
+        for (ListIterator<TalkingThread> oneClientIterator = clients.listIterator();
+             oneClientIterator.hasNext(); ) {
+                TalkingThread client = oneClientIterator.next();
+                if (!client.isAlive()) {
+                    oneClientIterator.remove();
+                }
+        }
         List<String> result = new ArrayList<>();
         for (TalkingThread oneClient : clients) {
             result.add(oneClient.getClientName());
