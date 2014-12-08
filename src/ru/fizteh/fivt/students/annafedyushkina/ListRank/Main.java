@@ -8,18 +8,19 @@ public class Main {
             System.err.println("Not enough arguments =^.^=");
             System.exit(1);
         }
-        File file_in = new File(args[0]);
-        if (file_in.exists() == false || file_in.isFile() == false) {
+        File fileIn = new File(args[0]);
+        if (!(fileIn.exists()) || !(fileIn.isFile())) {
             System.err.println("Bad input =^.^=");
             System.exit(1);
         }
         File directory = new File(System.getProperty("user.dir") + System.getProperty("file.separator") + "tmp");
         directory.mkdir();
-        File file_out = new File(args[1]);
-        Ranking rank = new Ranking(file_in, file_out, directory);
-        rank.do_some_magic();
-        for (File c : directory.listFiles())
+        File fileOut = new File(args[1]);
+        Ranking rank = new Ranking(fileIn, fileOut, directory);
+        rank.doSomeMagic();
+        for (File c : directory.listFiles()) {
             c.delete();
+        }
         directory.delete();
     }
 }

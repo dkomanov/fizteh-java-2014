@@ -4,17 +4,17 @@ import java.io.*;
 import static java.lang.Integer.parseInt;
 
 public class Ranking {
-    private File file_in;
-    private File file_out;
+    private File fileIn;
+    private File fileOut;
     private File directory;
 
     Ranking(File fin, File fout, File dir) { //конструктор
-        this.file_in = fin;
-        this.file_out = fout;
+        this.fileIn = fin;
+        this.fileOut = fout;
         this.directory = dir;
     }
 
-    File init_file() { // припишем в конце каждой строки 1 - потом мы хотим сделать так,
+    File initFile() { // припишем в конце каждой строки 1 - потом мы хотим сделать так,
         // чтобы это число стало расстоянием до последнего элемента
         File ifile = null;
         try {
@@ -23,7 +23,7 @@ public class Ranking {
             System.err.println("Some problems with file creation =^.^=");
             System.exit(1);
         }
-        try (BufferedReader read = new BufferedReader(new FileReader(file_in))) {
+        try (BufferedReader read = new BufferedReader(new FileReader(fileIn))) {
             try (BufferedWriter write = new BufferedWriter(new FileWriter(ifile))) {
                 String str;
                 while ((str = read.readLine()) != null) {
@@ -83,18 +83,18 @@ public class Ranking {
         try (BufferedReader firstRead = new BufferedReader(new FileReader(first))) {
             try (BufferedReader secondRead = new BufferedReader(new FileReader(second))) {
                 try (BufferedWriter resWrite = new BufferedWriter(new FileWriter(res))) {
-                    int first_len = numberOfLines(first);
-                    int second_len = numberOfLines(second);
+                    int firstLen = numberOfLines(first);
+                    int secondLen = numberOfLines(second);
                     int num1 = 0;
                     int num2 = 0;
                     String str1 = firstRead.readLine();
                     String str2 = secondRead.readLine();
-                    while (num1 != first_len || num2 != second_len) {
-                        if (num1 == first_len) {
+                    while (num1 != firstLen || num2 != secondLen) {
+                        if (num1 == firstLen) {
                             str1 = firstRead.readLine();
                             resWrite.write(str1 + "\n");
                             num1 ++;
-                        } else if (num2 == second_len) {
+                        } else if (num2 == secondLen) {
                             str2 = secondRead.readLine();
                             resWrite.write(str2 + "\n");
                             num2++;
@@ -166,10 +166,10 @@ public class Ranking {
         File next = connect(file2, file1);
         sort(next);
         next = sort(next);
-        return update_ranks(init, next);
+        return updateRanks(init, next);
     }
 
-    File update_ranks(File first, File second) { // в файле first обновляет ранги тех, что в second
+    File updateRanks(File first, File second) { // в файле first обновляет ранги тех, что в second
         File res = null;
         File temp = null;
         try {
@@ -220,7 +220,9 @@ public class Ranking {
                         } else if (parseInt(strings0[1]) > parseInt(strings2[0])) {
                             str2 = secondRead.readLine();
                         } else {
-                            resWrite.write(strings0[0] + " " + strings0[1] + " " + (parseInt(strings0[2]) + parseInt(strings2[2])) + "\n");
+                            resWrite.write(strings0[0] + " " + strings0[1]
+                                    + " " + (parseInt(strings0[2])
+                                    + parseInt(strings2[2])) + "\n");
                             str0 = tempRead.readLine();
                             str2 = secondRead.readLine();
                         }
@@ -263,7 +265,8 @@ public class Ranking {
                         } else if (strings1[3].equals("1") && strings2[3].equals("1")) {
                             resWrite.write(strings2[0] + " " + strings2[1] + " " + strings2[2] + "\n");
                         } else if (strings1[3].equals("0") && strings2[3].equals("1")) {
-                            resWrite.write(strings1[0] + " " + strings2[1] + " " + (parseInt(strings1[2]) + parseInt(strings2[2])) + "\n");
+                            resWrite.write(strings1[0] + " " + strings2[1] + " "
+                                    + (parseInt(strings1[2]) + parseInt(strings2[2])) + "\n");
                         } else if (strings2[1].equals("0")) {
                             resWrite.write(strings2[0] + " " + strings2[1] + " " + strings2[2] + "\n");
                         }
@@ -279,12 +282,12 @@ public class Ranking {
         return res;
     }
 
-    void do_some_magic() { // основная функция. сортирует и выводит файл
-        File ifile = init_file();
+    void doSomeMagic() { // основная функция. сортирует и выводит файл
+        File ifile = initFile();
         File res = sort(ifile);
         res = mergeSort(res, 2);
         try (BufferedReader read = new BufferedReader(new FileReader(res))) {
-            try (BufferedWriter write = new BufferedWriter(new FileWriter(file_out))) {
+            try (BufferedWriter write = new BufferedWriter(new FileWriter(fileOut))) {
                 String str;
                 while ((str = read.readLine()) != null) {
                     String[] edges = str.split(" ");
