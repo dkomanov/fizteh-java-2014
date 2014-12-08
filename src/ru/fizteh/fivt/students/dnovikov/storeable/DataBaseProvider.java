@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.dnovikov.storeable;
 
-import javafx.util.Pair;
 import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.dnovikov.storeable.Exceptions.LoadOrSaveException;
 import ru.fizteh.fivt.students.dnovikov.storeable.Exceptions.TableNotFoundException;
@@ -16,7 +15,6 @@ import java.text.ParseException;
 import java.util.*;
 
 public class DataBaseProvider implements TableProvider {
-    private DataBaseTable currentTable;
     private Path rootDirectory;
 
     private ArrayList<Table> tables = new ArrayList<>();
@@ -33,14 +31,6 @@ public class DataBaseProvider implements TableProvider {
 
     public Path getRootDirectory() {
         return rootDirectory;
-    }
-
-    public DataBaseTable getCurrentTable() {
-        return currentTable;
-    }
-
-    public void setCurrentTable(Table table) {
-        currentTable = (DataBaseTable) table;
     }
 
     @Override
@@ -97,16 +87,13 @@ public class DataBaseProvider implements TableProvider {
     @Override
     public void removeTable(String name) throws TableNotFoundException, LoadOrSaveException {
         if (name == null) {
-            throw new IllegalArgumentException("cannot remove table: null");
+            throw new IllegalArgumentException("cannot get table: name should be non-null string");
         }
 
         DataBaseTable table = (DataBaseTable) tableNames.get(name);
         if (table == null) {
             throw new TableNotFoundException();
         } else {
-            if (table.equals(currentTable)) {
-                currentTable = null;
-            }
             tableNames.remove(name);
             table.drop();
             tables.remove(table);
@@ -229,12 +216,12 @@ public class DataBaseProvider implements TableProvider {
         return result;
     }
 
-    public List<Pair<String, Integer>> showTable() {
-        List<Pair<String, Integer>> result = new ArrayList<>();
+    public List<TableInfo> showTable() {
+        List<TableInfo> result = new ArrayList<>();
         for (Table table : tables) {
             String tableName = table.getName();
             int size = table.size();
-            result.add(new Pair<>(tableName, size));
+            result.add(new TableInfo(tableName, size));
         }
         return result;
     }
@@ -261,12 +248,6 @@ public class DataBaseProvider implements TableProvider {
             throw new LoadOrSaveException("root directory '" + rootDirectory.getFileName() + "' not found");
         } else {
             throw new LoadOrSaveException("root directory '" + rootDirectory.getFileName() + "' is not directory");
-        }
-    }
-
-    public void saveTable() throws LoadOrSaveException {
-        if (currentTable != null) {
-            currentTable.save();
         }
     }
 }

@@ -41,16 +41,16 @@ public class Utils {
         return result;
     }
 
-    public static void tryToChangeUsedCurrentTable(DataBaseProvider dbConnector, String name) {
-        DataBaseTable currentTable = dbConnector.getCurrentTable();
+    public static void tryToChangeUsedCurrentTable(DataBaseState state, String name) {
+        DataBaseTable currentTable = state.getCurrentTable();
         int unsavedChanges = currentTable.getNumberOfUncommittedChanges();
-        if (dbConnector.getTable(name) != null) {
+        if (state.getTableProvider().getTable(name) != null) {
             if (unsavedChanges > 0) {
                 System.out.println(unsavedChanges + " unsaved changes");
             } else {
                 try {
                     currentTable.save();
-                    dbConnector.setCurrentTable(dbConnector.getTable(name));
+                    state.setCurrentTable((DataBaseTable) state.getTableProvider().getTable(name));
                     System.out.println("using " + name);
                 } catch (LoadOrSaveException e) {
                     System.err.println(e.getMessage());

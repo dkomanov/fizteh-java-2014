@@ -1,12 +1,11 @@
 package ru.fizteh.fivt.students.dnovikov.storeable;
 
-import javafx.util.Pair;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.dnovikov.storeable.Exceptions.LoadOrSaveException;
 import ru.fizteh.fivt.students.dnovikov.storeable.Exceptions.TableNotFoundException;
-import ru.fizteh.fivt.students.dnovikov.storeable.Interpreter.Command;
 import ru.fizteh.fivt.students.dnovikov.storeable.Interpreter.Interpreter;
+import ru.fizteh.fivt.students.dnovikov.storeable.Interpreter.InterpreterState;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -15,7 +14,7 @@ import java.util.function.BiConsumer;
 
 public class MultiFileHashMapMain {
 
-    private DataBaseProvider dbConnector;
+    private DataBaseProvider provider;
 
     public static void main(String[] args) {
         MultiFileHashMapMain fileMap = new MultiFileHashMapMain();
@@ -33,29 +32,31 @@ public class MultiFileHashMapMain {
     }
 
     private void run(String[] args, String directoryPath) throws LoadOrSaveException {
-        dbConnector = (DataBaseProvider) new DataBaseProviderFactory().create(directoryPath);
-        Command[] commands = createCommands();
-        Interpreter interpreter = new Interpreter(dbConnector, System.in, System.out, System.err, commands);
+        provider = (DataBaseProvider) new DataBaseProviderFactory().create(directoryPath);
+        DataBaseState dbState = new DataBaseState(provider);
+        DataBaseCommand[] commands = createCommands();
+        Interpreter interpreter = new Interpreter(dbState, System.in, System.out, System.err, commands);
         interpreter.run(args);
         if (interpreter.isBatch()) {
-            DataBaseTable currentTable = dbConnector.getCurrentTable();
+            DataBaseTable currentTable = dbState.getCurrentTable();
             if (currentTable != null) {
                 int unsavedChanges = currentTable.getNumberOfUncommittedChanges();
                 if (unsavedChanges > 0) {
                     System.out.println(unsavedChanges + " unsaved changes");
                 } else {
-                    dbConnector.saveTable();
+                    dbState.saveCurrentTable();
                 }
             }
         }
     }
 
-    Command[] createCommands() {
-        Command[] commands = new Command[]{
-                new Command("get", 1, new BiConsumer<DataBaseProvider, String[]>() {
+    DataBaseCommand[] createCommands() {
+        DataBaseCommand[] commands = new DataBaseCommand[]{
+                new DataBaseCommand("get", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                    public void accept(InterpreterState state, String[] args) {
+                        DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
+                        DataBaseProvider connector = ((DataBaseState) state).getTableProvider();
                         if (currentTable == null) {
                             System.out.println("no table");
                         } else {
@@ -64,22 +65,23 @@ public class MultiFileHashMapMain {
                                 System.out.println("not found");
                             } else {
                                 System.out.println("found");
-                                System.out.println(dataBaseConnector.serialize(currentTable, result));
+                                System.out.println(connector.serialize(currentTable, result));
                             }
                         }
                     }
                 }),
-                new Command("put", -1, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("put", -1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                    public void accept(InterpreterState state, String[] args) {
+                        DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
+                        DataBaseProvider connector = ((DataBaseState) state).getTableProvider();
                         if (currentTable == null) {
                             System.out.println("no table");
                         } else {
                             Storeable result = null;
                             try {
                                 String value = Utils.getJSONStringForPut(args);
-                                result = currentTable.put(args[0], dataBaseConnector.deserialize(currentTable, value));
+                                result = currentTable.put(args[0], connector.deserialize(currentTable, value));
                             } catch (ParseException | ColumnFormatException e) {
                                 System.err.println("wrong type (" + e.getMessage() + ")");
                                 return;
@@ -88,15 +90,15 @@ public class MultiFileHashMapMain {
                                 System.out.println("new");
                             } else {
                                 System.out.println("overwrite");
-                                System.out.println(dataBaseConnector.serialize(currentTable, result));
+                                System.out.println(connector.serialize(currentTable, result));
                             }
                         }
                     }
                 }),
-                new Command("list", 0, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("list", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                    public void accept(InterpreterState state, String[] args) {
+                        DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
                         if (currentTable == null) {
                             System.out.println("no table");
                         } else {
@@ -104,10 +106,10 @@ public class MultiFileHashMapMain {
                         }
                     }
                 }),
-                new Command("remove", 1, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("remove", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                    public void accept(InterpreterState state, String[] args) {
+                        DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
                         if (currentTable == null) {
                             System.out.println("no table");
                         } else {
@@ -120,10 +122,10 @@ public class MultiFileHashMapMain {
                         }
                     }
                 }),
-                new Command("rollback", 0, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("rollback", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                    public void accept(InterpreterState state, String[] args) {
+                        DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
                         if (currentTable == null) {
                             System.out.println("no table");
                         } else {
@@ -131,11 +133,11 @@ public class MultiFileHashMapMain {
                         }
                     }
                 }),
-                new Command("commit", 0, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("commit", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
+                    public void accept(InterpreterState state, String[] args) {
                         try {
-                            DataBaseTable currentTable = dbConnector.getCurrentTable();
+                            DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
                             if (currentTable == null) {
                                 System.out.println("no table");
                             } else {
@@ -146,10 +148,10 @@ public class MultiFileHashMapMain {
                         }
                     }
                 }),
-                new Command("size", 0, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("size", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
-                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                    public void accept(InterpreterState state, String[] args) {
+                        DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
                         if (currentTable == null) {
                             System.out.println("no table");
                         } else {
@@ -157,12 +159,12 @@ public class MultiFileHashMapMain {
                         }
                     }
                 }),
-                new Command("create", -1, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("create", -1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
+                    public void accept(InterpreterState state, String[] args) {
                         try {
                             List<Class<?>> typesList = Utils.getTypesForCreate(args);
-                            if (dbConnector.createTable(args[0], typesList) == null) {
+                            if (((DataBaseState) state).getTableProvider().createTable(args[0], typesList) == null) {
                                 System.out.println(args[0] + " exists");
                             } else {
                                 System.out.println("created");
@@ -172,41 +174,50 @@ public class MultiFileHashMapMain {
                         }
                     }
                 }),
-                new Command("show", 1, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("show", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
+                    public void accept(InterpreterState state, String[] args) {
                         if (!args[0].equals("tables")) {
                             System.err.println("show" + ' ' + args[0] + ": no such command");
                         } else {
-                            List<Pair<String, Integer>> result = dataBaseConnector.showTable();
-                            for (Pair<String, Integer> table : result) {
-                                System.out.println(table.getKey() + " " + table.getValue());
+                            List<TableInfo> result = ((DataBaseState) state).getTableProvider().showTable();
+                            for (TableInfo table : result) {
+                                System.out.println(table.name + " " + table.size);
                             }
                         }
                     }
                 }),
-                new Command("use", 1, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("use", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
+                    public void accept(InterpreterState state, String[] args) {
                         String name = new String(args[0]);
-                        DataBaseTable currentTable = dbConnector.getCurrentTable();
+                        DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
+                        DataBaseProvider dbConnector = ((DataBaseState) state).getTableProvider();
                         if (currentTable == null) {
                             if (dbConnector.getTable(name) != null) {
-                                dbConnector.setCurrentTable(dbConnector.getTable(name));
+                                ((DataBaseState) state).setCurrentTable((DataBaseTable) dbConnector.getTable(name));
                                 System.out.println("using " + name);
                             } else {
                                 System.out.println(name + " not exists");
                             }
                         } else {
-                            Utils.tryToChangeUsedCurrentTable(dbConnector, name);
+                            Utils.tryToChangeUsedCurrentTable((DataBaseState) state, name);
                         }
                     }
                 }),
-                new Command("drop", 1, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("drop", 1, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
+                    public void accept(InterpreterState state, String[] args) {
                         try {
-                            dbConnector.removeTable(args[0]);
+                            DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
+                            DataBaseProvider connector = ((DataBaseState) state).getTableProvider();
+                            DataBaseTable table = (DataBaseTable) connector.getTable(args[0]);
+                            if (table != null) {
+                                if (table.equals(currentTable)) {
+                                    ((DataBaseState) state).setCurrentTable(null);
+                                }
+                            }
+                            ((DataBaseState) state).getTableProvider().removeTable(args[0]);
                             System.out.println("dropped");
                         } catch (LoadOrSaveException e) {
                             System.err.println(e.getMessage());
@@ -215,23 +226,20 @@ public class MultiFileHashMapMain {
                         }
                     }
                 }),
-                new Command("exit", 0, new BiConsumer<DataBaseProvider, String[]>() {
+                new DataBaseCommand("exit", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override
-                    public void accept(DataBaseProvider dataBaseConnector, String[] args) {
+                    public void accept(InterpreterState state, String[] args) {
                         try {
-                            DataBaseTable currentTable = dbConnector.getCurrentTable();
+                            DataBaseTable currentTable = ((DataBaseState) state).getCurrentTable();
                             if (currentTable != null) {
                                 int unsavedChanges = currentTable.getNumberOfUncommittedChanges();
-                                if (unsavedChanges > 0) {
+                                if (unsavedChanges != 0) {
                                     System.out.println("cannot exit: " + unsavedChanges + " unsaved changes");
-                                } else {
-                                    dbConnector.saveTable();
-                                    System.exit(0);
+                                    return;
                                 }
-                            } else {
-                                dbConnector.saveTable();
-                                System.exit(0);
                             }
+                            ((DataBaseState) state).saveCurrentTable();
+                            System.exit(0);
                         } catch (LoadOrSaveException e) {
                             System.err.println(e.getMessage());
                             System.exit(1);
