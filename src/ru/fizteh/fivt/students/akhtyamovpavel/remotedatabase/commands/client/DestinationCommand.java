@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.server;
+package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.client;
 
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
@@ -6,29 +6,26 @@ import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBa
 import java.util.ArrayList;
 
 /**
- * Created by akhtyamovpavel on 08.12.14.
+ * Created by akhtyamovpavel on 09.12.14.
  */
-public class StopServerCommand implements Command {
-    public StopServerCommand(RemoteDataBaseTableProvider provider) {
+public class DestinationCommand implements Command {
+    public DestinationCommand(RemoteDataBaseTableProvider provider) {
         this.provider = provider;
     }
 
     RemoteDataBaseTableProvider provider;
 
-
     @Override
     public String executeCommand(ArrayList<String> arguments) throws Exception {
         if (!arguments.isEmpty()) {
-            throw new Exception("usage: stop");
+            throw new Exception("usage: whereiam");
         }
-        if (!provider.isServerStarted()) {
-            return "not started";
-        }
-        return "stopped at " + provider.stopServer();
+
+        return provider.getRoot();
     }
 
     @Override
     public String getName() {
-        return "stop";
+        return "whereiam";
     }
 }

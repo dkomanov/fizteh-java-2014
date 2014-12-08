@@ -20,6 +20,9 @@ public class ConnectCommand implements Command {
         if (arguments.size() != 2) {
             throw new Exception("usage: connect host port");
         }
+        if (provider.isServerStarted()) {
+            throw new Exception("on server mode");
+        }
         try {
             return provider.connect(arguments.get(0), Integer.parseInt(arguments.get(1)));
         } catch (NumberFormatException e) {

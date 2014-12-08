@@ -1,10 +1,9 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase;
 
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.Closer;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
+import java.nio.file.Paths;
 
 /**
  * Created by user1 on 07.10.2014.
@@ -12,23 +11,26 @@ import java.util.concurrent.ExecutionException;
 public class MultiFileMapMain {
     public static void main(String[] args) {
 
-        LoggerFactory loggerFactory = new LoggerFactory();
-        HashMap map = new HashMap();
-
-
-        Shell shell = new Shell();
+        String pathName = null;
+        try {
+            pathName = Paths.get(System.getProperty("user.dir"))
+                    .resolve(System.getProperty("fizteh.db.dir")).toString();
+        } catch (Exception e) {
+            System.err.println("Enter db dir file");
+            System.exit(-1);
+        }
         DataBaseTableProviderFactory factory = new DataBaseTableProviderFactory();
-
-
-
-        String pathName = "/home/akhtyamovpavel/Development/test/test2/";
         DataBaseTableProvider provider = null;
         try {
-            provider = new DataBaseTableProvider(pathName);
+            provider = factory.create(pathName);
         } catch (Exception e) {
             System.out.println("failed");
+            System.exit(-1);
         }
+        Shell shell = new Shell();
         RemoteDataBaseTableProvider remoteProvider = new RemoteDataBaseTableProvider(provider);
+        Closer closer = new Closer(remoteProvider);
+        Runtime.getRuntime().addShutdownHook(closer);
         shell.setProvider(remoteProvider);
         shell.startInteractiveMode();
     }

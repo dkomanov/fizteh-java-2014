@@ -29,7 +29,7 @@ public class ServerListener extends Thread {
     @Override
     public void run() {
         boolean finished = false;
-        while(!finished) {
+        while (!finished) {
             try {
                 Socket acceptedSocket = serverSocket.accept();
                 ServerResponder responder = new ServerResponder(shell, acceptedSocket);
@@ -41,6 +41,7 @@ public class ServerListener extends Thread {
                     responder.shutdown();
                 }
             }
+
         }
     }
 }

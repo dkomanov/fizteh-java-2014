@@ -21,6 +21,9 @@ public class ListUsersCommand implements Command{
         if (!arguments.isEmpty()) {
             throw new Exception("usage: listusers");
         }
+        if (!provider.isServerStarted()) {
+            return "not started";
+        }
 
         List<String> listOfUsers = provider.getUsersList();
         return String.join("\n", listOfUsers);

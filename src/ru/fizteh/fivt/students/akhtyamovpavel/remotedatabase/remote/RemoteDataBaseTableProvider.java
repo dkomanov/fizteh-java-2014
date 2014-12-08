@@ -30,13 +30,21 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         return guested;
     }
 
+    public void setGuested(boolean guested) {
+        this.guested = guested;
+    }
+
     boolean guested = false;
+
+    public boolean isServerStarted() {
+        return listeners.size() > 0;
+    }
+
     boolean serverStarted = false;
     String host;
     int port;
 
     ServerSocket asyncChannel;
-    Socket socketServerChannel;
     Socket socketClientChannel;
 
 
@@ -67,6 +75,8 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
             throw new IOException("socket hasn't opened");
         }
         guested = true;
+        this.host = host;
+        this.port = port;
     }
 
 
@@ -84,6 +94,8 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
                 throw new IOException("not connected: " + e.getMessage());
             }
             guested = true;
+            this.host = host;
+            this.port = port;
             return "connected";
         }
     }
@@ -92,6 +104,7 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         if (!isGuested()) {
             throw new IOException("not connected");
         }
+
         socketClientChannel.close();
         guested = false;
         return "disconnected";
@@ -120,18 +133,6 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         return String.valueOf(port);
     }
 
-    public void waitCommands() {
-        while (true) {
-            try {
-                socketServerChannel = asyncChannel.accept();
-                sendMessage(getMessage());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-
     public String getRoot() {
         if (guested) {
            return "remote " + host + ":" + port;
@@ -139,7 +140,6 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
             return "local";
         }
     }
-
 
 
     public void sendMessage(String string) throws IOException {
@@ -236,21 +236,27 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         return null;
     }
 
-    public int stopServer() {
-        return 0;
+    public int stopServer() throws IOException {
+        ServerSocket serverSocket = listeners.get(listeners.size() - 1).serverSocket;
+        int port = serverSocket.getLocalPort();
+        serverSocket.close();
+        listeners.remove(listeners.size() - 1);
+        return port;
     }
 
 
     public List<String> getUsersList() throws Exception {
-        if (!serverStarted) {
+        if (!isServerStarted()) {
             throw new Exception("not started");
         }
         ArrayList<String> users = new ArrayList<>();
         for (ServerListener listener: listeners) {
             for (ServerResponder responder: listener.getResponders()) {
-                String user = responder.getSocket().getInetAddress().getHostName();
-                int port = listener.serverSocket.getLocalPort();
-                users.add(user + ":" + port);
+                if (!responder.socket.isClosed()) {
+                    String user = responder.getSocket().getInetAddress().getHostName();
+                    int port = responder.getSocket().getPort();
+                    users.add(user + ":" + port);
+                }
             }
         }
         return users;

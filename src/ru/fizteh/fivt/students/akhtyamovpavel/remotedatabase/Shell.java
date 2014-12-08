@@ -4,8 +4,12 @@ import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.CommandParser;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.CommandStorage;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.client.ConnectCommand;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.client.DestinationCommand;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.client.DisconnectCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.filemap.*;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.server.ListUsersCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.server.StartServerCommand;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.server.StopServerCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.table.*;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProviderFactory;
@@ -117,6 +121,10 @@ public class Shell {
         addCommand(new CommitCommand(provider));
         addCommand(new StartServerCommand(provider));
         addCommand(new ConnectCommand(provider));
+        addCommand(new StopServerCommand(provider));
+        addCommand(new ListUsersCommand(provider));
+        addCommand(new DisconnectCommand(provider));
+        addCommand(new DestinationCommand(provider));
     }
 
     private void addCommand(Command command) {

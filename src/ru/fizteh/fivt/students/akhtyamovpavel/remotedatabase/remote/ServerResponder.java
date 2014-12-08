@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.Shell;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -22,27 +21,19 @@ public class ServerResponder extends Thread {
     Scanner stream;
     PrintStream outStream;
 
-    public boolean isServerOk() {
-        return serverOk;
-    }
-
-    volatile boolean serverOk;
 
     ServerResponder(Shell shell, Socket socket) {
         this.shell = shell;
         this.socket = socket;
-        serverOk = true;
         try {
             stream = new Scanner(socket.getInputStream());
             outStream = new PrintStream(socket.getOutputStream());
         } catch (IOException e) {
             shutdown();
         }
-
     }
 
     public void shutdown() {
-        serverOk = false;
         try {
             socket.close();
         } catch (IOException e) {
@@ -54,7 +45,7 @@ public class ServerResponder extends Thread {
 
     @Override
     public void run() {
-        while (serverOk) {
+        while (true) {
             if (stream.hasNext()) {
                 String inputString = stream.nextLine();
 
@@ -63,6 +54,14 @@ public class ServerResponder extends Thread {
                     outStream.println(string);
                 }
             }
+            if (!socket.isConnected() || socket.isClosed()) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    break;
+                }
+            }
+
         }
         shutdown();
     }
