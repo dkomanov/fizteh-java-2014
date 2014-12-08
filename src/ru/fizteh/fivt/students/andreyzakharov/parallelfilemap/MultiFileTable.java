@@ -293,6 +293,7 @@ public class MultiFileTable implements Table {
                     --diff.get().pending;
                 }
             }
+            version.set(stableVersion);
         }
     }
 
