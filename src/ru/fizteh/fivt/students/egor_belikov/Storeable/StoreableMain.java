@@ -6,7 +6,7 @@ import java.util.*;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
-import static ru.fizteh.fivt.students.egor_belikov.Storeable.MySerializer.stringToClass;
+import static ru.fizteh.fivt.students.egor_belikov.Storeable.MySerializer.returningClass;
 import static ru.fizteh.fivt.students.egor_belikov.Storeable.MyTableProvider.*;
 
 public class StoreableMain {
@@ -178,7 +178,7 @@ public class StoreableMain {
             if (type.trim().isEmpty()) {
                 throw new Exception("wrong types (signature)");
             }
-            Class<?> c = stringToClass(type.trim());
+            Class<?> c = returningClass(type.trim());
             if (c == null) {
                 throw new Exception("wrong type (" + type.trim() + " is not a valid type name)");
             }
