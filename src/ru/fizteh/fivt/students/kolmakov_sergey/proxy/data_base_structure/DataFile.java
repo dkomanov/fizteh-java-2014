@@ -92,7 +92,11 @@ class DataFile {
                 counter += 4;
                 String key = bytes.toString(TableManager.CODE_FORMAT);
                 bytes.reset();
-                checkKey(key, "Wrong key found in file " + filePath);
+                try {
+                    checkKey(key, null);
+                } catch (IllegalArgumentException e){
+                    throw new DatabaseCorruptedException("Wrong key found in file " + filePath.toString());
+                }
                 keys.add(key);
             } while (counter < offsets.get(0));
 
