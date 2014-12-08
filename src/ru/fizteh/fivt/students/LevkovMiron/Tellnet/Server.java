@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -91,13 +90,15 @@ public class Server {
         }
 
         private void readClient() {
-            Scanner scanner = new Scanner(System.in);
-            String input = scanner.nextLine();
-            String[] commands = input.split(";");
-            for (String cmd : commands) {
-                writeClient(runCommand(cmd.trim()));
+            try {
+                String input = in.readUTF();
+                String[] commands = input.split(";");
+                for (String cmd : commands) {
+                    writeClient(runCommand(cmd.trim()));
+                }
+            } catch (IOException e) {
+                return;
             }
-            readClient();
         }
 
         private void writeClient(String s) {
