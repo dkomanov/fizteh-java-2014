@@ -319,6 +319,7 @@ public class MultiFileTable implements Table, AutoCloseable {
                     --diff.get().pending;
                 }
             }
+            version.set(stableVersion);
         }
     }
 
