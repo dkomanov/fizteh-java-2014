@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class ConsoleApplication {
 
+
     private int applicationType;
 
     private CurrentTable currentT;
