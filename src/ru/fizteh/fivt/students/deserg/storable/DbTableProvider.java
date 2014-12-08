@@ -47,16 +47,19 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": getTable: empty table name");
         }
 
-        String fileName;
-
         try {
-            fileName = Paths.get("").resolve(name).getFileName().toString();
+            String testName = Paths.get("").resolve(name).getFileName().toString();
+
+            if (!testName.equals(name)) {
+                throw new IllegalArgumentException("Database \"" + name + "\": getTable: unacceptable table name");
+            }
+
         } catch (InvalidPathException ex) {
             throw new IllegalArgumentException("Database \"" + name + "\": getTable: unacceptable table name");
         }
 
         if (removedTables.contains(name)) {
-            throw new IllegalStateException("Database \"" + fileName + "\": getTable: table was removed");
+            throw new IllegalStateException("Database \"" + name + "\": getTable: table was removed");
         } else {
             return tables.get(name);
         }
@@ -89,13 +92,17 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable: invalid signature");
         }
 
-        String fileName;
-
         try {
-            fileName = Paths.get("").resolve(name).getFileName().toString();
+            String testName = Paths.get("").resolve(name).getFileName().toString();
+
+            if (!testName.equals(name)) {
+                throw new IllegalArgumentException("Database \"" + name + "\": createTable: unacceptable table name");
+            }
+
         } catch (InvalidPathException ex) {
             throw new IllegalArgumentException("Database \"" + name + "\": createTable: unacceptable table name");
         }
+
 
         if (tables.containsKey(name)) {
             return null;
@@ -132,12 +139,16 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": removeTable: empty Table name");
         }
 
-        String fileName;
 
         try {
-            fileName = Paths.get("").resolve(name).getFileName().toString();
+            String testName = Paths.get("").resolve(name).getFileName().toString();
+
+            if (!testName.equals(name)) {
+                throw new IllegalArgumentException("Database \"" + name + "\": removeTable: unacceptable table name");
+            }
+
         } catch (InvalidPathException ex) {
-            throw new IllegalArgumentException("Database \"" + name + "\": getTable: unacceptable table name");
+            throw new IllegalArgumentException("Database \"" + name + "\": removeTable: unacceptable table name");
         }
 
         if (!tables.containsKey(name)) {
@@ -145,9 +156,10 @@ public class DbTableProvider implements TableProvider {
         }
 
         removedTables.add(name);
-        if (currentTable.getName().equals(name)) {
+        if (currentTable != null && currentTable.getName().equals(name)) {
             currentTable = null;
         }
+
         tables.remove(name);
     }
 
