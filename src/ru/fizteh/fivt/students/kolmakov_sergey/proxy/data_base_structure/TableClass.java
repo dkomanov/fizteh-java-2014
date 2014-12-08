@@ -28,7 +28,7 @@ public class TableClass implements Table, AutoCloseable {
     private final String signatureFileName = "signature.tsv";
     private final TableProvider tableProvider;
     private AtomicBoolean wasRemoved = new AtomicBoolean(false);
-    private ReadWriteLock lock;
+    private final ReadWriteLock lock;
     private List<Class<?>> columnTypes;
 
     public TableClass(Path tablePath, String name, TableProvider tableProvider, List<Class<?>> columnTypes)
@@ -114,10 +114,10 @@ public class TableClass implements Table, AutoCloseable {
 
     @Override
     public int commit() {
-        checkActuality();
         lock.writeLock().lock();
         int numberOfChanges = difference.get().size();
         try { // Apply difference to tableMap.
+            checkActuality();
             for (Entry<String, Storeable> currentOperation : difference.get().entrySet()) {
                 DataFile dataFile = tableMap.get(new Coordinates(currentOperation.getKey(),
                         TableManager.NUMBER_OF_PARTITIONS));
@@ -161,9 +161,9 @@ public class TableClass implements Table, AutoCloseable {
         if (key == null) {
             throw new IllegalArgumentException("get: null key");
         }
-        checkActuality();
         lock.readLock().lock();
         try {
+            checkActuality();
             Storeable value;
             if (difference.get().containsKey(key)) {
                 value = difference.get().get(key);
@@ -187,8 +187,8 @@ public class TableClass implements Table, AutoCloseable {
             throw new IllegalArgumentException("put: null arguments");
         }
         lock.readLock().lock();
-        checkActuality();
         try {
+            checkActuality();
             Storeable oldValue;
             if (!difference.get().containsKey(key)) {
                 DataFile expectedDataFile = tableMap.get(new Coordinates(key, TableManager.NUMBER_OF_PARTITIONS));
@@ -213,8 +213,8 @@ public class TableClass implements Table, AutoCloseable {
             throw new IllegalArgumentException("remove: key == null");
         }
         lock.readLock().lock();
-        checkActuality();
         try {
+            checkActuality();
             Storeable removedValue;
             if (!difference.get().containsKey(key)) {
                 DataFile expectedDataFile = tableMap.get(new Coordinates(key, TableManager.NUMBER_OF_PARTITIONS));
@@ -235,9 +235,9 @@ public class TableClass implements Table, AutoCloseable {
 
     @Override
     public List<String> list() {
-        checkActuality();
         lock.readLock().lock();
         try {
+            checkActuality();
             Set<String> mergeResult = new HashSet<>();
             for (DataFile dataFile : tableMap.values()) {
                 mergeResult.addAll(dataFile.list());
@@ -259,45 +259,70 @@ public class TableClass implements Table, AutoCloseable {
 
     @Override
     public int rollback() {
-        checkActuality();
-        int numberOfChanges = difference.get().size();
-        difference.get().clear();
-        return numberOfChanges;
+        lock.readLock().lock();
+        try {
+            checkActuality();
+            int numberOfChanges = difference.get().size();
+            difference.get().clear();
+            return numberOfChanges;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public int getNumberOfUncommittedChanges() {
-        checkActuality();
-        return difference.get().size();
+        lock.readLock().lock();
+        try {
+            checkActuality();
+            return difference.get().size();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public int getColumnsCount() {
-        checkActuality();
-        return columnTypes.size();
+        lock.readLock().lock();
+        try {
+            checkActuality();
+            return columnTypes.size();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        checkActuality();
+        lock.readLock().lock();
         try {
-            return columnTypes.get(columnIndex);
-        } catch (IndexOutOfBoundsException e) {
-            throw new IndexOutOfBoundsException("Column with index " + columnIndex + " doesn't exist in this table");
+            checkActuality();
+            try {
+                return columnTypes.get(columnIndex);
+            } catch (IndexOutOfBoundsException e) {
+                throw new IndexOutOfBoundsException("Column with index " + columnIndex + " doesn't exist in this table");
+            }
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public String getName() {
-        checkActuality();
-        return name;
+        lock.readLock().lock();
+        try {
+            checkActuality();
+            return name;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public int size() {
         lock.readLock().lock();
-        checkActuality();
         try {
+            checkActuality();
             int numberOfRecords = 0;
             for (DataFile currentTable : tableMap.values()) {
                 numberOfRecords += currentTable.size();
@@ -322,7 +347,9 @@ public class TableClass implements Table, AutoCloseable {
     }
 
     public void setRemovedFlag() {
+        lock.writeLock().lock();
         wasRemoved.set(true);
+        lock.writeLock().unlock();
     }
 
     @Override
