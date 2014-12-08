@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.SukhanovZhenya.Parallel;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
