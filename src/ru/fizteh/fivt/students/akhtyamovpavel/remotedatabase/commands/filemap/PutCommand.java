@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.filemap;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.RemoteCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
 import java.util.ArrayList;
@@ -10,15 +11,19 @@ import java.util.ArrayList;
 /**
  * Created by user1 on 06.10.2014.
  */
-public class PutCommand implements Command {
+public class PutCommand extends RemoteCommand {
     private RemoteDataBaseTableProvider shell;
 
     public PutCommand(RemoteDataBaseTableProvider shell) {
+        super(shell);
         this.shell = shell;
     }
 
     @Override
     public String executeCommand(ArrayList<String> arguments) throws Exception {
+        if (shell.isGuested()) {
+            return sendCommand(arguments);
+        }
         if (arguments.size() != 2) {
             throw new Exception("usage: put key value");
         }

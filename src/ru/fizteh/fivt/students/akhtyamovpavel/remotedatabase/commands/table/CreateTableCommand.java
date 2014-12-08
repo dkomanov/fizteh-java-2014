@@ -6,6 +6,7 @@ import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.TableRowSerializer;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,9 @@ public class CreateTableCommand extends TableCommand implements Command {
 
     @Override
     public String executeCommand(ArrayList<String> arguments) throws Exception {
+        if (shell.isGuested()) {
+            return sendCommand(arguments);
+        }
 
         if (arguments.size() != 2) {
             throw new Exception("usage create tablename [JSON types]");
@@ -55,9 +59,7 @@ public class CreateTableCommand extends TableCommand implements Command {
                 types.add(currentClass);
             }
 
-            if (shell.isGuested()) {
-                shell.sendCommand(String.join(" ", arguments));
-            }
+
 
             Table table = shell.createTable(arguments.get(0), types);
             if (table == null) {
@@ -74,5 +76,12 @@ public class CreateTableCommand extends TableCommand implements Command {
     @Override
     public String getName() {
         return "create";
+    }
+
+    String sendCommand(ArrayList<String> arguments) throws IOException {
+        StringBuilder result = new StringBuilder();
+        result.append(getName() + " ");
+        result.append(String.join(" ", arguments));
+        return shell.sendCommand(result.toString());
     }
 }

@@ -12,13 +12,16 @@ import java.io.IOException;
  */
 public class ClientRun {
     public static void main(String[] args) {
-        RemoteTableProviderFactory factory = new RemoteDataBaseTableProviderFactory();
+        String pathName = "/home/akhtyamovpavel/Development/test/test/";
+        DataBaseTableProvider provider = null;
         try {
-            RemoteDataBaseTableProvider provider = (RemoteDataBaseTableProvider) factory.connect("localhost", 10001);
-            String s = "create mama [int]";
-            provider.sendCommand(s);
-        } catch (IOException e) {
-            e.printStackTrace();
+            provider = new DataBaseTableProvider(pathName);
+        } catch (Exception e) {
+            System.out.println("failed");
         }
+        RemoteDataBaseTableProvider remoteProvider = new RemoteDataBaseTableProvider(provider);
+        Shell shell = new Shell();
+        shell.setProvider(remoteProvider);
+        shell.startInteractiveMode();
     }
 }

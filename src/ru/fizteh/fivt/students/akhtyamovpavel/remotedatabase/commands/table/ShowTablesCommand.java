@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvid
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -17,12 +18,16 @@ public class ShowTablesCommand extends TableCommand implements Command {
 
     @Override
     public String executeCommand(ArrayList<String> arguments) throws Exception {
+        if (shell.isGuested()) {
+            sendCommand(arguments);
+        }
         if (arguments.size() != 1) {
             throw new Exception("usage: show tables");
         }
         if (!"tables".equals(arguments.get(0))) {
             throw new Exception("usage: show tables");
         }
+
         for (Map.Entry<String, Integer> entry : shell.getTableList().entrySet()) {
             System.out.println(entry.getKey() + " " + entry.getValue());
         }
@@ -32,5 +37,12 @@ public class ShowTablesCommand extends TableCommand implements Command {
     @Override
     public String getName() {
         return "show";
+    }
+
+    String sendCommand(ArrayList<String> arguments) throws IOException {
+        StringBuilder result = new StringBuilder();
+        result.append(getName() + " ");
+        result.append(String.join(" ", arguments));
+        return shell.sendCommand(result.toString());
     }
 }

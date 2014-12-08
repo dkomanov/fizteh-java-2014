@@ -5,6 +5,7 @@ import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvid
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -27,6 +28,12 @@ public class UseCommand extends TableCommand implements Command {
 
 
         try {
+            if (shell.isGuested()) {
+                sendCommand(arguments);
+            }
+            if (!isSilent && shell.isGuested()) {
+                return sendCommand(arguments);
+            }
             Table table = shell.getTable(arguments.get(0));
             if (!isSilent) {
                 if (table == null) {
@@ -46,5 +53,12 @@ public class UseCommand extends TableCommand implements Command {
     @Override
     public String getName() {
         return "use";
+    }
+
+    String sendCommand(ArrayList<String> arguments) throws IOException {
+        StringBuilder result = new StringBuilder();
+        result.append(getName() + " ");
+        result.append(String.join(" ", arguments));
+        return shell.sendCommand(result.toString());
     }
 }

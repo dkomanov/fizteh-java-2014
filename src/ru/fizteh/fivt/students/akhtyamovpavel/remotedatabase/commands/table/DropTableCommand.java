@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvid
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -22,6 +23,9 @@ public class DropTableCommand extends TableCommand implements Command {
             throw new Exception("usage drop tablename");
         }
         try {
+            if (shell.isGuested()) {
+                sendCommand(arguments);
+            }
             shell.removeTable(arguments.get(0));
             return "dropped";
         } catch (IllegalStateException e) {
@@ -34,5 +38,12 @@ public class DropTableCommand extends TableCommand implements Command {
     @Override
     public String getName() {
         return "drop";
+    }
+
+    String sendCommand(ArrayList<String> arguments) throws IOException {
+        StringBuilder result = new StringBuilder();
+        result.append(getName() + " ");
+        result.append(String.join(" ", arguments));
+        return shell.sendCommand(result.toString());
     }
 }

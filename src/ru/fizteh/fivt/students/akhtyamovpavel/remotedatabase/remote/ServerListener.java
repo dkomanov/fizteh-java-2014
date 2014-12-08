@@ -33,7 +33,7 @@ public class ServerListener extends Thread {
             try {
                 Socket acceptedSocket = serverSocket.accept();
                 ServerResponder responder = new ServerResponder(shell, acceptedSocket);
-                responder.run();
+                responder.start();
                 responders.add(responder);
             } catch (IOException e) {
                 finished = true;

@@ -34,6 +34,7 @@ public class ServerResponder extends Thread {
         serverOk = true;
         try {
             stream = new Scanner(socket.getInputStream());
+            outStream = new PrintStream(socket.getOutputStream());
         } catch (IOException e) {
             shutdown();
         }
@@ -55,7 +56,7 @@ public class ServerResponder extends Thread {
     public void run() {
         while (serverOk) {
             if (stream.hasNext()) {
-                String inputString = stream.next();
+                String inputString = stream.nextLine();
 
                 ArrayList<String> result = shell.processInteractiveRequest(inputString, true);
                 for (String string : result) {

@@ -3,7 +3,9 @@ package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.CommandParser;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.CommandStorage;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.client.ConnectCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.filemap.*;
+import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.server.StartServerCommand;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.table.*;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProviderFactory;
@@ -113,6 +115,8 @@ public class Shell {
         addCommand(new RemoveCommand(provider));
         addCommand(new RollbackCommand(provider));
         addCommand(new CommitCommand(provider));
+        addCommand(new StartServerCommand(provider));
+        addCommand(new ConnectCommand(provider));
     }
 
     private void addCommand(Command command) {

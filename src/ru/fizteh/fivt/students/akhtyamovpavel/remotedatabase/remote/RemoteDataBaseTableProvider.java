@@ -49,10 +49,12 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         localProvider = provider;
         shell = new Shell();
         shell.setProvider(this);
+        listeners = new ArrayList<>();
     }
 
     public RemoteDataBaseTableProvider(DataBaseTableProvider provider, String host, int port) throws IOException {
         localProvider = provider;
+        listeners = new ArrayList<>();
         try {
             shell = new Shell();
             socketClientChannel =  new Socket();
@@ -81,6 +83,7 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
             } catch (IOException e) {
                 throw new IOException("not connected: " + e.getMessage());
             }
+            guested = true;
             return "connected";
         }
     }
@@ -111,6 +114,7 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         guested = false;
         ServerListener listener = new ServerListener(shell, asyncChannel);
         listener.start();
+
         listeners.add(listener);
         serverStarted = true;
         return String.valueOf(port);
@@ -147,7 +151,7 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         while (!scanner.hasNext()) {
             //wait for stream
         }
-        return scanner.next();
+        return scanner.nextLine();
     }
 
     @Override

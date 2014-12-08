@@ -21,7 +21,7 @@ public class MultiFileMapMain {
 
 
 
-        String pathName = "/home/akhtyamovpavel/Development/test/test/";
+        String pathName = "/home/akhtyamovpavel/Development/test/test2/";
         DataBaseTableProvider provider = null;
         try {
             provider = new DataBaseTableProvider(pathName);
@@ -29,11 +29,7 @@ public class MultiFileMapMain {
             System.out.println("failed");
         }
         RemoteDataBaseTableProvider remoteProvider = new RemoteDataBaseTableProvider(provider);
-        try {
-            remoteProvider.startServer();
-        } catch (IOException | ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        remoteProvider.waitCommands();
+        shell.setProvider(remoteProvider);
+        shell.startInteractiveMode();
     }
 }
