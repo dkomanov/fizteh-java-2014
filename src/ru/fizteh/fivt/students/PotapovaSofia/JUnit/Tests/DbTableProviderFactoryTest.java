@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.PotapovaSofia.JUnit;
+package ru.fizteh.fivt.students.PotapovaSofia.JUnit.Tests;
 
 
 import static org.junit.Assert.*;
@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.PotapovaSofia.JUnit.DbTableProviderFactory;
 
 public class DbTableProviderFactoryTest {
     private DbTableProviderFactory factory;
@@ -31,7 +32,7 @@ public class DbTableProviderFactoryTest {
 
     @Test
     public void testOnCreateNewTableProvider() {
-        //TableProviderFactory factory = new DbTableProviderFactory() {};
+        //TableProviderFactory factory = new DbTableProviderFactory() {};Null
         TableProvider testProvider = factory.create(testFolder.toString());
         testProvider.createTable("testTable");
         assertTrue(testFolder.resolve("testTable").toFile().exists());

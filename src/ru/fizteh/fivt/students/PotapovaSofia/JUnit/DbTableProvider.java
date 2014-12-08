@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.PotapovaSofia.JUnit;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,9 +47,12 @@ public class DbTableProvider implements TableProvider {
 
     @Override
     public Table getTable(String name) {
+        Utils.checkOnNull(name, "Table name is null");
+        /*
         if (name == null) {
             throw new IllegalArgumentException("Table name is null");
         }
+        */
         try {
             dbPath.resolve(name);
             if (name.matches(".*[\\\\/\\.]+.*")) {
@@ -62,9 +66,12 @@ public class DbTableProvider implements TableProvider {
 
     @Override
     public Table createTable(String name) {
+        Utils.checkOnNull(name, "Table name is null");
+        /*
         if (name == null) {
             throw new IllegalArgumentException("Table name is null");
         }
+        */
         try {
             if (name.matches(".*[\\\\/\\.]+.*")) {
                 throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
@@ -84,9 +91,12 @@ public class DbTableProvider implements TableProvider {
 
     @Override
     public void removeTable(String name) {
+        Utils.checkOnNull(name, "Table name is null");
+        /*
         if (name == null) {
             throw new IllegalArgumentException("Table name is null");
         }
+        */
         try {
             if (name.matches(".*[\\\\/\\.]+.*")) {
                 throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");

@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.PotapovaSofia.JUnit;
 
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter.Utils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -36,6 +37,7 @@ public class DbTable implements Table {
         try {
             readFromDisk();
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException("Error reading table " + tableName + e.getMessage());
         }
     }
@@ -51,6 +53,7 @@ public class DbTable implements Table {
 
     @Override
     public String get(String key) {
+        Utils.checkOnNull(key, null);
         String value = null;
         if (diff.containsKey(key)) {
             ValueWrapper valueWrapper = diff.get(key);
@@ -65,6 +68,8 @@ public class DbTable implements Table {
 
     @Override
     public String put(String key, String value) {
+        Utils.checkOnNull(key, null);
+        Utils.checkOnNull(value, null);
         String oldValue = null;
         boolean isContains = false;
         if (state.containsKey(key)) {
@@ -90,6 +95,7 @@ public class DbTable implements Table {
 
     @Override
     public String remove(String key) {
+        Utils.checkOnNull(key, null);
         String removedValue = null;
         if (diff.containsKey(key)) {
             ValueWrapper valueWrapper = diff.get(key);
@@ -177,6 +183,7 @@ public class DbTable implements Table {
     }
 
     public void readFromDisk() throws IOException {
+
         state = new HashMap<>();
         try {
             for (int dir = 0; dir < DIR_COUNT; ++dir) {
@@ -205,6 +212,22 @@ public class DbTable implements Table {
         } catch (IOException e) {
             throw new IOException("Unable read from file", e);
         }
+        for (File directory : tablePath.toFile().listFiles()) {
+            int k = directory.getName().indexOf('.');
+            if ((k < 0) || !(directory.getName().endsWith(".dir"))) {
+                throw new RuntimeException("Table subdirectories don't have appropriate name");
+            }
+            File[] directoryFiles = directory.listFiles();
+            if (directory.list().length == 0) {
+                throw new RuntimeException("Table has the wrong format");
+            }
+            for (File file : directoryFiles) {
+                k = file.getName().indexOf('.');
+                if ((k < 0) || !(file.getName().endsWith(".dat"))) {
+                    throw new RuntimeException("Table subdirectory's files doesn't have appropriate name");
+                }
+            }
+        }
     }
 
     private String readWord(DataInputStream in) throws IOException {
@@ -232,7 +255,7 @@ public class DbTable implements Table {
         for (Map.Entry<String, String> entry : state.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            Integer hashCode = key.hashCode();
+            Integer hashCode = Math.abs(key.hashCode());
             Integer dir = hashCode % DIR_COUNT;
             Integer file = hashCode / DIR_COUNT % FILE_COUNT;
             db[dir][file].put(key, value);

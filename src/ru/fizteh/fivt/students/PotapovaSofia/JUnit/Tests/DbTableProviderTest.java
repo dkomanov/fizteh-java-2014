@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.PotapovaSofia.JUnit;
+package ru.fizteh.fivt.students.PotapovaSofia.JUnit.Tests;
 
 import static org.junit.Assert.*;
 
@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.PotapovaSofia.JUnit.DbTableProvider;
 
 public class DbTableProviderTest {
     private final Path testFolder = Paths.get(System.getProperty("java.io.tmpdir"), "testFolder");
