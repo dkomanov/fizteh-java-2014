@@ -15,11 +15,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
-<<<<<<< HEAD:src/ru/fizteh/fivt/students/lukina/Parallel/DBaseProvider.java
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-=======
->>>>>>> master2:src/ru/fizteh/fivt/students/lukina/DataBase/DBaseProvider.java
 
 
 public class DBaseProvider implements TableProvider, AutoCloseable {
@@ -237,11 +234,7 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
         try {
             tableBase.remove(name);
         } finally {
-<<<<<<< HEAD:src/ru/fizteh/fivt/students/lukina/Parallel/DBaseProvider.java
             lock.unlock();
-=======
-            //lock.unlock();
->>>>>>> master2:src/ru/fizteh/fivt/students/lukina/DataBase/DBaseProvider.java
         }
     }
 
