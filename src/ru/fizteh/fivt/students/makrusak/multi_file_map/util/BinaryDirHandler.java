@@ -1,4 +1,4 @@
-package util;
+package multi_file_map.util;
 
 import java.io.File;
 import java.io.IOException;

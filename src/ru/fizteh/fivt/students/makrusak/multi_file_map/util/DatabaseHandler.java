@@ -1,11 +1,11 @@
-package util;
+package multi_file_map.util;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import util.TableHandler;
+import multi_file_map.util.TableHandler;
 
 public class DatabaseHandler {
   private File path;

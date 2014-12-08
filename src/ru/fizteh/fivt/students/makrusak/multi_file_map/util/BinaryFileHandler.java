@@ -1,4 +1,4 @@
-package util;
+package multi_file_map.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

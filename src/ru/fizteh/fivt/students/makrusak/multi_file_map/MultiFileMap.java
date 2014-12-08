@@ -1,3 +1,5 @@
+package multi_file_map;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -5,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import util.DatabaseHandler;
+import multi_file_map.util.DatabaseHandler;
 
 class MultiFileMap {
   private static void workWithLine(DatabaseHandler handler, String s) throws IOException {
