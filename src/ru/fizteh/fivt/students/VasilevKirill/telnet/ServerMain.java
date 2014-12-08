@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.VasilevKirill.telnet;
 
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Threads.ClientThread;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Threads.ServerConsoleThread;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.ShutdownHookThread;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -29,6 +30,8 @@ public class ServerMain {
             synchronized (monitor) {
                 monitor.wait();
             }
+            Thread hook = new ShutdownHookThread(serverThread.getTableProvider());
+            Runtime.getRuntime().addShutdownHook(hook);
             ServerSocket ss = serverThread.getServerSocket();
             if (ss == null) {
                 throw new IOException("Server socket wasn't initialized");
