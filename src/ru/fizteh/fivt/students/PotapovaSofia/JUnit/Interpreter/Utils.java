@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
