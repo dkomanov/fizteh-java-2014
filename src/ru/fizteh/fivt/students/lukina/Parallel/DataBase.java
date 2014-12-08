@@ -347,6 +347,7 @@ public class DataBase {
                     if (checkArgs(1, args)) {
                         doExit();
                     }
+                    break;
                 default:
                     printError("unknown_command");
             }
