@@ -5,6 +5,8 @@ import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 
 public class LsCommand implements Command {
@@ -23,12 +25,12 @@ public class LsCommand implements Command {
         return 0;
     }
 
-    public void execute(String[] s) throws IOException {
+    public void execute(String[] s, InputStream inputStream, PrintStream outputStream) throws IOException {
         ShellState sh = link.getState();
         File dir = new File(sh.getState());
         File[] arr = dir.listFiles();
         for (File f : arr) {
-            System.out.println(f.getName());
+            outputStream.println(f.getName());
         }
     }
 }

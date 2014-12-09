@@ -5,6 +5,8 @@ import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.FileAlreadyExistsException;
 
 public class MkdirCommand implements Command {
@@ -23,7 +25,7 @@ public class MkdirCommand implements Command {
         return 1;
     }
 
-    public void execute(String[] s) throws IOException {
+    public void execute(String[] s, InputStream inputStream, PrintStream outputStream) throws IOException {
         ShellState sh = link.getState();
         File f = new File(s[1]);
         if (!f.isAbsolute()) {

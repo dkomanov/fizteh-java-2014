@@ -2,6 +2,9 @@ package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
+import java.io.InputStream;
+import java.io.PrintStream;
+
 public class ExitCommand implements Command {
 
     private Shell link;
@@ -18,7 +21,7 @@ public class ExitCommand implements Command {
         return 0;
     }
 
-    public void execute(String[] st) {
-            System.exit(0);
+    public void execute(String[] st, InputStream inputStream, PrintStream outputStream) {
+        System.exit(0);
     }
 }

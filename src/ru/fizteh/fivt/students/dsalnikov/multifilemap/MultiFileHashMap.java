@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MultiFileHashMap implements MultiTable {
     private Map<String, Integer> tableInfo;
@@ -32,11 +33,11 @@ public class MultiFileHashMap implements MultiTable {
     }
 
     @Override
-    public void create(String name) {
+    public void create(List<String> name) {
         if (!tableInfo.containsKey(name)) {
-            tableInfo.put(name, 0);
+            tableInfo.put(name.get(1), 0);
         }
-        manager.createTable(name);
+        manager.createTable(name.get(1));
     }
 
 
@@ -60,11 +61,8 @@ public class MultiFileHashMap implements MultiTable {
     }
 
     @Override
-    public void showTables() {
-        System.out.println(String.format("table_name row_count"));
-        for (String s : tableInfo.keySet()) {
-            System.out.println(String.format("%s\t\t%s", s, tableInfo.get(s)));
-        }
+    public List<String> showTables() {
+        return tableInfo.entrySet().stream().map(v -> String.format("%s\t%s", v.getKey(), v.getValue())).collect(Collectors.toList());
     }
 
     @Override
@@ -84,6 +82,11 @@ public class MultiFileHashMap implements MultiTable {
         } else {
             return currTable.getAmountOfChanges();
         }
+    }
+
+    @Override
+    public int getTableDimensions() {
+        return 1;
     }
 
     @Override

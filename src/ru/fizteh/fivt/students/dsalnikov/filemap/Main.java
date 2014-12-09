@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.dsalnikov.filemap;
 
 import ru.fizteh.fivt.students.dsalnikov.filemap.commands.*;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
+import ru.fizteh.fivt.students.dsalnikov.shell.StringParser;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
 import java.io.File;
@@ -13,24 +14,16 @@ public class Main {
         try {
             File dbfile = new File(System.getProperty("db.file"));
             Table t = new SingleFileTable(dbfile);
-            PutCommand pc = new PutCommand(t);
-            ListCommand lc = new ListCommand(t);
-            RemoveCommand rc = new RemoveCommand(t);
-            GetCommand gc = new GetCommand(t);
-            ExitCommand ec = new ExitCommand(t);
-            CommitCommand cc = new CommitCommand(t);
-            RollbackCommand rbc = new RollbackCommand(t);
-            SizeCommand sz = new SizeCommand(t);
-            Shell sh = new Shell();
+            Shell sh = new Shell(new StringParser());
             List<Command> commands = new ArrayList<>();
-            commands.add(pc);
-            commands.add(lc);
-            commands.add(rc);
-            commands.add(gc);
-            commands.add(ec);
-            commands.add(cc);
-            commands.add(rbc);
-            commands.add(sz);
+            commands.add(new PutCommand(t));
+            commands.add(new ListCommand(t));
+            commands.add(new RemoveCommand(t));
+            commands.add(new GetCommand(t));
+            commands.add(new ExitCommand(t));
+            commands.add(new CommitCommand(t));
+            commands.add(new RollbackCommand(t));
+            commands.add(new SizeCommand(t));
             sh.setCommands(commands);
             try {
                 if (args.length == 0) {

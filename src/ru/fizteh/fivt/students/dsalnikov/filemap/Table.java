@@ -9,4 +9,6 @@ public interface Table extends ru.fizteh.fivt.storage.strings.Table {
     String remove(String key);
 
     int exit();
+
+    int getTableDimensions();
 }

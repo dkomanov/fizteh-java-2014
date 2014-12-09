@@ -2,6 +2,9 @@ package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
+import java.io.InputStream;
+import java.io.PrintStream;
+
 
 public class MvCommand implements Command {
 
@@ -19,7 +22,7 @@ public class MvCommand implements Command {
         return 2;
     }
 
-    public void execute(String[] st) throws Exception {
+    public void execute(String[] st, InputStream inputStream, PrintStream outputStream) throws Exception {
         String[] rmstr = new String[3];
         String[] cpstr = new String[4];
         cpstr[1] = "-r";
@@ -29,7 +32,7 @@ public class MvCommand implements Command {
         rmstr[1] = "-r";
         CpCommand cp = new CpCommand(link);
         RmCommand rm = new RmCommand(link);
-        cp.execute(cpstr);
-        rm.execute(rmstr);
+        cp.execute(cpstr, inputStream, System.out);
+        rm.execute(rmstr, inputStream, System.out);
     }
 }

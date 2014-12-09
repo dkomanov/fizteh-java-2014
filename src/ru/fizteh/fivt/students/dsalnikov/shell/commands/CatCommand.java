@@ -16,8 +16,8 @@ public class CatCommand implements Command {
     }
 
     @Override
-    public void execute(String[] args) throws IOException {
-         if (StringUtils.processFile(link.getState().getState(), args[1]).isDirectory()) {
+    public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws IOException {
+        if (StringUtils.processFile(link.getState().getState(), args[1]).isDirectory()) {
             throw new IllegalArgumentException("can't cat directory");
         } else {
             File path = StringUtils.processFile(link.getState().getState(), args[1]);
@@ -26,7 +26,7 @@ public class CatCommand implements Command {
                     StandardCharsets.UTF_8))) {
                 String line = br.readLine();
                 while (line != null) {
-                    System.out.println(line);
+                    outputStream.println(line);
                     line = br.readLine();
                 }
             }

@@ -4,6 +4,8 @@ import ru.fizteh.fivt.students.dsalnikov.multifilemap.MultiTable;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 public class UseCommand implements Command {
 
@@ -14,18 +16,18 @@ public class UseCommand implements Command {
     }
 
     @Override
-    public void execute(String[] args) throws Exception {
+    public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
 
         int changes = db.getAmountOfChanges();
         if (changes > 0) {
-            System.out.println("Error: there are " + changes + " unsaved changes");
+            outputStream.println("Error: there are " + changes + " unsaved changes");
         } else {
             File file = new File(db.getDbFile(), args[1]);
             if (!file.exists()) {
-                System.out.println(String.format("%s not exists", file.getName()));
+                outputStream.println(String.format("%s not exists", file.getName()));
             } else {
                 db.use(args[1]);
-                System.out.println("using " + file.getName());
+                outputStream.println("using " + file.getName());
             }
         }
     }

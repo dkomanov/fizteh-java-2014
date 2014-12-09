@@ -3,6 +3,9 @@ package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
+import java.io.InputStream;
+import java.io.PrintStream;
+
 public class RemoveCommand implements Command {
 
     private Table db;
@@ -13,12 +16,12 @@ public class RemoveCommand implements Command {
 
     @Override
 
-    public void execute(String[] args) throws Exception {
+    public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
         String result = db.remove(args[1]);
         if (result == null) {
-            System.out.println("not found");
+            outputStream.println("not found");
         } else {
-            System.out.println("removed");
+            outputStream.println("removed");
         }
 
     }

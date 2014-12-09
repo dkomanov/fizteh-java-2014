@@ -3,6 +3,9 @@ package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
+import java.io.InputStream;
+import java.io.PrintStream;
+
 public class RollbackCommand implements Command {
 
     Table db;
@@ -12,7 +15,7 @@ public class RollbackCommand implements Command {
     }
 
     @Override
-    public void execute(String[] args) throws Exception {
+    public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
         db.rollback();
     }
 

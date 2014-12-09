@@ -3,6 +3,9 @@ package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
+import java.io.InputStream;
+import java.io.PrintStream;
+
 public class PutCommand implements Command {
 
     private Table db;
@@ -12,12 +15,12 @@ public class PutCommand implements Command {
     }
 
     @Override
-    public void execute(String[] args) throws Exception {
+    public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
         String result = db.put(args[1], args[2]);
         if (result == null) {
-            System.out.println("new");
+            outputStream.println("new");
         } else {
-            System.out.println(String.format("overwrite\n'%s'", result));
+            outputStream.println(String.format("overwrite\n'%s'", result));
         }
 
     }

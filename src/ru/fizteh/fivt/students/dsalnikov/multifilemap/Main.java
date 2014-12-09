@@ -7,6 +7,7 @@ import ru.fizteh.fivt.students.dsalnikov.multifilemap.commands.DropCommand;
 import ru.fizteh.fivt.students.dsalnikov.multifilemap.commands.ShowCommand;
 import ru.fizteh.fivt.students.dsalnikov.multifilemap.commands.UseCommand;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
+import ru.fizteh.fivt.students.dsalnikov.shell.StringParser;
 import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
 
 import java.util.ArrayList;
@@ -15,32 +16,20 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         MultiTable t = new MultiFileHashMap();
-        PutCommand pc = new PutCommand(t);
-        ListCommand lc = new ListCommand(t);
-        RemoveCommand rc = new RemoveCommand(t);
-        GetCommand gc = new GetCommand(t);
-        ExitCommand ec = new ExitCommand(t);
-        CreateCommand cc = new CreateCommand(t);
-        DropCommand dc = new DropCommand(t);
-        ShowCommand sc = new ShowCommand(t);
-        UseCommand uc = new UseCommand(t);
-        CommitCommand com = new CommitCommand(t);
-        RollbackCommand rolb = new RollbackCommand(t);
-        SizeCommand siz = new SizeCommand(t);
-        Shell sh = new Shell();
+        Shell sh = new Shell(new StringParser());
         List<Command> commands = new ArrayList<>();
-        commands.add(pc);
-        commands.add(lc);
-        commands.add(rc);
-        commands.add(gc);
-        commands.add(ec);
-        commands.add(cc);
-        commands.add(dc);
-        commands.add(sc);
-        commands.add(uc);
-        commands.add(com);
-        commands.add(rolb);
-        commands.add(siz);
+        commands.add(new PutCommand(t));
+        commands.add(new ListCommand(t));
+        commands.add(new RemoveCommand(t));
+        commands.add(new GetCommand(t));
+        commands.add(new ExitCommand(t));
+        commands.add(new CreateCommand(t));
+        commands.add(new DropCommand(t));
+        commands.add(new ShowCommand(t));
+        commands.add(new UseCommand(t));
+        commands.add(new CommitCommand(t));
+        commands.add(new RollbackCommand(t));
+        commands.add(new SizeCommand(t));
         sh.setCommands(commands);
         if (args.length == 0) {
             try {

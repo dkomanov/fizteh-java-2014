@@ -2,9 +2,7 @@ package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 
@@ -72,7 +70,7 @@ public class CpCommand implements Command {
         }
     }
 
-    public void execute(String[] str) throws Exception {
+    public void execute(String[] str, InputStream inputStream, PrintStream outputStream) throws Exception {
         if (str.length == 4) {
             File source = new File(link.getState().getState(), str[2]);
             source = source.toPath().normalize().toFile();

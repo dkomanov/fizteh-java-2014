@@ -108,6 +108,11 @@ public class SingleFileTable implements Table {
     }
 
     @Override
+    public int getTableDimensions() {
+        return 1;
+    }
+
+    @Override
     public int size() {
         return CountingTools.countSize(storage, changed, deleted);
     }
@@ -142,6 +147,6 @@ public class SingleFileTable implements Table {
     }
 
     public int getChangesCount() {
-        return CountingTools.countChanges(storage, changed, deleted);
+        return CountingTools.countChangesInFileMap(storage, changed, deleted);
     }
 }

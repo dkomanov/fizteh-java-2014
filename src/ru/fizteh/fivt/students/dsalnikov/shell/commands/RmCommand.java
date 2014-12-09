@@ -5,6 +5,8 @@ import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.DirectoryNotEmptyException;
 
 public class RmCommand implements Command {
@@ -51,7 +53,7 @@ public class RmCommand implements Command {
         }
     }
 
-    public void execute(String[] s) throws IOException {
+    public void execute(String[] s, InputStream inputStream, PrintStream outputStream) throws IOException {
         if (s.length != 2 && s.length != 3) {
             throw new IllegalArgumentException("wrong ammount of args. should be called with one arg");
         } else if (s.length == 2) {
