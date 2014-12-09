@@ -88,7 +88,28 @@ public class XMLManager {
         }
     }
 
-    private static Object parseValue(String value, Class type) {
-        return null;
+    private static Object parseValue(String value, Class type) throws ParseException {
+        try {
+            switch (type.getSimpleName()) {
+                case "Integer":
+                    return Integer.parseInt(value);
+                case "Long":
+                    return Long.parseLong(value);
+                case "Byte":
+                    return Byte.parseByte(value);
+                case "Float":
+                    return Float.parseFloat(value);
+                case "Double":
+                    return Double.parseDouble(value);
+                case "Boolean":
+                    return Boolean.parseBoolean(value);
+                case "String":
+                    return value;
+                default:
+                    throw new ParseException("Unknown type", 0);
+            }
+        } catch (NumberFormatException ex) {
+            throw new ParseException("Incorrect number format. " + ex.getMessage(), 0);
+        }
     }
 }
