@@ -8,7 +8,6 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyStorable;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTableProvider;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;

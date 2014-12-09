@@ -5,7 +5,6 @@ import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTableProviderFactory;
 
-import java.io.File;
 import java.nio.file.Files;
 
 import static org.junit.Assert.assertTrue;
