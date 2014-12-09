@@ -2,8 +2,8 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.junit;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.DatabaseIOException;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.DatabaseIOException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Utility;
 
 import java.io.File;
 import java.io.IOException;

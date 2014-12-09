@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util;
+package ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions;
 
 public class NoActiveTableException extends IllegalStateException {
     public NoActiveTableException() {

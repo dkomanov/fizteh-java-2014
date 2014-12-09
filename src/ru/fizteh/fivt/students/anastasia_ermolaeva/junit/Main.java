@@ -3,11 +3,9 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.junit;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.TableState;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.ExitException;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Command;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Interpreter;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.DatabaseIOException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.*;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.DatabaseIOException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.ExitException;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +21,7 @@ public class Main {
         }
         TableProviderFactory factory = new TableHolderFactory();
         try {
-            start(new TableState(factory.create(rootDirectory)), args);
+            start(new DBState(factory.create(rootDirectory)), args);
         } catch (DatabaseIOException e) {
             System.err.println(e.getMessage());
             System.exit(1);
@@ -32,10 +30,11 @@ public class Main {
         }
     }
 
-    public static void start(TableState tableState, final String[] args) throws ExitException {
+    public static void start(DBState tableState, final String[] args) throws ExitException {
         new Interpreter(tableState, new Command[] {
-                new Command("create", 2, (TableState tableS, String[] arguments) -> {
-                    TableProvider provider = tableS.getTableHolder();
+                new Command("create", 2, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableProvider provider = (TableProvider)state.getTableHolder();
                     String tableName = arguments[1];
                     if (provider.createTable(tableName) != null) {
                         System.out.println("created");
@@ -43,12 +42,13 @@ public class Main {
                         System.out.println(tableName + " exists");
                     }
                 }),
-                new Command("drop", 2, (TableState tableS, String[] arguments) -> {
-                    TableProvider provider = tableS.getTableHolder();
-                    String currentTableName = tableS.getCurrentTableName();
+                new Command("drop", 2, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    String currentTableName = state.getCurrentTableName();
                     String tableName = arguments[1];
                     if (currentTableName.equals(tableName)) {
-                        tableS.setCurrentTableName("");
+                        state.setCurrentTableName("");
                     }
                     try {
                         provider.removeTable(tableName);
@@ -57,11 +57,12 @@ public class Main {
                         System.out.println(tableName + " not exists");
                     }
                 }),
-                new Command("use", 2, (TableState tableS, String[] arguments) -> {
-                    TableHolder holder = (TableHolder) tableS.getTableHolder();
+                new Command("use", 2, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableHolder holder = (TableHolder)state.getTableHolder();
                     String tableName = arguments[1];
                     Table newCurrentTable = holder.getTable(tableName);
-                    String currentTableName = tableS.getCurrentTableName();
+                    String currentTableName = state.getCurrentTableName();
                     if (newCurrentTable != null) {
                         if (!currentTableName.equals("")) {
                             DBTable currentTable = holder.getTableMap().get(currentTableName);
@@ -69,19 +70,20 @@ public class Main {
                                 System.out.println(currentTable.getNumberOfChanges()
                                         + " unsaved changes");
                             } else {
-                                tableS.setCurrentTableName(newCurrentTable.getName());
+                                state.setCurrentTableName(newCurrentTable.getName());
                                 System.out.println("using " + tableName);
                             }
                         } else {
-                            tableS.setCurrentTableName(newCurrentTable.getName());
+                            state.setCurrentTableName(newCurrentTable.getName());
                             System.out.println("using " + tableName);
                         }
                     } else {
                         System.out.println(tableName + " not exists");
                     }
                 }),
-                new Command("show tables", 1, (TableState tableS, String[] arguments) -> {
-                    TableHolder holder = (TableHolder) tableS.getTableHolder();
+                new Command("show tables", 1, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableHolder holder = (TableHolder)state.getTableHolder();
                     Map<String, DBTable> tables = holder.getTableMap();
                     System.out.println("table_name row_count");
                     for (Map.Entry<String, DBTable> entry : tables.entrySet()) {
@@ -89,10 +91,11 @@ public class Main {
                         System.out.println(entry.getValue().size());
                     }
                 }),
-                new Command("put", 3, (TableState tableS, String[] arguments) -> {
-                    TableProvider provider = tableS.getTableHolder();
-                    String currentTableName = tableS.getCurrentTableName();
-                    if (tableS.checkCurrentTable()) {
+                new Command("put", 3, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    String currentTableName = state.getCurrentTableName();
+                    if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
                         String key = arguments[1];
                         String value = arguments[2];
@@ -105,10 +108,11 @@ public class Main {
                         }
                     }
                 }),
-                new Command("get", 2, (TableState tableS, String[] arguments) -> {
-                    TableProvider provider = tableS.getTableHolder();
-                    String currentTableName = tableS.getCurrentTableName();
-                    if (tableS.checkCurrentTable()) {
+                new Command("get", 2, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    String currentTableName = state.getCurrentTableName();
+                    if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
                         String key = arguments[1];
                         String value = currentTable.get(key);
@@ -120,10 +124,11 @@ public class Main {
                         }
                     }
                 }),
-                new Command("remove", 2, (TableState tableS, String[] arguments) -> {
-                    TableProvider provider = tableS.getTableHolder();
-                    String currentTableName = tableS.getCurrentTableName();
-                    if (tableS.checkCurrentTable()) {
+                new Command("remove", 2, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    String currentTableName = state.getCurrentTableName();
+                    if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
                         String key = arguments[1];
                         String value = currentTable.remove(key);
@@ -134,42 +139,47 @@ public class Main {
                         }
                     }
                 }),
-                new Command("list", 1, (TableState tableS, String[] arguments) -> {
-                    TableProvider provider = tableS.getTableHolder();
-                    String currentTableName = tableS.getCurrentTableName();
-                    if (tableS.checkCurrentTable()) {
+                new Command("list", 1, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    String currentTableName = state.getCurrentTableName();
+                    if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
                         List<String> list = currentTable.list();
                         String joined = String.join(", ", list);
                         System.out.println(joined);
                     }
                 }),
-                new Command("size", 1, (TableState tableS, String[] arguments) -> {
-                    TableProvider provider = tableS.getTableHolder();
-                    String currentTableName = tableS.getCurrentTableName();
-                    if (tableS.checkCurrentTable()) {
+                new Command("size", 1, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    String currentTableName = state.getCurrentTableName();
+                    if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
                         System.out.println(currentTable.size());
                     }
                 }),
-                new Command("commit", 1, (TableState tableS, String[] arguments) -> {
-                    TableProvider provider = tableS.getTableHolder();
-                    String currentTableName = tableS.getCurrentTableName();
-                    if (tableS.checkCurrentTable()) {
+                new Command("commit", 1, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    String currentTableName = state.getCurrentTableName();
+                    if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
                         System.out.println(currentTable.commit());
                     }
                 }),
-                new Command("rollback", 1, (TableState tableS, String[] arguments) -> {
-                    TableProvider provider = tableS.getTableHolder();
-                    String currentTableName = tableS.getCurrentTableName();
-                    if (tableS.checkCurrentTable()) {
+                new Command("rollback", 1, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    String currentTableName = state.getCurrentTableName();
+                    if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
                         System.out.println(currentTable.rollback());
                     }
                 }),
-                new Command("exit", 1, (TableState tableS, String[] arguments) -> {
-                    ((TableHolder) tableS.getTableHolder()).close();
+                new Command("exit", 1, (Object tableS, String[] arguments) -> {
+                    DBState state = (DBState)tableS;
+                    ((TableHolder)state.getTableHolder()).close();
                     System.out.println("exit");
                     System.exit(0);
                 })

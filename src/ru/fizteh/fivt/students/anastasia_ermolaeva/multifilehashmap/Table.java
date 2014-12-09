@@ -151,7 +151,7 @@ public class Table implements Map<String, String>, AutoCloseable {
                 db[i][j] = new HashMap<>();
             }
         }
-        for (Map.Entry<String, String> entry: allRecords.entrySet()) {
+        for (Entry<String, String> entry: allRecords.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             try {
@@ -193,7 +193,7 @@ public class Table implements Map<String, String>, AutoCloseable {
                     try (RandomAccessFile dbFile = new
                                 RandomAccessFile(file, "rw")) {
                         dbFile.setLength(0);
-                        for (Map.Entry<String, String> entry
+                        for (Entry<String, String> entry
                                     : db[i][j].entrySet()) {
                             String key = entry.getKey();
                             String value = entry.getValue();

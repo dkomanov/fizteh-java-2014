@@ -1,25 +1,27 @@
-package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util;
+package ru.fizteh.fivt.students.anastasia_ermolaeva.util;
+
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.IllegalCommandException;
 
 import java.util.function.BiConsumer;
 
 public class Command {
-    private String name;
-    private int numArguments;
-    private BiConsumer<TableState, String[]> callback;
+    protected String name;
+    protected int numArguments;
+    protected BiConsumer<Object, String[]> callback;
 
     public Command(final String name, final int numArguments,
-                   final BiConsumer<TableState, String[]> callback) {
+                   final BiConsumer<Object, String[]> callback) {
         this.name = name;
         this.numArguments = numArguments;
         this.callback = callback;
     }
 
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
-    public final void execute(final TableState tableState,
-                              final String[] arguments) {
+    public void execute(final Object tableState,
+                        final String[] arguments) {
         if (arguments.length != numArguments) {
             String errMessage = getName() + ": invalid number of arguments: "
                     + (numArguments - 1)

@@ -1,4 +1,10 @@
-package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util;
+package ru.fizteh.fivt.students.anastasia_ermolaeva.proxy;
+
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.commands.Command;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.ExitException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.IllegalCommandException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.NoActiveTableException;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -10,42 +16,31 @@ import java.util.Scanner;
 public class Interpreter {
     public static final String PROMPT = "$ ";
     public static final String STATEMENT_DELIMITER = ";";
-    public static final String PARAM_REGEXP = "\\s+";
-    public static final String ERR_MSG = "Command not found: ";
+    public static final String PARAM_DELIMITER = "\\s+";
+    public static final String COMMAND_NOT_FOUNG_MSG = "Command not found: ";
+    public static final String EXIT_COMMAND = "exit";
+
     private final Map<String, Command> commands;
-    private final TableState tableState;
     private InputStream in;
     private PrintStream out;
-    private PrintStream err;
 
-    public Interpreter(final TableState tableState,
-                       final Command[] commands,
+    public Interpreter(final Command[] commands,
                        final InputStream inStream,
-                       final PrintStream outStream,
-                       final PrintStream errStream) {
-        if (inStream == null || outStream == null || errStream == null) {
+                       final PrintStream outStream) {
+        if (inStream == null || outStream == null) {
             throw new
                     IllegalArgumentException("Given streams are not valid");
         }
-        this.tableState = tableState;
         in = inStream;
         out = outStream;
-        err = errStream;
         this.commands = new HashMap<>();
         for (Command command : commands) {
             this.commands.put(command.getName(), command);
         }
     }
 
-    public Interpreter(final TableState tableState, final Command[] commands) {
-        this.in = System.in;
-        this.out = System.out;
-        this.err = System.err;
-        this.tableState = tableState;
-        this.commands = new HashMap<>();
-        for (Command command : commands) {
-            this.commands.put(command.getName(), command);
-        }
+    public Interpreter(final Command[] commands) {
+        this(commands, System.in, System.out);
     }
 
     public final void run(final String[] arguments) throws ExitException {
@@ -73,12 +68,7 @@ public class Interpreter {
         for (String command : commands) {
             commandHandler(command, false);
         }
-        if (!(tableState == null)) {
-            String currentTableName = tableState.getCurrentTableName();
-            if (!currentTableName.equals("")) {
-                tableState.getTableHolder().getTable(currentTableName).commit();
-            }
-        }
+        commandHandler(EXIT_COMMAND, false);
         throw new ExitException(0);
     }
 
@@ -86,7 +76,7 @@ public class Interpreter {
         try (Scanner scan = new Scanner(in)) {
             while (true) {
                 out.print(PROMPT);
-                String line = "";
+                String line;
                 try {
                     line = scan.nextLine();
                 } catch (NoSuchElementException e) {
@@ -100,6 +90,8 @@ public class Interpreter {
                 } catch (IllegalCommandException | NoActiveTableException e) {
                     out.println(e.getMessage());
                     continue;
+                } catch (IllegalStateException s) {
+                    continue;
                 }
             }
         } catch (NoSuchElementException e) {
@@ -111,24 +103,36 @@ public class Interpreter {
         Command command = commands.get(commandName);
         if (command == null) {
             if (userMode) {
-                throw new IllegalCommandException(ERR_MSG + commandName);
+                throw new IllegalCommandException(COMMAND_NOT_FOUNG_MSG + commandName);
             } else {
-                throw new ExitException(ERR_MSG + commandName, 1);
+                throw new ExitException(COMMAND_NOT_FOUNG_MSG + commandName, 1);
             }
         } else {
             try {
-                command.execute(tableState, arguments);
-            } catch (IllegalCommandException | NoActiveTableException e) {
+                command.run(arguments);
+            } catch (IllegalCommandException | NoActiveTableException |
+                    IndexOutOfBoundsException | ColumnFormatException e) {
                 if (userMode) {
-                    throw e;
+                    if (e.getClass().equals(IllegalCommandException.class)
+                            || e.getClass().equals(NoActiveTableException.class)) {
+                        throw e;
+                    } else {
+                        throw new IllegalCommandException(e.getMessage());
+                    }
                 } else {
                     throw new ExitException(e.getMessage(), 1);
                 }
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException a) {
                 if (userMode) {
-                    out.println(e.getMessage());
+                    out.println(a.getMessage());
                 } else {
-                    throw new ExitException(e.getMessage(), 1);
+                    throw new ExitException(a.getMessage(), 1);
+                }
+            } catch (IllegalStateException s) {
+                if (userMode) {
+                    throw s;
+                } else {
+                    throw new ExitException(1);
                 }
             }
         }
@@ -136,25 +140,10 @@ public class Interpreter {
 
     private void commandHandler(String cmd,
                                 boolean userMode) throws ExitException {
-        String[] arguments = cmd.trim().split(PARAM_REGEXP);
-        if (arguments[0].equals("show")) {
-            String cmdName = "show";
-            if (arguments.length > 1) {
-                cmdName = "show " + arguments[1];
-                String[] newArguments = new String[arguments.length - 1];
-                newArguments[0] = cmdName;
-                for (int i = 1; i < arguments.length - 1; i++) {
-                    newArguments[i] = arguments[i + 1];
-                }
-                handleCommand(cmdName, userMode, newArguments);
-            } else {
-                handleCommand(cmdName, userMode, arguments);
-            }
-        } else {
-            if ((arguments.length > 0) && !arguments[0].isEmpty()) {
-                String commandName = arguments[0];
-                handleCommand(commandName, userMode, arguments);
-            }
+        String[] arguments = cmd.trim().split(PARAM_DELIMITER);
+        if ((arguments.length > 0) && !arguments[0].isEmpty()) {
+            String commandName = arguments[0];
+            handleCommand(commandName, userMode, arguments);
         }
     }
 }
