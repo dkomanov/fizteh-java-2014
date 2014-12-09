@@ -97,7 +97,6 @@ public class MyTableProvider implements TableProvider {
         }
     }
     public Storeable deserialize(Table table, String value) throws ParseException {
-        //ts = new TableSerializer();
         return ts.deserialize(table, value, ((MyTable) table).signature);
     }
 
