@@ -80,7 +80,8 @@ public class TableProviderTest {
 
     @Test
     public void testDeserialize() throws Exception {
-        Table table = tableProvider.createTable("First", typeList);
+        tableProvider.createTable("First", typeList);
+        Table table = tableProvider.getTable("First");
         Storeable result = tableProvider.deserialize(table, "[1,\"one\"]");
         assertEquals(1, result.getColumnAt(0));
         assertEquals("one", result.getStringAt(1));
@@ -89,7 +90,8 @@ public class TableProviderTest {
 
     @Test
     public void testSerialize() throws Exception {
-        Table table = tableProvider.createTable("First", typeList);
+        tableProvider.createTable("First", typeList);
+        Table table = tableProvider.getTable("First");
         Storeable stor = new MyStorable(typeList);
         stor.setColumnAt(0, 1);
         stor.setColumnAt(1, "one");
