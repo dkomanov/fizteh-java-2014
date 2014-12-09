@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.moskupols.storeable;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.moskupols.junit.KnownDiffTable;
+import ru.fizteh.fivt.students.moskupols.junit.KnownDiffTableProvider;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -11,23 +11,24 @@ import java.util.stream.Collectors;
 /**
  * Created by moskupols on 09.12.14.
  */
-public class StringBackedStructuredTableProvider extends AbstractStructuredTableProvider {
+public class StringBackedStructuredTableProvider
+        extends AbstractStructuredTableProvider implements KnownDiffStructuredTableProvider{
     private final Path dbPath;
-    private final TableProvider stringProvider;
+    private final KnownDiffTableProvider stringProvider;
 
     public StringBackedStructuredTableProvider(
             Path dbPath,
             Serializer serializer,
             Deserializer deserializer,
-            TableProvider stringProvider) {
+            KnownDiffTableProvider stringProvider) {
         super(serializer, deserializer);
         this.dbPath = dbPath;
         this.stringProvider = stringProvider;
     }
 
     @Override
-    public Table getTable(String name) {
-        final ru.fizteh.fivt.storage.strings.Table stringTable = stringProvider.getTable(name);
+    public KnownDiffStructuredTable getTable(String name) {
+        final KnownDiffTable stringTable = stringProvider.getTable(name);
         if (stringTable == null) {
             return null;
         }
@@ -39,8 +40,8 @@ public class StringBackedStructuredTableProvider extends AbstractStructuredTable
     }
 
     @Override
-    public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        final ru.fizteh.fivt.storage.strings.Table stringTable = stringProvider.createTable(name);
+    public KnownDiffStructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
+        final KnownDiffTable stringTable = stringProvider.createTable(name);
         if (stringTable == null) {
             return null;
         }

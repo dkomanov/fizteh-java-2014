@@ -1,10 +1,9 @@
 package ru.fizteh.fivt.students.moskupols.cliutils2.interpreters;
 
-import ru.fizteh.fivt.students.moskupols.cliutils.CommandExecutionException;
 import ru.fizteh.fivt.students.moskupols.cliutils.StopProcessingException;
 import ru.fizteh.fivt.students.moskupols.cliutils.UnknownCommandException;
 import ru.fizteh.fivt.students.moskupols.cliutils2.CommandChooser;
-import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.InvalidArgsException;
+import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.CommandExecutionException;
 
 import java.util.Scanner;
 
@@ -38,7 +37,7 @@ public class InteractiveInterpreter extends Interpreter {
                     runJob(context, chooser, s);
                 } catch (StopProcessingException e) {
                     exited = true;
-                } catch (InvalidArgsException | UnknownCommandException | CommandExecutionException e) {
+                } catch (UnknownCommandException | CommandExecutionException e) {
                     System.err.println(e.getMessage());
                 }
             }

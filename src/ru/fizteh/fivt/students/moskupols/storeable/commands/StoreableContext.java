@@ -1,28 +1,29 @@
 package ru.fizteh.fivt.students.moskupols.storeable.commands;
 
-import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.moskupols.storeable.KnownDiffStructuredTable;
+import ru.fizteh.fivt.students.moskupols.storeable.KnownDiffStructuredTableProvider;
 
 /**
  * Created by moskupols on 09.12.14.
  */
 public class StoreableContext {
-    private final TableProvider provider;
-    private Table currentTable;
+    private final KnownDiffStructuredTableProvider provider;
+    private KnownDiffStructuredTable currentTable;
 
-    public StoreableContext(TableProvider provider) {
+    public StoreableContext(KnownDiffStructuredTableProvider provider) {
         this.provider = provider;
+        this.currentTable = null;
     }
 
-    public TableProvider getProvider() {
+    public KnownDiffStructuredTableProvider getProvider() {
         return provider;
     }
 
-    public Table getCurrentTable() {
+    public KnownDiffStructuredTable getCurrentTable() {
         return currentTable;
     }
 
-    public void setCurrentTable(Table currentTable) {
+    public void setCurrentTable(KnownDiffStructuredTable currentTable) {
         this.currentTable = currentTable;
     }
 }

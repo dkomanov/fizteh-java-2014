@@ -26,6 +26,10 @@ public class Put extends KnownArgsCountNameFirstCommand {
     protected void performAction(Object context, String[] args) throws CommandExecutionException {
         final StoreableContext cont = (StoreableContext) context;
         Table table = cont.getCurrentTable();
+        if (table == null) {
+            System.out.println("no table");
+            return;
+        }
         TableProvider provider = cont.getProvider();
         Storeable oldStoreable;
         try {

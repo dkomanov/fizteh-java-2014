@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.moskupols.junit;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 
 import java.nio.file.Paths;
@@ -10,7 +9,7 @@ import java.nio.file.Paths;
  */
 public class MultiFileMapTableProviderFactory implements TableProviderFactory {
     @Override
-    public TableProvider create(String dir) {
+    public KnownDiffTableProvider create(String dir) {
         if (dir == null) {
             throw new IllegalArgumentException("db dir should not be null");
         }

@@ -1,9 +1,9 @@
 package ru.fizteh.fivt.students.moskupols.storeable;
 
-import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.moskupols.junit.KnownDiffTable;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -12,11 +12,12 @@ import java.text.ParseException;
 /**
  * Created by moskupols on 09.12.14.
  */
-public class StringBackedStructuredTable extends AbstractStructuredTable {
+public class StringBackedStructuredTable extends AbstractStructuredTable implements KnownDiffStructuredTable {
     private final TableProvider myProvider;
-    private final Table stringTable;
+    private final KnownDiffTable stringTable;
 
-    protected StringBackedStructuredTable(TableProvider myProvider, Path path, Table stringTable) throws IOException {
+    protected StringBackedStructuredTable(
+            TableProvider myProvider, Path path, KnownDiffTable stringTable) throws IOException {
         super(path);
         this.myProvider = myProvider;
         this.stringTable = stringTable;
@@ -67,5 +68,10 @@ public class StringBackedStructuredTable extends AbstractStructuredTable {
         } catch (ParseException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public int diff() {
+        return stringTable.diff();
     }
 }
