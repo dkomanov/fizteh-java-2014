@@ -27,8 +27,9 @@ public class CreateCommand implements Command {
         }
         givenTypeNames[0] = removeFirst(givenTypeNames[0]);
         givenTypeNames[givenTypeNames.length - 1] = removeLast(givenTypeNames[givenTypeNames.length - 1]);
-        for (int ind = 0; ind < givenTypeNames.length; ++ind)
+        for (int ind = 0; ind < givenTypeNames.length; ++ind) {
             typeNames.append(givenTypeNames[ind] + ' ');
+        }
         types = TypeManager.getClasses(typeNames.toString().trim());
     }
 
