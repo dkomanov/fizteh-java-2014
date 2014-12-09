@@ -54,7 +54,7 @@ public class ProxyMain {
                 System.out.println(e.getMessage());
             }
             System.exit(-1);
-        }//
+        }
     }
 
 }
