@@ -5,6 +5,10 @@ import ru.fizteh.fivt.storage.structured.*;
 import java.util.List;
 
 public class ParallelTableProvider implements TableProvider {
+    public ParallelTableProvider(String dbDir) {
+        
+    }
+
     @Override
     public Table getTable(String name) {
         return null;
@@ -42,6 +46,14 @@ public class ParallelTableProvider implements TableProvider {
 
     @Override
     public List<String> getTableNames() {
+        return null;
+    }
+
+    public Table getUsing() {
+        return null;
+    }
+
+    public Table setUsing(String name) {
         return null;
     }
 }
