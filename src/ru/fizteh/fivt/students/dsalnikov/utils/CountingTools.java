@@ -114,6 +114,4 @@ public class CountingTools {
         changes.keySet().removeAll(addedKeysForDeletion);
         return data.size() + changes.size() - removedKeys.size();
     }
-
-
 }

@@ -11,7 +11,8 @@ public enum WorkStatus {
 
     private WorkStatus(int stateNumber) throws IllegalStateException {
         if (IntStream.range(-1, 2).noneMatch(n -> n == stateNumber)) {
-            throw new IllegalStateException("container workstatus state getting problem: provided state: " + stateNumber);
+            throw new IllegalStateException(
+                    "container workstatus state getting problem: provided state: " + stateNumber);
         } else {
             state = stateNumber;
         }

@@ -98,13 +98,9 @@ public class CorrectnessCheck {
     }
 
     public static boolean correctProxyArguments(Writer writer, Object implementation, Class<?> interfaceClass) {
-        if ((writer == null)
-                ||(interfaceClass == null)
-                ||!interfaceClass.isInstance(implementation)
-                ||!interfaceClass.isInterface()) {
-            return false;
-        } else {
-            return true;
-        }
+        return (!((writer == null)
+                || (interfaceClass == null)
+                || !interfaceClass.isInstance(implementation)
+                || !interfaceClass.isInterface()));
     }
 }
