@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -23,9 +22,9 @@ public class TableClass implements Table, AutoCloseable {
     private final Path tablePath;
     private final Map<Coordinates, DataFile> tableMap;
     private ThreadLocal<Map<String, Storeable>> difference; // (null in Value) -> this entry must be removed.
-    private static final String unexpectedFilesMessage = "Unexpected files found in directory ";
-    private static final String emptyFoldersMessage = "Empty folders found";
-    private static final String signatureFileName = "signature.tsv";
+    private static final String UNEXPECTED_FILES_MESSAGE = "Unexpected files found in directory ";
+    private static final String EMPTY_FOLDERS_MESSAGE = "Empty folders found";
+    private static final String SIGNATURE_FILE_NAME = "signature.tsv";
     private final TableProvider tableProvider;
     private boolean wasRemoved = false;
     private final ReadWriteLock lock;
@@ -44,7 +43,7 @@ public class TableClass implements Table, AutoCloseable {
             readColumnTypes();
         } else { // Write columnTypes to the table directory.
             this.columnTypes = new ArrayList<>(columnTypes);
-            Path currentFolderPath = this.tablePath.resolve(signatureFileName);
+            Path currentFolderPath = this.tablePath.resolve(SIGNATURE_FILE_NAME);
             File currentFile = currentFolderPath.toFile();
             try {
                 currentFile.createNewFile();
@@ -63,22 +62,22 @@ public class TableClass implements Table, AutoCloseable {
         // Reading keys and values.
         String[] folders = this.tablePath.toFile().list();
         for (String currentFolderName : folders) {
-            if (currentFolderName.endsWith(signatureFileName)) {
+            if (currentFolderName.endsWith(SIGNATURE_FILE_NAME)) {
                 continue;
             }
             Path currentFolderPath = this.tablePath.resolve(currentFolderName);
             if (!currentFolderName.matches(TableManager.FOLDER_NAME_PATTERN)
                     || !currentFolderPath.toFile().isDirectory()) {
-                throw new DatabaseCorruptedException(unexpectedFilesMessage + tablePath.toString());
+                throw new DatabaseCorruptedException(UNEXPECTED_FILES_MESSAGE + tablePath.toString());
             }
             String[] fileList = currentFolderPath.toFile().list();
             if (fileList.length == 0) {
-                throw new DatabaseCorruptedException(tablePath.toString() + " : " + emptyFoldersMessage);
+                throw new DatabaseCorruptedException(tablePath.toString() + " : " + EMPTY_FOLDERS_MESSAGE);
             }
             for (String currentFileName : fileList) {
                 Path filePath = currentFolderPath.resolve(currentFileName);
                 if (!currentFileName.matches(TableManager.FILE_NAME_PATTERN) || !filePath.toFile().isFile()) {
-                    throw new DatabaseCorruptedException(unexpectedFilesMessage + tablePath.toString());
+                    throw new DatabaseCorruptedException(UNEXPECTED_FILES_MESSAGE + tablePath.toString());
                 }
                 int folderIndex = extractFolderNumber(currentFolderName);
                 int fileIndex = extractDataFileNumber(currentFileName);
@@ -98,7 +97,7 @@ public class TableClass implements Table, AutoCloseable {
 
     private void readColumnTypes() throws DatabaseCorruptedException {
         columnTypes = new ArrayList<>();
-        Path currentFolderPath = this.tablePath.resolve(signatureFileName);
+        Path currentFolderPath = this.tablePath.resolve(SIGNATURE_FILE_NAME);
         List<String> list;
         try (Scanner in = new Scanner(new File(currentFolderPath.toString()))) {
             list = Arrays.asList(in.nextLine().split("\\s+"));
@@ -106,9 +105,9 @@ public class TableClass implements Table, AutoCloseable {
                 columnTypes.add(CastMaker.stringToClass(currentString));
             }
         } catch (FileNotFoundException e) {
-            throw new DatabaseCorruptedException("Can't find " + signatureFileName + " in table " + name);
+            throw new DatabaseCorruptedException("Can't find " + SIGNATURE_FILE_NAME + " in table " + name);
         } catch (IllegalArgumentException | NoSuchElementException e) {
-            throw new DatabaseCorruptedException(signatureFileName + " is corrupted in table " + name);
+            throw new DatabaseCorruptedException(SIGNATURE_FILE_NAME + " is corrupted in table " + name);
         }
     }
 
