@@ -32,17 +32,26 @@ public class Create extends StoreableCommand {
         if (!checkMoreArguments(args.length)) {
             return !batchModeInInteractive;
         }
-        if (!args[1].startsWith("(") || !args[1].endsWith(")")) {
+        if (!args[1].startsWith("(") || !args[args.length - 1].endsWith(")")) {
             System.err.println("wrong arguments: ( ) not found");
             return !batchModeInInteractive;
         }
         java.util.List<Class<?>> types = new ArrayList<>();
-        args[1] = args[1].substring(1, args[1].length() - 1);
+        args[1] = args[1].substring(1);
+        args[args.length - 1] = args[args.length - 1].substring(0, (args[args.length - 1]).length() - 1);
         try {
-            for (String tempName : args[1].split("\\s+", 0)) {
+            for (int i = 1; i < args.length; ++i) {
+                String tempName = args[i];
                 types.add(classByName(tempName));
             }
+            for (Class<?> myType: types) {
+                if (!TYPES.containsValue(myType)) {
+                    System.out.println("wrong type ( don't have type: " + myType + " )");
+                    return !batchModeInInteractive;
+                }
+            }
             dbConnector.activeTableProvider.createTable(args[0], types);
+            System.out.println("created");
         } catch (IOException e) {
             System.err.println("Some IOException happen (in createTable)");
             return !batchModeInInteractive;

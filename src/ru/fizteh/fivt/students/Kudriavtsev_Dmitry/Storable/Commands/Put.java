@@ -5,6 +5,8 @@ import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Storable.Connector;
 import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Storable.CurrentStoreable;
 
 import java.io.File;
+import java.text.ParseException;
+import java.util.ArrayList;
 
 /**
  * Created by Дмитрий on 04.10.14.
@@ -28,11 +30,13 @@ public class Put extends StoreableCommand {
             noTable();
             return true;
         }
-        if (dbConnector.activeTable.signature.size() != args.length - 1) {
+        /*if (dbConnector.activeTable.signature.size() != 2) {
             System.err.println("Bad number of arguments");
             return !batchModeInInteractive;
         }
+        ArrayList<Class<?>> newArgs = new ArrayList<>();
         for (int i = 1; i < args.length; ++i) {
+            newArgs.add( ((dbConnector.activeTable.signature.get(i - 1)) args[i]) );
             if (!dbConnector.activeTable.signature.contains(args[i].getClass())) {
                 System.err.println("Signature not contains class " + args[i].getClass());
                 return !batchModeInInteractive;
@@ -41,8 +45,15 @@ public class Put extends StoreableCommand {
         Storeable temp = new CurrentStoreable(dbConnector.activeTable.signature);
         for (int i = 1; i < args.length; ++i) {
             temp.setColumnAt(i - 1, args[i]);
+        }*/
+        Storeable value;
+        try {
+            value = dbConnector.activeTable.put(args[0],
+                    dbConnector.activeTableProvider.deserialize(dbConnector.activeTable, args[1]));
+        } catch(ParseException e) {
+            System.err.println("Parse Exception in deserialize");
+            return !batchModeInInteractive;
         }
-        Storeable value = dbConnector.activeTable.put(args[0], temp);
         if (value != null) {
             System.out.println("overwrite");
             System.out.println(value);

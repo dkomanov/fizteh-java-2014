@@ -44,9 +44,9 @@ public class Show extends StoreableCommand {
             System.out.println(a.getKey() + " " + a.getValue().size());
         }
 
-        for (Map.Entry<String, StoreableTable> a : dbConnector.activeTableProvider.tables.entrySet()) {
+        /*for (Map.Entry<String, StoreableTable> a : dbConnector.activeTableProvider.tables.entrySet()) {
             System.out.println(a.getKey() + " " + a.getValue().size());
-        }
+        }*/
 
         return true;
     }

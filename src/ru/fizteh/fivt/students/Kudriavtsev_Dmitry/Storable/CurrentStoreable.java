@@ -45,25 +45,25 @@ public class CurrentStoreable implements Storeable{
     @Override
     public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         checkFormat(columnIndex, Integer.class);
-        return (Integer) values.get(columnIndex);
+        return (Integer)values.get(columnIndex);
     }
 
     @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         checkFormat(columnIndex, Long.class);
-        return (Long) values.get(columnIndex);
+        return (Long)values.get(columnIndex);
     }
 
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         checkFormat(columnIndex, Byte.class);
-        return (Byte) values.get(columnIndex);
+        return (Byte)values.get(columnIndex);
     }
 
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         checkFormat(columnIndex, Float.class);
-        return (Float) values.get(columnIndex);
+        return (Float)values.get(columnIndex);
     }
 
     @Override

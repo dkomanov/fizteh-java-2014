@@ -20,7 +20,6 @@ public class StoreableTable implements Table {
     protected static final int DIRECTORIES_COUNT = 16;
     private final String encoding = "UTF-8";
     private final String signatureFileName = "signature.tsv";
-    private static final HashMap<String, Class<?>> TYPES;
 
     public Path dbPath;
     public String name;
@@ -31,6 +30,7 @@ public class StoreableTable implements Table {
     public Map<String, Storeable> newKey = new HashMap<>();
     public List<Class<?>> signature;
     private StoreableTableProvider provider;
+    /*TYPES = provider.
 
     static {
         TYPES = new HashMap<>();
@@ -41,9 +41,11 @@ public class StoreableTable implements Table {
         TYPES.put("double", Double.class);
         TYPES.put("boolean", Boolean.class);
         TYPES.put("String", String.class);
-    }
+    }*/
 
-    private static Class<?> classByName(String name) throws IOException {
+    public final Map<String, Class<?>> TYPES;
+
+    private Class<?> classByName(String name) throws IOException {
         if (!TYPES.containsKey(name)) {
             throw new IOException("Unknown type name: " + name);
         }
@@ -55,6 +57,7 @@ public class StoreableTable implements Table {
         if (!Files.exists(path)) {
             Files.createDirectory(path);
         }
+        TYPES = new StoreableTableProvider().revClassNames;
     }
 
     public StoreableTable(StoreableTableProvider newProvider,  String dbName,
@@ -63,6 +66,7 @@ public class StoreableTable implements Table {
         dbPath = new File(parentDir + File.separator + dbName).toPath();
         signature = newSignature;
         provider = newProvider;
+        TYPES = provider.revClassNames;
         readDb();
     }
 
@@ -276,8 +280,7 @@ public class StoreableTable implements Table {
         return dbPath.resolve(nameOfTable + File.separator + i + ".dir" + File.separator);
     }
 
-    public AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<Integer, Integer>> 
-                                        whereToSave(String nameOfTable, String value) {
+    public AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<Integer, Integer>> whereToSave(String nameOfTable, String value) {
         int hashCode = value.hashCode();
         int d = hashCode % DIRECTORIES_COUNT;
         int f = hashCode / DIRECTORIES_COUNT % FILES_COUNT;
