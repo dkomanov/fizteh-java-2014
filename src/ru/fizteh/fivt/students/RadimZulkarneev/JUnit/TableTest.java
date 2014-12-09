@@ -178,7 +178,7 @@ public class TableTest {
         table = new TableRealize(testDirectory);
         table.put(key, value);
         table.put(key + "1", value);
-        ArrayList<String> list = new ArrayList<String>(Arrays.asList(key, key + "1"));
+        ArrayList<String> list = new ArrayList<>(Arrays.asList(key, key + "1"));
         assertTrue(list.containsAll(table.list()));
         table.remove(key);
         table.commit();

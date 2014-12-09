@@ -1,7 +1,13 @@
 package ru.fizteh.fivt.students.RadimZulkarneev.Main;
 
+import java.util.Set;
 import java.util.function.BiConsumer;
 
+
+
+
+
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import ru.fizteh.fivt.storage.strings.*;
 import ru.fizteh.fivt.students.RadimZulkarneev.DataBase.TableProviderFactoryRealize;
@@ -13,14 +19,19 @@ import ru.fizteh.fivt.students.RadimZulkarneev.Interpreter.InterpreterState;
 
 
 public class JUnitMain {
-
+    private static TableProviderFactory tableProviderFactory;
     public static void main(String[] args) {
         String pathName = System.getProperty("fizteh.db.dir");
         if (pathName == null) {
             System.err.println("You must specify fizteh.db.file");
             System.exit(1);
         }
-        TableProviderFactory tableProviderFactory = new TableProviderFactoryRealize();
+        try {
+            tableProviderFactory = new TableProviderFactoryRealize();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            System.exit(1);
+        }
         DataBaseInterpreterState state = new DataBaseInterpreterState(tableProviderFactory.create(pathName));
         new Interpreter(state, new Command[]{
                 new Command("put", 2, new BiConsumer<InterpreterState, String[]>() {
@@ -111,7 +122,7 @@ public class JUnitMain {
                         }
                         try {
                             tableProvider.removeTable(arguments[0]);
-                            System.out.println("removed");
+                            System.out.println("dropped");
                         } catch (IllegalStateException e) {
                             throw new IllegalArgumentException("tablename not exists");
                         }
@@ -152,13 +163,31 @@ public class JUnitMain {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
                         if (arguments[0].equals("tables")) {
-                            TableProviderRealize tableProvider = (TableProviderRealize) (((DataBaseInterpreterState)
-                                    interpreterState).getTableProvider());
-                            System.out.println(String.join("\n", tableProvider.getTableSet()));
+                            TableProviderRealize tableProvider = (TableProviderRealize)((DataBaseInterpreterState)
+                                    interpreterState).getTableProvider();
+                            Set<String> tableSet = (tableProvider).getTableSet();
+                            for (String table : tableSet) {
+                                System.out.println(table + " " + tableProvider.getTable(table).size());
+                            }
                         } else {
                             throw new IllegalArgumentException("command not found: show " + arguments[0]);
                         }
                     }
+                }),
+                new Command("size", 0, new BiConsumer<InterpreterState, String[]>() {
+
+                    @Override
+                    public void accept(InterpreterState interpreterState, String[] u) {
+                        TableProviderRealize tableProvider = (TableProviderRealize)((DataBaseInterpreterState)
+                                interpreterState).getTableProvider();
+                        Set<String> tableSet = (tableProvider).getTableSet();
+                        int size = 0;
+                        for (String table : tableSet) {
+                            size += tableProvider.getTable(table).size();
+                        }
+                        System.out.println(size);
+                    }
+                    
                 }),
                 new Command("rollback", 0, new BiConsumer<InterpreterState, String[]>() {
                     @Override

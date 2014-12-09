@@ -231,7 +231,7 @@ public class TableRealize implements Table {
 
     @Override
     public List<String> list() {
-        Set<String> set = new HashSet<>();
+        List<String> set = new LinkedList<>();
         for (Entry<String, FileMap> entry : data.entrySet()) {
             set.addAll(entry.getValue().keySet());
         }

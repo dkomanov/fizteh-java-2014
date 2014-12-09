@@ -42,10 +42,10 @@ public class TableProviderRealize implements TableProvider {
     @Override
     public Table getTable(String name) {
         // TODO Auto-generated method stub
+        nameIsNullAssertion(name);
         if (!tables.containsKey(name)) {
             return null;
         }
-        nameIsNullAssertion(name);
         return tables.get(name);
     }
 
@@ -61,7 +61,7 @@ public class TableProviderRealize implements TableProvider {
             tables.put(name, createdTable);
             return createdTable;
         } catch (Exception e) {
-            throw new IllegalStateException("table-create problem");
+            throw new IllegalStateException(e.toString(), e);
         }
     }
 
@@ -74,7 +74,7 @@ public class TableProviderRealize implements TableProvider {
                 tables.get(name).drop();
                 tables.remove(name);
             } catch (IOException ex) {
-                throw new IllegalArgumentException("dropping problem");
+                throw new IllegalArgumentException(ex.toString(), ex);
             }
         } else {
             throw new IllegalStateException();
