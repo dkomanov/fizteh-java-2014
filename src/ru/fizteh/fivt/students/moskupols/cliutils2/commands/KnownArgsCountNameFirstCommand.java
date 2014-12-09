@@ -4,7 +4,7 @@ package ru.fizteh.fivt.students.moskupols.cliutils2.commands;
  * Created by moskupols on 02.12.14.
  */
 public abstract class KnownArgsCountNameFirstCommand extends NameFirstCommand {
-    int expectedArgsCount() {
+    public int expectedArgsCount() {
         return 1;
     }
 

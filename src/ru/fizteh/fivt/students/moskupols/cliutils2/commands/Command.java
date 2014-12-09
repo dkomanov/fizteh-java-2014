@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.moskupols.cliutils2.commands;
 
-import ru.fizteh.fivt.students.moskupols.cliutils.CommandExecutionException;
 import ru.fizteh.fivt.students.moskupols.cliutils.StopProcessingException;
+import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.CommandExecutionException;
 import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.InvalidArgsException;
 
 /**
@@ -14,7 +14,7 @@ public abstract class Command {
             throws CommandExecutionException, StopProcessingException;
 
     public final void perform(Object context, String[] args)
-            throws CommandExecutionException, StopProcessingException, InvalidArgsException {
+            throws CommandExecutionException, StopProcessingException {
         String argsError = checkArgs(args);
         if (argsError != null) {
             throw new InvalidArgsException(this, argsError);
