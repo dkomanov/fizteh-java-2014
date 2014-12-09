@@ -204,6 +204,7 @@ public class TableRealize implements Table {
                     directory.delete();
                 }
             }
+            loadTable();
         } catch (Exception ex) {
             // It's abnormally.
             throw new RuntimeException("Some incomprehensible errors in commiting of the table");

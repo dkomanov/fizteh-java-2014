@@ -174,7 +174,7 @@ public class TableTest {
     }
 
     @Test
-    public void tableListFunctionTest() throws Exception {
+    public void tableListFunctionTest() throws Exception {  
         table = new TableRealize(testDirectory);
         table.put(key, value);
         table.put(key + "1", value);
