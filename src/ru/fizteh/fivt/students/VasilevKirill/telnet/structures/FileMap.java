@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.VasilevKirill.telnet.structures;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -45,43 +46,51 @@ public class FileMap implements Closeable{
     }
 
     private void readFromFile(Map<String, String> fileMap, FileReader reader) throws IOException {
-        StringBuilder readDataBuilder = new StringBuilder("");
-        while (reader.ready()) {
-            int readChar = reader.read();
-            readDataBuilder.append((char) readChar);
-        }
-        String readData = "";
-        if (!readDataBuilder.toString().equals("")) {
-            readData = new String(readDataBuilder);
-            JSONObject obj = new JSONObject(readData);
+        try {
+            StringBuilder readDataBuilder = new StringBuilder("");
+            while (reader.ready()) {
+                int readChar = reader.read();
+                readDataBuilder.append((char) readChar);
+            }
+            String readData = "";
+            if (!readDataBuilder.toString().equals("")) {
+                readData = new String(readDataBuilder);
+                JSONObject obj = new JSONObject(readData);
             /*Set<String> keySet = obj.keySet();
             for (String it : keySet) {
                 fileMap.put(it, obj.getJSONArray(it).toString());
             }*/
-            for (Iterator iterator = obj.keys(); iterator.hasNext(); ) {
-                String key = (String) iterator.next();
-                fileMap.put(key, obj.getJSONArray(key).toString());
+                for (Iterator iterator = obj.keys(); iterator.hasNext(); ) {
+                    String key = (String) iterator.next();
+                    fileMap.put(key, obj.getJSONArray(key).toString());
+                }
             }
+        } catch (JSONException e) {
+            throw new IOException("JSON exception in reading from file");
         }
     }
 
     private void writeToFile(Map<String, String> fileMap, FileWriter writer) throws IOException {
-        String key = null;
-        String value = null;
-        JSONObject obj = new JSONObject();
-        for (Map.Entry entry : fileMap.entrySet()) {
-            key = entry.getKey().toString();
-            value = entry.getValue().toString();
-            JSONArray input = new JSONArray(value);
-            obj.put(key, input);
-        }
-        if (obj.length() != 0) {
-            writer.write(obj.toString());
-        }
         try {
-            writer.flush();
-        } catch (IOException e) {
-            throw new IOException("Error in flushing: " + e.getMessage());
+            String key = null;
+            String value = null;
+            JSONObject obj = new JSONObject();
+            for (Map.Entry entry : fileMap.entrySet()) {
+                key = entry.getKey().toString();
+                value = entry.getValue().toString();
+                JSONArray input = new JSONArray(value);
+                obj.put(key, input);
+            }
+            if (obj.length() != 0) {
+                writer.write(obj.toString());
+            }
+            try {
+                writer.flush();
+            } catch (IOException e) {
+                throw new IOException("Error in flushing: " + e.getMessage());
+            }
+        } catch (JSONException e) {
+            throw new IOException("JSON exception in writing to file");
         }
     }
 
