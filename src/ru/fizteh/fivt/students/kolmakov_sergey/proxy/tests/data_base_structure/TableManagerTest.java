@@ -254,19 +254,6 @@ public class TableManagerTest {
     }
 
     @Test
-    public void testExcludeFolderNumber() {
-        assertEquals(2, TableManager.extractFolderNumber("2.dir"));
-        assertEquals(42, TableManager.extractFolderNumber("42.dir"));
-        assertEquals(442, TableManager.extractFolderNumber("442.dir"));
-    }
-    @Test
-    public void testExcludeFileNumber() {
-        assertEquals(2, TableManager.extractDataFileNumber("2.dat"));
-        assertEquals(42, TableManager.extractDataFileNumber("42.dat"));
-        assertEquals(442, TableManager.extractDataFileNumber("442.dat"));
-    }
-
-    @Test
     public void testGetNamesMethod() throws IOException {
         directoryPath.toFile().mkdir();
         directoryPath.resolve(tableName).toFile().mkdir();

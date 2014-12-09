@@ -186,39 +186,34 @@ public class TableManager implements TableProvider, AutoCloseable {
     }
 
     private String extractFromStoreable(Table table, Storeable storeable, int index) {
-        lock.readLock().lock();
-        try {
-            checkIfClosed();
-            Object answer = null;
-            Class<?> currentClass = table.getColumnType(index);
-            if (currentClass == Integer.class) {
-                answer = storeable.getIntAt(index);
-            }
-            if (currentClass == Long.class) {
-                answer = storeable.getLongAt(index);
-            }
-            if (currentClass == Byte.class) {
-                answer = storeable.getByteAt(index);
-            }
-            if (currentClass == Float.class) {
-                answer = storeable.getFloatAt(index);
-            }
-            if (currentClass == Double.class) {
-                answer = storeable.getDoubleAt(index);
-            }
-            if (currentClass == Boolean.class) {
-                answer = storeable.getBooleanAt(index);
-            }
-            if (currentClass == String.class) {
-                answer = storeable.getStringAt(index);
-            }
-            if (answer != null) {
-                return answer.toString();
-            } else {
-                return "null";
-            }
-        } finally {
-            lock.readLock().unlock();
+        checkIfClosed();
+        Object answer = null;
+        Class<?> currentClass = table.getColumnType(index);
+        if (currentClass == Integer.class) {
+            answer = storeable.getIntAt(index);
+        }
+        if (currentClass == Long.class) {
+            answer = storeable.getLongAt(index);
+        }
+        if (currentClass == Byte.class) {
+            answer = storeable.getByteAt(index);
+        }
+        if (currentClass == Float.class) {
+            answer = storeable.getFloatAt(index);
+        }
+        if (currentClass == Double.class) {
+            answer = storeable.getDoubleAt(index);
+        }
+        if (currentClass == Boolean.class) {
+            answer = storeable.getBooleanAt(index);
+        }
+        if (currentClass == String.class) {
+            answer = storeable.getStringAt(index);
+        }
+        if (answer != null) {
+            return answer.toString();
+        } else {
+            return "null";
         }
     }
 
@@ -259,13 +254,6 @@ public class TableManager implements TableProvider, AutoCloseable {
         }
     }
 
-    static int extractFolderNumber(String folderName) {
-        return Integer.parseInt(folderName.substring(0, folderName.length() - 4));
-    }
-    static int extractDataFileNumber(String fileName) {
-        return Integer.parseInt(fileName.substring(0, fileName.length() - 4));
-    }
-
     @Override
     public void close() throws Exception {
         lock.writeLock().lock();
@@ -287,7 +275,7 @@ public class TableManager implements TableProvider, AutoCloseable {
     public String toString() {
         lock.readLock().lock();
         try {
-            return getClass().getSimpleName() + "[" + databasePath.toAbsolutePath().toString() + "]";
+            return getClass().getSimpleName() + "[" + databasePath.normalize().toString() + "]";
         } finally {
             lock.readLock().unlock();
         }

@@ -325,7 +325,6 @@ public class TableClassTest {
         test.close();
     }
 
-
     @After
     public void tearDown() {
         DirectoryKiller.delete(testDir.toFile());

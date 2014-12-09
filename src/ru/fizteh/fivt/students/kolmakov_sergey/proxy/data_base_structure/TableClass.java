@@ -23,11 +23,11 @@ public class TableClass implements Table, AutoCloseable {
     private final Path tablePath;
     private final Map<Coordinates, DataFile> tableMap;
     private ThreadLocal<Map<String, Storeable>> difference; // (null in Value) -> this entry must be removed.
-    private final String unexpectedFilesMessage = "Unexpected files found in directory ";
-    private final String emptyFoldersMessage = "Empty folders found";
-    private final String signatureFileName = "signature.tsv";
+    private static final String unexpectedFilesMessage = "Unexpected files found in directory ";
+    private static final String emptyFoldersMessage = "Empty folders found";
+    private static final String signatureFileName = "signature.tsv";
     private final TableProvider tableProvider;
-    private AtomicBoolean wasRemoved = new AtomicBoolean(false);
+    private boolean wasRemoved = false;
     private final ReadWriteLock lock;
     private List<Class<?>> columnTypes;
 
@@ -80,8 +80,8 @@ public class TableClass implements Table, AutoCloseable {
                 if (!currentFileName.matches(TableManager.FILE_NAME_PATTERN) || !filePath.toFile().isFile()) {
                     throw new DatabaseCorruptedException(unexpectedFilesMessage + tablePath.toString());
                 }
-                int folderIndex = TableManager.extractFolderNumber(currentFolderName);
-                int fileIndex = TableManager.extractDataFileNumber(currentFileName);
+                int folderIndex = extractFolderNumber(currentFolderName);
+                int fileIndex = extractDataFileNumber(currentFileName);
                 try {
                     DataFile currentDataFile;
                     currentDataFile = new DataFile(this.tablePath,
@@ -342,36 +342,49 @@ public class TableClass implements Table, AutoCloseable {
     }
 
     private void checkActuality() {
-        if (wasRemoved.get()) {
+        if (wasRemoved) {
             throw new IllegalStateException("Table '" + name + "' does not exist already.");
         }
     }
 
     public void setRemovedFlag() {
         lock.writeLock().lock();
-        wasRemoved.set(true);
+        wasRemoved = true;
         lock.writeLock().unlock();
     }
 
     @Override
     public void close() throws Exception {
-        rollback();
-        if (!wasRemoved.getAndSet(true)) {
-            ((TableManager) tableProvider).getLock().writeLock().lock();
-            try {
-                if (!((TableManager) tableProvider).isClosed()) {
-                    ((TableManager) tableProvider).replaceClosedTableWithNew(name, this);
+        lock.writeLock().lock();
+        try {
+            rollback();
+            if (!wasRemoved) {
+                wasRemoved = true;
+                ((TableManager) tableProvider).getLock().writeLock().lock();
+                try {
+                    if (!((TableManager) tableProvider).isClosed()) {
+                        ((TableManager) tableProvider).replaceClosedTableWithNew(name, this);
+                    }
+                } finally {
+                    ((TableManager) tableProvider).getLock().writeLock().unlock();
                 }
-            } finally {
-                ((TableManager) tableProvider).getLock().writeLock().unlock();
+            } else {
+                throw new IllegalStateException("Table '" + name + "' was closed already.");
             }
-        } else {
-            throw new IllegalStateException("Table '" + name + "' was closed already.");
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     public Table makeNewTableFromClosed() throws DatabaseCorruptedException {
         return new TableClass(tablePath, name, tableProvider, columnTypes);
+    }
+
+    private static int extractFolderNumber(String folderName) {
+        return Integer.parseInt(folderName.substring(0, folderName.length() - 4));
+    }
+    private static int extractDataFileNumber(String fileName) {
+        return Integer.parseInt(fileName.substring(0, fileName.length() - 4));
     }
 
     @Override
