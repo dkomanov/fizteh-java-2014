@@ -42,10 +42,6 @@ public class StoreableType implements Storeable {
         }
     }
 
-    public int getNumberOfColumns() {
-        return types.size();
-    }
-
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
         checkIndex(columnIndex);

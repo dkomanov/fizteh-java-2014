@@ -78,7 +78,7 @@ public class MultiFileHashMapMain {
                         if (currentTable == null) {
                             System.out.println("no table");
                         } else {
-                            Storeable result = null;
+                            Storeable result;
                             try {
                                 String value = Utils.getJSONStringForPut(args);
                                 result = currentTable.put(args[0], connector.deserialize(currentTable, value));

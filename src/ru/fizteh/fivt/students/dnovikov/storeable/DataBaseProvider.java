@@ -102,6 +102,9 @@ public class DataBaseProvider implements TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
+        if (value == null) {
+            return null;
+        }
         if (!value.startsWith("[")) {
             throw new ParseException("can't deserialize '" + value + "': argument doesn't start with '['", 0);
         }
@@ -115,9 +118,6 @@ public class DataBaseProvider implements TableProvider {
             types[i] = table.getColumnType(i);
         }
         StoreableType storeableValue = new StoreableType(Arrays.asList(types));
-        if (value == null) {
-            return null;
-        }
         value = value.substring(value.indexOf('[') + 1, value.lastIndexOf(']'));
         String[] values = value.split(Utils.REGEXP_TO_SPLIT_JSON);
         if (values.length != types.length) {

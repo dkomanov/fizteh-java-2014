@@ -125,7 +125,6 @@ public class DataBaseTable implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("error of put: key or value is null");
         }
-
         try {
             for (int i = 0; i < types.size(); i++) {
                 if (value.getColumnAt(i) != null && types.get(i) != value.getColumnAt(i).getClass()) {
@@ -139,7 +138,9 @@ public class DataBaseTable implements Table {
         Storeable oldValue;
         if (!diffs.containsKey(key)) {
             oldValue = table.get(key);
-            if (oldValue != null && oldValue.equals(value)) {
+            String stringValue = databaseConnector.serialize(this, value);
+            String stringOldValue = databaseConnector.serialize(this, oldValue);
+            if (oldValue != null && stringOldValue.equals(stringValue)) {
                 return oldValue;
             }
         } else {

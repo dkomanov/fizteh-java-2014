@@ -110,10 +110,7 @@ public class SingleTable {
         if (fileNumber < 0) {
             fileNumber += FILES_COUNT;
         }
-        if (directoryNumber != this.folderNumber || fileNumber != this.fileNumber) {
-            return false;
-        }
-        return true;
+        return (directoryNumber == this.folderNumber && fileNumber == this.fileNumber);
     }
 
     private void load() throws LoadOrSaveException {

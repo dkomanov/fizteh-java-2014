@@ -61,7 +61,7 @@ public class InterpreterTest {
                 })
         });
         interpreter.run(new String[]{});
-        String actual = new String(outputStream.toString());
+        String actual = outputStream.toString();
         String expected = new String("$ " + testMessage + lineSeparator);
         assertEquals(actual, expected);
     }
