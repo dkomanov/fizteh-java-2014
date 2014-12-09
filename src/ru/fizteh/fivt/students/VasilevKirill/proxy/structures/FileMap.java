@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,9 +54,13 @@ public class FileMap implements Closeable{
         if (!readDataBuilder.toString().equals("")) {
             readData = new String(readDataBuilder);
             JSONObject obj = new JSONObject(readData);
-            Set<String> keySet = obj.keySet();
+            /*Set<String> keySet = obj.keySet();
             for (String it : keySet) {
                 fileMap.put(it, obj.getJSONArray(it).toString());
+            }*/
+            for (Iterator iterator = obj.keys(); iterator.hasNext(); ) {
+                String key = (String) iterator.next();
+                fileMap.put(key, obj.getJSONArray(key).toString());
             }
         }
     }

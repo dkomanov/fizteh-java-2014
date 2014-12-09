@@ -146,7 +146,8 @@ public class TableProviderTest {
 
     @Test
     public void testClose() throws Exception {
-        MyTableProvider database = new MyTableProvider(new File("").getCanonicalPath());
+        //MyTableProvider database = new MyTableProvider(new File("").getCanonicalPath());
+        MyTableProvider database = new MyTableProvider(Files.createTempDirectory("database").toString());
         database.close();
         try {
             database.getTable("First");
