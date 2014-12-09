@@ -8,7 +8,6 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyStorable;
 import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTableProvider;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -146,7 +145,8 @@ public class TableProviderTest {
 
     @Test
     public void testClose() throws Exception {
-        MyTableProvider database = new MyTableProvider(new File("").getCanonicalPath());
+        //MyTableProvider database = new MyTableProvider(new File("").getCanonicalPath());
+        MyTableProvider database = new MyTableProvider(Files.createTempDirectory("database").toString());
         database.close();
         try {
             database.getTable("First");
