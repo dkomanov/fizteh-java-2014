@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.table;
 
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.commands.Command;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.remote.RemoteDataBaseTableProvider;
 

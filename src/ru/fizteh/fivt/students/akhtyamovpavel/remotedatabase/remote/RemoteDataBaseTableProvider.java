@@ -176,7 +176,7 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
     }
 
     @Override
-    public Table getTable(String name) throws IOException {
+    public Table getTable(String name) {
         if (!guested) {
             return localProvider.getTable(name);
         } else {
