@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Executor {
     public Executor(String[] args) throws Exception {
-        String dbPath = "db";
+        String dbPath = System.getProperty("fizteh.db.dir");
         sTableProvider = new StoreableTableProvider(dbPath);
         if (args.length == 0) {
             interactiveMode();

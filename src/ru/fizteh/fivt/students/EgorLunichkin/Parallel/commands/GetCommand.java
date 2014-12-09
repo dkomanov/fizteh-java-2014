@@ -21,7 +21,7 @@ public class GetCommand implements Command {
             if (value == null) {
                 System.out.println("not found");
             } else {
-                System.out.println("found\n" + sTableProvider.serialize(sTableProvider.getUsing(), value));
+                System.out.println("found\n" + base.serialize(base.getUsing(), value));
             }
         }
     }

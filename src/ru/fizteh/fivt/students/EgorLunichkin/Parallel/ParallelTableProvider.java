@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ParallelTableProvider implements TableProvider {
     public ParallelTableProvider(String dbDir) {
-        
+
     }
 
     @Override
