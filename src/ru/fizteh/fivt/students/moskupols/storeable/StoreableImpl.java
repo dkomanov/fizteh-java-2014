@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by moskupols on 03.12.14.
  */
-public class StoreableImpl implements Storeable {
+class StoreableImpl implements Storeable {
 
     private final List<StoreableAtomType> signature;
     private List<Object> values;

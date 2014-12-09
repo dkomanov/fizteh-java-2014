@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-public class StoreableImplTest {
+class StoreableImplTest {
     private Storeable stor;
 
     @Before

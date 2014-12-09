@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by moskupols on 03.12.14.
  */
-class XmlDeserializer {
+class XmlDeserializer implements Deserializer {
     protected Object readCol(StoreableAtomType expectedType, XMLStreamReader xmlReader)
             throws ParseException, XMLStreamException {
         xmlReader.next();
@@ -59,26 +59,31 @@ class XmlDeserializer {
         }
     }
 
-    Storeable deserialize(List<StoreableAtomType> signature, String xml)
-            throws XMLStreamException, ParseException {
-        StringReader stringReader = new StringReader(xml);
-        XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-        XMLStreamReader xmlReader = xmlInputFactory.createXMLStreamReader(stringReader);
+    public Storeable deserialize(List<StoreableAtomType> signature, String xml)
+            throws ParseException {
+        try {
+            StringReader stringReader = new StringReader(xml);
+            XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+            XMLStreamReader xmlReader = null;
+            xmlReader = xmlInputFactory.createXMLStreamReader(stringReader);
 
-        Storeable ret = new StoreableImpl(signature);
+            Storeable ret = new StoreableImpl(signature);
 
-        xmlReader.next();
-        if (!(xmlReader.isStartElement() && "row".equals(xmlReader.getLocalName()))) {
-            throw new ParseException("row expected", -1);
-        }
-        for (int i = 0; i < signature.size(); i++) {
-            ret.setColumnAt(i, readCol(signature.get(i), xmlReader));
-        }
-        xmlReader.next();
-        if (!(xmlReader.isEndElement() && "row".equals(xmlReader.getLocalName()))) {
-            throw new ParseException("row end expected", -1);
-        }
+            xmlReader.next();
+            if (!(xmlReader.isStartElement() && "row".equals(xmlReader.getLocalName()))) {
+                throw new ParseException("row expected", -1);
+            }
+            for (int i = 0; i < signature.size(); i++) {
+                ret.setColumnAt(i, readCol(signature.get(i), xmlReader));
+            }
+            xmlReader.next();
+            if (!(xmlReader.isEndElement() && "row".equals(xmlReader.getLocalName()))) {
+                throw new ParseException("row end expected", -1);
+            }
 
-        return ret;
+            return ret;
+        } catch (XMLStreamException e) {
+            throw new ParseException(e.getMessage(), -1);
+        }
     }
 }
