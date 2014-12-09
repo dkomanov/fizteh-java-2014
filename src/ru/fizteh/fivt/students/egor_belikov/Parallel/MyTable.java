@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 import static ru.fizteh.fivt.students.egor_belikov.Parallel.MySerializer.returningClass;
 import static ru.fizteh.fivt.students.egor_belikov.Parallel.MySerializer.returningString;
@@ -22,7 +21,6 @@ public class MyTable implements Table {
     public TableProvider myTableProvider;
     public List<Class<?>> signature;
     private Map<String, Storeable> allMyStoreables;
-    //private Map<String, Storeable> sessionChanges;
     public String currentTableName;
     public String currentPath;
     private File currentTableFile;
@@ -41,7 +39,6 @@ public class MyTable implements Table {
         myTableProvider = ParallelMain.myTableProvider;
         allMyStoreables = new TreeMap<>();
         allRecords = new TreeMap<>();
-        //sessionChanges = new TreeMap<>();
         currentPath = pathname + File.separator + name;
         currentTableFile = new File(currentPath);
         currentTableName = name;
