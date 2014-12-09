@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.moskupols.storeable;
 
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.moskupols.junit.MultiFileMapTableProviderFactory;
 
@@ -17,7 +18,7 @@ public class TableProviderFactoryImpl implements TableProviderFactory {
     }
 
     @Override
-    public KnownDiffStructuredTableProvider create(String path) throws IOException {
+    public TableProvider create(String path) throws IOException {
         return new StringBackedStructuredTableProvider(
                 Paths.get(path),
                 new XmlSerializer(),

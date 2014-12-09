@@ -1,8 +1,8 @@
 package ru.fizteh.fivt.students.moskupols.storeable.commands;
 
+import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.moskupols.cliutils2.commands.KnownArgsCountNameFirstCommand;
 import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.CommandExecutionException;
-import ru.fizteh.fivt.students.moskupols.storeable.KnownDiffStructuredTable;
 
 import java.io.IOException;
 
@@ -22,7 +22,7 @@ public class Commit extends KnownArgsCountNameFirstCommand {
 
     @Override
     protected void performAction(Object context, String[] args) throws CommandExecutionException {
-        final KnownDiffStructuredTable currentTable = ((StoreableContext) context).getCurrentTable();
+        final Table currentTable = ((StoreableContext) context).getCurrentTable();
         if (currentTable == null) {
             System.out.println("no table");
             return;

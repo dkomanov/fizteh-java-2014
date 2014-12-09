@@ -6,7 +6,7 @@ import java.util.Arrays;
  * Created by moskupols on 02.12.14.
  */
 public abstract class FixedArgsNameFirstCommand extends NameFirstCommand {
-    abstract String[] expectedArgs();
+    public abstract String[] expectedArgs();
 
     @Override
     public String checkArgs(String[] args) {

@@ -1,10 +1,13 @@
 package ru.fizteh.fivt.students.moskupols.storeable;
 
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.moskupols.junit.KnownDiffTable;
 import ru.fizteh.fivt.students.moskupols.junit.KnownDiffTableProvider;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,7 +15,7 @@ import java.util.stream.Collectors;
  * Created by moskupols on 09.12.14.
  */
 public class StringBackedStructuredTableProvider
-        extends AbstractStructuredTableProvider implements KnownDiffStructuredTableProvider{
+        extends AbstractStructuredTableProvider implements TableProvider {
     private final Path dbPath;
     private final KnownDiffTableProvider stringProvider;
 
@@ -27,7 +30,7 @@ public class StringBackedStructuredTableProvider
     }
 
     @Override
-    public KnownDiffStructuredTable getTable(String name) {
+    public Table getTable(String name) {
         final KnownDiffTable stringTable = stringProvider.getTable(name);
         if (stringTable == null) {
             return null;
@@ -40,7 +43,7 @@ public class StringBackedStructuredTableProvider
     }
 
     @Override
-    public KnownDiffStructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
+    public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
         final KnownDiffTable stringTable = stringProvider.createTable(name);
         if (stringTable == null) {
             return null;
@@ -57,5 +60,10 @@ public class StringBackedStructuredTableProvider
         final Path tablePath = dbPath.resolve(name);
         removeSignatureFile(tablePath);
         stringProvider.removeTable(name);
+    }
+
+    @Override
+    public List<String> getTableNames() {
+        return Arrays.asList(dbPath.toFile().list((dir, name) -> !"signature.tsv".equals(name)));
     }
 }

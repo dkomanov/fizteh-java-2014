@@ -2,17 +2,19 @@ package ru.fizteh.fivt.students.moskupols.storeable;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.moskupols.junit.KnownDiffTable;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * Created by moskupols on 09.12.14.
  */
-public class StringBackedStructuredTable extends AbstractStructuredTable implements KnownDiffStructuredTable {
+public class StringBackedStructuredTable extends AbstractStructuredTable implements Table {
     private final TableProvider myProvider;
     private final KnownDiffTable stringTable;
 
@@ -55,6 +57,11 @@ public class StringBackedStructuredTable extends AbstractStructuredTable impleme
     }
 
     @Override
+    public List<String> list() {
+        return stringTable.list();
+    }
+
+    @Override
     public int commit() throws IOException {
         return stringTable.commit();
     }
@@ -62,6 +69,11 @@ public class StringBackedStructuredTable extends AbstractStructuredTable impleme
     @Override
     public int rollback() {
         return stringTable.rollback();
+    }
+
+    @Override
+    public int getNumberOfUncommittedChanges() {
+        return stringTable.diff();
     }
 
     @Override
@@ -80,10 +92,5 @@ public class StringBackedStructuredTable extends AbstractStructuredTable impleme
         } catch (ParseException e) {
             throw new AssertionError();
         }
-    }
-
-    @Override
-    public int diff() {
-        return stringTable.diff();
     }
 }
