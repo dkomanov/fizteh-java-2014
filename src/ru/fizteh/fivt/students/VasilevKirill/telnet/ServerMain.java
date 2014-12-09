@@ -53,7 +53,7 @@ public class ServerMain {
             for (Thread it : clients) {
                 it.join();
             }
-            mainThread.join();
+            mainThread.join(); //
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
