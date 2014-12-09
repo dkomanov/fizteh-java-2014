@@ -38,7 +38,8 @@ public class LogFormatter implements Closeable {
         try {
             streamWriter.writeAttribute("name", method.getName());
         } catch (XMLStreamException e) {
-            throw new IOException("writing method failed: Could it be something wrong with method access?" + e.getMessage());
+            throw new IOException("writing method failed: Could it be something wrong with method access?"
+                    + e.getMessage());
         }
     }
 
@@ -88,7 +89,8 @@ public class LogFormatter implements Closeable {
         }
     }
 
-    private void recursiveWrite(Iterable collection, XMLStreamWriter streamWriter, boolean inList, boolean cycled) throws XMLStreamException {
+    private void recursiveWrite(Iterable collection, XMLStreamWriter streamWriter,
+                                boolean inList, boolean cycled) throws XMLStreamException {
         boolean isContainer;
         boolean isEmpty;
         for (Object object : collection) {

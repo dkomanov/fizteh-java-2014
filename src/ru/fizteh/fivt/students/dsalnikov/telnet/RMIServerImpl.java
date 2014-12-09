@@ -22,10 +22,10 @@ public class RMIServerImpl implements RMIServer, Serializable {
 
     public static void main(String[] args) {
         System.out.println("Server started on 8080");
-        RMIServer Server = new RMIServerImpl();
+        RMIServer server = new RMIServerImpl();
         try {
             Registry registry = LocateRegistry.createRegistry(8080);
-            registry.bind("Server", Server);
+            registry.bind("Server", server);
 
             while (true) {
                 //do nothing

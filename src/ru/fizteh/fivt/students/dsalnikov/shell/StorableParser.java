@@ -11,7 +11,7 @@ public class StorableParser implements Parser {
 
     static final Pattern SOMETHING_IN_SQUARE_BRACKETS = Pattern.compile("\\[.+\\]");
     static final Pattern SOMETHING_IN_ROUND_BRACKETS = Pattern.compile("\\(.+\\)");
-    private static final String delimiter = " ";
+    private static final String DELIMETER = " ";
 
     @Override
     public String[] parseCommandArguments(String[] stringToParse) {
@@ -64,6 +64,6 @@ public class StorableParser implements Parser {
 
     @Override
     public String getDelimeter() {
-        return delimiter;
+        return DELIMETER;
     }
 }

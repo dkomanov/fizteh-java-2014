@@ -11,7 +11,8 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import java.text.ParseException;
 
 public class JSONSerializer {
-    private static Object getRightClassObject(Table table, JSONArray input, int index) throws ColumnFormatException, JSONException {
+    private static Object getRightClassObject(Table table, JSONArray input, int index)
+            throws ColumnFormatException, JSONException {
         if (input.get(index) == JSONObject.NULL || input.get(index) == null) {
             return null;
         }

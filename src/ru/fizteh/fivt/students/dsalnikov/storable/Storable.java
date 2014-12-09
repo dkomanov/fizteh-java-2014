@@ -102,9 +102,9 @@ public class Storable implements Storeable {
     private void checkTypeMatch(int columnIndex, Object value) throws ColumnFormatException {
         if (value != null) {
             boolean b = !value.getClass().equals(types.get(columnIndex));
-            Class T = types.get(columnIndex);
-            String A = value.toString();
-            boolean r = T.toString().equals(A);
+            Class t = types.get(columnIndex);
+            String a = value.toString();
+            boolean r = t.toString().equals(a);
             Class<?> clazz = types.get(columnIndex);
             if (!value.getClass().equals(clazz) && !value.toString().equals(clazz.toString())) {
                 throw new ColumnFormatException("");

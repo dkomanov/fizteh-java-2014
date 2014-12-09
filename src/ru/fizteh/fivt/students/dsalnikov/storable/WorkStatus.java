@@ -19,7 +19,8 @@ public enum WorkStatus {
 
     public void setState(int stateNumber) throws IllegalStateException {
         if (IntStream.range(-1, 2).noneMatch(n -> n == stateNumber)) {
-            throw new IllegalStateException("container workstatus state setting problem: provided stateNumber " + stateNumber);
+            throw new IllegalStateException(
+                    "container workstatus state setting problem: provided stateNumber " + stateNumber);
         } else {
             state = stateNumber;
         }

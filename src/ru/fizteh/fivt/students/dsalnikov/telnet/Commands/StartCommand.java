@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 public class StartCommand implements Command {
-    private final int DEFAULT_PORT = 10001;
+    private final int defaultPort = 10001;
 
     private ServerState state;
 

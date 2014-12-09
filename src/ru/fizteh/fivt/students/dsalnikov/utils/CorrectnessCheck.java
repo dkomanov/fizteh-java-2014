@@ -30,14 +30,13 @@ public class CorrectnessCheck {
             return false;
         }
         for (Class<?> type : givenTypes) {
-            if (type == Integer.class
+            if (!(type == Integer.class
                     || type == Long.class
                     || type == Byte.class
                     || type == Float.class
                     || type == Double.class
                     || type == Boolean.class
-                    || type == String.class) {
-            } else {
+                    || type == String.class)) {
                 return false;
             }
         }
@@ -88,8 +87,9 @@ public class CorrectnessCheck {
     }
 
     public static boolean methodIsCorrectForProxy(Method method) {
-        if (method == null)
+        if (method == null) {
             return false;
+        }
         String methodName = method.getName();
         if (methodName.equals("toString") || methodName.equals("hashCode")) {
             return false;
@@ -98,10 +98,10 @@ public class CorrectnessCheck {
     }
 
     public static boolean correctProxyArguments(Writer writer, Object implementation, Class<?> interfaceClass) {
-        if ((writer == null) ||
-                (interfaceClass == null) ||
-                !interfaceClass.isInstance(implementation) ||
-                !interfaceClass.isInterface()) {
+        if ((writer == null)
+                ||(interfaceClass == null)
+                ||!interfaceClass.isInstance(implementation)
+                ||!interfaceClass.isInterface()) {
             return false;
         } else {
             return true;

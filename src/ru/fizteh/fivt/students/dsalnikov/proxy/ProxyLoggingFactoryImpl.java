@@ -12,6 +12,7 @@ public class ProxyLoggingFactoryImpl implements LoggingProxyFactory {
         if (!CorrectnessCheck.correctProxyArguments(writer, implementation, interfaceClass)) {
             throw new IllegalArgumentException("incorrect arguments supplied to proxy logging factory");
         }
-        return Proxy.newProxyInstance(implementation.getClass().getClassLoader(), new Class[]{interfaceClass}, new ProxyInvocationHandlerImpl(writer, implementation));
+        return Proxy.newProxyInstance(implementation.getClass().getClassLoader(), new Class[]{interfaceClass},
+                new ProxyInvocationHandlerImpl(writer, implementation));
     }
 }

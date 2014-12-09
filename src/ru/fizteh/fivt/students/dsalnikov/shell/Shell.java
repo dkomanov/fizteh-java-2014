@@ -61,14 +61,14 @@ public class Shell<State extends ShellState> {
         for (String command : commands) {
             String[] cmdArgs =
                     parser.splitSingleCommandByDelimeter(command);
-            if (cmdArgs.length == 0 || cmdArgs[0].equals("")) {
-            } else {
+            if (!(cmdArgs.length == 0 || cmdArgs[0].equals(""))) {
                 Command c = commandMap.get(cmdArgs[0]);
                 if (c == null) {
                     throw new IllegalArgumentException("no such Command declared: " + cmdArgs[0]);
                 }
                 if (c.getArgsCount() != cmdArgs.length - 1) {
-                    throw new IllegalArgumentException(String.format("%s command: wrong amount of arguments", c.getName()));
+                    throw new IllegalArgumentException(
+                            String.format("%s command: wrong amount of arguments", c.getName()));
                 }
                 c.execute(cmdArgs, inputStream, outputStream);
             }
@@ -149,5 +149,3 @@ public class Shell<State extends ShellState> {
         return state;
     }
 }
-
-

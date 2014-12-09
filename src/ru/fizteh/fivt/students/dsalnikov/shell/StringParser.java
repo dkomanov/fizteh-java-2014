@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class StringParser implements Parser {
-    private static final String delimeter = " ";
+    private static final String DELIMETER = " ";
 
     @Override
     public String[] parseCommandArguments(String[] argsToParse) {
@@ -15,7 +15,7 @@ public class StringParser implements Parser {
 
     @Override
     public String[] splitSingleCommandByDelimeter(String cmdString) {
-        return cmdString.trim().split(delimeter);
+        return cmdString.trim().split(DELIMETER);
     }
 
     @Override
@@ -24,9 +24,6 @@ public class StringParser implements Parser {
     }
 
     public String getDelimeter() {
-        return delimeter;
+        return DELIMETER;
     }
 }
-//
-//String concatenatedcmds = join(Arrays.asList(args), " ");
-//        String[] commands = concatenatedcmds.split("\\s*;\\s*");

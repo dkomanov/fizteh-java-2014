@@ -176,7 +176,8 @@ public class StorableTable implements Table, AutoCloseable, Serializable {
         containerState.canBeSafelyUsed();
         lockForTransactions.lock();
         try {
-            return CountingTools.storableCountSize(this.data, transactionChanges.get().getRawTransacttionChanges(), transactionChanges.get().getRawRemoved());
+            return CountingTools.storableCountSize(this.data, transactionChanges.get().getRawTransacttionChanges(),
+                    transactionChanges.get().getRawRemoved());
         } finally {
             lockForTransactions.unlock();
         }
@@ -195,7 +196,8 @@ public class StorableTable implements Table, AutoCloseable, Serializable {
         int result = -1;
         lockForTransactions.lock();
         try {
-            result = CountingTools.countingOfChangesInStoreable(this, data, transactionChanges.get().getRawTransacttionChanges(), transactionChanges.get().getRawRemoved());
+            result = CountingTools.countingOfChangesInStoreable(this, data,
+                    transactionChanges.get().getRawTransacttionChanges(), transactionChanges.get().getRawRemoved());
             transactionChanges.get().getRawRemoved().forEach(data::remove);
             data.putAll(transactionChanges.get().getRawTransacttionChanges());
             try {
@@ -216,7 +218,8 @@ public class StorableTable implements Table, AutoCloseable, Serializable {
         int result = -1;
         lockForTransactions.lock();
         try {
-            result = CountingTools.countingOfChangesInStoreable(this, data, transactionChanges.get().getRawTransacttionChanges(), transactionChanges.get().getRawRemoved());
+            result = CountingTools.countingOfChangesInStoreable(this, data,
+                    transactionChanges.get().getRawTransacttionChanges(), transactionChanges.get().getRawRemoved());
         } finally {
             lockForTransactions.unlock();
         }
@@ -226,7 +229,8 @@ public class StorableTable implements Table, AutoCloseable, Serializable {
 
     @Override
     public int getNumberOfUncommittedChanges() {
-        return CountingTools.countingOfChangesInStoreable(this, data, transactionChanges.get().getRawTransacttionChanges(), transactionChanges.get().getRawRemoved());
+        return CountingTools.countingOfChangesInStoreable(this, data,
+                transactionChanges.get().getRawTransacttionChanges(), transactionChanges.get().getRawRemoved());
     }
 
     @Override

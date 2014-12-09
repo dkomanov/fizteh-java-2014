@@ -62,7 +62,8 @@ public class MultiFileHashMap implements MultiTable {
 
     @Override
     public List<String> showTables() {
-        return tableInfo.entrySet().stream().map(v -> String.format("%s\t%s", v.getKey(), v.getValue())).collect(Collectors.toList());
+        return tableInfo.entrySet().stream()
+                .map(v -> String.format("%s\t%s", v.getKey(), v.getValue())).collect(Collectors.toList());
     }
 
     @Override
