@@ -26,7 +26,7 @@ class XmlSerializer implements Serializer {
                 break;
             }
             columns.add(value);
-            if (!signature.get(colCount).boxedClass.isInstance(value)) {
+            if (value != null && !signature.get(colCount).boxedClass.isInstance(value)) {
                 throw new ColumnFormatException(String.valueOf(colCount));
             }
         }

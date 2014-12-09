@@ -6,8 +6,6 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.moskupols.cliutils2.commands.KnownArgsCountNameFirstCommand;
 import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.CommandExecutionException;
 
-import java.text.ParseException;
-
 /**
  * Created by moskupols on 09.12.14.
  */
@@ -34,8 +32,9 @@ public class Put extends KnownArgsCountNameFirstCommand {
         Storeable oldStoreable;
         try {
             oldStoreable = table.put(args[1], provider.deserialize(table, args[2]));
-        } catch (ParseException e) {
+        } catch (Exception e) {
             System.err.println("Value parse error: " + e.getMessage());
+            e.printStackTrace();
             return;
         }
         if (oldStoreable == null) {

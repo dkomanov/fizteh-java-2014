@@ -28,12 +28,14 @@ public abstract class AbstractStructuredTableProvider implements TableProvider {
     protected void writeSignatureFile(List<StoreableAtomType> signature, Path tableRoot)
             throws FileNotFoundException {
         Path filePath = tableRoot.resolve("signature.tsv");
-        final PrintWriter writer = new PrintWriter(filePath.toFile());
-        final StringJoiner joiner = new StringJoiner(" ");
-        for (StoreableAtomType type : signature) {
-            joiner.add(type.printedName);
+        try (PrintWriter writer = new PrintWriter(filePath.toFile())) {
+            final StringJoiner joiner = new StringJoiner(" ");
+            for (StoreableAtomType type : signature) {
+                joiner.add(type.printedName);
+            }
+            writer.print(joiner.toString());
+            writer.flush();
         }
-        writer.print(joiner.toString());
     }
 
     protected void removeSignatureFile(Path tableRoot) {
@@ -43,7 +45,7 @@ public abstract class AbstractStructuredTableProvider implements TableProvider {
     private List<StoreableAtomType> signatureFor(Table table) {
         List<StoreableAtomType> signature = new ArrayList<>(table.getColumnsCount());
         for (int i = 0; i < table.getColumnsCount(); i++) {
-            signature.set(i, StoreableAtomType.fromBoxedClass(table.getColumnType(i)));
+            signature.add(StoreableAtomType.fromBoxedClass(table.getColumnType(i)));
         }
         return signature;
     }

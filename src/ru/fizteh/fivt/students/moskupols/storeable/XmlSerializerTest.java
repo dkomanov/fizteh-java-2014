@@ -34,6 +34,6 @@ public class XmlSerializerTest {
                 + "<col>55.8</col>"
                 + "<null/>"
                 + "</row>";
-        assertEquals(expected, serializer.serialize(stor));
+        assertEquals(expected, serializer.serialize(signature, stor));
     }
 }

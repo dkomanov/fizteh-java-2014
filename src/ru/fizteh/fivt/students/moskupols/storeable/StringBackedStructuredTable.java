@@ -26,7 +26,11 @@ public class StringBackedStructuredTable extends AbstractStructuredTable impleme
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
         try {
-            return myProvider.deserialize(this, stringTable.put(key, myProvider.serialize(this, value)));
+            final String ret = stringTable.put(key, myProvider.serialize(this, value));
+            if (ret == null) {
+                return null;
+            }
+            return myProvider.deserialize(this, ret);
         } catch (ParseException e) {
             throw new AssertionError();
         }
@@ -35,7 +39,11 @@ public class StringBackedStructuredTable extends AbstractStructuredTable impleme
     @Override
     public Storeable remove(String key) {
         try {
-            return myProvider.deserialize(this, stringTable.remove(key));
+            final String ret = stringTable.remove(key);
+            if (ret == null) {
+                return null;
+            }
+            return myProvider.deserialize(this, ret);
         } catch (ParseException e) {
             throw new AssertionError();
         }
@@ -64,7 +72,11 @@ public class StringBackedStructuredTable extends AbstractStructuredTable impleme
     @Override
     public Storeable get(String key) {
         try {
-            return myProvider.deserialize(this, stringTable.get(key));
+            final String ret = stringTable.get(key);
+            if (ret == null) {
+                return null;
+            }
+            return myProvider.deserialize(this, ret);
         } catch (ParseException e) {
             throw new AssertionError();
         }

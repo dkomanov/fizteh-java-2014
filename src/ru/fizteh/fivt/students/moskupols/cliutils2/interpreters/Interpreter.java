@@ -12,6 +12,9 @@ import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.CommandExecutionEx
 public abstract class Interpreter {
     protected void runJob(Object context, CommandChooser chooser, String line)
             throws UnknownCommandException, CommandExecutionException, StopProcessingException {
+        if (line.matches("^\\s*$")) {
+            return;
+        }
         String[] args = line.split("\\s+");
         Command cmd = chooser.commandForArgs(args);
         if (cmd == null) {

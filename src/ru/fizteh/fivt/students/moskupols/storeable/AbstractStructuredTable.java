@@ -20,10 +20,12 @@ public abstract class AbstractStructuredTable implements Table {
     }
 
     private List<Class<?>> readSignature(Path signFilePath) throws IOException {
-        final Scanner scanner = new Scanner(new FileInputStream(signFilePath.toFile()));
-        final String line = scanner.nextLine();
-        if (scanner.hasNextLine()) {
-            throw new IOException("signature file should not contain second line");
+        String line;
+        try (Scanner scanner = new Scanner(new FileInputStream(signFilePath.toFile()))) {
+            line = scanner.nextLine();
+            if (scanner.hasNextLine()) {
+                throw new IOException("signature file should not contain second line");
+            }
         }
         final String[] typeNames = line.split(" +");
         List<Class<?>> signature = new ArrayList<>(typeNames.length);

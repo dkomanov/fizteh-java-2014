@@ -23,11 +23,12 @@ class XmlDeserializer implements Deserializer {
         }
         switch (xmlReader.getLocalName()) {
             case "col":
-                if (xmlReader.next() != XMLStreamConstants.CHARACTERS) {
-                    throw new ParseException("Characters expected", -1);
+                String value = "";
+                if (xmlReader.next() == XMLStreamConstants.CHARACTERS) {
+                    value = xmlReader.getText();
+                    xmlReader.next();
                 }
-                String value = xmlReader.getText();
-                if (!(xmlReader.next() == XMLStreamConstants.END_ELEMENT && "col".equals(xmlReader.getLocalName()))) {
+                if (!(xmlReader.isEndElement() && "col".equals(xmlReader.getLocalName()))) {
                     throw new ParseException("Column end expected", -1);
                 }
 
@@ -35,7 +36,7 @@ class XmlDeserializer implements Deserializer {
                     if ("false".equals(value) || "true".equals(value)) {
                         return Boolean.valueOf(value);
                     } else {
-                        throw new ParseException("Boolean expected", xmlReader.getTextStart());
+                        throw new ParseException("Boolean expected", -1);
                     }
                 } else if (expectedType == StoreableAtomType.STRING) {
                     return value;
@@ -43,9 +44,9 @@ class XmlDeserializer implements Deserializer {
                     try {
                         return expectedType.boxedClass.getMethod("valueOf", String.class)
                                 .invoke(expectedType.boxedClass, value);
-                    } catch (NumberFormatException e) {
-                        throw new ParseException("Number expected", xmlReader.getTextStart());
-                    } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException ignored) {
+                    } catch (InvocationTargetException e) {
+                        throw new ParseException("Number expected: " + e.getCause().getMessage(), -1);
+                    } catch (NoSuchMethodException | IllegalAccessException ignored) {
                         throw new AssertionError();
                     }
                 }
@@ -64,8 +65,7 @@ class XmlDeserializer implements Deserializer {
         try {
             StringReader stringReader = new StringReader(xml);
             XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-            XMLStreamReader xmlReader = null;
-            xmlReader = xmlInputFactory.createXMLStreamReader(stringReader);
+            XMLStreamReader xmlReader = xmlInputFactory.createXMLStreamReader(stringReader);
 
             Storeable ret = new StoreableImpl(signature);
 
