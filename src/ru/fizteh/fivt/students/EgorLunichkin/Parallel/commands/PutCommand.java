@@ -6,7 +6,7 @@ import ru.fizteh.fivt.students.EgorLunichkin.Parallel.*;
 import java.text.ParseException;
 
 public class PutCommand implements Command {
-    public PutCommand(ParallelTableProvider stp, String givenKey, String givenValue) {
+    public PutCommand(ParallelTableProvider ptp, String givenKey, String givenValue) {
         key = givenKey;
         value = givenValue;
         base = ptp;

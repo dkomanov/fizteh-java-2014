@@ -41,7 +41,12 @@ public class ParallelTable implements Table {
         if (oldValue == null) {
             return null;
         }
-        return provider.deserialize(this, oldValue);
+        try {
+            return provider.deserialize(this, oldValue);
+        } catch (ParseException ex) {
+            ParallelException.printException(ex);
+            return null;
+        }
     }
 
     @Override
@@ -53,7 +58,11 @@ public class ParallelTable implements Table {
         if (oldValue == null) {
             return null;
         }
-        return provider.deserialize(this, oldValue);
+        try {
+            return provider.deserialize(this, oldValue);
+        } catch (ParseException ex) {
+            throw new ColumnFormatException(ex.getMessage());
+        }
     }
 
     @Override
@@ -65,7 +74,12 @@ public class ParallelTable implements Table {
         if (oldValue == null) {
             return null;
         }
-        return provider.deserialize(this, oldValue);
+        try {
+            return provider.deserialize(this, oldValue);
+        } catch (ParseException ex) {
+            ParallelException.printException(ex);
+            return null;
+        }
     }
 
     @Override
@@ -123,5 +137,9 @@ public class ParallelTable implements Table {
     @Override
     public Class<?> getColumnType(int columnIndex) {
         return table.getColumnType(columnIndex);
+    }
+
+    public Table getTable() {
+        return table;
     }
 }
