@@ -12,17 +12,26 @@ enum StoreableAtomType {
     BOOLEAN(Boolean.class, "boolean"),
     FLOAT(Float.class, "float");
 
-    final Class<?> typeClass;
+    final Class<?> boxedClass;
     final String printedName;
 
     StoreableAtomType(Class<?> type, String name) {
-        typeClass = type;
+        boxedClass = type;
         printedName = name;
     }
 
     static StoreableAtomType withPrintedName(String name) {
         for (StoreableAtomType type : StoreableAtomType.values()) {
             if (type.printedName.equals(name)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    static StoreableAtomType fromBoxedClass(Class<?> cls) {
+        for (StoreableAtomType type : StoreableAtomType.values()) {
+            if (type.boxedClass.equals(cls)) {
                 return type;
             }
         }

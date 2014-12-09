@@ -12,18 +12,18 @@ import java.util.List;
  */
 public class StoreableImpl implements Storeable {
 
-    private final List<StoreableAtomType> types;
+    private final List<StoreableAtomType> signature;
     private List<Object> values;
 
-    StoreableImpl(List<StoreableAtomType> types) {
-        this.types = types;
-        this.values = new ArrayList<>(Collections.nCopies(types.size(), null));
+    StoreableImpl(List<StoreableAtomType> signature) {
+        this.signature = signature;
+        this.values = new ArrayList<>(Collections.nCopies(signature.size(), null));
     }
 
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (value != null && !types.get(columnIndex).typeClass.isInstance(value)) {
-            throw new ColumnFormatException(types.get(columnIndex).printedName + " expected");
+        if (value != null && !signature.get(columnIndex).boxedClass.isInstance(value)) {
+            throw new ColumnFormatException(signature.get(columnIndex).printedName + " expected");
         }
         values.set(columnIndex, value);
     }
@@ -34,7 +34,7 @@ public class StoreableImpl implements Storeable {
     }
 
     protected void checkGetterType(Class<?> type, int columnIndex) {
-        final Class<?> expected = types.get(columnIndex).typeClass;
+        final Class<?> expected = signature.get(columnIndex).boxedClass;
         if (!expected.equals(type)) {
             throw new ColumnFormatException(
                     String.format(
@@ -47,37 +47,37 @@ public class StoreableImpl implements Storeable {
 
     @Override
     public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkGetterType(int.class, columnIndex);
+        checkGetterType(Integer.class, columnIndex);
         return (Integer) values.get(columnIndex);
     }
 
     @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkGetterType(long.class, columnIndex);
+        checkGetterType(Long.class, columnIndex);
         return (Long) values.get(columnIndex);
     }
 
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkGetterType(byte.class, columnIndex);
+        checkGetterType(Byte.class, columnIndex);
         return (Byte) values.get(columnIndex);
     }
 
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkGetterType(float.class, columnIndex);
+        checkGetterType(Float.class, columnIndex);
         return (Float) values.get(columnIndex);
     }
 
     @Override
     public Double getDoubleAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkGetterType(double.class, columnIndex);
+        checkGetterType(Double.class, columnIndex);
         return (Double) values.get(columnIndex);
     }
 
     @Override
     public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkGetterType(boolean.class, columnIndex);
+        checkGetterType(Boolean.class, columnIndex);
         return (Boolean) values.get(columnIndex);
     }
 
