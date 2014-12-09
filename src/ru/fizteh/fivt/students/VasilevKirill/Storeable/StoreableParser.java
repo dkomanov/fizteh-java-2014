@@ -74,7 +74,8 @@ public class StoreableParser {
                         result.setColumnAt(i, typeList[i].cast(parser.get(i)));
                     }
                 } catch (ClassCastException e) {
-                    throw new ParseException(parser.get(i).toString(), 0);
+                    String errorStr = parser.get(i).toString();
+                    throw new ParseException(errorStr, 0);
                 }
             }
             return result;
