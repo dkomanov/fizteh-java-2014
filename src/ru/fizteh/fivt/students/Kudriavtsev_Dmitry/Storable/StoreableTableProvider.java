@@ -239,8 +239,7 @@ public class StoreableTableProvider implements TableProvider {
             }
         } catch (NumberFormatException e) {
             errorIncorrectFormat();
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             throw new ParseException("Null in parseObject", 0);
         }
         return str;
@@ -281,22 +280,22 @@ public class StoreableTableProvider implements TableProvider {
 
     private String valueToString(Object value) {
         if (value.getClass() == Integer.class) {
-            return Integer.toString((Integer)value);
+            return Integer.toString((Integer) value);
         }
         if (value.getClass() == Long.class) {
-            return Long.toString((Long)value);
+            return Long.toString((Long) value);
         }
         if (value.getClass() == Byte.class) {
-            return Byte.toString((Byte)value);
+            return Byte.toString((Byte) value);
         }
         if (value.getClass() == Float.class) {
-            return Float.toString((Float)value);
+            return Float.toString((Float) value);
         }
         if (value.getClass() == Double.class) {
-            return Double.toString((Double)value);
+            return Double.toString((Double) value);
         }
         if (value.getClass() == Boolean.class) {
-            return Boolean.toString((Boolean)value);
+            return Boolean.toString((Boolean) value);
         }
         return (String) value;
     }

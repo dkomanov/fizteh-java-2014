@@ -43,13 +43,13 @@ public class StoreableTable implements Table {
         TYPES.put("String", String.class);
     }*/
 
-    public final Map<String, Class<?>> TYPES;
+    public final Map<String, Class<?>> types;
 
     private Class<?> classByName(String name) throws IOException {
-        if (!TYPES.containsKey(name)) {
+        if (!types.containsKey(name)) {
             throw new IOException("Unknown type name: " + name);
         }
-        return TYPES.get(name);
+        return types.get(name);
     }
 
     public StoreableTable(Path path) throws IOException {
@@ -57,7 +57,7 @@ public class StoreableTable implements Table {
         if (!Files.exists(path)) {
             Files.createDirectory(path);
         }
-        TYPES = new StoreableTableProvider().revClassNames;
+        types = new StoreableTableProvider().revClassNames;
     }
 
     public StoreableTable(StoreableTableProvider newProvider,  String dbName,
@@ -66,7 +66,7 @@ public class StoreableTable implements Table {
         dbPath = new File(parentDir + File.separator + dbName).toPath();
         signature = newSignature;
         provider = newProvider;
-        TYPES = provider.revClassNames;
+        types = provider.revClassNames;
         readDb();
     }
 
@@ -280,7 +280,8 @@ public class StoreableTable implements Table {
         return dbPath.resolve(nameOfTable + File.separator + i + ".dir" + File.separator);
     }
 
-    public AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<Integer, Integer>> whereToSave(String nameOfTable, String value) {
+    public AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<Integer, Integer>>
+                                            whereToSave(String nameOfTable, String value) {
         int hashCode = value.hashCode();
         int d = hashCode % DIRECTORIES_COUNT;
         int f = hashCode / DIRECTORIES_COUNT % FILES_COUNT;

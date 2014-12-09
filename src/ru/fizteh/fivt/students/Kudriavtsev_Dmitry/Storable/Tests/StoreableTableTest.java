@@ -28,7 +28,8 @@ public class StoreableTableTest {
     public static void beforeClass() throws IOException {
         signature = new ArrayList<>();
         signature.add(String.class);
-        provider = (StoreableTableProvider)(new StoreableTableProviderFactory()).create(System.getProperty("fizteh.db.dir"));
+        provider = (StoreableTableProvider) (new StoreableTableProviderFactory()).create(
+                                                                System.getProperty("fizteh.db.dir"));
     }
 
     @Before

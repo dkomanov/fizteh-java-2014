@@ -2,11 +2,9 @@ package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Storable.Commands;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Storable.Connector;
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Storable.CurrentStoreable;
 
 import java.io.File;
 import java.text.ParseException;
-import java.util.ArrayList;
 
 /**
  * Created by Дмитрий on 04.10.14.
@@ -50,7 +48,7 @@ public class Put extends StoreableCommand {
         try {
             value = dbConnector.activeTable.put(args[0],
                     dbConnector.activeTableProvider.deserialize(dbConnector.activeTable, args[1]));
-        } catch(ParseException e) {
+        } catch (ParseException e) {
             System.err.println("Parse Exception in deserialize");
             return !batchModeInInteractive;
         }

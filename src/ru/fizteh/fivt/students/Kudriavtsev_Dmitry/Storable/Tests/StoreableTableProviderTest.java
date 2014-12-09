@@ -62,12 +62,14 @@ public class StoreableTableProviderTest {
                 + "<col>5.0</col><col>true</col><col>seven</col></row>";
         nullSerialized = "<row><null/><null/><null/><null/><null/><null/><null/></row>";
 
-        provider = (StoreableTableProvider)(new StoreableTableProviderFactory()).create(System.getProperty("fizteh.db.dir"));
+        provider = (StoreableTableProvider) (new StoreableTableProviderFactory()).create(
+                                                                System.getProperty("fizteh.db.dir"));
     }
 
     /*@Before
     public void before() throws IOException {
-        provider = (StoreableTableProvider)factory.create(System.getProperty("fizteh.db.dir") + File.separator + "testing");
+        provider = (StoreableTableProvider)factory.create(System.getProperty("fizteh.db.dir")
+                                                                     + File.separator + "testing");
     }*/
 
     @Test(expected = IllegalArgumentException.class)
