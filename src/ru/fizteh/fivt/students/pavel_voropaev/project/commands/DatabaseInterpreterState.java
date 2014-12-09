@@ -1,7 +1,8 @@
-package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter;
+package ru.fizteh.fivt.students.pavel_voropaev.project.commands;
 
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.InterpreterState;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -43,7 +44,6 @@ public class DatabaseInterpreterState implements InterpreterState {
     public void setActiveTable(Table table) {
         activeTable = table;
     }
-
 
     @Override
     public InputStream getInputStream() {

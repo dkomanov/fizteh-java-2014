@@ -1,11 +1,11 @@
-package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.database;
+package ru.fizteh.fivt.students.pavel_voropaev.project.commands.database;
 
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseAbstractCommand;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseInterpreterState;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.AbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
 
-public class Use extends AbstractCommand {
+public class Use extends DatabaseAbstractCommand {
 
     public Use(DatabaseInterpreterState state) {
         super("use", 1, state);

@@ -8,11 +8,11 @@ import java.util.List;
 
 public class TableEntry implements Storeable {
     List<Class<?>> signature;
-    List<Object> storage;
+    Object[] storage;
 
     public TableEntry(List<Class<?>> signature) {
         this.signature = new ArrayList<>(signature);
-        storage = new ArrayList<>(signature.size());
+        storage = new Object[signature.size()];
     }
 
     @Override
@@ -21,13 +21,13 @@ public class TableEntry implements Storeable {
         if (value != null) {
             checkSignature(columnIndex, value.getClass());
         }
-        storage.add(columnIndex, value);
+        storage[columnIndex] = value;
     }
 
     @Override
     public Object getColumnAt(int columnIndex) throws IndexOutOfBoundsException {
         checkBounds(columnIndex);
-        return storage.get(columnIndex);
+        return storage[columnIndex];
     }
 
     @Override
@@ -89,7 +89,7 @@ public class TableEntry implements Storeable {
 
     private <T> T getTemplate(int columnIndex, Class<T> type) {
         checkSignature(columnIndex, type);
-        Object value = storage.get(columnIndex);
+        Object value = storage[columnIndex];
         if (value == null) {
             return null;
         }
@@ -98,13 +98,7 @@ public class TableEntry implements Storeable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (!(obj instanceof TableEntry)) {
             return false;
         }
 
@@ -118,13 +112,11 @@ public class TableEntry implements Storeable {
         } catch (Exception e) {
             return false;
         }
-
         try {
             object.getColumnAt(signature.size());
         } catch (IndexOutOfBoundsException e) {
             return true;
         }
-
         return false;
     }
 
@@ -134,7 +126,6 @@ public class TableEntry implements Storeable {
         for (Object entry : storage) {
             result += entry.hashCode();
         }
-
         return result;
     }
 }

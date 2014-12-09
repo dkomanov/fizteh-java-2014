@@ -4,18 +4,12 @@ public abstract class AbstractCommand implements Command {
 
     private final String name;
     private final int argNum;
-    protected DatabaseInterpreterState state;
-
-    protected AbstractCommand(String name, int argNum, DatabaseInterpreterState state) {
-        this.name = name;
-        this.argNum = argNum;
-        this.state = state;
-    }
+    protected InterpreterState state;
 
     protected AbstractCommand(String name, int argNum, InterpreterState state) {
         this.name = name;
         this.argNum = argNum;
-        this.state = (DatabaseInterpreterState) state;
+        this.state = state;
     }
 
     @Override

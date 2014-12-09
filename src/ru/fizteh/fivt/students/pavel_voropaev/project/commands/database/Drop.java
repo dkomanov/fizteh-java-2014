@@ -1,13 +1,13 @@
-package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.database;
+package ru.fizteh.fivt.students.pavel_voropaev.project.commands.database;
 
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.*;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.AbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseAbstractCommand;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseInterpreterState;
+import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.TableDoesNotExistException;
 
 import java.io.IOException;
 
-public class Drop extends AbstractCommand {
+public class Drop extends DatabaseAbstractCommand {
 
     public Drop(DatabaseInterpreterState state) {
         super("drop", 1, state);

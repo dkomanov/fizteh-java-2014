@@ -93,13 +93,12 @@ public class Serializer {
         }
 
         if (currentColumn != table.getColumnsCount()) {
-            throw new JSONParseException(
-                    "Found " + currentColumn + " columns. Expected: " + table.getColumnsCount(), table);
+            throw new JSONParseException("Found " + currentColumn + " columns. Expected: " + table.getColumnsCount(),
+                    table);
         }
     }
 
-    public static String serialize(Table table, Storeable value, char delim, char escape)
-            throws ColumnFormatException {
+    public static String serialize(Table table, Storeable value, char delim, char escape) throws ColumnFormatException {
         if (table == null || value == null) {
             throw new NullArgumentException("deserialize");
         }

@@ -5,7 +5,10 @@ import java.io.PrintStream;
 
 public interface InterpreterState {
     InputStream getInputStream();
+
     PrintStream getOutputStream();
+
     PrintStream getErrorStream();
+
     boolean isExitSafe();
 }

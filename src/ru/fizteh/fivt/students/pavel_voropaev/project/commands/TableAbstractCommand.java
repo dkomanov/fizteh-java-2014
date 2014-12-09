@@ -1,8 +1,8 @@
-package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter;
+package ru.fizteh.fivt.students.pavel_voropaev.project.commands;
 
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 
-public abstract class TableAbstractCommand extends AbstractCommand {
+public abstract class TableAbstractCommand extends DatabaseAbstractCommand {
 
     protected TableAbstractCommand(String name, int argNum, DatabaseInterpreterState state) {
         super(name, argNum, state);

@@ -1,8 +1,8 @@
-package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.table;
+package ru.fizteh.fivt.students.pavel_voropaev.project.commands.table;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.TableAbstractCommand;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseInterpreterState;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.TableAbstractCommand;
 
 public class Remove extends TableAbstractCommand {
 

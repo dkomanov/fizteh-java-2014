@@ -1,10 +1,10 @@
-package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.database;
+package ru.fizteh.fivt.students.pavel_voropaev.project.commands.database;
 
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseAbstractCommand;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseInterpreterState;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.AbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
 
-public class Exit extends AbstractCommand {
+public class Exit extends DatabaseAbstractCommand {
 
     public Exit(DatabaseInterpreterState state) {
         super("exit", 0, state);

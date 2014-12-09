@@ -1,19 +1,19 @@
-package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.database;
+package ru.fizteh.fivt.students.pavel_voropaev.project.commands.database;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseAbstractCommand;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseInterpreterState;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.WrongTypeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.database.Serializer;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.AbstractCommand;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Create extends AbstractCommand {
+public class Create extends DatabaseAbstractCommand {
 
     public Create(DatabaseInterpreterState state) {
         super("create", 2, state);

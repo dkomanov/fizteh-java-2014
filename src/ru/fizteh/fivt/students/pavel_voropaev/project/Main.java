@@ -4,10 +4,10 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.pavel_voropaev.project.database.DatabaseFactory;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Command;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.DatabaseInterpreterState;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.DatabaseInterpreterState;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Interpreter;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.database.*;
-import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.commands.table.*;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.database.*;
+import ru.fizteh.fivt.students.pavel_voropaev.project.commands.table.*;
 
 public class Main {
     public static void main(String[] args) {
