@@ -16,14 +16,14 @@ public class StoreableTableProviderFactory implements TableProviderFactory {
         if (dir == null || dir.isEmpty()) {
             throw new IllegalArgumentException("dir is null or empty");
         }
-        File f = new File(dir).getAbsoluteFile();
-        if (!f.mkdirs()) {
+        File tempfile = new File(dir).getAbsoluteFile();
+        if (!tempfile.mkdirs()) {
             throw new IllegalArgumentException("Can't create directory: " + dir);
         }
-        if (f.isFile()) {
+        if (tempfile.isFile()) {
             throw new IllegalArgumentException("db dir is a regular file");
         }
-        if (!f.canWrite()) {
+        if (!tempfile.canWrite()) {
             throw new IllegalArgumentException("dir is read only");
         }
             return new StoreableTableProvider(dir);

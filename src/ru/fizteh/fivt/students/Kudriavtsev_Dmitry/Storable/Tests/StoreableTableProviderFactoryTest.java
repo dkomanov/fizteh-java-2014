@@ -40,18 +40,18 @@ public class StoreableTableProviderFactoryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createProviderInNotWritableDirectory() throws IOException {
-        File f = new File(System.getProperty("fizteh.db.dir") + "newTableThatNotExists");
+        File tempfile = new File(System.getProperty("fizteh.db.dir") + "newTableThatNotExists");
         try {
-            Files.createDirectory(f.toPath());
+            Files.createDirectory(tempfile.toPath());
         } catch (IOException e) {
-            System.err.println("Can't create file " + f.getName());
+            System.err.println("Can't create file " + tempfile.getName());
             throw new IllegalArgumentException();
         }
-        if (!f.setWritable(false)) {
+        if (!tempfile.setWritable(false)) {
             System.err.println("Can't change permission");
             throw new IllegalArgumentException();
         }
-        factory.create(f.getName());
+        factory.create(tempfile.getName());
     }
 
     @Test

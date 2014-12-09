@@ -85,7 +85,7 @@ public class Connector {
                 return false;
             }
         } else if (!args[0].equals("")) {
-            System.err.println("args[0] + : command not found");
+            System.err.println(args[0] + " : command not found");
             return false;
         }
         return true;

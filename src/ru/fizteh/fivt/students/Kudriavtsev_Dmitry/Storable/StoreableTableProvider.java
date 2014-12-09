@@ -48,9 +48,9 @@ public class StoreableTableProvider implements TableProvider {
         classNames.put(String.class, "String");
 
         revClassNames = new HashMap<>();
-        for (Class<?> cl : classNames.keySet()) {
-            String name = classNames.get(cl);
-            revClassNames.put(name, cl);
+        for (Class<?> tempClass : classNames.keySet()) {
+            String name = classNames.get(tempClass);
+            revClassNames.put(name, tempClass);
         }
     }
 
