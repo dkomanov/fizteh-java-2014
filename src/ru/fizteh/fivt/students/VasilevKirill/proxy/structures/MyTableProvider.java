@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.VasilevKirill.proxy.structures;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
@@ -307,8 +306,6 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
                         System.out.println("overwrite\n" + result);
                     }
                 } catch (ParseException e) {
-                    throw new IOException("wrong type (" + e.getMessage() + ")");
-                } catch (JSONException e) {
                     throw new IOException("wrong type (" + e.getMessage() + ")");
                 }
                 break;
