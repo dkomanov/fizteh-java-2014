@@ -36,17 +36,17 @@ public class Show extends StoreableCommand {
             return checkForArgs();
         }
 
-        if (dbConnector.tables.isEmpty() && dbConnector.activeTableProvider.tables.isEmpty()) {
+        if (dbConnector.getTables().isEmpty() && dbConnector.getActiveTableProvider().tables.isEmpty()) {
             return true;
         }
 
-        for (Map.Entry<String, StoreableTable> a : dbConnector.tables.entrySet()) {
-            System.out.println(a.getKey() + " " + a.getValue().size());
-        }
-
-        /*for (Map.Entry<String, StoreableTable> a : dbConnector.activeTableProvider.tables.entrySet()) {
+        /*for (Map.Entry<String, StoreableTable> a : dbConnector.tables.entrySet()) {
             System.out.println(a.getKey() + " " + a.getValue().size());
         }*/
+
+        for (Map.Entry<String, StoreableTable> a : dbConnector.getActiveTableProvider().tables.entrySet()) {
+            System.out.println(a.getKey() + " " + a.getValue().size());
+        }
 
         return true;
     }

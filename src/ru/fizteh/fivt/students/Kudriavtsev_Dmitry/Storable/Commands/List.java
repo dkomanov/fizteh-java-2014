@@ -15,7 +15,7 @@ public class List extends StoreableCommand {
         if (!checkArguments(args.length)) {
             return !batchModeInInteractive;
         }
-        if (dbConnector.activeTable == null) {
+        if (dbConnector.getActiveTable() == null) {
             if (batchModeInInteractive) {
                 System.err.println("No table");
                 return false;
@@ -23,7 +23,7 @@ public class List extends StoreableCommand {
             noTable();
             return true;
         }
-        java.util.List<String> keySet = dbConnector.activeTable.list();
+        java.util.List<String> keySet = dbConnector.getActiveTable().list();
         int count = 0;
         for (String key : keySet) {
             System.out.print(key);

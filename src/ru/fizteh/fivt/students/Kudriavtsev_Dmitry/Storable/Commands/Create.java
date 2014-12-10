@@ -50,8 +50,9 @@ public class Create extends StoreableCommand {
                     return !batchModeInInteractive;
                 }
             }
-            dbConnector.activeTableProvider.createTable(args[0], types);
-            System.out.println("created");
+            if (dbConnector.getActiveTableProvider().createTable(args[0], types) != null) {
+                System.out.println("created");
+            }
         } catch (IOException e) {
             System.err.println("Some IOException happen (in createTable)");
             return !batchModeInInteractive;

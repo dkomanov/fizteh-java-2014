@@ -11,8 +11,12 @@ import java.util.List;
  */
 public class CurrentStoreable implements Storeable{
 
-    public List<Object> values = new ArrayList<>();
-    public List<Class<?>> types;
+    private List<Object> values = new ArrayList<>();
+    private List<Class<?>> types;
+
+    public List<Object> getValues() {
+        return values;
+    }
 
     public CurrentStoreable(List<Class<?>> types) {
         this.types = types;

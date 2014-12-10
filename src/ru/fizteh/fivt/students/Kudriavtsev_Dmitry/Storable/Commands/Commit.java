@@ -15,7 +15,7 @@ public class Commit extends StoreableCommand {
         if (!checkArguments(args.length)) {
             return !batchModeInInteractive;
         }
-        if (dbConnector.activeTable == null) {
+        if (dbConnector.getActiveTable() == null) {
             if (batchModeInInteractive) {
                 System.err.println("No table");
                 return false;
@@ -23,7 +23,7 @@ public class Commit extends StoreableCommand {
             noTable();
             return true;
         }
-        System.out.println(dbConnector.activeTable.commit());
+        System.out.println(dbConnector.getActiveTable().commit());
         return true;
     }
 }

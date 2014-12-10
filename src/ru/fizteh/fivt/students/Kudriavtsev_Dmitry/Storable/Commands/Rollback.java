@@ -15,7 +15,7 @@ public class Rollback extends StoreableCommand {
         if (!checkArguments(args.length)) {
             return !batchModeInInteractive;
         }
-        if (dbConnector.activeTable == null) {
+        if (dbConnector.getActiveTable() == null) {
             if (batchModeInInteractive) {
                 System.err.println("No table");
                 return false;
@@ -23,7 +23,7 @@ public class Rollback extends StoreableCommand {
             noTable();
             return true;
         }
-        System.out.println(dbConnector.activeTable.rollback());
+        System.out.println(dbConnector.getActiveTable().rollback());
         return true;
     }
 }

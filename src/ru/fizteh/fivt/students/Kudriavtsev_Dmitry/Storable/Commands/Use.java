@@ -17,22 +17,22 @@ public class Use extends StoreableCommand {
         if (!checkArguments(args.length)) {
             return !batchModeInInteractive;
         }
-        if (dbConnector.activeTable != null) {
-            if (!dbConnector.activeTable.removed.isEmpty() || !dbConnector.activeTable.newKey.isEmpty()) {
+        if (dbConnector.getActiveTable() != null) {
+            if (!dbConnector.getActiveTable().getRemoved().isEmpty() || !dbConnector.getActiveTable().getNewKey().isEmpty()) {
                 int count = 0;
-                for (String s : dbConnector.activeTable.removed.keySet()) {
-                    if (dbConnector.activeTable.activeTable.containsKey(s)) {
+                for (String s : dbConnector.getActiveTable().getRemoved().keySet()) {
+                    if (dbConnector.getActiveTable().getActiveTable().containsKey(s)) {
                         ++count;
                     }
                 }
-                count += dbConnector.activeTable.newKey.size();
+                count += dbConnector.getActiveTable().getNewKey().size();
                 System.out.println(count + " unsaved changes");
                 return true;
             }
         }
-        StoreableTable map = dbConnector.tables.get(args[0]);
+        StoreableTable map = dbConnector.getActiveTableProvider().tables.get(args[0]);
         if (map == null) {
-            map = dbConnector.activeTableProvider.tables.get(args[0]);
+            map = dbConnector.getTables().get(args[0]);
         }
         if (map == null) {
             System.err.println(args[0] + " not exists");
@@ -44,14 +44,14 @@ public class Use extends StoreableCommand {
             }
             return true;
         }
-        if (dbConnector.activeTable != null) {
-            dbConnector.activeTable.unload(dbConnector.activeTable, dbConnector.activeTable.getName());
-            if (dbConnector.activeTable.dbPath.getFileName().toString().equals(args[0])) {
+        if (dbConnector.getActiveTable() != null) {
+            dbConnector.getActiveTable().unload(dbConnector.getActiveTable(), dbConnector.getActiveTable().getName());
+            if (dbConnector.getActiveTable().dbPath.getFileName().toString().equals(args[0])) {
                 System.out.println("using " + args[0]);
                 return true;
             }
         }
-        dbConnector.activeTable = map;
+        dbConnector.setActiveTable(map);
         System.out.println("using " + args[0]);
         return true;
     }

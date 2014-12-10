@@ -18,7 +18,7 @@ public class Get extends StoreableCommand {
         if (!checkArguments(args.length)) {
             return !batchModeInInteractive;
         }
-        if (dbConnector.activeTable == null) {
+        if (dbConnector.getActiveTable() == null) {
             if (batchModeInInteractive) {
                 System.err.println("No table");
                 return false;
@@ -26,10 +26,10 @@ public class Get extends StoreableCommand {
             noTable();
             return true;
         }
-        Storeable value = dbConnector.activeTable.get(args[0]);
+        Storeable value = dbConnector.getActiveTable().get(args[0]);
         if (value != null) {
             System.out.println("found");
-            for (Object val: ((CurrentStoreable) value).values) {
+            for (Object val: ((CurrentStoreable) value).getValues()) {
                 System.out.println(val.toString());
             }
         } else {

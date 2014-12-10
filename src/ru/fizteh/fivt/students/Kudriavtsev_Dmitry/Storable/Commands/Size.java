@@ -16,11 +16,11 @@ public class Size extends StoreableCommand {
             return !batchModeInInteractive;
         }
         int size = 0;
-        for (String s : dbConnector.tables.keySet()) {      // возможно что-то нужно будет убрать
-            size += dbConnector.tables.get(s).size();
+        for (String s : dbConnector.getTables().keySet()) {      // возможно что-то нужно будет убрать
+            size += dbConnector.getTables().get(s).size();
         }
-        for (String s : dbConnector.activeTableProvider.tables.keySet()) {
-            size += dbConnector.activeTableProvider.tables.get(s).size();
+        for (String s : dbConnector.getActiveTableProvider().tables.keySet()) {
+            size += dbConnector.getActiveTableProvider().tables.get(s).size();
         }
         System.out.println(size);
         return true;

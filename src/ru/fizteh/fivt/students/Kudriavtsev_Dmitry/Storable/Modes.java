@@ -49,8 +49,8 @@ public class Modes {
                     continue;
                 }
                 if (arguments[j].equals("exit")) {
-                    if (!dbConnector.activeTable.newKey.isEmpty()
-                            || !dbConnector.activeTable.removed.isEmpty()) {
+                    if (!dbConnector.getActiveTable().getNewKey().isEmpty()
+                            || !dbConnector.getActiveTable().getRemoved().isEmpty()) {
                         if (exitWarning()) {
                             break;
                         }
@@ -123,11 +123,11 @@ public class Modes {
                 }
             }
             if (exit) {
-                if (dbConnector.activeTable == null) {
+                if (dbConnector.getActiveTable() == null) {
                     break;
                 }
-                if (!dbConnector.activeTable.newKey.isEmpty()
-                        || !dbConnector.activeTable.removed.isEmpty()) {
+                if (!dbConnector.getActiveTable().getNewKey().isEmpty()
+                        || !dbConnector.getActiveTable().getRemoved().isEmpty()) {
                     if (exitWarning()) {
                         break;
                     }

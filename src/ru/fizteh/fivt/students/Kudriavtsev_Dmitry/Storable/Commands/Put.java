@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Storable.Commands;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Storable.Connector;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Storable.CurrentStoreable;
 
 import java.io.File;
 import java.text.ParseException;
@@ -17,10 +18,15 @@ public class Put extends StoreableCommand {
 
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
-        if (!checkArguments(args.length)) {
+        if (args == null || args.length <= 1) {
             return !batchModeInInteractive;
         }
-        if (dbConnector.activeTable == null) {
+        if (args.length > 2) {
+            for (int i = 2; i < args.length; ++i) {
+                args[1] = args[1].concat(" " + args[i]);
+            }
+        }
+        if (dbConnector.getActiveTable() == null) {
             if (batchModeInInteractive) {
                 System.err.println("No table");
                 return false;
@@ -46,28 +52,30 @@ public class Put extends StoreableCommand {
         }*/
         Storeable value;
         try {
-            value = dbConnector.activeTable.put(args[0],
-                    dbConnector.activeTableProvider.deserialize(dbConnector.activeTable, args[1]));
-        } catch (ParseException e) {
+            value = dbConnector.getActiveTable().put(args[0],
+                    dbConnector.getActiveTableProvider().deserialize(dbConnector.getActiveTable(), args[1]));
+        } catch(ParseException e) {
             System.err.println("Parse Exception in deserialize");
             return !batchModeInInteractive;
         }
         if (value != null) {
             System.out.println("overwrite");
-            System.out.println(value);
+            for (Object val: ((CurrentStoreable) value).getValues()) {
+                System.out.println(val.toString());
+            }
         } else {
             System.out.println("new");
         }
-        String newPath = dbConnector.activeTable.whereToSave("", args[0]).getKey();
-        if (new File(newPath).exists() || dbConnector.activeTable.changedFiles.containsKey(newPath)) {
-            Integer collisionCount = dbConnector.activeTable.changedFiles.get(newPath);
+        String newPath = dbConnector.getActiveTable().whereToSave("", args[0]).getKey();
+        if (new File(newPath).exists() || dbConnector.getActiveTable().getChangedFiles().containsKey(newPath)) {
+            Integer collisionCount = dbConnector.getActiveTable().getChangedFiles().get(newPath);
             if (collisionCount == null) {
-                collisionCount = dbConnector.activeTable.countOfCollisionsInFile(new File(newPath).toPath());
+                collisionCount = dbConnector.getActiveTable().countOfCollisionsInFile(new File(newPath).toPath());
             }
             ++collisionCount;
-            dbConnector.activeTable.changedFiles.put(newPath, collisionCount);
+            dbConnector.getActiveTable().getChangedFiles().put(newPath, collisionCount);
         } else {
-            dbConnector.activeTable.changedFiles.put(newPath, 0);
+            dbConnector.getActiveTable().getChangedFiles().put(newPath, 0);
         }
         return true;
     }

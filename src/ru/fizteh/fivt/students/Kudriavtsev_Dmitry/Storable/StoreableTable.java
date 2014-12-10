@@ -24,12 +24,30 @@ public class StoreableTable implements Table {
     public Path dbPath;
     public String name;
 
-    public Map<String, Integer> changedFiles = new TreeMap<>();
-    public Map<String, Storeable> activeTable = new HashMap<>();
-    public Map<String, Storeable> removed = new HashMap<>();
-    public Map<String, Storeable> newKey = new HashMap<>();
-    public List<Class<?>> signature;
+    private Map<String, Integer> changedFiles = new TreeMap<>();
+    private Map<String, Storeable> activeTable = new HashMap<>();
+    private Map<String, Storeable> removed = new HashMap<>();
+    private Map<String, Storeable> newKey = new HashMap<>();
+    private List<Class<?>> signature;
     private StoreableTableProvider provider;
+
+
+    public Map<String, Integer> getChangedFiles() {
+        return changedFiles;
+    }
+
+    public Map<String, Storeable> getActiveTable() {
+        return activeTable;
+    }
+
+    public Map<String, Storeable> getNewKey() {
+        return newKey;
+    }
+
+    public Map<String, Storeable> getRemoved() {
+        return removed;
+    }
+
     /*TYPES = provider.
 
     static {
@@ -185,7 +203,8 @@ public class StoreableTable implements Table {
         checkArg("key", key);
         checkArg("value", value);
         checkSignature(value);
-        if (activeTable.containsKey(key) && activeTable.get(key).equals(value)) {
+        if (activeTable.containsKey(key) && ((CurrentStoreable) activeTable.get(key)).getValues().equals(
+                                            ((CurrentStoreable) value).getValues())) {
             if (newKey.containsKey(key)) {
                 newKey.remove(key);
             }

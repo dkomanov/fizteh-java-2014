@@ -15,7 +15,7 @@ public class Remove extends StoreableCommand {
         if (!checkArguments(args.length)) {
             return !batchModeInInteractive;
         }
-        if (dbConnector.activeTable == null) {
+        if (dbConnector.getActiveTable() == null) {
             if (batchModeInInteractive) {
                 System.err.println("No table");
                 return false;
@@ -23,10 +23,10 @@ public class Remove extends StoreableCommand {
             noTable();
             return true;
         }
-        if (dbConnector.activeTable.remove(args[0]) != null) {
+        if (dbConnector.getActiveTable().remove(args[0]) != null) {
             System.out.println("removed");
-            dbConnector.activeTable.changedFiles.put(
-                    dbConnector.activeTable.whereToSave("", args[0]).getKey(), 0);
+            dbConnector.getActiveTable().getChangedFiles().put(
+                    dbConnector.getActiveTable().whereToSave("", args[0]).getKey(), 0);
         } else {
             System.err.println("not found");
             if (batchModeInInteractive) {

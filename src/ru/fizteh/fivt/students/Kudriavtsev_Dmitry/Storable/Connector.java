@@ -13,11 +13,41 @@ import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Storable.Commands.*;
  * Created by Дмитрий on 08.10.14.
  */
 public class Connector {
+    private Path dbRoot;
+    private Map<String, StoreableTable> tables;
+    private StoreableTable activeTable;
+    private StoreableTableProvider activeTableProvider;
+
+    public Map<String, Command> getCommands() {
+        return commands;
+    }
+
+    public void setCommands(Map<String, Command> commands) {
+        this.commands = commands;
+    }
+
     public Map<String, Command> commands = new HashMap<>();
-    public Path dbRoot;
-    public Map<String, StoreableTable> tables;
-    public StoreableTable activeTable;
-    public StoreableTableProvider activeTableProvider;
+
+    public Map<String, StoreableTable> getTables() {
+        return tables;
+    }
+
+    public void setTables(Map<String, StoreableTable> tables) {
+        this.tables = tables;
+    }
+
+    public StoreableTable getActiveTable() {
+        return activeTable;
+    }
+
+    public void setActiveTable(StoreableTable activeTable) {
+        this.activeTable = activeTable;
+    }
+
+    public StoreableTableProvider getActiveTableProvider() {
+        return activeTableProvider;
+    }
+
 
     public Connector(Path dbPath) throws IOException {
         if (!Files.exists(dbPath)) {

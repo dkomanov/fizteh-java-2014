@@ -31,7 +31,7 @@ public abstract class Command {
     }
 
     protected boolean checkMoreArguments(int argLen) {
-        if (argLen < 1) {
+        if (argLen <= 1) {
             System.err.println("Incorrect number of arguments in " + name);
             if (batchMode) {
                 System.exit(-1);
