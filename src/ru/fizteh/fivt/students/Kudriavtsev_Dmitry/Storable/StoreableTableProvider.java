@@ -41,7 +41,6 @@ public class StoreableTableProvider implements TableProvider {
         classNames.put(Integer.class, "int");
         classNames.put(Long.class, "long");
         classNames.put(Byte.class, "byte");
-        classNames.put(Float.class, "float");
         classNames.put(Double.class, "double");
         classNames.put(Float.class, "float");
         classNames.put(Boolean.class, "boolean");
