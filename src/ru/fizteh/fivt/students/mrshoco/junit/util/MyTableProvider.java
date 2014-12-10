@@ -1,8 +1,8 @@
-package util;
+package junit.util;
 
 import java.io.File;
 
-import strings.*;
+import junit.strings.*;
 
 public class MyTableProvider implements TableProvider{
     File root;

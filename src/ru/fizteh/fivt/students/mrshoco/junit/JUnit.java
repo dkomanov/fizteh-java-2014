@@ -1,8 +1,10 @@
+package junit;
+
 import java.util.Scanner;
 
-import strings.*;
+import junit.strings.*;
 
-import util.*;
+import junit.util.*;
 
 public final class JUnit {
 

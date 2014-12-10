@@ -1,4 +1,4 @@
-package strings;
+package junit.strings;
 
 import java.util.List;
 
