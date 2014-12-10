@@ -20,7 +20,6 @@ public class Interpreter {
     private final InputStream in;
     private final PrintStream out;
     private final PrintStream err;
-    private boolean isBatch;
 
     public Interpreter(DataBaseState state, InputStream in, PrintStream out, PrintStream err, DataBaseCommand[] cmds) {
         if (in == null || out == null || err == null) {
@@ -39,10 +38,8 @@ public class Interpreter {
     public void run(String[] args) {
         try {
             if (args.length == 0) {
-                isBatch = false;
                 interactiveMode();
             } else {
-                isBatch = true;
                 batchMode(args);
             }
         } catch (StopInterpreterException e) {
@@ -61,7 +58,6 @@ public class Interpreter {
 
     private void invokeLine(String line) throws StopInterpreterException,
             WrongNumberOfArgumentsException, IOException {
-
         String[] commandsWithArgs = line.trim().split(COMMANDS_SEPARATOR);
         for (String command : commandsWithArgs) {
             String[] tokens = command.trim().split("\\s+");
@@ -97,9 +93,5 @@ public class Interpreter {
                 }
             }
         }
-    }
-
-    public boolean isBatch() {
-        return isBatch;
     }
 }

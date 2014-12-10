@@ -37,17 +37,6 @@ public class MultiFileHashMapMain {
         DataBaseCommand[] commands = createCommands();
         Interpreter interpreter = new Interpreter(dbState, System.in, System.out, System.err, commands);
         interpreter.run(args);
-        if (interpreter.isBatch()) {
-            DataBaseTable currentTable = dbState.getCurrentTable();
-            if (currentTable != null) {
-                int unsavedChanges = currentTable.getNumberOfUncommittedChanges();
-                if (unsavedChanges > 0) {
-                    System.out.println(unsavedChanges + " unsaved changes");
-                } else {
-                    dbState.saveCurrentTable();
-                }
-            }
-        }
     }
 
     DataBaseCommand[] createCommands() {
@@ -60,12 +49,14 @@ public class MultiFileHashMapMain {
                         if (currentTable == null) {
                             System.out.println("no table");
                         } else {
-                            Storeable result = currentTable.get(args[0]);
+                            StoreableType result = (StoreableType) currentTable.get(args[0]);
                             if (result == null) {
                                 System.out.println("not found");
                             } else {
                                 System.out.println("found");
-                                System.out.println(connector.serialize(currentTable, result));
+                                for (int i = 0; i < result.getNumberOfColumns(); ++i) {
+                                    System.out.println(result.getColumnAt(i));
+                                }
                             }
                         }
                     }
