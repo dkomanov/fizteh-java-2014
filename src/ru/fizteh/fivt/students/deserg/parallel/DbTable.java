@@ -41,7 +41,7 @@ public class DbTable implements Table {
         }
 
     };
-    private Integer commitedVersion = 0;
+    private Integer committedVersion = 0;
 
 
     private String tableName;
@@ -259,7 +259,7 @@ public class DbTable implements Table {
         diff.get().removedData.clear();
         diff.get().changedData.clear();
         version.set(version.get() + 1);
-        commitedVersion++;
+        committedVersion++;
 
         try {
             write();
@@ -354,7 +354,7 @@ public class DbTable implements Table {
 
     private void sync() {
 
-        if (version.get() < commitedVersion) {
+        if (version.get() < committedVersion) {
             for (String key : diff.get().removedData) {
                 if (committedData.containsKey(key)) {
                     diff.get().removedData.remove(key);
