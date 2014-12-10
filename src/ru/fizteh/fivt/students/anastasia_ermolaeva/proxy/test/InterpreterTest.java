@@ -31,7 +31,8 @@ public class InterpreterTest {
         outputStream = new ByteArrayOutputStream();
         printStream = new PrintStream(outputStream);
         testConsumer = (object, arguments) -> printStream.println(testOutput);
-        emptyConsumer = (object, arguments) -> {};
+        emptyConsumer = (object, arguments) -> {
+        };
     }
 
     @Test(expected = IllegalArgumentException.class)
