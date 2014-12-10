@@ -46,7 +46,6 @@ public class ProxyInvocationHandler implements InvocationHandler {
                 xmlWriter.writeEmptyElement(object.toString());
             }
         }
-
     }
 
     @Override

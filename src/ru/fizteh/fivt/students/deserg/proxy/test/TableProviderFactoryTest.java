@@ -53,6 +53,13 @@ public class TableProviderFactoryTest {
             System.out.println(ex.getMessage());
         }
 
+        try {
+            factory.close();
+            factory.create("newDb");
+            assertTrue(false);
+        } catch (IllegalStateException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     @Test

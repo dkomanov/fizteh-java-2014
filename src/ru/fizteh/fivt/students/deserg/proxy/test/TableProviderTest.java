@@ -80,6 +80,13 @@ public class TableProviderTest {
             System.out.println(ex.getMessage());
         }
 
+        try {
+            provider.close();
+            provider.createTable("tableName", signature);
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
 
     }
 
@@ -111,6 +118,14 @@ public class TableProviderTest {
 
         try {
             provider.removeTable("Nam\000e");
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            provider.close();
+            provider.removeTable("tableName");
             assertTrue(false);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -160,6 +175,14 @@ public class TableProviderTest {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
+
+        try {
+            provider.close();
+            provider.getTable("tableName");
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     @Test
@@ -193,31 +216,43 @@ public class TableProviderTest {
     }
 
     @Test
-    public void testCreateFor() {
+    public void testCreateFor() throws Exception{
 
+        DbTable table = (DbTable) provider.createTable("table", signature);
+        Storeable row = provider.createFor(table);
+        assertNotNull(row);
+
+        int val1 = 103;
+        String val2 = "123";
+        List<Object> list = new LinkedList<>();
+        list.add(val1);
+        list.add(val2);
+        assertNotNull(provider.createFor(table, list));
+
+        list.add("123");
         try {
-            DbTable table = (DbTable) provider.createTable("table", signature);
-            Storeable row = provider.createFor(table);
-            assertNotNull(row);
-
-            int val1 = 103;
-            String val2 = "123";
-            List<Object> list = new LinkedList<>();
-            list.add(val1);
-            list.add(val2);
-            assertNotNull(provider.createFor(table, list));
-
-            list.add("123");
-            try {
-                provider.createFor(table, list);
-                assertTrue(false);
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-
-        } catch (IOException ex) {
+            provider.createFor(table, list);
+            assertTrue(false);
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
+
+        try {
+            provider.close();
+            provider.createFor(table);
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            provider.close();
+            provider.createFor(table, list);
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
     }
 
     @Test
@@ -241,6 +276,15 @@ public class TableProviderTest {
         List<String> expNames = provider.getTableNames();
         expNames.sort(Comparator.<String>naturalOrder());
         assertEquals(names, expNames);
+
+        try {
+            provider.close();
+            provider.getTableNames();
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
     }
 
     @Test
@@ -259,6 +303,14 @@ public class TableProviderTest {
 
             val.setColumnAt(0, null);
             assertEquals(provider.serialize(table, val), "[null,\"serialize\"]");
+
+            try {
+                provider.close();
+                provider.serialize(table, val);
+                assertTrue(false);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
 
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -315,18 +367,20 @@ public class TableProviderTest {
                 System.out.println(ex.getMessage());
             }
 
+            try {
+                provider.close();
+                provider.deserialize(table, pattern);
+                assertTrue(false);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
 
     }
 
-    @Test
-    public void testClose() {
-
-
-
-    }
 
 
 }
