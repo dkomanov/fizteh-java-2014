@@ -1,10 +1,8 @@
 package ru.fizteh.fivt.students.andreyzakharov.remotefilemap.test;
 
 import org.junit.*;
-import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProvider;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProviderFactory;
 
 import java.io.IOException;
@@ -23,16 +21,16 @@ public class MultiFileTableConcurrentTest {
     static String key = "key";
     static Storeable value;
 
-    TableProviderFactory factory;
-    TableProvider provider;
+    MultiFileTableProviderFactory factory;
+    RemoteTableProvider provider;
     Table table;
 
     @BeforeClass
     public static void setUp() {
         signature = Arrays.asList(Integer.class, String.class);
 
-        TableProviderFactory factory = new MultiFileTableProviderFactory();
-        TableProvider dummyProvider;
+        MultiFileTableProviderFactory factory = new MultiFileTableProviderFactory();
+        RemoteTableProvider dummyProvider;
         Table dummyTable;
 
         try {

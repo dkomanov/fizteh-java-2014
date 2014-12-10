@@ -63,7 +63,7 @@ public class MultiFileTableTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        TableProviderFactory factory = new MultiFileTableProviderFactory();
+        MultiFileTableProviderFactory factory = new MultiFileTableProviderFactory();
         TableProvider dummyProvider;
         Table dummyTable;
 
