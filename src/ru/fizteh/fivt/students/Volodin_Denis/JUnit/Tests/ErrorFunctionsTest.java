@@ -5,8 +5,8 @@ import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
 
 public class ErrorFunctionsTest {
 
-    final static String name = "name";
-    final static String string = "string";
+    final String name = "name";
+    final String string = "string";
 
     //@SuppressWarnings("static-access")
     @Test(expected = Exception.class)

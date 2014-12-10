@@ -16,13 +16,12 @@ import static org.junit.Assert.assertEquals;
 
 public class TableByVoloddenTest {
 
-    public final static String name = "test123321123322";
-    public final static String end = ".." + File.separator + name;
-    public final static String end2 = ".." + File.separator + "ololoshki";
-    public final static String key1 = "key1key1";
-    public final static String val1 = "val1val1";
-    public final static String val2 = "val2lav2";
-    public final static String val3 = "val3lav3";
+    public final String name = "test123321123322";
+    public final String end = ".." + File.separator + name;
+    public final String key1 = "key1key1";
+    public final String val1 = "val1val1";
+    public final String val2 = "val2lav2";
+    public final String val3 = "val3lav3";
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -39,7 +38,8 @@ public class TableByVoloddenTest {
     public void testGetNameIfTableExist() throws Exception {
         Table table = new TableByVolodden(name);
         assertEquals(name, table.getName());
-        Files.deleteIfExists(Paths.get(temporaryFolder.toString(), ".." + File.separator, name).toAbsolutePath().normalize());
+        Files.deleteIfExists(Paths.get(temporaryFolder.toString(), ".." + File.separator, name)
+                .toAbsolutePath().normalize());
     }
 
     @Test
