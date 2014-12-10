@@ -1,4 +1,4 @@
-package util;
+package filemap.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -15,8 +15,8 @@ public class BinaryFileHandler {
 
   private String fileRoute;
 
-  public BinaryFileHandler(String _fileRoute) {
-    fileRoute = _fileRoute;
+  public BinaryFileHandler(String getFileRoute) {
+    fileRoute = getFileRoute;
   }
 
   private String readString(int bytes, DataInputStream in) throws IOException {
@@ -29,7 +29,7 @@ public class BinaryFileHandler {
   }
 
   private void writeString(String s, DataOutputStream out) throws IOException {
-    byte b[] = s.getBytes("UTF-8");
+    byte[] b = s.getBytes("UTF-8");
     out.writeInt(b.length);
     for (int i = 0; i < b.length; i++) {
       out.writeByte(b[i]);
@@ -56,7 +56,7 @@ public class BinaryFileHandler {
     }
   }
 
-  public void sync_from(Map<String, String> map) throws IOException {
+  public void syncFrom(Map<String, String> map) throws IOException {
     try (BufferedOutputStream bufferedStream = new BufferedOutputStream(
         new FileOutputStream(fileRoute));
         DataOutputStream dataStream = new DataOutputStream(bufferedStream)) {

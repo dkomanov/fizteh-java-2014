@@ -1,3 +1,5 @@
+package filemap;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,7 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import util.BinaryFileHandler;
+import filemap.util.BinaryFileHandler;
 
 class FileMap {
   private static BinaryFileHandler binaryHandler;
@@ -88,7 +90,7 @@ class FileMap {
           System.out.println("Incorrect command");
           System.exit(1);
         }
-        binaryHandler.sync_from(map);
+        binaryHandler.syncFrom(map);
       }
     } catch (IOException e) {
       System.out.println("Something wrong with files");
@@ -104,7 +106,7 @@ class FileMap {
         System.out.println("Incorrect command");
         System.exit(1);
       }
-      binaryHandler.sync_from(map);
+      binaryHandler.syncFrom(map);
     }
   }
 }
