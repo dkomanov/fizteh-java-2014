@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.junit;
 
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.TableHolder;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Command;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.DBState;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.ExitException;

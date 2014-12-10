@@ -13,7 +13,8 @@ public class DatabaseCommand implements Command {
     protected TableHolder tableHolder;
     protected Function<String[], String[]> argumentsHandler;
 
-    public DatabaseCommand(TableHolder tableHolder, String name, int numArguments, BiConsumer<TableHolder, String[]> callback) {
+    public DatabaseCommand(TableHolder tableHolder, String name,
+                           int numArguments, BiConsumer<TableHolder, String[]> callback) {
         this.tableHolder = tableHolder;
         this.name = name;
         this.numArguments = numArguments;
@@ -53,3 +54,4 @@ public class DatabaseCommand implements Command {
         callback.accept(tableHolder, checkAndCorrectArguments(arguments));
     }
 }
+

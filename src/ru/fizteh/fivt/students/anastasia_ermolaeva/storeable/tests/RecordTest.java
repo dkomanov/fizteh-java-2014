@@ -549,4 +549,5 @@ public class RecordTest {
         Storeable test = new Record(valuesTypes);
         test.getIntAt(1);
     }
+
 }

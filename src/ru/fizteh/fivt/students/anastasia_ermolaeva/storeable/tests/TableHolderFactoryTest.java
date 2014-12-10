@@ -40,4 +40,5 @@ public class TableHolderFactoryTest {
     public final void tearDown() throws IOException {
         Utility.recursiveDeleteCopy(testDirectory);
     }
+
 }

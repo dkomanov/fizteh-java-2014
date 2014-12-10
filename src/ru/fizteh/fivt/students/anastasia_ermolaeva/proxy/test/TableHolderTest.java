@@ -413,7 +413,8 @@ public class TableHolderTest {
      */
 
     @Test(expected = ParseException.class)
-    public final void firstTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable() throws IOException, ParseException {
+    public final void firstTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable()
+            throws IOException, ParseException {
         TableHolder test = new TableHolder(testDirectory.toString());
         List<Class<?>> types = new ArrayList<>();
         types.add(Integer.class);
@@ -732,4 +733,5 @@ public class TableHolderTest {
     public final void tearDown() throws IOException {
         Utility.recursiveDeleteCopy(testDirectory);
     }
+
 }

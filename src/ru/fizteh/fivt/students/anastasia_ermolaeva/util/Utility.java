@@ -417,7 +417,9 @@ public class Utility {
     }
 
     private static String getIncompatibleTypesErrMessage(String currentValue, Class<?> required) {
-        return "wrong type (value " + currentValue + " can't be applied to " + WRAPPERS_TO_PRIMITIVE.get(required) + ")";
+        return "wrong type (value " + currentValue
+                + " can't be applied to "
+                + WRAPPERS_TO_PRIMITIVE.get(required) + ")";
     }
 
     /*
