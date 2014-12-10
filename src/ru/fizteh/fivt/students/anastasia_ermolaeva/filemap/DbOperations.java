@@ -16,9 +16,11 @@ public class DbOperations implements AutoCloseable {
     public DbOperations() {
         //
     }
+
     public static void main() {
 
     }
+
     public final void create() throws ExitException {
         database = new TreeMap<>();
         try {
@@ -38,12 +40,14 @@ public class DbOperations implements AutoCloseable {
             throw new ExitException(-1);
         }
     }
+
     private String readUtil() throws IOException {
         int length = inStream.readInt();
         byte[] wordArray = new byte[length];
         inStream.readFully(wordArray);
         return new String(wordArray, "UTF-8");
     }
+
     private void read(final RandomAccessFile dbFile) throws Exception {
         boolean end = false;
         while (!end) {
@@ -61,7 +65,7 @@ public class DbOperations implements AutoCloseable {
         if (dbFile.length() > 0) {
             outStream = new DataOutputStream(
                     new FileOutputStream(dbFile.toString()));
-            for (Map.Entry<String, String> entry: getDataBase().entrySet()) {
+            for (Map.Entry<String, String> entry : getDataBase().entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 try {
@@ -73,6 +77,7 @@ public class DbOperations implements AutoCloseable {
             }
         }
     }
+
     public final void close() {
         try (RandomAccessFile dbFile
                      = new RandomAccessFile(dbPath.toString(), "rw")) {

@@ -7,9 +7,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class ArgsListCommand extends Command {
-    private Function<String[],String[]> argumentsHandler;
+    private Function<String[], String[]> argumentsHandler;
+
     public ArgsListCommand(String name, int numArguments,
-                           BiConsumer<Object, String[]> callback, Function<String[],String[]> handler) {
+                           BiConsumer<Object, String[]> callback, Function<String[], String[]> handler) {
         super(name, numArguments, callback);
         argumentsHandler = handler;
     }

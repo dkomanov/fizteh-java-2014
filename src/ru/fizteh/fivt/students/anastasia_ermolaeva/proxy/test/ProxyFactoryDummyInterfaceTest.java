@@ -19,18 +19,27 @@ public class ProxyFactoryDummyInterfaceTest {
 
     interface InterfaceToProxy {
         void returnVoid(int a);
+
         String getString(String a);
+
         int getPrimitive(int a);
+
         List<String> getListStrings(List<String> list);
+
         List<List<String>> getListWithInsertedList(List<List<String>> list);
+
         List<String> getEmptyListStrings();
+
         Object getNullObject();
+
         void throwException() throws IOException;
     }
-    class InterfaceToProxyImplementation implements InterfaceToProxy{
+
+    class InterfaceToProxyImplementation implements InterfaceToProxy {
 
         @Override
-        public void returnVoid (int a) {}
+        public void returnVoid(int a) {
+        }
 
         @Override
         public String getString(String a) {
@@ -78,7 +87,7 @@ public class ProxyFactoryDummyInterfaceTest {
     @Before
     public void setUp() throws Exception {
         InterfaceToProxyImplementation dummy = new InterfaceToProxyImplementation();
-        instance = (InterfaceToProxy)proxyFactory.wrap(writer, dummy, InterfaceToProxy.class);
+        instance = (InterfaceToProxy) proxyFactory.wrap(writer, dummy, InterfaceToProxy.class);
     }
 
     @Test
@@ -111,6 +120,7 @@ public class ProxyFactoryDummyInterfaceTest {
         instance.getListStrings(list);
         System.out.println(writer.toString());
     }
+
     @Test
     public void proxyGetAndReturnsListOfListsOfStrings() {
         List<String> list1 = Arrays.asList("freak", "geek", "others");
@@ -127,7 +137,7 @@ public class ProxyFactoryDummyInterfaceTest {
     }
 
     @Test(expected = IOException.class)
-    public void proxyWritesInfoAboutTargetExceptionMethodThrowed() throws IOException{
+    public void proxyWritesInfoAboutTargetExceptionMethodThrowed() throws IOException {
         try {
             instance.throwException();
         } finally {

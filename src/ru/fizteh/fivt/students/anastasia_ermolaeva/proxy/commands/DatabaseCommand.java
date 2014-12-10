@@ -11,7 +11,7 @@ public class DatabaseCommand implements Command {
     protected int numArguments;
     protected BiConsumer<TableHolder, String[]> callback;
     protected TableHolder tableHolder;
-    protected Function<String[],String[]> argumentsHandler;
+    protected Function<String[], String[]> argumentsHandler;
 
     public DatabaseCommand(TableHolder tableHolder, String name, int numArguments, BiConsumer<TableHolder, String[]> callback) {
         this.tableHolder = tableHolder;
@@ -21,7 +21,7 @@ public class DatabaseCommand implements Command {
     }
 
     public DatabaseCommand(TableHolder tableHolder, String name, int numArguments,
-                           BiConsumer<TableHolder, String[]> callback, Function<String[],String[]> handler) {
+                           BiConsumer<TableHolder, String[]> callback, Function<String[], String[]> handler) {
         this(tableHolder, name, numArguments, callback);
         argumentsHandler = handler;
     }

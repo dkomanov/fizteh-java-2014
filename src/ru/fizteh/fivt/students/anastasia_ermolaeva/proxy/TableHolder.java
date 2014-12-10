@@ -55,9 +55,11 @@ public class TableHolder implements TableProvider, AutoCloseable {
             }
         }
     }
+
     public Table getActiveTable() {
         return activeTable;
     }
+
     public void setActiveTable(Table activeTable) {
         this.activeTable = activeTable;
     }
@@ -67,6 +69,7 @@ public class TableHolder implements TableProvider, AutoCloseable {
             throw new NoActiveTableException();
         }
     }
+
     /**
      * Возвращает таблицу с указанным названием.
      * <p>
@@ -128,24 +131,25 @@ public class TableHolder implements TableProvider, AutoCloseable {
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
             for (Class type : columnTypes) {
-                String s = Utility.wrappersToPrimitive.get(type) + " ";
+                String s = Utility.WRAPPERS_TO_PRIMITIVE.get(type) + " ";
                 writeSig.write(s.getBytes(Utility.ENCODING));
             }
         }
         tableMap.put(name, newTable);
         return newTable;
     }
-        /**
-         * Создаёт таблицу с указанным названием.
-         * Создает новую таблицу. Совершает необходимые дисковые операции.
-         *
-         * @param name   Название таблицы.
-         * @param columnTypes Типы колонок таблицы. Не может быть пустой.
-         * @return Объект, представляющий таблицу. Если таблица с указанным именем существует, возвращает null.
-         * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение. Если список типов
-         *                                  колонок null или содержит недопустимые значения.
-         * @throws java.io.IOException      При ошибках ввода/вывода.
-         */
+
+    /**
+     * Создаёт таблицу с указанным названием.
+     * Создает новую таблицу. Совершает необходимые дисковые операции.
+     *
+     * @param name        Название таблицы.
+     * @param columnTypes Типы колонок таблицы. Не может быть пустой.
+     * @return Объект, представляющий таблицу. Если таблица с указанным именем существует, возвращает null.
+     * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение. Если список типов
+     *                                  колонок null или содержит недопустимые значения.
+     * @throws java.io.IOException      При ошибках ввода/вывода.
+     */
 
 
     @Override
@@ -216,8 +220,9 @@ public class TableHolder implements TableProvider, AutoCloseable {
                 /*
                 Invalidate table.
                  */
-                if (activeTable == table)
+                if (activeTable == table) {
                     activeTable = null;
+                }
                 table.close();
                 Utility.recursiveDeleteCopy(tableDirectory);
                 tableMap.remove(name);
@@ -353,7 +358,7 @@ public class TableHolder implements TableProvider, AutoCloseable {
     }
 
     @Override
-    public final void close()  {
+    public final void close() {
         validLock.writeLock().lock();
         try {
             checkIfValid();
@@ -369,14 +374,15 @@ public class TableHolder implements TableProvider, AutoCloseable {
             });
             valid = false;
             tableMap.clear();
-        }  finally {
+        } finally {
             validLock.writeLock().unlock();
         }
     }
 
     private void checkIfValid() {
-        if (!valid)
+        if (!valid) {
             throw new IllegalStateException("TableProvider was closed\n");
+        }
     }
 }
 

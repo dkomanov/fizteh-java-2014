@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.util;
 
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.Table;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.multifilehashmap.TableHolder;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,12 +24,15 @@ public class TableState {
     public Map<String, Map<String, String>> getMap() {
         return map;
     }
+
     public String getCurrentTableName() {
         return currentTableName;
     }
+
     public void setCurrentTableName(String currentTableName) {
         this.currentTableName = currentTableName;
     }
+
     /*
     * False - no chosen table.
     */

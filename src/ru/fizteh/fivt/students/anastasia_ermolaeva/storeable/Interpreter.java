@@ -119,8 +119,8 @@ public class Interpreter {
         } else {
             try {
                 command.execute(tableState, arguments);
-            } catch (IllegalCommandException | NoActiveTableException |
-                    IndexOutOfBoundsException | ColumnFormatException e) {
+            } catch (IllegalCommandException | NoActiveTableException
+                    | IndexOutOfBoundsException | ColumnFormatException e) {
                 if (userMode) {
                     if (e.getClass().equals(IllegalCommandException.class)
                             || e.getClass().equals(NoActiveTableException.class)) {

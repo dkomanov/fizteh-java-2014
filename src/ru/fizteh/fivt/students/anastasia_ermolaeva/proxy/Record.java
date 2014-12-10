@@ -21,7 +21,7 @@ public class Record implements Storeable {
     private <T> T getFormattedObjectAt(int columnIndex, Class<T> required) {
         Utility.checkColumnIndex(columnIndex, columnsAmount);
         Utility.checkCurrentColumnType(required, values.get(columnIndex));
-        return (T)(values.get(columnIndex));
+        return (T) (values.get(columnIndex));
     }
 
     /**
@@ -144,6 +144,7 @@ public class Record implements Storeable {
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         return getFormattedObjectAt(columnIndex, String.class);
     }
+
     /*
     Выводит строку Storeable[values], где Storeable - это название класса-реализации (getClass().getSimpleName()),
     а values - значения, записанные через запятую.
@@ -157,15 +158,14 @@ public class Record implements Storeable {
         string.append(getClass().getSimpleName());
         string.append("[");
         List<String> valuesList = new ArrayList<>();
-        for (Object value: values) {
+        for (Object value : values) {
             if (value != null) {
                 valuesList.add(value.toString());
             } else {
                 valuesList.add("");
             }
         }
-        String list_values = String.join(",", valuesList);
-        string.append(list_values);
+        string.append(String.join(",", valuesList));
         string.append("]");
         return string.toString();
     }

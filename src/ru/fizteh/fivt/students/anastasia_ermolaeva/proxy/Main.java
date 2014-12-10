@@ -19,7 +19,7 @@ public class Main {
         }
         TableProviderFactory factory = new TableHolderFactory();
         try {
-            start ((TableHolder)factory.create(rootDirectory), args);
+            start((TableHolder) factory.create(rootDirectory), args);
         } catch (DatabaseFormatException e) {
             System.err.println(e.getMessage());
             System.exit(1);

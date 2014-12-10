@@ -47,7 +47,7 @@ public class TableHolderFactoryTest {
     @Test(expected = IllegalStateException.class)
     public final void testFactoryThrowsExceptionAfterClosing() throws Exception {
         TableProviderFactory test = new TableHolderFactory();
-        ((TableHolderFactory)test).close();
+        ((TableHolderFactory) test).close();
         test.create(testDirectory.toString());
     }
 
@@ -60,7 +60,7 @@ public class TableHolderFactoryTest {
         Files.createDirectory(pathProvider2);
         TableProvider testProvider1 = test.create(pathProvider1.toString());
         TableProvider testProvider2 = test.create(pathProvider2.toString());
-        ((TableHolderFactory)test).close();
+        ((TableHolderFactory) test).close();
         try {
             testProvider1.getTableNames();
         } catch (IllegalStateException e1) {
@@ -72,6 +72,7 @@ public class TableHolderFactoryTest {
             assertEquals("TableProvider was closed\n", e2.getMessage());
         }
     }
+
     @After
     public final void tearDown() throws IOException {
         Utility.recursiveDeleteCopy(testDirectory);

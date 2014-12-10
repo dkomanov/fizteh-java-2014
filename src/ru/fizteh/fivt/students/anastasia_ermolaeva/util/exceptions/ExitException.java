@@ -1,4 +1,5 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions;
+
 /*
 * The exceptions is used for safe program exit.
 * Its status determines exit code.

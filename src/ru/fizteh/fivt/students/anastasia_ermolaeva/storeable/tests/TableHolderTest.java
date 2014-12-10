@@ -100,7 +100,7 @@ public class TableHolderTest {
         Files.createDirectory(tableDirPath);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             String s2 = ArrayList.class.getSimpleName() + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
             writeSig.write(s2.getBytes(Utility.ENCODING));
@@ -116,7 +116,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         Files.createDirectory(tableSubdirPath);
@@ -131,7 +131,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         Files.createDirectory(tableSubdirPath);
@@ -148,7 +148,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         Files.createDirectory(tableSubdirPath);
@@ -165,7 +165,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
             Files.createDirectory(tableSubdirPath);
             Path newFilePath = tableSubdirPath.resolve(validFileName);
@@ -186,7 +186,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         String key = "key";
@@ -346,7 +346,7 @@ public class TableHolderTest {
         Files.createDirectory(tableDirPath);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         TableHolder test = new TableHolder(testDirectory.toString());
@@ -385,7 +385,8 @@ public class TableHolderTest {
      */
 
     @Test(expected = ParseException.class)
-    public final void firstTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable() throws IOException, ParseException {
+    public final void firstTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable()
+            throws IOException, ParseException {
         TableHolder test = new TableHolder(testDirectory.toString());
         List<Class<?>> types = new ArrayList<>();
         types.add(Integer.class);
@@ -395,7 +396,8 @@ public class TableHolderTest {
     }
 
     @Test(expected = ParseException.class)
-    public final void secondTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable() throws IOException, ParseException {
+    public final void secondTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable()
+            throws IOException, ParseException {
         TableHolder test = new TableHolder(testDirectory.toString());
         List<Class<?>> types = new ArrayList<>();
         types.add(String.class);
@@ -405,7 +407,8 @@ public class TableHolderTest {
     }
 
     @Test(expected = ParseException.class)
-    public final void thirdTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable() throws IOException, ParseException {
+    public final void thirdTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable()
+            throws IOException, ParseException {
         TableHolder test = new TableHolder(testDirectory.toString());
         List<Class<?>> types = new ArrayList<>();
         types.add(String.class);
@@ -415,7 +418,8 @@ public class TableHolderTest {
     }
 
     @Test(expected = ParseException.class)
-    public final void fourthTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable() throws IOException, ParseException {
+    public final void fourthTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable()
+            throws IOException, ParseException {
         TableHolder test = new TableHolder(testDirectory.toString());
         List<Class<?>> types = new ArrayList<>();
         types.add(Boolean.class);

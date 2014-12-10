@@ -11,10 +11,12 @@ import java.util.List;
 public class TableHolderFactory implements TableProviderFactory, AutoCloseable {
     private boolean valid;
     private List<TableHolder> createdTableHolders;
+
     public TableHolderFactory() {
         valid = true;
         createdTableHolders = new ArrayList<>();
     }
+
     /**
      * Возвращает объект для работы с базой данных.
      *

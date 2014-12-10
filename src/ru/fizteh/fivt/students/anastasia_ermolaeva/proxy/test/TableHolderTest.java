@@ -29,14 +29,14 @@ public class TableHolderTest {
     private Path tableSubdirPath;
     private Path tableSignaturePath;
 
-    private final String TEST_FILE = "filename.txt";
-    private final String VALID_FILE_NAME = "1.dat";
-    private final String TEST_TABLE_NAME1 = "MyTable1";
-    private final String TEST_TABLE_NAME2 = "MyTable2";
-    private final String WRONG_TABLE_NAME = ".";
+    private static final String TEST_FILE = "filename.txt";
+    private static final String VALID_FILE_NAME = "1.dat";
+    private static final String TEST_TABLE_NAME1 = "MyTable1";
+    private static final String TEST_TABLE_NAME2 = "MyTable2";
+    private static final String WRONG_TABLE_NAME = ".";
 
 
-    private static List<Class<?>> TYPES = Arrays.asList(Integer.class);
+    private static final List<Class<?>> TYPES = Arrays.asList(Integer.class);
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -108,7 +108,7 @@ public class TableHolderTest {
         Files.createDirectory(tableDirPath);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             String s2 = ArrayList.class.getSimpleName() + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
             writeSig.write(s2.getBytes(Utility.ENCODING));
@@ -124,7 +124,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         Files.createDirectory(tableSubdirPath);
@@ -139,7 +139,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         Files.createDirectory(tableSubdirPath);
@@ -156,7 +156,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         Files.createDirectory(tableSubdirPath);
@@ -173,7 +173,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
             Files.createDirectory(tableSubdirPath);
             Path newFilePath = tableSubdirPath.resolve(VALID_FILE_NAME);
@@ -194,7 +194,7 @@ public class TableHolderTest {
         Path tableSignaturePath = tableDirPath.resolve(Utility.TABLE_SIGNATURE);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         String key = "key";
@@ -257,7 +257,7 @@ public class TableHolderTest {
         test.createTable(TEST_TABLE_NAME1, valuesTypes);
 
         Table createdTable = test.getTable(TEST_TABLE_NAME1);
-        ((DBTable)createdTable).close();
+        ((DBTable) createdTable).close();
         assertNotNull(test.getTable(TEST_TABLE_NAME1));
     }
 
@@ -349,8 +349,8 @@ public class TableHolderTest {
         Path newTablePath = testDirectory.resolve(TEST_TABLE_NAME1);
 
         assertTrue(Files.exists(newTablePath)
-                        && Files.isDirectory(newTablePath)
-                        && Files.exists(newTablePath.resolve(Utility.TABLE_SIGNATURE)));
+                && Files.isDirectory(newTablePath)
+                && Files.exists(newTablePath.resolve(Utility.TABLE_SIGNATURE)));
 
     }
 
@@ -362,7 +362,7 @@ public class TableHolderTest {
         Files.createDirectory(tableDirPath);
         Files.createFile(tableSignaturePath);
         try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class) + " ";
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class) + " ";
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
         TableHolder test = new TableHolder(testDirectory.toString());
@@ -378,7 +378,7 @@ public class TableHolderTest {
 
         TableHolder test = new TableHolder(testDirectory.toString());
         Table createdTable = test.createTable(TEST_TABLE_NAME1, types);
-        ((DBTable)createdTable).close();
+        ((DBTable) createdTable).close();
         assertNotNull(test.createTable(TEST_TABLE_NAME1, types));
     }
 
@@ -423,7 +423,8 @@ public class TableHolderTest {
     }
 
     @Test(expected = ParseException.class)
-    public final void secondTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable() throws IOException, ParseException {
+    public final void secondTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable()
+            throws IOException, ParseException {
         TableHolder test = new TableHolder(testDirectory.toString());
         List<Class<?>> types = new ArrayList<>();
         types.add(String.class);
@@ -433,7 +434,8 @@ public class TableHolderTest {
     }
 
     @Test(expected = ParseException.class)
-    public final void thirdTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable() throws IOException, ParseException {
+    public final void thirdTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable()
+            throws IOException, ParseException {
         TableHolder test = new TableHolder(testDirectory.toString());
         List<Class<?>> types = new ArrayList<>();
         types.add(String.class);
@@ -443,7 +445,8 @@ public class TableHolderTest {
     }
 
     @Test(expected = ParseException.class)
-    public final void fourthTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable() throws IOException, ParseException {
+    public final void fourthTestDeserializeThrowsExceptionIfValueTypesDoesNotFitTable()
+            throws IOException, ParseException {
         TableHolder test = new TableHolder(testDirectory.toString());
         List<Class<?>> types = new ArrayList<>();
         types.add(Boolean.class);
@@ -643,28 +646,28 @@ public class TableHolderTest {
      */
 
     @Test(expected = IllegalStateException.class)
-    public final void TableProviderThrowsIllegalStateExceptionCallPutAfterClose() throws IOException {
+    public final void tableProviderThrowsIllegalStateExceptionCallPutAfterClose() throws IOException {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.close();
         test.createTable(TEST_TABLE_NAME1, TYPES);
     }
 
     @Test(expected = IllegalStateException.class)
-    public final void TableProviderThrowsIllegalStateExceptionCallGetAfterClose() throws IOException {
+    public final void tableProviderThrowsIllegalStateExceptionCallGetAfterClose() throws IOException {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.close();
         test.getTable(TEST_TABLE_NAME1);
     }
 
     @Test(expected = IllegalStateException.class)
-    public final void TableProviderThrowsIllegalStateExceptionCallRemoveAfterClose() throws IOException {
+    public final void tableProviderThrowsIllegalStateExceptionCallRemoveAfterClose() throws IOException {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.close();
         test.removeTable(TEST_TABLE_NAME1);
     }
 
     @Test(expected = IllegalStateException.class)
-    public final void TableProviderThrowsIllegalStateExceptionCallCreateForAfterClose() throws IOException {
+    public final void tableProviderThrowsIllegalStateExceptionCallCreateForAfterClose() throws IOException {
         TableHolder test = new TableHolder(testDirectory.toString());
         Table testTable = test.createTable(TEST_TABLE_NAME1, TYPES);
         test.close();
@@ -672,7 +675,7 @@ public class TableHolderTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public final void TableProviderThrowsIllegalStateExceptionCallCreateFor2AfterClose() throws IOException {
+    public final void tableProviderThrowsIllegalStateExceptionCallCreateFor2AfterClose() throws IOException {
         TableHolder test = new TableHolder(testDirectory.toString());
         Table testTable = test.createTable(TEST_TABLE_NAME1, TYPES);
         List<?> list = Arrays.asList(5);
@@ -681,14 +684,15 @@ public class TableHolderTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public final void TableProviderThrowsIllegalStateExceptionCallGetTableNamesAfterClose() throws IOException {
+    public final void tableProviderThrowsIllegalStateExceptionCallGetTableNamesAfterClose() throws IOException {
         TableHolder test = new TableHolder(testDirectory.toString());
         test.close();
         test.getTableNames();
     }
 
     @Test(expected = IllegalStateException.class)
-    public final void TableProviderThrowsIllegalStateExceptionCallDeserializeAfterClose() throws IOException, ParseException {
+    public final void tableProviderThrowsIllegalStateExceptionCallDeserializeAfterClose()
+            throws IOException, ParseException {
         TableHolder test = new TableHolder(testDirectory.toString());
         Table testTable = test.createTable(TEST_TABLE_NAME1, TYPES);
         String s = "string";
@@ -697,7 +701,7 @@ public class TableHolderTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public final void TableProviderThrowsIllegalStateExceptionCallSerializeAfterClose() throws IOException {
+    public final void tableProviderThrowsIllegalStateExceptionCallSerializeAfterClose() throws IOException {
         TableHolder test = new TableHolder(testDirectory.toString());
         Table testTable = test.createTable(TEST_TABLE_NAME1, TYPES);
         Storeable testValue1 = new Record(TYPES);
@@ -707,7 +711,7 @@ public class TableHolderTest {
     }
 
     @Test
-    public final void TableProviderCloseAllCreatedTables() throws IOException {
+    public final void tableProviderCloseAllCreatedTables() throws IOException {
         TableHolder test = new TableHolder(testDirectory.toString());
         Table testTable1 = test.createTable(TEST_TABLE_NAME1, TYPES);
         Table testTable2 = test.createTable(TEST_TABLE_NAME2, TYPES);

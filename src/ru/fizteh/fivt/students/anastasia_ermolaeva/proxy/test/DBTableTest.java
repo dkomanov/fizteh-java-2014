@@ -27,16 +27,16 @@ import static org.junit.Assert.*;
 public class DBTableTest {
 
     private Path testDirectory;
-    private static String TABLE_NAME = "Таблица1";
-    private static String TEST_KEY1 = "ключ1";
-    private static String TEST_KEY2 = "ключ2";
+    private static final String TABLE_NAME = "Таблица1";
+    private static final String TEST_KEY1 = "ключ1";
+    private static final String TEST_KEY2 = "ключ2";
 
-    private static int DIR_AMOUNT = 16;
-    private static int FILES_AMOUNT = 16;
-    private static List<Class<?>> TYPES = Arrays.asList(Integer.class);
+    private static final int DIR_AMOUNT = 16;
+    private static final int FILES_AMOUNT = 16;
+    private static final List<Class<?>> TYPES = Arrays.asList(Integer.class);
 
-    private static Storeable TEST_VALUE1 = new Record(TYPES);
-    private static Storeable TEST_VALUE2 = new Record(TYPES);
+    private static Storeable testValue1 = new Record(TYPES);
+    private static Storeable testValue2 = new Record(TYPES);
 
     private Table test;
 
@@ -47,8 +47,8 @@ public class DBTableTest {
     public void setUp() throws Exception {
         testDirectory = tempFolder.newFolder().toPath();
         TableProvider provider = new TableHolder(testDirectory.toString());
-        TEST_VALUE1.setColumnAt(0, 1);
-        TEST_VALUE2.setColumnAt(0, 5);
+        testValue1.setColumnAt(0, 1);
+        testValue2.setColumnAt(0, 5);
         test = provider.createTable(TABLE_NAME, TYPES);
     }
 
@@ -78,29 +78,29 @@ public class DBTableTest {
     public final void testGetCalledForNonComittedKey()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.get(TEST_KEY1).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.get(TEST_KEY1).getIntAt(0));
     }
 
     @Test
     public final void testGetCalledForComittedKey()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
         test.commit();
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.get(TEST_KEY1).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.get(TEST_KEY1).getIntAt(0));
     }
 
     @Test
     public final void testGetCalledForDeletedKeyBeforeCommit()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
 
         assertNull(test.get(TEST_KEY1));
     }
@@ -111,7 +111,7 @@ public class DBTableTest {
     @Test(expected = IllegalArgumentException.class)
     public final void testPutThrowsIllegalArgumentExceptionCalledForNullKey()
             throws IOException {
-        test.put(null, TEST_VALUE1);
+        test.put(null, testValue1);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -124,15 +124,15 @@ public class DBTableTest {
     public final void testPutReturnsNullIfKeyHasNotBeenWrittenYet()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
     }
 
     @Test
     public final void testPutReturnsOldValueIfKeyExists()
             throws IOException {
-        test.put(TEST_KEY1, TEST_VALUE1);
+        test.put(TEST_KEY1, testValue1);
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.put(TEST_KEY1, TEST_VALUE2).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.put(TEST_KEY1, testValue2).getIntAt(0));
     }
 
     /*
@@ -156,9 +156,9 @@ public class DBTableTest {
     public final void testRemoveCalledForDeletedKeyBeforeCommit()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
 
         assertNull(test.remove(TEST_KEY1));
     }
@@ -167,9 +167,9 @@ public class DBTableTest {
     public final void testRemoveCalledForDeletedKeyAfterCommit()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
 
         test.commit();
 
@@ -184,7 +184,7 @@ public class DBTableTest {
     public final void testCommitCreatesRealFileOnTheDisk()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
         test.commit();
         String subdirectoryName = Math.abs(TEST_KEY1.getBytes(Utility.ENCODING)[0]
@@ -203,26 +203,26 @@ public class DBTableTest {
     public final void testCommitOverwritesCommitedKey()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
         test.commit();
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.put(TEST_KEY1, TEST_VALUE2).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.put(TEST_KEY1, testValue2).getIntAt(0));
 
         test.commit();
 
-        assertEquals(TEST_VALUE2.getIntAt(0), test.get(TEST_KEY1).getIntAt(0));
+        assertEquals(testValue2.getIntAt(0), test.get(TEST_KEY1).getIntAt(0));
     }
 
     @Test
     public final void testCommitRemovesExistentKeyAfterCommit()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
         test.commit();
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
 
         test.commit();
 
@@ -233,11 +233,11 @@ public class DBTableTest {
     public final void testCommitEmptiedAfterLoadingTable()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
         test.commit();
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.remove(TEST_KEY1).getIntAt(0));
 
         test.commit();
         String subdirectoryName = Math.abs(TEST_KEY1.getBytes(Utility.ENCODING)[0]
@@ -256,7 +256,7 @@ public class DBTableTest {
     public final void testCommitReturnsNonZeroChangesPuttingNewRecord()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
         assertEquals(1, test.commit());
     }
@@ -265,9 +265,9 @@ public class DBTableTest {
     public final void testCommitReturnsNotZeroChangesRewriting()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
-        assertEquals(TEST_VALUE1.getIntAt(0), test.put(TEST_KEY1, TEST_VALUE2).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), test.put(TEST_KEY1, testValue2).getIntAt(0));
 
         assertEquals(1, test.commit());
     }
@@ -276,7 +276,7 @@ public class DBTableTest {
     public final void testCommitNoChanges()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
         assertEquals(1, test.commit());
 
@@ -292,7 +292,7 @@ public class DBTableTest {
 
         assertEquals(0, test.size());
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
         assertEquals(1, test.size());
 
@@ -307,7 +307,7 @@ public class DBTableTest {
     public final void testRollbackNoChanges()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
         test.rollback();
 
@@ -323,11 +323,11 @@ public class DBTableTest {
     public final void testSizeCalledForNonEmptyNonCommitedTable()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
-        assertNull(test.put(TEST_KEY2, TEST_VALUE2));
+        assertNull(test.put(TEST_KEY2, testValue2));
 
-        assertEquals(TEST_VALUE2.getIntAt(0), test.remove(TEST_KEY2).getIntAt(0));
+        assertEquals(testValue2.getIntAt(0), test.remove(TEST_KEY2).getIntAt(0));
 
         assertEquals(1, test.size());
     }
@@ -336,13 +336,13 @@ public class DBTableTest {
     public final void testSizeCalledForNonEmptyCommitedTable()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
-        assertNull(test.put(TEST_KEY2, TEST_VALUE2));
+        assertNull(test.put(TEST_KEY2, testValue2));
 
         test.commit();
 
-        assertEquals(TEST_VALUE2.getIntAt(0), test.remove(TEST_KEY2).getIntAt(0));
+        assertEquals(testValue2.getIntAt(0), test.remove(TEST_KEY2).getIntAt(0));
 
         assertEquals(1, test.size());
     }
@@ -373,9 +373,9 @@ public class DBTableTest {
     public final void testListCalledForNonEmptyNewTable()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
-        assertNull(test.put(TEST_KEY2, TEST_VALUE2));
+        assertNull(test.put(TEST_KEY2, testValue2));
 
         Set<String> expectedKeySet = new HashSet<>();
         expectedKeySet.add(TEST_KEY1);
@@ -390,13 +390,13 @@ public class DBTableTest {
     public final void testListCalledForNonEmptyCommitedTable()
             throws IOException {
 
-        assertNull(test.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(test.put(TEST_KEY1, testValue1));
 
-        assertNull(test.put(TEST_KEY2, TEST_VALUE2));
+        assertNull(test.put(TEST_KEY2, testValue2));
 
         test.commit();
 
-        assertEquals(TEST_VALUE2.getIntAt(0), test.remove(TEST_KEY2).getIntAt(0));
+        assertEquals(testValue2.getIntAt(0), test.remove(TEST_KEY2).getIntAt(0));
 
         Set<String> expectedKeySet = new HashSet<>();
         expectedKeySet.add(TEST_KEY1);
@@ -433,61 +433,61 @@ public class DBTableTest {
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallPutAfterClose() {
-        ((DBTable)test).close();
-        test.put(TEST_KEY1, TEST_VALUE1);
+        ((DBTable) test).close();
+        test.put(TEST_KEY1, testValue1);
     }
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallGetAfterClose() {
-        ((DBTable)test).close();
+        ((DBTable) test).close();
         test.get(TEST_KEY1);
     }
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallRemoveAfterClose() {
-        ((DBTable)test).close();
+        ((DBTable) test).close();
         test.remove(TEST_KEY1);
     }
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallSizeAfterClose() {
-        ((DBTable)test).close();
+        ((DBTable) test).close();
         test.size();
     }
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallListAfterClose() {
-        ((DBTable)test).close();
+        ((DBTable) test).close();
         test.list();
     }
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallCommitAfterClose() throws IOException {
-        ((DBTable)test).close();
+        ((DBTable) test).close();
         test.commit();
     }
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallRollbackAfterClose() {
-        ((DBTable)test).close();
+        ((DBTable) test).close();
         test.rollback();
     }
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallUncommitedChangesAfterClose() {
-        ((DBTable)test).close();
+        ((DBTable) test).close();
         test.getNumberOfUncommittedChanges();
     }
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallGetColumnTypeAfterClose() {
-        ((DBTable)test).close();
+        ((DBTable) test).close();
         test.getColumnType(0);
     }
 
     @Test(expected = IllegalStateException.class)
     public final void testTableThrowsIllegalStateExceptionCallGetColumnsContAfterClose() {
-        ((DBTable)test).close();
+        ((DBTable) test).close();
         test.getColumnsCount();
     }
 

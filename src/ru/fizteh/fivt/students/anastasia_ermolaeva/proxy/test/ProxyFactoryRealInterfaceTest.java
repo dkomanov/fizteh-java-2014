@@ -34,14 +34,14 @@ public class ProxyFactoryRealInterfaceTest {
     private static StringWriter writer = new StringWriter();
 
     private Path testDirectory;
-    private static String TABLE_NAME = "Таблица1";
-    private static Path TABLE_DIRECTORY_PATH;
-    private static Path TABLE_SIGNATURE_PATH;
-    private static String TEST_KEY1 = "ключ1";
+    private static final String TABLE_NAME = "Таблица1";
+    private static Path tableDirectoryPath;
+    private static Path tableSignaturePath;
+    private static final String TEST_KEY1 = "ключ1";
 
     private static List<Class<?>> types;
-    private static Storeable TEST_VALUE1;
-    private static Storeable TEST_VALUE2;
+    private static Storeable testValue1;
+    private static Storeable testValue2;
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -50,24 +50,24 @@ public class ProxyFactoryRealInterfaceTest {
     public void setUp() throws Exception {
         types = new ArrayList<>();
         types.add(Integer.class);
-        TEST_VALUE1 = new Record(types);
-        TEST_VALUE1.setColumnAt(0, 1);
-        TEST_VALUE2 = new Record(types);
-        TEST_VALUE2.setColumnAt(0, 5);
+        testValue1 = new Record(types);
+        testValue1.setColumnAt(0, 1);
+        testValue2 = new Record(types);
+        testValue2.setColumnAt(0, 5);
 
         testDirectory = tempFolder.newFolder().toPath();
-        TABLE_DIRECTORY_PATH = testDirectory.resolve(TABLE_NAME);
-        TABLE_SIGNATURE_PATH = TABLE_DIRECTORY_PATH.resolve(Utility.TABLE_SIGNATURE);
-        Files.createDirectory(TABLE_DIRECTORY_PATH);
-        Files.createFile(TABLE_SIGNATURE_PATH);
-        try (RandomAccessFile writeSig = new RandomAccessFile(TABLE_SIGNATURE_PATH.toString(), "rw")) {
-            String s1 = Utility.wrappersToPrimitive.get(Integer.class);
+        tableDirectoryPath = testDirectory.resolve(TABLE_NAME);
+        tableSignaturePath = tableDirectoryPath.resolve(Utility.TABLE_SIGNATURE);
+        Files.createDirectory(tableDirectoryPath);
+        Files.createFile(tableSignaturePath);
+        try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
+            String s1 = Utility.WRAPPERS_TO_PRIMITIVE.get(Integer.class);
             writeSig.write(s1.getBytes(Utility.ENCODING));
         }
-        testProvider = (TableProvider)proxyFactory.wrap(writer,
+        testProvider = (TableProvider) proxyFactory.wrap(writer,
                 new TableHolder(testDirectory.toString()), TableProvider.class);
 
-        testTable = (Table)proxyFactory.wrap(writer,
+        testTable = (Table) proxyFactory.wrap(writer,
                 new DBTable(testDirectory, TABLE_NAME, new HashMap<>(), types, testProvider), Table.class);
     }
 
@@ -89,7 +89,7 @@ public class ProxyFactoryRealInterfaceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public final void testGetTableThrowsExceptionCalledForNullTableName() throws IOException {
-        try{
+        try {
             testProvider.getTable(null);
         } finally {
             System.out.println(writer.toString());
@@ -100,7 +100,7 @@ public class ProxyFactoryRealInterfaceTest {
     public final void testSizeCalledForNonEmptyNonCommitedTable()
             throws IOException {
 
-        assertNull(testTable.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(testTable.put(TEST_KEY1, testValue1));
 
         assertEquals(1, testTable.size());
 
@@ -135,9 +135,9 @@ public class ProxyFactoryRealInterfaceTest {
     public final void testGetCalledForDeletedKeyBeforeCommit()
             throws IOException {
 
-        assertNull(testTable.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(testTable.put(TEST_KEY1, testValue1));
 
-        assertEquals(TEST_VALUE1.getIntAt(0), testTable.remove(TEST_KEY1).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), testTable.remove(TEST_KEY1).getIntAt(0));
 
         assertNull(testTable.get(TEST_KEY1));
 
@@ -145,12 +145,11 @@ public class ProxyFactoryRealInterfaceTest {
     }
 
 
-
     @Test
     public final void testPutReturnsNullIfKeyHasNotBeenWrittenYet()
             throws IOException {
 
-        assertNull(testTable.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(testTable.put(TEST_KEY1, testValue1));
 
         System.out.println(writer.toString());
     }
@@ -158,20 +157,19 @@ public class ProxyFactoryRealInterfaceTest {
     @Test
     public final void testPutReturnsOldValueIfKeyExists()
             throws IOException {
-        testTable.put(TEST_KEY1, TEST_VALUE1);
+        testTable.put(TEST_KEY1, testValue1);
 
-        assertEquals(TEST_VALUE1.getIntAt(0), testTable.put(TEST_KEY1, TEST_VALUE2).getIntAt(0));
+        assertEquals(testValue1.getIntAt(0), testTable.put(TEST_KEY1, testValue2).getIntAt(0));
 
         System.out.println(writer.toString());
     }
-
 
 
     @Test
     public final void testCommitReturnsNonZeroChangesPuttingNewRecord()
             throws IOException {
 
-        assertNull(testTable.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(testTable.put(TEST_KEY1, testValue1));
 
         assertEquals(1, testTable.commit());
 
@@ -183,7 +181,7 @@ public class ProxyFactoryRealInterfaceTest {
     public final void testRollbackNoChanges()
             throws IOException {
 
-        assertNull(testTable.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(testTable.put(TEST_KEY1, testValue1));
 
         testTable.rollback();
 
@@ -223,7 +221,7 @@ public class ProxyFactoryRealInterfaceTest {
     public final void testListCalledForNonEmptyNewTable()
             throws IOException {
 
-        assertNull(testTable.put(TEST_KEY1, TEST_VALUE1));
+        assertNull(testTable.put(TEST_KEY1, testValue1));
 
         Set<String> expectedKeySet = new HashSet<>();
         expectedKeySet.add(TEST_KEY1);

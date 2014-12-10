@@ -22,7 +22,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
-
 public class DBTable implements Table, AutoCloseable {
     public static final String DIR_SUFFIX = ".dir";
     public static final String FILE_SUFFIX = ".dat";
@@ -34,7 +33,7 @@ public class DBTable implements Table, AutoCloseable {
     public static final int FILES_AMOUNT = 16;
     private TableProvider tableProvider;
 
-    private ThreadLocal<Integer> size = ThreadLocal.withInitial(()->0);
+    private ThreadLocal<Integer> size = ThreadLocal.withInitial(() -> 0);
     /*
     * List of column types.
      */
@@ -48,7 +47,7 @@ public class DBTable implements Table, AutoCloseable {
     */
     private final ThreadLocal<Map<String, Storeable>> sessionChanges =
             ThreadLocal.withInitial(HashMap::new);
-    private ReadWriteLock tableOperationsLock =  new ReentrantReadWriteLock(true);
+    private ReadWriteLock tableOperationsLock = new ReentrantReadWriteLock(true);
     /*
     * Path to table's directory.
     */
@@ -59,7 +58,7 @@ public class DBTable implements Table, AutoCloseable {
     private String name;
 
     private boolean valid = true;
-    private ReadWriteLock validLock =  new ReentrantReadWriteLock(true);
+    private ReadWriteLock validLock = new ReentrantReadWriteLock(true);
 
     public DBTable(final Path rootPath, final String name, final TableProvider provider) throws IOException {
         this(rootPath, name, new HashMap<>(), new ArrayList<>(), provider);
@@ -76,6 +75,7 @@ public class DBTable implements Table, AutoCloseable {
         signature = columnTypes;
         size.set(allRecords.size());
     }
+
     private void readExistingTableFromDisk() throws IOException {
         Utility.checkTableDirectoryContent(dbPath);
         Utility.fillSignature(dbPath, signature);
@@ -109,7 +109,7 @@ public class DBTable implements Table, AutoCloseable {
                             k = fileName.indexOf('.');
                             if ((k < 0) || !(fileName.endsWith(FILE_SUFFIX))) {
                                 throw new DatabaseFormatException(FILE_TYPE + fileName
-                                                + Utility.NOT_EXIST_MSG);
+                                        + Utility.NOT_EXIST_MSG);
                             }
                             int nFile;
                             try {
@@ -120,12 +120,15 @@ public class DBTable implements Table, AutoCloseable {
                                         + Utility.NOT_EXIST_MSG, n);
                             }
                             Utility.checkBoundsForFileNames(nFile, FILE_SUFFIX, FILE_TYPE);
-                            try (RandomAccessFile dbFile = new RandomAccessFile(file.toAbsolutePath().toString(), "r")) {
+                            try (RandomAccessFile dbFile =
+                                         new RandomAccessFile(file.toAbsolutePath().toString(), "r")) {
                                 if (dbFile.length() > 0) {
                                     while (dbFile.getFilePointer() < dbFile.length()) {
                                         String key = Utility.readUtil(dbFile, fileName);
-                                        int expectedNDirectory = Math.abs(key.getBytes(Utility.ENCODING)[0] % DIR_AMOUNT);
-                                        int expectedNFile = Math.abs((key.getBytes(Utility.ENCODING)[0] / DIR_AMOUNT) % FILES_AMOUNT);
+                                        int expectedNDirectory = Math.abs(key.getBytes(Utility.ENCODING)[0]
+                                                % DIR_AMOUNT);
+                                        int expectedNFile = Math.abs((key.getBytes(Utility.ENCODING)[0]
+                                                / DIR_AMOUNT) % FILES_AMOUNT);
                                         String value = Utility.readUtil(dbFile, fileName);
                                         if (expectedNDirectory == nDirectory && expectedNFile == nFile) {
                                             allRecords.put(key, tableProvider.deserialize(this, value));
@@ -418,6 +421,7 @@ public class DBTable implements Table, AutoCloseable {
         sessionChanges.get().clear();
         return numberOfChanges;
     }
+
     /**
      * Возвращает количество изменений, ожидающих фиксации.
      *
@@ -533,7 +537,8 @@ public class DBTable implements Table, AutoCloseable {
     }
 
     public void checkIfValid() {
-        if (!valid)
+        if (!valid) {
             throw new IllegalStateException("Table " + name + " was closed\n");
+        }
     }
 }

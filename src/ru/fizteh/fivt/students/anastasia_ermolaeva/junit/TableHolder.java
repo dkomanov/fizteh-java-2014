@@ -85,7 +85,7 @@ public class TableHolder implements TableProvider {
                 tableMap.put(tableName, newTable);
                 return newTable;
             } catch (IOException e) {
-                    throw new DatabaseIOException("Can't create table directory");
+                throw new DatabaseIOException("Can't create table directory");
             }
         }
     }

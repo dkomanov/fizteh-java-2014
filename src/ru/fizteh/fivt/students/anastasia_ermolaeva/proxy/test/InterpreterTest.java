@@ -30,8 +30,8 @@ public class InterpreterTest {
     public void setUp() {
         outputStream = new ByteArrayOutputStream();
         printStream = new PrintStream(outputStream);
-        testConsumer = (object, arguments)-> printStream.println(testOutput);
-        emptyConsumer = (object, arguments)->{};
+        testConsumer = (object, arguments) -> printStream.println(testOutput);
+        emptyConsumer = (object, arguments) -> {};
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -41,7 +41,7 @@ public class InterpreterTest {
 
     @Test
     public void testRunValidUserMode() {
-        Interpreter test = new Interpreter(new Command[] {
+        Interpreter test = new Interpreter(new Command[]{
                 new DatabaseCommand(null, "command", 1, testConsumer)},
                 new ByteArrayInputStream(
                         (testCommand + newLine).getBytes()), printStream);

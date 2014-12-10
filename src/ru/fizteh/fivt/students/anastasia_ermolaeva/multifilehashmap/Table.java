@@ -8,6 +8,7 @@ import java.util.*;
 
 import ru.fizteh.fivt.students.anastasia_ermolaeva.
         multifilehashmap.util.ExitException;
+
 public class Table implements Map<String, String>, AutoCloseable {
     static final int DIR_AMOUNT = 16;
     static final int FILES_AMOUNT = 16;
@@ -19,10 +20,10 @@ public class Table implements Map<String, String>, AutoCloseable {
     /* 
     * Path to root directory.
     */
-    private Path rootPath; 
+    private Path rootPath;
     private String name;
 
-    public Table(final Path rootPath, final String name)  {
+    public Table(final Path rootPath, final String name) {
         this.rootPath = rootPath;
         String path = rootPath.toAbsolutePath().toString()
                 + File.separator + name;
@@ -31,6 +32,7 @@ public class Table implements Map<String, String>, AutoCloseable {
         this.allRecords = new HashMap<>();
         create();
     }
+
     public Table(final Path rootPath, final String name, Map<String, String> records) {
         this.rootPath = rootPath;
         String path = rootPath.toAbsolutePath().toString()
@@ -39,6 +41,7 @@ public class Table implements Map<String, String>, AutoCloseable {
         this.name = name;
         this.allRecords = Collections.synchronizedMap(records);
     }
+
     private void create() {
         try {
             read();
@@ -50,9 +53,11 @@ public class Table implements Map<String, String>, AutoCloseable {
     public static void main() {
 
     }
+
     public Map<String, String> getAllRecords() {
         return allRecords;
     }
+
     private String readUtil(final RandomAccessFile dbFile) throws ExitException {
         try {
             int wordLength = dbFile.readInt();
@@ -64,13 +69,14 @@ public class Table implements Map<String, String>, AutoCloseable {
             throw new ExitException(1);
         }
     }
+
     private void read() throws ExitException {
-        File pathDirectory =  dbPath.toFile();
+        File pathDirectory = dbPath.toFile();
         if (pathDirectory.list().length == 0) {
             return;
         }
         File[] tableDirectories = pathDirectory.listFiles();
-        for (File t: tableDirectories) {
+        for (File t : tableDirectories) {
             /*
             * Checking subdirectories.
             */
@@ -80,7 +86,7 @@ public class Table implements Map<String, String>, AutoCloseable {
                 throw new ExitException(1);
             }
         }
-        for (File directory: tableDirectories) {
+        for (File directory : tableDirectories) {
             File[] directoryFiles = directory.listFiles();
             int k = directory.getName().indexOf('.');
             if ((k < 0) || !(directory.getName().substring(k).equals(".dir"))) {
@@ -144,14 +150,14 @@ public class Table implements Map<String, String>, AutoCloseable {
         }
     }
 
-    private void write() throws  ExitException {
+    private void write() throws ExitException {
         Map<String, String>[][] db = new Map[DIR_AMOUNT][FILES_AMOUNT];
         for (int i = 0; i < DIR_AMOUNT; i++) {
             for (int j = 0; j < FILES_AMOUNT; j++) {
                 db[i][j] = new HashMap<>();
             }
         }
-        for (Entry<String, String> entry: allRecords.entrySet()) {
+        for (Entry<String, String> entry : allRecords.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             try {
@@ -180,9 +186,9 @@ public class Table implements Map<String, String>, AutoCloseable {
                         }
                     }
                     String newFilePath = directory.getAbsolutePath()
-                                + File.separator
-                                + nFile.toString()
-                                + ".dat";
+                            + File.separator
+                            + nFile.toString()
+                            + ".dat";
                     File file = new File(newFilePath);
                     try {
                         file.createNewFile();
@@ -191,10 +197,10 @@ public class Table implements Map<String, String>, AutoCloseable {
                         throw new ExitException(1);
                     }
                     try (RandomAccessFile dbFile = new
-                                RandomAccessFile(file, "rw")) {
+                            RandomAccessFile(file, "rw")) {
                         dbFile.setLength(0);
                         for (Entry<String, String> entry
-                                    : db[i][j].entrySet()) {
+                                : db[i][j].entrySet()) {
                             String key = entry.getKey();
                             String value = entry.getValue();
                             writeUtil(key, dbFile);
@@ -202,9 +208,9 @@ public class Table implements Map<String, String>, AutoCloseable {
                         }
                         dbFile.close();
                     } catch (IOException e) {
-                            System.err.println(e);
-                            throw new ExitException(1);
-                        }
+                        System.err.println(e);
+                        throw new ExitException(1);
+                    }
                 } else {
                 /*
                 * Deleting empty files and directories.
@@ -212,9 +218,9 @@ public class Table implements Map<String, String>, AutoCloseable {
                     Integer nDirectory = i;
                     Integer nFile = j;
                     String newPath = dbPath.toAbsolutePath().toString()
-                                + File.separator
-                                + nDirectory.toString()
-                                + ".dir";
+                            + File.separator
+                            + nDirectory.toString()
+                            + ".dir";
                     File directory = new File(newPath);
                     if (directory.exists()) {
                         String newFilePath = directory.getAbsolutePath()
@@ -246,6 +252,7 @@ public class Table implements Map<String, String>, AutoCloseable {
             }
         }
     }
+
     public final void close() throws ExitException {
         write();
     }
@@ -260,6 +267,7 @@ public class Table implements Map<String, String>, AutoCloseable {
             throw new ExitException(1);
         }
     }
+
     @Override
     public int size() {
         return allRecords.size();

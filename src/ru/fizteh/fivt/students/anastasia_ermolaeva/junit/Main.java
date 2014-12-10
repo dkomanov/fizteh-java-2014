@@ -31,10 +31,10 @@ public class Main {
     }
 
     public static void start(DBState tableState, final String[] args) throws ExitException {
-        new Interpreter(tableState, new Command[] {
+        new Interpreter(tableState, new Command[]{
                 new Command("create", 2, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableProvider provider = (TableProvider) state.getTableHolder();
                     String tableName = arguments[1];
                     if (provider.createTable(tableName) != null) {
                         System.out.println("created");
@@ -43,8 +43,8 @@ public class Main {
                     }
                 }),
                 new Command("drop", 2, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableProvider provider = (TableProvider) state.getTableHolder();
                     String currentTableName = state.getCurrentTableName();
                     String tableName = arguments[1];
                     if (currentTableName.equals(tableName)) {
@@ -58,8 +58,8 @@ public class Main {
                     }
                 }),
                 new Command("use", 2, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableHolder holder = (TableHolder)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableHolder holder = (TableHolder) state.getTableHolder();
                     String tableName = arguments[1];
                     Table newCurrentTable = holder.getTable(tableName);
                     String currentTableName = state.getCurrentTableName();
@@ -82,8 +82,8 @@ public class Main {
                     }
                 }),
                 new Command("show tables", 1, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableHolder holder = (TableHolder)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableHolder holder = (TableHolder) state.getTableHolder();
                     Map<String, DBTable> tables = holder.getTableMap();
                     System.out.println("table_name row_count");
                     for (Map.Entry<String, DBTable> entry : tables.entrySet()) {
@@ -92,8 +92,8 @@ public class Main {
                     }
                 }),
                 new Command("put", 3, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableProvider provider = (TableProvider) state.getTableHolder();
                     String currentTableName = state.getCurrentTableName();
                     if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
@@ -109,8 +109,8 @@ public class Main {
                     }
                 }),
                 new Command("get", 2, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableProvider provider = (TableProvider) state.getTableHolder();
                     String currentTableName = state.getCurrentTableName();
                     if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
@@ -125,8 +125,8 @@ public class Main {
                     }
                 }),
                 new Command("remove", 2, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableProvider provider = (TableProvider) state.getTableHolder();
                     String currentTableName = state.getCurrentTableName();
                     if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
@@ -140,8 +140,8 @@ public class Main {
                     }
                 }),
                 new Command("list", 1, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableProvider provider = (TableProvider) state.getTableHolder();
                     String currentTableName = state.getCurrentTableName();
                     if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
@@ -151,8 +151,8 @@ public class Main {
                     }
                 }),
                 new Command("size", 1, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableProvider provider = (TableProvider) state.getTableHolder();
                     String currentTableName = state.getCurrentTableName();
                     if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
@@ -160,8 +160,8 @@ public class Main {
                     }
                 }),
                 new Command("commit", 1, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableProvider provider = (TableProvider) state.getTableHolder();
                     String currentTableName = state.getCurrentTableName();
                     if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
@@ -169,8 +169,8 @@ public class Main {
                     }
                 }),
                 new Command("rollback", 1, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    TableProvider provider = (TableProvider)state.getTableHolder();
+                    DBState state = (DBState) tableS;
+                    TableProvider provider = (TableProvider) state.getTableHolder();
                     String currentTableName = state.getCurrentTableName();
                     if (state.checkCurrentTable()) {
                         Table currentTable = provider.getTable(currentTableName);
@@ -178,8 +178,8 @@ public class Main {
                     }
                 }),
                 new Command("exit", 1, (Object tableS, String[] arguments) -> {
-                    DBState state = (DBState)tableS;
-                    ((TableHolder)state.getTableHolder()).close();
+                    DBState state = (DBState) tableS;
+                    ((TableHolder) state.getTableHolder()).close();
                     System.out.println("exit");
                     System.exit(0);
                 })

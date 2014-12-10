@@ -18,20 +18,20 @@ public class ProxyFactory implements LoggingProxyFactory {
     public ProxyFactory() {
     }
 
-    class LoggerInvocationHandler implements InvocationHandler {
+    static class LoggerInvocationHandler implements InvocationHandler {
         private final Object target;
         private final Writer loggerWriter;
-        private final String INVOKE = "invoke";
-        private final String TIMESTAMP = "timestamp";
-        private final String CLASS = "class";
-        private final String NAME = "name";
-        private final String ARGUMENTS = "arguments";
-        private final String ARGUMENT = "argument";
-        private final String THROWN = "thrown";
-        private final String RETURN = "return";
-        private final String LIST = "list";
-        private final String VALUE = "value";
-        private final String NULL = "null";
+        private static final String INVOKE = "invoke";
+        private static final String TIMESTAMP = "timestamp";
+        private static final String CLASS = "class";
+        private static final String NAME = "name";
+        private static final String ARGUMENTS = "arguments";
+        private static final String ARGUMENT = "argument";
+        private static final String THROWN = "thrown";
+        private static final String RETURN = "return";
+        private static final String LIST = "list";
+        private static final String VALUE = "value";
+        private static final String NULL = "null";
 
         LoggerInvocationHandler(Object target, Writer loggerWriter) {
             this.target = target;
@@ -46,6 +46,7 @@ public class ProxyFactory implements LoggingProxyFactory {
                 return false;
             }
         }
+
         private void writeIterable(Iterable iterable, XMLStreamWriter writer) throws XMLStreamException {
             Iterator iterator = iterable.iterator();
             if (!iterator.hasNext()) {
@@ -94,21 +95,21 @@ public class ProxyFactory implements LoggingProxyFactory {
                 if (args == null || args.length == 0) {
                     writer.writeEmptyElement(ARGUMENTS);
                 } else {
-                        writer.writeStartElement(ARGUMENTS);
-                        for (Object argument : args) {
-                            writer.writeStartElement(ARGUMENT);
-                            if (argument instanceof Iterable) {
-                                writeIterable((Iterable) argument, writer);
+                    writer.writeStartElement(ARGUMENTS);
+                    for (Object argument : args) {
+                        writer.writeStartElement(ARGUMENT);
+                        if (argument instanceof Iterable) {
+                            writeIterable((Iterable) argument, writer);
+                        } else {
+                            if (argument == null) {
+                                writer.writeEmptyElement(NULL);
                             } else {
-                                if (argument == null) {
-                                    writer.writeEmptyElement(NULL);
-                                } else {
-                                    writer.writeCharacters(argument.toString());
-                                }
+                                writer.writeCharacters(argument.toString());
                             }
-                            writer.writeEndElement();
                         }
                         writer.writeEndElement();
+                    }
+                    writer.writeEndElement();
                 }
                 try {
                     boolean isAccessible = method.isAccessible();
@@ -179,9 +180,8 @@ public class ProxyFactory implements LoggingProxyFactory {
     }
 
     private void checkInterface(Class<?> interfaceClass) {
-        if (!interfaceClass.isInterface())
+        if (!interfaceClass.isInterface()) {
             throw new IllegalArgumentException(interfaceClass + " is not an interface");
+        }
     }
-
-
 }

@@ -50,7 +50,7 @@ public class InterpreterTest {
             assertEquals(0, e.getStatus());
 
             assertEquals(test.PROMPT + testOutput + newLine + test.PROMPT,
-                   outputStream.toString());
+                    outputStream.toString());
         }
 
     }
@@ -109,11 +109,12 @@ public class InterpreterTest {
         } catch (ExitException e) {
 
             assertEquals("command: invalid number of arguments: 0 expected, 1 found."
-            + newLine, outputStream.toString());
+                    + newLine, outputStream.toString());
 
             assertNotEquals(0, e.getStatus());
         }
     }
+
     @Test
     public void testUserModePrintErrorMessageInOutStreamForCommandWithWrongNumberOfArguments() {
         Interpreter test = new Interpreter(null, new Command[]{
@@ -124,11 +125,12 @@ public class InterpreterTest {
         } catch (ExitException e) {
 
             assertEquals(test.PROMPT
-            + "command: invalid number of arguments: 0 expected, 1 found."
-            + newLine + test.PROMPT,
+                            + "command: invalid number of arguments: 0 expected, 1 found."
+                            + newLine + test.PROMPT,
                     outputStream.toString());
         }
     }
+
     @After
     public void tearDown() throws IOException {
         outputStream.close();

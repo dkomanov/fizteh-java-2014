@@ -26,6 +26,7 @@ public class TableHolderFactoryTest {
             Files.createDirectory(testDirectory);
         }
     }
+
     @Test(expected = IllegalArgumentException.class)
     public final void testFactoryThrowsExceptionCreatedNullTableHolder() {
         TableProviderFactory test = new TableHolderFactory();

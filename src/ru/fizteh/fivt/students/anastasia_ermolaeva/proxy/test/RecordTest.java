@@ -12,13 +12,13 @@ import static org.junit.Assert.*;
 
 public class RecordTest {
     private List<Class<?>> valuesTypes = new ArrayList<>();
-    private final int TEST_INT = 128;
-    private final long TEST_LONG = Long.MAX_VALUE;
-    private final byte TEST_BYTE = (byte) 100;
-    private final float TEST_FLOAT = (float) 5.5;
-    private final double TEST_DOUBLE = Double.MAX_VALUE;
-    private final boolean TEST_BOOLEAN = true;
-    private final String TEST_STRING = "string";
+    private static final int TEST_INT = 128;
+    private static final long TEST_LONG = Long.MAX_VALUE;
+    private static final byte TEST_BYTE = (byte) 100;
+    private static final float TEST_FLOAT = (float) 5.5;
+    private static final double TEST_DOUBLE = Double.MAX_VALUE;
+    private static final boolean TEST_BOOLEAN = true;
+    private static final String TEST_STRING = "string";
 
     /*
     * Tests on setter.
@@ -548,6 +548,7 @@ public class RecordTest {
         Storeable test = new Record(valuesTypes);
         test.getIntAt(1);
     }
+
     /*
     Test on toString.
      */

@@ -13,6 +13,7 @@ public final class Commands {
     private Commands() {
         //
     }
+
     static void main(final String[] args) {
     }
 
@@ -64,6 +65,7 @@ public final class Commands {
                     + ": cannot change directory: access denied");
         }
     }
+
     public static void mkdir(final String[] args) throws Exception {
         String command = "mkdir";
         if (args.length == 1) {
@@ -102,6 +104,7 @@ public final class Commands {
                     + args[1] + "': access denied");
         }
     }
+
     public static void pwd(final String[] args) throws Exception {
         String command = "pwd";
         if (args.length != 1) {
@@ -117,10 +120,10 @@ public final class Commands {
         }
     }
 
-    private static void rmutil(final File name)throws Exception {
+    private static void rmutil(final File name) throws Exception {
         String command = "rm";
         if (name.isDirectory()) {
-            for (File c: name.listFiles()) {
+            for (File c : name.listFiles()) {
                 rmutil(c);
             }
         }
@@ -130,17 +133,17 @@ public final class Commands {
                     + name.getName() + "'");
         }
     }
+
     public static void rm(final String[] args) throws Exception {
         String command = "rm";
         int index;
         boolean recursive;
         String file;
-        String [] idealCmd = {"rm", "-r", "file.txt"};
+        String[] idealCmd = {"rm", "-r", "file.txt"};
         int suitableAmount = idealCmd.length;
         if (args.length > suitableAmount) {
             throw new Exception(command + ": too much arguments");
-        } else
-        if (args.length == suitableAmount) {
+        } else if (args.length == suitableAmount) {
             if (args[1].equals("-r")) {
                 recursive = true;
                 file = args[2];
@@ -250,13 +253,14 @@ public final class Commands {
             }
         }
     }
+
     public static void cp(final String[] args) throws Exception {
         String command = "cp";
         boolean recursive;
         int index;
         String source;
         String destination;
-        String [] idealCmd = {"cp", "-r", "source", "destination"};
+        String[] idealCmd = {"cp", "-r", "source", "destination"};
         int suitAmount = idealCmd.length;
         if (args.length > suitAmount) {
             throw new Exception(command + ": too much arguments");
@@ -335,7 +339,7 @@ public final class Commands {
             throw new Exception(command
                     + ": cannot copy file '"
                     + args[index] + "' to '"
-                    + args[index  + 1]
+                    + args[index + 1]
                     + "': access denied");
         } catch (InvalidPathException e) {
             throw new Exception(command
@@ -350,7 +354,7 @@ public final class Commands {
         String command = "mv";
         String source;
         String destination;
-        String [] idealCmd = {"mv", "source", "destination"};
+        String[] idealCmd = {"mv", "source", "destination"};
         int suitAmount = idealCmd.length;
         if (args.length > suitAmount) {
             throw new Exception(command + ": too much arguments");
@@ -403,6 +407,7 @@ public final class Commands {
                     + args[2] + "': illegal character in name");
         }
     }
+
     public static void ls(final String[] args) throws Exception {
         String command = "ls";
         if (args.length != 1) {

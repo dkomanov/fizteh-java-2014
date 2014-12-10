@@ -88,7 +88,7 @@ public class TableHolder implements TableProvider {
      * Создаёт таблицу с указанным названием.
      * Создает новую таблицу. Совершает необходимые дисковые операции.
      *
-     * @param name   Название таблицы.
+     * @param name        Название таблицы.
      * @param columnTypes Типы колонок таблицы. Не может быть пустой.
      * @return Объект, представляющий таблицу. Если таблица с указанным именем существует, возвращает null.
      * @throws IllegalArgumentException Если название таблицы null или имеет недопустимое значение. Если список типов
@@ -112,7 +112,7 @@ public class TableHolder implements TableProvider {
 
             try (RandomAccessFile writeSig = new RandomAccessFile(tableSignaturePath.toString(), "rw")) {
                 for (Class type : columnTypes) {
-                    String s = Utility.wrappersToPrimitive.get(type) + " ";
+                    String s = Utility.WRAPPERS_TO_PRIMITIVE.get(type) + " ";
                     writeSig.write(s.getBytes(Utility.ENCODING));
                 }
             }

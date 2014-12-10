@@ -45,7 +45,7 @@ public class Utility {
     public static final String NULL_STRING = "null";
     public static final String BOOL_TRUE = "true";
     public static final String BOOL_FALSE = "false";
-    public static final String PARSE  = "parse";
+    public static final String PARSE = "parse";
     public static final String VALID_FORMAT = ", required: [type, ..., type]";
     public static final char VALUE_START_LIMITER = '[';
     public static final char VALUE_END_LIMITER = ']';
@@ -55,8 +55,8 @@ public class Utility {
 
 
     private static final String ILLEGAL_TABLE_NAME_PATTERN = ".*\\.|\\..*|.*(/|\\\\).*";
-    private static final Map<String, Class> validTypes = new HashMap<>();
-    public static final Map<Class, String> wrappersToPrimitive = new HashMap<>();
+    private static final Map<String, Class> VALID_TYPES = new HashMap<>();
+    public static final Map<Class, String> WRAPPERS_TO_PRIMITIVE = new HashMap<>();
 
     static {
         String[] primitiveNames = new String[]{"int", "long", "byte", "float", "double", "boolean", "String"};
@@ -64,8 +64,8 @@ public class Utility {
                 Boolean.class, String.class};
 
         for (int i = 0; i < primitiveNames.length; i++) {
-            validTypes.put(primitiveNames[i], classes[i]);
-            wrappersToPrimitive.put(classes[i], primitiveNames[i]);
+            VALID_TYPES.put(primitiveNames[i], classes[i]);
+            WRAPPERS_TO_PRIMITIVE.put(classes[i], primitiveNames[i]);
         }
     }
 
@@ -98,7 +98,7 @@ public class Utility {
 
     public static void checkDirectorySubdirs(Path directory) {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
-            for (Path subdirectory: stream) {
+            for (Path subdirectory : stream) {
                 if (!Files.isDirectory(subdirectory)) {
                     throw new DatabaseIOException(directory.getFileName() + NOT_DIRECTORY_MSG);
                 }
@@ -110,13 +110,14 @@ public class Utility {
 
     public static void checkDirectorySubdirectories(Path directory) throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
-            for (Path subdirectory: stream) {
+            for (Path subdirectory : stream) {
                 if (!Files.isDirectory(subdirectory)) {
                     throw new DatabaseFormatException(directory.getFileName() + NOT_DIRECTORY_MSG);
                 }
             }
         }
     }
+
     /*
     * Checks if the table directory contains
     * signature.tsv file(doesn't check content just its presence)
@@ -129,7 +130,7 @@ public class Utility {
         }
         boolean signatureExists = false;
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(tableDirectory)) {
-            for (Path directoryFile: stream) {
+            for (Path directoryFile : stream) {
                 if (!Files.isDirectory(directoryFile)) {
                     /*
                     * If we already found the signature file
@@ -172,8 +173,8 @@ public class Utility {
                     String[] typesNames = types.trim().split(Interpreter.PARAM_DELIMITER);
                     int i = 0;
                     for (String s : typesNames) {
-                        if (validTypes.containsKey(s)) {
-                            signature.add(i, validTypes.get(s));
+                        if (VALID_TYPES.containsKey(s)) {
+                            signature.add(i, VALID_TYPES.get(s));
                             i += 1;
                         } else {
                             throw new DatabaseFormatException(INVALID_SIGNATURE_MSG);
@@ -271,14 +272,14 @@ public class Utility {
             throw new IllegalArgumentException(INVALID_TYPES_MSG);
         }
         for (Class<?> columnType : columnTypes) {
-            if (!wrappersToPrimitive.containsKey(columnType)) {
+            if (!WRAPPERS_TO_PRIMITIVE.containsKey(columnType)) {
                 throw new IllegalArgumentException(INVALID_TYPES_MSG);
             }
         }
     }
 
     public static void checkIfObjectsNotNull(Object... objects) {
-        for (Object object: objects) {
+        for (Object object : objects) {
             if (object == null) {
                 throw new
                         IllegalArgumentException(NULL_MSG);
@@ -288,11 +289,11 @@ public class Utility {
 
     public static void checkBoundsForFileNames(int number, String suffix, String type) {
         if (!(number >= LOWER_BOUND && number < UPPER_BOUND)) {
-            throw new DatabaseFormatException(type +
-                    + number + suffix +
-                    NOT_EXIST_MSG);
+            throw new DatabaseFormatException(type
+                    + number + suffix + NOT_EXIST_MSG);
         }
     }
+
     /*
     * Get list of types for create command.
      */
@@ -300,8 +301,8 @@ public class Utility {
         List<Class<?>> result = new ArrayList<>();
         for (String s : list) {
             try {
-                if (validTypes.containsKey(s)) {
-                    result.add(validTypes.get(s));
+                if (VALID_TYPES.containsKey(s)) {
+                    result.add(VALID_TYPES.get(s));
                 } else {
                     result.add(Class.forName(s));
                 }
@@ -358,7 +359,7 @@ public class Utility {
     public static List<Object> formatStringValues(Table table, List<String> valuesList) throws ParseException {
         int i = 0;
         List<Object> formattedValues = new ArrayList<>();
-        for (String s: valuesList) {
+        for (String s : valuesList) {
             if (table.getColumnType(i).equals(String.class)) {
                 if (s.indexOf(STRING_LIMITER) == 0
                         && s.lastIndexOf(STRING_LIMITER) == s.length() - 1) {
@@ -390,7 +391,7 @@ public class Utility {
         List<String> storeableValues = new ArrayList<>();
         Method[] methods = value.getClass().getDeclaredMethods();
         Map<Class<?>, Method> getMethods = new HashMap<>();
-        for (Method method: methods) {
+        for (Method method : methods) {
             getMethods.put(method.getReturnType(), method);
         }
         for (int i = 0; i < tableColumnsAmount; i++) {
@@ -414,9 +415,11 @@ public class Utility {
         }
         return storeableValues;
     }
+
     private static String getIncompatibleTypesErrMessage(String currentValue, Class<?> required) {
-        return "wrong type (value " + currentValue + " can't be applied to " + wrappersToPrimitive.get(required) + ")";
+        return "wrong type (value " + currentValue + " can't be applied to " + WRAPPERS_TO_PRIMITIVE.get(required) + ")";
     }
+
     /*
     * Checks compatibility of column type and type of object destined for it.
     * Return formatted Object or throws ColumnFormatException if there are any mistakes.
@@ -462,7 +465,8 @@ public class Utility {
                         StringBuilder parseMethodName = new StringBuilder(PARSE);
                         parseMethodName.append(required.getSimpleName());
                         try {
-                            return required.getMethod(parseMethodName.toString(), String.class).invoke(null, currentValue);
+                            return required.getMethod(parseMethodName.toString(),
+                                    String.class).invoke(null, currentValue);
                         } catch (InvocationTargetException e) {
                             throw new
                                     ColumnFormatException(getIncompatibleTypesErrMessage(currentValue, required));

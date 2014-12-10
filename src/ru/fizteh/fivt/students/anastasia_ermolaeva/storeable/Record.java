@@ -21,7 +21,7 @@ public class Record implements Storeable {
     private <T> T getFormattedObjectAt(int columnIndex, Class<T> required) {
         Utility.checkColumnIndex(columnIndex, columnsAmount);
         Utility.checkCurrentColumnType(required, values.get(columnIndex));
-        return (T)(values.get(columnIndex));
+        return (T) (values.get(columnIndex));
     }
 
     /**

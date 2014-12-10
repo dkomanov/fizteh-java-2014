@@ -7,11 +7,12 @@ public final class Filemap {
     private Filemap() {
         //
     }
-    public static void main(final String[] args)throws Exception {
+
+    public static void main(final String[] args) throws Exception {
     }
 
     private static void commandHandler(final DbOperations db,
-            final String command, final boolean mode) throws ExitException {
+                                       final String command, final boolean mode) throws ExitException {
         String[] arguments = command.trim().split("\\s+");
         try {
             if (arguments.length > 0 && !arguments[0].isEmpty()) {
@@ -49,6 +50,7 @@ public final class Filemap {
             }
         }
     }
+
     public static void userMode(
             final DbOperations db) throws ExitException {
         db.create();
@@ -62,7 +64,7 @@ public final class Filemap {
                     System.exit(0);
                 }
                 String[] commands = line.trim().split(";");
-                for (String command:commands) {
+                for (String command : commands) {
                     commandHandler(db, command, true);
                 }
             }
@@ -70,25 +72,29 @@ public final class Filemap {
             throw new ExitException(-1);
         }
     }
+
     public static void batchMode(
             final DbOperations db, final String[] args) throws ExitException {
         db.create();
         StringBuilder cmd = new StringBuilder();
-        for (String arg: args) {
+        for (String arg : args) {
             cmd.append(arg);
             cmd.append(' ');
         }
         String[] commands = cmd.toString().trim().split(";");
-        for (String command:commands) {
+        for (String command : commands) {
             commandHandler(db, command, false);
         }
     }
 }
+
 class ExitException extends Exception {
     private final int status;
-    public  int getStatus() {
+
+    public int getStatus() {
         return status;
     }
+
     public ExitException(int exitStatus) {
         status = exitStatus;
     }

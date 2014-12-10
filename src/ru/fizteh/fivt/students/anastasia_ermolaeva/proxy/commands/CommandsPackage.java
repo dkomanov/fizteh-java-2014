@@ -16,7 +16,7 @@ public class CommandsPackage {
     public Command[] pack;
 
     public CommandsPackage(TableHolder tableHolder) {
-        pack = new Command[] {
+        pack = new Command[]{
                 new DatabaseCommand(tableHolder, "create", 3, (holder, arguments) -> {
                     String tableName = arguments[1];
                     String typesList = arguments[2].substring(1, arguments[2].length() - 1);
@@ -194,8 +194,9 @@ public class CommandsPackage {
                 ),
                 new DatabaseCommand(tableHolder, "exit", 1, (holder, arguments) -> {
                     try {
-                        if (holder.getActiveTable() != null)
+                        if (holder.getActiveTable() != null) {
                             holder.getActiveTable().commit();
+                        }
                     } catch (IOException io) {
                         System.err.println("Some i/o error occured " + io.getMessage());
                         System.exit(1);
