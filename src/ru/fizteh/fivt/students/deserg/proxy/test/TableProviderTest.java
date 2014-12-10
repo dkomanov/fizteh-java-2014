@@ -216,7 +216,7 @@ public class TableProviderTest {
     }
 
     @Test
-    public void testCreateFor() throws Exception{
+    public void testCreateFor() throws Exception {
 
         DbTable table = (DbTable) provider.createTable("table", signature);
         Storeable row = provider.createFor(table);

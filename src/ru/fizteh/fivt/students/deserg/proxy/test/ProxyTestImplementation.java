@@ -1,8 +1,7 @@
 package ru.fizteh.fivt.students.deserg.proxy.test;
 
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by deserg on 10.12.14.
@@ -27,25 +26,30 @@ public class ProxyTestImplementation implements ProxyTestInterface {
     }
 
     @Override
-    public Set<Object> methodReturnsIterable() {
+    public List<Object> methodReturnsIterable() {
 
-        Set<Object> set = new HashSet<>();
-        Set<String> anotherSet = new HashSet<>();
+        List<Object> list = new LinkedList<>();
 
-        set.add(1.5);
-        set.add("123321");
-        set.add(anotherSet);
-        set.add(set);
+        list.add(1.5);
+        list.add("123321");
 
-        anotherSet.add("key1");
-        anotherSet.add("key2");
-
-        return set;
+        return list;
     }
 
     @Override
     public void methodThrowsException() {
         throw new IllegalArgumentException("ProxyTestImplementation: methodThrowsException: thrown");
+    }
+
+    @Override
+    public List<Object> methodCyclicReturn() {
+
+        List<Object> list = new LinkedList<>();
+        list.add("Str1");
+        list.add(list);
+
+        return list;
+
     }
 
 

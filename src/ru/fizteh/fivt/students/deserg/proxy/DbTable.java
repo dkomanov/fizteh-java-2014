@@ -458,7 +458,6 @@ public class DbTable implements Table, AutoCloseable {
                     byte[] key = new byte[keyLen];
                     is.read(key, 0, keyLen);
 
-
                     int valLen = is.readInt();
                     if (is.available() < valLen) {
                         throw new MyIOException("Wrong value size");

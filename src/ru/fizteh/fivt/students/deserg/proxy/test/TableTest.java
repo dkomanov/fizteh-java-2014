@@ -145,7 +145,7 @@ public class TableTest {
 
 
     @Test
-    public void testGet() throws Exception{
+    public void testGet() throws Exception {
 
         DbTable table = (DbTable) provider.createTable("justTable", signature);
 
