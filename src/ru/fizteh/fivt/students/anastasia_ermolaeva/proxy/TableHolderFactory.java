@@ -27,9 +27,8 @@ public class TableHolderFactory implements TableProviderFactory, AutoCloseable {
      */
     @Override
     public TableProvider create(String path) throws IOException {
-        if (!valid) {
+        if (!valid)
             throw new IllegalStateException("Factory was closed\n");
-        }
         Utility.checkIfObjectsNotNull(path);
         TableHolder newTableHolder = new TableHolder(path);
         createdTableHolders.add(newTableHolder);

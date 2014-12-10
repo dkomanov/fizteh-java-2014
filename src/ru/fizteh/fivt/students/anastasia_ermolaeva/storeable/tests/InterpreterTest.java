@@ -134,5 +134,4 @@ public class InterpreterTest {
         outputStream.close();
         printStream.close();
     }
-
 }

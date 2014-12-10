@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+
     public static void main(final String[] args) {
         String rootDirectory = System.getProperty("fizteh.db.dir");
         if (rootDirectory == null) {
@@ -40,7 +41,7 @@ public class Main {
     }
 
     public static void start(DBState tableState, final String[] args) throws ExitException {
-        new Interpreter(tableState, new Command[] {
+        new Interpreter(tableState, new Command[]{
                 new ArgsListCommand("create", 3, (Object tableS, String[] arguments) -> {
                     DBState state = (DBState) tableS;
                     TableProvider provider = (TableProvider) state.getTableHolder();

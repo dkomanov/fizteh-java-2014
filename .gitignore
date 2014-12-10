@@ -22,16 +22,3 @@ jars
 
 .settings
 .checkstyle
-src/ru/fizteh/fivt/storage/strings/Table.java
-src/ru/fizteh/fivt/proxy/LoggingProxyFactory.java
-src/ru/fizteh/fivt/storage/strings/TableProvider.java
-src/ru/fizteh/fivt/storage/strings/TableProviderFactory.java
-src/ru/fizteh/fivt/storage/structured/ColumnFormatException.java
-src/ru/fizteh/fivt/storage/structured/Index.java
-src/ru/fizteh/fivt/storage/structured/IndexProvider.java
-src/ru/fizteh/fivt/storage/structured/RemoteTableProvider.java
-src/ru/fizteh/fivt/storage/structured/RemoteTableProviderFactory.java
-src/ru/fizteh/fivt/storage/structured/Storeable.java
-src/ru/fizteh/fivt/storage/structured/Table.java
-src/ru/fizteh/fivt/storage/structured/TableProvider.java
-src/ru/fizteh/fivt/storage/structured/TableProviderFactory.java
