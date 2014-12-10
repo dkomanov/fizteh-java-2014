@@ -48,7 +48,7 @@ public class MyTableProviderTest {
         }
         
         @Test
-        public void dirInDirTest()
+        public void creatingTableInsideDirTest()
                 throws IOException {
             dirPath.toFile().mkdir();
             dirPath.resolve(testTableName).toFile().mkdir();

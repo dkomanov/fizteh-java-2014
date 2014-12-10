@@ -14,6 +14,7 @@ public class MyTable implements Table{
     private Path path;
     private Map<String, String> filemap;
     private Map<String, String> buffermap;
+    private int changes;
 
     public MyTable(Path currentTablePath, String currentTable) {
         filemap = new HashMap<>();
@@ -23,14 +24,12 @@ public class MyTable implements Table{
         filemanager.readTable(this.path);
         this.filemap = filemanager.filemap;
         this.buffermap = this.filemap;
+        changes = 0;
     }
 
     @Override
-    public String getName() {
-        if (this.name != null) {
-            return name;
-        }
-        return null;
+    public String getName() { 
+            return name; 
     }
 
     @Override
@@ -39,21 +38,14 @@ public class MyTable implements Table{
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
-        if (val.equals(null)) {
-            return null;
-        } else {
-            return val;
-        }
+        return val;
     }
 
     @Override
     public String put(String key, String value) {
         String val = filemap.put(key, value);
-        if (val == null) {
-            return null;
-        } else {
-            return val;
-        }
+        changes++;
+        return val;
     }
 
     @Override
@@ -62,12 +54,8 @@ public class MyTable implements Table{
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
-        if (val.equals(null)) {
-            return null;
-        } else {
-            return val;
-        }
-        
+        changes++;
+        return val;
     }
 
     @Override
@@ -80,13 +68,14 @@ public class MyTable implements Table{
         FileManager filemanager = new FileManager();
         filemanager.filemap = this.filemap;
         filemanager.writeTable(path);
+        changes = 0;
         return 0;
     }
 
     @Override
-    public int rollback() {
+    public int rollback() {        
         this.filemap = this.buffermap;
-        return 0;
+        return this.unsavedChanges();
     }
 
     @Override
@@ -100,6 +89,6 @@ public class MyTable implements Table{
     }
 
     int unsavedChanges() {
-        return this.filemap.size() - this.buffermap.size();
+        return this.changes;
     }
 }

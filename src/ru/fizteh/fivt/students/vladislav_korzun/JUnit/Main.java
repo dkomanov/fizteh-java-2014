@@ -87,7 +87,7 @@ public class Main {
                                 }
                                 System.out.println(joined);
                             } else {
-                                System.out.println("no elememts");
+                                System.out.println("");
                             }
                         } else {
                             System.out.println("no table");
@@ -112,7 +112,7 @@ public class Main {
                         Table link = ((TableConnector) state).getUsedTable();
                         if (link != null) {
                             link.commit();
-                            System.out.println("succes");
+                            System.out.println("committed");
                         } else {
                             System.out.println("no table");
                         }
@@ -123,8 +123,8 @@ public class Main {
                     public void accept(Object state, String[] args) {
                         Table link = ((TableConnector) state).getUsedTable();
                         if (link != null) {
-                            link.rollback();
-                            System.out.println("succes");
+                            int rollbacked = link.rollback();
+                            System.out.println(rollbacked + "changes have rollbacked");
                         } else {
                             System.out.println("no table");
                         }
@@ -134,10 +134,10 @@ public class Main {
                     @Override
                     public void accept(Object state, String[] args) {
                         TableProvider manager = ((TableConnector) state).getManager();
-                        if (manager.createTable(args[0]) != null) {                            
+                        if (manager.createTable(args[0]) != null) {
                             System.out.println("created");
                         } else {
-                            System.out.println("no table");
+                            System.out.println(args[0] + "already exist");
                         }
                     }
                 }),
@@ -157,8 +157,7 @@ public class Main {
                                System.out.println("using " + args[0]);
                             }
                         } else {
-                            //throw new Exception(args[0] + "not exist");
-                            System.out.println("no table");
+                            System.out.println(args[0] + "not exist");
                         } 
                     }
                 }),
@@ -175,7 +174,7 @@ public class Main {
                             manager.removeTable(args[0]);
                             System.out.println("dropped");
                         } catch (IllegalStateException e) {
-                            System.out.println("tablename not exists");
+                            System.out.println(args[0] + " not exist");
                         }
                     }
                 }),
