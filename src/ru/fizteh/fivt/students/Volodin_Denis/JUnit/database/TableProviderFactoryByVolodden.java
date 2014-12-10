@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit.database;
 
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.TableProviderFactory;
 
 public class TableProviderFactoryByVolodden implements TableProviderFactory {
 

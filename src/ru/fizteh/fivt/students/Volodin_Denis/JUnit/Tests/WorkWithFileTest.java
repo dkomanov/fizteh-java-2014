@@ -86,6 +86,12 @@ public class WorkWithFileTest {
         assertEquals(path.getParent().getFileName().toString(), WorkWithFile.getParentName(path.toString())); }
 
     @Test
+    public void testGetParentNameWithTwoArguments() {
+        Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
+        assertEquals(path.getParent().getFileName().toString(),
+                WorkWithFile.getParentName(path.toString(), "1" + File.separator + "..")); }
+
+    @Test
     public void testIsDirectoryWithOneArgument() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
         assertEquals(path.toFile().isDirectory(), WorkWithFile.isDirectory(path.toString())); }

@@ -8,7 +8,7 @@ public class ErrorFunctionsTest {
     final static String name = "name";
     final static String string = "string";
 
-    @SuppressWarnings("static-access")
+    //@SuppressWarnings("static-access")
     @Test(expected = Exception.class)
     public void testErrorFunctionsClass() throws Exception {
         ErrorFunctions error = new ErrorFunctions();

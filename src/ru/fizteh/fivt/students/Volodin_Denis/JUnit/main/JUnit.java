@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit.main;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.TableProvider;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.database.TableProviderFactoryByVolodden;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.CommandHandler;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.Interpreter;

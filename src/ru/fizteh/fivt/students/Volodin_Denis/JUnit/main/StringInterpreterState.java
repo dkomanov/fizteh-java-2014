@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit.main;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.Table;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.TableProvider;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.InterpreterState;
 
 public class StringInterpreterState implements InterpreterState {

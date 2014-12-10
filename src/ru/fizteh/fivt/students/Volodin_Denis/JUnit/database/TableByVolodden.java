@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.Table;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
 
 public class TableByVolodden implements Table {

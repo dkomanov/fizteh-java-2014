@@ -1,14 +1,14 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit.database;
 
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.Table;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.TableProvider;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
-
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
 
 public class TableProviderByVolodden implements TableProvider {
 
@@ -26,9 +26,6 @@ public class TableProviderByVolodden implements TableProvider {
     @Override
     public Table getTable(String name) throws IllegalArgumentException {
         if (!WorkWithFile.exists(dbPath, name)) {
-            ErrorFunctions.notExists("get table", name);
-        }
-        if (!WorkWithFile.getFileName(dbPath, name).equals(WorkWithFile.getFileName(dbPath))) {
             ErrorFunctions.notExists("get table", name);
         }
         Table dbTable;
@@ -60,7 +57,7 @@ public class TableProviderByVolodden implements TableProvider {
             }
             if (exists) {
                 try {
-                    dbTable = new TableByVolodden(name);
+                    dbTable = new TableByVolodden(Paths.get(dbPath, name).normalize().toFile().toString());
                     tables.add(name);
                 } catch (Exception exception) {
                     exception.printStackTrace();
@@ -74,10 +71,10 @@ public class TableProviderByVolodden implements TableProvider {
 
     @Override
     public void removeTable(String name) throws IllegalArgumentException, IllegalStateException {
-        if (!WorkWithFile.exists(dbPath)) {
+        if (!WorkWithFile.exists(dbPath, name)) {
             throw new IllegalStateException("[" + name + "] not exists");
         }
-        if (!WorkWithFile.getParentName(dbPath).equals(WorkWithFile.getFileName(dbPath))) {
+        if (!WorkWithFile.getParentName(dbPath, name).equals(WorkWithFile.getFileName(dbPath))) {
             ErrorFunctions.notExists("drop", name);
         }
         if (!WorkWithFile.isDirectory(dbPath)) {

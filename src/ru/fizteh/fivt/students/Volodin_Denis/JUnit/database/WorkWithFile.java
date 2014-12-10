@@ -46,7 +46,11 @@ public class WorkWithFile {
     public static String getParentName(final String path) {
         return Paths.get(path).normalize().getParent().getFileName().toString();
     }
-    
+
+    public static String getParentName(final String path, final String secondPath) {
+        return Paths.get(path, secondPath).normalize().getParent().getFileName().toString();
+    }
+
     public static boolean isDirectory(final String path) {
         return Paths.get(path).toAbsolutePath().normalize().toFile().isDirectory();
     }

@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter;
 
-import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.Table;
 
 public abstract class Command {
     

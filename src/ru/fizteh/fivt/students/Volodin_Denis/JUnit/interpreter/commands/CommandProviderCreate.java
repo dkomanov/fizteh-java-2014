@@ -2,8 +2,8 @@ package ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.commands;
 
 import java.util.function.BiConsumer;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.Table;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.TableProvider;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.Command;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.CommandHandler;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.InterpreterState;
