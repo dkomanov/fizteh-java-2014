@@ -5,7 +5,6 @@ import org.junit.rules.ExpectedException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.*;
 
 import java.io.IOException;
@@ -109,7 +108,6 @@ public class MultiFileTableTest {
             //
         }
     }
-
 
     @Test
     public void testGetName() throws Exception {

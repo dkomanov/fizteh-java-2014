@@ -3,24 +3,28 @@ package ru.fizteh.fivt.students.andreyzakharov.remotefilemap.commands;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.CommandInterruptException;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProvider;
 
-public class StopCommand implements Command {
+public class StatusCommand implements Command {
     @Override
     public String execute(MultiFileTableProvider connector, String... args) throws CommandInterruptException {
-        if (connector.getStatus() == MultiFileTableProvider.ProviderStatus.SERVER) {
-            int port = connector.stop();
-            return "stopped at " + port;
-        } else {
-            return "not started";
+        switch (connector.getStatus()) {
+            case LOCAL:
+                return "local";
+            case CONNECTED:
+                return "connected";
+            case SERVER:
+                return "running";
+            default:
+                return null;
         }
     }
 
     @Override
     public boolean isLocal() {
-        return false;
+        return true;
     }
 
     @Override
     public String toString() {
-        return "stop";
+        return "status";
     }
 }

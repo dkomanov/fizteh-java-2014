@@ -2,8 +2,6 @@ package ru.fizteh.fivt.students.andreyzakharov.remotefilemap;
 
 import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
-import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -14,7 +12,13 @@ public class MultiFileTableProviderFactory implements AutoCloseable, RemoteTable
     @Override
     public RemoteTableProvider connect(String hostname, int port) throws IOException {
         checkClosed();
-        return null;
+        try {
+            MultiFileTableProvider provider = new MultiFileTableProvider(Paths.get(""));
+            provider.connect(hostname, port);
+            return provider;
+        } catch (ConnectionInterruptException e) {
+            throw new IOException(e.getMessage());
+        }
     }
 
     public RemoteTableProvider create(String dir) {
@@ -25,7 +29,6 @@ public class MultiFileTableProviderFactory implements AutoCloseable, RemoteTable
             return null;
         }
     }
-
 
     @Override
     public void close() throws Exception {

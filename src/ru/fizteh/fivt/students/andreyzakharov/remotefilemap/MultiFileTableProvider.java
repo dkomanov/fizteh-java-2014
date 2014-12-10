@@ -1,17 +1,22 @@
 package ru.fizteh.fivt.students.andreyzakharov.remotefilemap;
 
-import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
+import ru.fizteh.fivt.storage.structured.Storeable;
+import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.commands.CommandRunner;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -25,18 +30,21 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
     private boolean closed;
     private CommandRunner commandRunner = new CommandRunner();
     private Socket outgoingSocket;
+    private Thread serverThread;
+    private ServerSocket serverSocket;
 
     private ProviderStatus status = ProviderStatus.LOCAL;
     private String host = null;
     private int port = -1;
-    private final int CONNECTION_LIMIT = 50;
+    private final int connectionLimit = 50;
 
-    private ExecutorService clientPool = Executors.newFixedThreadPool(CONNECTION_LIMIT);
+    private ExecutorService clientPool;
     private Map<Integer, Host> clientMap = new ConcurrentHashMap<>();
 
     public class Host {
         public String host;
         public int port;
+
         public Host(String host, int port) {
             this.host = host;
             this.port = port;
@@ -53,13 +61,15 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
         @Override
         public void run() {
             try {
-                ServerSocket serverSocket = new ServerSocket(port);
-                while (true) {
+                serverSocket = new ServerSocket(port);
+                while (!serverThread.isInterrupted()) {
                     Socket clientSocket = serverSocket.accept();
                     clientPool.submit(new ClientTask(clientSocket));
                 }
+            } catch (SocketException e) {
+                // interrupted
             } catch (IOException e) {
-                System.err.println("not started: " + e.getMessage());
+                System.err.println("server: " + e.getMessage());
             }
         }
     }
@@ -75,9 +85,9 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
         public void run() {
             clientMap.put(this.hashCode(),
                     new Host(socket.getInetAddress().toString().replace("/", ""), socket.getPort()));
-            byte buffer[] = new byte[64*1024];
+            byte[] buffer = new byte[64 * 1024];
             try {
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
                     int len = socket.getInputStream().read(buffer);
                     if (len == -1) {
                         break;
@@ -92,9 +102,9 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
                         socket.getOutputStream().write(reply.getBytes("UTF-8"));
                     }
                 }
+                socket.close();
             } catch (IOException e) {
-                /*System.err.println("Connection from " + socket.getRemoteSocketAddress()
-                        + " failed: " + e.getMessage());*/
+                // connection failed
             }
             clientMap.remove(this.hashCode());
         }
@@ -149,13 +159,13 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
 //                result.append("@REMOTE: ");
                 try {
                     outgoingSocket.getOutputStream().write(command.getBytes("UTF-8"));
-                    byte buffer[] = new byte[64 * 1024];
+                    byte[] buffer = new byte[64 * 1024];
                     int len = outgoingSocket.getInputStream().read(buffer);
                     if (len != -1) {
                         result.append(new String(buffer, 0, len, "UTF-8")).append('\n');
                     } else {
                         finalizeConnection();
-                        return result.length() == 0 ? "" : result.substring(0, result.length()-1);
+                        return result.length() == 0 ? "" : result.substring(0, result.length() - 1);
                     }
                 } catch (IOException e) {
                     finalizeConnection();
@@ -175,15 +185,33 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
         return result.length() == 0 ? "" : result.substring(0, result.length() - 1);
     }
 
-    public void startServer(int port) throws IllegalArgumentException {
+    public void start(int port) throws IllegalArgumentException {
         if (port < 0 || port > 65536) {
             throw new IllegalArgumentException("connection: invalid port number");
         }
         if (status == ProviderStatus.LOCAL) {
             status = ProviderStatus.SERVER;
+            clientPool = Executors.newFixedThreadPool(connectionLimit);
             this.port = port;
-            new Thread(new ConnectionAccepter()).start();
+            serverThread = new Thread(new ConnectionAccepter());
+            serverThread.start();
         }
+    }
+
+    public int stop() {
+        try {
+            if (status == ProviderStatus.SERVER) {
+                status = ProviderStatus.LOCAL;
+                clientPool.shutdownNow();
+                clientPool = null;
+                serverThread.interrupt();
+                serverSocket.close();
+                return port;
+            }
+        } catch (IOException e) {
+            //
+        }
+        return -1;
     }
 
     public Collection<Host> getUsers() {
@@ -214,7 +242,9 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
         if (status == ProviderStatus.CONNECTED) {
             status = ProviderStatus.LOCAL;
             try {
-                outgoingSocket.close();
+                if (outgoingSocket != null) {
+                    outgoingSocket.close();
+                }
             } catch (IOException e) {
                 throw new ConnectionInterruptException("connection: " + e.getMessage());
             }
@@ -223,11 +253,11 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
 
     private void finalizeConnection() {
         if (status == ProviderStatus.CONNECTED) {
+            status = ProviderStatus.LOCAL;
             try {
-                status = ProviderStatus.LOCAL;
                 outgoingSocket.close();
             } catch (IOException e) {
-                //
+                System.err.println("exception on close: " + e.getMessage());
             }
         }
     }

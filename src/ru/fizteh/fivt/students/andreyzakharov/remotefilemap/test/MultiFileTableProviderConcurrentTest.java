@@ -3,8 +3,6 @@ package ru.fizteh.fivt.students.andreyzakharov.remotefilemap.test;
 import org.junit.*;
 import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProviderFactory;
 
 import java.io.IOException;

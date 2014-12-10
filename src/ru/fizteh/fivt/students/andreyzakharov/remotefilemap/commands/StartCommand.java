@@ -29,7 +29,7 @@ public class StartCommand implements Command {
             return "not started: already running as a client";
         }
 
-        connector.startServer(port);
+        connector.start(port);
 
         return "started at " + port;
     }

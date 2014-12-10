@@ -6,7 +6,9 @@ import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProvid
 public class ListusersCommand implements Command {
     @Override
     public String execute(MultiFileTableProvider connector, String... args) throws CommandInterruptException {
-        if (connector.getUsers() != null && connector.getUsers().size() > 0) {
+        if (connector.getStatus() != MultiFileTableProvider.ProviderStatus.SERVER) {
+            return "not started";
+        } else if (connector.getUsers() != null && connector.getUsers().size() > 0) {
             StringBuilder sb = new StringBuilder();
             for (MultiFileTableProvider.Host host : connector.getUsers()) {
                 sb.append(host.host).append(':').append(host.port).append('\n');

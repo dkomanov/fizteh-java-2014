@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.andreyzakharov.remotefilemap.commands;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.CommandInterruptException;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProvider;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +34,8 @@ public class CommandRunner {
         registerCommand(new DisconnectCommand());
         registerCommand(new WhereamiCommand());
         registerCommand(new ListusersCommand());
+
+        registerCommand(new StatusCommand());
 
         registerCommand(new ExitCommand());
     }
