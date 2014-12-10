@@ -250,6 +250,7 @@ public class StoreableTable implements Table {
         java.util.List<String> result = newKey.keySet().stream().collect(Collectors.toList());
         result.addAll(
                 activeTable.keySet().stream().filter(key -> !newKey.containsKey(key)).collect(Collectors.toList()));
+        removed.keySet().forEach(result::remove);
         return result;
     }
 

@@ -19,6 +19,10 @@ public class Put extends StoreableCommand {
     @Override
     public boolean exec(Connector dbConnector, String[] args) {
         if (args == null || args.length <= 1) {
+            System.err.println("Incorrect number of arguments in " + name);
+            if (batchMode) {
+                System.exit(-1);
+            }
             return !batchModeInInteractive;
         }
         if (args.length > 2) {
