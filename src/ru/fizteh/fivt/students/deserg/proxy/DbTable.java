@@ -377,12 +377,16 @@ public class DbTable implements Table, AutoCloseable {
         closed = true;
     }
 
+    @Override
+    public String toString() {
 
+        return getClass().getSimpleName() + "[" + tablePath + "]";
+
+    }
 
     /**
      * Not-interface methods begin here
      */
-
 
     public boolean isClosed() {
         return closed;

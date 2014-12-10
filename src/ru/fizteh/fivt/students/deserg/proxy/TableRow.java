@@ -255,4 +255,22 @@ public class TableRow implements Storeable {
         return (this.signature.equals(otherRow.getSignature()) && this.columns.equals(otherRow.getColumns()));
     }
 
+
+    @Override
+    public String toString() {
+
+        String values = "";
+
+        for (Object value: columns) {
+            if (value == null) {
+                values += ",";
+            } else {
+                values += value.toString() + ",";
+            }
+        }
+        values = values.substring(0, values.length());
+        return getClass().getSimpleName() + "[" + values + "]";
+
+    }
+
 }

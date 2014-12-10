@@ -11,7 +11,9 @@ import java.nio.file.Paths;
 /**
  * Created by deserg on 26.11.14.
  */
-public class DbTableProviderFactory implements TableProviderFactory {
+public class DbTableProviderFactory implements TableProviderFactory, AutoCloseable {
+
+    private boolean closed = false;
 
     /**
      * Возвращает объект для работы с базой данных.
@@ -20,7 +22,10 @@ public class DbTableProviderFactory implements TableProviderFactory {
      * @return Объект для работы с базой данных.
      * @throws IllegalArgumentException Если значение директории null или имеет недопустимое значение.
      */
+    @Override
     public TableProvider create(String dir) throws IllegalArgumentException {
+
+        checkClosed();
 
         if (dir == null) {
             throw new IllegalArgumentException("Database \"" + dir + "\": null path");
@@ -43,6 +48,22 @@ public class DbTableProviderFactory implements TableProviderFactory {
         }
 
         return new DbTableProvider(path);
+    }
+
+    @Override
+    public void close() {
+
+        checkClosed();
+        closed = true;
+
+    }
+
+
+
+    private void checkClosed() {
+        if (closed) {
+            throw new IllegalStateException("Factory is closed");
+        }
     }
 
 }

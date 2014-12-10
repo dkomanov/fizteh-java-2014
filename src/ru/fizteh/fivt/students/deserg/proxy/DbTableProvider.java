@@ -298,6 +298,13 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
         closed = true;
     }
 
+    @Override
+    public String toString() {
+
+        return getClass().getSimpleName() + "[" + dbPath + "]";
+
+    }
+
     /**
      * Not-interface methods begin here
      */
