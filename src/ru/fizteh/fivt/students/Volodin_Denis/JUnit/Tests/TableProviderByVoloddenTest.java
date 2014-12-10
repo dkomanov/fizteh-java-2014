@@ -16,9 +16,9 @@ import static org.junit.Assert.assertEquals;
 
 public class TableProviderByVoloddenTest {
 
-    public final static String name = "test123321123323";
-    public final static String nameTable = "nameTable";
-    public final static String end = ".." + File.separator + name;
+    public final String name = "test123321123323";
+    public final String nameTable = "nameTable";
+    public final String end = ".." + File.separator + name;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();

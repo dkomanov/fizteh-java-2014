@@ -1,5 +1,8 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit.database;
 
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.Table;
+
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.FileInputStream;
@@ -8,16 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.Table;
-import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
+import java.util.*;
 
 public class TableByVolodden implements Table {
 
@@ -39,11 +33,11 @@ public class TableByVolodden implements Table {
     
     class FileMap implements Map<String, String>, AutoCloseable {
 
-        private static final int FOLDERS = 16;
-        private static final int FILES = 16;
-        private static final String ENCODING = "UTF-8";
-        private static final String dir = ".dir";
-        private static final String dat = ".dat";
+        private final int FOLDERS = 16;
+        private final int FILES = 16;
+        private final String ENCODING = "UTF-8";
+        private final String dir = ".dir";
+        private final String dat = ".dat";
 
         private String databasePath;
         private Map<String, String> database;
@@ -167,11 +161,11 @@ public class TableByVolodden implements Table {
             writeOnDisk();
         }
 
-        private void downgrade(){
+        private void downgrade() {
             diff.clear();
         }
         
-        public int numUncommitedChanges(){
+        public int numUncommitedChanges() {
             return diff.size();
         }
         
@@ -196,9 +190,8 @@ public class TableByVolodden implements Table {
                     } else {
                         return false;
                     }
-                } else {
-                    return true;
                 }
+                return true;
             } else {
                 return diff.containsKey(key);
             }

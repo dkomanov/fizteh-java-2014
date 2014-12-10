@@ -127,12 +127,9 @@ public class TableProviderByVolodden implements TableProvider {
         try {
             for (String name : names) {
                 if (WorkWithFile.isDirectory(path.toString(), name)) {
-                    try {
-                        Table temp = new TableByVolodden(name);
-                        temp.size();
-                        setOfNames.add(name);
-                    } catch (Exception exception) {
-                    }
+                    Table temp = new TableByVolodden(name);
+                    temp.size();
+                    setOfNames.add(name);
                 } else {
                     Files.delete(Paths.get(dbPath, name));
                 }

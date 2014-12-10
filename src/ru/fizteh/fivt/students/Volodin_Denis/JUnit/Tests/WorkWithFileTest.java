@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 
 public class WorkWithFileTest {
 
-    public final static String end = ".." + File.separator + "test123321123321";
+    public final String end = ".." + File.separator + "test123321123321";
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -57,7 +57,8 @@ public class WorkWithFileTest {
     @Test
     public void testExistsWithTwoArguments() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath();
-        assertEquals(path.toFile().exists(), WorkWithFile.exists(temporaryFolder.toString(), path.getFileName().toString())); }
+        assertEquals(path.toFile().exists(), WorkWithFile.exists(temporaryFolder.toString(), path.getFileName()
+                .toString())); }
 
     @Test
     public void testGetWithOneArgument() throws Exception {
@@ -77,7 +78,8 @@ public class WorkWithFileTest {
     @Test
     public void testGetFileNameWithTwoArguments() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
-        assertEquals(path.getFileName().toString(), WorkWithFile.getFileName(path.toString(), "1" + File.separator + "..")); }
+        assertEquals(path.getFileName().toString(), WorkWithFile
+                .getFileName(path.toString(), "1" + File.separator + "..")); }
 
 
     @Test
