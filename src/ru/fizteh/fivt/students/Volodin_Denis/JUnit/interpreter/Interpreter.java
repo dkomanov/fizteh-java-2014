@@ -1,17 +1,17 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter;
 
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ReturnCodes;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ReturnCodes;
-
 public class Interpreter {
     
-    private final String PROMT = "$ ";
-    private final String STATEMENT_DELIMITER = ";";
-    private final String PARAM_REGEXP = "\\s+";
+    private final String promt = "$ ";
+    private final String statementDelimiter = ";";
+    private final String paramRegExp = "\\s+";
     
     private final Map<String, CommandHandler> commands;
     private final InterpreterState interpreterState;
@@ -27,7 +27,7 @@ public class Interpreter {
     private void executeLine(final String[] input) {
         for (int i = 0; i < input.length; ++i) {
             if (input[i].length() > 0) {
-                String[] buffer = input[i].trim().split(PARAM_REGEXP);
+                String[] buffer = input[i].trim().split(paramRegExp);
                 String commandName = buffer[0];
                 if (commandName.equals("exit")) {
                     System.exit(ReturnCodes.SUCCESS);
@@ -49,8 +49,8 @@ public class Interpreter {
     public void run(String[] args) {
         while (args.length == 0) {
             try (Scanner scanner = new Scanner(System.in)) {
-                System.out.print(PROMT);
-                String[] input = scanner.nextLine().split(STATEMENT_DELIMITER);
+                System.out.print(promt);
+                String[] input = scanner.nextLine().split(statementDelimiter);
                 executeLine(input);
             } catch (Throwable exception) {
                 System.err.println("Smth wrong: " + exception.getMessage());
@@ -61,7 +61,7 @@ public class Interpreter {
         for (int i = 0; i < args.length; ++i) {
             helpArray.append(args[i]).append(' ');
         }
-        String[] input = helpArray.toString().split(STATEMENT_DELIMITER);
+        String[] input = helpArray.toString().split(statementDelimiter);
         executeLine(input);
     }
 }

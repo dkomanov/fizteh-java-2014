@@ -33,9 +33,9 @@ public class TableByVolodden implements Table {
     
     class FileMap implements Map<String, String>, AutoCloseable {
 
-        private final int FOLDERS = 16;
-        private final int FILES = 16;
-        private final String ENCODING = "UTF-8";
+        private final int folders = 16;
+        private final int files = 16;
+        private final String encoding = "UTF-8";
         private final String dir = ".dir";
         private final String dat = ".dat";
 
@@ -55,8 +55,8 @@ public class TableByVolodden implements Table {
         }
 
         private void readFromDisk() throws Exception {
-            for (int i = 0; i < FOLDERS; ++i) {
-                for (int j = 0; j < FILES; ++j) {
+            for (int i = 0; i < folders; ++i) {
+                for (int j = 0; j < files; ++j) {
                     Path somePath =  Paths.get(databasePath, Integer.toString(i) + dir, Integer.toString(j)
                                                                                  + dat).normalize();
                     if (somePath.toFile().exists()) {
@@ -66,8 +66,8 @@ public class TableByVolodden implements Table {
                                     String key = readOneWordFromDisk(input);
                                     String value = readOneWordFromDisk(input);
                                     
-                                    if ((Math.abs(key.hashCode()) % FOLDERS != i)
-                                     || (Math.abs(key.hashCode()) / FOLDERS % FILES != j)) {
+                                    if ((Math.abs(key.hashCode()) % folders != i)
+                                     || (Math.abs(key.hashCode()) / folders % files != j)) {
                                         throw new Exception("wrong input");
                                     }
                                     database.put(key, value);
@@ -86,23 +86,23 @@ public class TableByVolodden implements Table {
         private String readOneWordFromDisk(DataInputStream input) throws Exception {
             byte[] word = new byte[input.readInt()];
             input.readFully(word);
-            return new String(word, ENCODING);
+            return new String(word, encoding);
         }
 
         private void writeOnDisk() throws Exception {
-            HelpMap[][] helpMap = new HelpMap[FOLDERS][FILES];
-            for (int i = 0; i < FOLDERS; ++i) {
-                for (int j = 0; j < FILES; ++j) {
+            HelpMap[][] helpMap = new HelpMap[folders][files];
+            for (int i = 0; i < folders; ++i) {
+                for (int j = 0; j < files; ++j) {
                     helpMap[i][j] = new HelpMap();
                 }
             }
             Set<String> keys = database.keySet();
             for (String key : keys) {
-                helpMap[Math.abs(key.hashCode()) % FOLDERS][Math.abs(key.hashCode()) / FOLDERS % FILES].map
+                helpMap[Math.abs(key.hashCode()) % folders][Math.abs(key.hashCode()) / folders % files].map
                         .put(key, database.get(key));
             }
-            for (int i = 0; i < FOLDERS; ++i) {
-                for (int j = 0; j < FILES; ++j) {
+            for (int i = 0; i < folders; ++i) {
+                for (int j = 0; j < files; ++j) {
                     Path somePath =  Paths.get(databasePath, Integer.toString(i) + dir, Integer.toString(j)
                                                                                  + dat).normalize();
                     if (somePath.toFile().exists()) {
@@ -118,8 +118,8 @@ public class TableByVolodden implements Table {
                     }
                 }
             }
-            for (int i = 0; i < FOLDERS; ++i) {
-                for (int j = 0; j < FILES; ++j) {
+            for (int i = 0; i < folders; ++i) {
+                for (int j = 0; j < files; ++j) {
                     Set<String> keyList = helpMap[i][j].map.keySet();
                     if (!keyList.isEmpty()) {
                         Path somePath =  Paths.get(databasePath, Integer.toString(i) + dir).normalize();
@@ -144,9 +144,9 @@ public class TableByVolodden implements Table {
 
         private void writeOneWordOnDisk(final String word, FileOutputStream output) throws Exception {
             ByteBuffer buffer = ByteBuffer.allocate(4);
-            byte[] wordByte = buffer.putInt(word.getBytes(ENCODING).length).array();
+            byte[] wordByte = buffer.putInt(word.getBytes(encoding).length).array();
             output.write(wordByte);
-            output.write(word.getBytes(ENCODING));
+            output.write(word.getBytes(encoding));
         }
 
         private void upgrade() throws Exception {
@@ -185,11 +185,7 @@ public class TableByVolodden implements Table {
         public boolean containsKey(Object key) {
             if (database.containsKey(key)) {
                 if (diff.containsKey(key)) {
-                    if (diff.get(key) != null) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return (diff.get(key) != null);
                 }
                 return true;
             } else {

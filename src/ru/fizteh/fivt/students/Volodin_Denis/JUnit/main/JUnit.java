@@ -35,7 +35,7 @@ public class JUnit {
                         new CommandProviderCreate().create(),
                         new CommandProviderDrop().create(),
                         new CommandTableCommit().create(),
-                        new CommandProviderUse().create(),})
+                        new CommandProviderUse().create()})
             .run(args);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
