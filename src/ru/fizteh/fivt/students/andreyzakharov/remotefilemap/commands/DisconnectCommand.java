@@ -4,24 +4,18 @@ import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.CommandInterruptExce
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.ConnectionInterruptException;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProvider;
 
-public class ExitCommand implements Command {
+public class DisconnectCommand implements Command {
     @Override
     public String execute(MultiFileTableProvider connector, String... args) throws CommandInterruptException {
-        if (connector.getCurrent() != null && connector.getCurrent().getNumberOfUncommittedChanges() > 0) {
-            return connector.getCurrent().getNumberOfUncommittedChanges() + " unsaved changes";
-        }
         if (connector.getStatus() == MultiFileTableProvider.ProviderStatus.CONNECTED) {
             try {
                 connector.disconnect();
+                return "disconnected";
             } catch (ConnectionInterruptException e) {
-                //
+                return "disconnect: " + e.getMessage();
             }
-            return "disconnected";
-        } else {
-            connector.close();
-            System.exit(0);
-            return null; // silly Java
         }
+        return "not connected";
     }
 
     @Override
@@ -31,6 +25,6 @@ public class ExitCommand implements Command {
 
     @Override
     public String toString() {
-        return "exit";
+        return "disconnect";
     }
 }

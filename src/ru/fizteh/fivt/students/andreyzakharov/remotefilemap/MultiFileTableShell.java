@@ -1,13 +1,10 @@
 package ru.fizteh.fivt.students.andreyzakharov.remotefilemap;
 
-import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.commands.CommandRunner;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class MultiFileTableShell {
-    private CommandRunner commandrunner = new CommandRunner();
     private boolean batch;
     private Path dbPath;
 
@@ -58,7 +55,7 @@ public class MultiFileTableShell {
 
     void execute(MultiFileTableProvider connector, String argString) {
         try {
-            String out = commandrunner.run(connector, argString);
+            String out = connector.run(argString);
             if (out != null) {
                 System.out.println(out);
             }

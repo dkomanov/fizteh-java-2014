@@ -16,6 +16,11 @@ public class RollbackCommand implements Command {
     }
 
     @Override
+    public boolean isLocal() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "rollback";
     }

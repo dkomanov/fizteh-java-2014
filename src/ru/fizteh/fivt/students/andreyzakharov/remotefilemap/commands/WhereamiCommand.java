@@ -3,32 +3,23 @@ package ru.fizteh.fivt.students.andreyzakharov.remotefilemap.commands;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.CommandInterruptException;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProvider;
 
-import java.util.List;
-
-public class ListCommand implements Command {
+public class WhereamiCommand implements Command {
     @Override
     public String execute(MultiFileTableProvider connector, String... args) throws CommandInterruptException {
-        if (args.length > 1) {
-            throw new CommandInterruptException("list: too many arguments");
-        }
-        if (connector.getCurrent() == null) {
-            throw new CommandInterruptException("no table");
-        }
-        List<String> keys = connector.getCurrent().list();
-        if (keys.isEmpty()) {
-            return "";
+        if (connector.getStatus() == MultiFileTableProvider.ProviderStatus.CONNECTED) {
+            return "remote " + connector.getHost() + " " + connector.getPort();
         } else {
-            return String.join(", ", keys);
+            return "local";
         }
     }
 
     @Override
     public boolean isLocal() {
-        return false;
+        return true;
     }
 
     @Override
     public String toString() {
-        return "list";
+        return "whereami";
     }
 }

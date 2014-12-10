@@ -5,4 +5,5 @@ import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProvid
 
 public interface Command {
     String execute(MultiFileTableProvider connector, String... args) throws CommandInterruptException;
+    boolean isLocal();
 }

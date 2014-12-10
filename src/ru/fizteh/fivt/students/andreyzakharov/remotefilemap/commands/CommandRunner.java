@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.andreyzakharov.remotefilemap.commands;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.CommandInterruptException;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableProvider;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,13 @@ public class CommandRunner {
         registerCommand(new CommitCommand());
         registerCommand(new RollbackCommand());
 
+        registerCommand(new StartCommand());
+        registerCommand(new StopCommand());
+        registerCommand(new ConnectCommand());
+        registerCommand(new DisconnectCommand());
+        registerCommand(new WhereamiCommand());
+        registerCommand(new ListusersCommand());
+
         registerCommand(new ExitCommand());
     }
 
@@ -40,6 +48,16 @@ public class CommandRunner {
             throw new CommandInterruptException(args[0] + ": command not found");
         } else {
             return null;
+        }
+    }
+
+    public boolean isLocal(String commandString) throws CommandInterruptException {
+        String[] args = commandString.trim().split("\\s(?![^\\(]*\\))(?![^\\[]*\\])");
+        Command command = commands.get(args[0]);
+        if (command != null) {
+            return command.isLocal();
+        } else {
+            throw new CommandInterruptException(args[0] + ": command not found");
         }
     }
 }

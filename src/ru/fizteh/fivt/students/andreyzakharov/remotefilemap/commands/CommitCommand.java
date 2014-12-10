@@ -16,6 +16,11 @@ public class CommitCommand implements Command {
     }
 
     @Override
+    public boolean isLocal() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "commit";
     }

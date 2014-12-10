@@ -25,6 +25,11 @@ public class GetCommand implements Command {
     }
 
     @Override
+    public boolean isLocal() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "get";
     }

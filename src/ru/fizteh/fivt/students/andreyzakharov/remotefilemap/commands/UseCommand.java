@@ -33,6 +33,11 @@ public class UseCommand implements Command {
     }
 
     @Override
+    public boolean isLocal() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "use";
     }

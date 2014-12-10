@@ -35,6 +35,11 @@ public class ShowCommand implements Command {
     }
 
     @Override
+    public boolean isLocal() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "show";
     }
