@@ -1,32 +1,29 @@
-package multifilehashmap;
+package junit;
 
-import multifilehashmap.util.*;
-
-import java.io.File;
 import java.util.Scanner;
 
-public final class MultiFileHashMap {
+import junit.strings.*;
+
+import junit.util.*;
+
+public final class JUnit {
 
     public static void main(final String[] args) {
-        File file = null;
+        String path = System.getProperty("fizteh.db.dir");
+        TableProviderFactory tableProviderFactory = new MyTableProviderFactory();
+        TableProvider tableProvider = null;
         try {
-            file = new File(System.getProperty("fizteh.db.dir"));
-            file.mkdir();
-        } catch (Exception e) {
-            System.err.println("Directory doesnt exist");
-            System.exit(1);
-        }
-        TableLauncher tableLauncher = null;
-        try {
-            tableLauncher = new TableLauncher(file);
+            tableProvider = tableProviderFactory.create(path);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
+        TableLauncher tableLauncher = new TableLauncher(tableProvider);
+
         Scanner sc = new Scanner(System.in);
         while (true) {
             try {
-                System.out.print(tableLauncher.getCurrentDb() + "$ ");
+                System.out.print(tableLauncher.getCurrentName() + "$ ");
                 String[] input = sc.nextLine().split(";");
                 for (int i = 0; i < input.length; i++) {
                     input[i] = input[i].trim();

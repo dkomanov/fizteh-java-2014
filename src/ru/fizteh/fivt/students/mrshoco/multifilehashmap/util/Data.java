@@ -1,4 +1,4 @@
-package util;
+package multifilehashmap.util;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
