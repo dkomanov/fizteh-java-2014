@@ -1,12 +1,12 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.commands;
 
-import java.util.function.BiConsumer;
-
-import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.TableProvider;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.Command;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.CommandHandler;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.interpreter.InterpreterState;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.StringInterpreterState;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.TableProvider;
+
+import java.util.function.BiConsumer;
 
 public class CommandProviderDrop extends Command {
     
