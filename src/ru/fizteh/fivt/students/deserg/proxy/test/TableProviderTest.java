@@ -321,6 +321,12 @@ public class TableProviderTest {
 
     }
 
+    @Test
+    public void testClose() {
+
+
+
+    }
 
 
 }

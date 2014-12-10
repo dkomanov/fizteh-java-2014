@@ -22,6 +22,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class DbTableProvider implements TableProvider, AutoCloseable {
 
     private Map<String, DbTable> tables = new HashMap<>();
+    private Map<String, List<Class<?>>> signatures = new HashMap<>();
     private Set<String> removedTables = new HashSet<>();
     private Path dbPath;
     private DbTable currentTable = null;
@@ -64,13 +65,17 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
             throw new IllegalArgumentException("Database \"" + name + "\": getTable: unacceptable table name");
         }
 
-        lock.readLock().lock();
+        lock.writeLock().lock();
         if (removedTables.contains(name)) {
-            lock.readLock().unlock();
+            lock.writeLock().unlock();
             throw new IllegalStateException("Database \"" + name + "\": getTable: table was removed");
         } else {
-            Table table = tables.get(name);
-            lock.readLock().unlock();
+            DbTable table = tables.get(name);
+            if (table != null && table.isClosed()) {
+                table = new DbTable(dbPath.resolve(name), signatures.get(name));
+            }
+            lock.writeLock().unlock();
+
             return table;
         }
     }
@@ -124,6 +129,7 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
 
             DbTable table = new DbTable(dbPath.resolve(name), columnTypes);
             tables.put(name, table);
+            signatures.put(name, columnTypes);
             removedTables.remove(name);
             lock.writeLock().unlock();
             return table;
@@ -183,6 +189,7 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
         }
 
         tables.remove(name);
+        signatures.remove(name);
         lock.writeLock().unlock();
 
     }

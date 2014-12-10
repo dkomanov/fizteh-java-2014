@@ -55,6 +55,15 @@ public class TableTest {
             DbTable table = (DbTable) provider.createTable(name, signature);
             assertEquals(name, table.getName());
 
+            try {
+                table.close();
+                table.getName();
+                assertTrue(false);
+            } catch (IllegalStateException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
@@ -116,6 +125,14 @@ public class TableTest {
 
             assertEquals(table.put("key1", val2), val1);
 
+            try {
+                table.close();
+                table.put("key100500", val1);
+                assertTrue(false);
+            } catch (IllegalStateException ex) {
+                System.out.println(ex.getMessage());
+            }
+
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
@@ -128,48 +145,52 @@ public class TableTest {
 
 
     @Test
-    public void testGet() {
+    public void testGet() throws Exception{
+
+        DbTable table = (DbTable) provider.createTable("justTable", signature);
 
         try {
-            DbTable table = (DbTable) provider.createTable("justTable", signature);
-
-            try {
-                table.get(null);
-                assertTrue(false);
-            } catch (IllegalArgumentException ex) {
-                System.out.println(ex.getMessage());
-            }
-
-            try {
-                table.get("");
-                assertTrue(false);
-            } catch (IllegalArgumentException ex) {
-                System.out.println(ex.getMessage());
-            }
-
-            Storeable val1 = new TableRow(signature);
-            val1.setColumnAt(0, 123);
-
-            Storeable val2 = new TableRow(signature);
-            val1.setColumnAt(0, 345);
-
-            table.put("key1", val1);
-            table.put("key2", val1);
-            table.commit();
-
-            table.put("key3", val1);
-            assertEquals(table.get("key3"), val1);
-
-            table.put("key2", val2);
-            assertEquals(table.get("key2"), val2);
-
-            assertEquals(table.get("key1"), val1);
-
-            assertEquals(table.get("keyX"), null);
-
-        } catch (IOException ex) {
+            table.get(null);
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
         }
+
+        try {
+            table.get("");
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        Storeable val1 = new TableRow(signature);
+        val1.setColumnAt(0, 123);
+
+        Storeable val2 = new TableRow(signature);
+        val1.setColumnAt(0, 345);
+
+        table.put("key1", val1);
+        table.put("key2", val1);
+        table.commit();
+
+        table.put("key3", val1);
+        assertEquals(table.get("key3"), val1);
+
+        table.put("key2", val2);
+        assertEquals(table.get("key2"), val2);
+
+        assertEquals(table.get("key1"), val1);
+
+        assertEquals(table.get("keyX"), null);
+
+        try {
+            table.close();
+            table.get("key1");
+            assertTrue(false);
+        } catch (IllegalStateException ex) {
+            System.out.println(ex.getMessage());
+        }
+
 
     }
 
@@ -216,6 +237,14 @@ public class TableTest {
 
             assertEquals(table.remove("keyX"), null);
 
+            try {
+                table.close();
+                table.remove("key100500");
+                assertTrue(false);
+            } catch (IllegalStateException ex) {
+                System.out.println(ex.getMessage());
+            }
+
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
@@ -242,6 +271,15 @@ public class TableTest {
             table.put("key4", val1);
 
             assertEquals(list, table.list());
+
+            try {
+                table.close();
+                table.list();
+                assertTrue(false);
+            } catch (IllegalStateException ex) {
+                System.out.println(ex.getMessage());
+            }
+
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
@@ -330,6 +368,23 @@ public class TableTest {
             table.rollback();
             assertEquals(table.size(), 2);
 
+            try {
+                table.close();
+                table.commit();
+                assertTrue(false);
+            } catch (IllegalStateException ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            table = (DbTable) provider.getTable("table");
+            try {
+                table.close();
+                table.rollback();
+                assertTrue(false);
+            } catch (IllegalStateException ex) {
+                System.out.println(ex.getMessage());
+            }
+
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
@@ -348,7 +403,39 @@ public class TableTest {
                 System.out.println(ex.getMessage());
             }
 
+            try {
+                table.close();
+                table.getColumnType(0);
+                assertTrue(false);
+            } catch (IllegalStateException ex) {
+                System.out.println(ex.getMessage());
+            }
+
         } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
+
+    @Test
+    public void testClose() throws Exception {
+
+        DbTable table = (DbTable) provider.createTable("table1", signature);
+
+        Storeable val1 = new TableRow(signature);
+        val1.setColumnAt(0, 123);
+
+        table.put("key1", val1);
+        table.put("key2", val1);
+        table.commit();
+
+        table.put("key3", val1);
+        table.close();
+
+        try {
+            table.put("someKey", val1);
+            assertTrue(false);
+        } catch (IllegalStateException ex) {
             System.out.println(ex.getMessage());
         }
 

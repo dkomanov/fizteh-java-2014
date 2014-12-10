@@ -29,6 +29,19 @@ public class ProxyInvocationHandler implements InvocationHandler {
         } else {
             if (object instanceof Iterable) {
 
+                if (map.containsKey(object)) {
+                    xmlWriter.writeEmptyElement("cyclic");
+                } else {
+                    map.put(object, null);
+                    xmlWriter.writeStartElement("list");
+                    for (Object insideObject: (Iterable) object) {
+                        xmlWriter.writeStartElement("value");
+                        xmlObject(insideObject, xmlWriter, map);
+                        xmlWriter.writeEndElement();
+                    }
+
+                    xmlWriter.writeEndElement();
+                }
             } else {
                 xmlWriter.writeEmptyElement(object.toString());
             }
