@@ -1,4 +1,4 @@
-package test;
+package junit.test;
 
 import java.io.IOException;
 
@@ -7,9 +7,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import strings.*;
+import junit.strings.*;
 
-import util.*;
+import junit.util.*;
 
 public class TableProviderFactoryTest {
     private TableProviderFactory factory;
