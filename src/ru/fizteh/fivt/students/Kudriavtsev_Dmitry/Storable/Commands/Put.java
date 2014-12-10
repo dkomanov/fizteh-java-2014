@@ -54,7 +54,7 @@ public class Put extends StoreableCommand {
         try {
             value = dbConnector.getActiveTable().put(args[0],
                     dbConnector.getActiveTableProvider().deserialize(dbConnector.getActiveTable(), args[1]));
-        } catch(ParseException e) {
+        } catch (ParseException e) {
             System.err.println("Parse Exception in deserialize");
             return !batchModeInInteractive;
         }

@@ -61,8 +61,8 @@ public class Drop extends StoreableCommand {
             }
             Files.delete(map.dbPath);
         } catch (Exception e) {
-            System.err.println("Exception in drop: can't delete " + map.dbPath.toString() +
-                                " because " + e.getLocalizedMessage());
+            System.err.println("Exception in drop: can't delete " + map.dbPath.toString()
+                                                    + " because " + e.getLocalizedMessage());
             System.exit(-1);
         }
         System.out.println("dropped");

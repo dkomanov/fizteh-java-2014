@@ -18,7 +18,8 @@ public class Use extends StoreableCommand {
             return !batchModeInInteractive;
         }
         if (dbConnector.getActiveTable() != null) {
-            if (!dbConnector.getActiveTable().getRemoved().isEmpty() || !dbConnector.getActiveTable().getNewKey().isEmpty()) {
+            if (!dbConnector.getActiveTable().getRemoved().isEmpty()
+                    || !dbConnector.getActiveTable().getNewKey().isEmpty()) {
                 int count = 0;
                 for (String s : dbConnector.getActiveTable().getRemoved().keySet()) {
                     if (dbConnector.getActiveTable().getActiveTable().containsKey(s)) {
