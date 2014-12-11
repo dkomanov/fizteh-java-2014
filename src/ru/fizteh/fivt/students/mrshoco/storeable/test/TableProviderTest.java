@@ -32,7 +32,6 @@ public class TableProviderTest {
 
     @Before
     public void initProvider() throws IOException {
-        System.err.println(tmpFolder.getRoot());
         factory = new MyTableProviderFactory();
         providerPath = tmpFolder.newFolder().getAbsolutePath();
         provider = factory.create(providerPath);
