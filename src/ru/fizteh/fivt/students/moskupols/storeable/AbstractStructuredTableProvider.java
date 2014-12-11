@@ -31,7 +31,7 @@ public abstract class AbstractStructuredTableProvider implements TableProvider {
         try (PrintWriter writer = new PrintWriter(filePath.toFile())) {
             final StringJoiner joiner = new StringJoiner(" ");
             for (StoreableAtomType type : signature) {
-                joiner.add(type.printedName);
+                joiner.add(type.getPrintedName());
             }
             writer.print(joiner.toString());
             writer.flush();

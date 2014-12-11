@@ -33,6 +33,7 @@ public class Drop extends KnownArgsCountNameFirstCommand {
             System.out.println("dropped");
         } else {
             System.out.println(String.format("%s not exists", args[1]));
+            return;
         }
         try {
             provider.removeTable(args[1]);

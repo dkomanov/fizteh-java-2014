@@ -42,8 +42,8 @@ class XmlDeserializer implements Deserializer {
                     return value;
                 } else {
                     try {
-                        return expectedType.boxedClass.getMethod("valueOf", String.class)
-                                .invoke(expectedType.boxedClass, value);
+                        return expectedType.getBoxedClass().getMethod("valueOf", String.class)
+                                .invoke(expectedType.getBoxedClass(), value);
                     } catch (InvocationTargetException e) {
                         throw new ParseException("Number expected: " + e.getCause().getMessage(), -1);
                     } catch (NoSuchMethodException | IllegalAccessException ignored) {

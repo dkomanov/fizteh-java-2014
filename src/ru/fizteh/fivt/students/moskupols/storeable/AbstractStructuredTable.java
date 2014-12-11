@@ -34,7 +34,7 @@ public abstract class AbstractStructuredTable implements Table {
             if (type == null) {
                 throw new IOException("Unknown type " + typeName);
             }
-            signature.add(type.boxedClass);
+            signature.add(type.getBoxedClass());
         }
         return signature;
     }

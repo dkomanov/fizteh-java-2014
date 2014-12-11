@@ -22,8 +22,8 @@ class StoreableImpl implements Storeable {
 
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (value != null && !signature.get(columnIndex).boxedClass.isInstance(value)) {
-            throw new ColumnFormatException(signature.get(columnIndex).printedName + " expected");
+        if (value != null && !signature.get(columnIndex).getBoxedClass().isInstance(value)) {
+            throw new ColumnFormatException(signature.get(columnIndex).getPrintedName() + " expected");
         }
         values.set(columnIndex, value);
     }
@@ -34,7 +34,7 @@ class StoreableImpl implements Storeable {
     }
 
     protected void checkGetterType(Class<?> type, int columnIndex) {
-        final Class<?> expected = signature.get(columnIndex).boxedClass;
+        final Class<?> expected = signature.get(columnIndex).getBoxedClass();
         if (!expected.equals(type)) {
             throw new ColumnFormatException(
                     String.format(

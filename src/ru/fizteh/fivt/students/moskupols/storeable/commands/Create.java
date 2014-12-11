@@ -40,7 +40,7 @@ public class Create extends NameFirstCommand {
             if (atomType == null) {
                 throw new CommandExecutionException(this, "Unknown type" + args[i]);
             }
-            types.add(atomType.boxedClass);
+            types.add(atomType.getBoxedClass());
         }
         Table newTable;
         try {

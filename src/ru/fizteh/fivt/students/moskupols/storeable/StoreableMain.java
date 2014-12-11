@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.moskupols.storeable;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.moskupols.cliutils.UnknownCommandException;
 import ru.fizteh.fivt.students.moskupols.cliutils2.CommandChooser;
 import ru.fizteh.fivt.students.moskupols.cliutils2.NameFirstCommandChooser;
@@ -26,7 +27,7 @@ public class StoreableMain {
             System.exit(1);
         }
 
-        final TableProviderFactoryImpl providerFactory = new TableProviderFactoryImpl();
+        final TableProviderFactory providerFactory = new TableProviderFactoryImpl();
         final TableProvider provider;
         try {
             provider = providerFactory.create(dbPath);
@@ -35,7 +36,7 @@ public class StoreableMain {
             return;
         }
 
-        final StoreableContext context = new StoreableContext(provider);
+        final Object context = new StoreableContext(provider);
         final CommandChooser chooser = new NameFirstCommandChooser(
                 new Commit(), new Create(), new Drop(),
                 new Get(), new Put(), new Remove(),

@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.moskupols.storeable;
 /**
 * Created by moskupols on 03.12.14.
 */
-public enum StoreableAtomType {
+enum StoreableAtomType {
     INT(Integer.class, "int"),
     DOUBLE(Double.class, "double"),
     BYTE(Byte.class, "byte"),
@@ -12,17 +12,17 @@ public enum StoreableAtomType {
     BOOLEAN(Boolean.class, "boolean"),
     FLOAT(Float.class, "float");
 
-    public final Class<?> boxedClass;
-    public final String printedName;
+    private final Class<?> boxedClass;
+    private final String printedName;
 
-    StoreableAtomType(Class<?> type, String name) {
+    private StoreableAtomType(Class<?> type, String name) {
         boxedClass = type;
         printedName = name;
     }
 
     public static StoreableAtomType withPrintedName(String name) {
         for (StoreableAtomType type : StoreableAtomType.values()) {
-            if (type.printedName.equals(name)) {
+            if (type.getPrintedName().equals(name)) {
                 return type;
             }
         }
@@ -31,7 +31,7 @@ public enum StoreableAtomType {
 
     public static StoreableAtomType fromBoxedClass(Class<?> cls) {
         for (StoreableAtomType type : StoreableAtomType.values()) {
-            if (type.boxedClass.equals(cls)) {
+            if (type.getBoxedClass().equals(cls)) {
                 return type;
             }
         }
@@ -40,6 +40,14 @@ public enum StoreableAtomType {
 
     @Override
     public String toString() {
+        return getPrintedName();
+    }
+
+    public Class<?> getBoxedClass() {
+        return boxedClass;
+    }
+
+    public String getPrintedName() {
         return printedName;
     }
 }
