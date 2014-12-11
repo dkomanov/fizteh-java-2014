@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MyTableProvider implements TableProvider {
+    ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private Path location;
     private HashMap<String, StructedTable> tables;
-    ReentrantReadWriteLock lock;
 
 
     public MyTableProvider(Path path) throws IOException {
@@ -75,11 +75,15 @@ public class MyTableProvider implements TableProvider {
             }
             if (tables.containsKey(name)) {
                 res = null;
+            } else {
+                res = new StructedTable(location.resolve(name).normalize(), columnTypes);
+                tables.put(name, res);
             }
-            res = new StructedTable(location.resolve(name).normalize(), columnTypes);
-            tables.put(name, res);
         } finally {
             lock.writeLock().unlock();
+        }
+        if (res == null) {
+            return null;
         }
         return new TransactionTable(res);
     }
