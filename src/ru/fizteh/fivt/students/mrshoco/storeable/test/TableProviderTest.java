@@ -1,18 +1,26 @@
 package storeable.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.LinkedList;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import storeable.structured.*;
+import storeable.structured.ColumnFormatException;
+import storeable.structured.Storeable;
+import storeable.structured.Table;
+import storeable.structured.TableProvider;
+import storeable.structured.TableProviderFactory;
 import storeable.util.MyTableProviderFactory;
-
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
 
 public class TableProviderTest {
     @Rule
@@ -24,6 +32,7 @@ public class TableProviderTest {
 
     @Before
     public void initProvider() throws IOException {
+        System.err.println(tmpFolder.getRoot());
         factory = new MyTableProviderFactory();
         providerPath = tmpFolder.newFolder().getAbsolutePath();
         provider = factory.create(providerPath);
@@ -153,5 +162,18 @@ public class TableProviderTest {
         Storeable storeable = provider.createFor(table);
         storeable.setColumnAt(2, 5.2);
         assertEquals(storeable.getDoubleAt(2), (Double) 5.2);
+    }
+
+    @Test
+    public void testListOfTables() throws IOException {
+        Class<?>[] types = {Integer.class};
+        provider.createTable("table", Arrays.asList(types)).commit();
+        provider.createTable("таблица", Arrays.asList(types));
+        provider.createTable("табличка", Arrays.asList(types));
+        assertEquals(provider.getTableNames().size(), 3);
+        provider.removeTable("table");
+        assertEquals(provider.getTableNames().size(), 2);
+        assertTrue(provider.getTableNames().containsAll(
+                new LinkedList<String>(Arrays.asList("таблица", "табличка"))));
     }
 }

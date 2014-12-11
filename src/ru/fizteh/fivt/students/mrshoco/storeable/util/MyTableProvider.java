@@ -164,12 +164,12 @@ public class MyTableProvider implements TableProvider{
 
         for (File table : root.listFiles()) {
             if (table.getName().equals(root.getName())) {
-                System.out.println(table.getName());
+                tables.add(table.getName());
             } else if (table.isDirectory()) {
                 try {
-                    System.out.println(table.getName());
+                    tables.add(table.getName());
                 } catch (Exception e) {
-                    System.out.println("Problem with one of Data Bases");
+                    tables.add("Problem with one of Data Bases");
                 }
             }
         }
