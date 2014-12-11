@@ -30,9 +30,11 @@ public abstract class AbstractStructuredTable implements Table {
         final String[] typeNames = line.split(" +");
         List<Class<?>> signature = new ArrayList<>(typeNames.length);
         for (String typeName : typeNames) {
-            final StoreableAtomType type = StoreableAtomType.withPrintedName(typeName);
-            if (type == null) {
-                throw new IOException("Unknown type " + typeName);
+            final StoreableAtomType type;
+            try {
+                type = StoreableAtomType.withPrintedName(typeName);
+            } catch (EnumConstantNotPresentException e) {
+                throw new IOException("Unknown type " + typeName, e);
             }
             signature.add(type.getBoxedClass());
         }

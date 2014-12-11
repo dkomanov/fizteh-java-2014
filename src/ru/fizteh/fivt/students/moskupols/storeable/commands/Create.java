@@ -36,9 +36,11 @@ public class Create extends NameFirstCommand {
         final StoreableContext cont = (StoreableContext) context;
         List<Class<?>> types = new ArrayList<>(args.length - 2);
         for (int i = 2; i < args.length; i++) {
-            final StoreableAtomType atomType = StoreableAtomType.withPrintedName(args[i]);
-            if (atomType == null) {
-                throw new CommandExecutionException(this, "Unknown type" + args[i]);
+            final StoreableAtomType atomType;
+            try {
+                atomType = StoreableAtomType.withPrintedName(args[i]);
+            } catch (EnumConstantNotPresentException e) {
+                throw new CommandExecutionException(this, "Unknown type" + args[i], e);
             }
             types.add(atomType.getBoxedClass());
         }

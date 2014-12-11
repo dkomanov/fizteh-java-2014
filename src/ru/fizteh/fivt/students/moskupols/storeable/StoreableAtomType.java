@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.moskupols.storeable;
 /**
 * Created by moskupols on 03.12.14.
 */
-enum StoreableAtomType {
+public enum StoreableAtomType {
     INT(Integer.class, "int"),
     DOUBLE(Double.class, "double"),
     BYTE(Byte.class, "byte"),
@@ -26,7 +26,7 @@ enum StoreableAtomType {
                 return type;
             }
         }
-        return null;
+        throw new EnumConstantNotPresentException(StoreableAtomType.class, name);
     }
 
     public static StoreableAtomType fromBoxedClass(Class<?> cls) {
@@ -35,7 +35,7 @@ enum StoreableAtomType {
                 return type;
             }
         }
-        return null;
+        throw new EnumConstantNotPresentException(StoreableAtomType.class, cls.getSimpleName());
     }
 
     @Override
