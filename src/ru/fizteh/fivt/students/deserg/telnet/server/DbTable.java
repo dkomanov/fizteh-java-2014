@@ -1,7 +1,10 @@
-package ru.fizteh.fivt.students.deserg.telnet;
+package ru.fizteh.fivt.students.deserg.telnet.server;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.deserg.telnet.Serializer;
+import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyException;
+import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyIOException;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -529,7 +532,7 @@ public class DbTable implements Table, AutoCloseable {
         lock.writeLock().lock();
 
         if (Files.exists(tablePath)) {
-            Shell.deleteContent(tablePath);
+            FileSystem.deleteContent(tablePath);
         } else {
             try {
                 Files.createDirectory(tablePath);
@@ -539,7 +542,7 @@ public class DbTable implements Table, AutoCloseable {
             }
         }
 
-        Shell.writeSignature(signature, tablePath);
+        FileSystem.writeSignature(signature, tablePath);
 
         for (HashMap.Entry<String, Storeable> entry : committedData.entrySet()) {
 

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.deserg.telnet;
+package ru.fizteh.fivt.students.deserg.telnet.server;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;

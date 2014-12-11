@@ -3,10 +3,10 @@ package ru.fizteh.fivt.students.deserg.telnet.test;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.students.deserg.telnet.DbTable;
-import ru.fizteh.fivt.students.deserg.telnet.DbTableProvider;
-import ru.fizteh.fivt.students.deserg.telnet.DbTableProviderFactory;
-import ru.fizteh.fivt.students.deserg.telnet.TableRow;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTable;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProviderFactory;
+import ru.fizteh.fivt.students.deserg.telnet.server.TableRow;
 
 import java.io.IOException;
 import java.text.ParseException;

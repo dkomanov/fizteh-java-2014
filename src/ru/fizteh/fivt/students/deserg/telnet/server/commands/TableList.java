@@ -1,7 +1,7 @@
-package ru.fizteh.fivt.students.deserg.telnet.commands;
+package ru.fizteh.fivt.students.deserg.telnet.server.commands;
 
-import ru.fizteh.fivt.students.deserg.telnet.DbTable;
-import ru.fizteh.fivt.students.deserg.telnet.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTable;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by deserg on 03.10.14.
  */
-public class TableList implements Command {
+public class TableList implements DbCommand {
 
     @Override
     public void execute(ArrayList<String> args, DbTableProvider db) {

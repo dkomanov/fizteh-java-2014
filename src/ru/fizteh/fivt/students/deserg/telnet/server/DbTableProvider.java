@@ -1,9 +1,8 @@
-package ru.fizteh.fivt.students.deserg.telnet;
+package ru.fizteh.fivt.students.deserg.telnet.server;
 
-import ru.fizteh.fivt.storage.structured.ColumnFormatException;
-import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.students.deserg.telnet.Serializer;
+import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyIOException;
 
 import java.io.File;
 import java.io.IOException;
@@ -335,37 +334,37 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
         return currentTable;
     }
 
-    public void setCurrentTable(String name) {
+    public String setCurrentTable(String name) {
 
         lock.writeLock().lock();
 
         if (!tables.containsKey(name)) {
-            System.out.println(name + " not exists");
             lock.writeLock().unlock();
-            return;
+            return name + " not exists";
         }
 
         if (currentTable != null && currentTable.getNumberOfUncommittedChanges() > 0) {
-            System.out.println(currentTable.getNumberOfUncommittedChanges() + " unsaved changes");
             lock.writeLock().unlock();
-            return;
+            return currentTable.getNumberOfUncommittedChanges() + " unsaved changes";
         }
 
         currentTable = tables.get(name);
-        System.out.println("using " + name);
         lock.writeLock().unlock();
+        return "using " + name;
     }
 
 
-    public void showTableSet() {
+    public String showTableSet() {
 
         lock.readLock().lock();
-        System.out.println("table_name row_count");
+        String result = "table_name row_count\n";
         for (HashMap.Entry<String, DbTable> entry: tables.entrySet()) {
             DbTable table = entry.getValue();
-            System.out.println(table.getName() + " " + table.size());
+            result += table.getName() + " " + table.size() + "\n";
         }
         lock.readLock().unlock();
+
+        return result;
     }
 
     private boolean checkSignature(List<Class<?>> signature) {
@@ -422,7 +421,7 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
 
                     Path tablePath = item.toPath();
                     try {
-                        List<Class<?>> signature = Shell.readSignature(tablePath);
+                        List<Class<?>> signature = FileSystem.readSignature(tablePath);
                         DbTable table = new DbTable(tablePath, signature);
                         table.read();
                         tables.put(item.getName(), table);
@@ -444,7 +443,7 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     public void write() {
 
         lock.writeLock().lock();
-        Shell.deleteContent(dbPath);
+        FileSystem.deleteContent(dbPath);
 
         for (HashMap.Entry<String, DbTable> entry: tables.entrySet()) {
 

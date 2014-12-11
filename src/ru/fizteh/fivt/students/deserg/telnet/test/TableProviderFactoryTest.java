@@ -3,8 +3,8 @@ package ru.fizteh.fivt.students.deserg.telnet.test;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.deserg.telnet.DbTableProviderFactory;
-import ru.fizteh.fivt.students.deserg.telnet.Shell;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProviderFactory;
+import ru.fizteh.fivt.students.deserg.telnet.server.FileSystem;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -109,7 +109,7 @@ public class TableProviderFactoryTest {
 
     @After
     public void finish() {
-        Shell.delete(testDir);
+        FileSystem.delete(testDir);
     }
 
 }

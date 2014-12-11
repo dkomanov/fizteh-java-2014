@@ -1,14 +1,14 @@
-package ru.fizteh.fivt.students.deserg.telnet.commands;
+package ru.fizteh.fivt.students.deserg.telnet.server.commands;
 
-import ru.fizteh.fivt.students.deserg.telnet.DbTable;
-import ru.fizteh.fivt.students.deserg.telnet.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTable;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
 
 import java.util.ArrayList;
 
 /**
  * Created by deserg on 27.11.14.
  */
-public class TableRollback implements Command {
+public class TableRollback implements DbCommand {
 
     @Override
     public void execute(ArrayList<String> args, DbTableProvider db) {

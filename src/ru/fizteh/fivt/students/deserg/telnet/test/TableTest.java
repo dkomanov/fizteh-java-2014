@@ -4,7 +4,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.students.deserg.telnet.*;
+import ru.fizteh.fivt.students.deserg.telnet.server.FileSystem;
+import ru.fizteh.fivt.students.deserg.telnet.server.TableRow;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTable;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProviderFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -445,7 +449,7 @@ public class TableTest {
     @After
     public void finish() {
 
-        Shell.delete(dbPath);
+        FileSystem.delete(dbPath);
 
     }
 

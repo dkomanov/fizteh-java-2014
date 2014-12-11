@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.deserg.telnet;
+package ru.fizteh.fivt.students.deserg.telnet.server;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 /**
  * Created by deserg on 26.11.14.
  */
-public class DbTableProviderFactory implements TableProviderFactory, AutoCloseable {
+public class DbTableProviderFactory implements TableProviderFactory, AutoCloseable{
 
     private boolean closed = false;
 
@@ -58,6 +58,9 @@ public class DbTableProviderFactory implements TableProviderFactory, AutoCloseab
 
     }
 
+    /**
+     * Not-interface methods begin here
+     */
 
 
     private void checkClosed() {

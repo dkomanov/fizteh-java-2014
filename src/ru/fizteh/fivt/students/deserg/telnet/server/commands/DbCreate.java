@@ -1,7 +1,6 @@
-package ru.fizteh.fivt.students.deserg.telnet.commands;
+package ru.fizteh.fivt.students.deserg.telnet.server.commands;
 
-import ru.fizteh.fivt.students.deserg.telnet.DbTableProvider;
-import ru.fizteh.fivt.students.deserg.telnet.MyException;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
 import ru.fizteh.fivt.students.deserg.telnet.Serializer;
 
 import java.io.IOException;
@@ -11,15 +10,14 @@ import java.util.List;
 /**
  * Created by deserg on 22.10.14.
  */
-public class DbCreate implements Command {
+public class DbCreate implements DbCommand {
 
     @Override
-    public void execute(ArrayList<String> args, DbTableProvider db) {
+    public String execute(ArrayList<String> args, DbTableProvider db) {
 
         if (args.size() < 2) {
-            throw new MyException("Not enough arguments");
-        }
-        if (args.size() >= 2) {
+            return "Not enough arguments";
+        } else {
 
             String tableName = args.get(1);
             String typeString = "";
@@ -32,16 +30,17 @@ public class DbCreate implements Command {
 
             try {
                 if (db.createTable(tableName, signature) == null) {
-                    System.out.println(tableName + " exists");
+                    return tableName + " exists";
                 } else {
-                    System.out.println("created");
+                    return "created";
                 }
+
             } catch (IOException ex) {
-                System.out.println("IO error while creating the table \"" + tableName + "\"");
-                System.exit(1);
+                return "IO error while creating the table \"" + tableName + "\"";
             }
 
         }
+
     }
 
 }

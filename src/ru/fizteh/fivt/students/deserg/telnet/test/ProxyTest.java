@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.w3c.dom.Document;
-import ru.fizteh.fivt.students.deserg.telnet.DbProxyFactory;
+import ru.fizteh.fivt.students.deserg.telnet.proxy.DbProxyFactory;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;

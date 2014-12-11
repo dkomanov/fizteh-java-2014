@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.deserg.telnet;
+package ru.fizteh.fivt.students.deserg.telnet.proxy;
 
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
 

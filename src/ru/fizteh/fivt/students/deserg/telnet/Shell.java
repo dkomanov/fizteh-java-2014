@@ -1,148 +1,123 @@
 package ru.fizteh.fivt.students.deserg.telnet;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
+import ru.fizteh.fivt.students.deserg.telnet.client.commands.ClientCommand;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.telnet.server.commands.*;
+
+import java.util.*;
 
 /**
- * Created by deserg on 01.12.14.
+ * Created by deserg on 11.12.14.
  */
 public class Shell {
 
-    public static boolean checkName(String name) {
 
-        return (!name.contains("\\") && !name.contains("/000"));
+    private static Map<String, DbCommand> serverCommandMap;
+    private static Map<String, ClientCommand> clientCommandMap;
+
+    static {
+
+        serverCommandMap = new HashMap<>();
+        serverCommandMap.put("exit", new TableExit());
+        serverCommandMap.put("get", new TableGet());
+        serverCommandMap.put("list", new TableList());
+        serverCommandMap.put("put", new TablePut());
+        serverCommandMap.put("remove", new TableRemove());
+        serverCommandMap.put("size", new TableSize());
+        serverCommandMap.put("commit", new TableCommit());
+        serverCommandMap.put("rollback", new TableRollback());
+        serverCommandMap.put("create", new DbCreate());
+        serverCommandMap.put("drop", new DbDrop());
+        serverCommandMap.put("use", new DbUse());
+        serverCommandMap.put("show", new DbShowTables());
+
+        clientCommandMap = new HashMap<>();
+
 
     }
 
-    public static void deleteContent(Path path) {
+    public static String executeServerCommand(String commands, DbTableProvider db) {
 
-        if (!Files.isDirectory(path)) {
-                throw new MyException("Database is not located in a directory");
-        } else {
-            deleteFinal(path, false);
-        }
+        return execute(commands, db);
 
     }
 
+    public static String executeClientCommand(String commands) {
 
-    public static void delete(Path path) {
+        return execute(commands, null);
+    }
 
-        if (!Files.isDirectory(path)) {
-            try {
-                Files.delete(path);
-            } catch (IOException ex) {
-                throw new MyException("Error while deleting " + path.toString());
+
+    private static String execute(String commands, DbTableProvider db) {
+
+        Queue<ArrayList<String>> commandQueue = new LinkedList<>();
+
+        System.out.print("$ ");
+
+        String lineStr = "";
+
+        if (commands == null) {
+            Scanner lineScan = new Scanner(System.in);
+            if (lineScan.hasNext()) {
+                lineStr = lineScan.nextLine();
+            } else {
+                System.exit(1);
             }
         } else {
-            deleteFinal(path, true);
+            lineStr = commands;
         }
+
+        String[] commandBlockAr = lineStr.split(";");
+
+        for (String commandBlock: commandBlockAr) {
+            String[] argsStr = commandBlock.trim().split("\\s+");
+            ArrayList<String> argumentVector = new ArrayList<>();
+
+            for (String arg: argsStr) {
+                argumentVector.add(arg);
+            }
+
+            if (argumentVector.size() > 0) {
+                commandQueue.add(argumentVector);
+            }
+        }
+
+        return executeQueue(commandQueue, db);
 
     }
 
-    private static void deleteFinal(Path path, boolean deleteParent) {
 
-        File curDir = new File(path.toString());
-        File[] content = curDir.listFiles();
 
-        if (content != null) {
-            for (File item: content) {
-                if (item.isFile()) {
-                    try {
-                        Files.delete(item.toPath());
-                    } catch (IOException ex) {
-                        throw new MyException("I/O error occurs while removing " + item.toPath().toString());
-                    }
-                } else {
-                    deleteFinal(item.toPath(), true);
+    private static String executeQueue(Queue<ArrayList<String>> commandQueue, DbTableProvider db) {
+
+        if (commandQueue.size() == 0) {
+            return null;
+        }
+
+        String result = "";
+
+        while (commandQueue.size() > 0) {
+            ArrayList<String> arguments = commandQueue.poll();
+
+
+
+            if (db != null) {
+                DbCommand command;
+                command = serverCommandMap.get(arguments.get(0));
+                if (command != null) {
+                    result += command.execute(arguments, db);
                 }
-            }
-        }
-
-        if (deleteParent) {
-            try {
-                Files.delete(path);
-            } catch (IOException ex) {
-                throw new MyException("I/O error occurs while removing " + path.toString());
-            }
-        }
-    }
-
-
-    public static List<Class<?>> readSignature(Path path) throws MyIOException {
-
-        Path sPath = path.resolve("signature.tsv");
-
-        try (DataInputStream is = new DataInputStream(Files.newInputStream(sPath))) {
-
-            if (is.available() == 0) {
-                throw new MyIOException("File is empty");
-            }
-
-            String line = "";
-            while (is.available() > 0) {
-                line += is.readChar();
-            }
-
-            String[] types = line.trim().split("\t");
-            List<Class<?>> list = Serializer.makeSignatureFromStrings(types);
-            return list;
-
-        } catch (IOException ex) {
-            throw new MyIOException("Database: read: failed to read from \"signature.tsv\"");
-        }
-
-    }
-
-    public static void writeSignature(List<Class<?>> signature, Path path) throws MyIOException {
-
-        Path sPath = path.resolve("signature.tsv");
-        if (Files.exists(sPath)) {
-            Shell.delete(sPath);
-        }
-
-        try {
-            Files.createFile(sPath);
-        } catch (IOException ex) {
-            throw new MyIOException("Database: write: failed create \"signature.tsv\"");
-        }
-
-        try (DataOutputStream os = new DataOutputStream(Files.newOutputStream(sPath))) {
-
-            for (Class<?> cl: signature) {
-
-                if (cl == Integer.class) {
-                    os.writeChars("int\t");
-
-                } else if (cl == Long.class) {
-                    os.writeChars("long\t");
-
-                } else if (cl == Byte.class) {
-                    os.writeChars("byte\t");
-
-                } else if (cl == Float.class) {
-                    os.writeChars("float\t");
-
-                } else if (cl == Double.class) {
-                    os.writeChars("double\t");
-
-                } else if (cl == Boolean.class) {
-                    os.writeChars("boolean\t");
-
-                } else if (cl == String.class) {
-                    os.writeChars("String\t");
-                } else {
-                    throw new MyException("Database: write: invalid signature");
+            } else {
+                ClientCommand command;
+                command = clientCommandMap.get(arguments.get(0));
+                if (command != null) {
+                    result += command.execute(arguments);
                 }
             }
 
-        } catch (IOException ex) {
-            throw new MyIOException("Database: read: failed write to \"signature.tsv\"");
         }
+
+        return result;
     }
 
 }

@@ -3,6 +3,9 @@ package ru.fizteh.fivt.students.deserg.telnet;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyException;
+import ru.fizteh.fivt.students.deserg.telnet.server.DbTable;
+import ru.fizteh.fivt.students.deserg.telnet.server.TableRow;
 
 import java.text.ParseException;
 import java.util.ArrayList;
