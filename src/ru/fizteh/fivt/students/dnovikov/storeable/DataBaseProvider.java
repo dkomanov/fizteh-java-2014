@@ -124,33 +124,33 @@ public class DataBaseProvider implements TableProvider {
             throw new ColumnFormatException("Wrong number of values");
         }
         for (int i = 0; i < types.length; i++) {
-                values[i] = values[i].trim();
-                if (values[i].equals("null")) {
-                    storeableValue.setColumnAt(i, null);
-                } else if (!types[i].equals(Integer.class) && !types[i].equals(String.class)) {
-                    try {
-                        storeableValue.setColumnAt(i,
-                                types[i].getMethod("parse" + types[i].getSimpleName(),
-                                        String.class).invoke(null, values[i]));
-                    } catch (NoSuchMethodException | InvocationTargetException
-                            | IllegalArgumentException | IllegalAccessException e) {
-                        throw new ParseException(e.getMessage(), 0);
-                    }
-                } else if (types[i].equals(Integer.class)) {
-                    try {
-                        storeableValue.setColumnAt(i, Integer.parseInt(values[i]));
-                    } catch (NumberFormatException e) {
-                        throw new ParseException("can't parse to Integer: " + e.getMessage(), 0);
-                    }
-                } else if (types[i].equals(String.class)) {
-                    try {
+            values[i] = values[i].trim();
+            if (values[i].equals("null")) {
+                storeableValue.setColumnAt(i, null);
+            } else if (!types[i].equals(Integer.class) && !types[i].equals(String.class)) {
+                try {
+                    storeableValue.setColumnAt(i,
+                            types[i].getMethod("parse" + types[i].getSimpleName(),
+                                    String.class).invoke(null, values[i]));
+                } catch (NoSuchMethodException | InvocationTargetException
+                        | IllegalArgumentException | IllegalAccessException e) {
+                    throw new ParseException(e.getMessage(), 0);
+                }
+            } else if (types[i].equals(Integer.class)) {
+                try {
+                    storeableValue.setColumnAt(i, Integer.parseInt(values[i]));
+                } catch (NumberFormatException e) {
+                    throw new ParseException("can't parse to Integer: " + e.getMessage(), 0);
+                }
+            } else if (types[i].equals(String.class)) {
+                try {
                     storeableValue.setColumnAt(i,
                             values[i].substring(values[i].indexOf('"') + 1,
                                     values[i].lastIndexOf('"')));
-                    } catch (IndexOutOfBoundsException e) {
-                        throw new ParseException("wrong JSON format for String", 0);
-                    }
+                } catch (IndexOutOfBoundsException e) {
+                    throw new ParseException("wrong JSON format for String", 0);
                 }
+            }
         }
         return storeableValue;
     }
@@ -185,11 +185,12 @@ public class DataBaseProvider implements TableProvider {
 
     @Override
     public Storeable createFor(Table table) {
-        Class<?>[] types = new Class[table.getColumnsCount()];
-        for (int i = 0; i < types.length; i++) {
-            types[i] = table.getColumnType(i);
+        int size = table.getColumnsCount();
+        List<Class<?>> types = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            types.add(table.getColumnType(i));
         }
-        return new StoreableType(Arrays.asList(types));
+        return new StoreableType(types);
     }
 
     @Override
