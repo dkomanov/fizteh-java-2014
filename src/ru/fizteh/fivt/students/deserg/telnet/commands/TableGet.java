@@ -1,8 +1,7 @@
-package ru.fizteh.fivt.students.deserg.telnet.server.commands;
+package ru.fizteh.fivt.students.deserg.telnet.commands;
 
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTable;
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
-import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyException;
 import ru.fizteh.fivt.students.deserg.telnet.Serializer;
 
 import java.util.ArrayList;
@@ -13,29 +12,28 @@ import java.util.ArrayList;
 public class TableGet implements DbCommand {
 
     @Override
-    public void execute(ArrayList<String> args, DbTableProvider db) {
+    public String execute(ArrayList<String> args, DbTableProvider db) {
 
         if (args.size() < 2) {
-            throw new MyException("Not enough arguments");
+            return "Not enough arguments";
         }
         if (args.size() == 2) {
 
             DbTable table = db.getCurrentTable();
             if (table == null) {
-                System.out.println("no table");
-                return;
+                return "no table";
             }
 
             String key = args.get(1);
             String value = Serializer.serialize(table, table.get(key));
             if (value != null) {
-                System.out.println("found\n" + value);
+                return "found\n" + value;
             } else {
-                System.out.println("not found");
+                return "not found";
             }
 
         } else {
-            System.out.println("Too many arguments");
+            return "Too many arguments";
         }
 
     }

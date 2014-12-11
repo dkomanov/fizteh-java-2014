@@ -14,10 +14,10 @@ public class Main {
         String mode = System.getProperty("mode");
         if (mode != null) {
             Program server = new Server();
-            server.work(args);
+            server.work();
         } else {
             Program client = new Client();
-            client.work(args);
+            client.work();
         }
 
     }

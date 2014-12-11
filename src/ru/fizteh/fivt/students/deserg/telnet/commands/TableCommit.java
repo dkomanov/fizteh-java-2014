@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.deserg.telnet.server.commands;
+package ru.fizteh.fivt.students.deserg.telnet.commands;
 
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTable;
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
@@ -8,20 +8,19 @@ import java.util.ArrayList;
 /**
  * Created by deserg on 27.11.14.
  */
-public class TableRollback implements DbCommand {
+public class TableCommit implements DbCommand {
 
     @Override
-    public void execute(ArrayList<String> args, DbTableProvider db) {
+    public String execute(ArrayList<String> args, DbTableProvider db) {
 
         if (args.size() == 1) {
 
             DbTable table = db.getCurrentTable();
 
-            System.out.println(table.rollback());
-
+            return String.valueOf(table.commit());
 
         } else {
-            System.out.println("Too many arguments");
+            return "Too many arguments";
         }
 
     }

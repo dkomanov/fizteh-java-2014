@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.deserg.telnet.server.commands;
+package ru.fizteh.fivt.students.deserg.telnet.commands;
 
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
 

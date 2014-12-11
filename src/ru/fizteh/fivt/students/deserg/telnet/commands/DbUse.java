@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.deserg.telnet.server.commands;
+package ru.fizteh.fivt.students.deserg.telnet.commands;
 
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
 
@@ -7,25 +7,22 @@ import java.util.ArrayList;
 /**
  * Created by deserg on 22.10.14.
  */
-public class DbShowTables implements DbCommand {
+public class DbUse implements DbCommand {
 
     @Override
     public String execute(ArrayList<String> args, DbTableProvider db) {
 
         if (args.size() < 2) {
-            return "Wrong command";
-        } else if (args.size() == 2) {
+            return "Not enough arguments";
+        }
+        if (args.size() == 2) {
 
-            if (!args.get(1).equals("tables")) {
-                return "Wrong command";
-            }
-
-            return db.showTableSet();
-
+            return db.setCurrentTable(args.get(1));
 
         } else {
             return "Too many arguments";
         }
+
     }
 
 }

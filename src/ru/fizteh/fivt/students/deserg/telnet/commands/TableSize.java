@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.deserg.telnet.server.commands;
+package ru.fizteh.fivt.students.deserg.telnet.commands;
 
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTable;
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
@@ -12,17 +12,16 @@ import java.util.ArrayList;
 public class TableSize implements DbCommand {
 
     @Override
-    public void execute(ArrayList<String> args, DbTableProvider db) {
+    public String execute(ArrayList<String> args, DbTableProvider db) {
 
         if (args.size() == 1) {
 
             DbTable table = db.getCurrentTable();
 
-            System.out.println(table.size());
-
+            return String.valueOf(table.size());
 
         } else {
-            System.out.println("Too many arguments");
+            return "Too many arguments";
         }
 
     }

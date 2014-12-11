@@ -5,6 +5,6 @@ package ru.fizteh.fivt.students.deserg.telnet;
  */
 public interface Program {
 
-    void work(String[] args);
+    void work();
 
 }

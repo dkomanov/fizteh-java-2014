@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.deserg.telnet.server;
 
-import ru.fizteh.fivt.students.deserg.telnet.Shell;
-import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyException;
+import ru.fizteh.fivt.students.deserg.telnet.DbCommandExecuter;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,12 +14,12 @@ public class ClientAgent implements Callable<Integer> {
 
     Socket socket;
     DbTableProvider db;
+    CommonData data;
 
-    public ClientAgent(Socket socket, DbTableProvider db) {
+    public ClientAgent(Socket socket, CommonData data) {
 
         this.socket = socket;
-        this.db = db;
-
+        this.data = data;
     }
 
     @Override
@@ -43,7 +42,7 @@ public class ClientAgent implements Callable<Integer> {
             } else {
                 String result;
                 try {
-                    result = Shell.executeServerCommand(inputCommand, db);
+                    result = DbCommandExecuter.executeDbCommand(inputCommand, db);
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                     throw ex;

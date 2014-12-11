@@ -1,66 +1,142 @@
 package ru.fizteh.fivt.students.deserg.telnet.server;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.deserg.telnet.Program;
-import ru.fizteh.fivt.students.deserg.telnet.server.commands.*;
 
-import java.io.IOException;
-import java.net.ServerSocket;
+import ru.fizteh.fivt.students.deserg.telnet.Program;
+
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Created by deserg on 11.12.14.
  */
 public class Server implements Program {
 
-    private Map<String, DbCommand> commandMap = new HashMap<>();
-    private Queue<ArrayList<String>> argumentsQueue = new LinkedList<>();
-    private TableProvider db;
-    private int port = 10001;
-    ServerSocket socket;
+    private DbTableProvider db;
+    private CommonData data;
+    private ExecutorService serverService = Executors.newFixedThreadPool(5);
+    private Future<Integer> serverFuture;
+    private boolean started = false;
 
     public Server() {
 
         String dbDir = System.getProperty("fizteh.db.dir");
-
-
         DbTableProviderFactory factory = new DbTableProviderFactory();
-        db = factory.create(dbDir);
-
-        commandMap.put("exit", new TableExit());
-        commandMap.put("get", new TableGet());
-        commandMap.put("list", new TableList());
-        commandMap.put("put", new TablePut());
-        commandMap.put("remove", new TableRemove());
-        commandMap.put("size", new TableSize());
-        commandMap.put("commit", new TableCommit());
-        commandMap.put("rollback", new TableRollback());
-        commandMap.put("create", new DbCreate());
-        commandMap.put("drop", new DbDrop());
-        commandMap.put("use", new DbUse());
-        commandMap.put("show", new DbShowTables());
+        db = (DbTableProvider) factory.create(dbDir);
+        data = new CommonData(db);
 
     }
 
     @Override
-    public void work(String[] args) {
+    public void work() {
 
+        while (true) {
 
+            System.out.print("$ ");
+            String lineStr = "";
 
-    }
+            Scanner lineScan = new Scanner(System.in);
+            if (lineScan.hasNext()) {
+                lineStr = lineScan.nextLine();
+            } else {
+                System.exit(1);
+            }
 
-    public void acceptConnections() {
+            String[] argumentAr = lineStr.split("\\s+");
+            ArrayList<String> arguments = new ArrayList<>();
 
-        try {
-            socket = new ServerSocket(port);
+            Collections.addAll(arguments, argumentAr);
+            System.out.println(execute(arguments));
 
-
-
-        } catch (IOException ex) {
-            System.out.println("Error with socket");
-            System.exit(1);
         }
 
     }
+
+
+    private String execute(ArrayList<String> arguments) {
+
+        if (arguments.size() < 1 || arguments.size() > 2) {
+            return "Wrong command";
+        } else {
+
+            String command = arguments.get(0);
+            switch (command) {
+
+                case "start": {
+                    return commandStart(arguments);
+                }
+
+                case "stop": {
+                    return commandStop(arguments);
+                }
+
+                case "listusers": {
+                    return commandListUsers(arguments);
+                }
+
+                default: {
+                    return "Wrong command";
+                }
+
+            }
+
+        }
+
+    }
+
+    public String commandStart(ArrayList<String> arguments) {
+
+        if (started) {
+            return "not started: already started";
+        }
+
+        if (arguments.size() == 2) {
+            try {
+                int port = Integer.valueOf(arguments.get(1));
+                data.setPort(port);
+            } catch (NumberFormatException ex) {
+                return "not started: wrong port number";
+            }
+        }
+
+        serverFuture = serverService.submit(new ConnectionManager(data));
+        return "started at port " + data.port;
+
+    }
+
+    public String commandStop(ArrayList<String> arguments) {
+
+        if (arguments.size() != 1) {
+            return "Too many arguments (required: 0)";
+        }
+
+        if (!started) {
+            return "not started";
+        }
+
+        serverService.shutdown();
+        if (serverService.isShutdown()) {
+            return "stopped at port " + data.port;
+        } else {
+            return "not stopped :((";
+        }
+    }
+
+    public String commandListUsers(ArrayList<String> arguments) {
+
+        if (arguments.size() != 1) {
+            return "Too many arguments (required: 0)";
+        }
+
+        String users = "";
+        for (String string: data.users) {
+            users += string + "\n";
+        }
+
+        return users.substring(0, users.length() - 1);
+
+    }
+
 
 }
