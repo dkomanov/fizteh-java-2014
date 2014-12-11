@@ -61,13 +61,18 @@ public class DbTableProvider implements TableProvider {
         }
 
         lock.readLock().lock();
-        if (removedTables.contains(name)) {
+
+        try {
+
+            if (removedTables.contains(name)) {
+                throw new IllegalStateException("Database \"" + name + "\": getTable: table was removed");
+            } else {
+                Table table = tables.get(name);
+                return table;
+            }
+        } finally {
+
             lock.readLock().unlock();
-            throw new IllegalStateException("Database \"" + name + "\": getTable: table was removed");
-        } else {
-            Table table = tables.get(name);
-            lock.readLock().unlock();
-            return table;
         }
     }
 
@@ -110,17 +115,23 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + name + "\": createTable: unacceptable table name");
         }
 
-        lock.writeLock().lock();
-        if (tables.containsKey(name)) {
-            lock.writeLock().unlock();
-            return null;
-        } else {
 
-            DbTable table = new DbTable(dbPath.resolve(name), columnTypes);
-            tables.put(name, table);
-            removedTables.remove(name);
+        lock.writeLock().lock();
+
+        try {
+
+            if (tables.containsKey(name)) {
+                return null;
+            } else {
+
+                DbTable table = new DbTable(dbPath.resolve(name), columnTypes);
+                tables.put(name, table);
+                removedTables.remove(name);
+                return table;
+            }
+        } finally {
+
             lock.writeLock().unlock();
-            return table;
         }
 
     }
@@ -160,21 +171,25 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + name + "\": removeTable: unacceptable table name");
         }
 
-        lock.readLock().lock();
-        if (!tables.containsKey(name)) {
-            lock.readLock().unlock();
-            throw new IllegalStateException("Database \"" + dbPath + "\": removeTable: table does not exist");
-        }
-        lock.readLock().unlock();
-
         lock.writeLock().lock();
-        removedTables.add(name);
-        if (currentTable != null && currentTable.getName().equals(name)) {
-            currentTable = null;
-        }
 
-        tables.remove(name);
-        lock.writeLock().unlock();
+        try {
+
+            if (!tables.containsKey(name)) {
+                throw new IllegalStateException("Database \"" + dbPath + "\": removeTable: table does not exist");
+            }
+
+            removedTables.add(name);
+            if (currentTable != null && currentTable.getName().equals(name)) {
+                currentTable = null;
+            }
+
+            tables.remove(name);
+
+        } finally {
+
+            lock.writeLock().unlock();
+        }
 
     }
 
@@ -261,10 +276,16 @@ public class DbTableProvider implements TableProvider {
     public List<String> getTableNames() {
 
         lock.readLock().lock();
-        List<String> list = new LinkedList<>();
-        list.addAll(tables.keySet());
-        lock.readLock().unlock();
-        return list;
+
+        try {
+
+            List<String> list = new LinkedList<>();
+            list.addAll(tables.keySet());
+            return list;
+
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
 
@@ -275,9 +296,13 @@ public class DbTableProvider implements TableProvider {
 
     public DbTableProvider(Path inpPath) {
         lock.writeLock().lock();
-        dbPath = inpPath;
-        read();
-        lock.writeLock().unlock();
+
+        try {
+            dbPath = inpPath;
+            read();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     public DbTable getCurrentTable() {
@@ -288,33 +313,44 @@ public class DbTableProvider implements TableProvider {
 
         lock.writeLock().lock();
 
-        if (!tables.containsKey(name)) {
-            System.out.println(name + " not exists");
+        try {
+
+            if (!tables.containsKey(name)) {
+                System.out.println(name + " not exists");
+                return;
+            }
+
+            if (currentTable != null && currentTable.getNumberOfUncommittedChanges() > 0) {
+                System.out.println(currentTable.getNumberOfUncommittedChanges() + " unsaved changes");
+                return;
+            }
+
+            currentTable = tables.get(name);
+            System.out.println("using " + name);
+
+        } finally {
+
             lock.writeLock().unlock();
-            return;
         }
 
-        if (currentTable != null && currentTable.getNumberOfUncommittedChanges() > 0) {
-            System.out.println(currentTable.getNumberOfUncommittedChanges() + " unsaved changes");
-            lock.writeLock().unlock();
-            return;
-        }
-
-        currentTable = tables.get(name);
-        System.out.println("using " + name);
-        lock.writeLock().unlock();
     }
 
 
     public void showTableSet() {
 
         lock.readLock().lock();
-        System.out.println("table_name row_count");
-        for (HashMap.Entry<String, DbTable> entry: tables.entrySet()) {
-            DbTable table = entry.getValue();
-            System.out.println(table.getName() + " " + table.size());
+
+        try {
+
+            System.out.println("table_name row_count");
+            for (HashMap.Entry<String, DbTable> entry : tables.entrySet()) {
+                DbTable table = entry.getValue();
+                System.out.println(table.getName() + " " + table.size());
+            }
+        } finally {
+
+            lock.readLock().unlock();
         }
-        lock.readLock().unlock();
     }
 
     private boolean checkSignature(List<Class<?>> signature) {
@@ -347,66 +383,76 @@ public class DbTableProvider implements TableProvider {
 
         lock.writeLock().lock();
 
-        if (dbPath == null) {
-            return;
-        }
+        try {
 
-        if (!Files.exists(dbPath)) {
-
-            try {
-                Files.createDirectory(dbPath);
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-                System.exit(1);
+            if (dbPath == null) {
+                return;
             }
 
-        }
+            if (!Files.exists(dbPath)) {
 
-        File curDir = new File(dbPath.toString());
-        File[] content = curDir.listFiles();
+                try {
+                    Files.createDirectory(dbPath);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                    System.exit(1);
+                }
 
-        if (content != null) {
-            for (File item: content) {
-                if (Files.isDirectory(item.toPath())) {
+            }
 
-                    Path tablePath = item.toPath();
-                    try {
-                        List<Class<?>> signature = Shell.readSignature(tablePath);
-                        DbTable table = new DbTable(tablePath, signature);
-                        table.read();
-                        tables.put(item.getName(), table);
-                    } catch (MyIOException ex) {
-                        System.out.println(ex.getMessage());
-                        System.exit(1);
+            File curDir = new File(dbPath.toString());
+            File[] content = curDir.listFiles();
+
+            if (content != null) {
+                for (File item : content) {
+                    if (Files.isDirectory(item.toPath())) {
+
+                        Path tablePath = item.toPath();
+                        try {
+                            List<Class<?>> signature = Shell.readSignature(tablePath);
+                            DbTable table = new DbTable(tablePath, signature);
+                            table.read();
+                            tables.put(item.getName(), table);
+                        } catch (MyIOException ex) {
+                            System.out.println(ex.getMessage());
+                            System.exit(1);
+                        }
+
                     }
-
                 }
             }
+
+            currentTable = null;
+        } finally {
+
+            lock.writeLock().unlock();
         }
 
-        currentTable = null;
-        lock.writeLock().unlock();
-        
     }
 
 
     public void write() {
 
         lock.writeLock().lock();
-        Shell.deleteContent(dbPath);
 
-        for (HashMap.Entry<String, DbTable> entry: tables.entrySet()) {
+        try {
 
-            try {
-                entry.getValue().write();
-            } catch (MyIOException ex) {
-                System.out.println(ex.getMessage());
-                System.exit(1);
+            Shell.deleteContent(dbPath);
+
+            for (HashMap.Entry<String, DbTable> entry : tables.entrySet()) {
+
+                try {
+                    entry.getValue().write();
+                } catch (MyIOException ex) {
+                    System.out.println(ex.getMessage());
+                    System.exit(1);
+                }
+
             }
+        } finally {
 
+            lock.writeLock().lock();
         }
-
-        lock.writeLock().lock();
     }
 
 
