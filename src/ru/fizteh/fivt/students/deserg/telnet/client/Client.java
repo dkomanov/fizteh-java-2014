@@ -64,6 +64,10 @@ public class Client implements Program {
                 return commandDisconnect(arguments);
             }
 
+            case "close": {
+                return commandDisconnect(arguments);
+            }
+
             case "whereami": {
                 return commandWhereAmI(arguments);
             }
@@ -199,7 +203,14 @@ public class Client implements Program {
             return new String(bytes);
 
         } catch (IOException ex) {
-            return "IO exception";
+            connected = false;
+
+            try {
+                socket.close();
+                return "connection stopped";
+            } catch (IOException ex1) {
+                return "connection stopped";
+            }
         }
 
     }

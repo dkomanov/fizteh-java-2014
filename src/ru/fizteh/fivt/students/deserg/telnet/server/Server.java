@@ -74,6 +74,15 @@ public class Server implements Program {
                     return commandStop(arguments);
                 }
 
+                case "exit": {
+                    if (data.started) {
+                        serverService.shutdown();
+                        data.started = false;
+                    }
+                    System.exit(1);
+                    return "";
+                }
+
                 case "listusers": {
                     return commandListUsers(arguments);
                 }

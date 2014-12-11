@@ -23,10 +23,12 @@ public class DbCommandExecuter {
         dbCommandMap.put("size", new TableSize());
         dbCommandMap.put("commit", new TableCommit());
         dbCommandMap.put("rollback", new TableRollback());
+        dbCommandMap.put("describe", new TableDescribe());
         dbCommandMap.put("create", new DbCreate());
         dbCommandMap.put("drop", new DbDrop());
         dbCommandMap.put("use", new DbUse());
         dbCommandMap.put("show", new DbShowTables());
+        dbCommandMap.put("close", new DbClose());
 
     }
 
@@ -76,7 +78,6 @@ public class DbCommandExecuter {
             }
         }
 
-        System.out.println("The result: " + result);
         return result;
     }
 

@@ -30,39 +30,39 @@ public class ClientAgent implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
 
-        System.out.println("Client agent has started it's work");
-        System.out.println("The socket is: " + socket.getInetAddress().getCanonicalHostName() + ":" + socket.getPort());
-
+        System.out.println("New user: " + socket.getInetAddress().getCanonicalHostName() + ":" + socket.getPort());
 
         while (true) {
 
-            System.out.println("Reading from socket: " + socket.getInetAddress().getCanonicalHostName() + ":" + socket.getPort());
 
+            if (!data.started) {
+                System.out.println("Server has got disabled");
+                break;
+            }
+
+            if (socket.getInputStream().available() <= 0) {
+
+            }
             byte[] bytes = new byte[512000];
-            socket.getInputStream().read(bytes);
-            String inputCommand = new String(bytes);
 
-            System.out.println("Read from socket: " + socket.getInetAddress().getCanonicalHostName());
+            int readNum = socket.getInputStream().read(bytes);
+
+            if (readNum == 0) {
+                System.out.println("The socket is closed");
+                break;
+            }
+
+            String inputCommand = new String(bytes, 0, readNum);
+
+            System.out.println("Read " + readNum + " bytes from socket: " + socket.getInetAddress().getCanonicalHostName());
             System.out.println(inputCommand);
 
-            if (inputCommand.equals("disconnect") || inputCommand.equals("exit")) {
+            String result;
+            result = DbCommandExecuter.executeDbCommand(inputCommand, data.db);
+            System.out.println("The result is: \n" + result + "\n");
 
-                data.db.close();
-                socket.close();
-                System.out.println("Closed socket: " + socket.getInetAddress().getCanonicalHostName());
-                break;
-
-            } else {
-
-                System.out.println("Starting to execute");
-                String result;
-                result = DbCommandExecuter.executeDbCommand(inputCommand, data.db);
-                System.out.println("The result is: \n" + result + "\n");
-
-                System.out.println("Writing to socket: " + socket.getInetAddress().getCanonicalHostName());
-                socket.getOutputStream().write(result.getBytes());
-                System.out.println("Wrote to socket: " + socket.getInetAddress().getCanonicalHostName());
-            }
+            socket.getOutputStream().write(result.getBytes());
+            System.out.println("Wrote to socket: " + socket.getInetAddress().getCanonicalHostName());
 
         }
 

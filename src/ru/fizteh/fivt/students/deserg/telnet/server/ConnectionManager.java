@@ -9,6 +9,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by deserg on 11.12.14.
@@ -17,6 +19,7 @@ public class ConnectionManager implements Callable<Integer> {
 
 
     CommonData data;
+    ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     public ConnectionManager(CommonData data) {
         this.data = data;
@@ -30,16 +33,19 @@ public class ConnectionManager implements Callable<Integer> {
 
         try {
 
+            lock.readLock().lock();
             System.out.println("Port: " + data.port);
             ServerSocket serverSocket = new ServerSocket(data.port);
             ExecutorService service = Executors.newFixedThreadPool(5);
+            lock.readLock().unlock();
 
-
-            while (data.started) {
+            while (true) {
 
                 System.out.println("Waiting for the connection...");
                 Socket socket = serverSocket.accept();
-                data.users.add(socket.getInetAddress().getCanonicalHostName());
+                lock.writeLock().lock();
+                data.users.add(socket.getInetAddress().toString());
+                lock.writeLock().unlock();
                 System.out.println("New client connected: " + socket.getInetAddress().getCanonicalHostName() + ":" + socket.getPort());
 
                 Future<Integer> future = service.submit(new ClientAgent(socket, data));

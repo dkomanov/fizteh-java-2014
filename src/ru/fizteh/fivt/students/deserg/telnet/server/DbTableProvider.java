@@ -26,8 +26,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     private Path dbPath;
     private DbTable currentTable = null;
     private ReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private boolean closed = false;
-
 
     /**
      * Возвращает таблицу с указанным названием.
@@ -42,8 +40,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
      */
     @Override
     public Table getTable(String name) {
-
-        checkClosed();
 
         if (name == null) {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": getTable: null table name");
@@ -94,8 +90,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
      */
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-
-        checkClosed();
 
         if (name == null) {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": createTable: null table name");
@@ -152,8 +146,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     @Override
     public void removeTable(String name) {
 
-        checkClosed();
-
         if (name == null) {
             throw new IllegalArgumentException("Database \"" + dbPath + "\": removeTable: null Table name");
         }
@@ -208,8 +200,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
 
-        checkClosed();
-
         return Serializer.deserialize((DbTable) table, value);
 
     }
@@ -226,8 +216,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
 
-        checkClosed();
-
         return Serializer.serialize(table, value);
 
     }
@@ -240,8 +228,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
      */
     @Override
     public Storeable createFor(Table table) {
-
-        checkClosed();
 
         DbTable mTable = (DbTable) table;
         return new TableRow(mTable.getSignature());
@@ -259,8 +245,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
      */
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-
-        checkClosed();
 
         DbTable mTable = (DbTable) table;
         if (mTable.getColumnsCount() != values.size()) {
@@ -283,8 +267,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     @Override
     public List<String> getTableNames() {
 
-        checkClosed();
-
         lock.readLock().lock();
         List<String> list = new LinkedList<>();
         list.addAll(tables.keySet());
@@ -295,13 +277,12 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     @Override
     public void close() {
 
-        checkClosed();
         for (HashMap.Entry<String, DbTable> entry: tables.entrySet()) {
-
             DbTable table = entry.getValue();
-            table.close();
+            table.rollback();
         }
-        closed = true;
+
+        write();
     }
 
     @Override
@@ -321,12 +302,6 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
         dbPath = inpPath;
         read();
         lock.writeLock().unlock();
-    }
-
-    private void checkClosed() {
-        if (closed) {
-            throw new IllegalStateException("Database \"" + dbPath.getFileName() + "\" is closed");
-        }
     }
 
 

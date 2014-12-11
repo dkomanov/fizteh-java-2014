@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Created by deserg on 04.10.14.
  */
-public class DbTable implements Table, AutoCloseable {
+public class DbTable implements Table {
 
     private List<Class<?>> signature = new ArrayList<>();
     private Map<String, Storeable> committedData = new HashMap<>();
@@ -372,13 +372,6 @@ public class DbTable implements Table, AutoCloseable {
 
     }
 
-
-    @Override
-    public void close() {
-        checkClosed();
-        rollback();
-        closed = true;
-    }
 
     @Override
     public String toString() {

@@ -18,6 +18,10 @@ public class TableSize implements DbCommand {
 
             DbTable table = db.getCurrentTable();
 
+            if (table == null) {
+                return "no table";
+            }
+
             return String.valueOf(table.size());
 
         } else {

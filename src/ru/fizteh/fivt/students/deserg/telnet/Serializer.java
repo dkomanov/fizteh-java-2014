@@ -118,6 +118,32 @@ public class Serializer {
         return list;
     }
 
+    public static String makeStringFromSignature(List<Class<?>> signature) {
+
+        String result = "(";
+        for (Class<?> cl: signature) {
+
+            if (cl == Integer.class) {
+                result += "int ";
+            } else if (cl == Long.class) {
+                result += "long ";
+            } else if (cl == Byte.class) {
+                result += "byte ";
+            } else if (cl == Float.class) {
+                result += "float ";
+            } else if (cl == Double.class) {
+                result += "double ";
+            } else if (cl == Boolean.class) {
+                result += "boolean ";
+            } else if (cl == String.class) {
+                result += "String ";
+            }
+        }
+
+        return result.substring(0, result.length() - 1) + ")";
+
+    }
+
 
     private static Object transform(Class<?> classType, String pattern) {
 
