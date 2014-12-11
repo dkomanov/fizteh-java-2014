@@ -35,8 +35,6 @@ public class DbCommandExecuter {
 
         Queue<ArrayList<String>> commandQueue = new LinkedList<>();
 
-        System.out.print("$ ");
-
         String[] commandBlockAr = commands.split(";");
 
         for (String commandBlock: commandBlockAr) {
@@ -71,12 +69,14 @@ public class DbCommandExecuter {
 
             DbCommand command;
             command = dbCommandMap.get(arguments.get(0));
+
+
             if (command != null) {
                 result += command.execute(arguments, db);
             }
-
         }
 
+        System.out.println("The result: " + result);
         return result;
     }
 

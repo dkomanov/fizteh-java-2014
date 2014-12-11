@@ -17,13 +17,16 @@ public class Server implements Program {
     private CommonData data;
     private ExecutorService serverService = Executors.newFixedThreadPool(5);
     private Future<Integer> serverFuture;
-    private boolean started = false;
 
     public Server() {
 
         String dbDir = System.getProperty("fizteh.db.dir");
         DbTableProviderFactory factory = new DbTableProviderFactory();
         db = (DbTableProvider) factory.create(dbDir);
+        if (db == null) {
+            System.out.println("Database is null...");
+            System.exit(1);
+        }
         data = new CommonData(db);
 
     }
@@ -87,7 +90,7 @@ public class Server implements Program {
 
     public String commandStart(ArrayList<String> arguments) {
 
-        if (started) {
+        if (data.started) {
             return "not started: already started";
         }
 
@@ -101,6 +104,7 @@ public class Server implements Program {
         }
 
         serverFuture = serverService.submit(new ConnectionManager(data));
+        data.started = true;
         return "started at port " + data.port;
 
     }
@@ -111,12 +115,13 @@ public class Server implements Program {
             return "Too many arguments (required: 0)";
         }
 
-        if (!started) {
+        if (!data.started) {
             return "not started";
         }
 
         serverService.shutdown();
         if (serverService.isShutdown()) {
+            data.started = false;
             return "stopped at port " + data.port;
         } else {
             return "not stopped :((";
@@ -124,6 +129,10 @@ public class Server implements Program {
     }
 
     public String commandListUsers(ArrayList<String> arguments) {
+
+        if (!data.started) {
+            return "not started";
+        }
 
         if (arguments.size() != 1) {
             return "Too many arguments (required: 0)";
@@ -137,6 +146,5 @@ public class Server implements Program {
         return users.substring(0, users.length() - 1);
 
     }
-
 
 }

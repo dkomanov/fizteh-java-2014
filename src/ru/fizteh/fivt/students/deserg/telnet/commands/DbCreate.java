@@ -16,7 +16,7 @@ public class DbCreate implements DbCommand {
     public String execute(ArrayList<String> args, DbTableProvider db) {
 
         if (args.size() < 2) {
-            return "Not enough arguments";
+            return "Not enough args";
         } else {
 
             String tableName = args.get(1);
@@ -30,6 +30,7 @@ public class DbCreate implements DbCommand {
 
             try {
                 if (db.createTable(tableName, signature) == null) {
+                    System.out.println("After creating");
                     return tableName + " exists";
                 } else {
                     return "created";

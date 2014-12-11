@@ -26,21 +26,28 @@ public class ConnectionManager implements Callable<Integer> {
     @Override
     public Integer call() {
 
+        System.out.println("Connection manager has started his work!");
 
         try {
+
+            System.out.println("Port: " + data.port);
             ServerSocket serverSocket = new ServerSocket(data.port);
             ExecutorService service = Executors.newFixedThreadPool(5);
 
-            while (true) {
 
+            while (data.started) {
+
+                System.out.println("Waiting for the connection...");
                 Socket socket = serverSocket.accept();
-                data.users.add(socket.getInetAddress().toString());
-                Future<Integer> future = service.submit(new ClientAgent(socket, data));
+                data.users.add(socket.getInetAddress().getCanonicalHostName());
+                System.out.println("New client connected: " + socket.getInetAddress().getCanonicalHostName() + ":" + socket.getPort());
 
+                Future<Integer> future = service.submit(new ClientAgent(socket, data));
             }
 
+
         } catch (IOException ex) {
-            System.out.println("Error with socket");
+            System.out.println("Error with socket: " + ex.getMessage());
             System.exit(1);
         }
 

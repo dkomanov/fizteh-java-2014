@@ -2,9 +2,7 @@ package ru.fizteh.fivt.students.deserg.telnet.client;
 
 import ru.fizteh.fivt.students.deserg.telnet.Program;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -16,9 +14,8 @@ import java.util.*;
 public class Client implements Program {
 
     Socket socket;
-    DataInputStream inputStream;
-    DataOutputStream outputStream;
     private boolean connected = false;
+    String localIP = "localhost";
 
     public Client() {
 
@@ -28,6 +25,7 @@ public class Client implements Program {
     @Override
     public void work() {
 
+        System.out.println("\nHello, stanger! Welcome to deserg DataBase!\n");
         while (true) {
 
             System.out.print("$ ");
@@ -70,6 +68,10 @@ public class Client implements Program {
                 return commandWhereAmI(arguments);
             }
 
+            case "exit": {
+                return commandExit(arguments);
+            }
+
             default: {
                 return commandOther(notDevided);
             }
@@ -81,7 +83,7 @@ public class Client implements Program {
 
     private String commandConnect(ArrayList<String> arguments) {
 
-        if (arguments.size() < 2 || arguments.size() > 3) {
+        if (arguments.size() < 1 || arguments.size() > 3) {
             return "Wrong argument number";
         }
 
@@ -89,7 +91,11 @@ public class Client implements Program {
             return "not connected: already connected";
         }
 
-        String strHost = arguments.get(1);
+        String strHost = localIP;
+
+        if (arguments.size() == 2) {
+            strHost = arguments.get(1);
+        }
         InetAddress host;
 
         try {
@@ -98,10 +104,8 @@ public class Client implements Program {
             return "not connected: wrong host";
         }
 
-        int port;
-        if (arguments.size() == 2) {
-            port = 10001;
-        } else {
+        int port = 10001;
+        if (arguments.size() == 3) {
             String strPort = arguments.get(2);
             try {
                 port = Integer.valueOf(strPort);
@@ -112,8 +116,7 @@ public class Client implements Program {
 
         try {
             socket = new Socket(host, port);
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream(socket.getOutputStream());
+            connected = true;
             return "connected";
         } catch (IOException ex) {
             return "not connected: " + ex.getMessage();
@@ -133,6 +136,7 @@ public class Client implements Program {
 
         try {
             socket.close();
+            connected = false;
             return "disconnected";
         } catch (IOException ex) {
             return "not disconnected: " + ex.getMessage();
@@ -146,20 +150,38 @@ public class Client implements Program {
             return "Too many arguments (required: 0)";
         }
 
-        String mode = System.getProperty("mode");
-
-        if (mode != null) {
-            return "local";
+        if (!connected) {
+            return "not connected";
         }
 
-        if (connected) {
-            return "remote " + socket.getInetAddress() + socket.getPort();
+        if (socket.getInetAddress().getCanonicalHostName().equals(localIP)) {
+            return "local " + socket.getInetAddress().getCanonicalHostName() + " " + socket.getPort();
         } else {
-            return "remote";
+            return "remote " + socket.getInetAddress().getCanonicalHostName() + " " + socket.getPort();
         }
-
     }
 
+    private String commandExit(ArrayList<String> arguments) {
+
+        if (arguments.size() != 1) {
+            return "Too many arguments (required: 0)";
+        }
+
+        String result = "";
+
+        if (connected) {
+            try {
+                socket.close();
+            } catch (IOException ex) {
+                System.out.println("problms with disconnecting: " + ex.getMessage() + "\n");
+            }
+        }
+
+
+        System.out.println("\nGoodbye, stranger!\n");
+        System.exit(0);
+        return null;
+    }
 
 
     private String commandOther(String command) {
@@ -169,13 +191,16 @@ public class Client implements Program {
         }
 
         try {
-            outputStream.writeChars(command);
-            return inputStream.readUTF();
+
+            socket.getOutputStream().write(command.getBytes());
+
+            byte[] bytes = new byte[512000];
+            socket.getInputStream().read(bytes);
+            return new String(bytes);
 
         } catch (IOException ex) {
             return "IO exception";
         }
-
 
     }
 

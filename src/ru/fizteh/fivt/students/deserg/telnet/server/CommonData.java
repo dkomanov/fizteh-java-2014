@@ -11,6 +11,7 @@ public class CommonData {
     public DbTableProvider db;
     public Set<String> users = new HashSet<>();
     public int port = 10001;
+    public boolean started = false;
 
 
     public CommonData(DbTableProvider db) {
