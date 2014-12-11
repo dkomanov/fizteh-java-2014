@@ -1,4 +1,4 @@
-package structured;
+package storeable.structured;
 
 /**
  * Дополнительный интерфейс к {@link ru.fizteh.fivt.storage.structured.TableProvider}, позволяющий создавать индексы на

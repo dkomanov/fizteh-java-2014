@@ -1,4 +1,4 @@
-package structured;
+package storeable.structured;
 
 /**
  * Бросается при попытке извлечь из колонки {@link Storeable} значение не соответствующего типа,

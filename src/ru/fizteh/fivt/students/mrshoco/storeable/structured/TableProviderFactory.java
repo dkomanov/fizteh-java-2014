@@ -1,4 +1,4 @@
-package structured;
+package storeable.structured;
 
 import java.io.IOException;
 

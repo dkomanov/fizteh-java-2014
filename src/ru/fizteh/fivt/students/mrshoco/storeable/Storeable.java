@@ -1,8 +1,10 @@
+package storeable;
+
 import java.util.Scanner;
 
-import structured.*;
+import storeable.structured.*;
 
-import util.*;
+import storeable.util.*;
 
 public final class Storeable {
 

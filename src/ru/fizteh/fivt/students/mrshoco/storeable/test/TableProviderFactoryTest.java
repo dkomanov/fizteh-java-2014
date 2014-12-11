@@ -1,15 +1,13 @@
-package test;
-
-import java.io.IOException;
+package storeable.test;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import storeable.structured.TableProviderFactory;
+import storeable.util.MyTableProviderFactory;
 
-import strings.*;
-
-import util.*;
+import java.io.IOException;
 
 public class TableProviderFactoryTest {
     private TableProviderFactory factory;
@@ -28,12 +26,12 @@ public class TableProviderFactoryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void createWithNullArgument() {
+    public void createWithNullArgument() throws IOException {
         factory.create(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void createWithIncorrectArgument() throws IOException {
+    public void createWithIncorrectArgument() throws IllegalArgumentException, IOException {
         factory.create(tmpFolder.newFile().getAbsolutePath());
     }
 }

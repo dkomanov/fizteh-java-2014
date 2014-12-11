@@ -1,4 +1,4 @@
-package structured;
+package storeable.structured;
 
 /**
  * Список фиксированной структуры, строка таблицы {@link Table}.

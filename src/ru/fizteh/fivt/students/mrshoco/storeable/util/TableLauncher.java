@@ -1,6 +1,9 @@
-package util;
+package storeable.util;
 
-import strings.*;
+import java.util.Arrays;
+import java.util.List;
+
+import storeable.structured.*;
 
 public class TableLauncher {
     TableProvider tableProvider;
@@ -20,12 +23,21 @@ public class TableLauncher {
     }
 
     public void run(String[] cmd) throws Exception {
+        String[] strings;
         switch (cmd[0]) {
             case "create":
-                if (cmd.length != 2) {
+                if (cmd.length < 3) {
                     throw new Exception("Wrong number of arguments");
                 }
-                table = tableProvider.createTable(cmd[1]);
+                if (cmd[2].charAt(0) != '(' || cmd[cmd.length - 1].charAt(
+                                    cmd[cmd.length - 1].length() - 1) != ')') {
+                    throw new Exception("Wrong types description");
+                }
+                cmd[2] = cmd[2].replaceAll("\\(", "");
+                cmd[cmd.length - 1] = cmd[cmd.length - 1].replaceAll("\\)", "");
+                strings = Arrays.copyOfRange(cmd, 2, cmd.length);
+
+                table = tableProvider.createTable(cmd[1], TypesTransformer.toListTypes(strings));
                 break;
             case "drop":
                 if (cmd.length != 2) {
@@ -39,23 +51,54 @@ public class TableLauncher {
                 }
                 table = tableProvider.getTable(cmd[1]);
                 break;
+            case "show":
+                if (cmd.length != 2 || !cmd[1].equals("tables")) {
+                    throw new Exception("Wrong number of arguments");
+                }
+                List<String> tables = tableProvider.getTableNames();
+                for (int i = 0; i < tables.size(); i++) {
+                    System.out.println(tables.get(i));
+                }
+                break;
             case "put":
-                if (cmd.length != 3) {
+                if (cmd.length < 3) {
                     throw new IndexOutOfBoundsException("Wrong number of arguments");
                 }
-                table.put(cmd[1], cmd[2]);
+                StringBuilder builder = new StringBuilder();
+                for (int i = 2; i < cmd.length; i++) {
+                    builder.append(cmd[i]);
+                }
+
+                Storeable old = table.put(cmd[1], tableProvider.deserialize(table,
+                                                                builder.toString()));
+                if (old == null) {
+                    System.out.println("new");
+                } else {
+                    System.out.println("overwrite");
+                    System.out.println(tableProvider.serialize(table, old));
+                }
                 break;
             case "get":
                 if (cmd.length != 2) {
                     throw new IndexOutOfBoundsException("Wrong number of arguments");
                 }
-                table.get(cmd[1]);
+                Storeable value = table.get(cmd[1]);
+                if (value == null) {
+                    System.out.println("not found");
+                } else {
+                    System.out.println("found\n" + tableProvider.serialize(table, value));
+                }
                 break;
             case "remove":
                 if (cmd.length != 2) {
                     throw new IndexOutOfBoundsException("Wrong number of arguments");
                 }
-                table.remove(cmd[1]);
+                value = table.remove(cmd[1]);
+                if (value == null) {
+                    System.out.println("not found");
+                } else {
+                    System.out.println("removed");
+                }
                 break;
             case "list":
                 if (cmd.length != 1) {

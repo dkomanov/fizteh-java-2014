@@ -1,25 +1,22 @@
-package util;
+package storeable.util;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import structured.*;
+import storeable.structured.*;
 
 public class MyStoreable implements Storeable {
-    List<Object> columns;
+    public List<Object> columns;
+    List<Class<?>> types;
 
     public MyStoreable(List<Class<?>> types) {
+        this.types = types;
         columns = new ArrayList<Object>();
-        for (Class<?> type : types) {
-            try {
-                columns.add(type.getConstructor());
-            } catch (NoSuchMethodException e) {
-                throw new ColumnFormatException("wrong type (type " + type.getName()
-                                                                        + " is bad)");
-            }
+        for (int i = 0; i < types.size(); i++) {
+            columns.add(null);
         }
     }
-    
+
     private void checkIndex(int columnIndex) throws IndexOutOfBoundsException {
         if (columnIndex >= columns.size() || columnIndex < 0) {
             throw new IndexOutOfBoundsException("column index is out of bound");
@@ -27,9 +24,9 @@ public class MyStoreable implements Storeable {
     }
 
     private void checkFormat(int columnIndex, Class<?> type) throws ColumnFormatException {
-        if (!columns.get(columnIndex).getClass().equals(type)) {
+        if (!types.get(columnIndex).equals(type)) {
             throw new ColumnFormatException("wrong type (giving " + type
-                    + " instead of " + columns.get(columnIndex).getClass() + ")");
+                    + " instead of " + types.get(columnIndex) + ")");
         }
     }
 
@@ -37,7 +34,9 @@ public class MyStoreable implements Storeable {
     public void setColumnAt(int columnIndex, Object value) 
                             throws ColumnFormatException, IndexOutOfBoundsException {
         checkIndex(columnIndex);
-        checkFormat(columnIndex, value.getClass());
+        if (value != null) {
+            checkFormat(columnIndex, value.getClass());
+        }
 
         columns.set(columnIndex, value);
     }
@@ -46,6 +45,15 @@ public class MyStoreable implements Storeable {
     public Object getColumnAt(int columnIndex) throws IndexOutOfBoundsException {
         checkIndex(columnIndex);
         return columns.get(columnIndex);
+    }
+
+    public Class<?> getTypeAt(int columnIndex) throws IndexOutOfBoundsException {
+        checkIndex(columnIndex);
+        return types.get(columnIndex);
+    }
+
+    public int getSize() {
+        return types.size();
     }
 
     @Override

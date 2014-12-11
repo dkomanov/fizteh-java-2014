@@ -1,33 +1,38 @@
-package test;
+package storeable.test;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import strings.*;
-import util.*;
+import storeable.structured.*;
+import storeable.util.MyTableProviderFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class TableTest {
-
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     public Table table;
+    public TableProvider provider;
     public String dbDirPath;
+    List<Class<?>> types;
 
     @Before
     public void initTable() throws IOException {
         TableProviderFactory factory = new MyTableProviderFactory();
         dbDirPath = tmpFolder.newFolder().getAbsolutePath();
-        TableProvider provider = factory.create(dbDirPath);
-        table = provider.createTable("table");
+        provider = factory.create(dbDirPath);
+        Class<?>[] arrayTypes = {Integer.class, Long.class, Float.class, Double.class,
+                                 Boolean.class, String.class, Byte.class};
+        types = Arrays.asList(arrayTypes);
+        table = provider.createTable("table", types);
     }
 
     @Test
@@ -52,71 +57,85 @@ public class TableTest {
 
     @Test
     public void testPutAndGet() {
-        assertNull(table.put("1", "2"));
-        assertEquals("2", table.get("1"));
-        assertEquals("2", table.put("1", "3"));
-        assertEquals("3", table.get("1"));
-        assertNull(table.get("a"));
+        Object[] values = {5, 6L, 5.2f, 5.4, true, null, (Byte) (byte) 3};
+        Storeable value = provider.createFor(table, Arrays.asList(values));
+        assertNull(table.put("key", value));
+        Storeable ret = table.get("key");
+        assertEquals(ret.getByteAt(6), (Byte) (byte) 3);
+        assertEquals(ret.getStringAt(5), null);
+        assertEquals(ret.getColumnAt(1), 6L);
+        value.setColumnAt(0, 2);
+        Storeable old = table.put("key", value);
+        assertEquals(old.getColumnAt(0), 5);
+        assertEquals(table.get("key").getColumnAt(0), 2);
     }
 
     @Test
     public void testPutAndRemove() {
-        assertNull(table.put("1", "2"));
-        assertNull(table.remove("2"));
-        assertEquals("2", table.remove("1"));
-        assertNull(table.remove("1"));
-        assertNull(table.get("1"));
+        Object[] values = {5, 6L, 5.2f, 5.4, true, null, (Byte) (byte) 3};
+        Storeable value = provider.createFor(table, Arrays.asList(values));
+        assertNull(table.put("key", value));
+        Storeable old = table.remove("key");
+        assertEquals(old.getColumnAt(0), 5);
+        assertEquals(old.getColumnAt(1), 6L);
+        assertEquals(old.getColumnAt(6), (byte) 3);
+        assertNull(table.remove("key"));
+    }
+
+    @Test (expected = ColumnFormatException.class)
+    public void testIncorrectPut() throws IOException {
+        types.set(1, Boolean.class);
+        Object[] values = {false, 6L, 5.2f, 5.4, true, null, (Byte) (byte) 3};
+        Table anotherTable = provider.createTable("anotherTable", types);
+        Storeable value = provider.createFor(anotherTable, Arrays.asList(values));
+        table.put("key", value);
     }
 
     @Test
     public void testSize() {
+        Storeable value = provider.createFor(table);
         assertEquals(0, table.size());
-        table.put("1", "2");
+        table.put("1", value);
         assertEquals(1, table.size());
-        table.put("3", "4");
-        assertEquals(2, table.size());
-        table.put("3", "5");
-        assertEquals(2, table.size());
-        table.remove("1");
-        assertEquals(1, table.size());
-        table.remove("1");
-        assertEquals(1, table.size());
-        table.remove("3");
-        assertEquals(0, table.size());
+        table.put("2", value);
+        table.put("3", value);
+        table.put("2", value);
+        assertEquals(3, table.size());
     }
 
     @Test
-    public void testList() {
-        assertEquals(0, table.list().size());
-        table.put("1", "2");
-        table.put("3", "4");
-        table.put("3", "5");
-        table.remove("1");
-        table.put("6", "7");
-        table.put("key", "value");
-        assertEquals(3, table.list().size());
-        assertTrue(table.list().containsAll(new ArrayList<String>(Arrays.asList("3", "6", "key"))));
+    public void testColumnsNumber() {
+        assertEquals(7, table.getColumnsCount());
     }
 
     @Test
-    public void testRollBack() {
+    public void testGetColumnType() {
+        for (int i = 0; i < types.size(); i++) {
+            assertEquals(types.get(i), table.getColumnType(i));
+        }
+    }
+
+    @Test
+    public void testRollBack() throws IOException {
+        Storeable value = provider.createFor(table);
         assertEquals(0, table.rollback());
-        table.put("1", "2");
-        table.put("2", "3");
-        table.put("3", "4");
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
         table.remove("1");
-        table.put("1", "5");
+        table.put("1", value);
         assertEquals(3, table.size());
         assertEquals(3, table.rollback());
         assertEquals(0, table.size());
     }
 
     @Test
-    public void testCommit() {
+    public void testCommit() throws IOException {
+        Storeable value = provider.createFor(table);
         assertEquals(0, table.commit());
-        table.put("1", "2");
-        table.put("2", "3");
-        table.put("3", "4");
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
         table.remove("3");
         assertEquals(2, table.commit());
         assertEquals(2, table.size());
@@ -127,24 +146,45 @@ public class TableTest {
     }
 
     @Test
-    public void testCommitAndRollback() {
-        table.put("1", "2");
-        table.put("2", "3");
-        table.put("3", "4");
+    public void testCommitAndRollback() throws IOException {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
         assertEquals(3, table.commit());
         table.remove("1");
         table.remove("2");
         assertNull(table.get("1"));
         assertNull(table.get("2"));
         assertEquals(2, table.rollback());
-        assertEquals("2", table.get("1"));
-        assertEquals("3", table.get("2"));
         table.remove("1");
         assertEquals(1, table.commit());
         assertEquals(2, table.size());
-        table.put("1", "2");
+        table.put("1", value);
         assertEquals(3, table.size());
         assertEquals(1, table.rollback());
         assertEquals(2, table.size());
+    }
+
+    @Test
+    public void testList() {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
+        assertEquals(3, table.list().size());
+        assertTrue(table.list().containsAll(new LinkedList<String>(Arrays.asList("1", "2", "3"))));
+    }
+
+    @Test
+    public void testUnsavedChanges() throws IOException {
+        Storeable value = provider.createFor(table);
+        table.put("1", value);
+        table.put("2", value);
+        table.put("3", value);
+        table.remove("1");
+        assertEquals(table.getNumberOfUncommittedChanges(), 2);
+        table.commit();
+        assertEquals(table.getNumberOfUncommittedChanges(), 0);
     }
 }

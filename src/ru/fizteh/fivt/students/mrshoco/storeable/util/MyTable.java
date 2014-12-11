@@ -1,4 +1,4 @@
-package util;
+package storeable.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,14 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import structured.Storeable;
-import structured.Table;
-import structured.TableProvider;
+import storeable.structured.ColumnFormatException;
+import storeable.structured.Storeable;
+import storeable.structured.Table;
+import storeable.structured.TableProvider;
 
 public class MyTable implements Table {
     TableProvider myTableProvider;
     File tableRoot;
-    HashMap<String, Storeable> data;
+    Map<String, Storeable> data;
     List<Class<?>> types;
 
     public MyTable(File tableFile, TableProvider tableProvider) {
@@ -25,16 +26,22 @@ public class MyTable implements Table {
         try {
             types = FolderData.loadSignature(tableFile);
 
-            HashMap<String, String> hashMap = FolderData.loadDb(tableFile);
-            for (Map.Entry<String, String> entry : hashMap.entrySet()) {
-                data.put(entry.getKey(), myTableProvider.deserialize(this, entry.getValue()));
-            }
+            data = deserializeMap(FolderData.loadDb(tableFile));
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to load signature");
         } catch (ParseException e) {
             throw new IllegalArgumentException("Error while parsing values");
         }
         tableRoot = tableFile;
+    }
+    
+    private Storeable copy(Storeable storeable) {
+        try {
+            return myTableProvider.deserialize(this,
+                    myTableProvider.serialize(this, storeable));
+        } catch (ParseException e) {
+            throw new ColumnFormatException(e.getMessage());
+        }
     }
 
     @Override
@@ -43,51 +50,45 @@ public class MyTable implements Table {
     }
 
     @Override
-    public String get(String key) {
+    public Storeable get(String key) {
         if (key == null) {
             throw new IllegalArgumentException("Bad key value");
         }
 
         if (data.containsKey(key)) {
-            System.out.println("found\n" + data.get(key));
             return data.get(key);
         } else {
-            System.out.println("not found");
             return null;
         }
     }
 
     @Override
-    public String put(String key, Storeable value) {
+    public Storeable put(String key, Storeable value) {
         if (key == null) {
             throw new IllegalArgumentException("Bad key value");
         }
 
         if (data.containsKey(key)) {
-            System.out.println("overwrite\nold value");
-            String oldValue = data.get(key);
-            data.put(key, value);
-            return oldValue;
+                Storeable oldValue = copy(data.get(key));
+                data.put(key, copy(value));
+                return oldValue;
         } else {
-            System.out.println("new");
-            data.put(key, value);
+            data.put(key, copy(value));
             return null;
         }
     }
 
     @Override
-    public String remove(String key) {
+    public Storeable remove(String key) {
         if (key == null) {
             throw new IllegalArgumentException("Bad key value");
         }
 
         if (data.containsKey(key)) {
-            System.out.println("removed");
-            String oldValue = data.get(key);
+            Storeable oldValue = data.get(key);
             data.remove(key);
             return oldValue;
         } else {
-            System.out.println("not found");
             return null;
         }
     }
@@ -105,31 +106,55 @@ public class MyTable implements Table {
     @Override
     public int commit() {
         int diffSize = diff();
-        FolderData.saveDb(data, tableRoot);
+        FolderData.saveDb(serializeMap(data), tableRoot);
         System.out.println(diffSize);
         return diffSize;
+    }
+
+    private Map<String, String> serializeMap(Map<String, Storeable> map) {
+        Map<String, String> hashMap = new HashMap<String, String>();
+        for (Map.Entry<String, Storeable> entry : map.entrySet()) {
+            hashMap.put(entry.getKey(), myTableProvider.serialize(this, entry.getValue()));
+        }
+
+        return hashMap;
     }
 
     @Override
     public int rollback() {
         int diffSize = diff();
-        data = FolderData.loadDb(tableRoot);
+        try {
+            data = deserializeMap(FolderData.loadDb(tableRoot));
+        } catch (ParseException e) {
+            System.err.println("failed to load old data");
+        }
         System.out.println(diffSize);
         return diffSize;
     }
 
-    private int diff() {
-        HashMap<String, String> oldData = FolderData.loadDb(tableRoot);
+
+    private Map<String, Storeable> deserializeMap(Map<String, String> map) 
+                                                            throws ParseException {
+        Map<String, Storeable> hashMap = new HashMap<String, Storeable>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            hashMap.put(entry.getKey(), myTableProvider.deserialize(this, entry.getValue()));
+        }
+
+        return hashMap;
+    }
+
+    protected int diff() {
+        Map<String, String> oldData = FolderData.loadDb(tableRoot);
         Set<String> allKeys = new HashSet<String>(oldData.keySet());
-        allKeys.addAll(data.keySet());
+        Map<String, String> sData = serializeMap(data);
+        allKeys.addAll(sData.keySet());
         
         int size = 0;
 
         for (String k : allKeys) {
-            if ((data.containsKey(k) && !oldData.containsKey(k))
-                    || (!data.containsKey(k) && oldData.containsKey(k))
-                        || (!data.get(k).equals(oldData.get(k)))) {
-                System.out.println(" " + data.get(k) + " " + oldData.get(k));
+            if ((sData.containsKey(k) && !oldData.containsKey(k))
+                    || (!sData.containsKey(k) && oldData.containsKey(k))
+                        || (!sData.get(k).equals(oldData.get(k)))) {
                 size++;
             }
         }

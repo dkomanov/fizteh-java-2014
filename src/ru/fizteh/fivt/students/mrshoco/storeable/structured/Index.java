@@ -1,4 +1,4 @@
-package structured;
+package storeable.structured;
 
 /**
  * Представляет базу для интерфейс для работы с таблицей, содержащей ключи-значения.
