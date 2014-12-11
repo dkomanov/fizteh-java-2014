@@ -6,9 +6,6 @@ import ru.fizteh.fivt.students.deserg.telnet.Program;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by deserg on 11.12.14.

@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.deserg.telnet;
 
 import ru.fizteh.fivt.students.deserg.telnet.client.Client;
 import ru.fizteh.fivt.students.deserg.telnet.server.Server;
-import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyException;
 
 /**
  * Created by deserg on 03.10.14.

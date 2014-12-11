@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.deserg.telnet.commands;
 
 import ru.fizteh.fivt.students.deserg.telnet.Serializer;
-import ru.fizteh.fivt.students.deserg.telnet.server.DbTable;
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProvider;
 
 import java.util.ArrayList;

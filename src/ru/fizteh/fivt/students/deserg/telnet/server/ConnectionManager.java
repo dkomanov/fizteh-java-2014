@@ -49,7 +49,8 @@ public class ConnectionManager implements Callable<Integer> {
                 users.add(socket.getInetAddress().toString());
                 lock.writeLock().unlock();
 
-                System.out.println("New client connected: " + socket.getInetAddress().getCanonicalHostName() + ":" + socket.getPort());
+                System.out.println("New client connected: " + socket.getInetAddress().getCanonicalHostName()
+                        + ":" + socket.getPort());
 
                 Future<Integer> future = service.submit(new ClientAgent(socket, data));
             }

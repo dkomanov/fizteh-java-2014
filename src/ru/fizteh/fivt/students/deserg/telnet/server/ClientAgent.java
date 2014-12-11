@@ -58,7 +58,8 @@ public class ClientAgent implements Callable<Integer> {
 
             String inputCommand = new String(bytes, 0, readNum);
 
-            System.out.println("Read " + readNum + " bytes from socket: " + socket.getInetAddress().getCanonicalHostName());
+            System.out.println("Read " + readNum + " bytes from socket: "
+                    + socket.getInetAddress().getCanonicalHostName());
             System.out.println(inputCommand);
 
             String result;

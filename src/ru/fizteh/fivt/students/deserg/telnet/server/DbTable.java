@@ -94,28 +94,32 @@ public class DbTable implements Table {
 
 
         lock.readLock().lock();
-        sync();
-        lock.readLock().unlock();
 
-        Storeable value = diff.get().addedData.get(key);
-        if (value != null) {
-            return value;
+        try {
+            sync();
+
+            Storeable value = diff.get().addedData.get(key);
+            if (value != null) {
+                return value;
+            }
+
+            value = diff.get().changedData.get(key);
+            if (value != null) {
+                return value;
+            }
+
+            value = committedData.get(key);
+
+            if (value != null) {
+                return value;
+            }
+
+            return null;
+
+        } finally {
+
+            lock.readLock().unlock();
         }
-
-        value = diff.get().changedData.get(key);
-        if (value != null) {
-            return value;
-        }
-
-        lock.readLock().lock();
-        value = committedData.get(key);
-        lock.readLock().unlock();
-
-        if (value != null) {
-            return value;
-        }
-
-        return null;
     }
 
     /**
@@ -144,46 +148,42 @@ public class DbTable implements Table {
         }
 
         lock.readLock().lock();
-        sync();
-        lock.readLock().unlock();
 
-        lock.readLock().lock();
-        if (committedData.containsKey(key)) {
+        try {
 
-            if (diff.get().removedData.contains(key)) {
-                diff.get().removedData.remove(key);
-                if (!committedData.get(key).equals(value)) {
-                    diff.get().changedData.put(key, value);
-                }
+            sync();
 
-                lock.readLock().unlock();
-                return null;
-            } else if (diff.get().changedData.containsKey(key)) {
+            if (committedData.containsKey(key)) {
 
-                if (committedData.get(key).equals(value)) {
+                if (diff.get().removedData.contains(key)) {
+                    diff.get().removedData.remove(key);
+                    if (!committedData.get(key).equals(value)) {
+                        diff.get().changedData.put(key, value);
+                    }
 
-                    lock.readLock().unlock();
-                    return diff.get().changedData.remove(key);
+                    return null;
+                } else if (diff.get().changedData.containsKey(key)) {
+
+                    if (committedData.get(key).equals(value)) {
+                        return diff.get().changedData.remove(key);
+                    } else {
+
+                        return diff.get().changedData.put(key, value);
+                    }
                 } else {
 
-                    lock.readLock().unlock();
-                    return diff.get().changedData.put(key, value);
+                    diff.get().changedData.put(key, value);
+
+                    return committedData.get(key);
+
                 }
+
             } else {
-
-                diff.get().changedData.put(key, value);
-
-                lock.readLock().unlock();
-                return committedData.get(key);
-
+                return diff.get().addedData.put(key, value);
             }
-
-        } else {
-
+        } finally {
             lock.readLock().unlock();
-            return diff.get().addedData.put(key, value);
         }
-
     }
 
     /**
@@ -206,32 +206,36 @@ public class DbTable implements Table {
         }
 
         lock.readLock().lock();
-        sync();
-        lock.readLock().unlock();
 
+        try {
+            sync();
 
-        if (diff.get().addedData.containsKey(key)) {
-            return diff.get().addedData.remove(key);
-        }
+            if (diff.get().addedData.containsKey(key)) {
+                return diff.get().addedData.remove(key);
+            }
 
-        if (diff.get().changedData.containsKey(key)) {
-            Storeable value = diff.get().changedData.get(key);
-            diff.get().changedData.remove(key);
-            diff.get().removedData.add(key);
-            return value;
-        }
+            if (diff.get().changedData.containsKey(key)) {
+                Storeable value = diff.get().changedData.get(key);
+                diff.get().changedData.remove(key);
+                diff.get().removedData.add(key);
+                return value;
+            }
 
-        if (diff.get().removedData.contains(key)) {
+            if (diff.get().removedData.contains(key)) {
+                return null;
+            }
+
+            if (committedData.containsKey(key)) {
+                Storeable value = committedData.get(key);
+                diff.get().removedData.add(key);
+                return value;
+            }
+
             return null;
-        }
 
-        if (committedData.containsKey(key)) {
-            Storeable value = committedData.get(key);
-            diff.get().removedData.add(key);
-            return value;
+        } finally {
+            lock.readLock().unlock();
         }
-
-        return null;
     }
 
     /**
@@ -254,26 +258,31 @@ public class DbTable implements Table {
 
         lock.writeLock().lock();
 
-        committedData.keySet().removeAll(diff.get().removedData);
-        committedData.putAll(diff.get().addedData);
-        committedData.putAll(diff.get().changedData);
-
-        int changedKeys = getNumberOfUncommittedChanges();
-        diff.get().addedData.clear();
-        diff.get().removedData.clear();
-        diff.get().changedData.clear();
-        version.set(version.get() + 1);
-        committedVersion++;
-
         try {
-            write();
-        } catch (MyIOException ex) {
-            lock.writeLock().unlock();
-            throw new MyException("Table \"" + tableName + "\": errors while saving commit");
-        }
 
-        lock.writeLock().unlock();
-        return changedKeys;
+            committedData.keySet().removeAll(diff.get().removedData);
+            committedData.putAll(diff.get().addedData);
+            committedData.putAll(diff.get().changedData);
+
+            int changedKeys = getNumberOfUncommittedChanges();
+            diff.get().addedData.clear();
+            diff.get().removedData.clear();
+            diff.get().changedData.clear();
+            version.set(version.get() + 1);
+            committedVersion++;
+
+            try {
+                write();
+            } catch (MyIOException ex) {
+                throw new MyException("Table \"" + tableName + "\": errors while saving commit");
+            }
+
+            return changedKeys;
+
+        } finally {
+
+            lock.writeLock().unlock();
+        }
     }
 
     /**
@@ -368,6 +377,7 @@ public class DbTable implements Table {
     private void sync() {
 
         if (version.get() < committedVersion) {
+
             for (String key : diff.get().removedData) {
                 if (committedData.containsKey(key)) {
                     diff.get().removedData.remove(key);
@@ -398,11 +408,7 @@ public class DbTable implements Table {
     }
 
     public List<Class<?>> getSignature() {
-        lock.readLock().lock();
-        List<Class<?>> retSignature = signature;
-        lock.readLock().unlock();
-
-        return retSignature;
+            return signature;
     }
 
     private void readKeyValue(Path filePath, int dir, int file) throws MyIOException {
@@ -459,18 +465,23 @@ public class DbTable implements Table {
     public void read() throws MyIOException {
 
         lock.writeLock().lock();
-        for (int dir = 0; dir < 16; ++dir) {
-            for (int file = 0; file < 16; ++file) {
-                Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
-                try {
-                    readKeyValue(filePath, dir, file);
-                } catch (MyException ex) {
-                    System.out.println(ex.getMessage());
-                    System.exit(1);
+
+        try {
+
+            for (int dir = 0; dir < 16; ++dir) {
+                for (int file = 0; file < 16; ++file) {
+                    Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
+                    try {
+                        readKeyValue(filePath, dir, file);
+                    } catch (MyException ex) {
+                        System.out.println(ex.getMessage());
+                        System.exit(1);
+                    }
                 }
             }
+        } finally {
+            lock.writeLock().unlock();
         }
-        lock.writeLock().unlock();
     }
 
     private void writeKeyValue(Path filePath, String keyStr, String valueStr) throws MyIOException {
@@ -494,52 +505,52 @@ public class DbTable implements Table {
 
         lock.writeLock().lock();
 
-        if (Files.exists(tablePath)) {
-            FileSystem.deleteContent(tablePath);
-        } else {
-            try {
-                Files.createDirectory(tablePath);
-            } catch (IOException ex) {
-                lock.writeLock().unlock();
-                throw new MyIOException("Error has occurred while creating table directory");
-            }
-        }
 
-        FileSystem.writeSignature(signature, tablePath);
-
-        for (HashMap.Entry<String, Storeable> entry : committedData.entrySet()) {
-
-            String key = entry.getKey();
-            String value = Serializer.serialize(this, entry.getValue());
-            int hashCode = key.hashCode();
-            int dir = hashCode % 16;
-            int file = hashCode / 16 % 16;
-
-            Path dirPath = tablePath.resolve(dir + ".dir");
-            Path filePath = dirPath.resolve(file + ".dat");
-
-            if (!Files.exists(dirPath)) {
+        try {
+            if (Files.exists(tablePath)) {
+                FileSystem.deleteContent(tablePath);
+            } else {
                 try {
-                    Files.createDirectory(dirPath);
+                    Files.createDirectory(tablePath);
                 } catch (IOException ex) {
-                    lock.writeLock().unlock();
-                    throw new MyIOException(dirPath + ": unable to create");
-                }
-            }
-            if (!Files.exists(filePath)) {
-                try {
-                    Files.createFile(filePath);
-                } catch (IOException ex) {
-                    lock.writeLock().unlock();
-                    throw new MyIOException(filePath + ": unable to create");
+                    throw new MyIOException("Error has occurred while creating table directory");
                 }
             }
 
-            writeKeyValue(filePath, key, value);
+            FileSystem.writeSignature(signature, tablePath);
 
+            for (HashMap.Entry<String, Storeable> entry : committedData.entrySet()) {
+
+                String key = entry.getKey();
+                String value = Serializer.serialize(this, entry.getValue());
+                int hashCode = key.hashCode();
+                int dir = hashCode % 16;
+                int file = hashCode / 16 % 16;
+
+                Path dirPath = tablePath.resolve(dir + ".dir");
+                Path filePath = dirPath.resolve(file + ".dat");
+
+                if (!Files.exists(dirPath)) {
+                    try {
+                        Files.createDirectory(dirPath);
+                    } catch (IOException ex) {
+                        throw new MyIOException(dirPath + ": unable to create");
+                    }
+                }
+                if (!Files.exists(filePath)) {
+                    try {
+                        Files.createFile(filePath);
+                    } catch (IOException ex) {
+                        throw new MyIOException(filePath + ": unable to create");
+                    }
+                }
+
+                writeKeyValue(filePath, key, value);
+
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
-
-        lock.writeLock().unlock();
 
     }
 
