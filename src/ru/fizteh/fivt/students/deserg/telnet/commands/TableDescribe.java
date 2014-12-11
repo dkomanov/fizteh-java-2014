@@ -21,14 +21,7 @@ public class TableDescribe implements DbCommand {
 
         } else if (args.size() == 2) {
 
-            DbTable table = db.getCurrentTable();
-
-            if (table == null) {
-                return "no table";
-            }
-
-
-            return Serializer.makeStringFromSignature(table.getSignature());
+            return Serializer.makeStringFromSignature(db.getSignature(args.get(1)));
 
         } else {
             return "Too many arguments";

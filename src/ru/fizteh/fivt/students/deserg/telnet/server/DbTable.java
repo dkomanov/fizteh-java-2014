@@ -22,7 +22,6 @@ public class DbTable implements Table {
 
     private List<Class<?>> signature = new ArrayList<>();
     private Map<String, Storeable> committedData = new HashMap<>();
-    private boolean closed = false;
 
     class TableDiff {
         public Map<String, Storeable> addedData = new HashMap<>();
@@ -71,8 +70,6 @@ public class DbTable implements Table {
     @Override
     public String getName() {
 
-        checkClosed();
-
         return tableName;
     }
 
@@ -86,8 +83,6 @@ public class DbTable implements Table {
      */
     @Override
     public Storeable get(String key) throws IllegalArgumentException {
-
-        checkClosed();
 
         if (key == null) {
             throw new IllegalArgumentException("Table \"" + tableName + "\": get: null key");
@@ -135,8 +130,6 @@ public class DbTable implements Table {
      */
     @Override
     public Storeable put(String key, Storeable value) {
-
-        checkClosed();
 
         if (key == null) {
             throw new IllegalArgumentException("Table \"" + tableName + "\": put: null key");
@@ -204,8 +197,6 @@ public class DbTable implements Table {
     @Override
     public Storeable remove(String key) {
 
-        checkClosed();
-
         if (key == null) {
             throw new IllegalArgumentException("Table \"" + tableName + "\": remove: null key");
         }
@@ -250,7 +241,6 @@ public class DbTable implements Table {
      */
     @Override
     public int size() {
-        checkClosed();
         return committedData.size() - diff.get().removedData.size() + diff.get().addedData.size();
     }
 
@@ -261,8 +251,6 @@ public class DbTable implements Table {
      */
     @Override
     public int commit() {
-
-        checkClosed();
 
         lock.writeLock().lock();
 
@@ -296,8 +284,6 @@ public class DbTable implements Table {
     @Override
     public int rollback() {
 
-        checkClosed();
-
         int changedKeys = getNumberOfUncommittedChanges();
         diff.get().addedData.clear();
         diff.get().removedData.clear();
@@ -313,8 +299,6 @@ public class DbTable implements Table {
      */
     @Override
     public List<String> list() {
-
-        checkClosed();
 
         List<String> keyList = new LinkedList<>();
         keyList.addAll(committedData.keySet());
@@ -332,7 +316,6 @@ public class DbTable implements Table {
     @Override
     public int getNumberOfUncommittedChanges() {
 
-        checkClosed();
         return diff.get().addedData.size() + diff.get().removedData.size() + diff.get().changedData.size();
     }
 
@@ -345,7 +328,6 @@ public class DbTable implements Table {
     @Override
     public int getColumnsCount() {
 
-        checkClosed();
         return signature.size();
     }
 
@@ -360,8 +342,6 @@ public class DbTable implements Table {
      */
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-
-        checkClosed();
 
         if (columnIndex < 0 || columnIndex >= signature.size()) {
             throw new IndexOutOfBoundsException("DbTable: getColumnType: index \""
@@ -384,9 +364,6 @@ public class DbTable implements Table {
      * Not-interface methods begin here
      */
 
-    public boolean isClosed() {
-        return closed;
-    }
 
     private void sync() {
 
@@ -419,13 +396,6 @@ public class DbTable implements Table {
         }
 
     }
-
-    private void checkClosed() {
-        if (closed) {
-            throw new IllegalStateException("Table \"" + tableName + "\" is closed");
-        }
-    }
-
 
     public List<Class<?>> getSignature() {
         lock.readLock().lock();

@@ -60,16 +60,13 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
             throw new IllegalArgumentException("Database \"" + name + "\": getTable: unacceptable table name");
         }
 
-        lock.writeLock().lock();
+        lock.readLock().lock();
         if (removedTables.contains(name)) {
-            lock.writeLock().unlock();
+            lock.readLock().unlock();
             throw new IllegalStateException("Database \"" + name + "\": getTable: table was removed");
         } else {
             DbTable table = tables.get(name);
-            if (table != null && table.isClosed()) {
-                table = new DbTable(dbPath.resolve(name), signatures.get(name));
-            }
-            lock.writeLock().unlock();
+            lock.readLock().unlock();
 
             return table;
         }
@@ -305,6 +302,40 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     }
 
 
+    public List<Class<?>> getSignature(String name) {
+
+        if (name == null) {
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": getSignature: null table name");
+        }
+
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("Database \"" + dbPath + "\": getSignature: empty table name");
+        }
+
+        try {
+            String testName = Paths.get("").resolve(name).getFileName().toString();
+
+            if (!testName.equals(name)) {
+                throw new IllegalArgumentException("Database \"" + name + "\": getSignature: unacceptable table name");
+            }
+
+        } catch (InvalidPathException ex) {
+            throw new IllegalArgumentException("Database \"" + name + "\": getSignature: unacceptable table name");
+        }
+
+        lock.readLock().lock();
+        if (removedTables.contains(name)) {
+            lock.readLock().unlock();
+            throw new IllegalStateException("Database \"" + name + "\": getSignature: table was removed");
+        } else {
+            List<Class<?>> signature = signatures.get(name);
+            lock.readLock().unlock();
+
+            return signature;
+        }
+
+    }
+
     public DbTable getCurrentTable() {
         return currentTable;
     }
@@ -339,7 +370,7 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
         }
         lock.readLock().unlock();
 
-        return result;
+        return result.substring(0, result.length() - 1);
     }
 
     private boolean checkSignature(List<Class<?>> signature) {
@@ -373,6 +404,7 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
         lock.writeLock().lock();
 
         if (dbPath == null) {
+            lock.writeLock().unlock();
             return;
         }
 
@@ -431,7 +463,7 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
 
         }
 
-        lock.writeLock().lock();
+        lock.writeLock().unlock();
     }
 
 

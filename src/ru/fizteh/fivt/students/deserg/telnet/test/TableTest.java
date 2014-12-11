@@ -60,7 +60,6 @@ public class TableTest {
             assertEquals(name, table.getName());
 
             try {
-                table.close();
                 table.getName();
                 assertTrue(false);
             } catch (IllegalStateException ex) {
@@ -130,7 +129,6 @@ public class TableTest {
             assertEquals(table.put("key1", val2), val1);
 
             try {
-                table.close();
                 table.put("key100500", val1);
                 assertTrue(false);
             } catch (IllegalStateException ex) {
@@ -188,7 +186,6 @@ public class TableTest {
         assertEquals(table.get("keyX"), null);
 
         try {
-            table.close();
             table.get("key1");
             assertTrue(false);
         } catch (IllegalStateException ex) {
@@ -242,7 +239,6 @@ public class TableTest {
             assertEquals(table.remove("keyX"), null);
 
             try {
-                table.close();
                 table.remove("key100500");
                 assertTrue(false);
             } catch (IllegalStateException ex) {
@@ -277,7 +273,6 @@ public class TableTest {
             assertEquals(list, table.list());
 
             try {
-                table.close();
                 table.list();
                 assertTrue(false);
             } catch (IllegalStateException ex) {
@@ -373,7 +368,6 @@ public class TableTest {
             assertEquals(table.size(), 2);
 
             try {
-                table.close();
                 table.commit();
                 assertTrue(false);
             } catch (IllegalStateException ex) {
@@ -382,7 +376,6 @@ public class TableTest {
 
             table = (DbTable) provider.getTable("table");
             try {
-                table.close();
                 table.rollback();
                 assertTrue(false);
             } catch (IllegalStateException ex) {
@@ -408,7 +401,6 @@ public class TableTest {
             }
 
             try {
-                table.close();
                 table.getColumnType(0);
                 assertTrue(false);
             } catch (IllegalStateException ex) {
@@ -434,7 +426,6 @@ public class TableTest {
         table.commit();
 
         table.put("key3", val1);
-        table.close();
 
         try {
             table.put("someKey", val1);

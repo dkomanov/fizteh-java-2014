@@ -31,12 +31,12 @@ public class TableList implements DbCommand {
                 }
 
                 if (out.isEmpty()) {
-                    return "\n";
+                    return "";
                 } else {
-                    return out.substring(0, out.length() - 2) + "\n";
+                    return out.substring(0, out.length() - 2);
                 }
             } else {
-                return "\n";
+                return "";
             }
 
         } else {

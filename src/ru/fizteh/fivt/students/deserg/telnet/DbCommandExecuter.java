@@ -74,7 +74,11 @@ public class DbCommandExecuter {
 
 
             if (command != null) {
-                result += command.execute(arguments, db);
+                try {
+                    result += command.execute(arguments, db) + "\n";
+                } catch (Exception ex) {
+                    result += "Error: " + ex.getMessage() + "\n";
+                }
             }
         }
 

@@ -2,8 +2,6 @@ package ru.fizteh.fivt.students.deserg.telnet.server;
 
 import ru.fizteh.fivt.students.deserg.telnet.DbCommandExecuter;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -27,6 +25,7 @@ public class ClientAgent implements Callable<Integer> {
         lock.readLock().unlock();
     }
 
+
     @Override
     public Integer call() throws Exception {
 
@@ -34,23 +33,28 @@ public class ClientAgent implements Callable<Integer> {
 
         while (true) {
 
-
-            if (!data.started) {
+            if (!data.isStarted()) {
                 System.out.println("Server has got disabled");
+                socket.close();
                 break;
             }
 
-            if (socket.getInputStream().available() <= 0) {
 
-            }
+
             byte[] bytes = new byte[512000];
-
             int readNum = socket.getInputStream().read(bytes);
 
-            if (readNum == 0) {
+            if (readNum == -1) {
                 System.out.println("The socket is closed");
                 break;
             }
+
+            if (!data.isStarted()) {
+                System.out.println("Server has got disabled");
+                socket.close();
+                break;
+            }
+
 
             String inputCommand = new String(bytes, 0, readNum);
 
@@ -58,7 +62,7 @@ public class ClientAgent implements Callable<Integer> {
             System.out.println(inputCommand);
 
             String result;
-            result = DbCommandExecuter.executeDbCommand(inputCommand, data.db);
+            result = DbCommandExecuter.executeDbCommand(inputCommand, data.getDb());
             System.out.println("The result is: \n" + result + "\n");
 
             socket.getOutputStream().write(result.getBytes());

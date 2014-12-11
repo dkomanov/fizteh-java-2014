@@ -64,10 +64,6 @@ public class Client implements Program {
                 return commandDisconnect(arguments);
             }
 
-            case "close": {
-                return commandDisconnect(arguments);
-            }
-
             case "whereami": {
                 return commandWhereAmI(arguments);
             }
@@ -171,13 +167,11 @@ public class Client implements Program {
             return "Too many arguments (required: 0)";
         }
 
-        String result = "";
-
         if (connected) {
             try {
                 socket.close();
             } catch (IOException ex) {
-                System.out.println("problms with disconnecting: " + ex.getMessage() + "\n");
+                System.out.println("problems with disconnecting: " + ex.getMessage() + "\n");
             }
         }
 
@@ -196,17 +190,29 @@ public class Client implements Program {
 
         try {
 
+            if (socket.isClosed()) {
+                connected = false;
+                return "connection stopped";
+            }
+
             socket.getOutputStream().write(command.getBytes());
 
             byte[] bytes = new byte[512000];
-            socket.getInputStream().read(bytes);
-            return new String(bytes);
+            int inpNum = socket.getInputStream().read(bytes);
+
+            if (inpNum == -1) {
+                connected = false;
+                return "connection stopped";
+            }
+
+            return new String(bytes, 0, inpNum);
 
         } catch (IOException ex) {
             connected = false;
 
             try {
                 socket.close();
+                connected = false;
                 return "connection stopped";
             } catch (IOException ex1) {
                 return "connection stopped";

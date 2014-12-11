@@ -36,7 +36,7 @@ public class TablePut implements DbCommand {
             try {
                 mValue = Serializer.deserialize(table, value);
             } catch (ParseException ex) {
-                return "wrong type " + ex.getMessage();
+                return "wrong type: " + ex.getMessage();
             }
 
             if (table.put(key, mValue) != null) {

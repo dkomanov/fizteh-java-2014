@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by deserg on 11.12.14.
@@ -16,7 +18,6 @@ public class Server implements Program {
     private DbTableProvider db;
     private CommonData data;
     private ExecutorService serverService = Executors.newFixedThreadPool(5);
-    private Future<Integer> serverFuture;
 
     public Server() {
 
@@ -75,9 +76,10 @@ public class Server implements Program {
                 }
 
                 case "exit": {
-                    if (data.started) {
+                    if (data.isStarted()) {
                         serverService.shutdown();
-                        data.started = false;
+                        data.setStarted(false);
+                        data.getDb().close();
                     }
                     System.exit(1);
                     return "";
@@ -99,7 +101,7 @@ public class Server implements Program {
 
     public String commandStart(ArrayList<String> arguments) {
 
-        if (data.started) {
+        if (data.isStarted()) {
             return "not started: already started";
         }
 
@@ -112,9 +114,9 @@ public class Server implements Program {
             }
         }
 
-        serverFuture = serverService.submit(new ConnectionManager(data));
-        data.started = true;
-        return "started at port " + data.port;
+        serverService.submit(new ConnectionManager(data));
+        data.setStarted(true);
+        return "started at port " + data.getPort();
 
     }
 
@@ -124,14 +126,17 @@ public class Server implements Program {
             return "Too many arguments (required: 0)";
         }
 
-        if (!data.started) {
+
+        if (!data.isStarted()) {
             return "not started";
         }
 
         serverService.shutdown();
+
+        data.getDb().close();
         if (serverService.isShutdown()) {
-            data.started = false;
-            return "stopped at port " + data.port;
+            data.setStarted(false);
+            return "stopped at port " + data.getPort();
         } else {
             return "not stopped :((";
         }
@@ -139,7 +144,7 @@ public class Server implements Program {
 
     public String commandListUsers(ArrayList<String> arguments) {
 
-        if (!data.started) {
+        if (!data.isStarted()) {
             return "not started";
         }
 
@@ -148,7 +153,7 @@ public class Server implements Program {
         }
 
         String users = "";
-        for (String string: data.users) {
+        for (String string: data.getUsers()) {
             users += string + "\n";
         }
 
