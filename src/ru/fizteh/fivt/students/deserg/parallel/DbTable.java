@@ -21,33 +21,9 @@ public class DbTable implements Table {
     private Map<String, Storeable> committedData = new HashMap<>();
 
     private class TableDiff {
-        private Map<String, Storeable> addedData = new HashMap<>();
-        private Map<String, Storeable> changedData = new HashMap<>();
-        private Set<String> removedData = new HashSet<>();
-
-        public Map<String, Storeable> getAddedData() {
-            return addedData;
-        }
-
-        public Map<String, Storeable> getChangedData() {
-            return addedData;
-        }
-
-        public Set<String> getRemovedData() {
-            return removedData;
-        }
-
-        public void setAddedData(Map<String, Storeable> addedData) {
-            this.addedData = addedData;
-        }
-
-        public void setChangedData(Map<String, Storeable> changedData) {
-            this.changedData = changedData;
-        }
-
-        public void setRemovedData(Set<String> removedData) {
-            this.removedData = removedData;
-        }
+        public Map<String, Storeable> addedData = new HashMap<>();
+        public Map<String, Storeable> changedData = new HashMap<>();
+        public Set<String> removedData = new HashSet<>();
     }
 
 
