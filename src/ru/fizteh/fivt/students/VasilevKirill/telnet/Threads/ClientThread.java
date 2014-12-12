@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.VasilevKirill.telnet.Threads;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.ServerMain;
@@ -116,7 +117,11 @@ public class ClientThread implements Runnable {
             }
             out.writeUTF(new String(typesBuilder));
             for (String key: keys) {
-                out.writeUTF(key + " " + new JSONArray(table.get(key)).toString());
+                try {
+                    out.writeUTF(key + " " + new JSONArray(table.get(key)).toString());
+                } catch (JSONException e) {
+                    out.writeUTF(key + " " + "null");
+                }
             }
             out.flush();
         }
