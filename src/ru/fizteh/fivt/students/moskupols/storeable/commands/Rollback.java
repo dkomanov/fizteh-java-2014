@@ -22,8 +22,7 @@ public class Rollback extends KnownArgsCountNameFirstCommand {
     protected void performAction(Object context, String[] args) throws CommandExecutionException {
         final Table currentTable = ((StoreableContext) context).getCurrentTable();
         if (currentTable == null) {
-            System.out.println("no table");
-            return;
+            throw new CommandExecutionException(this, "no table");
         }
         System.out.println(currentTable.rollback());
     }

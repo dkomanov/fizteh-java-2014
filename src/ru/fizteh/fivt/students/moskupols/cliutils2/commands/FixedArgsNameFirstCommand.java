@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.moskupols.cliutils2.commands;
 
+import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.InvalidArgsException;
+
 import java.util.Arrays;
 
 /**
@@ -9,11 +11,11 @@ public abstract class FixedArgsNameFirstCommand extends NameFirstCommand {
     public abstract String[] expectedArgs();
 
     @Override
-    public String checkArgs(String[] args) {
-        String ret = super.checkArgs(args);
-        if (ret == null && !Arrays.equals(args, expectedArgs())) {
-            ret = "This command should be called only in '" + String.join(" ", expectedArgs()) + "' form";
+    public void checkArgs(String[] args) throws InvalidArgsException {
+        super.checkArgs(args);
+        if (!Arrays.equals(args, expectedArgs())) {
+            throw new InvalidArgsException(this,
+                    "This command should be called only in '" + String.join(" ", expectedArgs()) + "' form");
         }
-        return ret;
     }
 }

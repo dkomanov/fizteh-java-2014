@@ -26,12 +26,15 @@ public class Use extends KnownArgsCountNameFirstCommand {
         final TableProvider provider = cont.getProvider();
         if (currentTable != null) {
             if (currentTable.getNumberOfUncommittedChanges() != 0) {
-                System.out.printf("%d uncommitted changes\n", currentTable.getNumberOfUncommittedChanges());
+                throw new CommandExecutionException(
+                        this,
+                        String.format(
+                                "%d uncommitted changes\n", currentTable.getNumberOfUncommittedChanges()));
             }
         }
         Table newTable = provider.getTable(args[1]);
         if (newTable == null) {
-            System.out.println(String.format("%s not exists", args[1]));
+            throw new CommandExecutionException(this, String.format("%s not exists", args[1]));
         } else {
             System.out.println(String.format("using %s", args[1]));
             cont.setCurrentTable(newTable);

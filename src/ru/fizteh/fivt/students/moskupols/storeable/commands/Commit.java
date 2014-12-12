@@ -24,13 +24,12 @@ public class Commit extends KnownArgsCountNameFirstCommand {
     protected void performAction(Object context, String[] args) throws CommandExecutionException {
         final Table currentTable = ((StoreableContext) context).getCurrentTable();
         if (currentTable == null) {
-            System.out.println("no table");
-            return;
+            throw new CommandExecutionException(this, "no table");
         }
         try {
             System.out.println(currentTable.commit());
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            throw new CommandExecutionException(this, e.getMessage(), e);
         }
     }
 }

@@ -32,13 +32,12 @@ public class Drop extends KnownArgsCountNameFirstCommand {
         if (existed) {
             System.out.println("dropped");
         } else {
-            System.out.println(String.format("%s not exists", args[1]));
-            return;
+            throw new CommandExecutionException(this, String.format("%s not exists", args[1]));
         }
         try {
             provider.removeTable(args[1]);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            throw new CommandExecutionException(this, e.getMessage(), e);
         }
         if (removingCur) {
             cont.setCurrentTable(null);

@@ -22,9 +22,12 @@ public class Remove extends KnownArgsCountNameFirstCommand {
     protected void performAction(Object context, String[] args) throws CommandExecutionException {
         final Table currentTable = ((StoreableContext) context).getCurrentTable();
         if (currentTable == null) {
-            System.out.println("no table");
-            return;
+            throw new CommandExecutionException(this, "no table");
         }
-        System.out.println(currentTable.remove(args[1]) == null ? "not found" : "removed");
+        if (currentTable.remove(args[1]) == null) {
+            throw new CommandExecutionException(this, "not found");
+        } else {
+            System.out.println("removed");
+        }
     }
 }

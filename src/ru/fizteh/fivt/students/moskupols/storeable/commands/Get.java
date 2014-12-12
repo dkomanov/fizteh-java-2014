@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.moskupols.storeable.commands;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.moskupols.cliutils.StopProcessingException;
 import ru.fizteh.fivt.students.moskupols.cliutils2.commands.KnownArgsCountNameFirstCommand;
 import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.CommandExecutionException;
 
@@ -22,12 +21,11 @@ public class Get extends KnownArgsCountNameFirstCommand {
 
     @Override
     protected void performAction(Object context, String[] args)
-            throws CommandExecutionException, StopProcessingException {
+            throws CommandExecutionException {
         final StoreableContext cont = (StoreableContext) context;
         final Table table = cont.getCurrentTable();
         if (table == null) {
-            System.out.println("no table");
-            return;
+            throw new CommandExecutionException(this, "no table");
         }
         Storeable ret = table.get(args[1]);
         String str;

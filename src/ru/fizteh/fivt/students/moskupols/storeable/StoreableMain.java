@@ -32,16 +32,16 @@ public class StoreableMain {
         try {
             provider = providerFactory.create(dbPath);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return;
         }
 
-        final Object context = new StoreableContext(provider);
+        final StoreableContext context = new StoreableContextImpl(provider);
         final CommandChooser chooser = new NameFirstCommandChooser(
                 new Commit(), new Create(), new Drop(),
                 new Get(), new Put(), new Remove(),
                 new Rollback(), new Size(), new Use(),
-                new ExitCommand()
+                new ShowTables(), new ExitCommand()
         );
         Interpreter interpreter;
         if (args.length == 0) {
@@ -56,6 +56,5 @@ public class StoreableMain {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-
     }
 }

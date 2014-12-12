@@ -1,9 +1,9 @@
 package ru.fizteh.fivt.students.moskupols.storeable.commands;
 
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.moskupols.cliutils.StopProcessingException;
 import ru.fizteh.fivt.students.moskupols.cliutils2.commands.NameFirstCommand;
 import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.CommandExecutionException;
+import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.InvalidArgsException;
 import ru.fizteh.fivt.students.moskupols.storeable.StoreableAtomType;
 
 import java.io.IOException;
@@ -20,19 +20,15 @@ public class Create extends NameFirstCommand {
     }
 
     @Override
-    public String checkArgs(String[] args) {
-        String ret = super.checkArgs(args);
-        if (ret == null) {
-            if (args.length < 3) {
-                return "At least 1 column type is expected";
-            }
+    public void checkArgs(String[] args) throws InvalidArgsException {
+        super.checkArgs(args);
+        if (args.length < 3) {
+            throw new InvalidArgsException(this, "At least 1 column type is expected");
         }
-        return ret;
     }
 
     @Override
-    protected void performAction(Object context, String[] args)
-            throws StopProcessingException, CommandExecutionException {
+    protected void performAction(Object context, String[] args) throws CommandExecutionException {
         final StoreableContext cont = (StoreableContext) context;
         List<Class<?>> types = new ArrayList<>(args.length - 2);
         for (int i = 2; i < args.length; i++) {
@@ -48,8 +44,7 @@ public class Create extends NameFirstCommand {
         try {
             newTable = cont.getProvider().createTable(args[1], types);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
-            return;
+            throw new CommandExecutionException(this, e.getMessage(), e);
         }
         if (newTable == null) {
             System.out.println(String.format("%s exists", args[1]));

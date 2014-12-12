@@ -8,7 +8,7 @@ import ru.fizteh.fivt.students.moskupols.cliutils2.exceptions.CommandExecutionEx
 /**
  * Created by moskupols on 03.12.14.
  */
-public class BatchModeInterpreter extends Interpreter {
+public class BatchModeInterpreter extends ShellInterpreter {
     private final String[] splittedCommands;
     private final Object context;
     private final CommandChooser chooser;
@@ -16,12 +16,7 @@ public class BatchModeInterpreter extends Interpreter {
     public BatchModeInterpreter(Object context, CommandChooser chooser, String[] args) {
         this.context = context;
         this.chooser = chooser;
-        StringBuilder joiner = new StringBuilder();
-        for (String s : args) {
-            joiner.append(s);
-            joiner.append(' ');
-        }
-        splittedCommands = joiner.toString().split(";");
+        splittedCommands = String.join(" ", args).split(";");
     }
 
     @Override

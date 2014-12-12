@@ -25,17 +25,14 @@ public class Put extends KnownArgsCountNameFirstCommand {
         final StoreableContext cont = (StoreableContext) context;
         Table table = cont.getCurrentTable();
         if (table == null) {
-            System.out.println("no table");
-            return;
+            throw new CommandExecutionException(this, "no table");
         }
         TableProvider provider = cont.getProvider();
         Storeable oldStoreable;
         try {
             oldStoreable = table.put(args[1], provider.deserialize(table, args[2]));
         } catch (Exception e) {
-            System.err.println("Value parse error: " + e.getMessage());
-            e.printStackTrace();
-            return;
+            throw new CommandExecutionException(this, "Value parse error: " + e.getMessage(), e);
         }
         if (oldStoreable == null) {
             System.out.println("new");

@@ -10,7 +10,7 @@ import java.util.Scanner;
 /**
  * Created by moskupols on 02.12.14.
  */
-public class InteractiveInterpreter extends Interpreter {
+public class InteractiveInterpreter extends ShellInterpreter {
     private final Object prompt;
     private final Object context;
     private final CommandChooser chooser;
@@ -24,7 +24,7 @@ public class InteractiveInterpreter extends Interpreter {
     @Override
     public void interpret() {
         Scanner scanner = new Scanner(System.in);
-        boolean exited = false;
+        boolean exitOccured = false;
         do {
             System.err.flush();
             System.out.print(prompt);
@@ -36,11 +36,11 @@ public class InteractiveInterpreter extends Interpreter {
                 try {
                     runJob(context, chooser, s);
                 } catch (StopProcessingException e) {
-                    exited = true;
+                    exitOccured = true;
                 } catch (UnknownCommandException | CommandExecutionException e) {
                     System.err.println(e.getMessage());
                 }
             }
-        } while (!exited);
+        } while (!exitOccured);
     }
 }
