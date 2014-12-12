@@ -62,7 +62,7 @@ public class ParallelMain {
                 execute(s);
             }
         } catch (Exception exception) {
-            System.exit(0);
+            System.exit(1);
         }
     }
 

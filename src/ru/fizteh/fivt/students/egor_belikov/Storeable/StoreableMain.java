@@ -61,7 +61,7 @@ public class StoreableMain {
                 execute(s);
             }
         } catch (Exception exception) {
-            System.exit(0);
+            System.exit(1);
         }
     }
 
