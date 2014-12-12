@@ -54,23 +54,17 @@ public class CRemoteTableProvider implements RemoteTableProvider {
         if (name == null) {
             throw new NullPointerException();
         }
-        try {
-            StringBuilder builder = new StringBuilder("");
-            builder.append("CREATETABLE " + name);
-            for (Class cl : columnTypes) {
-                builder.append(" " + cl.toString());
-            }
-            client.send(builder.toString());
-            String s = client.read();
-            if (s.equals("1")) {
-                return new CRemoteTable(host, port, name);
-            }
-            return null;
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.exit(-1);
-            return null;
+        StringBuilder builder = new StringBuilder("");
+        builder.append("CREATETABLE " + name);
+        for (Class cl : columnTypes) {
+            builder.append(" " + cl.toString());
         }
+        client.send(builder.toString());
+        String s = client.read();
+        if (s.equals("1")) {
+            return new CRemoteTable(host, port, name);
+        }
+        return null;
     }
 
     @Override

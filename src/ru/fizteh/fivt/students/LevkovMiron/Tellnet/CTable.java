@@ -52,20 +52,7 @@ public class CTable implements Table, AutoCloseable {
     }
 
     public CTable(Path path, List<Class<?>> columnTypes, ReentrantReadWriteLock thisLock) throws IOException {
-        removed.set(new HashSet<>());
-        put.set(new HashMap<>());
-        changed.set(new HashMap<>());
-        dbPath = path;
-        lock = thisLock;
-        name = path.getFileName().toString();
-        try {
-            if (!Files.exists(path)) {
-                Files.createDirectory(path);
-            }
-        } catch (IOException e) {
-            throw new IOException("Directory creation failed: " + e.getMessage());
-        }
-        loadData();
+        this(path, thisLock);
         signature = new ArrayList<>(columnTypes);
         writeSignature();
     }
@@ -126,22 +113,25 @@ public class CTable implements Table, AutoCloseable {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        Storeable value = null;
-        lock.readLock().lock();
-        if (table.keySet().contains(key)) {
-            value = table.get(key);
+        try {
+            Storeable value = null;
+            lock.readLock().lock();
+            if (table.keySet().contains(key)) {
+                value = table.get(key);
+            }
+            if (removed.get().contains(key)) {
+                value = null;
+            }
+            if (put.get().keySet().contains(key)) {
+                value = put.get().get(key);
+            }
+            if (changed.get().keySet().contains(key)) {
+                value = changed.get().get(key);
+            }
+            return value;
+        } finally {
+            lock.readLock().unlock();
         }
-        if (removed.get().contains(key)) {
-            value = null;
-        }
-        if (put.get().keySet().contains(key)) {
-            value = put.get().get(key);
-        }
-        if (changed.get().keySet().contains(key)) {
-            value = changed.get().get(key);
-        }
-        lock.readLock().unlock();
-        return value;
     }
 
     @Override
@@ -152,28 +142,31 @@ public class CTable implements Table, AutoCloseable {
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         }
-        Storeable valueBefore = null;
-        lock.readLock().lock();
-        if (table.keySet().contains(key)) {
-            valueBefore = table.get(key);
+        try {
+            Storeable valueBefore = null;
+            lock.readLock().lock();
+            if (table.keySet().contains(key)) {
+                valueBefore = table.get(key);
+            }
+            if (removed.get().contains(key)) {
+                valueBefore = null;
+                removed.get().remove(key);
+            }
+            if (put.get().keySet().contains(key)) {
+                valueBefore = put.get().get(key);
+            }
+            if (changed.get().keySet().contains(key)) {
+                valueBefore = changed.get().get(key);
+            }
+            if (table.keySet().contains(key)) {
+                changed.get().put(key, value);
+            } else {
+                put.get().put(key, value);
+            }
+            return valueBefore;
+        } finally {
+            lock.readLock().unlock();
         }
-        if (removed.get().contains(key)) {
-            valueBefore = null;
-            removed.get().remove(key);
-        }
-        if (put.get().keySet().contains(key)) {
-            valueBefore = put.get().get(key);
-        }
-        if (changed.get().keySet().contains(key)) {
-            valueBefore = changed.get().get(key);
-        }
-        if (table.keySet().contains(key)) {
-            changed.get().put(key, value);
-        } else {
-            put.get().put(key, value);
-        }
-        lock.readLock().unlock();
-        return valueBefore;
     }
 
     @Override

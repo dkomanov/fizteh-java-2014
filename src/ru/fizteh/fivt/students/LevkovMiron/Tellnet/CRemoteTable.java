@@ -47,17 +47,10 @@ public class CRemoteTable implements Table {
         try {
             client.send("put " + key + " " + value);
             res = client.read();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            System.exit(-1);
-        }
-        try {
             return parser.deserialize(signature, res);
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-            System.exit(-1);
+        } catch (IOException | ParseException e) {
+            throw new ColumnFormatException(e.getMessage());
         }
-        return null;
     }
 
     @Override
