@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.EgorLunichkin.Parallel;
 import ru.fizteh.fivt.students.EgorLunichkin.Parallel.commands.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Executor {
@@ -12,8 +11,7 @@ public class Executor {
         try {
             tableProvider = new ParallelTableProvider(dbPath);
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-            throw new ExitException(1);
+            throw new ExitException(ex.getMessage());
         }
         if (args.length == 0) {
             interactiveMode();

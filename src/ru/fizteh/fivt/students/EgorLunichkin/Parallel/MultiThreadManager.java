@@ -97,7 +97,7 @@ public class MultiThreadManager {
         }
     }
 
-    public void commit() throws ParallelException {
+    public void commit() throws IOException {
         lock.writeLock().lock();
         try {
             deletions.forEach(table::remove);
@@ -109,7 +109,7 @@ public class MultiThreadManager {
             }
             table.commit();
         } catch (ParseException ex) {
-            throw new ParallelException(ex.getMessage());
+            throw new IOException(ex.getMessage());
         } finally {
             lock.writeLock().unlock();
         }
@@ -133,7 +133,7 @@ public class MultiThreadManager {
         return creations.size() + overwrites.size() + deletions.size();
     }
 
-    public int DiffCount() {
+    public int diffCount() {
         return creations.size() - deletions.size();
     }
 }

@@ -1,17 +1,18 @@
 package ru.fizteh.fivt.students.EgorLunichkin.Parallel;
 
 public class ExitException extends Exception {
-    public ExitException(int _code) {
-        code = _code;
+    public ExitException(int givenCode) {
+        code = givenCode;
+        message = "";
     }
 
-    public ExitException(String msg) {
-        message = msg;
+    public ExitException(String givenMessage) {
+        message = givenMessage;
         code = 1;
     }
 
-    private int code;
-    private String message;
+    private final int code;
+    private final String message;
 
     public int getCode() {
         return code;

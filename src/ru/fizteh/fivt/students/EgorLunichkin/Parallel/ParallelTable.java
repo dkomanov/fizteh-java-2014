@@ -85,8 +85,8 @@ public class ParallelTable implements Table {
     @Override
     public int size() {
         lock.readLock().lock();
-        try{
-            return table.size() + multiThread.get().DiffCount();
+        try {
+            return table.size() + multiThread.get().diffCount();
         } finally {
             lock.readLock().unlock();
         }
@@ -108,13 +108,9 @@ public class ParallelTable implements Table {
     @Override
     public int commit() throws IOException {
         int changesCount = multiThread.get().changesCount();
-        try {
-            multiThread.get().commit();
-            multiThread.get().clear();
-            return changesCount;
-        } catch (ParallelException ex) {
-            throw new IOException(ex.getMessage());
-        }
+        multiThread.get().commit();
+        multiThread.get().clear();
+        return changesCount;
     }
 
     @Override
