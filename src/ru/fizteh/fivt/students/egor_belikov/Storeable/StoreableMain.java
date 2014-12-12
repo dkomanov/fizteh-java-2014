@@ -21,7 +21,7 @@ public class StoreableMain {
     static String separator;
 
 
-    public static void main(String[] args) throws Exception {
+    public void main(String[] args) throws Exception {
         separator = File.separator;
         currentPath = System.getProperty("fizteh.db.dir");
 
@@ -53,7 +53,7 @@ public class StoreableMain {
         }
     }
 
-    public static void pack(String[] args) {
+    public void pack(String[] args) {
         String commands = Joiner.on(" ").join(args);
         String[] splittedCommands = commands.trim().split(";");
         try {
@@ -65,7 +65,7 @@ public class StoreableMain {
         }
     }
 
-    public static void interactive() {
+    public void interactive() {
         Scanner scanner = new Scanner(System.in);
         try  {
             while (true) {
@@ -90,7 +90,7 @@ public class StoreableMain {
         }
     }
 
-    public static void execute(String s) throws Exception {
+    public void execute(String s) throws Exception {
         try {
             String[] args = s.trim().split("\\s+");
             if (args[0].equals("get") || args[0].equals("remove") || args[0].equals("list") || args[0].equals("put")
@@ -161,7 +161,7 @@ public class StoreableMain {
         }
     }
 
-    public static void create(String[] args) throws Exception {
+    public void create(String[] args) throws Exception {
         String stringTypes = "";
         for (int i = 2; i != args.length; i++) {
             stringTypes = stringTypes + " " + args[i];
@@ -197,7 +197,7 @@ public class StoreableMain {
         }
     }
 
-    public static void drop(String[] args) {
+    public void drop(String[] args) {
         try {
             myTableProvider.removeTable(args[1]);
             System.out.println("dropped");
@@ -208,7 +208,7 @@ public class StoreableMain {
         }
     }
 
-    public static void use(String[] args) {
+    public void use(String[] args) {
         if (listOfTables.get(args[1]) == null) {
             System.out.println(args[1] + " not exists");
         } else {
@@ -230,7 +230,7 @@ public class StoreableMain {
         }
     }
 
-    public static void put(String[] args) {
+    public void put(String[] args) {
         String arguments = args[2];
         if (args.length > 3) {
             for (int i = 3; i != args.length; i++) {
@@ -250,7 +250,7 @@ public class StoreableMain {
         }
     }
 
-    public static void get(String[] args) {
+    public void get(String[] args) {
         if (MyTableProvider.currentTable.get(args[1]) == null) {
             System.out.println("not found");
         } else {
@@ -260,7 +260,7 @@ public class StoreableMain {
         }
     }
 
-    public static void remove(String[] args) {
+    public void remove(String[] args) {
         if (MyTableProvider.currentTable.remove(args[1]) == null) {
             System.out.println("not found");
         } else {
@@ -268,7 +268,7 @@ public class StoreableMain {
         }
     }
 
-    public static void list() {
+    public void list() {
         int counter = 0;
         List<String> list = MyTableProvider.currentTable.list();
         for (String current : list) {
@@ -281,7 +281,7 @@ public class StoreableMain {
         System.out.println();
     }
 
-    public static void deleteDirectory(File dir) {
+    public void deleteDirectory(File dir) {
         if (dir.isDirectory()) {
             String[] children = dir.list();
             for (String aChildren : children) {
@@ -296,12 +296,12 @@ public class StoreableMain {
         System.out.println(MyTableProvider.currentTable.numberOfElements);
     }
 
-    public static void commit() throws Exception {
+    public void commit() throws Exception {
         System.out.println(MyTableProvider.currentTable.commit());
 
     }
 
-    public static void rollback() {
+    public void rollback() {
         System.out.println(MyTableProvider.currentTable.rollback());
 
     }
