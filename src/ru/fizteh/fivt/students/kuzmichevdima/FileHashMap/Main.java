@@ -34,7 +34,6 @@ public class Main {
         db = new DB(path);
         commandMap.put("create", new CommandHandler(new CmdCreate(), 2));
         commandMap.put("drop", new CommandHandler(new CmdDrop(), 2));
-        commandMap.put("exit", new CommandHandler(new CmdExit(), 1));
         commandMap.put("get", new CommandHandler(new CmdGet(), 2));
         commandMap.put("list", new CommandHandler(new CmdList(), 1));
         commandMap.put("put", new CommandHandler(new CmdPut(), 3));
@@ -54,8 +53,8 @@ public class Main {
     private static void interactiveMode() throws IOException {
         Main currentCmd = new Main();
         System.out.print("$ ");
-        while (true) {
-            Scanner in = new Scanner(System.in);
+        Scanner in = new Scanner(System.in);
+        while (in.hasNextLine()) {
             String str = in.nextLine();
             str = str.trim();
             try {
@@ -90,7 +89,13 @@ public class Main {
         if (args.length == 0) {
             throw new RuntimeException("no command");
         }
-
+        if (args[0] == "exit")
+        {
+            if (args.length > 1)
+                throw new IllegalArgumentException(args[0] + ": too many arguments");
+            db.writeToDataBase();
+            System.exit(0);
+        }
         CommandHandler commandHandler = commandMap.get(args[0]);
         if (commandHandler == null) {
             throw new IllegalArgumentException("Wrong command");
