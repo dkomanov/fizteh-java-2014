@@ -5,22 +5,34 @@ import ru.fizteh.fivt.students.EgorLunichkin.Parallel.*;
 import java.io.IOException;
 
 public class CommitCommand implements Command {
-    public CommitCommand(ParallelTableProvider ptp) {
-        base = ptp;
-    }
+    public CommitCommand() {}
 
     private ParallelTableProvider base;
 
     @Override
-    public void run() throws ParallelException {
+    public void run() throws IOException {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
-            try {
-                System.out.println(base.getUsing().commit());
-            } catch (IOException ex) {
-                throw new ParallelException(ex.getMessage());
-            }
+            System.out.println(base.getUsing().commit());
         }
+    }
+
+    @Override
+    public void putArguments(ParallelTableProvider ptp, String[] args) throws ParallelException {
+        if (args.length > maxArguments()) {
+            throw new ParallelException("commit: Too many arguments");
+        }
+        base = ptp;
+    }
+
+    @Override
+    public int minArguments() {
+        return 0;
+    }
+
+    @Override
+    public int maxArguments() {
+        return 0;
     }
 }

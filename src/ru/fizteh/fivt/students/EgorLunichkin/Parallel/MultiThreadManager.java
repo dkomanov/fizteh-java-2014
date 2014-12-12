@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -15,15 +16,15 @@ public class MultiThreadManager {
         table = givenTable;
         lock = givenLock;
         deletions = new HashSet<>();
-        creations = new HashMap<>();
-        overwrites = new HashMap<>();
+        creations = new HashMap<String, String>();
+        overwrites = new HashMap<String, String>();
     }
 
     private StoreableTable table;
     private ReentrantReadWriteLock lock;
-    private HashSet<String> deletions;
-    private HashMap<String, String> creations;
-    private HashMap<String, String> overwrites;
+    private Set<String> deletions;
+    private Map<String, String> creations;
+    private Map<String, String> overwrites;
 
     public String put(String key, String value) {
         if (creations.containsKey(key)) {

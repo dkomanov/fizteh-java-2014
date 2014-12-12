@@ -5,6 +5,7 @@ import ru.fizteh.fivt.students.EgorLunichkin.Parallel.*;
 import ru.fizteh.fivt.students.EgorLunichkin.Storeable.TypeManager;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class CreateCommand implements Command {
@@ -16,8 +17,29 @@ public class CreateCommand implements Command {
         return s.substring(0, s.length() - 1);
     }
 
-    public CreateCommand(ParallelTableProvider ptp, String givenName, String[] givenTypeNames)
-            throws ParallelException {
+    public CreateCommand() {}
+
+    private ParallelTableProvider base;
+    private String tableName;
+    private List<Class<?>> types;
+
+    @Override
+    public void run() throws IOException {
+        Table table = base.createTable(tableName, types);
+        if (table == null) {
+            System.out.println(tableName + " exists");
+        } else {
+            System.out.println("created");
+        }
+    }
+
+    @Override
+    public void putArguments(ParallelTableProvider ptp, String[] args) throws ParallelException {
+        if (args.length < minArguments()) {
+            throw new ParallelException("create: Too few arguments");
+        }
+        String givenName = args[0];
+        String[] givenTypeNames = Arrays.copyOfRange(args, 1, args.length);
         base = ptp;
         tableName = givenName;
         StringBuilder typeNames = new StringBuilder();
@@ -32,21 +54,13 @@ public class CreateCommand implements Command {
         types = TypeManager.getClasses(typeNames.toString().trim());
     }
 
-    private ParallelTableProvider base;
-    private String tableName;
-    private List<Class<?>> types;
+    @Override
+    public int minArguments() {
+        return 2;
+    }
 
     @Override
-    public void run() throws ParallelException {
-        try {
-            Table table = base.createTable(tableName, types);
-            if (table == null) {
-                System.out.println(tableName + " exists");
-            } else {
-                System.out.println("created");
-            }
-        } catch (IOException ex) {
-            throw new ParallelException(ex.getMessage());
-        }
+    public int maxArguments() {
+        return Integer.MAX_VALUE;
     }
 }

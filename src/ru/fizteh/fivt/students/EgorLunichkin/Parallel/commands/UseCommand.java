@@ -3,10 +3,7 @@ package ru.fizteh.fivt.students.EgorLunichkin.Parallel.commands;
 import ru.fizteh.fivt.students.EgorLunichkin.Parallel.*;
 
 public class UseCommand implements Command {
-    public UseCommand(ParallelTableProvider ptp, String givenName) {
-        tableName = givenName;
-        base = ptp;
-    }
+    public UseCommand() {}
 
     private ParallelTableProvider base;
     private String tableName;
@@ -20,5 +17,27 @@ public class UseCommand implements Command {
         } else {
             System.out.println("using " + tableName);
         }
+    }
+
+    @Override
+    public void putArguments(ParallelTableProvider ptp, String[] args) throws ParallelException {
+        if (args.length > maxArguments()) {
+            throw new ParallelException("use: Too many arguments");
+        }
+        if (args.length < minArguments()) {
+            throw new ParallelException("use: Too few arguments");
+        }
+        tableName = args[0];
+        base = ptp;
+    }
+
+    @Override
+    public int minArguments() {
+        return 1;
+    }
+
+    @Override
+    public int maxArguments() {
+        return 1;
     }
 }
