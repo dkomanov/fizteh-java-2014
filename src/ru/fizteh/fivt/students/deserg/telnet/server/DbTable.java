@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.deserg.telnet.server;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.deserg.telnet.FileSystem;
 import ru.fizteh.fivt.students.deserg.telnet.Serializer;
 import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyException;
 import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyIOException;

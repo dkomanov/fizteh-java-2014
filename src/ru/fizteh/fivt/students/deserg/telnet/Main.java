@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.deserg.telnet;
 import ru.fizteh.fivt.students.deserg.telnet.client.Client;
 import ru.fizteh.fivt.students.deserg.telnet.server.Server;
 
+//-Dfizteh.db.dir=db
+
 /**
  * Created by deserg on 03.10.14.
  */

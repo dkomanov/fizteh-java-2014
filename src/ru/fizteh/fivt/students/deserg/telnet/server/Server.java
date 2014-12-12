@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.deserg.telnet.server;
 
 
+import ru.fizteh.fivt.students.deserg.telnet.FileSystem;
 import ru.fizteh.fivt.students.deserg.telnet.Program;
 
 import java.util.*;
@@ -10,7 +11,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by deserg on 11.12.14.
  */
-public class Server extends Program {
+public class Server implements Program {
 
     private DbTableProvider db;
     private CommonData data;
@@ -29,8 +30,19 @@ public class Server extends Program {
 
     }
 
-
     @Override
+    public void work() {
+
+        System.out.println("\nHello! Welcome to deserg DataBase's server!\n");
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (scanner.hasNext()) {
+            ArrayList<String> list = FileSystem.readCommandLine(scanner);
+            System.out.println(execute(list));
+        }
+    }
+
     public String execute(ArrayList<String> arguments) {
 
         if (arguments.size() < 1 || arguments.size() > 2) {
@@ -49,6 +61,7 @@ public class Server extends Program {
                 }
 
                 case "exit": {
+                    System.out.println("\nGoodbye!\n");
                     if (data.isStarted()) {
                         serverService.shutdown();
                         data.setStarted(false);

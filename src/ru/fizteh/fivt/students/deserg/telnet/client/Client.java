@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.deserg.telnet.client;
 
-import ru.fizteh.fivt.students.deserg.telnet.Program;
+import ru.fizteh.fivt.students.deserg.telnet.*;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -17,35 +17,23 @@ public class Client implements Program {
     private boolean connected = false;
     String localIP = "localhost";
 
-    public Client() {
-
-
-    }
 
     @Override
     public void work() {
 
         System.out.println("\nHello, stanger! Welcome to deserg DataBase!\n");
 
-        Scanner lineScan = new Scanner(System.in);
-        while (lineScan.hasNext()) {
+        Scanner scanner = new Scanner(System.in);
 
-            System.out.print("$ ");
-            String lineStr = lineScan.nextLine();
-
-            String[] argumentAr = lineStr.split("\\s+");
-            ArrayList<String> arguments = new ArrayList<>();
-
-            Collections.addAll(arguments, argumentAr);
-            System.out.println(execute(arguments, lineStr));
-
+        while (scanner.hasNext()) {
+            ArrayList<String> list = FileSystem.readCommandLine(scanner);
+            System.out.println(execute(list));
         }
-
     }
 
 
 
-    private String execute(ArrayList<String> arguments, String notDevided) {
+    private String execute(ArrayList<String> arguments) {
 
 
         String command = arguments.get(0);
@@ -68,7 +56,8 @@ public class Client implements Program {
             }
 
             default: {
-                return commandOther(notDevided);
+
+                return commandOther(String.join(" ", arguments));
             }
 
         }

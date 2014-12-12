@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.students.deserg.telnet.server.DbTableProviderFactory;
-import ru.fizteh.fivt.students.deserg.telnet.server.FileSystem;
+import ru.fizteh.fivt.students.deserg.telnet.FileSystem;
 
 import java.io.IOException;
 import java.nio.file.Files;

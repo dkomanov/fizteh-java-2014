@@ -1,6 +1,5 @@
-package ru.fizteh.fivt.students.deserg.telnet.server;
+package ru.fizteh.fivt.students.deserg.telnet;
 
-import ru.fizteh.fivt.students.deserg.telnet.Serializer;
 import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyException;
 import ru.fizteh.fivt.students.deserg.telnet.exceptions.MyIOException;
 
@@ -10,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by deserg on 01.12.14.
@@ -20,6 +19,18 @@ public class FileSystem {
     public static boolean checkName(String name) {
 
         return (!name.contains("\\") && !name.contains("/000"));
+
+    }
+
+    public static ArrayList<String> readCommandLine(Scanner scanner) {
+
+        ArrayList<String> argumentVector = new ArrayList<>();
+
+        String commands = scanner.nextLine();
+        String[] argsStr = commands.trim().split("\\s+");
+
+        Collections.addAll(argumentVector, argsStr);
+        return argumentVector;
 
     }
 
