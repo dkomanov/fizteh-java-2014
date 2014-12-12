@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.VasilevKirill.telnet.structures;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.storage.structured.Storeable;
@@ -297,7 +298,11 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
                     } else {
                         System.out.println("overwrite");
                     }
-                    out.writeUTF("put" + args[1] + new JSONArray(new String(inputString)).toString());
+                    try {
+                        out.writeUTF("put" + args[1] + new JSONArray(new String(inputString)).toString());
+                    } catch (JSONException e) {
+                        out.writeUTF("put" + args[1]);
+                    }
                     break;
                 case "get":
                     if (args.length != 2) {
