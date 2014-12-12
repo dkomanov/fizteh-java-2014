@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.egor_belikov.Storeable;
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
+
+import com.google.common.base.Joiner;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
@@ -52,12 +54,8 @@ public class StoreableMain {
     }
 
     public static void pack(String[] args) {
-        StringBuilder commands = new StringBuilder();
-        for (String arg: args) {
-            commands.append(arg);
-            commands.append(" ");
-        }
-        String[] splittedCommands = commands.toString().trim().split(";");
+        String commands = Joiner.on(" ").join(args);
+        String[] splittedCommands = commands.trim().split(";");
         try {
             for (String s: splittedCommands) {
                 execute(s);
