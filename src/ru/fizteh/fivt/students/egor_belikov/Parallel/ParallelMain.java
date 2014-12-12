@@ -75,15 +75,17 @@ public class ParallelMain {
             while (true) {
                 System.out.print("$ ");
                 String commands;
-                commands = scanner.nextLine();
-                try {
-                    String[] splittedCommands = commands.trim().split(";");
-                    for (String s: splittedCommands) {
-                        execute(s);
+                if (scanner.hasNextLine()) {
+                    commands = scanner.nextLine();
+                    try {
+                        String[] splittedCommands = commands.trim().split(";");
+                        for (String s : splittedCommands) {
+                            execute(s);
+                        }
+                    } catch (Exception exception) {
+                        System.out.println(exception.getMessage());
+                        System.exit(0);
                     }
-                } catch (Exception exception) {
-                    System.out.println(exception.getMessage());
-                    System.exit(0);
                 }
             }
         } catch (NoSuchElementException exception) {
