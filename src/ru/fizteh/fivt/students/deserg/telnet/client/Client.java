@@ -26,17 +26,12 @@ public class Client implements Program {
     public void work() {
 
         System.out.println("\nHello, stanger! Welcome to deserg DataBase!\n");
-        while (true) {
+
+        Scanner lineScan = new Scanner(System.in);
+        while (lineScan.hasNext()) {
 
             System.out.print("$ ");
-            String lineStr = "";
-
-            Scanner lineScan = new Scanner(System.in);
-            if (lineScan.hasNext()) {
-                lineStr = lineScan.nextLine();
-            } else {
-                System.exit(1);
-            }
+            String lineStr = lineScan.nextLine();
 
             String[] argumentAr = lineStr.split("\\s+");
             ArrayList<String> arguments = new ArrayList<>();

@@ -25,16 +25,8 @@ public class TableList implements DbCommand {
 
             if (list.size() > 0) {
 
-                String out = "";
-                for (String key: list) {
-                    out = out + key + ", ";
-                }
+                return String.join(", ", table.list());
 
-                if (out.isEmpty()) {
-                    return "";
-                } else {
-                    return out.substring(0, out.length() - 2);
-                }
             } else {
                 return "";
             }

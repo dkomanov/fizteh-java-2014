@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by deserg on 11.12.14.
  */
-public class Server implements Program {
+public class Server extends Program {
 
     private DbTableProvider db;
     private CommonData data;
@@ -29,33 +29,9 @@ public class Server implements Program {
 
     }
 
+
     @Override
-    public void work() {
-
-        while (true) {
-
-            System.out.print("$ ");
-            String lineStr = "";
-
-            Scanner lineScan = new Scanner(System.in);
-            if (lineScan.hasNext()) {
-                lineStr = lineScan.nextLine();
-            } else {
-                System.exit(1);
-            }
-
-            String[] argumentAr = lineStr.split("\\s+");
-            ArrayList<String> arguments = new ArrayList<>();
-
-            Collections.addAll(arguments, argumentAr);
-            System.out.println(execute(arguments));
-
-        }
-
-    }
-
-
-    private String execute(ArrayList<String> arguments) {
+    public String execute(ArrayList<String> arguments) {
 
         if (arguments.size() < 1 || arguments.size() > 2) {
             return "Wrong command";

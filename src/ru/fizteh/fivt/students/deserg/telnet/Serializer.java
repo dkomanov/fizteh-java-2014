@@ -9,13 +9,18 @@ import ru.fizteh.fivt.students.deserg.telnet.server.TableRow;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by deserg on 03.12.14.
  */
 public class Serializer {
 
+    interface Transformer {
+        Object getObject(String string) throws ParseException;
+    }
     /**
      * Преобразовывает строку в объект {@link ru.fizteh.fivt.storage.structured.Storeable}, соответствующий структуре таблицы.
      *
@@ -94,25 +99,22 @@ public class Serializer {
 
     public static List<Class<?>> makeSignatureFromStrings(String[] types) {
 
+        if (types == null) {
+            throw new MyException("null array of types");
+        }
+
         List<Class<?>> list = new ArrayList<>();
         for (String type: types) {
-            if (type.equals("int")) {
-                list.add(Integer.class);
-            } else if (type.equals("long")) {
-                list.add(Long.class);
-            } else if (type.equals("byte")) {
-                list.add(Byte.class);
-            } else if (type.equals("float")) {
-                list.add(Float.class);
-            } else if (type.equals("double")) {
-                list.add(Double.class);
-            } else if (type.equals("boolean")) {
-                list.add(Boolean.class);
-            } else if (type.equals("String")) {
-                list.add(String.class);
-            } else {
+
+            StoreableMap map;
+
+            try {
+                map = StoreableMap.getFromString(type);
+            } catch (EnumConstantNotPresentException ex) {
                 throw new MyException("wrong type");
             }
+
+            list.add(map.getBoxedClass());
         }
 
         return list;
@@ -120,23 +122,20 @@ public class Serializer {
 
     public static String makeStringFromSignature(List<Class<?>> signature) {
 
+        if (signature == null) {
+            return "null";
+        }
+
         String result = "(";
         for (Class<?> cl: signature) {
 
-            if (cl == Integer.class) {
-                result += "int ";
-            } else if (cl == Long.class) {
-                result += "long ";
-            } else if (cl == Byte.class) {
-                result += "byte ";
-            } else if (cl == Float.class) {
-                result += "float ";
-            } else if (cl == Double.class) {
-                result += "double ";
-            } else if (cl == Boolean.class) {
-                result += "boolean ";
-            } else if (cl == String.class) {
-                result += "String ";
+            StoreableMap map;
+
+            try {
+                map = StoreableMap.getFromClass(cl);
+                result += map.getString() + " ";
+            } catch (EnumConstantNotPresentException ex) {
+                return "wrong type: " + cl.getSimpleName();
             }
         }
 
@@ -145,41 +144,22 @@ public class Serializer {
     }
 
 
-    private static Object transform(Class<?> classType, String pattern) {
+    private static Object transform(Class<?> classType, String pattern) throws ParseException {
 
         if (pattern.equals("null")) {
             return null;
         }
 
-        if (classType == Integer.class) {
-            return Integer.valueOf(pattern);
-        }
+        Map<Class, Transformer> map = new HashMap<>();
+        map.put(Integer.class, Integer::valueOf);
+        map.put(Long.class, Long::valueOf);
+        map.put(Byte.class, Byte::valueOf);
+        map.put(Float.class, Float::valueOf);
+        map.put(Double.class, Double::valueOf);
+        map.put(Boolean.class, Boolean::valueOf);
+        map.put(String.class, string -> string.substring(1, string.length() - 1));
 
-        if (classType == Long.class) {
-            return Long.valueOf(pattern);
-        }
-
-        if (classType == Byte.class) {
-            return Byte.valueOf(pattern);
-        }
-
-        if (classType == Float.class) {
-            return Float.valueOf(pattern);
-        }
-
-        if (classType == Double.class) {
-            return Double.valueOf(pattern);
-        }
-
-        if (classType == Boolean.class) {
-            return Boolean.valueOf(pattern);
-        }
-
-        if (classType == String.class) {
-            return pattern.substring(1, pattern.length() - 1);
-        }
-
-        return null;
+        return map.get(classType).getObject(pattern);
     }
 
 }

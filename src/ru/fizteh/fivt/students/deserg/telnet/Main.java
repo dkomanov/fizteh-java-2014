@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String mode = System.getProperty("mode");
+        String mode = System.getProperty("fizteh.db.dir");
         if (mode != null) {
             Program server = new Server();
             server.work();
