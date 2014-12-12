@@ -76,6 +76,9 @@ public class CStoreable implements Storeable {
 
     @Override
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
+        if (values[columnIndex] == null) {
+            return "null";
+        }
         if (!(values[columnIndex] instanceof String)) {
             throw new ColumnFormatException("Not an instance of String");
         }
