@@ -54,7 +54,7 @@ class XmlSerializer implements Serializer {
             xmlWriter.flush();
             return stringWriter.toString();
         } catch (XMLStreamException e) {
-            throw new AssertionError();
+            throw new IllegalStateException();
         }
     }
 }

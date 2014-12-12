@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * Created by moskupols on 09.12.14.
@@ -29,12 +29,10 @@ public abstract class AbstractStructuredTableProvider implements TableProvider {
             throws FileNotFoundException {
         Path filePath = tableRoot.resolve("signature.tsv");
         try (PrintWriter writer = new PrintWriter(filePath.toFile())) {
-            final StringJoiner joiner = new StringJoiner(" ");
-            for (StoreableAtomType type : signature) {
-                joiner.add(type.getPrintedName());
-            }
-            writer.print(joiner.toString());
-            writer.flush();
+            writer.print(
+                    signature.stream()
+                            .map(StoreableAtomType::getPrintedName)
+                            .collect(Collectors.joining(" ")));
         }
     }
 

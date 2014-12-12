@@ -46,8 +46,8 @@ class XmlDeserializer implements Deserializer {
                                 .invoke(expectedType.getBoxedClass(), value);
                     } catch (InvocationTargetException e) {
                         throw new ParseException("Number expected: " + e.getCause().getMessage(), -1);
-                    } catch (NoSuchMethodException | IllegalAccessException ignored) {
-                        throw new AssertionError();
+                    } catch (NoSuchMethodException | IllegalAccessException e) {
+                        throw new IllegalStateException(e);
                     }
                 }
             case "null":

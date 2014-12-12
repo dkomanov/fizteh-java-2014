@@ -34,7 +34,7 @@ public class StringBackedStructuredTable extends AbstractStructuredTable impleme
             }
             return myProvider.deserialize(this, ret);
         } catch (ParseException e) {
-            throw new AssertionError();
+            throw new ColumnFormatException(e);
         }
     }
 
@@ -47,7 +47,7 @@ public class StringBackedStructuredTable extends AbstractStructuredTable impleme
             }
             return myProvider.deserialize(this, ret);
         } catch (ParseException e) {
-            throw new AssertionError();
+            throw new IllegalStateException(e);
         }
     }
 
@@ -90,7 +90,7 @@ public class StringBackedStructuredTable extends AbstractStructuredTable impleme
             }
             return myProvider.deserialize(this, ret);
         } catch (ParseException e) {
-            throw new AssertionError();
+            throw new IllegalStateException(e);
         }
     }
 }

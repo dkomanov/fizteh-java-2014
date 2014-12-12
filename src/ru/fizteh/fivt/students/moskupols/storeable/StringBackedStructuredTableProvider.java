@@ -38,7 +38,7 @@ public class StringBackedStructuredTableProvider
         try {
             return new StringBackedStructuredTable(this, dbPath.resolve(name), stringTable);
         } catch (IOException e) {
-            throw new AssertionError();
+            throw new IllegalStateException(e);
         }
     }
 
