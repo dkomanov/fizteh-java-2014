@@ -99,7 +99,6 @@ public class MyTable implements Table {
         for (String key : data.keySet()) {
             keyList.add(key);
         }
-        System.out.println(keyList.size());
         return keyList.size();
     }
     
@@ -107,7 +106,6 @@ public class MyTable implements Table {
     public int commit() {
         int diffSize = diff();
         FolderData.saveDb(serializeMap(data), tableRoot);
-        System.out.println(diffSize);
         return diffSize;
     }
 
@@ -126,9 +124,8 @@ public class MyTable implements Table {
         try {
             data = deserializeMap(FolderData.loadDb(tableRoot));
         } catch (ParseException e) {
-            System.err.println("failed to load old data");
+            throw new IllegalArgumentException("failed to load old data");
         }
-        System.out.println(diffSize);
         return diffSize;
     }
 
@@ -165,7 +162,6 @@ public class MyTable implements Table {
     public List<String> list() {
         List<String> keyList = new ArrayList<String>();
         for (String key : data.keySet()) {
-            System.out.println(key);
             keyList.add(key);
         }
         return keyList;

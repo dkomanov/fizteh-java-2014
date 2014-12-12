@@ -17,7 +17,7 @@ public class StoreableTest {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-    public Table table;
+    Table table;
     Storeable storeable;
     List<Class<?>> types;
 

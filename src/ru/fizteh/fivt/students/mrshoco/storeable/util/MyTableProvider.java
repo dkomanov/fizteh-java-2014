@@ -31,14 +31,11 @@ public class MyTableProvider implements TableProvider{
 
         File tableFile = new File(root, name);
         if (!tableFile.isDirectory()) {
-            System.out.println("table not exists");
             return null;
         } else {
             if (currentTable != null && currentTable.diff() != 0) {
-                System.out.println(currentTable.diff() + " unsaved changes");
                 throw new IllegalArgumentException(currentTable.diff() + " unsaved changes");
             }
-                System.out.println("using " + name);
         }
         currentTable = new MyTable(tableFile, this);
         return currentTable;
@@ -52,11 +49,9 @@ public class MyTableProvider implements TableProvider{
 
         File tableFile = new File(root, name);
         if (tableFile.exists()) {
-            System.out.println("tablename exists");
             return null;
         } else {
             tableFile.mkdir();
-            System.out.println("created");
             FolderData.saveSignature(tableFile, columnTypes);
         }
         currentTable = new MyTable(tableFile, this);
@@ -71,7 +66,6 @@ public class MyTableProvider implements TableProvider{
 
         File tableFile = new File(root, name);
         if (!tableFile.isDirectory()) {
-            System.out.println("tablename not exist");
             throw new IllegalStateException("Table doesn't exist");
         } else {
             try {
@@ -90,7 +84,6 @@ public class MyTableProvider implements TableProvider{
                     }
                 }
                 tableFile.delete();
-                System.out.println("dropped");
             } catch (Exception e) {
                 throw new IllegalArgumentException("Some of directories is not empty");
             }

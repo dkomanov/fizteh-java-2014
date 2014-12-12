@@ -3,12 +3,12 @@ package storeable.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,9 +26,9 @@ public class TableProviderTest {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-    public TableProvider provider;
-    public TableProviderFactory factory;
-    public String providerPath;
+    TableProvider provider;
+    TableProviderFactory factory;
+    String providerPath;
 
     @Before
     public void initProvider() throws IOException {
@@ -172,7 +172,6 @@ public class TableProviderTest {
         assertEquals(provider.getTableNames().size(), 3);
         provider.removeTable("table");
         assertEquals(provider.getTableNames().size(), 2);
-        assertTrue(provider.getTableNames().containsAll(
-                new LinkedList<String>(Arrays.asList("таблица", "табличка"))));
+        assertThat(provider.getTableNames(), containsInAnyOrder("таблица", "табличка"));
     }
 }

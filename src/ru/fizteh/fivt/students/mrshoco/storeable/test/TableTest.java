@@ -19,9 +19,9 @@ public class TableTest {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-    public Table table;
-    public TableProvider provider;
-    public String dbDirPath;
+    Table table;
+    TableProvider provider;
+    String dbDirPath;
     List<Class<?>> types;
 
     @Before

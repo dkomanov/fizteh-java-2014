@@ -37,8 +37,7 @@ public class FolderData extends Data {
         File signatureFile = new File(file, "signature.tsv");
         List<Class<?>> signatures = new ArrayList<Class<?>>();
         String str = new String();
-        try {
-            Scanner scanner = new Scanner(signatureFile);
+        try (Scanner scanner = new Scanner(signatureFile)) {
             while (scanner.hasNext()) {
                 str = scanner.next();
 
@@ -57,9 +56,7 @@ public class FolderData extends Data {
 
     public static void saveSignature(File file, List<Class<?>> types) {
         File signatureFile = new File(file, "signature.tsv");
-        PrintWriter writer;
-        try {
-            writer = new PrintWriter(signatureFile);
+        try (PrintWriter writer = new PrintWriter(signatureFile)) {
             for (int i = 0; i < types.size(); i++) {
                 writer.println(TypesTransformer.toString(types.get(i)));
             }
