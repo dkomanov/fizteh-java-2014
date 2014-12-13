@@ -20,8 +20,7 @@ public class StructedTable {
         location = path;
         dirTable = new DirTable(path);
         File columnFile = location.resolve("signature.tsv").toFile();
-        try {
-            FileInputStream fis = new FileInputStream(columnFile);
+        try (FileInputStream fis = new FileInputStream(columnFile)) {
             Scanner scanner = new Scanner(fis);
             columnTypes = Typer.typeListFromString(scanner.nextLine());
             scanner.close();
@@ -70,8 +69,7 @@ public class StructedTable {
         location.toFile().mkdirs();
         dirTable.save();
         File columnFile = location.resolve("signature.tsv").toFile();
-        try {
-            FileOutputStream fos = new FileOutputStream(columnFile);
+        try (FileOutputStream fos = new FileOutputStream(columnFile)) {
             PrintStream printStream = new PrintStream(fos);
             printStream.print(Typer.stringFromTypeList(columnTypes));
             printStream.close();
