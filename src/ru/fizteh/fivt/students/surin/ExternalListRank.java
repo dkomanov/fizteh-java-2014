@@ -43,8 +43,9 @@ public class ExternalListRank {
             new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, fcur,
                     ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
         } finally {
-            if (!buf1.delete() || !buf2.delete())
+            if (!buf1.delete() || !buf2.delete()) {
                 System.err.println("failed to delete temporary files");
+            }
         }
     }
 
