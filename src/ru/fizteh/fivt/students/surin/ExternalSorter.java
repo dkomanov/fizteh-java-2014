@@ -7,81 +7,77 @@ import java.util.PriorityQueue;
 /**
  * Created by mike on 11.12.14.
  */
-public class ExternalSorter<T extends Serializable & Comparable<T>> {
-    private InputStream is;
-    private OutputStream os;
+public class ExternalSorter<T extends Comparable<T>> {
+    private ObjectInputStream<T> is;
+    private ObjectOutputStream<T> os;
+    private ObjectInputStream.Reader reader;
+    private ObjectOutputStream.Writer writer;
 
-    public ExternalSorter(InputStream inp, OutputStream outp) {
-        is = inp;
-        os = outp;
-    }
-    public ExternalSorter(File fin, File fout) throws FileNotFoundException {
-        is = new FileInputStream(fin);
-        os = new FileOutputStream(fout);
-    }
-
-    void writeBuffer(ArrayList<T> buf, File f) throws IOException {
-        ObjectOutputStream outp = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(f)));
-        for (T i : buf) {
-            outp.writeObject(i);
-        }
-        outp.close();
-        buf.clear();
+    public ExternalSorter(File inp, File outp, ObjectInputStream.Reader reader,
+                          ObjectOutputStream.Writer writer) throws FileNotFoundException {
+        is = new ObjectInputStream<T>(inp, reader);
+        os = new ObjectOutputStream<T>(outp, writer);
+        this.reader = reader;
+        this.writer = writer;
+        buf.ensureCapacity(blockLim + 10);
     }
 
     private final int blockLim = 500000;
-    public void run() throws IOException, ClassNotFoundException {
-        ArrayList<File> tmps = new ArrayList<>();
-        ArrayList<T> buf = new ArrayList<>();
-        ObjectInputStream iis = new ObjectInputStream(new BufferedInputStream(is));
-        ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(os));
-        while (true) {
-            try {
-                T b = (T) iis.readObject();
-                buf.add(b);
+    ArrayList<T> buf = new ArrayList<>();
+    ArrayList<File> tmps = new ArrayList<>();
+
+    public void run() throws ClassNotFoundException, IOException {
+
+        FileIterator.forEach(is, (Object o, ArrayList out) -> {
+            T x = (T) o;
+            buf.add(x);
+            if (buf.size() > blockLim) {
                 File temp;
-                if (buf.size() > blockLim) {
-                    tmps.add(temp = File.createTempFile("sort-temp", ".tmp"));
-                    buf.sort((T fs, T sc) -> fs.compareTo(sc));
-                    writeBuffer(buf, temp);
+                tmps.add(temp = File.createTempFile("sort-temp", ".tmp"));
+                buf.sort((T fs, T sc) -> fs.compareTo(sc));
+                ObjectOutputStream<T> os = new ObjectOutputStream<T>(temp, writer);
+                for (T obj: buf) {
+                    os.write(obj);
                 }
-            } catch (EOFException e) {
-                if (!buf.isEmpty()) {
-                    File temp;
-                    tmps.add(temp = File.createTempFile("sort-temp", ".tmp"));
-                    buf.sort((T fs, T sc) -> fs.compareTo(sc));
-                    writeBuffer(buf, temp);
-                }
-                break;
+                os.close();
+                buf.clear();
             }
+        });
+        if (!buf.isEmpty()) {
+            File temp;
+            tmps.add(temp = File.createTempFile("sort-temp", ".tmp"));
+            buf.sort((T fs, T sc) -> fs.compareTo(sc));
+            ObjectOutputStream<T> os = new ObjectOutputStream<T>(temp, writer);
+            for (T obj: buf) {
+                os.write(obj);
+            }
+            os.close();
+            buf.clear();
         }
-        ArrayList<ObjectInputStream> inps = new ArrayList<>();
+        ArrayList<ObjectInputStream<T>> inps = new ArrayList<>();
         for (File f: tmps) {
-            inps.add(new ObjectInputStream(new BufferedInputStream(new FileInputStream(f.getAbsolutePath()))));
+            inps.add(new ObjectInputStream<>(f, reader));
         }
-        PriorityQueue<Pair<T, ObjectInputStream>> cur = new PriorityQueue<>();
-        //TreeMap<T, ObjectInputStream> cur = new TreeMap<>();
-        for (ObjectInputStream i: inps) {
-            try {
-                cur.add(new Pair<>((T) i.readObject(), i));
-            } catch (EOFException e) {
+        PriorityQueue<Pair<T, ObjectInputStream<T>>> cur = new PriorityQueue<>();
+        for (ObjectInputStream<T> i: inps) {
+            T x;
+            if ((x = i.read()) != null) {
+                cur.add(new Pair<>(x, i));
+            } else {
                 i.close();
             }
         }
         while (!cur.isEmpty()) {
-            Pair<T, ObjectInputStream> e = cur.poll();
+            Pair<T, ObjectInputStream<T>> e = cur.poll();
             T key = e.first;
-            ObjectInputStream inp = e.second;
-            oos.writeObject(key);
-            try {
+            ObjectInputStream<T> inp = e.second;
+            os.write(key);
+            if ((e.first = inp.read()) != null) {
                 cur.remove(key);
-                e.first = (T) inp.readObject();
-            } catch (EOFException err) {
+                cur.add(e);
+            } else {
                 inp.close();
-                continue;
             }
-            e.second = inp;
-            cur.add(e);
         }
         for (ObjectInputStream is: inps) {
             is.close();
@@ -91,7 +87,6 @@ public class ExternalSorter<T extends Serializable & Comparable<T>> {
                 System.out.println("File deletion failed " + f.getAbsolutePath());
             }
         }
-        iis.close();
-        oos.close();
+        os.close();
     }
 }

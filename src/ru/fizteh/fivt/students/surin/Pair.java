@@ -1,10 +1,7 @@
 package ru.fizteh.fivt.students.surin;
 
-import java.io.Serializable;
-
-
 public class Pair<FirstType extends Comparable<FirstType>, SecondType>
-        implements Comparable<Pair<FirstType, SecondType>>, Serializable {
+        implements Comparable<Pair<FirstType, SecondType>> {
     public FirstType first;
     public SecondType second;
     Pair(FirstType first, SecondType second) {
