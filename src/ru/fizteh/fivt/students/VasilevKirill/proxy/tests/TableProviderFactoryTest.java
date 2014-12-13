@@ -7,7 +7,6 @@ import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTableProviderFac
 
 import java.nio.file.Files;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TableProviderFactoryTest {
