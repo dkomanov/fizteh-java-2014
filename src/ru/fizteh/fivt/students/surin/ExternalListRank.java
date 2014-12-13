@@ -2,110 +2,70 @@ package ru.fizteh.fivt.students.surin;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 /**
  * Created by mike on 11.12.14.
  */
 public class ExternalListRank {
-    static class Vertex implements Comparable<Vertex>, Serializable{
-        public int vnum;
-        public int d;
-        Vertex(int vnum, int d) {
-            this.vnum = vnum;
-            this.d = d;
-        }
 
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof Vertex)) {
-                return false;
-            }
-            return ((Vertex) o).vnum == vnum && ((Vertex) o).d == d;
-        }
-
-        @Override
-        public int hashCode() {
-            return vnum * 111317 + d;
-        }
-
-        @Override
-        public int compareTo(Vertex vertex) {
-            if (vnum == vertex.vnum) {
-                return d - vertex.d;
-            }
-            return vnum - vertex.vnum;
-        }
-    }
-    static Pair<Integer, Integer> findCloses(File f) throws IOException, ClassNotFoundException {
-        File buf = File.createTempFile("list-temp", ".tmp");
-        Pair<Integer, Integer> res = new Pair<>(null, 0);
-        new ExternalSorter<Pair<Vertex, Vertex>>(f, buf).run();
-        try (ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(new FileInputStream(buf)))) {
-            Vertex cur = new Vertex(-1, -1);
-            ArrayList<Pair<Vertex, Vertex>> curv = new ArrayList<>();
-            while (true) {
-                Pair<Vertex, Vertex> t = null;
-                boolean tobreak = false;
-                try {
-                    t = (Pair<Vertex, Vertex>) is.readObject();
-                } catch (EOFException ignored) {
-                    tobreak = true;
+    static void iterate(File fcur) throws IOException, ClassNotFoundException {
+        File buf1 = File.createTempFile("iterate", ".tmp");
+        File buf2 = File.createTempFile("iterate", ".tmp");
+        FileIterator.map(new ObjectInputStream(fcur, ExternalListRank::readTriple),
+                         new ObjectOutputStream(buf1, ExternalListRank::writeTriple),
+                (Object o, ArrayList out) -> {
+                    Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
+                    out.add(new Pair(p.second.first, new Pair(p.first, p.second.second)));
                 }
-                if (tobreak || !t.first.equals(cur)) {
-                    if (curv.size() == 1 && cur.vnum != 0) {
-                        res.first = cur.vnum;
-                    }
-                    curv.clear();
+        );
+        new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, buf2,
+                ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+        FileIterator.joinWith(new ObjectInputStream(buf2, ExternalListRank::readTriple),
+                              new ObjectInputStream(fcur, ExternalListRank::readTriple),
+                              new ObjectOutputStream(buf1, ExternalListRank::writeTriple),
+                (Object a, Object b) -> ((Pair) a).first.compareTo(((Pair) b).first),
+                (Object req, Object orig) -> {
+                    Pair<Integer, Pair<Integer, Integer>> org = (Pair<Integer, Pair<Integer, Integer>>) orig;
+                    Integer v = org.first;
+                    Integer par = org.second.first;
+                    Integer h = org.second.second;
+                    Pair<Integer, Pair<Integer, Integer>> request = (Pair<Integer, Pair<Integer, Integer>>) req;
+                    return new Pair<>(request.second.first, new Pair<>(par, h + request.second.second));
                 }
-                if (tobreak) {
-                    break;
-                }
-                cur = t.first;
-                curv.add(t);
-            }
-        } catch (IOException e) {
-            // do nothing
-        }
-        buf.delete();
-        return res;
+                );
+        new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, fcur,
+                ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+        buf1.delete();
+        buf2.delete();
     }
 
-    static void iterate(File fold, File fnew, int d,
-                        Pair<Integer, Integer> closes) throws IOException, ClassNotFoundException {
-        Vertex cur = new Vertex(-1, -1);
-        ArrayList<Pair<Vertex, Vertex>> curv = new ArrayList<>();
-        new ExternalSorter<Pair<Vertex, Vertex>>(fold, fnew).run();
-        try (ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(new FileInputStream(fnew)));
-             ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(fold)))) {
-            while (true) {
-                Pair<Vertex, Vertex> p = null;
-                boolean tobreak = false;
-                try {
-                    p = (Pair<Vertex, Vertex>) is.readObject();
-                } catch (EOFException ignored) {
-                    tobreak = true;
-                }
-                if (!tobreak && (p.second.vnum == closes.first || p.second.vnum == closes.second)) {
-                    os.writeObject(new Pair<>(p.first, new Vertex(p.second.vnum, p.second.d + d)));
-                }
-                if (tobreak || (!p.first.equals(cur) && !curv.isEmpty())) {
-                    assert curv.size() <= 2;
-                    if (curv.size() == 2) {
-                        os.writeObject(new Pair<>(curv.get(0).second, curv.get(1).second));
-                        os.writeObject(new Pair<>(curv.get(1).second, curv.get(0).second));
-                    }
-                    curv.clear();
-                }
-                if (tobreak) {
-                    break;
-                }
-                curv.add(p);
-                cur = p.first;
-            }
-        } catch (EOFException e) {
-            //do nothing
+    static void writeInt(Object value, OutputStream os) throws IOException {
+        int n = (Integer) value;
+        byte[] buf = new byte[] {
+                (byte) (n >> 24),
+                (byte) (n >> 16),
+                (byte) (n >> 8),
+                (byte) n};
+        os.write(buf);
+    }
+
+    static int readInt(InputStream is) throws IOException {
+        byte[] buf = new byte[4];
+        if (is.read(buf) != 4) {
+            throw new EOFException("eof");
         }
+        return buf[3] + (((int) buf[2]) << 8) + (((int) buf[1]) << 16) + (((int) buf[0]) << 24);
+    }
+
+    static void writeTriple(Object o, OutputStream os) throws IOException {
+        Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
+        writeInt(p.first, os);
+        writeInt(p.second.first, os);
+        writeInt(p.second.second, os);
+    }
+
+    static Pair<Integer, Pair<Integer, Integer>> readTriple(InputStream is) throws IOException {
+        return new Pair<>(readInt(is), new Pair<>(readInt(is), readInt(is)));
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -116,58 +76,46 @@ public class ExternalListRank {
         File outfile = new File(args[1]);
         BufferedReader inp = new BufferedReader(new FileReader(infile));
         PrintWriter outp = new PrintWriter(outfile);
-        File buf1 = File.createTempFile("list-temp", ".tmp");
-        File buf2 = File.createTempFile("list-temp", ".tmp");
+        File par = File.createTempFile("list-temp", ".tmp");
+        File buf = File.createTempFile("list-temp", ".tmp");
         int n = 0;
-        try (ObjectOutputStream b = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(buf1)))) {
-            String line;
-            while ((line = inp.readLine()) != null) {
-                StringTokenizer tk = new StringTokenizer(line);
-                int u = Integer.valueOf(tk.nextToken());
-                int v = Integer.valueOf(tk.nextToken());
-                b.writeObject(new Pair<>(new Vertex(u, 0), new Vertex(v, 0)));
-                b.writeObject(new Pair<>(new Vertex(v, 0), new Vertex(u, 0)));
-                //System.err.println(u + " " + v);
-                //System.err.flush();
-                n++;
-            }
-        } catch (EOFException ignored) {
-            //do nothing
+        ObjectOutputStream b = new ObjectOutputStream(buf, ExternalListRank::writeTriple);
+        String line;
+        while ((line = inp.readLine()) != null) {
+            String[] tokens = line.split(" ");
+            int u = Integer.valueOf(tokens[0]);
+            int v = Integer.valueOf(tokens[1]);
+            b.write(new Pair<>(u, v == 0 ? new Pair<>(u, 0) : new Pair<>(v , 1)));
+            n++;
         }
-        Pair<Integer, Integer> tails = findCloses(buf1);
-        //System.err.println(tails.first + " " + tails.second);
+        b.close();
+
+        new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf, par,
+                ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+
         int d = 1;
 
         while (d < n) {
-            //System.err.println(D);
-            iterate(buf1, buf2, d, tails);
+            iterate(par);
             d *= 2;
         }
-        try (ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(new FileInputStream(buf1)));
-             ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(buf2)))) {
-            while (true) {
-                Pair<Vertex, Vertex> p = (Pair<Vertex, Vertex>) is.readObject();
-                if (p.second.vnum == tails.second && p.first.d == 0) {
-                    os.writeObject(new Pair<>(-(d - p.second.d), p.first.vnum));
-                }
-            }
-        } catch (EOFException ignored) {
-            // do nothing
-        }
-        new ExternalSorter<Pair<Integer, Integer>>(buf2, buf1).run();
-        //outp.println(tails.second);
-        try (ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(new FileInputStream(buf1)))) {
-            while (true) {
-                Pair<Integer, Integer> p = (Pair<Integer, Integer>) is.readObject();
-                outp.println(p.second);
-            }
 
-        } catch (EOFException ignored) {
-            // do nothing
-        }
-        //outp.println(tails.first);
-        buf1.delete();
-        buf2.delete();
+        FileIterator.map(new ObjectInputStream(par, ExternalListRank::readTriple),
+                         new ObjectOutputStream(buf, ExternalListRank::writeTriple),
+                (Object o, ArrayList out) -> {
+                    Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
+                    out.add(new Pair(-p.second.second, new Pair(p.first, 0)));
+                }
+                );
+        new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf, par,
+                ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+        FileIterator.forEach(new ObjectInputStream(par, ExternalListRank::readTriple),
+                (Object o, ArrayList out) -> {
+                    outp.println(((Pair<Integer, Pair<Integer, Integer>>) o).second.first);
+                }
+        );
+        buf.delete();
+        par.delete();
         outp.close();
     }
 }
