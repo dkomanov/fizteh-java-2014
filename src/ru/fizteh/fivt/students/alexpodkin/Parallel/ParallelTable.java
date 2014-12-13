@@ -182,12 +182,7 @@ public class ParallelTable implements Table {
         };
         lock = new ReentrantReadWriteLock();
         lockProvider = pl;
-        lock.readLock().lock();
-        try {
-            readData();
-        } finally {
-            lock.readLock().unlock();
-        }
+        readData();
     }
 
     @Override
