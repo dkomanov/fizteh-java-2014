@@ -20,7 +20,7 @@ public class Writer implements AutoCloseable {
         dataOutputStream.write(byteWord);
     }
 
-    public void writeDataToFile(HashMap<String, String> fileMap) throws Exception {
+    public void writeDataToFile(HashMap<String, String> fileMap) throws IOException {
         dataOutputStream = new DataOutputStream(new FileOutputStream(fileMapPath));
         for (HashMap.Entry<String, String> entry : fileMap.entrySet()) {
             writeWord(dataOutputStream, entry.getKey());
