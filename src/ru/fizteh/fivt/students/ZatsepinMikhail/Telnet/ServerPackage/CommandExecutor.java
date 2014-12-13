@@ -25,6 +25,7 @@ public class CommandExecutor {
         shellCommands.put("use", new CommandUse());
         shellCommands.put("describe", new CommandDescribe());
         shellCommands.put("current", new CommandCurrentTable());
+        shellCommands.put("uncomm-changes", new CommandNumberOfUncommittedChanges());
     }
 
     public void run(String message, PrintStream output, TableProvider dataBase) throws ExitException {

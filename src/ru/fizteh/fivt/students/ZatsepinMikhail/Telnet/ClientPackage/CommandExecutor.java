@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsTableProvider.*;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
@@ -25,7 +26,7 @@ public class CommandExecutor {
         //shellCommands.put("describe", new CommandDescribe());
     }
 
-    public void run(String message, PrintStream output, TableProviderExtended dataBase) {
+    public void run(String message, PrintStream output, TableProvider dataBase) {
         String[] parsedCommands;
         String[] parsedArguments;
         boolean errorOccuried = false;

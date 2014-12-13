@@ -18,6 +18,7 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
     private PrintStream output;
     private String hostName;
     private int port;
+    private RealRemoteTable currentTable;
 
     public String getHostName() {
         return hostName;
@@ -28,22 +29,24 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
     }
 
     public RealRemoteTable getCurrentTable() {
-        output.println("current");
-        String answerFromServer = input.nextLine();
-        if (answerFromServer.equals("\n")) {
-            System.out.println("empty");
-        } else {
-            System.out.println("there is current table");
-        }
-        return null;
+        return currentTable;
     }
 
     public void setCurrentTable(String name) throws IllegalStateException {
-        output.println("use " + name);
+        output.println("uncomm-changes " + name);
         String answerFromServer = input.nextLine();
-        String[] parsedAnswer = answerFromServer.split(" ");
-        if (!parsedAnswer[0].equals("using")) {
-            throw new IllegalStateException(answerFromServer);
+        int numberOfUncommittedChanges = Integer.parseInt(answerFromServer);
+        if (numberOfUncommittedChanges != 0) {
+            throw new IllegalStateException(numberOfUncommittedChanges + " unsaved changes");
+        }
+        getTable("simple"); //load current state on server
+        for (String oneTable : tables.keySet()) {
+            System.err.println(oneTable);
+        }
+        if (tables.containsKey(name)) {
+            currentTable = tables.get(name);
+        } else {
+            throw new IllegalStateException(name + " not exists");
         }
     }
 
@@ -158,19 +161,8 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
 
     @Override
     public List<String> getTableNames() {
-        getTable("simple");
-        List<String> result = new ArrayList<>();
-        Collection<RealRemoteTable> filemaps = tables.values();
-        for (RealRemoteTable oneTable : filemaps) {
-            result.add(oneTable.getName());
-        }
-        return result;
-    }
-
-    public List<String> showTables() {
         output.println("show tables");
         List<String> result = new ArrayList<>();
-        input.nextLine();
         int size = Integer.parseInt(input.nextLine());
         for (int i = 0; i < size; ++i) {
             result.add(input.nextLine());

@@ -8,14 +8,14 @@ import java.io.PrintStream;
 public class CommandRollback extends CommandTableProviderExtended {
     public CommandRollback() {
         name = "rollback";
-        numberOfArguments = 1;
+        numberOfArguments = 2;
     }
 
     @Override
-    public boolean run(TableProviderExtended myMap, String[] args, PrintStream output) {
-        Table currentTable = myMap.getCurrentTable();
+    public boolean run(TableProviderExtended dataBase, String[] args, PrintStream output) {
+        Table currentTable = dataBase.getTable(args[1]);
         if (currentTable == null) {
-            output.println("no table");
+            output.println("there isn't table \"" + args[1] + "\" on server");
         } else {
             output.println(currentTable.rollback());
         }

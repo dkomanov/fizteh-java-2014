@@ -176,8 +176,7 @@ public class MFileHashMap implements TableProviderExtended, AutoCloseable {
         List<String> result = new ArrayList<>();
         Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneTable: pairSet) {
-            result.add(oneTable.getKey() + " "
-                + oneTable.getValue().size());
+            result.add(oneTable.getKey());
         }
         return result;
     }

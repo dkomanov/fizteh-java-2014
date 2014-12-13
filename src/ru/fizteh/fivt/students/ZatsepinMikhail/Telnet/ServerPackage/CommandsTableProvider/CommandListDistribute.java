@@ -10,15 +10,15 @@ import java.util.List;
 public class CommandListDistribute extends CommandTableProviderExtended {
     public CommandListDistribute() {
         name = "list";
-        numberOfArguments = 1;
+        numberOfArguments = 2;
     }
 
     @Override
-    public boolean run(TableProviderExtended myMap, String[] args, PrintStream output) {
-        Table currentTable = myMap.getCurrentTable();
-        if (myMap.getCurrentTable() == null) {
-            output.println("no table");
-            return true;
+    public boolean run(TableProviderExtended dataBase, String[] args, PrintStream output) {
+        Table currentTable = dataBase.getTable(args[1]);
+        if (currentTable == null) {
+            output.println("there isn't table \"" + args[1] + "\" on server");
+            return false;
         }
         List<String> allKeys = currentTable.list();
         StringBuilder newMessage = new StringBuilder();

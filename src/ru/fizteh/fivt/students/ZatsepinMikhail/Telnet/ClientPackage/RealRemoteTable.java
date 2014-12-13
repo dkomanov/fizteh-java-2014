@@ -13,6 +13,8 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -97,7 +99,15 @@ public class RealRemoteTable implements Table, Closeable {
 
     @Override
     public List<String> list() {
-        return null;
+        outputStream.println("list " + name);
+        String answerFromServer = inputStream.nextLine();
+        System.err.println(answerFromServer);
+        String[] parsedKeys = answerFromServer.split(", ");
+        List<String> result = new ArrayList<String>();
+        for (String oneKey : parsedKeys) {
+            result.add(oneKey);
+        }
+        return result;
     }
 
     @Override

@@ -16,11 +16,11 @@ public class CommandPutDistribute extends CommandTableProviderExtended {
     }
 
     @Override
-    public boolean run(TableProviderExtended myMap, String[] args, PrintStream output) {
-        Table currentTable = myMap.getCurrentTable();
-        if (myMap.getCurrentTable() == null) {
-            output.println("no table");
-            return true;
+    public boolean run(TableProviderExtended dataBase, String[] args, PrintStream output) {
+        Table currentTable = dataBase.getTable(args[1]);
+        if (currentTable == null) {
+            output.println("there isn't table \"" + args[1] + "\" on server");
+            return false;
         }
         Storeable oldValue = currentTable.get(args[1]);
         try {
