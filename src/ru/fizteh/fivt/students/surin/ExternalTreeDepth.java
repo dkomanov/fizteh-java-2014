@@ -9,44 +9,54 @@ import java.util.ArrayList;
 public class ExternalTreeDepth {
     static Integer root = null;
 
-    static void findRoot(File edges, int n) throws IOException, ClassNotFoundException {
+    static void findRoot(File edges, int n) throws IOException {
         File buf1 = File.createTempFile("iterate", ".tmp");
         File buf2 = File.createTempFile("iterate", ".tmp");
-        ObjectOutputStream os = new ObjectOutputStream(buf1, ExternalTreeDepth::writeInt);
-        BufferedReader inp = new BufferedReader(new FileReader(edges));
-        os.write(n + 1);
-        String ss;
-        while ((ss = inp.readLine()) != null) {
+        try (ObjectOutputStream os = new ObjectOutputStream(buf1, ExternalTreeDepth::writeInt);
+             BufferedReader inp = new BufferedReader(new FileReader(edges))) {
+            os.write(n + 1);
+            String ss;
+            while ((ss = inp.readLine()) != null) {
                 int vertex = Integer.valueOf(ss.split(" ")[1]);
                 if (vertex != 0) {
                     os.write(vertex);
                 }
+            }
+        } catch (IOException e) {
+            if (!buf1.delete() || !buf2.delete()) {
+                System.err.println("failed to delete temporary files");
+            }
+            throw e;
         }
-        os.close();
-        new ExternalSorter<Integer>(buf1, buf2, ExternalTreeDepth::readInt, ExternalTreeDepth::writeInt).run();
-        // anonymous class because we need internal state (prev)
-        FileIterator.Consumer consumer  =
-                new FileIterator.Consumer() {
-                    int prev = 0;
-                    @Override
-                    public void apply(Object o, ArrayList out) throws IOException {
-                        Integer cur = (Integer) o;
-                        if (cur - prev > 1) {
-                            ExternalTreeDepth.root = prev + 1;
-                        }
-                        prev = cur;
-                    }
-                };
+        try {
+            new ExternalSorter<Integer>(buf1, buf2, ExternalTreeDepth::readInt, ExternalTreeDepth::writeInt).run();
+            // anonymous class because we need internal state (prev)
+            IterTools.Consumer consumer =
+                    new IterTools.Consumer() {
+                        int prev = 0;
 
-        FileIterator.forEach(new ObjectInputStream(buf2, ExternalTreeDepth::readInt), consumer);
-        buf1.delete();
-        buf2.delete();
+                        @Override
+                        public void consume(Object o) throws IOException {
+                            Integer cur = (Integer) o;
+                            if (cur - prev > 1) {
+                                ExternalTreeDepth.root = prev + 1;
+                            }
+                            prev = cur;
+                        }
+                    };
+
+            IterTools.forEach(new ObjectInputStream(buf2, ExternalTreeDepth::readInt), consumer);
+        } finally {
+            if (!buf1.delete() || !buf2.delete()) {
+                System.err.println("failed to delete temporary files");
+            }
+        }
     }
 
-    static void iterate(File parents) throws IOException, ClassNotFoundException {
+    static void iterate(File parents) throws IOException {
         File buf1 = File.createTempFile("iterate", ".tmp");
         File buf2 = File.createTempFile("iterate", ".tmp");
-        FileIterator.map(new ObjectInputStream(parents, ExternalTreeDepth::readTriple),
+        IterTools.map(new ObjectInputStream(parents, ExternalTreeDepth::readTriple),
                          new ObjectOutputStream(buf1, ExternalTreeDepth::writeTriple),
                 (Object o, ArrayList out) -> {
                     Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
@@ -57,7 +67,7 @@ public class ExternalTreeDepth {
                 });
         new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, buf2,
                 ExternalTreeDepth::readTriple, ExternalTreeDepth::writeTriple).run();
-        FileIterator.joinWith(new ObjectInputStream(buf2, ExternalTreeDepth::readTriple),
+        IterTools.joinWith(new ObjectInputStream(buf2, ExternalTreeDepth::readTriple),
                                 new ObjectInputStream(parents, ExternalTreeDepth::readTriple),
                                 new ObjectOutputStream(buf1, ExternalTreeDepth::writeTriple),
                 (Object a, Object b) -> ((Pair) a).first.compareTo(((Pair) b).first),
@@ -107,54 +117,80 @@ public class ExternalTreeDepth {
 
     static Integer result;
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) {
         if (args.length != 2) {
+            System.err.println("2 arguments needed");
             System.exit(2);
         }
         File infile = new File(args[0]);
         File outfile = new File(args[1]);
-        BufferedReader inp = new BufferedReader(new FileReader(infile));
-        File parents = File.createTempFile("tree", ".tmp");
-        File tmp = File.createTempFile("tree", ".tmp");
-        int n = 1;
-        ObjectOutputStream os = new ObjectOutputStream(tmp, ExternalTreeDepth::writeTriple);
-        String ss;
-        while ((ss = inp.readLine()) != null) {
-            String[] tokens = ss.split(" ");
-            int parent = Integer.valueOf(tokens[0]);
-            int vertex = Integer.valueOf(tokens[1]);
-            if (vertex != 0) {
-                os.write(new Pair<>(vertex, new Pair(parent, 1)));
-                n++;
+        BufferedReader inp = null;
+        try {
+            inp = new BufferedReader(new FileReader(infile));
+        } catch (IOException e) {
+            System.err.println("failed to open input file");
+            System.exit(2);
+        }
+        File parents = null;
+        File tmp = null;
+        try {
+            parents = File.createTempFile("tree", ".tmp");
+            tmp = File.createTempFile("tree", ".tmp");
+        } catch (IOException e) {
+            System.err.println("failed to create temporary files");
+            System.exit(2);
+        }
+        try {
+            int n = 1;
+            try (ObjectOutputStream os = new ObjectOutputStream(tmp, ExternalTreeDepth::writeTriple)) {
+                String ss;
+                while ((ss = inp.readLine()) != null) {
+                    String[] tokens = ss.split(" ");
+                    int parent = Integer.valueOf(tokens[0]);
+                    int vertex = Integer.valueOf(tokens[1]);
+                    if (vertex != 0) {
+                        os.write(new Pair<>(vertex, new Pair(parent, 1)));
+                        n++;
+                    }
+                }
+                inp.close();
+                findRoot(infile, n);
+                assert root != null;
+
+                os.write(new Pair<>(root, new Pair<>(root, 0)));
+            } catch (IOException e) {
+                throw e;
             }
-        }
-        inp.close();
-        findRoot(infile, n);
-        assert root != null;
 
-        os.write(new Pair<>(root, new Pair<>(root, 0)));
-        os.close();
-
-        new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(tmp, parents,
+            new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(tmp, parents,
                     ExternalTreeDepth::readTriple, ExternalTreeDepth::writeTriple).run();
-        tmp.delete();
 
-        int d = 1;
-        while (d < n) {
-            iterate(parents);
-            d *= 2;
+            int d = 1;
+            while (d < n) {
+                iterate(parents);
+                d *= 2;
+            }
+            result = Integer.MIN_VALUE;
+            IterTools.forEach(
+                    new ObjectInputStream(parents, ExternalTreeDepth::readTriple),
+                    (Object o) -> {
+                        Pair<Integer, Pair<Integer, Integer>> trp = (Pair<Integer, Pair<Integer, Integer>>) o;
+                        result = Math.max(result, trp.second.second);
+                    }
+            );
+        } catch (IOException e) {
+            parents.delete();
+            tmp.delete();
+            System.exit(2);
         }
-        result = Integer.MIN_VALUE;
-        FileIterator.forEach(
-                new ObjectInputStream(parents, ExternalTreeDepth::readTriple),
-                (Object o, ArrayList out) -> {
-                    Pair<Integer, Pair<Integer, Integer>> trp = (Pair<Integer, Pair<Integer, Integer>>) o;
-                    result = Math.max(result, trp.second.second);
-                });
-
-        parents.delete();
-        PrintWriter outp = new PrintWriter(outfile);
-        outp.print(result + 1);
-        outp.close();
+        if (!parents.delete() || !tmp.delete()) {
+            System.err.println("failed to delete temporary files");
+            System.exit(2);
+        }
+        try (PrintWriter outp = new PrintWriter(outfile)) {
+            outp.print(result + 1);
+        } catch (IOException e) {
+            System.out.println("failed to write answer");
+        }
     }
 }
