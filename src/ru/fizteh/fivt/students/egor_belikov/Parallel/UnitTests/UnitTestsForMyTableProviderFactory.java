@@ -1,10 +1,11 @@
-package ru.fizteh.fivt.students.egor_belikov.Parallel;
+package ru.fizteh.fivt.students.egor_belikov.Parallel.UnitTests;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.students.egor_belikov.Parallel.MyTableProviderFactory;
 
 import java.io.File;
 import java.io.IOException;

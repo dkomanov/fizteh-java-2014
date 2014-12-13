@@ -1,8 +1,9 @@
-package ru.fizteh.fivt.students.egor_belikov.Parallel;
+package ru.fizteh.fivt.students.egor_belikov.Parallel.UnitTests;
 
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
+import ru.fizteh.fivt.students.egor_belikov.Parallel.MyStoreable;
 
 import java.util.ArrayList;
 import java.util.List;

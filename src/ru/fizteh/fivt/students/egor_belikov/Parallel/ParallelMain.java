@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.egor_belikov.Parallel;
 
 import com.google.common.base.Joiner;
+import javafx.util.Pair;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
@@ -11,6 +12,7 @@ import java.util.*;
 
 import static ru.fizteh.fivt.students.egor_belikov.Parallel.MySerializer.returningClass;
 import static ru.fizteh.fivt.students.egor_belikov.Parallel.MyTableProvider.listOfTables;
+import ru.fizteh.fivt.students.egor_belikov.Parallel.Commands.*;
 
 public class ParallelMain {
     public static String currentPath;
@@ -19,13 +21,13 @@ public class ParallelMain {
 
 
     public static String currentTable;
-    static String separator;
+    private static TreeMap<String, Pair<Boolean, Integer>> listOfCommandsDescription;
+    private static TreeMap<String, Command> listOfCommands;
 
 
     public void main(String[] args) throws Exception {
-        separator = File.separator;
         currentPath = System.getProperty("fizteh.db.dir");
-
+        initListsOfCommands();
         MyTableProviderFactory myTableProviderFactory = new MyTableProviderFactory();
         myTableProvider = (MyTableProvider) myTableProviderFactory.create(currentPath);
         if (currentPath == null) {
@@ -52,6 +54,38 @@ public class ParallelMain {
             System.out.println(exception.getMessage());
             System.exit(1);
         }
+    }
+
+    private void initListsOfCommands() {
+        listOfCommandsDescription = new TreeMap<>();
+        listOfCommandsDescription.put("create", new Pair<>(false, 2));
+        listOfCommandsDescription.put("drop", new Pair<>(false, 2));
+        listOfCommandsDescription.put("put", new Pair<>(true, 2));
+        listOfCommandsDescription.put("get", new Pair<>(true, 3));
+        listOfCommandsDescription.put("use", new Pair<>(false, 2));
+        listOfCommandsDescription.put("show", new Pair<>(false, 2));
+        listOfCommandsDescription.put("remove", new Pair<>(true, 2));
+        listOfCommandsDescription.put("list", new Pair<>(true, 1));
+        listOfCommandsDescription.put("commit", new Pair<>(true, 1));
+        listOfCommandsDescription.put("rollback", new Pair<>(true, 1));
+        listOfCommandsDescription.put("size", new Pair<>(true, 1));
+        listOfCommandsDescription.put("exit", new Pair<>(false, 1));
+
+        listOfCommands = new TreeMap<>();
+        listOfCommands.put("create", new Create());
+        listOfCommands.put("drop", new Drop());
+        listOfCommands.put("put", new Put());
+        listOfCommands.put("get", new Get());
+        listOfCommands.put("use", new Use());
+        listOfCommands.put("show", new Show());
+        listOfCommands.put("remove", new Remove());
+        listOfCommands.put("list", new ListCommand());
+        listOfCommands.put("commit", new Commit());
+        listOfCommands.put("rollback", new Rollback());
+        listOfCommands.put("size", new Size());
+        listOfCommands.put("exit", new Exit());
+
+
     }
 
     public void pack(String[] args) {
@@ -94,6 +128,23 @@ public class ParallelMain {
     public void execute(String s) throws Exception {
         try {
             String[] args = s.trim().split("\\s+");
+            if (listOfCommands.containsKey(args[0])) {
+                if (listOfCommandsDescription.get(args[0]).getKey() && currentTable == null) {
+                    throw new Exception("no table");
+                }
+                if (!listOfCommandsDescription.get(args[0]).getValue().equals(args.length)) {
+                    throw new Exception(args[0] + ": invalid number of arguments");
+                }
+                listOfCommands.get(args[0]).execute(args, myTableProvider);
+            } else {
+                throw new Exception("Invalid command");
+            }
+            /*
+            if (!listOfCommands.containsKey(args[0])) {
+                throw new Exception("Invalid command");
+            } else {
+
+            }
             if (args[0].equals("get") || args[0].equals("remove") || args[0].equals("list") || args[0].equals("put")
                     || args[0].equals("commit") || args[0].equals("rollback")) {
                 if (currentTable == null) {
@@ -125,7 +176,7 @@ public class ParallelMain {
                     use(args);
                     break;
                 case "show":
-                    show();
+                    show(args);
                     break;
                 case "put":
                     put(args);
@@ -153,7 +204,7 @@ public class ParallelMain {
                     break;
                 default:
                     throw new Exception("Invalid command");
-            }
+            }*/
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
             if (!isInteractiveMode) {
@@ -222,7 +273,10 @@ public class ParallelMain {
         }
     }
 
-    public void show() {
+    public void show(String args[]) throws Exception {
+        if (!args[1].equals("tables")) {
+            throw new Exception("show: invalid arguments");
+        }
         System.out.println("table_name row_count");
         for (Map.Entry<String, Table> i :  listOfTables.entrySet()) {
             String key = i.getKey();
