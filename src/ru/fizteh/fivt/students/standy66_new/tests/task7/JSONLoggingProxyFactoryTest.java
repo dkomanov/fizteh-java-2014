@@ -133,17 +133,17 @@ public class JSONLoggingProxyFactoryTest {
         assertSame(StringIndexOutOfBoundsException.class, thrown());
     }
 
-    private JSONObject getLog() {
+    private JSONObject getLog() throws Exception {
         String logString = stringWriter.getBuffer().toString();
         stringWriter.getBuffer().setLength(0);
         return new JSONObject(logString);
     }
 
-    private Object retVal() {
+    private Object retVal() throws Exception {
         return getLog().get("returnValue");
     }
 
-    private Class<?> thrown() throws ClassNotFoundException {
+    private Class<?> thrown() throws Exception {
         return Class.forName((String) getLog().get("thrown"));
     }
 
