@@ -27,14 +27,19 @@ public class ExternalSorter<T extends Comparable<T>> {
     ArrayList<T> buf = new ArrayList<>();
     List<File> tmps = new ArrayList<>();
 
-    public void run() throws ClassNotFoundException, IOException {
-
-        FileIterator.forEach(is, (Object o, ArrayList out) -> {
+    public void run() throws IOException {
+        IterTools.forEach(is, (Object o) -> {
             T x = (T) o;
             buf.add(x);
             if (buf.size() > blockLim) {
                 File temp;
-                tmps.add(temp = File.createTempFile("sort-temp", ".tmp"));
+                try {
+                    temp = File.createTempFile("sort-temp", ".tmp");
+                } catch (IOException e) {
+                    System.err.println("failed to create temporary file");
+                    throw e;
+                }
+                tmps.add(temp);
                 buf.sort((T fs, T sc) -> fs.compareTo(sc));
                 ObjectOutputStream<T> os = new ObjectOutputStream<T>(temp, writer);
                 for (T obj: buf) {
@@ -46,7 +51,13 @@ public class ExternalSorter<T extends Comparable<T>> {
         });
         if (!buf.isEmpty()) {
             File temp;
-            tmps.add(temp = File.createTempFile("sort-temp", ".tmp"));
+            try {
+                temp = File.createTempFile("sort-temp", ".tmp");
+            } catch (IOException e) {
+                System.err.println("failed to create temporary file");
+                throw e;
+            }
+            tmps.add(temp);
             buf.sort((T fs, T sc) -> fs.compareTo(sc));
             ObjectOutputStream<T> os = new ObjectOutputStream<T>(temp, writer);
             for (T obj: buf) {
@@ -56,38 +67,56 @@ public class ExternalSorter<T extends Comparable<T>> {
             buf.clear();
         }
         ArrayList<ObjectInputStream<T>> inps = new ArrayList<>();
-        for (File f: tmps) {
-            inps.add(new ObjectInputStream<>(f, reader));
-        }
         PriorityQueue<Pair<T, ObjectInputStream<T>>> cur = new PriorityQueue<>();
-        for (ObjectInputStream<T> i: inps) {
-            T x;
-            if ((x = i.read()) != null) {
-                cur.add(new Pair<>(x, i));
-            } else {
-                i.close();
+        try {
+            for (File f : tmps) {
+                inps.add(new ObjectInputStream<>(f, reader));
+            }
+            for (ObjectInputStream<T> i : inps) {
+                T x;
+                if ((x = i.read()) != null) {
+                    cur.add(new Pair<>(x, i));
+                } else {
+                    i.close();
+                }
+            }
+            while (!cur.isEmpty()) {
+                Pair<T, ObjectInputStream<T>> e = cur.poll();
+                T key = e.first;
+                ObjectInputStream<T> inp = e.second;
+                os.write(key);
+                if ((e.first = inp.read()) != null) {
+                    cur.remove(key);
+                    cur.add(e);
+                } else {
+                    inp.close();
+                }
+            }
+        } finally {
+            IOException err = null;
+            while (!cur.isEmpty()) {
+                Pair<T, ObjectInputStream<T>> is = cur.poll();
+                try {
+                    is.second.close();
+                } catch (IOException e) {
+                    err = e;
+                }
+            }
+            for (File i: tmps) {
+                if (!i.delete()) {
+                    System.err.println("failed to delete temporary file");
+                    err = new IOException();
+                }
+            }
+            try {
+                is.close();
+            } catch (IOException e) {
+                err = e;
+            }
+            os.close();
+            if (err != null) {
+                throw err;
             }
         }
-        while (!cur.isEmpty()) {
-            Pair<T, ObjectInputStream<T>> e = cur.poll();
-            T key = e.first;
-            ObjectInputStream<T> inp = e.second;
-            os.write(key);
-            if ((e.first = inp.read()) != null) {
-                cur.remove(key);
-                cur.add(e);
-            } else {
-                inp.close();
-            }
-        }
-        for (ObjectInputStream is: inps) {
-            is.close();
-        }
-        for (File f : tmps) {
-            if (!f.delete()) {
-                System.out.println("File deletion failed " + f.getAbsolutePath());
-            }
-        }
-        os.close();
     }
 }

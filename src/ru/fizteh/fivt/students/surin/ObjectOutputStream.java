@@ -4,7 +4,7 @@ import java.io.*;
 /**
  * Created by mike on 13.12.14.
  */
-public class ObjectOutputStream<T> {
+public class ObjectOutputStream<T> implements AutoCloseable {
     @FunctionalInterface
     public interface Writer{
         void write(Object o, OutputStream os) throws IOException;
