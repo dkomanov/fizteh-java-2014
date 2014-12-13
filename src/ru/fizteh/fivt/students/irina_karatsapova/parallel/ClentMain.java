@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 
 public class ClentMain {
@@ -17,12 +18,9 @@ public class ClentMain {
     }
 
     public static void start(String[] args) throws IOException {
-
-        System.out.println("Welcome to Client side");
-
-        String connectingIp = "127.0.0.1";
+        InetAddress connectingIp = InetAddress.getLoopbackAddress();
         if (args.length != 0) {
-            connectingIp = args[0];
+            connectingIp = InetAddress.getByName(args[0]);
         }
 
         System.out.println("Connecting to... " + connectingIp);

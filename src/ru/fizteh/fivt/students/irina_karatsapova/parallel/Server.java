@@ -28,14 +28,12 @@ public class Server {
     }
 
     public void startWork() throws IOException {
-        System.out.println("Welcome to Server side");
-
         ServerSocket servers = null;
 
         try {
             servers = new ServerSocket(4444);
         } catch (IOException e) {
-            System.out.println("Couldn't listen to port 4444");
+            System.err.println("Couldn't listen to port 4444");
             System.exit(-1);
         }
 
@@ -47,7 +45,7 @@ public class Server {
                 connectionThread.start();
             }
         } catch (IOException e) {
-            System.out.println("Can't accept");
+            System.err.println("Can't accept");
             System.exit(-1);
         }
 
