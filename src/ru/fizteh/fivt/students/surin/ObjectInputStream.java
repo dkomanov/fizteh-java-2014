@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * Created by mike on 13.12.14.
  */
-public class ObjectInputStream<T> {
+public class ObjectInputStream<T> implements AutoCloseable {
     @FunctionalInterface
     public interface Reader {
         Object read(InputStream is) throws IOException;
