@@ -36,14 +36,10 @@ public class Interpreter {
     
     public void interactiveMode(InterpreterState state) {
         Scanner inScanner = new Scanner(in);
-        while (true) {
-            out.println("$ ");
+        out.println("$ ");
+        while (inScanner.hasNextLine()) {
             String input;
-            if (inScanner.hasNextLine()) {
-                input = inScanner.nextLine();
-            } else {
-                break;
-            }
+            input = inScanner.nextLine();
             try {
                 batchMode(state, input);
             } catch (DataBaseException e) {
@@ -54,6 +50,7 @@ public class Interpreter {
             } catch (Exception e) {
                 out.println(e.getMessage());
             }
+            out.println("$ ");
         }
     }
     

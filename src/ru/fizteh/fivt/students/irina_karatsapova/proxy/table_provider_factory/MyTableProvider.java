@@ -59,19 +59,24 @@ public class MyTableProvider implements TableProvider {
         checkLoaded();
         Utils.checkNotNull(name);
         MyTable lookedForTable = null;
-        databaseAccessLock.writeLock().lock();
+        databaseAccessLock.readLock().lock();
         try {
             if (tables.containsKey(name)) {
                 lookedForTable = (MyTable) tables.get(name);
-                if (!lookedForTable.loaded) {
-                    lookedForTable = new MyTable(lookedForTable);
-                }
+            }
+        } finally {
+            databaseAccessLock.readLock().unlock();
+        }
+        if (lookedForTable != null && !lookedForTable.loaded) {
+            databaseAccessLock.writeLock().lock();
+            try {
+                lookedForTable = new MyTable(lookedForTable);
                 tables.remove(name);
                 tables.put(name, lookedForTable);
                 lookedForTable.renewDiff();
+            } finally {
+                databaseAccessLock.writeLock().unlock();
             }
-        } finally {
-            databaseAccessLock.writeLock().unlock();
         }
         return lookedForTable;
     }
