@@ -133,6 +133,8 @@ public class ExternalListRank {
                     (Object o) -> outp.println(((Pair<Integer, Pair<Integer, Integer>>) o).second.first)
             );
         } catch (IOException e) {
+            buf.delete();
+            par.delete();
             System.exit(2);
         }
         if (!buf.delete() || !par.delete()) {
