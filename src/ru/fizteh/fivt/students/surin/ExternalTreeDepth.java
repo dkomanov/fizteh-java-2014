@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.surin;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 /**
  * Created by mike on 11.12.14.
@@ -18,16 +17,14 @@ public class ExternalTreeDepth {
         os.write(n + 1);
         String ss;
         while ((ss = inp.readLine()) != null) {
-                StringTokenizer st = new StringTokenizer(ss);
-                int parent = Integer.valueOf(st.nextToken());
-                int vertex = Integer.valueOf(st.nextToken());
+                int vertex = Integer.valueOf(ss.split(" ")[1]);
                 if (vertex != 0) {
                     os.write(vertex);
                 }
         }
         os.close();
         new ExternalSorter<Integer>(buf1, buf2, ExternalTreeDepth::readInt, ExternalTreeDepth::writeInt).run();
-
+        // anonymous class because we need internal state (prev)
         FileIterator.Consumer consumer  =
                 new FileIterator.Consumer() {
                     int prev = 0;
@@ -123,9 +120,9 @@ public class ExternalTreeDepth {
         ObjectOutputStream os = new ObjectOutputStream(tmp, ExternalTreeDepth::writeTriple);
         String ss;
         while ((ss = inp.readLine()) != null) {
-            StringTokenizer st = new StringTokenizer(ss);
-            int parent = Integer.valueOf(st.nextToken());
-            int vertex = Integer.valueOf(st.nextToken());
+            String[] tokens = ss.split(" ");
+            int parent = Integer.valueOf(tokens[0]);
+            int vertex = Integer.valueOf(tokens[1]);
             if (vertex != 0) {
                 os.write(new Pair<>(vertex, new Pair(parent, 1)));
                 n++;
@@ -134,7 +131,7 @@ public class ExternalTreeDepth {
         inp.close();
         findRoot(infile, n);
         assert root != null;
-        System.err.println(root);
+
         os.write(new Pair<>(root, new Pair<>(root, 0)));
         os.close();
 
