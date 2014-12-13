@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.pershik.Proxy;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -26,47 +27,57 @@ public class MyLoggingProxy implements InvocationHandler{
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
         Object res = null;
-        JSONObject jsonObj = new JSONObject();
-        if (!objectMethods.contains(method)) {
-            putTimeStamp(jsonObj);
-            putClassName(jsonObj, obj);
-            putMethodName(jsonObj, method);
-            putArguments(jsonObj, args);
-        }
-        Throwable exception = null;
         try {
-            res = method.invoke(obj, args);
-        } catch (InvocationTargetException e) {
-            exception = e.getTargetException();
+            JSONObject jsonObj = new JSONObject();
+            if (!objectMethods.contains(method)) {
+                putTimeStamp(jsonObj);
+                putClassName(jsonObj, obj);
+                putMethodName(jsonObj, method);
+                putArguments(jsonObj, args);
+            }
+            Throwable exception = null;
+            try {
+                res = method.invoke(obj, args);
+            } catch (InvocationTargetException e) {
+                exception = e.getTargetException();
+            }
+            if (exception != null) {
+                putException(jsonObj, exception);
+                printJSON(jsonObj);
+                throw exception;
+            } else {
+                putReturnValue(jsonObj, method, res);
+                printJSON(jsonObj);
+                return res;
+            }
+        } catch (JSONException e) {
+            // Do nothing
         }
-        if (exception != null) {
-            putException(jsonObj, exception);
-            printJSON(jsonObj);
-            throw exception;
-        } else {
-            putReturnValue(jsonObj, method, res);
-            printJSON(jsonObj);
-            return res;
-        }
+        return res;
     }
 
-    private void putTimeStamp(JSONObject jsonObj) {
+    private void putTimeStamp(JSONObject jsonObj)
+            throws JSONException {
         jsonObj.put("timestamp", System.currentTimeMillis());
     }
 
-    private void putClassName(JSONObject jsonObj, Object obj) {
+    private void putClassName(JSONObject jsonObj, Object obj)
+            throws JSONException {
         String className = obj.getClass().toString();
         className = className.substring(6);
         jsonObj.put("class", className);
     }
 
-    private void putMethodName(JSONObject jsonObj, Method method) {
+    private void putMethodName(JSONObject jsonObj, Method method)
+            throws JSONException {
         jsonObj.put("method", method.getName());
     }
 
-    private void putArguments(JSONObject jsonObj, Object[] args) {
+    private void putArguments(JSONObject jsonObj, Object[] args)
+            throws JSONException {
         if (args != null) {
             List<Object> argumentsList = new ArrayList<>(Arrays.asList(args));
             jsonObj.put("arguments",
@@ -76,7 +87,8 @@ public class MyLoggingProxy implements InvocationHandler{
         }
     }
 
-    private void putReturnValue(JSONObject jsonObj, Method method, Object res) {
+    private void putReturnValue(JSONObject jsonObj, Method method, Object res)
+            throws JSONException {
         if (method.getReturnType() != void.class) {
             if (res instanceof Iterable) {
                 JSONArray arr =
@@ -92,11 +104,13 @@ public class MyLoggingProxy implements InvocationHandler{
         }
     }
 
-    private void putException(JSONObject jsonObj, Throwable exception) {
+    private void putException(JSONObject jsonObj, Throwable exception)
+            throws JSONException {
         jsonObj.put("thrown", exception);
     }
 
-    private JSONArray searchCyclicLinks(Iterable list, IdentityHashMap<Object, Object> map) {
+    private JSONArray searchCyclicLinks(Iterable list, IdentityHashMap<Object, Object> map)
+            throws JSONException {
         map.put(list, null);
         JSONArray res = new JSONArray();
         for (Object iter : list) {
