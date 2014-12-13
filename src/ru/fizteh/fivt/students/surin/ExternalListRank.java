@@ -8,35 +8,44 @@ import java.util.ArrayList;
  */
 public class ExternalListRank {
 
-    static void iterate(File fcur) throws IOException, ClassNotFoundException {
-        File buf1 = File.createTempFile("iterate", ".tmp");
-        File buf2 = File.createTempFile("iterate", ".tmp");
-        FileIterator.map(new ObjectInputStream(fcur, ExternalListRank::readTriple),
-                         new ObjectOutputStream(buf1, ExternalListRank::writeTriple),
-                (Object o, ArrayList out) -> {
-                    Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
-                    out.add(new Pair(p.second.first, new Pair(p.first, p.second.second)));
-                }
-        );
-        new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, buf2,
-                ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
-        FileIterator.joinWith(new ObjectInputStream(buf2, ExternalListRank::readTriple),
-                              new ObjectInputStream(fcur, ExternalListRank::readTriple),
-                              new ObjectOutputStream(buf1, ExternalListRank::writeTriple),
-                (Object a, Object b) -> ((Pair) a).first.compareTo(((Pair) b).first),
-                (Object req, Object orig) -> {
-                    Pair<Integer, Pair<Integer, Integer>> org = (Pair<Integer, Pair<Integer, Integer>>) orig;
-                    Integer v = org.first;
-                    Integer par = org.second.first;
-                    Integer h = org.second.second;
-                    Pair<Integer, Pair<Integer, Integer>> request = (Pair<Integer, Pair<Integer, Integer>>) req;
-                    return new Pair<>(request.second.first, new Pair<>(par, h + request.second.second));
-                }
-                );
-        new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, fcur,
-                ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
-        buf1.delete();
-        buf2.delete();
+    static void iterate(File fcur) throws IOException {
+        File buf1;
+        File buf2;
+        try {
+            buf1 = File.createTempFile("iterate", ".tmp");
+            buf2 = File.createTempFile("iterate", ".tmp");
+        } catch (FileNotFoundException e) {
+            System.err.println("failed to create temporary files");
+            throw new IOException();
+        }
+        try {
+            IterTools.map(new ObjectInputStream(fcur, ExternalListRank::readTriple),
+                    new ObjectOutputStream(buf1, ExternalListRank::writeTriple),
+                    (Object o, ArrayList out) -> {
+                        Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
+                        out.add(new Pair(p.second.first, new Pair(p.first, p.second.second)));
+                    }
+            );
+            new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, buf2,
+                    ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+            IterTools.joinWith(new ObjectInputStream(buf2, ExternalListRank::readTriple),
+                    new ObjectInputStream(fcur, ExternalListRank::readTriple),
+                    new ObjectOutputStream(buf1, ExternalListRank::writeTriple),
+                    (Object a, Object b) -> ((Pair) a).first.compareTo(((Pair) b).first),
+                    (Object req, Object orig) -> {
+                        Pair<Integer, Pair<Integer, Integer>> org = (Pair<Integer, Pair<Integer, Integer>>) orig;
+                        Integer par = org.second.first;
+                        Integer h = org.second.second;
+                        Pair<Integer, Pair<Integer, Integer>> request = (Pair<Integer, Pair<Integer, Integer>>) req;
+                        return new Pair<>(request.second.first, new Pair<>(par, h + request.second.second));
+                    }
+            );
+            new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, fcur,
+                    ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+        } finally {
+            if (!buf1.delete() || !buf2.delete())
+                System.err.println("failed to delete temporary files");
+        }
     }
 
     static void writeInt(Object value, OutputStream os) throws IOException {
@@ -68,54 +77,66 @@ public class ExternalListRank {
         return new Pair<>(readInt(is), new Pair<>(readInt(is), readInt(is)));
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) {
         if (args.length != 2) {
+            System.err.println("invalid number of args");
             System.exit(2);
         }
         File infile = new File(args[0]);
         File outfile = new File(args[1]);
-        BufferedReader inp = new BufferedReader(new FileReader(infile));
-        PrintWriter outp = new PrintWriter(outfile);
-        File par = File.createTempFile("list-temp", ".tmp");
-        File buf = File.createTempFile("list-temp", ".tmp");
-        int n = 0;
-        ObjectOutputStream b = new ObjectOutputStream(buf, ExternalListRank::writeTriple);
-        String line;
-        while ((line = inp.readLine()) != null) {
-            String[] tokens = line.split(" ");
-            int u = Integer.valueOf(tokens[0]);
-            int v = Integer.valueOf(tokens[1]);
-            b.write(new Pair<>(u, v == 0 ? new Pair<>(u, 0) : new Pair<>(v , 1)));
-            n++;
-        }
-        b.close();
+        File par = null;
+        File buf = null;
+        try (BufferedReader inp = new BufferedReader(new FileReader(infile));
+             PrintWriter outp = new PrintWriter(outfile)) {
 
-        new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf, par,
-                ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
-
-        int d = 1;
-
-        while (d < n) {
-            iterate(par);
-            d *= 2;
-        }
-
-        FileIterator.map(new ObjectInputStream(par, ExternalListRank::readTriple),
-                         new ObjectOutputStream(buf, ExternalListRank::writeTriple),
-                (Object o, ArrayList out) -> {
-                    Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
-                    out.add(new Pair(-p.second.second, new Pair(p.first, 0)));
+            try {
+                par = File.createTempFile("list-temp", ".tmp");
+                buf = File.createTempFile("list-temp", ".tmp");
+            } catch (IOException e) {
+                System.out.println("failed to create temporary files");
+                throw e;
+            }
+            int n = 0;
+            try (ObjectOutputStream b = new ObjectOutputStream(buf, ExternalListRank::writeTriple)) {
+                String line;
+                while ((line = inp.readLine()) != null) {
+                    String[] tokens = line.split(" ");
+                    int u = Integer.valueOf(tokens[0]);
+                    int v = Integer.valueOf(tokens[1]);
+                    b.write(new Pair<>(u, v == 0 ? new Pair<>(u, 0) : new Pair<>(v, 1)));
+                    n++;
                 }
-                );
-        new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf, par,
-                ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
-        FileIterator.forEach(new ObjectInputStream(par, ExternalListRank::readTriple),
-                (Object o, ArrayList out) -> {
-                    outp.println(((Pair<Integer, Pair<Integer, Integer>>) o).second.first);
-                }
-        );
-        buf.delete();
-        par.delete();
-        outp.close();
+            } catch (IOException e) {
+                throw e;
+            }
+
+            new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf, par,
+                    ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+
+            int d = 1;
+
+            while (d < n) {
+                iterate(par);
+                d *= 2;
+            }
+
+            IterTools.map(new ObjectInputStream(par, ExternalListRank::readTriple),
+                    new ObjectOutputStream(buf, ExternalListRank::writeTriple),
+                    (Object o, ArrayList out) -> {
+                        Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
+                        out.add(new Pair(-p.second.second, new Pair(p.first, 0)));
+                    }
+            );
+            new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf, par,
+                    ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+            IterTools.forEach(new ObjectInputStream(par, ExternalListRank::readTriple),
+                    (Object o) -> outp.println(((Pair<Integer, Pair<Integer, Integer>>) o).second.first)
+            );
+        } catch (IOException e) {
+            System.exit(2);
+        }
+        if (!buf.delete() || !par.delete()) {
+            System.err.println("failed to delete temporary files");
+        }
     }
 }
