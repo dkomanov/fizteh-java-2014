@@ -4,15 +4,15 @@ import java.io.UnsupportedEncodingException;
 
 public class CellForKey {
 
-    private static final int KEYNUMBER = 16;
-    private static final int HASHNUMBER = 16;
+    private static final int KEY_NUMBER = 16;
+    private static final int HASH_NUMBER = 16;
     private final int x;
     private final int y;
 
     public CellForKey(final String key) throws UnsupportedEncodingException {
         int nbytes = key.getBytes("UTF-8")[0];
-        int ndirectory = Math.abs(nbytes % KEYNUMBER);
-        int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
+        int ndirectory = Math.abs(nbytes % KEY_NUMBER);
+        int nfile = Math.abs((nbytes / KEY_NUMBER) % KEY_NUMBER);
         this.x = ndirectory;
         this.y = nfile;
     }
@@ -36,7 +36,7 @@ public class CellForKey {
 
     @Override
     public final int hashCode() {
-        return HASHNUMBER * x + y;
+        return HASH_NUMBER * x + y;
     }
 
 }

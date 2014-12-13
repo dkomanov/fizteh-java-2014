@@ -14,8 +14,9 @@ import java.util.Map.Entry;
 import ru.fizteh.fivt.storage.strings.Table;
 
 public final class Tabledb implements Table {
-    private static final int KEYNUMBER = 16;
-    private static final int INTNUMBER = 4;
+    private static final int INT_NUMBER = 4;
+    static final int NUMBER_OF_DIRS = 16;
+    static final int NUMBER_OF_FILES = 16;
     private String tableName;
     private Path tablePath;
     private Map<CellForKey, DatabaseSerializer> databaseFiles;
@@ -102,8 +103,8 @@ public final class Tabledb implements Table {
                     if (databaseFile == null) {
 
                         int nbytes = key.getBytes("UTF-8")[0];
-                        int ndirectory = Math.abs(nbytes % KEYNUMBER);
-                        int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
+                        int ndirectory = Math.abs(nbytes % NUMBER_OF_DIRS);
+                        int nfile = Math.abs((nbytes / NUMBER_OF_DIRS) % NUMBER_OF_FILES);
                         databaseFile = new DatabaseSerializer(tablePath,
                                 ndirectory, nfile);
                         databaseFiles.put(new CellForKey(ndirectory, nfile),
@@ -200,9 +201,9 @@ public final class Tabledb implements Table {
                             + file.toString());
                 }
                 int ndirectory = Integer.parseInt(dir.substring(0, dir.length()
-                        - INTNUMBER));
+                        - INT_NUMBER));
                 int nfile = Integer.parseInt(file.substring(0, file.length()
-                        - INTNUMBER));
+                        - INT_NUMBER));
                 DatabaseSerializer databaseFile;
                 try {
                     databaseFile = new DatabaseSerializer(tablePath,

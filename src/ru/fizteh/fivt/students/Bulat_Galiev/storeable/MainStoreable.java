@@ -167,7 +167,7 @@ public final class MainStoreable {
                             return;
                         }
                     }
-                    TabledbProvider.changeCurTable(name);
+                    ((TabledbProvider) provider).changeCurTable(name);
                     System.out.println("using " + name);
                 } catch (IllegalStateException e) {
                     throw new StopInterpretationException(name + " does not exist");

@@ -22,10 +22,10 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
 public final class TabledbProvider implements TableProvider {
-    private static Map<String, Table> tableMap;
-    private static Path tablesDirPath;
-    private static Table currentTable;
-    private static Types serializer;
+    private Map<String, Table> tableMap;
+    private Path tablesDirPath;
+    private Table currentTable;
+    private Types serializer;
 
     public TabledbProvider(final String dir) {
         try {
@@ -57,7 +57,7 @@ public final class TabledbProvider implements TableProvider {
         }
     }
 
-    public static void changeCurTable(final String name) {
+    public void changeCurTable(final String name) {
         try {
             if (name != null && !name.equals("")) {
                 tablesDirPath.resolve(name);
@@ -92,7 +92,10 @@ public final class TabledbProvider implements TableProvider {
                             "ColumnTypes list is empty");
                 }
                 Path newTablePath = tablesDirPath.resolve(name);
-                newTablePath.toFile().mkdir();
+                if (!newTablePath.toFile().mkdir()) {
+                    throw new IllegalArgumentException(
+                            "Error creating directory " + name);
+                }
                 Path signature = newTablePath.resolve("signature.tsv");
                 try {
                     if (!signature.toFile().createNewFile()) {

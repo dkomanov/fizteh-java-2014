@@ -142,7 +142,7 @@ public class TabledbProviderTest {
     @Test
     public final void testChangeCurTable() throws Exception {
         Table singletable = provider.createTable("table");
-        TabledbProvider.changeCurTable("table");
+        ((TabledbProvider) provider).changeCurTable("table");
         Assert.assertEquals(((TabledbProvider) provider).getDataBase(),
                 singletable);
     }
@@ -155,7 +155,7 @@ public class TabledbProviderTest {
     @Test
     public final void testGetNormalDataBase() throws Exception {
         provider.createTable("table");
-        TabledbProvider.changeCurTable("table");
+        ((TabledbProvider) provider).changeCurTable("table");
         Assert.assertNotNull(((TabledbProvider) provider).getDataBase());
     }
 

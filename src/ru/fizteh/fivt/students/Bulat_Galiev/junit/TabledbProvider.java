@@ -13,9 +13,9 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
 public final class TabledbProvider implements TableProvider {
-    private static Map<String, Table> tableMap;
-    private static Path tablesDirPath;
-    private static Table currentTable;
+    private Map<String, Table> tableMap;
+    private Path tablesDirPath;
+    private Table currentTable;
 
     public TabledbProvider(final String dir) {
         try {
@@ -49,7 +49,7 @@ public final class TabledbProvider implements TableProvider {
         return tableMap.keySet();
     }
 
-    public static void changeCurTable(final String name) {
+    public void changeCurTable(final String name) {
         try {
             if (name != null && !name.equals("")) {
                 tablesDirPath.resolve(name);
@@ -75,7 +75,10 @@ public final class TabledbProvider implements TableProvider {
                 if (tableMap.get(name) != null) {
                     return null;
                 }
-                newTablePath.toFile().mkdir();
+                if (!newTablePath.toFile().mkdir()) {
+                    throw new IllegalArgumentException(
+                            "Error creating directory " + name);
+                }
                 Table newTable = new Tabledb(newTablePath, name);
                 tableMap.put(name, newTable);
                 return newTable;

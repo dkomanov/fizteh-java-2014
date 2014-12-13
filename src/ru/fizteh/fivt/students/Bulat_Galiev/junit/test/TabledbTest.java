@@ -13,10 +13,10 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.Bulat_Galiev.junit.Tabledb;
 
 public class TabledbTest {
-    private static final int CHECKNUMBERZERO = 0;
-    private static final int CHECKNUMBERONE = 1;
-    private static final int CHECKNUMBERTWO = 2;
-    private static final int CHECKNUMBERTHREE = 3;
+    private static final int CHECK_NUMBER_ZERO = 0;
+    private static final int CHECK_NUMBER_ONE = 1;
+    private static final int CHECK_NUMBER_TWO = 2;
+    private static final int CHECK_NUMBER_THREE = 3;
     private Table table;
     private Path testDir;
 
@@ -129,17 +129,17 @@ public class TabledbTest {
 
     @Test
     public final void testCommit() throws Exception {
-        Assert.assertEquals(CHECKNUMBERZERO, table.commit());
+        Assert.assertEquals(CHECK_NUMBER_ZERO, table.commit());
     }
 
     @Test
     public final void testRollback() throws Exception {
-        Assert.assertEquals(CHECKNUMBERZERO, table.rollback());
+        Assert.assertEquals(CHECK_NUMBER_ZERO, table.rollback());
     }
 
     @Test
     public final void testSize() throws Exception {
-        Assert.assertEquals(CHECKNUMBERZERO, table.size());
+        Assert.assertEquals(CHECK_NUMBER_ZERO, table.size());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class TabledbTest {
     @Test
     public final void testPutCommitGet() throws Exception {
         table.put("1", "2");
-        Assert.assertEquals(CHECKNUMBERONE, table.commit());
+        Assert.assertEquals(CHECK_NUMBER_ONE, table.commit());
         Assert.assertEquals("2", table.get("1"));
     }
 
@@ -161,7 +161,7 @@ public class TabledbTest {
         table.put("key1", "value1");
         table.put("key2", "value2");
         table.put("key3", "value3");
-        Assert.assertEquals(CHECKNUMBERTHREE,
+        Assert.assertEquals(CHECK_NUMBER_THREE,
                 ((Tabledb) table).getChangedRecordsNumber());
     }
 
@@ -170,7 +170,7 @@ public class TabledbTest {
         table.put("key", "value");
         table.put("key", "value2");
 
-        Assert.assertEquals(CHECKNUMBERONE,
+        Assert.assertEquals(CHECK_NUMBER_ONE,
                 ((Tabledb) table).getChangedRecordsNumber());
     }
 
@@ -179,7 +179,7 @@ public class TabledbTest {
         table.put("key", "value");
         table.remove("key");
 
-        Assert.assertEquals(CHECKNUMBERZERO,
+        Assert.assertEquals(CHECK_NUMBER_ZERO,
                 ((Tabledb) table).getChangedRecordsNumber());
     }
 
@@ -189,7 +189,7 @@ public class TabledbTest {
         table.commit();
         table.remove("key");
 
-        Assert.assertEquals(CHECKNUMBERONE,
+        Assert.assertEquals(CHECK_NUMBER_ONE,
                 ((Tabledb) table).getChangedRecordsNumber());
     }
 
@@ -200,7 +200,7 @@ public class TabledbTest {
         table.remove("key");
         table.put("key", "value");
 
-        Assert.assertEquals(CHECKNUMBERZERO,
+        Assert.assertEquals(CHECK_NUMBER_ZERO,
                 ((Tabledb) table).getChangedRecordsNumber());
     }
 
@@ -211,7 +211,7 @@ public class TabledbTest {
         table.remove("key");
         table.put("key", "value2");
 
-        Assert.assertEquals(CHECKNUMBERONE,
+        Assert.assertEquals(CHECK_NUMBER_ONE,
                 ((Tabledb) table).getChangedRecordsNumber());
     }
 
@@ -229,15 +229,15 @@ public class TabledbTest {
         table.put("1", "2");
         table.put("2", "3");
         table.remove("3");
-        Assert.assertEquals(CHECKNUMBERTWO, table.size());
+        Assert.assertEquals(CHECK_NUMBER_TWO, table.size());
         table.remove("2");
-        Assert.assertEquals(CHECKNUMBERONE, table.size());
+        Assert.assertEquals(CHECK_NUMBER_ONE, table.size());
     }
 
     @Test
     public final void testDeleteTable() throws Exception {
         ((Tabledb) table).deleteTable();
-        Assert.assertEquals(CHECKNUMBERZERO, table.size());
+        Assert.assertEquals(CHECK_NUMBER_ZERO, table.size());
     }
 
     @Test
@@ -245,13 +245,13 @@ public class TabledbTest {
         table.put("1", "2");
         table.put("2", "3");
         table.put("2", "3");
-        Assert.assertEquals(CHECKNUMBERTWO, table.commit());
-        Assert.assertEquals(CHECKNUMBERTWO, table.size());
+        Assert.assertEquals(CHECK_NUMBER_TWO, table.commit());
+        Assert.assertEquals(CHECK_NUMBER_TWO, table.size());
         table.remove("2");
         table.remove("1");
-        Assert.assertEquals(CHECKNUMBERZERO, table.size());
-        Assert.assertEquals(CHECKNUMBERTWO, table.rollback());
-        Assert.assertEquals(CHECKNUMBERTWO, table.size());
+        Assert.assertEquals(CHECK_NUMBER_ZERO, table.size());
+        Assert.assertEquals(CHECK_NUMBER_TWO, table.rollback());
+        Assert.assertEquals(CHECK_NUMBER_TWO, table.size());
     }
 
 }

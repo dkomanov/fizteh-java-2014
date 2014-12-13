@@ -21,8 +21,8 @@ import ru.fizteh.fivt.students.Bulat_Galiev.proxy.Tabledb;
 import ru.fizteh.fivt.students.Bulat_Galiev.proxy.TabledbProvider;
 
 public class TabledbProviderTest {
-    private static final int INTVALUENUMBER = 139;
-    private static final int SLEEPTIME = 200;
+    private static final int INT_VALUE_NUMBER = 139;
+    private static final int SLEEP_TIME = 200;
     private static ArrayList<Class<?>> typeList;
     private TableProvider provider;
     private Path testDir;
@@ -214,7 +214,7 @@ public class TabledbProviderTest {
     public final void testCreateForNormalTable() throws IOException {
         List<Object> values = new ArrayList<>();
         values.add(0, "Testing");
-        values.add(1, INTVALUENUMBER);
+        values.add(1, INT_VALUE_NUMBER);
         Storeable storeableExpected = new Storeabledb(values);
 
         Table singleTable = provider.createTable("table", typeList);
@@ -232,7 +232,7 @@ public class TabledbProviderTest {
         Table singleTable = provider.createTable("table", typeList);
         List<Object> values = new ArrayList<>();
         values.add(0, "Testing");
-        values.add(1, INTVALUENUMBER);
+        values.add(1, INT_VALUE_NUMBER);
         Storeable storeableExpected = new Storeabledb(values);
         Storeable result = provider.createFor(singleTable, values);
         Assert.assertEquals(result.getStringAt(0),
@@ -259,7 +259,7 @@ public class TabledbProviderTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(SLEEPTIME);
+                    Thread.sleep(SLEEP_TIME);
                     tableNotCreatedFlagSecond = (provider.createTable("table",
                             typeList) == null);
                 } catch (IOException ignored) {
@@ -295,7 +295,7 @@ public class TabledbProviderTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(SLEEPTIME);
+                    Thread.sleep(SLEEP_TIME);
                     provider.removeTable("parallel");
                 } catch (IOException ignored) {
                     // Disable exception processing.
@@ -330,7 +330,7 @@ public class TabledbProviderTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(SLEEPTIME);
+                    Thread.sleep(SLEEP_TIME);
                     ref2.set((Tabledb) provider.getTable("table1"));
                 } catch (InterruptedException e) {
                     // Disable exception processing.

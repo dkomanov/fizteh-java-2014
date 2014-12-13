@@ -15,8 +15,9 @@ import java.util.Set;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
 public class DatabaseSerializer {
-    private static final int BYTESNUMBER = 8;
-    private static final int KEYNUMBER = 16;
+    private static final int BYTES_NUMBER = 8;
+    static final int NUMBER_OF_DIRS = 16;
+    static final int NUMBER_OF_FILES = 16;
     private Path filePathdb;
     private ThreadLocal<HashMap<String, Storeable>> fileMap;
     private HashMap<String, Storeable> savedFileMap;
@@ -78,13 +79,13 @@ public class DatabaseSerializer {
             int keyLength = inputStream.readInt();
             int valueLength = inputStream.readInt();
 
-            bytesLeft -= BYTESNUMBER;
+            bytesLeft -= BYTES_NUMBER;
 
             String key = readUTF8String(keyLength);
             String value = readUTF8String(valueLength);
             int nbytes = key.getBytes("UTF-8")[0];
-            int ndirectory = Math.abs(nbytes % KEYNUMBER);
-            int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
+            int ndirectory = Math.abs(nbytes % NUMBER_OF_DIRS);
+            int nfile = Math.abs((nbytes / NUMBER_OF_DIRS) % NUMBER_OF_FILES);
             String dirString = Integer.toString(ndirectory) + ".dir";
             String fileString = Integer.toString(nfile) + ".dat";
             String dirfile = dirString + File.separator + fileString;

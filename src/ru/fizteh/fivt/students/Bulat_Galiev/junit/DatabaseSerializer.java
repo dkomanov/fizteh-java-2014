@@ -12,8 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class DatabaseSerializer {
-    private static final int BYTESNUMBER = 8;
-    private static final int KEYNUMBER = 16;
+    private static final int BYTES_NUMBER = 8;
+    static final int NUMBER_OF_DIRS = 16;
+    static final int NUMBER_OF_FILES = 16;
+    static final String ENCODING = "UTF-8";
     private Path filePathdb;
     private Map<String, String> fileMap;
     private Map<String, String> savedFileMap;
@@ -50,7 +52,7 @@ public class DatabaseSerializer {
         if (read < 0 || read != dataLength) {
             throw new IllegalArgumentException("Bad file format.");
         }
-        String data = new String(byteData, "UTF-8");
+        String data = new String(byteData, ENCODING);
         return data;
     }
 
@@ -62,13 +64,13 @@ public class DatabaseSerializer {
             int keyLength = inputStream.readInt();
             int valueLength = inputStream.readInt();
 
-            bytesLeft -= BYTESNUMBER;
+            bytesLeft -= BYTES_NUMBER;
 
             String key = readUTF8String(keyLength);
             String value = readUTF8String(valueLength);
-            int nbytes = key.getBytes("UTF-8")[0];
-            int ndirectory = Math.abs(nbytes % KEYNUMBER);
-            int nfile = Math.abs((nbytes / KEYNUMBER) % KEYNUMBER);
+            int nbytes = key.getBytes(ENCODING)[0];
+            int ndirectory = Math.abs(nbytes % NUMBER_OF_DIRS);
+            int nfile = Math.abs((nbytes / NUMBER_OF_DIRS) % NUMBER_OF_FILES);
             String dirString = Integer.toString(ndirectory) + ".dir";
             String fileString = Integer.toString(nfile) + ".dat";
             String dirfile = dirString + File.separator + fileString;
@@ -90,10 +92,10 @@ public class DatabaseSerializer {
         filedb.setLength(0);
         Set<Map.Entry<String, String>> rows = savedFileMap.entrySet();
         for (Map.Entry<String, String> row : rows) {
-            outputStream.writeInt(row.getKey().getBytes("UTF-8").length);
-            outputStream.writeInt(row.getValue().getBytes("UTF-8").length);
-            outputStream.write(row.getKey().getBytes("UTF-8"));
-            outputStream.write(row.getValue().getBytes("UTF-8"));
+            outputStream.writeInt(row.getKey().getBytes(ENCODING).length);
+            outputStream.writeInt(row.getValue().getBytes(ENCODING).length);
+            outputStream.write(row.getKey().getBytes(ENCODING));
+            outputStream.write(row.getValue().getBytes(ENCODING));
         }
     }
 

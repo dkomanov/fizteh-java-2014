@@ -19,7 +19,7 @@ import ru.fizteh.fivt.students.Bulat_Galiev.storeable.Storeabledb;
 import ru.fizteh.fivt.students.Bulat_Galiev.storeable.TabledbProvider;
 
 public class TabledbProviderTest {
-    private static final int INTVALUENUMBER = 139;
+    private static final int INT_VALUE_NUMBER = 139;
     private static ArrayList<Class<?>> typeList;
     private TableProvider provider;
     private Path testDir;
@@ -163,7 +163,7 @@ public class TabledbProviderTest {
     @Test
     public final void testChangeCurTable() throws Exception {
         Table singletable = provider.createTable("table", typeList);
-        TabledbProvider.changeCurTable("table");
+        ((TabledbProvider) provider).changeCurTable("table");
         Assert.assertEquals(((TabledbProvider) provider).getDataBase(),
                 singletable);
     }
@@ -176,7 +176,7 @@ public class TabledbProviderTest {
     @Test
     public final void testGetNormalDataBase() throws Exception {
         provider.createTable("table", typeList);
-        TabledbProvider.changeCurTable("table");
+        ((TabledbProvider) provider).changeCurTable("table");
         Assert.assertNotNull(((TabledbProvider) provider).getDataBase());
     }
 
@@ -203,7 +203,7 @@ public class TabledbProviderTest {
     public final void testCreateForNormalTable() throws IOException {
         List<Object> values = new ArrayList<>();
         values.add(0, "Testing");
-        values.add(1, INTVALUENUMBER);
+        values.add(1, INT_VALUE_NUMBER);
         Storeable storeableExpected = new Storeabledb(values);
 
         Table singleTable = provider.createTable("table", typeList);
@@ -221,7 +221,7 @@ public class TabledbProviderTest {
         Table singleTable = provider.createTable("table", typeList);
         List<Object> values = new ArrayList<>();
         values.add(0, "Testing");
-        values.add(1, INTVALUENUMBER);
+        values.add(1, INT_VALUE_NUMBER);
         Storeable storeableExpected = new Storeabledb(values);
         Storeable result = provider.createFor(singleTable, values);
         Assert.assertEquals(result.getStringAt(0),

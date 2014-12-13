@@ -25,10 +25,10 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public final class TabledbProvider implements TableProvider, AutoCloseable {
-    private static Map<String, Tabledb> tableMap;
-    private static Path tablesDirPath;
-    private static Table currentTable;
-    private static Types serializer;
+    private Map<String, Tabledb> tableMap;
+    private Path tablesDirPath;
+    private Table currentTable;
+    private Types serializer;
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     boolean closed;
 
@@ -108,7 +108,10 @@ public final class TabledbProvider implements TableProvider, AutoCloseable {
                             "ColumnTypes list is empty");
                 }
                 Path newTablePath = tablesDirPath.resolve(name);
-                newTablePath.toFile().mkdir();
+                if (!newTablePath.toFile().mkdir()) {
+                    throw new IllegalArgumentException(
+                            "Error creating directory " + name);
+                }
                 Path signature = newTablePath.resolve("signature.tsv");
                 try {
                     if (!signature.toFile().createNewFile()) {

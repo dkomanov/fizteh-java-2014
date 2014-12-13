@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 public class Interpreter {
-    private static final int SLEEPNUMBER = 15;
+    private static final int SLEEP_NUMBER = 15;
     private final TableProvider provider;
     private static Map<String, Command> commandMap;
     private InputStream in;
@@ -56,7 +56,7 @@ public class Interpreter {
                     this.in));
             do {
                 try {
-                    Thread.sleep(SLEEPNUMBER);
+                    Thread.sleep(SLEEP_NUMBER);
                 } catch (InterruptedException e1) {
                     this.err.print(e1.getMessage());
                 }

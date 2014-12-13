@@ -31,7 +31,7 @@ public final class MainJunit {
     private static void run(final TableProvider provider, final String[] arg) throws Exception {
         new Interpreter(provider, new Command[] {new Command("put", 2, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 Table curTable = ((TabledbProvider) provider).getDataBase();
                 if (curTable != null) {
                     String putValue = curTable.put(arg[1], arg[2]);
@@ -47,7 +47,7 @@ public final class MainJunit {
             }
         }), new Command("get", 1, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 Table curTable = ((TabledbProvider) provider).getDataBase();
                 if (curTable != null) {
                     String getValue = curTable.get(arg[1]);
@@ -63,7 +63,7 @@ public final class MainJunit {
             }
         }), new Command("remove", 1, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 Table curTable = ((TabledbProvider) provider).getDataBase();
                 if (curTable != null) {
                     String getValue = curTable.remove(arg[1]);
@@ -78,7 +78,7 @@ public final class MainJunit {
             }
         }), new Command("list", 0, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 Table curTable = ((TabledbProvider) provider).getDataBase();
                 if (curTable != null) {
                     System.out.println(String.join(", ", curTable.list()));
@@ -88,7 +88,7 @@ public final class MainJunit {
             }
         }), new Command("size", 0, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 Table curTable = ((TabledbProvider) provider).getDataBase();
                 if (curTable != null) {
                     System.out.println(curTable.size());
@@ -98,7 +98,7 @@ public final class MainJunit {
             }
         }), new Command("commit", 0, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 Table curTable = ((TabledbProvider) provider).getDataBase();
                 if (curTable != null) {
                     System.out.println(curTable.commit());
@@ -108,7 +108,7 @@ public final class MainJunit {
             }
         }), new Command("rollback", 0, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 Table curTable = ((TabledbProvider) provider).getDataBase();
                 if (curTable != null) {
                     System.out.println(curTable.rollback());
@@ -118,7 +118,7 @@ public final class MainJunit {
             }
         }), new Command("create", 1, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 if (provider.createTable(arg[1]) != null) {
                     System.out.println("created");
                 } else {
@@ -127,7 +127,7 @@ public final class MainJunit {
             }
         }), new Command("use", 1, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 String name = arg[1];
                 try {
                     Table curTable = ((TabledbProvider) provider).getDataBase();
@@ -138,7 +138,7 @@ public final class MainJunit {
                             return;
                         }
                     }
-                    TabledbProvider.changeCurTable(name);
+                    ((TabledbProvider) provider).changeCurTable(name);
                     System.out.println("using " + name);
                 } catch (IllegalStateException e) {
                     throw new StopInterpretationException(name + " does not exist");
@@ -146,7 +146,7 @@ public final class MainJunit {
             }
         }), new Command("drop", 1, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 String name = arg[1];
                 try {
                     provider.removeTable(name);
@@ -157,7 +157,7 @@ public final class MainJunit {
             }
         }), new Command("show", 1, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 if (arg[1].equals("tables")) {
                     Set<String> keys = ((TabledbProvider) provider).getKeySet();
                     for (String current : keys) {
@@ -169,7 +169,7 @@ public final class MainJunit {
             }
         }), new Command("exit", 0, new BiConsumer<TableProvider, String[]>() {
             @Override
-            public void accept(final TableProvider state, final String[] arg) {
+            public void accept(final TableProvider provider, final String[] arg) {
                 if (((TabledbProvider) provider).getDataBase() != null) {
                     int diff = ((Tabledb) ((TabledbProvider) provider).getDataBase()).getChangedRecordsNumber();
                     if (diff == 0) {
