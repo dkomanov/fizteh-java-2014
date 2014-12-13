@@ -11,12 +11,12 @@ public class DropCommand implements DatabaseCommand {
         }
         String tableName = args[1];
         try {
-            state.tableProvider.removeTable(tableName);
+            state.getTableProvider().removeTable(tableName);
             state.out.println("dropped");
         } catch (IllegalStateException e) {
             state.out.println(tableName + "not exists");
         }
-        state.table = null;
+        state.stopUsingTable();
     }
 
     public String name() {

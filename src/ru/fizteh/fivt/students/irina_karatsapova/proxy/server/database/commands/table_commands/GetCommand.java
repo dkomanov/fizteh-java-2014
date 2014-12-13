@@ -11,10 +11,10 @@ public class GetCommand implements DatabaseCommand {
             return;
         }
         String key = args[1];
-        Storeable tableRawValue = state.table.get(key);
+        Storeable tableRawValue = state.getTable().get(key);
         if (tableRawValue != null) {
             state.out.println("found");
-            String stringValue = state.tableProvider.serialize(state.table, tableRawValue);
+            String stringValue = state.getTableProvider().serialize(state.getTable(), tableRawValue);
             state.out.println(stringValue);
         } else {
             state.out.println("not found");

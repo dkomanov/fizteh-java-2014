@@ -4,10 +4,10 @@ import ru.fizteh.fivt.students.irina_karatsapova.proxy.client.InterpreterState;
 
 public class WhereamiCommand implements Command {
     public void execute(InterpreterState state, String[] args) {
-        if (!state.connected) {
+        if (!state.isConnected()) {
             state.out.println("local");
         } else {
-            state.out.println("remote " + state.host + " " + state.port);
+            state.out.println("remote " + state.getHost() + " " + state.getPort());
         }
     }
     

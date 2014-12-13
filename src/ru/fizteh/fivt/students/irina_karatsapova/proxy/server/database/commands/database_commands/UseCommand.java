@@ -10,9 +10,8 @@ public class UseCommand implements DatabaseCommand {
             return;
         }
         String tableName = args[1];
-        state.table = null;
-        state.table = state.tableProvider.getTable(tableName);
-        if (state.table == null) {
+        state.setTable(state.getTableProvider().getTable(tableName));
+        if (state.getTable() == null) {
             state.out.println(tableName + " not exists");
         } else {
             state.out.println("using " + tableName);

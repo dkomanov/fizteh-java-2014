@@ -6,12 +6,28 @@ import ru.fizteh.fivt.students.irina_karatsapova.proxy.server.database.interface
 import java.io.PrintWriter;
 
 public class InterpreterStateDatabase {
-    public TableProvider tableProvider;
-    public Table table = null;
+    private TableProvider tableProvider;
+    private Table table = null;
     public PrintWriter out;
 
     public InterpreterStateDatabase(TableProvider tableProvider, PrintWriter out) {
         this.tableProvider = tableProvider;
         this.out = out;
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public void setTable(Table table) {
+        this.table = table;
+    }
+
+    public void stopUsingTable() {
+        table = null;
+    }
+
+    public TableProvider getTableProvider() {
+        return tableProvider;
     }
 }

@@ -10,7 +10,7 @@ public class StartCommand implements Command {
     int port = 10001;
 
     public void execute(InterpreterStateServer state, String[] args) throws Exception {
-        if (state.started) {
+        if (state.isStarted()) {
             state.out.println("not started: already started");
             return;
         }

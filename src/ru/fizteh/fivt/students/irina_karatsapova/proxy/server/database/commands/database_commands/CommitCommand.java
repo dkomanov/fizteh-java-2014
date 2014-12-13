@@ -9,7 +9,7 @@ public class CommitCommand implements DatabaseCommand {
         if (!Utils.checkTableChosen(state)) {
             return;
         }
-        int changesNumber = state.table.commit();
+        int changesNumber = state.getTable().commit();
         state.out.println(changesNumber);
     }
 

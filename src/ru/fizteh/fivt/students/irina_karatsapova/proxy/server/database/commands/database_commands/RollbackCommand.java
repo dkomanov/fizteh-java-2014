@@ -9,7 +9,7 @@ public class RollbackCommand implements DatabaseCommand {
         if (!Utils.checkTableChosen(state)) {
             return;
         }
-        int changesNumber = state.table.rollback();
+        int changesNumber = state.getTable().rollback();
         state.out.println(changesNumber);
     }
 

@@ -17,13 +17,13 @@ public class PutCommand implements DatabaseCommand {
         for (int argsIndex = 2; argsIndex < args.length; ++argsIndex) {
             stringValue += (args[argsIndex]);
         }
-        Storeable tableRawValue = state.tableProvider.deserialize(state.table, stringValue);
-        Storeable tableRawPrevValue = state.table.put(key, tableRawValue);
+        Storeable tableRawValue = state.getTableProvider().deserialize(state.getTable(), stringValue);
+        Storeable tableRawPrevValue = state.getTable().put(key, tableRawValue);
         if (tableRawPrevValue == null) {
             state.out.println("new");
         } else {
             state.out.println("owerwrite");
-            String stringPrevValue = state.tableProvider.serialize(state.table, tableRawPrevValue);
+            String stringPrevValue = state.getTableProvider().serialize(state.getTable(), tableRawPrevValue);
             state.out.println(stringPrevValue);
         }
     }

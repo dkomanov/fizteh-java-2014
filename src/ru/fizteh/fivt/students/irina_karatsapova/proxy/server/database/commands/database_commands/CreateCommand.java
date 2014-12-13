@@ -16,13 +16,13 @@ public class CreateCommand implements DatabaseCommand {
         }
         String tableName = args[1];
         List<Class<?>> types = parseTypes(args);
-        Table createdTable = state.tableProvider.createTable(tableName, types);
+        Table createdTable = state.getTableProvider().createTable(tableName, types);
         if (createdTable == null) {
             state.out.println(tableName + " exists");
         } else {
             state.out.println("created");
         }
-        state.table = null;
+        state.stopUsingTable();
     }
 
     private List<Class<?>> parseTypes(String[] args) throws Exception {

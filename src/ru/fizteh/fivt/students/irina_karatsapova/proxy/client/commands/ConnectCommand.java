@@ -7,7 +7,7 @@ import java.net.Socket;
 
 public class ConnectCommand implements Command {
     public void execute(InterpreterState state, String[] args) throws Exception {
-        if (state.connected) {
+        if (state.isConnected()) {
             state.out.println("not connected: connection has already been established");
             return;
         }

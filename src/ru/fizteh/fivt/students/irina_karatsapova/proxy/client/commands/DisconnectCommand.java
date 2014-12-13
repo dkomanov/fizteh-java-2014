@@ -4,7 +4,7 @@ import ru.fizteh.fivt.students.irina_karatsapova.proxy.client.InterpreterState;
 
 public class DisconnectCommand implements Command {
     public void execute(InterpreterState state, String[] args) throws Exception {
-        if (!state.connected) {
+        if (!state.isConnected()) {
             state.out.println("not connected");
             return;
         }

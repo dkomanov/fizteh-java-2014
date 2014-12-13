@@ -11,7 +11,7 @@ public class RemoveCommand implements DatabaseCommand {
             return;
         }
         String key = args[1];
-        Storeable value = state.table.remove(key);
+        Storeable value = state.getTable().remove(key);
         if (value == null) {
             state.out.println("not found");
         } else {

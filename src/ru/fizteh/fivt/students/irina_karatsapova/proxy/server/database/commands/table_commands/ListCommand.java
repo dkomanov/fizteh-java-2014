@@ -11,7 +11,7 @@ public class ListCommand implements DatabaseCommand {
         if (!Utils.checkTableChosen(state)) {
             return;
         }
-        List<String> keys = state.table.list();
+        List<String> keys = state.getTable().list();
         String allKeys = "";
         for (String key: keys) {
             if (allKeys.length() > 0) {

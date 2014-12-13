@@ -13,7 +13,7 @@ import java.util.List;
 public class ConnectionsManagerThread extends Thread {
     ServerSocket serverSocket;
     TableProvider tableProvider;
-    public List<ClientAcceptorThread> clientAcceptors = new ArrayList<>();
+    private List<ClientAcceptorThread> clientAcceptors = new ArrayList<>();
 
     public ConnectionsManagerThread(ServerSocket serverSocket, TableProvider tableProvider) {
         this.serverSocket = serverSocket;
@@ -48,5 +48,9 @@ public class ConnectionsManagerThread extends Thread {
                 // it will never happen
             }
         }
+    }
+
+    public List<ClientAcceptorThread> getClientAcceptors() {
+        return clientAcceptors;
     }
 }

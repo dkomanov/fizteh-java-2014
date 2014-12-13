@@ -8,12 +8,12 @@ import java.util.List;
 
 public class ListusersCommand implements Command {
     public void execute(InterpreterStateServer state, String[] args) {
-        if (!state.started) {
+        if (!state.isStarted()) {
             state.out.println("not started");
             return;
         }
-        int port = state.port;
-        List<ClientAcceptorThread> clientAcceptors = state.connectionsManager.clientAcceptors;
+        int port = state.getPort();
+        List<ClientAcceptorThread> clientAcceptors = state.getClientAcceptors();
         for (ClientAcceptorThread clientAcceptor: clientAcceptors) {
             if  (clientAcceptor.isAlive()) {
                 String host = clientAcceptor.clientSocket.getInetAddress().getHostName();

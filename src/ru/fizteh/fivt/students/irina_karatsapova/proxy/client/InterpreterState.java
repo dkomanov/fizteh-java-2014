@@ -8,10 +8,10 @@ import java.net.Socket;
 
 public class InterpreterState {
     public PrintWriter out;
-    public boolean connected = false;
-    public String host;
-    public int port;
-    public Socket socket;
+    private boolean connected = false;
+    private String host;
+    private int port;
+    private Socket socket;
     public BufferedReader fromServerStream;
     public PrintWriter toServerStream;
 
@@ -42,5 +42,21 @@ public class InterpreterState {
         } catch (IOException e) {
             throw new Exception("Can't disconnect");
         }
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 }

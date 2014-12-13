@@ -5,7 +5,7 @@ import ru.fizteh.fivt.students.irina_karatsapova.proxy.server.commands.Command;
 
 public class ExitCommand implements Command {
     public void execute(InterpreterStateServer state, String[] args) throws Exception {
-        if (state.started) {
+        if (state.isStarted()) {
             state.stop();
         }
         System.exit(0);

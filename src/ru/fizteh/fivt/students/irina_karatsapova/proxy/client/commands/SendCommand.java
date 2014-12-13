@@ -7,11 +7,11 @@ import java.io.IOException;
 
 public class SendCommand implements Command {
     public void execute(InterpreterState state, String[] args) throws Exception {
-        if (!state.connected) {
+        if (!state.isConnected()) {
             state.out.println("not connected");
             return;
         }
-        if (state.socket.isInputShutdown()) {
+        if (state.getSocket().isInputShutdown()) {
             state.disconnect();
             state.out.println("Server disconnected. Try to connect again.");
         }

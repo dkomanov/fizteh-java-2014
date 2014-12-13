@@ -23,7 +23,7 @@ public class ClentMain {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                if (state.connected) {
+                if (state.isConnected()) {
                     try {
                         state.disconnect();
                         out.close();

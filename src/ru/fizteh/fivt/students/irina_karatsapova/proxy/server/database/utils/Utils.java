@@ -84,15 +84,15 @@ public class Utils {
     }
 
     public static boolean checkNoChanges(InterpreterStateDatabase state) {
-        if (state.table == null || state.table.getNumberOfUncommittedChanges() == 0) {
+        if (state.getTable() == null || state.getTable().getNumberOfUncommittedChanges() == 0) {
             return true;
         }
-        state.out.println(state.table.getNumberOfUncommittedChanges() + " unsaved changes");
+        state.out.println(state.getTable().getNumberOfUncommittedChanges() + " unsaved changes");
         return false;
     }
 
     public static boolean checkTableChosen(InterpreterStateDatabase state) {
-        if (state.table == null) {
+        if (state.getTable() == null) {
             System.out.println("choose a table");
             return false;
         }

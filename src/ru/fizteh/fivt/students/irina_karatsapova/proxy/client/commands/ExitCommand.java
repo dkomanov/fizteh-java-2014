@@ -4,7 +4,7 @@ import ru.fizteh.fivt.students.irina_karatsapova.proxy.client.InterpreterState;
 
 public class ExitCommand implements Command {
     public void execute(InterpreterState state, String[] args) throws Exception {
-        if (!state.connected) {
+        if (!state.isConnected()) {
             System.exit(0);
         }
         state.disconnect();

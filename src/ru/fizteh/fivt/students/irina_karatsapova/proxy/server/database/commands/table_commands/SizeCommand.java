@@ -9,7 +9,7 @@ public class SizeCommand implements DatabaseCommand {
         if (!Utils.checkTableChosen(state)) {
             return;
         }
-        int size = state.table.size();
+        int size = state.getTable().size();
         state.out.println(size);
     }
 

@@ -39,7 +39,7 @@ public class ServerMain {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                if (state.started) {
+                if (state.isStarted()) {
                     try {
                         state.stop();
                         out.close();

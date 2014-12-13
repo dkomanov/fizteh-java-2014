@@ -10,9 +10,9 @@ public class ShowCommand implements DatabaseCommand {
         if (!args[1].equals("tables")) {
             throw new Exception("The name of this command is \"show tables\"");
         }
-        List<String> tableNames = state.tableProvider.getTableNames();
+        List<String> tableNames = state.getTableProvider().getTableNames();
         for (String tableName: tableNames) {
-            int valuesNumber = state.tableProvider.getTable(tableName).size();
+            int valuesNumber = state.getTableProvider().getTable(tableName).size();
             state.out.println(tableName + " " + valuesNumber);
         }
     }
