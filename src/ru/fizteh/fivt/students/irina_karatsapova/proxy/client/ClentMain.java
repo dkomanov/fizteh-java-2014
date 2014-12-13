@@ -8,8 +8,6 @@ import java.io.PrintWriter;
 
 public class ClentMain {
     public static void main(String[] args) {
-        System.out.println("Welcome to Client side");
-
         BufferedReader in  = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter out = new PrintWriter(System.out, true);
 

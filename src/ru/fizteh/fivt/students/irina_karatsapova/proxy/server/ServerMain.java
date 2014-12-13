@@ -16,7 +16,7 @@ public class ServerMain {
     public static String mainDir = "fizteh.db.dir";
 
     public static void main(String[] args) {
-        //System.setProperty(mainDir, "D:/tmp/db8-telnet");
+        System.setProperty(mainDir, "D:/tmp/db8-telnet");
 
         TableProviderFactory tableProviderFactory = new MyTableProviderFactory();
         if (System.getProperty(ServerMain.mainDir) == null) {
@@ -24,8 +24,6 @@ public class ServerMain {
             System.exit(1);
         }
         TableProvider tableProvider = tableProviderFactory.create(System.getProperty(ServerMain.mainDir));
-
-        System.out.println("Welcome to Server side");
 
         BufferedReader in  = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter out = new PrintWriter(System.out, true);

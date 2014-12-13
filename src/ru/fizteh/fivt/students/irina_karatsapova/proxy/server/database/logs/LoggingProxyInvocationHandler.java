@@ -15,10 +15,8 @@ public class LoggingProxyInvocationHandler implements InvocationHandler {
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        for (Method objectMethod : Object.class.getMethods()) {
-            if (objectMethod.equals(method)) {
-                return method.invoke(implementation, args);
-            }
+        if (method.getDeclaringClass() == Object.class) {
+            return method.invoke(implementation, args);
         }
 
         JsonLogCreator logCreator = new JsonLogCreator();
