@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.surin;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 /**
@@ -15,8 +16,8 @@ public class ExternalSorter<T extends Comparable<T>> {
 
     public ExternalSorter(File inp, File outp, ObjectInputStream.Reader reader,
                           ObjectOutputStream.Writer writer) throws FileNotFoundException {
-        is = new ObjectInputStream<T>(inp, reader);
-        os = new ObjectOutputStream<T>(outp, writer);
+        is = new ObjectInputStream<>(inp, reader);
+        os = new ObjectOutputStream<>(outp, writer);
         this.reader = reader;
         this.writer = writer;
         buf.ensureCapacity(blockLim + 10);
@@ -24,7 +25,7 @@ public class ExternalSorter<T extends Comparable<T>> {
 
     private final int blockLim = 500000;
     ArrayList<T> buf = new ArrayList<>();
-    ArrayList<File> tmps = new ArrayList<>();
+    List<File> tmps = new ArrayList<>();
 
     public void run() throws ClassNotFoundException, IOException {
 
