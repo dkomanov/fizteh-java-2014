@@ -64,11 +64,11 @@ public class JSONLoggingProxyFactory implements LoggingProxyFactory {
             synchronized (writer) {
                 try {
                     log.write(writer);
+                    writer.write(String.format("%n"));
                 } catch (Exception e) {
                     boolean veryBad = true;
                 }
             }
-            writer.write(String.format("%n"));
             if (targetException != null) {
                 throw targetException;
             }
