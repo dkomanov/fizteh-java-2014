@@ -61,15 +61,20 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-        output.println("show tables");
-        input.nextLine();
-        int numberOfTables = Integer.parseInt(input.nextLine());
-        for (int i = 0; i < numberOfTables; ++i) {
-            String tableName = input.nextLine().split(" ")[0];
+        List<String> tablesOnServer = getTableNames();
+        for (String oneTable : tables.keySet()) {
+            if (!tablesOnServer.contains(oneTable)) {
+                tables.remove(oneTable);
+                // можно ли так делать?
+            }
+        }
+        for (String oneTable : tablesOnServer) {
             try {
-                tables.put(tableName, new RealRemoteTable(tableName, hostName, port, this));
+                if (!tables.containsKey(oneTable)) {
+                    tables.put(oneTable, new RealRemoteTable(oneTable, hostName, port, this));
+                }
             } catch (IOException e) {
-                System.err.println("error while creating real remote table");
+                System.err.println("error while creating RealRemoteTable");
             }
         }
         return tables.get(name);
