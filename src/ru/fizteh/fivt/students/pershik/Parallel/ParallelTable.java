@@ -18,37 +18,37 @@ public class ParallelTable implements Table {
 
     private final int mod = 16;
 
-    private String dbDirPath;
-    private List<Class<?>> signature;
-    private String name;
-    private ParallelTableProvider provider;
+    private final String dbDirPath;
+    private final List<Class<?>> signature;
+    private final String name;
+    private final ParallelTableProvider provider;
     private Map<String, Storeable> db;
-    private ThreadLocal<Map<String, Storeable>> added = new ThreadLocal<Map<String, Storeable>>() {
+    private final ThreadLocal<Map<String, Storeable>> added = new ThreadLocal<Map<String, Storeable>>() {
         @Override
         protected Map<String, Storeable> initialValue() {
             return new HashMap<String, Storeable>();
         }
     };
-    private ThreadLocal<Set<String>> removed = new ThreadLocal<Set<String>>() {
+    private final ThreadLocal<Set<String>> removed = new ThreadLocal<Set<String>>() {
         @Override
         protected Set<String> initialValue() {
             return new HashSet<>();
         }
     };
-    private ThreadLocal<Integer> uncommitted = new ThreadLocal<Integer>() {
+    private final ThreadLocal<Integer> uncommitted = new ThreadLocal<Integer>() {
         @Override
         protected Integer initialValue() {
             return 0;
         }
     };
-    private ThreadLocal<Integer> sz = new ThreadLocal<Integer>() {
+    private final ThreadLocal<Integer> sz = new ThreadLocal<Integer>() {
         @Override
         protected Integer initialValue() {
             return 0;
         }
     };
-    private ReentrantReadWriteLock lock;
-    private ReentrantReadWriteLock providerLock;
+    private final  ReentrantReadWriteLock lock;
+    private final ReentrantReadWriteLock providerLock;
 
     public ParallelTable(ParallelTableProvider newProvider,  String dbName,
                           String parentDir, List<Class<?>> newSignature,
@@ -60,12 +60,7 @@ public class ParallelTable implements Table {
         provider = newProvider;
         providerLock = newProviderLock;
         lock = new ReentrantReadWriteLock();
-        lock.readLock().lock();
-        try {
-            readDb();
-        } finally {
-            lock.readLock().unlock();
-        }
+        readDb();
     }
 
     @Override
@@ -328,12 +323,10 @@ public class ParallelTable implements Table {
         try {
             try (DataInputStream stream = new DataInputStream(
                     new FileInputStream(file))) {
-                while (true) {
-                    String key = readToken(stream);
-                    String valueStr = readToken(stream);
-                    if (key == null || valueStr == null) {
-                        break;
-                    }
+                String key;
+                String valueStr;
+                while ((key = readToken(stream)) != null
+                        && (valueStr = readToken(stream)) != null) {
                     Storeable value = provider.deserialize(this, valueStr);
                     checkSignature(value);
                     db.put(key, value);

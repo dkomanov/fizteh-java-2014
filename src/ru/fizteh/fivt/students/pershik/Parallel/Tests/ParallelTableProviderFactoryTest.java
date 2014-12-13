@@ -4,6 +4,7 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.students.pershik.Parallel.ParallelTableProviderFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -15,10 +16,12 @@ public class ParallelTableProviderFactoryTest {
 
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
+    public File folder;
 
     @Before
     public void before() throws IOException {
         factory = new ParallelTableProviderFactory();
+        folder = tmpFolder.newFolder("dbDir");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -28,11 +31,12 @@ public class ParallelTableProviderFactoryTest {
 
     @Test
     public void create() throws IOException {
-        factory.create("dbDir");
+        factory.create(folder.getAbsolutePath());
     }
 
     @Test
     public void createSubDirectory() throws IOException {
-        factory.create("dbDir2/db/db");
+        factory.create(folder.getAbsolutePath() + File.separator + "db"
+                + File.separator + "db");
     }
 }
