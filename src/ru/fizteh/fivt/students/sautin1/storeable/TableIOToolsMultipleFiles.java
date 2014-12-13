@@ -134,13 +134,8 @@ public class TableIOToolsMultipleFiles<MappedValue, T extends GeneralTable<Mappe
     public int loadFileToTable(P provider, Path filePath, T table) throws IOException, ParseException {
         int loadedEntriesNumber = 0;
         try (DataInputStream inStream = new DataInputStream(Files.newInputStream(filePath))) {
-            while (true) {
-                String key;
-                if (inStream.available() > 0) {
-                    key = readEncodedString(inStream);
-                } else {
-                    break;
-                }
+            while (inStream.available() > 0) {
+                String key = readEncodedString(inStream);
                 if (!checkKeyPlace(key, filePath)) {
                     String wrongPathString = filePath.getParent().getFileName().toString();
                     wrongPathString += "/" + filePath.getFileName().toString();

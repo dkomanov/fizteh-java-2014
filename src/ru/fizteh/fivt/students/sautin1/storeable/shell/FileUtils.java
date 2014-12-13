@@ -59,7 +59,6 @@ public class FileUtils {
     public static void printToFile(String message, Path filePath) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
             writer.write(message);
-            writer.flush();
         }
     }
 

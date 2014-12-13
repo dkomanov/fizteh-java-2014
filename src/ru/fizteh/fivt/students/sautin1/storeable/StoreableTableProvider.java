@@ -66,12 +66,10 @@ public class StoreableTableProvider extends GeneralTableProvider<Storeable, Stor
     @Override
     public Storeable deserialize(Table table, String serializedValue) throws ParseException {
         List<Object> rawObjectList = new ArrayList<>();
-        try {
-            StoreableTableXMLReader xmlReader = new StoreableTableXMLReader(serializedValue);
+        try (StoreableTableXMLReader xmlReader = new StoreableTableXMLReader(serializedValue)) {
             for (int columnIndex = 0; columnIndex < table.getColumnsCount(); ++columnIndex) {
                 rawObjectList.add(xmlReader.deserializeColumn(table.getColumnType(columnIndex)));
             }
-            xmlReader.safeClose();
         } catch (XMLStreamException e) {
             throw new RuntimeException(e.getMessage());
         }

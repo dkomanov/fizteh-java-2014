@@ -9,6 +9,9 @@ import ru.fizteh.fivt.students.sautin1.storeable.shell.CommandExecuteException;
 import ru.fizteh.fivt.students.sautin1.storeable.shell.UserInterruptException;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Put command.
@@ -36,11 +39,8 @@ public class PutCommand extends AbstractStoreableDatabaseCommand {
         StoreableTable table = state.getActiveTable();
         if (table != null) {
             try {
-                String serialized = "";
-                for (int argIndex = 2; argIndex < args.length; ++argIndex) {
-                    serialized += args[argIndex] + " ";
-                }
-                serialized = serialized.trim();
+                List<String> typeNameList = Arrays.asList(args).subList(2, args.length);
+                String serialized = String.join(" ", typeNameList);
                 Storeable storeable = state.getTableProvider().deserialize(table, serialized);
                 Storeable value = table.put(args[1], storeable);
                 if (value == null) {

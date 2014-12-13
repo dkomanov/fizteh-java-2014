@@ -65,19 +65,15 @@ public class Shell<T> {
      */
     public void interactWithUser() throws UserInterruptException, CommandExecuteException {
         try (Scanner scanner = new Scanner(System.in)) {
-            while (true) {
-                System.out.print(PROMPT);
-                String newCommand = null;
-                if (scanner.hasNextLine()) {
-                    newCommand = scanner.nextLine().trim();
-                } else {
-                    return;
-                }
+            System.out.print(PROMPT);
+            while (scanner.hasNextLine()) {
+                String newCommand = scanner.nextLine().trim();
                 try {
                     callCommands(newCommand);
                 } catch (CommandExecuteException e) {
                     System.err.println(e.getMessage());
                 }
+                System.out.print(PROMPT);
             }
         }
     }

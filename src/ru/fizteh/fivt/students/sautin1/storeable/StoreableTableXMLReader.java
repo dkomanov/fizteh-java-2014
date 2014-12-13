@@ -11,7 +11,7 @@ import java.text.ParseException;
 /**
  * Created by sautin1 on 12/10/14.
  */
-public class StoreableTableXMLReader {
+public class StoreableTableXMLReader implements AutoCloseable {
     private XMLStreamReader xmlReader;
 
     public StoreableTableXMLReader(String serializedValue) throws XMLStreamException, ParseException {
@@ -115,7 +115,8 @@ public class StoreableTableXMLReader {
         }
     }
 
-    public void safeClose() throws ParseException, XMLStreamException {
+    @Override
+    public void close() throws ParseException, XMLStreamException {
         try {
             if (xmlReader.hasNext()) {
                 xmlReader.next();

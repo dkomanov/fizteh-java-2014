@@ -79,11 +79,6 @@ public class StoreableTableProviderTest {
         provider.createTable(null, valueTypes);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreateTableRubbish() throws Exception {
-        provider.createTable("([/<:>/])", valueTypes);
-    }
-
     @Test
     public void testGetTable() throws Exception {
         StoreableTable createdTable = provider.createTable(tableName, valueTypes);

@@ -34,10 +34,11 @@ public abstract class GeneralTableProvider<MappedValue, T extends GeneralTable<M
             try {
                 Files.createDirectory(rootDir);
             } catch (IOException e) {
-                String errorMessage = "Directory " + rootDir.getFileName().toString();
-                errorMessage += " does not exist and cannot be created";
-                errorMessage += e.getMessage();
-                throw new IllegalArgumentException(errorMessage);
+                StringBuilder errorMessage = new StringBuilder("Directory ");
+                errorMessage.append(rootDir.getFileName().toString());
+                errorMessage.append(" does not exist and cannot be created");
+                errorMessage.append(e.getMessage());
+                throw new IllegalArgumentException(errorMessage.toString());
             }
         }
         if (tableIOTools == null) {
