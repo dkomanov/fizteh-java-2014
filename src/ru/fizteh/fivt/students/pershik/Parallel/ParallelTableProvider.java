@@ -1,5 +1,9 @@
 package ru.fizteh.fivt.students.pershik.Parallel;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
@@ -7,9 +11,12 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.pershik.Storeable.NameChecker;
 import ru.fizteh.fivt.students.pershik.Storeable.StoreableEntry;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.w3c.dom.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.*;
+import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -23,15 +30,24 @@ public class ParallelTableProvider implements TableProvider {
 
     private Map<Class<?>, String> classNames;
     private Map<String, Class<?>> revClassNames;
-    private String dbDirPath;
-    private Map<String, ParallelTable> tables;
-    private ReentrantReadWriteLock lock;
+    private final String dbDirPath;
+    private final Map<String, ParallelTable> tables;
+    private final ReentrantReadWriteLock lock;
+    private final XMLOutputFactory outputFactory;
+    private final DocumentBuilder builder;
 
     public ParallelTableProvider(String dbDir)
             throws IOException {
         dbDirPath = dbDir;
         tables = new HashMap<>();
         lock = new ReentrantReadWriteLock();
+        outputFactory = XMLOutputFactory.newInstance();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
         initClassNames();
         initProvider();
     }
@@ -44,11 +60,7 @@ public class ParallelTableProvider implements TableProvider {
         }
         lock.readLock().lock();
         try {
-            if (tables.containsKey(name)) {
-                return tables.get(name);
-            } else {
-                return null;
-            }
+            return tables.get(name);
         } finally {
             lock.readLock().unlock();
         }
@@ -120,36 +132,41 @@ public class ParallelTableProvider implements TableProvider {
     @Override
     public StoreableEntry deserialize(Table table, String value)
             throws ParseException {
-        if (!value.startsWith("<row>")) {
-            throw new ParseException("<row> expected", 0);
-        } else if (!value.endsWith("</row>")) {
-            throw new ParseException("</row> expected", value.length() - 1);
-        }
-        value = value.substring(5, value.length() - 6);
-        StoreableEntry storeable = createFor(table);
-        for (int columnNumber = 0; columnNumber < table.getColumnsCount();
-             columnNumber++) {
-            if (value.startsWith("<null/>")) {
-                value = value.substring(7);
-            } else if (value.startsWith("<col>")) {
-                value = value.substring(5);
-                int pos = value.indexOf("</col>");
-                if (pos == -1) {
-                    errorIncorrectXmlSyntax();
-                } else {
-                    String column = value.substring(0, pos);
-                    storeable.setColumnAt(columnNumber,
-                            parseObject(column, table.getColumnType(columnNumber)));
-                    value = value.substring(pos + 6);
-                }
-            } else {
+        try {
+            Document document = builder.parse(new InputSource(new StringReader(value)));
+            StoreableEntry storeable = createFor(table);
+            String root = document.getDocumentElement().getNodeName();
+            if (!root.equals("row")) {
                 errorIncorrectXmlSyntax();
             }
+            NodeList rootList = document.getElementsByTagName("row");
+            if (rootList.getLength() != 1) {
+                errorIncorrectXmlSyntax();
+            }
+            NodeList nodeList = rootList.item(0).getChildNodes();
+            if (nodeList.getLength() != table.getColumnsCount()) {
+                errorIncorrectXmlSyntax();
+            }
+            for (int columnNumber = 0; columnNumber < nodeList.getLength();
+                 columnNumber++) {
+                Node item = nodeList.item(columnNumber);
+                if (!"null".equals(item.getNodeName())) {
+                    if (!"col".equals(item.getNodeName())) {
+                        errorIncorrectXmlSyntax();
+                    }
+                    NodeList children = item.getChildNodes();
+                    String column = children.item(0).getNodeValue();
+                    storeable.setColumnAt(columnNumber,
+                            parseObject(column, table.getColumnType(columnNumber)));
+                }
+            }
+            return storeable;
+        } catch (SAXException | Error e) {
+            errorIncorrectXmlSyntax();
+            return null;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        if (!"".equals(value)) {
-            errorIncorrectFormat();
-        }
-        return storeable;
     }
 
     private Object parseObject(String str, Class<?> type) throws ParseException {
@@ -190,24 +207,28 @@ public class ParallelTableProvider implements TableProvider {
     public String serialize(Table table, Storeable value)
             throws ColumnFormatException, IndexOutOfBoundsException {
         checkFormat(table, value);
-        StringBuilder serialized = new StringBuilder("<row>");
-        for (int columnNumber = 0; columnNumber < table.getColumnsCount();
-             columnNumber++) {
-            Object column = value.getColumnAt(columnNumber);
-            if (column == null) {
-                serialized.append("<null/>");
-            } else {
-                serialized.append("<col>");
-                if (column.getClass() == String.class) {
-                    serialized.append(column);
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter xmlWriter;
+        try {
+            xmlWriter = outputFactory.createXMLStreamWriter(writer);
+            xmlWriter.writeStartElement("row");
+            for (int columnNumber = 0; columnNumber < table.getColumnsCount();
+                 columnNumber++) {
+                Object column = value.getColumnAt(columnNumber);
+                if (column == null) {
+                    xmlWriter.writeEmptyElement("null");
                 } else {
-                    serialized.append(serialize(column));
+                    xmlWriter.writeStartElement("col");
+                    xmlWriter.writeCharacters(serialize(column));
+                    xmlWriter.writeEndElement();
                 }
-                serialized.append("</col>");
             }
+            xmlWriter.writeEndElement();
+            xmlWriter.close();
+        } catch (XMLStreamException e) {
+            throw new RuntimeException(e);
         }
-        serialized.append("</row>");
-        return serialized.toString();
+        return writer.toString();
     }
 
     private String serialize(Object value) {

@@ -317,7 +317,7 @@ public class ParallelTableProviderTest {
         ParallelTable table =
                 provider.createTable("table", fullSignature);
         String incorrectSerialized =
-                correctSerialized.replace("</row", "<col>1</col></row>");
+                correctSerialized.replace("</row>", "<col>1</col></row>");
         provider.deserialize(table, incorrectSerialized);
     }
 
