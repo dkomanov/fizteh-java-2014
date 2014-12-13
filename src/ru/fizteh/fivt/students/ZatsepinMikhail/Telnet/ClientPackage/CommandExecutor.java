@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider.*;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsTableProvider.*;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.PrintStream;

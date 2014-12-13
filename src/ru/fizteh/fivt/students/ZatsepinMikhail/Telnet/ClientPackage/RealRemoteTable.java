@@ -19,17 +19,17 @@ import java.util.Scanner;
 public class RealRemoteTable implements Table, Closeable {
     private String name;
     private Socket server;
-    private Scanner input;
-    private PrintStream output;
-    private RemoteTableProvider parent;
+    private Scanner inputStream;
+    private PrintStream outputStream;
+    private RemoteTableProvider parentProvider;
 
 
     public RealRemoteTable(String name, String hostname, int port, RemoteTableProvider parent) throws IOException {
         this.name = name;
-        this.parent = parent;
+        this.parentProvider = parent;
         server = new Socket(InetAddress.getByName(hostname), port);
-        input = new Scanner(server.getInputStream());
-        output = new PrintStream(server.getOutputStream());
+        inputStream = new Scanner(server.getInputStream());
+        outputStream = new PrintStream(server.getOutputStream());
     }
 
     @Override
@@ -37,14 +37,14 @@ public class RealRemoteTable implements Table, Closeable {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
-        output.println("put " + key + " " + Serializator.serialize(this, value));
-        String message = input.nextLine();
+        outputStream.println("put " + key + " " + Serializator.serialize(this, value));
+        String message = inputStream.nextLine();
         if ("new".equals(message)) {
             return null;
         } else {
-            String oldValue = input.nextLine();
+            String oldValue = inputStream.nextLine();
             try {
-                return parent.deserialize(this, oldValue);
+                return parentProvider.deserialize(this, oldValue);
             } catch (ParseException e) {
                 throw new ColumnFormatException(e.getMessage());
             }
@@ -56,12 +56,12 @@ public class RealRemoteTable implements Table, Closeable {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        output.println("get " + key);
-        String message = input.nextLine();
+        outputStream.println("get " + key);
+        String message = inputStream.nextLine();
         if ("found".equals(message)) {
-            String value = input.nextLine();
+            String value = inputStream.nextLine();
             try {
-                return parent.deserialize(this, value);
+                return parentProvider.deserialize(this, value);
             } catch (ParseException e) {
                 return null;
             }
@@ -75,14 +75,14 @@ public class RealRemoteTable implements Table, Closeable {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        output.println("remove " + key);
-        String message = input.nextLine();
+        outputStream.println("remove " + key);
+        String message = inputStream.nextLine();
         if ("not found".equals(message)) {
             return null;
         } else {
-            String value = input.nextLine();
+            String value = inputStream.nextLine();
             try {
-                return parent.deserialize(this, value);
+                return parentProvider.deserialize(this, value);
             } catch (ParseException e) {
                 return null;
             }
@@ -91,8 +91,8 @@ public class RealRemoteTable implements Table, Closeable {
 
     @Override
     public int size() {
-        output.println("size");
-        return Integer.parseInt(input.nextLine());
+        outputStream.println("size");
+        return Integer.parseInt(inputStream.nextLine());
     }
 
     @Override
@@ -102,14 +102,14 @@ public class RealRemoteTable implements Table, Closeable {
 
     @Override
     public int commit() throws IOException {
-        output.println("commit");
-        return Integer.parseInt(input.nextLine());
+        outputStream.println("commit");
+        return Integer.parseInt(inputStream.nextLine());
     }
 
     @Override
     public int rollback() {
-        output.println("rollback");
-        return Integer.parseInt(input.nextLine());
+        outputStream.println("rollback");
+        return Integer.parseInt(inputStream.nextLine());
     }
 
     @Override
@@ -119,15 +119,15 @@ public class RealRemoteTable implements Table, Closeable {
 
     @Override
     public int getColumnsCount() {
-        output.println("describe " + name);
-        String message = input.nextLine();
+        outputStream.println("describe " + name);
+        String message = inputStream.nextLine();
         return message.split(" ").length;
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        output.println("describe " + name);
-        String message = input.nextLine();
+        outputStream.println("describe " + name);
+        String message = inputStream.nextLine();
         String[] types = message.split(" ");
         return TypesUtils.toTypeList(types).get(columnIndex);
     }

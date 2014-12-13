@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider;
 
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.PrintStream;
@@ -18,10 +19,10 @@ public class CommandShowTables extends CommandTableProviderExtended {
             return false;
         }
         output.println("table_name row_count");
-        List<String> tables = myMap.getTableNames();
+        List<String> tables = myMap.showTables();
         output.println(tables.size());
         for (String oneTableName : tables) {
-            output.println(oneTableName + " " + myMap.getCurrentTable().size());
+            output.println(oneTableName);
         }
         return true;
     }

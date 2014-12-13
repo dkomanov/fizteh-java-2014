@@ -4,8 +4,10 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
 import java.io.Closeable;
+import java.util.List;
 
 public interface TableProviderExtended extends TableProvider, Closeable {
     Table getCurrentTable();
     void setCurrentTable(Table newTable);
+    List<String> showTables();
 }

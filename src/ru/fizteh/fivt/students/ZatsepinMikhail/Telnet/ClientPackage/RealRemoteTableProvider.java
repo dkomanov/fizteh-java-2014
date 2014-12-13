@@ -4,7 +4,6 @@ import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.AbstractStoreable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -12,7 +11,7 @@ import java.net.Socket;
 import java.text.ParseException;
 import java.util.*;
 
-public class RealRemoteTableProvider implements RemoteTableProvider, TableProviderExtended {
+public class RealRemoteTableProvider implements RemoteTableProvider {//, TableProviderExtended {
     private HashMap<String, RealRemoteTable> tables;
     private Socket server;
     private Scanner input;
@@ -29,18 +28,23 @@ public class RealRemoteTableProvider implements RemoteTableProvider, TableProvid
     }
 
     public RealRemoteTable getCurrentTable() {
-        getTable("simple");
         output.println("current");
-        String answer = input.nextLine();
-        if (answer.length() > 1) {
-            return tables.get(answer);
+        String answerFromServer = input.nextLine();
+        if (answerFromServer.equals("\n")) {
+            System.out.println("empty");
+        } else {
+            System.out.println("there is current table");
         }
         return null;
     }
 
-    @Override
-    public void setCurrentTable(Table newTable) {
-        output.println("use " + newTable.getName());
+    public void setCurrentTable(String name) throws IllegalStateException {
+        output.println("use " + name);
+        String answerFromServer = input.nextLine();
+        String[] parsedAnswer = answerFromServer.split(" ");
+        if (!parsedAnswer[0].equals("using")) {
+            throw new IllegalStateException(answerFromServer);
+        }
     }
 
     public RealRemoteTableProvider(String hostName, int port) throws IOException {
@@ -60,7 +64,6 @@ public class RealRemoteTableProvider implements RemoteTableProvider, TableProvid
         output.println("show tables");
         input.nextLine();
         int numberOfTables = Integer.parseInt(input.nextLine());
-        tables.clear();
         for (int i = 0; i < numberOfTables; ++i) {
             String tableName = input.nextLine().split(" ")[0];
             try {
@@ -155,6 +158,17 @@ public class RealRemoteTableProvider implements RemoteTableProvider, TableProvid
         Collection<RealRemoteTable> filemaps = tables.values();
         for (RealRemoteTable oneTable : filemaps) {
             result.add(oneTable.getName());
+        }
+        return result;
+    }
+
+    public List<String> showTables() {
+        output.println("show tables");
+        List<String> result = new ArrayList<>();
+        input.nextLine();
+        int size = Integer.parseInt(input.nextLine());
+        for (int i = 0; i < size; ++i) {
+            result.add(input.nextLine());
         }
         return result;
     }
