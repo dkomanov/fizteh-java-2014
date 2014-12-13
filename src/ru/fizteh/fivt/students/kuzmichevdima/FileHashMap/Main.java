@@ -89,10 +89,10 @@ public class Main {
         if (args.length == 0) {
             throw new RuntimeException("no command");
         }
-        if (args[0] == "exit")
-        {
-            if (args.length > 1)
+        if (args[0].equals("exit")) {
+            if (args.length > 1) {
                 throw new IllegalArgumentException(args[0] + ": too many arguments");
+            }
             db.writeToDataBase();
             System.exit(0);
         }
