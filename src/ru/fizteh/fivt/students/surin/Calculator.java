@@ -137,9 +137,6 @@ public class Calculator {
         if (args.length != 1) {
             System.exit(2);
         }
-        //PrintWriter outp = new PrintWriter(System.out);
-        //outp.print((new Calculator()).run(args[0]));
-        //outp.close();
         System.out.format("%f", (new Calculator()).run(args[0]));
     }
 
