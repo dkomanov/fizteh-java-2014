@@ -4,11 +4,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 
-
-
-
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
-
 import ru.fizteh.fivt.storage.strings.*;
 import ru.fizteh.fivt.students.RadimZulkarneev.DataBase.TableProviderFactoryRealize;
 import ru.fizteh.fivt.students.RadimZulkarneev.DataBase.TableProviderRealize;
@@ -163,7 +158,7 @@ public class JUnitMain {
                     @Override
                     public void accept(InterpreterState interpreterState, String[] arguments) {
                         if (arguments[0].equals("tables")) {
-                            TableProviderRealize tableProvider = (TableProviderRealize)((DataBaseInterpreterState)
+                            TableProviderRealize tableProvider = (TableProviderRealize) ((DataBaseInterpreterState)
                                     interpreterState).getTableProvider();
                             Set<String> tableSet = (tableProvider).getTableSet();
                             for (String table : tableSet) {
@@ -178,7 +173,7 @@ public class JUnitMain {
 
                     @Override
                     public void accept(InterpreterState interpreterState, String[] u) {
-                        TableProviderRealize tableProvider = (TableProviderRealize)((DataBaseInterpreterState)
+                        TableProviderRealize tableProvider = (TableProviderRealize) ((DataBaseInterpreterState)
                                 interpreterState).getTableProvider();
                         Set<String> tableSet = (tableProvider).getTableSet();
                         int size = 0;
