@@ -27,7 +27,6 @@ public class ParallelTable implements Table {
     private Writer writer;
     private ParallelTableProvider storeableTableProvider;
     private ReentrantReadWriteLock lock;
-    private ReentrantReadWriteLock lockProvider;
     private ThreadLocal<Map<String, Storeable>> addedChanges;
     private ThreadLocal<Set<String>> removedElements;
 
@@ -98,7 +97,6 @@ public class ParallelTable implements Table {
     }
 
     private void writeData() {
-        //removeData(new File(dirPath + File.separator + tableName));
         try {
             HashMap<String, Storeable>[][] maps = new HashMap[mod][mod];
             for (int i = 0; i < mod; i++) {
@@ -115,10 +113,8 @@ public class ParallelTable implements Table {
             for (int i = 0; i < mod; i++) {
                 String tablePath = dirPath + File.separator + tableName;
                 String path = tablePath + File.separator + Integer.toString(i) + ".dir";
-                File subDir = new File(path);
                 for (int j = 0; j < mod; j++) {
                     String subPath = path + File.separator + Integer.toString(j) + ".dat";
-                    File file = new File(subPath);
                     writer = new Writer(subPath, storeableTableProvider, storeableTableProvider.getTable(tableName));
                     writer.writeDataToFile(maps[i][j], path);
                 }
@@ -149,8 +145,7 @@ public class ParallelTable implements Table {
         }
     }
 
-    public ParallelTable(ParallelTableProvider stp, String name, String dir, List<Class<?>> sign,
-                         ReentrantReadWriteLock pl) {
+    public ParallelTable(ParallelTableProvider stp, String name, String dir, List<Class<?>> sign) {
         storeableTableProvider = stp;
         tableName = name;
         dirPath = dir;
@@ -181,19 +176,13 @@ public class ParallelTable implements Table {
             }
         };
         lock = new ReentrantReadWriteLock();
-        lockProvider = pl;
         readData();
     }
 
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
-        lockProvider.readLock().lock();
-        try {
-            if (storeableTableProvider.getTable(tableName) == null) {
-                throw new IllegalArgumentException("Table doesn't exist");
-            }
-        } finally {
-            lockProvider.readLock().unlock();
+        if (storeableTableProvider.getTable(tableName) == null) {
+            throw new IllegalArgumentException("Table doesn't exist");
         }
         if (key == null || value == null) {
             throw new IllegalArgumentException("Arguments shouldn't be null");
@@ -228,13 +217,8 @@ public class ParallelTable implements Table {
 
     @Override
     public Storeable remove(String key) {
-        lockProvider.readLock().lock();
-        try {
-            if (storeableTableProvider.getTable(tableName) == null) {
-                throw new IllegalArgumentException("Table doesn't exist");
-            }
-        } finally {
-            lockProvider.readLock().unlock();
+        if (storeableTableProvider.getTable(tableName) == null) {
+            throw new IllegalArgumentException("Table doesn't exist");
         }
         if (key == null) {
             throw new IllegalArgumentException("Arguments shouldn't be null");
@@ -271,13 +255,8 @@ public class ParallelTable implements Table {
 
     @Override
     public int size() {
-        lockProvider.readLock().lock();
-        try {
-            if (storeableTableProvider.getTable(tableName) == null) {
-                throw new IllegalArgumentException("Table doesn't exist");
-            }
-        } finally {
-            lockProvider.readLock().unlock();
+        if (storeableTableProvider.getTable(tableName) == null) {
+            throw new IllegalArgumentException("Table doesn't exist");
         }
         lock.readLock().lock();
         try {
@@ -307,13 +286,8 @@ public class ParallelTable implements Table {
 
     @Override
     public int commit() throws IOException {
-        lockProvider.readLock().lock();
-        try {
-            if (storeableTableProvider.getTable(tableName) == null) {
-                throw new IllegalArgumentException("Table doesn't exist");
-            }
-        } finally {
-            lockProvider.readLock().unlock();
+        if (storeableTableProvider.getTable(tableName) == null) {
+            throw new IllegalArgumentException("Table doesn't exist");
         }
         int ans = uncommitedChanges.get();
         if (ans > 0) {
@@ -336,13 +310,8 @@ public class ParallelTable implements Table {
 
     @Override
     public int rollback() {
-        lockProvider.readLock().lock();
-        try {
-            if (storeableTableProvider.getTable(tableName) == null) {
-                throw new IllegalArgumentException("Table doesn't exist");
-            }
-        } finally {
-            lockProvider.readLock().unlock();
+        if (storeableTableProvider.getTable(tableName) == null) {
+            throw new IllegalArgumentException("Table doesn't exist");
         }
         int ans = uncommitedChanges.get();
         uncommitedChanges.set(0);
@@ -359,26 +328,16 @@ public class ParallelTable implements Table {
 
     @Override
     public int getColumnsCount() {
-        lockProvider.readLock().lock();
-        try {
-            if (storeableTableProvider.getTable(tableName) == null) {
-                throw new IllegalArgumentException("Table doesn't exist");
-            }
-        } finally {
-            lockProvider.readLock().unlock();
+        if (storeableTableProvider.getTable(tableName) == null) {
+            throw new IllegalArgumentException("Table doesn't exist");
         }
         return signature.size();
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        lockProvider.readLock().lock();
-        try {
-            if (storeableTableProvider.getTable(tableName) == null) {
-                throw new IllegalArgumentException("Table doesn't exist");
-            }
-        } finally {
-            lockProvider.readLock().unlock();
+        if (storeableTableProvider.getTable(tableName) == null) {
+            throw new IllegalArgumentException("Table doesn't exist");
         }
         if (columnIndex >= getColumnsCount()) {
             throw new IndexOutOfBoundsException("Invalid column index");
@@ -388,26 +347,16 @@ public class ParallelTable implements Table {
 
     @Override
     public String getName() {
-        lockProvider.readLock().lock();
-        try {
-            if (storeableTableProvider.getTable(tableName) == null) {
-                throw new IllegalArgumentException("Table doesn't exist");
-            }
-        } finally {
-            lockProvider.readLock().unlock();
+        if (storeableTableProvider.getTable(tableName) == null) {
+            throw new IllegalArgumentException("Table doesn't exist");
         }
         return tableName;
     }
 
     @Override
     public Storeable get(String key) {
-        lockProvider.readLock().lock();
-        try {
-            if (storeableTableProvider.getTable(tableName) == null) {
-                throw new IllegalArgumentException("Table doesn't exist");
-            }
-        } finally {
-            lockProvider.readLock().unlock();
+        if (storeableTableProvider.getTable(tableName) == null) {
+            throw new IllegalArgumentException("Table doesn't exist");
         }
         if (key == null) {
             throw new IllegalArgumentException("Arguments shouldn't be null");

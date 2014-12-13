@@ -56,7 +56,7 @@ public class ParallelTableProvider implements TableProvider {
                 } catch (FileNotFoundException e) {
                     throw new RuntimeException("Error with reading");
                 }
-                ParallelTable storeableTable = new ParallelTable(this, file.getName(), dbPath, sign, lock);
+                ParallelTable storeableTable = new ParallelTable(this, file.getName(), dbPath, sign);
                 tables.put(file.getName(), storeableTable);
             }
         }
@@ -114,7 +114,7 @@ public class ParallelTableProvider implements TableProvider {
                     new ru.fizteh.fivt.students.alexpodkin.Storeable.Writer().
                             writeWord(dataOutputStream, sign.getName());
                 }
-                ParallelTable table = new ParallelTable(this, name, dbPath, columnTypes, lock);
+                ParallelTable table = new ParallelTable(this, name, dbPath, columnTypes);
                 tables.put(name, table);
                 return table;
             }
@@ -160,12 +160,6 @@ public class ParallelTableProvider implements TableProvider {
         for (int i = 0; i < table.getColumnsCount(); i++) {
             Class element = table.getColumnType(i);
             Class passed = ((StoreableEntry) value).getColumnType(i);
-            String result;
-            if (value.getColumnAt(i) == null) {
-                result = "null";
-            } else {
-                result = value.getColumnAt(i).toString();
-            }
             if (element != passed) {
                 throw new ColumnFormatException("Bad coliumn");
             }
