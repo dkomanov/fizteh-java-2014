@@ -18,7 +18,7 @@ public class SendCommand implements Command {
         String commandToServer = Utils.concatStrings(args, " ");
         state.toServerStream.println(commandToServer);
         try {
-//            Thread.sleep(100);
+            Thread.sleep(100);
             do {
                 String answerFromServer = state.fromServerStream.readLine();
                 state.out.println(answerFromServer);

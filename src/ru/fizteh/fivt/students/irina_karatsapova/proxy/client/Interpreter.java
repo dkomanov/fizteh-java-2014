@@ -26,20 +26,18 @@ public class Interpreter {
     
     public void interactiveMode(InterpreterState state) {
         Scanner inScanner = new Scanner(in);
-        while (true) {
-            out.print("$ ");
-            out.flush();
+        out.print("$ ");
+        out.flush();
+        while (inScanner.hasNextLine()) {
             String input;
-            if (inScanner.hasNextLine()) {
-                input = inScanner.nextLine();
-            } else {
-                break;
-            }
+            input = inScanner.nextLine();
             try {
                 batchMode(state, input);
             } catch (Exception e) {
                 out.println(e.getMessage());
             }
+            out.print("$ ");
+            out.flush();
         }
     }
     

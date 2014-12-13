@@ -35,6 +35,16 @@ public class ClentMain {
             }
         });
 
-        interpreter.interactiveMode(state);
+        if (args.length == 0) {
+            interpreter.interactiveMode(state);
+        } else {
+            String wholeArgument = Utils.concatStrings(args, " ");
+            try {
+                interpreter.batchMode(state, wholeArgument);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                System.exit(1);
+            }
+        }
     }
 }

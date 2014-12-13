@@ -27,7 +27,7 @@ public class StartCommand implements Command {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
-            state.out.println("not started: wrong port number");
+            state.out.println("not started: wrong port number or it is already busy");
             return;
         }
 
