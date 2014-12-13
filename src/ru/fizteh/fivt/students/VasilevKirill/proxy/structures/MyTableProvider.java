@@ -42,6 +42,9 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
         closedTables = new HashSet<>();
         providerLock = new ReentrantReadWriteLock();
         File[] tableDirectories = new File(workingDirectory).listFiles();
+        if (tableDirectories == null) {
+            return;
+        }
         for (File it : tableDirectories) {
             File signatures = new File(it.getCanonicalPath() + File.separator + "signature.tsv");
             if (!signatures.exists()) {
@@ -65,8 +68,7 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
         if (closedTables.contains(name)) {
             providerLock.readLock().unlock();
             try {
-                Table retValue = new MyTable(new File(workingDirectory + File.separator + name), this, new Class[0]);
-                return retValue;
+                return new MyTable(new File(workingDirectory + File.separator + name), this, new Class[0]);
             } catch (IOException e) {
                 return null;
             }
@@ -101,7 +103,7 @@ public class MyTableProvider implements TableProvider, AutoCloseable {
             tables.put(name, new SharedMyTable(retTable));
             return retTable;
         } catch (IOException e) {
-            if (e.getMessage().substring(0, 5).equals("Can't")) {
+            if (e.getMessage().startsWith("Can't")) {
                 throw new IllegalArgumentException();
             }
         } finally {

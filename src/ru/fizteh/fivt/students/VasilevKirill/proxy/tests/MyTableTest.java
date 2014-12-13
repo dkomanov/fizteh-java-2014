@@ -26,7 +26,6 @@ public class MyTableTest {
     @BeforeClass
     public static void beforeClass() {
         try {
-            //path = new File("").getCanonicalPath();
             path = Files.createTempDirectory("database").toString();
             multiMap = new MyTableProviderFactory().create(path);
             typeList = new ArrayList<>();
@@ -62,9 +61,9 @@ public class MyTableTest {
         Table table = multiMap.getTable("First");
         try {
             table.put(null, null);
-            assertFalse(true);
+            fail();
         } catch (IllegalArgumentException e) {
-            assertFalse(false);
+            //Всё хорошо
         }
         Storeable input = new MyStorable(typeList);
         input.setColumnAt(0, 1);
@@ -81,9 +80,9 @@ public class MyTableTest {
         Table table = multiMap.getTable("First");
         try {
             table.remove(null);
-            assertFalse(true);
+            fail();
         } catch (IllegalArgumentException e) {
-            assertFalse(false);
+            //Всё хорошо
         }
         Storeable input = new MyStorable(typeList);
         input.setColumnAt(0, 1);
@@ -146,9 +145,9 @@ public class MyTableTest {
         Table table = multiMap.getTable("First");
         try {
             table.getColumnType(3);
-            assertFalse(true);
+            fail();
         } catch (IndexOutOfBoundsException e) {
-            assertFalse(false);
+            //Всё хорошо
         }
         assertEquals(Integer.class, table.getColumnType(0));
     }
@@ -160,7 +159,7 @@ public class MyTableTest {
         try {
             table.get("key");
         } catch (IllegalStateException e) {
-            assertTrue(false);
+            fail();
         }
         MyTable myTable = null;
         if (table instanceof MyTable) {
@@ -170,9 +169,9 @@ public class MyTableTest {
         myTable.close();
         try {
             table.get("key");
-            assertTrue(false);
+            fail();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
     }
 }
