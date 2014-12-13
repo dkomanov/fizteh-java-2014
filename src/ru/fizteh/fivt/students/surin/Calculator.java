@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.surin;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Calculator {
@@ -136,7 +137,10 @@ public class Calculator {
         if (args.length != 1) {
             System.exit(2);
         }
-        System.out.print((new Calculator()).run(args[0]));
+        //PrintWriter outp = new PrintWriter(System.out);
+        //outp.print((new Calculator()).run(args[0]));
+        //outp.close();
+        System.out.format("%f", (new Calculator()).run(args[0]));
     }
 
     @FunctionalInterface
