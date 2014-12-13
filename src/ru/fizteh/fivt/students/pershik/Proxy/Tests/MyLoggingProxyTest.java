@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.pershik.Proxy.Tests;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,7 +35,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void timestampTest() {
+    public void timestampTest() throws JSONException {
         obj.noArgumentsMethod();
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
@@ -42,7 +43,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void classTest() {
+    public void classTest() throws JSONException {
         obj.noArgumentsMethod();
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
@@ -51,7 +52,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void methodTest() {
+    public void methodTest() throws JSONException {
         obj.noArgumentsMethod();
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
@@ -59,7 +60,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void noArgumentsMethodTest() {
+    public void noArgumentsMethodTest() throws JSONException {
         obj.noArgumentsMethod();
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
@@ -68,7 +69,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void nullArgumentMethodTest() {
+    public void nullArgumentMethodTest() throws JSONException {
         obj.integerArgumentMethod(null);
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
@@ -78,7 +79,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void integerArgumentMethodTest() {
+    public void integerArgumentMethodTest() throws JSONException {
         Integer value = 2;
         obj.integerArgumentMethod(value);
         String log = writer.toString();
@@ -89,7 +90,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void listArgumentMethodTest() {
+    public void listArgumentMethodTest() throws JSONException {
         List<Object> list = new ArrayList<>();
         int sz = 3;
         Integer[] value = new Integer[sz];
@@ -110,7 +111,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void cyclicListArgumentMethodTest() {
+    public void cyclicListArgumentMethodTest() throws JSONException {
         List<Object> firstList = new ArrayList<>();
         List<Object> secondList = new ArrayList<>();
 
@@ -133,7 +134,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void twoArgumentsTest() {
+    public void twoArgumentsTest() throws JSONException {
         String str1 = "str1";
         String str2 = "str2";
         obj.twoStringArgumentMethod(str1, str2);
@@ -146,7 +147,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test(expected = IOException.class)
-    public void exceptionTest() throws IOException {
+    public void exceptionTest() throws IOException, JSONException {
         try {
             obj.iOExceptionHiMethod();
         } catch (Exception e) {
@@ -159,7 +160,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void noExceptionTest() {
+    public void noExceptionTest() throws JSONException {
         obj.noArgumentsMethod();
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
@@ -167,7 +168,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void voidReturningMethodTest() {
+    public void voidReturningMethodTest() throws JSONException {
         obj.voidReturningMethod();
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
@@ -175,7 +176,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void zeroReturningMethodTest() {
+    public void zeroReturningMethodTest() throws JSONException {
         obj.zeroReturningMethod();
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
@@ -184,7 +185,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void nullReturningMethodTest() {
+    public void nullReturningMethodTest() throws JSONException {
         obj.nullReturningMethod();
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
@@ -193,7 +194,7 @@ public class MyLoggingProxyTest {
     }
 
     @Test
-    public void cyclicListReturningMethodTest() {
+    public void cyclicListReturningMethodTest() throws JSONException {
         obj.cyclicListReturningMethod();
         String log = writer.toString();
         JSONObject jsonObject = new JSONObject(log);
