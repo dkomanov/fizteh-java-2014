@@ -19,8 +19,6 @@ public class ClentMain {
 
     public static void start(String[] args) throws IOException {
 
-        System.out.println("Welcome to Client side");
-
         InetAddress connectingIp = InetAddress.getLoopbackAddress();
         if (args.length != 0) {
             connectingIp = InetAddress.getByName(args[0]);
