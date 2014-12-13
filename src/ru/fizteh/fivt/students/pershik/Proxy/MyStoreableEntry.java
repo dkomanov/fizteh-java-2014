@@ -4,7 +4,6 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.pershik.Storeable.StoreableEntry;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -17,9 +16,9 @@ public class MyStoreableEntry extends StoreableEntry implements Storeable {
 
     @Override
     public String toString() {
-        return "MyStoreableEntry" +
-                this.list.stream().map(
-                        (o) -> o == null?"":o.toString()).
+        return "MyStoreableEntry"
+                + this.list.stream().map(
+                        (object) -> object == null ? "" : object.toString()).
                         collect(Collectors.joining(",", "[", "]"));
     }
 }
