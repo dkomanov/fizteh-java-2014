@@ -21,9 +21,9 @@ public class CommandGetDistribute extends CommandTableProviderExtended {
             output.println("there isn't table \"" + args[1] + "\" on server");
             return false;
         }
-        Storeable value = currentTable.get(args[1]);
+        Storeable value = currentTable.get(args[2]);
         if (value != null) {
-            output.println("found\n" + Serializator.serialize(currentTable, currentTable.get(args[1])));
+            output.println("found\n" + Serializator.serialize(currentTable, value));
         } else {
             output.println("not found");
         }

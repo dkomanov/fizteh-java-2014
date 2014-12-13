@@ -20,7 +20,7 @@ public class CommandRemoveDistribute extends CommandTableProviderExtended {
             output.println("there isn't table \"" + args[1] + "\" on server");
             return false;
         }
-        Storeable value = currentTable.remove(args[1]);
+        Storeable value = currentTable.remove(args[2]);
         if (value != null) {
             output.println("removed");
         } else {

@@ -40,9 +40,6 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
             throw new IllegalStateException(numberOfUncommittedChanges + " unsaved changes");
         }
         getTable("simple"); //load current state on server
-        for (String oneTable : tables.keySet()) {
-            System.err.println(oneTable);
-        }
         if (tables.containsKey(name)) {
             currentTable = tables.get(name);
         } else {

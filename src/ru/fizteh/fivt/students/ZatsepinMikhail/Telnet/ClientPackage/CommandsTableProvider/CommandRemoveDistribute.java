@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsTableProvider;
 
+import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProvider;
@@ -19,7 +20,13 @@ public class CommandRemoveDistribute extends CommandTableProviderExtended {
             System.out.println("no table");
             return true;
         }
-        System.out.println(currentTable.remove(args[1]));
+        Storeable value = currentTable.remove(args[1]);
+        if (value != null) {
+            System.out.println("removed");
+            System.out.println(currentTable.get(args[1]));
+        } else {
+            System.out.println("not found");
+        }
         return true;
     }
 }

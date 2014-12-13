@@ -22,9 +22,9 @@ public class CommandPutDistribute extends CommandTableProviderExtended {
             output.println("there isn't table \"" + args[1] + "\" on server");
             return false;
         }
-        Storeable oldValue = currentTable.get(args[1]);
+        Storeable oldValue = currentTable.get(args[2]);
         try {
-            currentTable.put(args[1], Serializator.deserialize(currentTable, args[2]));
+            currentTable.put(args[2], Serializator.deserialize(currentTable, args[3]));
         } catch (ParseException e) {
             output.println("wrong type (" + e.getMessage() + ")");
             return false;

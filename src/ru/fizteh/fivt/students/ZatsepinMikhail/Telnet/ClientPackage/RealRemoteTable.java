@@ -39,7 +39,7 @@ public class RealRemoteTable implements Table, Closeable {
         if (key == null || value == null) {
             throw new IllegalArgumentException("null argument");
         }
-        outputStream.println("put " + key + " " + Serializator.serialize(this, value));
+        outputStream.println("put " + name + " " + key + " " + Serializator.serialize(this, value));
         String message = inputStream.nextLine();
         if ("new".equals(message)) {
             return null;
@@ -58,8 +58,9 @@ public class RealRemoteTable implements Table, Closeable {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        outputStream.println("get " + key);
+        outputStream.println("get " + name + " " + key);
         String message = inputStream.nextLine();
+        System.err.println("in client: " + message);
         if ("found".equals(message)) {
             String value = inputStream.nextLine();
             try {
@@ -77,7 +78,7 @@ public class RealRemoteTable implements Table, Closeable {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        outputStream.println("remove " + key);
+        outputStream.println("remove " + name + " " + key);
         String message = inputStream.nextLine();
         if ("not found".equals(message)) {
             return null;
@@ -93,7 +94,7 @@ public class RealRemoteTable implements Table, Closeable {
 
     @Override
     public int size() {
-        outputStream.println("size");
+        outputStream.println("size " + name);
         return Integer.parseInt(inputStream.nextLine());
     }
 
@@ -101,7 +102,6 @@ public class RealRemoteTable implements Table, Closeable {
     public List<String> list() {
         outputStream.println("list " + name);
         String answerFromServer = inputStream.nextLine();
-        System.err.println(answerFromServer);
         String[] parsedKeys = answerFromServer.split(", ");
         List<String> result = new ArrayList<String>();
         for (String oneKey : parsedKeys) {
@@ -112,13 +112,13 @@ public class RealRemoteTable implements Table, Closeable {
 
     @Override
     public int commit() throws IOException {
-        outputStream.println("commit");
+        outputStream.println("commit " + name);
         return Integer.parseInt(inputStream.nextLine());
     }
 
     @Override
     public int rollback() {
-        outputStream.println("rollback");
+        outputStream.println("rollback " + name);
         return Integer.parseInt(inputStream.nextLine());
     }
 
