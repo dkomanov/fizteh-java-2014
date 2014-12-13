@@ -24,8 +24,8 @@ public class Main {
     public static void main(String[] args) {
         int exitStatus = 0;
         try {
-            System.setProperty(DB_LOCATION_PROPERTY,
-             "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test");
+//            System.setProperty(DB_LOCATION_PROPERTY,
+//             "/home/sautin1/IdeaProjects/MIPTProjects/src/ru/fizteh/fivt/students/sautin1/test");
             String filePathString = System.getProperty(DB_LOCATION_PROPERTY);
             if (filePathString == null) {
                 throw new IllegalArgumentException("No system property \'" + DB_LOCATION_PROPERTY + "\' found");
