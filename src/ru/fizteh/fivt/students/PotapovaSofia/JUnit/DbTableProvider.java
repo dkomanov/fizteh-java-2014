@@ -48,16 +48,9 @@ public class DbTableProvider implements TableProvider {
     @Override
     public Table getTable(String name) {
         Utils.checkOnNull(name, "Table name is null");
-        /*
-        if (name == null) {
-            throw new IllegalArgumentException("Table name is null");
-        }
-        */
+        Utils.checkTableName(name);
         try {
             dbPath.resolve(name);
-            if (name.matches(".*[\\\\/\\.]+.*")) {
-                throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
-            }
             return tables.get(name);
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException("Illegal table name: " + e.getMessage(), e);
@@ -67,15 +60,8 @@ public class DbTableProvider implements TableProvider {
     @Override
     public Table createTable(String name) {
         Utils.checkOnNull(name, "Table name is null");
-        /*
-        if (name == null) {
-            throw new IllegalArgumentException("Table name is null");
-        }
-        */
+        Utils.checkTableName(name);
         try {
-            if (name.matches(".*[\\\\/\\.]+.*")) {
-                throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
-            }
             if (tables.get(name) != null) {
                 return null;
             }
@@ -92,15 +78,8 @@ public class DbTableProvider implements TableProvider {
     @Override
     public void removeTable(String name) {
         Utils.checkOnNull(name, "Table name is null");
-        /*
-        if (name == null) {
-            throw new IllegalArgumentException("Table name is null");
-        }
-        */
+        Utils.checkTableName(name);
         try {
-            if (name.matches(".*[\\\\/\\.]+.*")) {
-                throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
-            }
             Path tableDir = dbPath.resolve(name);
             Table removedTable = tables.remove(name);
             if (removedTable == null) {
@@ -111,8 +90,7 @@ public class DbTableProvider implements TableProvider {
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException("Illegal table name: " + e.getMessage(), e);
         } catch (IOException e) {
-            throw new RuntimeException("Table can't be removed from disk: "
-                    + e.getMessage(), e);
+            throw new RuntimeException("Table can't be removed from disk: " + e.getMessage(), e);
         }
     }
 

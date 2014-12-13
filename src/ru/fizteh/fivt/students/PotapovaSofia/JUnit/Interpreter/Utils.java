@@ -1,10 +1,7 @@
 package ru.fizteh.fivt.students.PotapovaSofia.JUnit.Interpreter;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+    static final String ILLEGAL_TABLE_NAME_PATTERN = ".*[\\\\/\\.]+.*";
+
     public static void interpreterError(String errorMessage) {
         System.out.println(errorMessage);
     }
@@ -48,15 +47,18 @@ public class Utils {
                         Files.delete(dir);
                         return FileVisitResult.CONTINUE;
                     } else {
-                            /*
-                             * Directory iteration failed.
-                              */
                         throw e;
                     }
                 }
             });
         } catch (IOException | SecurityException e) {
             throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public static void checkTableName(String name) {
+        if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
+            throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
         }
     }
 }

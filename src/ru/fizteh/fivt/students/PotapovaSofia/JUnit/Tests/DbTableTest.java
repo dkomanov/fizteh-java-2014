@@ -36,13 +36,13 @@ public class DbTableTest {
         if (!testFolder.toFile().exists()) {
             Files.createDirectory(testFolder);
         }
+        if (!tableDirectoryPath.toFile().exists()) {
+            Files.createDirectory(tableDirectoryPath);
+        }
     }
 
     @Test(expected = RuntimeException.class)
     public final void testOnCreatedFromDirectoryWithNonDirectories() throws IOException {
-        if (!tableDirectoryPath.toFile().exists()) {
-            Files.createDirectory(tableDirectoryPath);
-        }
         Path newFilePath = tableDirectoryPath.resolve(testFile);
         if (!newFilePath.toFile().exists()) {
             newFilePath.toFile().createNewFile();
@@ -57,7 +57,6 @@ public class DbTableTest {
 
     @Test(expected = RuntimeException.class)
     public final void testOnCreatedFromDirWithWrongSubdirectories() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Path newDir = tableDirectoryPath.resolve("subdirectory");
         Files.createDirectory(newDir);
         new DbTable(tableDirectoryPath, tableName);
@@ -65,7 +64,6 @@ public class DbTableTest {
 
     @Test(expected = RuntimeException.class)
     public final void testOnCreatedFromDirWithEmptySubdirs() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Path newDir = tableDirectoryPath.resolve(validDir);
         Files.createDirectory(newDir);
         new DbTable(tableDirectoryPath, tableName);
@@ -73,7 +71,6 @@ public class DbTableTest {
 
     @Test(expected = RuntimeException.class)
     public final void testOnCreatedFromDirWithSubdirsWithWrongFiles() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Path newDir = tableDirectoryPath.resolve(validDir);
         Files.createDirectory(newDir);
         Path newFilePath = newDir.resolve(testFile);
@@ -83,21 +80,18 @@ public class DbTableTest {
 
     @Test
     public final void testGetReturnsNullIfKeyIsNotFound() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(testFolder.resolve(tableName), tableName);
         assertNull(test.get(testKey1));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public final void testGetThrowsIllegalArgumentExceptionCalledForNullKey() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         test.get(null);
     }
 
     @Test
     public final void testGetCalledForNonComittedKey() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.get(testKey1));
@@ -105,7 +99,6 @@ public class DbTableTest {
 
     @Test
     public final void testGetCalledForComittedKey() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
@@ -114,7 +107,6 @@ public class DbTableTest {
 
     @Test
     public final void testGetCalledForDeletedKeyBeforeCommit() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.remove(testKey1));
@@ -124,28 +116,24 @@ public class DbTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public final void testPutThrowsIllegalArgumentExceptionCalledForNullKey() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         test.put(null, testValue1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public final void testPutThrowsExceptionCalledForNullValue() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         DbTable test = new DbTable(tableDirectoryPath, tableName);
         test.put(testKey1, null);
     }
 
     @Test
     public final void testPutReturnsNullIfKeyHasNotBeenWrittenYet() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         DbTable test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
     }
 
     @Test
     public final void testPutReturnsOldValueIfKeyExists() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         test.put(testKey1, testValue1);
         assertEquals(testValue1, test.put(testKey1, testValue2));
@@ -153,21 +141,18 @@ public class DbTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public final void testRemoveThrowsExceptionCalledForNullKey() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         test.remove(null);
     }
 
     @Test
     public final void testRemoveReturnsNullIfKeyIsNotFound() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.remove(testKey1));
     }
 
     @Test
     public final void testRemoveCalledForDeletedKeyBeforeCommit() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.remove(testKey1));
@@ -176,7 +161,6 @@ public class DbTableTest {
 
     @Test
     public final void testRemoveCalledForDeletedKeyAfterCommit() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.remove(testKey1));
@@ -186,7 +170,6 @@ public class DbTableTest {
 
     @Test
     public final void testCommitCreatesRealFileOnTheDisk() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
@@ -201,7 +184,6 @@ public class DbTableTest {
 
     @Test
     public final void testCommitOverwritesCommitedKey() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
@@ -212,7 +194,6 @@ public class DbTableTest {
 
     @Test
     public final void testCommitRemovesExistentKeyAfterCommit() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
@@ -223,7 +204,6 @@ public class DbTableTest {
 
     @Test
     public final void testCommitEmptiedAfterLoadingTable() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         test.commit();
@@ -240,7 +220,6 @@ public class DbTableTest {
 
     @Test
     public final void testCommitReturnsNonZeroChangesPuttingNewRecord() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(1, test.commit());
@@ -248,7 +227,6 @@ public class DbTableTest {
 
     @Test
     public final void testCommitReturnsNotZeroChangesRewriting() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(testValue1, test.put(testKey1, testValue2));
@@ -257,7 +235,6 @@ public class DbTableTest {
 
     @Test
     public final void testCommitNoChanges() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertEquals(1, test.commit());
@@ -266,7 +243,6 @@ public class DbTableTest {
 
     @Test
     public final void testRollbackAfterPuttingNewKey() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertEquals(0, test.size());
         assertNull(test.put(testKey1, testValue1));
@@ -278,7 +254,6 @@ public class DbTableTest {
 
     @Test
     public final void testRollbackNoChanges() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         test.rollback();
@@ -288,14 +263,12 @@ public class DbTableTest {
 
     @Test
     public final void testListCalledForEmptyTable() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertTrue(test.list().isEmpty());
     }
 
     @Test
     public final void testListCalledForNonEmptyNewTable() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
@@ -309,7 +282,6 @@ public class DbTableTest {
 
     @Test
     public final void testListCalledForNonEmptyCommitedTable() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
@@ -324,7 +296,6 @@ public class DbTableTest {
 
     @Test
     public final void testSizeCalledForNonEmptyNonCommitedTable() throws IOException {
-        Files.createDirectory(tableDirectoryPath);
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
@@ -333,9 +304,7 @@ public class DbTableTest {
     }
 
     @Test
-    public final void testSizeCalledForNonEmptyCommitedTable()
-            throws IOException {
-        Files.createDirectory(tableDirectoryPath);
+    public final void testSizeCalledForNonEmptyCommitedTable() throws IOException {
         Table test = new DbTable(tableDirectoryPath, tableName);
         assertNull(test.put(testKey1, testValue1));
         assertNull(test.put(testKey2, testValue2));
