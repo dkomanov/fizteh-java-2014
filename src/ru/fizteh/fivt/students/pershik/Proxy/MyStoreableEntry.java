@@ -4,6 +4,8 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.pershik.Storeable.StoreableEntry;
 
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by pershik on 11/28/14.
@@ -15,21 +17,9 @@ public class MyStoreableEntry extends StoreableEntry implements Storeable {
 
     @Override
     public String toString() {
-        StringBuilder res = new StringBuilder("");
-        res.append(this.getClass().getSimpleName());
-        res.append("[");
-        for (Object object : this.list) {
-            if (object == null) {
-                res.append(",");
-            } else {
-                res.append(object.toString());
-                res.append(",");
-            }
-        }
-        if (res.lastIndexOf(",") == res.length() - 1) {
-            res.deleteCharAt(res.length() - 1);
-        }
-        res.append("]");
-        return res.toString();
+        return "MyStoreableEntry" +
+                this.list.stream().map(
+                        (o) -> o == null?"":o.toString()).
+                        collect(Collectors.joining(",", "[", "]"));
     }
 }

@@ -116,9 +116,7 @@ public class MyLoggingProxy implements InvocationHandler{
 
     private void printJSON(JSONObject jsonObj) {
         try {
-            synchronized (writer) {
-                writer.write(jsonObj.toString());
-            }
+            writer.write(jsonObj.toString());
         } catch (IOException e) {
             // Do nothing
         }

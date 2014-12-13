@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.students.pershik.Proxy.CloseableTableProviderFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -14,6 +15,7 @@ import java.io.IOException;
 public class CloseableTableProviderFactoryTest {
 
     private static CloseableTableProviderFactory factory;
+    public File folder;
 
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
@@ -21,6 +23,7 @@ public class CloseableTableProviderFactoryTest {
     @Before
     public void before() throws IOException {
         factory = new CloseableTableProviderFactory();
+        folder = tmpFolder.newFolder("dbDir");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -30,12 +33,13 @@ public class CloseableTableProviderFactoryTest {
 
     @Test
     public void create() throws IOException {
-        factory.create("dbDir");
+        factory.create(folder.getAbsolutePath());
     }
 
     @Test
     public void createSubDirectory() throws IOException {
-        factory.create("dbDir2/db/db");
+        factory.create(folder.getAbsolutePath() + File.separator + "db"
+                + File.separator + "db");
     }
 
     @Test(expected = IllegalStateException.class)
