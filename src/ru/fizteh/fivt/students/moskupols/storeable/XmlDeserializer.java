@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by moskupols on 03.12.14.
  */
-class XmlDeserializer implements Deserializer {
+public class XmlDeserializer implements Deserializer {
     protected Object readCol(StoreableAtomType expectedType, XMLStreamReader xmlReader)
             throws ParseException, XMLStreamException {
         xmlReader.next();

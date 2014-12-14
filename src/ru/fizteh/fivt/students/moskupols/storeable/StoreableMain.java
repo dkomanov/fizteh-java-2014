@@ -27,7 +27,7 @@ public class StoreableMain {
             System.exit(1);
         }
 
-        final TableProviderFactory providerFactory = new TableProviderFactoryImpl();
+        final TableProviderFactory providerFactory = new StringBackedTableProviderFactory();
         final TableProvider provider;
         try {
             provider = providerFactory.create(dbPath);

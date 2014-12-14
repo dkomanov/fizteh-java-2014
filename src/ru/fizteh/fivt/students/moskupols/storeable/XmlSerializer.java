@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by moskupols on 03.12.14.
  */
-class XmlSerializer implements Serializer {
+public class XmlSerializer implements Serializer {
     @Override
     public String serialize(List<StoreableAtomType> signature, Storeable stor) {
         List<Object> columns = new ArrayList<>(signature.size());

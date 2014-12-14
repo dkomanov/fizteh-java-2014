@@ -15,7 +15,7 @@ public class JUnitMain {
             System.exit(1);
         }
 
-        final MultiFileMapTableProviderFactory providerFactory = new MultiFileMapTableProviderFactory();
+        final KnownDiffTableProviderFactory providerFactory = new MultiFileMapTableProviderFactory();
         final JUnitCommandFactory commandFactory;
         try {
             commandFactory = new JUnitCommandFactory(providerFactory.create(dbPath));

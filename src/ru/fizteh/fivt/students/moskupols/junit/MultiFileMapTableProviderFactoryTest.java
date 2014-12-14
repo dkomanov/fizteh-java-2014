@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class MultiFileMapTableProviderFactoryTest {
 
-    private MultiFileMapTableProviderFactory factory;
+    private KnownDiffTableProviderFactory factory;
 
     @Before
     public void setUp() throws Exception {
