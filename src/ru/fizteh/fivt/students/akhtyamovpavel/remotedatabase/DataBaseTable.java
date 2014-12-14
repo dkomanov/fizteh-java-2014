@@ -25,10 +25,20 @@ public class DataBaseTable implements Table, AutoCloseable {
 
     private Path dataBasePath;
     private String tableName;
+
+    public HashMap<String, Storeable> getTempData() {
+        return tempData;
+    }
+
     private HashMap<String, Storeable> tempData = new HashMap<>();
     private ReentrantReadWriteLock lock;
     private ThreadLocal<DataBaseTableDiff> diff;
     private boolean closed = false;
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
     private int version = 0;
     private TableRowSerializer serializer;
     private ArrayList<Class<?>> signature = new ArrayList<>();
