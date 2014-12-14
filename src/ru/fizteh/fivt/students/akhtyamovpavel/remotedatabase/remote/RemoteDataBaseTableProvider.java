@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by akhtyamovpavel on 07.12.14.
@@ -112,13 +111,13 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
 
 
 
-    public String startServer() throws IOException, ExecutionException, InterruptedException {
+    public String startServer() throws IOException {
         return startServer(10001);
     }
 
 
 
-    public String startServer(int port) throws IOException, ExecutionException, InterruptedException {
+    public String startServer(int port) throws IOException {
         if (guested) {
             throw new IOException("not started: client mode is on");
         }

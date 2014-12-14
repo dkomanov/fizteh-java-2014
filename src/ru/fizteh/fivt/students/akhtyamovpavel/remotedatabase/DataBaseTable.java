@@ -23,17 +23,17 @@ public class DataBaseTable implements Table, AutoCloseable {
     public static final int NUMBER_OF_FILES = 16;
     public static final int NUMBER_OF_DIRECTORIES = 16;
 
-    Path dataBasePath;
-    String tableName;
-    HashMap<String, Storeable> tempData = new HashMap<>();
-    ReentrantReadWriteLock lock;
-    ThreadLocal<DataBaseTableDiff> diff;
-    boolean closed = false;
-    int version = 0;
+    private Path dataBasePath;
+    private String tableName;
+    private HashMap<String, Storeable> tempData = new HashMap<>();
+    private ReentrantReadWriteLock lock;
+    private ThreadLocal<DataBaseTableDiff> diff;
+    private boolean closed = false;
+    private int version = 0;
     private TableRowSerializer serializer;
     private ArrayList<Class<?>> signature = new ArrayList<>();
 
-    public void isClosed() throws IllegalStateException {
+    public void checkClosed() throws IllegalStateException {
         if (closed) {
             throw new IllegalStateException("table " + tableName + " is closed");
         }
@@ -44,11 +44,11 @@ public class DataBaseTable implements Table, AutoCloseable {
                          TableRowSerializer serializer,
                          ReentrantReadWriteLock lock) throws Exception {
         dataBasePath = Paths.get(path.toString(), tableName);
-
-        this.tableName = tableName;
-        this.serializer = serializer;
         this.lock = lock;
         this.lock.readLock().lock();
+        this.tableName = tableName;
+        this.serializer = serializer;
+
         try {
             readSignature();
             loadMap();
@@ -70,11 +70,12 @@ public class DataBaseTable implements Table, AutoCloseable {
                          ReentrantReadWriteLock lock) throws Exception {
         dataBasePath = Paths.get(path.toString(), tableName);
 
+        this.lock = lock;
+        this.lock.writeLock().lock();
         this.tableName = tableName;
         this.serializer = serializer;
         this.signature = new ArrayList<>(signature);
-        this.lock = lock;
-        this.lock.writeLock().lock();
+
         diff = new ThreadLocal<DataBaseTableDiff>() {
             @Override
             protected DataBaseTableDiff initialValue() {
@@ -90,13 +91,12 @@ public class DataBaseTable implements Table, AutoCloseable {
     }
 
     private void writeSignature() throws IOException {
-        PrintWriter out = new PrintWriter(dataBasePath.resolve("signature.tsv").toString());
-
-        for (Class<?> type : signature) {
-            out.print(TableRowSerializer.classToString(type));
-            out.print(" ");
+        try (PrintWriter out = new PrintWriter(dataBasePath.resolve("signature.tsv").toString())) {
+            for (Class<?> type : signature) {
+                out.print(TableRowSerializer.classToString(type));
+                out.print(" ");
+            }
         }
-        out.close();
     }
 
     private void readSignature() throws IOException {
@@ -218,7 +218,7 @@ public class DataBaseTable implements Table, AutoCloseable {
     }
 
     private void clearGarbage() throws Exception {
-        isClosed();
+        checkClosed();
         String[] filesList = dataBasePath.toFile().list();
         for (String fileName : filesList) {
             if (!fileName.equals("signature.tsv")) {
@@ -232,13 +232,13 @@ public class DataBaseTable implements Table, AutoCloseable {
 
     @Override
     public String getName() {
-        isClosed();
+        checkClosed();
         return tableName;
     }
 
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
-        isClosed();
+        checkClosed();
         if (key == null || value == null) {
             throw new IllegalArgumentException("null key or value");
         }
@@ -247,7 +247,7 @@ public class DataBaseTable implements Table, AutoCloseable {
 
     @Override
     public Storeable get(String key) {
-        isClosed();
+        checkClosed();
         if (key == null) {
             throw new IllegalArgumentException("null key");
         }
@@ -257,7 +257,7 @@ public class DataBaseTable implements Table, AutoCloseable {
 
     @Override
     public Storeable remove(String key) {
-        isClosed();
+        checkClosed();
         if (key == null) {
             throw new IllegalArgumentException("null key");
         }
@@ -266,13 +266,13 @@ public class DataBaseTable implements Table, AutoCloseable {
 
     @Override
     public int size() {
-        isClosed();
+        checkClosed();
         return tempData.size() + diff.get().addMap.size() - diff.get().deleteMap.size();
     }
 
     @Override
     public int commit() throws IOException {
-        isClosed();
+        checkClosed();
         int changes = diff.get().changesSize();
         diff.get().commit();
         diff.get().clearDiff();
@@ -281,7 +281,7 @@ public class DataBaseTable implements Table, AutoCloseable {
 
     @Override
     public int rollback() {
-        isClosed();
+        checkClosed();
         int changes = diff.get().changesSize();
         diff.get().clearDiff();
         return changes;
@@ -290,19 +290,19 @@ public class DataBaseTable implements Table, AutoCloseable {
 
     @Override
     public int getColumnsCount() {
-        isClosed();
+        checkClosed();
         return signature.size();
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        isClosed();
+        checkClosed();
         return signature.get(columnIndex);
     }
 
     @Override
     public List<String> list() throws IllegalStateException {
-        isClosed();
+        checkClosed();
         ArrayList<String> nameList = new ArrayList<>();
         for (String currentKey : tempData.keySet()) {
             nameList.add(currentKey);
@@ -320,18 +320,18 @@ public class DataBaseTable implements Table, AutoCloseable {
 
 
     public boolean containsKey(String key) {
-        isClosed();
+        checkClosed();
         return tempData.containsKey(key);
     }
 
     public boolean hasUnsavedChanges() {
-        isClosed();
+        checkClosed();
         return diff.get().changesSize() > 0;
     }
 
     @Override
     public int getNumberOfUncommittedChanges() {
-        isClosed();
+        checkClosed();
         return diff.get().changesSize();
     }
 

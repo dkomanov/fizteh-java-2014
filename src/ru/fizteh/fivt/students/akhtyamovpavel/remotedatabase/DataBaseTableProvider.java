@@ -37,7 +37,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
     ReentrantReadWriteLock providerLock = new ReentrantReadWriteLock(true);
     HashMap<String, ReentrantReadWriteLock> tableLocks = new HashMap<>();
 
-    void isClosed() throws IllegalStateException {
+    void checkClosed() throws IllegalStateException {
         if (closed) {
             throw new IllegalStateException("database is closed");
         }
@@ -160,34 +160,34 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
 
 
     public Path getDataBaseDirectory() {
-        isClosed();
+        checkClosed();
         return dataBaseDirectory;
     }
 
     public void setFileMap(DataBaseTable fileMap) {
-        isClosed();
+        checkClosed();
         this.fileMap = fileMap;
     }
 
 
     public DataBaseTable getOpenedTable() {
-        isClosed();
+        checkClosed();
         return fileMap;
     }
 
     public String getOpenedTableName() {
-        isClosed();
+        checkClosed();
         return openedTableName;
     }
 
     public void setOpenedTableName(String openedTableName) {
-        isClosed();
+        checkClosed();
         this.openedTableName = openedTableName;
     }
 
     @Override
     public Table getTable(String name) throws IllegalArgumentException {
-        isClosed();
+        checkClosed();
         boolean isClosedCurrentMap = false;
         if (name == null) {
             throw new IllegalArgumentException("null table name");
@@ -195,7 +195,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
         providerLock.readLock().lock();
         try {
             if (fileMap != null) {
-                fileMap.isClosed();
+                fileMap.checkClosed();
             }
             if (name.equals(openedTableName)) {
                 return fileMap;
@@ -214,7 +214,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
             try {
                 if (fileMap != null) {
                     try {
-                        fileMap.isClosed();
+                        fileMap.checkClosed();
                     } catch (IllegalStateException e) {
                         isClosedCurrentMap = true;
                     }
@@ -226,7 +226,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
                     }
                     fileMap = tables.get(name);
                     try {
-                        fileMap.isClosed();
+                        fileMap.checkClosed();
                     } catch (IllegalStateException e) {
                         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
                     }
@@ -261,7 +261,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        isClosed();
+        checkClosed();
         if (name == null || columnTypes == null || columnTypes.isEmpty()) {
             throw new IllegalArgumentException("null table name");
         }
@@ -290,7 +290,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
     }
 
     public String onExistCheck(String name, boolean existMode) {
-        isClosed();
+        checkClosed();
         Path newPath = Paths.get(getDataBaseDirectory().toString(), name);
         if (!Files.exists(newPath) && existMode) {
             return name + " not exists";
@@ -304,7 +304,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public void removeTable(String name) throws IllegalArgumentException, IllegalStateException {
-        isClosed();
+        checkClosed();
         if (name == null) {
             throw new IllegalArgumentException("null table name");
         }
@@ -337,26 +337,26 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        isClosed();
+        checkClosed();
         return serializer.deserialize(table, value);
     }
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        isClosed();
+        checkClosed();
         return serializer.serialize(table, value);
     }
 
     @Override
     public Storeable createFor(Table table) {
-        isClosed();
+        checkClosed();
         List<Object> values = new ArrayList<>(table.getColumnsCount());
         return new TableRow(values);
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-        isClosed();
+        checkClosed();
         List<Object> objectValues = new ArrayList<>(values);
 
         for (int i = 0; i < values.size(); ++i) {
@@ -372,7 +372,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
 
     @Override
     public List<String> getTableNames() {
-        isClosed();
+        checkClosed();
         List<String> result = new ArrayList<>();
         for (String currentString: tables.keySet()) {
             result.add(currentString);
@@ -382,7 +382,7 @@ public class DataBaseTableProvider implements AutoCloseable, TableProvider {
     }
 
     public HashMap<String, Integer> getTableList() {
-        isClosed();
+        checkClosed();
         providerLock.readLock().lock();
         try {
             HashMap<String, Integer> tableList = new HashMap<>();
