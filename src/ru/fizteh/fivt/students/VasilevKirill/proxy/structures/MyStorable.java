@@ -1,11 +1,11 @@
 package ru.fizteh.fivt.students.VasilevKirill.proxy.structures;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -13,58 +13,60 @@ import java.util.List;
  * Created by Kirill on 15.11.2014.
  */
 public class MyStorable implements Storeable {
-    Object[] dataList;
-    Class[] typeList;
+    List<Object> dataList;
+    List<Class<?>> typeList;
 
     public MyStorable(Class[] typeList) {
-        this.typeList = typeList;
-        dataList = new Object[typeList.length];
+        this.typeList = Arrays.asList(typeList);
+        dataList = new ArrayList<>(typeList.length);
+        for (int i = 0; i < typeList.length; ++i) {
+            dataList.add(null);
+        }
     }
 
     public MyStorable(List<Class<?>> listOfTypes) {
-        int num = listOfTypes.size();
-        typeList = new Class[num];
-        for (int i = 0; i < num; ++i) {
-            typeList[i] = listOfTypes.get(i);
+        this.typeList = listOfTypes;
+        dataList = new ArrayList<>(typeList.size());
+        for (int i = 0; i < typeList.size(); ++i) {
+            dataList.add(null);
         }
-        dataList = new Object[num];
     }
 
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= typeList.length || columnIndex >= dataList.length) {
+        if (columnIndex < 0 || columnIndex >= typeList.size() || columnIndex >= dataList.size()) {
             throw new IndexOutOfBoundsException("MyStoreable: incorrect index");
         }
         if (value == null) {
-            dataList[columnIndex] = null;
+            dataList.set(columnIndex, null);
             return;
         }
-        if (value.getClass() != typeList[columnIndex]) {
+        if (value.getClass() != typeList.get(columnIndex)) {
             throw new ColumnFormatException("MyStoreable: incorrect column format");
         }
-        dataList[columnIndex] =  value;
+        dataList.set(columnIndex, value);
     }
 
     @Override
     public Object getColumnAt(int columnIndex) throws IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= dataList.length) {
+        if (columnIndex < 0 || columnIndex >= dataList.size()) {
             throw new IndexOutOfBoundsException("MyStoreable: incorrect index");
         }
-        return dataList[columnIndex];
+        return dataList.get(columnIndex);
     }
 
     @Override
     public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= typeList.length || columnIndex >= dataList.length) {
+        if (columnIndex < 0 || columnIndex >= typeList.size() || columnIndex >= dataList.size()) {
             throw new IndexOutOfBoundsException("MyStoreable: incorrect index");
         }
-        if (typeList[columnIndex] != Integer.class) {
+        if (typeList.get(columnIndex) != Integer.class) {
             throw new ColumnFormatException("MyStoreable: incorrect column format");
         }
-        if (dataList[columnIndex] == null) {
+        if (dataList.get(columnIndex) == null) {
             return null;
         }
-        Object result = dataList[columnIndex];
+        Object result = dataList.get(columnIndex);
         if (!(result instanceof Integer)) {
             throw new ColumnFormatException("MyStoreable: error in data");
         }
@@ -73,16 +75,16 @@ public class MyStorable implements Storeable {
 
     @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= typeList.length || columnIndex >= dataList.length) {
+        if (columnIndex < 0 || columnIndex >= typeList.size() || columnIndex >= dataList.size()) {
             throw new IndexOutOfBoundsException("MyStoreable: incorrect index");
         }
-        if (typeList[columnIndex] != Long.class) {
+        if (typeList.get(columnIndex) != Long.class) {
             throw new ColumnFormatException("MyStoreable: incorrect column format");
         }
-        if (dataList[columnIndex] == null) {
+        if (dataList.get(columnIndex) == null) {
             return null;
         }
-        Object result = dataList[columnIndex];
+        Object result = dataList.get(columnIndex);
         if (!(result instanceof Long)) {
             throw new ColumnFormatException("MyStoreable: error in data");
         }
@@ -91,16 +93,16 @@ public class MyStorable implements Storeable {
 
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= typeList.length || columnIndex >= dataList.length) {
+        if (columnIndex < 0 || columnIndex >= typeList.size() || columnIndex >= dataList.size()) {
             throw new IndexOutOfBoundsException("MyStoreable: incorrect index");
         }
-        if (typeList[columnIndex] != Byte.class) {
+        if (typeList.get(columnIndex) != Byte.class) {
             throw new ColumnFormatException("MyStoreable: incorrect column format");
         }
-        if (dataList[columnIndex] == null) {
+        if (dataList.get(columnIndex) == null) {
             return null;
         }
-        Object result = dataList[columnIndex];
+        Object result = dataList.get(columnIndex);
         if (!(result instanceof Byte)) {
             throw new ColumnFormatException("MyStoreable: error in data");
         }
@@ -109,16 +111,16 @@ public class MyStorable implements Storeable {
 
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= typeList.length || columnIndex >= dataList.length) {
+        if (columnIndex < 0 || columnIndex >= typeList.size() || columnIndex >= dataList.size()) {
             throw new IndexOutOfBoundsException("MyStoreable: incorrect index");
         }
-        if (typeList[columnIndex] != Float.class) {
+        if (typeList.get(columnIndex) != Float.class) {
             throw new ColumnFormatException("MyStoreable: incorrect column format");
         }
-        if (dataList[columnIndex] == null) {
+        if (dataList.get(columnIndex) == null) {
             return null;
         }
-        Object result = dataList[columnIndex];
+        Object result = dataList.get(columnIndex);
         if (!(result instanceof Float)) {
             throw new ColumnFormatException("MyStoreable: error in data");
         }
@@ -127,16 +129,16 @@ public class MyStorable implements Storeable {
 
     @Override
     public Double getDoubleAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= typeList.length || columnIndex >= dataList.length) {
+        if (columnIndex < 0 || columnIndex >= typeList.size() || columnIndex >= dataList.size()) {
             throw new IndexOutOfBoundsException("MyStoreable: incorrect index");
         }
-        if (typeList[columnIndex] != Double.class) {
+        if (typeList.get(columnIndex) != Double.class) {
             throw new ColumnFormatException("MyStoreable: incorrect column format");
         }
-        if (dataList[columnIndex] == null) {
+        if (dataList.get(columnIndex) == null) {
             return null;
         }
-        Object result = dataList[columnIndex];
+        Object result = dataList.get(columnIndex);
         if (!(result instanceof Double)) {
             throw new ColumnFormatException("MyStoreable: error in data");
         }
@@ -145,16 +147,16 @@ public class MyStorable implements Storeable {
 
     @Override
     public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= typeList.length || columnIndex >= dataList.length) {
+        if (columnIndex < 0 || columnIndex >= typeList.size() || columnIndex >= dataList.size()) {
             throw new IndexOutOfBoundsException("MyStoreable: incorrect index");
         }
-        if (typeList[columnIndex] != Boolean.class) {
+        if (typeList.get(columnIndex) != Boolean.class) {
             throw new ColumnFormatException("MyStoreable: incorrect column format");
         }
-        if (dataList[columnIndex] == null) {
+        if (dataList.get(columnIndex) == null) {
             return null;
         }
-        Object result = dataList[columnIndex];
+        Object result = dataList.get(columnIndex);
         if (!(result instanceof Boolean)) {
             throw new ColumnFormatException("MyStoreable: error in data");
         }
@@ -163,49 +165,32 @@ public class MyStorable implements Storeable {
 
     @Override
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= typeList.length || columnIndex >= dataList.length) {
+        if (columnIndex < 0 || columnIndex >= typeList.size() || columnIndex >= dataList.size()) {
             throw new IndexOutOfBoundsException("MyStoreable: incorrect index");
         }
-        if (typeList[columnIndex] != String.class) {
+        if (typeList.get(columnIndex) != String.class) {
             throw new ColumnFormatException("MyStoreable: incorrect column format");
         }
-        if (dataList[columnIndex] == null) {
+        if (dataList.get(columnIndex) == null) {
             return null;
         }
-        Object result = dataList[columnIndex];
+        Object result = dataList.get(columnIndex);
         if (!(result instanceof String)) {
             throw new ColumnFormatException("MyStoreable: error in data");
         }
         return result.toString();
     }
 
-    public List<Object> dataToList() {
-        List<Object> result = new ArrayList<>(dataList.length);
-        for (Object it : dataList) {
-            result.add(it);
-        }
+    @Override
+    public String toString() {
+        JSONArray arr = new JSONArray(dataList);
+        String result = arr.toString();
+        result = result.replace("null", "");
         return result;
     }
 
-    @Override
-    public String toString() {
-        try {
-            JSONArray arr = new JSONArray(dataList);
-            String result = arr.toString();
-            result = result.replace("null", "");
-            return result;
-        } catch (JSONException e) {
-            return null;
-        }
-    }
-
     public String toFileFormat() {
-        try {
-            JSONArray arr = new JSONArray(dataList);
-            String result = arr.toString();
-            return arr.toString();
-        } catch (JSONException e) {
-            return null;
-        }
+        JSONArray arr = new JSONArray(dataList);
+        return arr.toString();
     }
 }

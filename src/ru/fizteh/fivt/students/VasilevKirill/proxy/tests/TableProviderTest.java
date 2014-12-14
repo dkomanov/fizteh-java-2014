@@ -22,7 +22,6 @@ public class TableProviderTest {
     @BeforeClass
     public static void beforeClass() {
         try {
-            //path = new File("").getCanonicalPath();
             path = Files.createTempDirectory("database").toString();
             tableProvider = new MyTableProvider(path);
             typeList = new ArrayList<>();
@@ -37,9 +36,9 @@ public class TableProviderTest {
     public void testGetTable() throws Exception {
         try {
             tableProvider.getTable(null);
-            assertTrue(false);
+            fail();
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
         tableProvider.createTable("First", typeList);
         Table table = tableProvider.getTable("First");
@@ -51,9 +50,9 @@ public class TableProviderTest {
     public void testCreateTable() throws Exception {
         try {
             tableProvider.createTable(null, null);
-            assertTrue(false);
+            fail();
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
         assertNotNull(tableProvider.createTable("First", typeList));
         assertNull(tableProvider.createTable("First", typeList));
@@ -64,15 +63,15 @@ public class TableProviderTest {
     public void testRemoveTable() throws Exception {
         try {
             tableProvider.removeTable(null);
-            assertTrue(false);
+            fail();
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
         try {
             tableProvider.removeTable("First");
-            assertTrue(false);
+            fail();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
         tableProvider.createTable("First", typeList);
         assertNotNull(tableProvider.getTable("First"));
@@ -115,9 +114,9 @@ public class TableProviderTest {
         assertNull(stor.getColumnAt(0));
         try {
             assertNull(stor.getColumnAt(2));
-            assertTrue(false);
+            fail();
         } catch (IndexOutOfBoundsException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
         table.remove("First");
     }
@@ -136,23 +135,22 @@ public class TableProviderTest {
         assertEquals("one", stor.getColumnAt(1));
         try {
             assertNull(stor.getColumnAt(2));
-            assertTrue(false);
+            fail();
         } catch (IndexOutOfBoundsException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
         table.remove("First");
     }
 
     @Test
     public void testClose() throws Exception {
-        //MyTableProvider database = new MyTableProvider(new File("").getCanonicalPath());
         MyTableProvider database = new MyTableProvider(Files.createTempDirectory("database").toString());
         database.close();
         try {
             database.getTable("First");
-            assertTrue(false);
+            fail();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
     }
 }

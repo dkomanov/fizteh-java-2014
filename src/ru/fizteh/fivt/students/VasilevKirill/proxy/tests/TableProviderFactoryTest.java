@@ -7,7 +7,7 @@ import ru.fizteh.fivt.students.VasilevKirill.proxy.structures.MyTableProviderFac
 
 import java.nio.file.Files;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TableProviderFactoryTest {
     private static TableProviderFactory factory;
@@ -21,9 +21,9 @@ public class TableProviderFactoryTest {
     public void testCreate() throws Exception {
         try {
             factory.create(null);
-            assertTrue(false);
+            fail();
         } catch (IllegalArgumentException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
     }
 
@@ -32,16 +32,16 @@ public class TableProviderFactoryTest {
         TableProviderFactory factory2 = new MyTableProviderFactory();
         try {
             factory2.create(Files.createTempDirectory("database1").toString());
-            assertTrue(true);
         } catch (IllegalStateException e) {
-            assertTrue(false);
+            fail();
+            //Всё хорошо
         }
         ((MyTableProviderFactory) factory2).close();
         try {
             factory2.create(Files.createTempDirectory("database2").toString());
-            assertTrue(false);
+            fail();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            //Всё хорошо
         }
     }
 }

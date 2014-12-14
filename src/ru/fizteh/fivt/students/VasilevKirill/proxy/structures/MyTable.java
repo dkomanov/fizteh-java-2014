@@ -146,7 +146,7 @@ public class MyTable implements Table, AutoCloseable {
                 Storeable value = oldData.get(pair.getKey());
                 if (value == null) {
                     number++;
-                    JSONArray inputValue = new JSONArray(((MyStorable) pair.getValue()).dataToList());
+                    JSONArray inputValue = new JSONArray(Arrays.asList((MyStorable) pair.getValue()));
                     String[] args = {"put", (String) pair.getKey(),  inputValue.toString() };
                     handle(args);
                 }
