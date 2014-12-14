@@ -102,7 +102,6 @@ public class MyTableProvider implements TableProvider {
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        MySerializer ts = new MySerializer();
         return ts.serialize(table, value);
     }
 
