@@ -15,7 +15,7 @@ public interface DatabaseShellOperationsInterface<Table, Key, Value>
 
     String getActiveTableName();
 
-    void showTables();
+    List<Key> showTables();
 
     List<String> list();
 }

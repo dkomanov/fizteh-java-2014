@@ -5,9 +5,10 @@ import ru.fizteh.fivt.students.SurkovaEkaterina.Telnet.Shell.ACommand;
 import ru.fizteh.fivt.students.SurkovaEkaterina.Telnet.Shell.CommandsParser;
 
 import java.io.PrintStream;
+import java.util.List;
 
 public class CommandShowTables<Table, Key, Value, TableOperations
-        extends DatabaseShellOperationsInterface<Table, Key, Value>>
+        extends DatabaseShellOperationsInterface<Table, String, Value>>
         extends ACommand<TableOperations> {
     public CommandShowTables() {
         super("show", "show tables");
@@ -30,6 +31,9 @@ public class CommandShowTables<Table, Key, Value, TableOperations
                     this.getClass().toString() + ": Unknown command: show " + params);
         }
 
-        ops.showTables();
+        List<String> tables = ops.showTables();
+        for (String s : tables) {
+            out.println(s);
+        }
     }
 }

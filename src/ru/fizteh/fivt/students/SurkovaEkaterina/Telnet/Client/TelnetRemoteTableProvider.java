@@ -37,15 +37,15 @@ class TelnetRemoteTableProvider implements RemoteTableProvider {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         for (TelnetRemoteTable table: providedTables) {
             try {
                 table.close();
+                socket.close();
             } catch (IOException e) {
                 //
             }
         }
-        socket.close();
     }
 
     @Override
@@ -56,18 +56,18 @@ class TelnetRemoteTableProvider implements RemoteTableProvider {
         for (int i = 0; i < numberOfTables; i++) {
             names.add(inputStream.nextLine().split(" ")[0]);
         }
-        System.out.println(names);
         return names;
     }
 
-    void showTables() {
+    public List<String> showTables() {
+        List<String> tables = new ArrayList<>();
         outputStream.println("show tables");
         int numberOfTables = Integer.parseInt(inputStream.nextLine());
-        System.out.println(numberOfTables);
-        for (int i = 0; i < numberOfTables; i++) {
-            String table = inputStream.nextLine().split(" ")[0];
-            System.out.println(table);
+        for (int i = 0; i < numberOfTables; ++i) {
+            String table = inputStream.nextLine();
+            tables.add(table);
         }
+        return tables;
     }
 
     @Override
@@ -112,7 +112,6 @@ class TelnetRemoteTableProvider implements RemoteTableProvider {
         String types = StoreableUsage.concatenateListEntries(columnTypes);
         outputStream.println("create " + name + " (" + types + ")");
         String result = inputStream.nextLine();
-        System.out.println(result);
         if (result.equals("created")) {
             return getTable(name);
         } else {
@@ -127,7 +126,6 @@ class TelnetRemoteTableProvider implements RemoteTableProvider {
         }
         outputStream.println("drop " + name);
         String result = inputStream.nextLine();
-        System.out.println(result);
     }
 
     @Override
@@ -137,7 +135,7 @@ class TelnetRemoteTableProvider implements RemoteTableProvider {
         }
         XmlDeserializer deserializer = new XmlDeserializer(value);
         Storeable result;
-        List<Object> values = new ArrayList<Object>(table.getColumnsCount());
+        List<Object> values = new ArrayList<>(table.getColumnsCount());
 
         for (int index = 0; index < table.getColumnsCount(); ++index) {
             try {
@@ -241,13 +239,9 @@ class TelnetRemoteTableProvider implements RemoteTableProvider {
         }
     }
 
-    public void exit() {
-
-    }
-
     private void checkTableName(String name) {
         if (!name.matches("[0-9A-Za-zА-Яа-я]+")) {
-            throw new IllegalArgumentException(this.getClass().toString() + ": Bad symbol!");
+            throw new IllegalArgumentException(this.getClass().getSimpleName() + ": Bad symbol!");
         }
     }
 

@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.SurkovaEkaterina.Telnet.Client;
 
+import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.SurkovaEkaterina.Telnet.TableSystem.DatabaseTableOperations;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
 
 public class TelnetClient extends DatabaseTableOperations {
     public static final int DEFAULT_PORT = 10001;
@@ -41,6 +43,7 @@ public class TelnetClient extends DatabaseTableOperations {
             inputStream.close();
             outputStream.close();
             socket.close();
+            ((RemoteTableProvider) provider).close();
             state = ClientState.NOT_CONNECTED;
             return 0;
         }
@@ -53,14 +56,14 @@ public class TelnetClient extends DatabaseTableOperations {
     @Override
     public int exit() {
         if (provider != null) {
-            ((TelnetRemoteTableProvider) provider).exit();
+            ((TelnetRemoteTableProvider) provider).close();
         }
         return 0;
     }
 
     @Override
-    public void showTables() {
-        ((TelnetRemoteTableProvider) provider).showTables();
+    public List<String> showTables() {
+        return ((TelnetRemoteTableProvider) provider).showTables();
     }
 
     @Override

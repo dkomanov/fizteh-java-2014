@@ -251,11 +251,13 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
         }
     }
 
-    public void showTables() {
-        System.out.println(tables.size());
+    public List<String> showTables() {
+        List<String> result = new ArrayList<>();
+        result.add(Integer.toString(tables.size()));
         for (final Map.Entry<String, ThreadSafeDatabaseTable> map: tables.entrySet()) {
-            System.out.println(map.getKey() + ' ' + map.getValue().size());
+            result.add(map.getKey() + ' ' + map.getValue().size());
         }
+        return result;
     }
 
     public void exit() throws IOException {
@@ -275,7 +277,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
             BufferedReader reader = new BufferedReader(new FileReader(signatureFile));
             signature = reader.readLine();
         } catch (IOException e) {
-            System.err.println(this.getClass().getSimpleName() + ": Error loading signature file: " + e.getMessage());
+            System.out.println(this.getClass().getSimpleName() + ": Error loading signature file: " + e.getMessage());
             return null;
         }
 

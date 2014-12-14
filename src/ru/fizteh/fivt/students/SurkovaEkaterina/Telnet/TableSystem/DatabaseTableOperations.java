@@ -124,8 +124,8 @@ public class DatabaseTableOperations implements DatabaseShellOperationsInterface
     }
 
     @Override
-    public void showTables() {
-        ((ThreadSafeDatabaseTableProvider) provider).showTables();
+    public List<String> showTables() {
+        return ((ThreadSafeDatabaseTableProvider) provider).showTables();
     }
 
     @Override

@@ -16,7 +16,7 @@ public class CommandSize<Table, Key, Value, FileMapShellOperations
     public void executeCommand(String params, FileMapShellOperations shellState, PrintStream out) {
         String[] parameters = CommandsParser.parseCommandParameters(params);
         if (parameters.length > 1) {
-            throw new IllegalArgumentException(this.getClass().toString() + ": Too many parameters!");
+            throw new IllegalArgumentException(this.getClass().getSimpleName() + ": Too many parameters!");
         }
 
         int size = shellState.size();

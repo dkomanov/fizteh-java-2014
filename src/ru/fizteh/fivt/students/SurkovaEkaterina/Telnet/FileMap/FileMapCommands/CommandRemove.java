@@ -17,14 +17,14 @@ public class CommandRemove<Table, Key, Value, FileMapShellOperations
                                      final FileMapShellOperations operations, PrintStream out) {
         String[] parameters = CommandsParser.parseCommandParameters(params);
         if (parameters.length > 1) {
-            throw new IllegalArgumentException(this.getClass().toString() + ": Too many arguments!");
+            throw new IllegalArgumentException(this.getClass().getSimpleName() + ": Too many arguments!");
         }
         if (parameters.length < 1) {
-            throw new IllegalArgumentException(this.getClass().toString() + ": Not enough arguments!");
+            throw new IllegalArgumentException(this.getClass().getSimpleName() + ": Not enough arguments!");
         }
 
         if (operations.getTable() == null) {
-            out.println(this.getClass().toString() + ": No table!");
+            out.println(this.getClass().getSimpleName() + ": No table!");
             return;
         }
 
