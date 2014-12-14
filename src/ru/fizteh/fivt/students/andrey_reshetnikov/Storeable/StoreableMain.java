@@ -45,28 +45,28 @@ public class StoreableMain {
                 }
             } while (!exitStatus);
         } catch (UnsupportedEncodingException e) {
-            System.out.println("Error: UTF-8 encoding is not supported");
+            System.err.println("Error: UTF-8 encoding is not supported");
             System.exit(1);
         } catch (TwoSameKeysException e) {
-            System.out.println("Two same keys in database file");
+            System.err.println("Two same keys in database file");
             System.exit(1);
         } catch (CannotCreateNewDatabaseFileException e) {
-            System.out.println("Can not create new database file");
+            System.err.println("Can not create new database file");
             System.exit(1);
         } catch (MyDirectoryNotEmptyException e) {
-            System.out.println("Can not remove table directory. Redundant files");
+            System.err.println("Can not remove table directory. Redundant files");
             System.exit(1);
         } catch (CannotDeleteDataBaseFileException e) {
-            System.out.println(e.message);
+            System.err.println(e.message);
             System.exit(1);
         } catch (FileFromDataBaseIsNotDirectoryException e) {
-            System.out.println(e.childName + " from databases directory is not a directory");
+            System.err.println(e.childName + " from databases directory is not a directory");
             System.exit(1);
         } catch (ParentDirectoryIsNotDirectory e) {
-            System.out.println("Specified fizteh.db.dir is not a directory");
+            System.err.println("Specified fizteh.db.dir is not a directory");
             System.exit(1);
         } catch (CannotCreateDirectoryException e) {
-            System.out.println("Can not create working directory");
+            System.err.println("Can not create working directory");
             System.exit(1);
         } catch (Exception e) {
             System.err.println(e.getMessage());
