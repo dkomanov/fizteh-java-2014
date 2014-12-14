@@ -231,8 +231,8 @@ public class TableManagerTest {
                 TestHelper.STRUCTURE));
         assertNotNull(test.createTable(TestHelper.TEST_TABLE_NAME + "2",
                 TestHelper.STRUCTURE));
-        String[] tableNames = { TestHelper.TEST_TABLE_NAME,
-                TestHelper.TEST_TABLE_NAME + "2" };
+        String[] tableNames = {TestHelper.TEST_TABLE_NAME,
+                TestHelper.TEST_TABLE_NAME + "2"};
         assertArrayEquals(tableNames, test.getTableNames().toArray());
         test.close();
     }
