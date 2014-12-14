@@ -62,7 +62,8 @@ public class Ranking {
             try (BufferedWriter write = new BufferedWriter(new FileWriter(withColor))) {
                 String str;
                 while ((str = read.readLine()) != null) {
-                    write.write(str + " " + (int) (Math.random() * 2) + "\n");
+                    int temp = (int) (Math.random() * 2);
+                    write.write(str + " " + temp + "\n");
                 }
             }
         } catch (IOException e) {
@@ -83,29 +84,21 @@ public class Ranking {
         try (BufferedReader firstRead = new BufferedReader(new FileReader(first))) {
             try (BufferedReader secondRead = new BufferedReader(new FileReader(second))) {
                 try (BufferedWriter resWrite = new BufferedWriter(new FileWriter(res))) {
-                    int firstLen = numberOfLines(first);
-                    int secondLen = numberOfLines(second);
-                    int num1 = 0;
-                    int num2 = 0;
                     String str1 = firstRead.readLine();
                     String str2 = secondRead.readLine();
-                    while (num1 != firstLen || num2 != secondLen) {
-                        if (num1 == firstLen) {
-                            str1 = firstRead.readLine();
-                            resWrite.write(str1 + "\n");
-                            num1 ++;
-                        } else if (num2 == secondLen) {
-                            str2 = secondRead.readLine();
+                    while (str1 != null || str2 != null) {
+                        if (str1 == null) {
                             resWrite.write(str2 + "\n");
-                            num2++;
+                            str2 = secondRead.readLine();
+                        } else if (str2 == null) {
+                            resWrite.write(str1 + "\n");
+                            str1 = firstRead.readLine();
                         } else if ((parseInt(str1.split(" ")[ind]) < parseInt(str2.split(" ")[ind]))) {
                             resWrite.write(str1 + "\n");
                             str1 = firstRead.readLine();
-                            num1++;
                         } else {
                             resWrite.write(str2 + "\n");
                             str2 = secondRead.readLine();
-                            num2++;
                         }
                     }
                 }
@@ -134,12 +127,12 @@ public class Ranking {
         try (BufferedReader fileRead = new BufferedReader(new FileReader(file))) {
             try (BufferedWriter firstWrite = new BufferedWriter(new FileWriter(first))) {
                 try (BufferedWriter secondWrite = new BufferedWriter(new FileWriter(second))) {
-                    int i;
-                    for (i = 0; i < lines / 2; i++) {
+                    int i = 0;
+                    for (; i < (lines / 2); i++) {
                         String s = fileRead.readLine();
                         firstWrite.write(s + "\n");
                     }
-                    for (; i < lines / 2; i++) {
+                    for (; i < lines; i++) {
                         String s = fileRead.readLine();
                         secondWrite.write(s + "\n");
                     }
@@ -151,12 +144,10 @@ public class Ranking {
         }
         File first1 = mergeSort(first, ind);
         File second1 = mergeSort(second, ind);
-        File result = merge(first1, second1, ind);
-        return result;
+        return (merge(first1, second1, ind));
     }
 
     File sort(File init) { //сортирует наш список как надо
-        System.out.println(numberOfLines(init));
         if (numberOfLines(init) <= 1) {
             return init;
         }
@@ -164,7 +155,6 @@ public class Ranking {
         File file1 = mergeSort(colored, 0);
         File file2 = mergeSort(colored, 1);
         File next = connect(file2, file1);
-        sort(next);
         next = sort(next);
         return updateRanks(init, next);
     }
@@ -173,8 +163,8 @@ public class Ranking {
         File res = null;
         File temp = null;
         try {
-            res = File.createTempFile("upd_res", ".txt", directory);
-            temp = File.createTempFile("temporary", ".txt", directory);
+            res = File.createTempFile("updateRank", ".txt", directory);
+            temp = File.createTempFile("UpdateTemp", ".txt", directory);
         } catch (IOException e) {
             System.err.println("Some problems with file creation =^.^=");
             System.exit(1);
@@ -189,7 +179,7 @@ public class Ranking {
                         String str2 = secondRead.readLine();
                         while (str1 != null && str2 != null) {
                             String[] strings1 = str1.split(" ");
-                            String[] strings2 = str1.split(" ");
+                            String[] strings2 = str2.split(" ");
                             if (!strings1[0].equals(strings2[0])) {
                                 tempWrite.write(str1 + "\n");
                                 str1 = firstRead.readLine();
@@ -217,20 +207,24 @@ public class Ranking {
                         if (parseInt(strings0[1]) < parseInt(strings2[0])) {
                             resWrite.write(str0 + "\n");
                             str0 = tempRead.readLine();
-                        } else if (parseInt(strings0[1]) > parseInt(strings2[0])) {
+                        } else
+                        if (parseInt(strings0[1]) > parseInt(strings2[0])) {
                             str2 = secondRead.readLine();
                         } else {
-                            resWrite.write(strings0[0] + " " + strings0[1]
-                                    + " " + (parseInt(strings0[2])
-                                    + parseInt(strings2[2])) + "\n");
+                            resWrite.write(strings0[0] + " " + strings0[1] + " "
+                                    + (parseInt(strings0[2]) + parseInt(strings2[2])) + "\n");
                             str0 = tempRead.readLine();
                             str2 = secondRead.readLine();
                         }
                     }
+                    while (str0 != null) {
+                        resWrite.write(str0 + "\n");
+                        str0 = tempRead.readLine();
+                    }
                 }
             }
         } catch (IOException e) {
-            System.err.println("Some problems with updating ranks =^.^=");
+            System.err.println("Can't reduce files!");
             System.exit(1);
         }
         return res;
@@ -255,6 +249,9 @@ public class Ranking {
                         String[] strings2 = str2.split(" ");
                         if (!strings1[1].equals(strings2[0])) {
                             str2 = secondRead.readLine();
+                            if (str2 == null) {
+                                break;
+                            }
                             strings2 = str2.split(" ");
                         }
                         if (strings1[3].equals("0") && strings2[3].equals("0")) {
@@ -286,8 +283,8 @@ public class Ranking {
         File ifile = initFile();
         File res = sort(ifile);
         res = mergeSort(res, 2);
-        try (BufferedReader read = new BufferedReader(new FileReader(res))) {
-            try (BufferedWriter write = new BufferedWriter(new FileWriter(fileOut))) {
+        try (BufferedWriter write = new BufferedWriter(new FileWriter(fileOut))) {
+            try (BufferedReader read = new BufferedReader(new FileReader(res))) {
                 String str;
                 while ((str = read.readLine()) != null) {
                     String[] edges = str.split(" ");
