@@ -12,8 +12,14 @@ import java.util.List;
  */
 public class MultiFileMapTableProvider implements KnownDiffTableProvider {
     private final MultiFileMapProvider delegatedProvider;
+    private final MultiFileMapTableAdaptorFactory adaptorFactory;
 
     public MultiFileMapTableProvider(Path dbPath) {
+        this(dbPath, MultiFileMapTableAdaptor::new);
+    }
+
+    public MultiFileMapTableProvider(Path dbPath, MultiFileMapTableAdaptorFactory adaptorFactory) {
+        this.adaptorFactory = adaptorFactory;
         try {
             delegatedProvider = new MultiFileMapProvider(dbPath);
         } catch (IOException e) {
@@ -36,7 +42,7 @@ public class MultiFileMapTableProvider implements KnownDiffTableProvider {
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-        return t == null ? null : new MultiFileMapTableAdaptor(t);
+        return t == null ? null : adaptorFactory.adapt(t);
     }
 
     @Override
@@ -48,7 +54,7 @@ public class MultiFileMapTableProvider implements KnownDiffTableProvider {
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-        return t == null ? null : new MultiFileMapTableAdaptor(t);
+        return t == null ? null : adaptorFactory.adapt(t);
     }
 
     @Override
