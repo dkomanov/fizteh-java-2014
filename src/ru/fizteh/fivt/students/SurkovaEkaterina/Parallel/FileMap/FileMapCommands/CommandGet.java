@@ -22,7 +22,11 @@ public class CommandGet<Table, Key, Value, FileMapShellOperations
         }
 
         if (operations.getTable() == null) {
+<<<<<<< HEAD:src/ru/fizteh/fivt/students/SurkovaEkaterina/Parallel/FileMap/FileMapCommands/CommandGet.java
             System.out.println(this.getClass().toString() + ": No table!");
+=======
+            System.out.println("get: No table!");
+>>>>>>> 9e55f5a09a2dfc3fdca591ae3651d9e6d4270c41:src/ru/fizteh/fivt/students/SurkovaEkaterina/MultiFileHashMap/FileMap/FileMapCommands/CommandGet.java
             return;
         }
 
