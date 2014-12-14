@@ -25,11 +25,15 @@ public class ParallelMain {
     private static TreeMap<String, Command> listOfCommands;
 
 
-    public void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         currentPath = System.getProperty("fizteh.db.dir");
         initListsOfCommands();
         MyTableProviderFactory myTableProviderFactory = new MyTableProviderFactory();
-        myTableProvider = (MyTableProvider) myTableProviderFactory.create(currentPath);
+        try {
+            myTableProvider = (MyTableProvider) myTableProviderFactory.create(currentPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (currentPath == null) {
             throw new IllegalArgumentException("Storeable.main: null path");
         }
@@ -56,7 +60,7 @@ public class ParallelMain {
         }
     }
 
-    private void initListsOfCommands() {
+    private static void initListsOfCommands() {
         listOfCommandsDescription = new TreeMap<>();
         listOfCommandsDescription.put("create", new Pair<>(false, 2));
         listOfCommandsDescription.put("drop", new Pair<>(false, 2));
@@ -88,7 +92,7 @@ public class ParallelMain {
 
     }
 
-    public void pack(String[] args) {
+    public static void pack(String[] args) {
         String commands = Joiner.on(" ").join(args);
         String[] splittedCommands = commands.trim().split(";");
         try {
@@ -100,7 +104,7 @@ public class ParallelMain {
         }
     }
 
-    public void interactive() {
+    public static void interactive() {
         Scanner scanner = new Scanner(System.in);
         try  {
             while (true) {
@@ -125,7 +129,7 @@ public class ParallelMain {
         }
     }
 
-    public void execute(String s) throws Exception {
+    public static void execute(String s) throws Exception {
         try {
             String[] args = s.trim().split("\\s+");
             if (listOfCommands.containsKey(args[0])) {
