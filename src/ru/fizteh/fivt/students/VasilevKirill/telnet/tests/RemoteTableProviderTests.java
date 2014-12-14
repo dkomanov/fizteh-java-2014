@@ -9,7 +9,6 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyStorable;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyRemoteTableProvider;
-import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTable;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProvider;
 
 import java.io.DataInputStream;
