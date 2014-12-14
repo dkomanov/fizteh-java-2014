@@ -36,11 +36,25 @@ public class SStoreableTest {
 
         storeable = new SStoreable(objects, list);
     }
-    @Test
-    public void tmp() {
-        Assert.assertEquals(0, 0);
-    }
 
+    @Test(expected = ColumnFormatException.class)
+    public void testColumnFormatException() throws Exception {
+        List<Class<?>> list = new ArrayList<>();
+        list.add(Integer.class);
+        list.add(Long.class);
+        list.add(Byte.class);
+        list.add(Float.class);
+        list.add(Double.class);
+        list.add(Boolean.class);
+        list.add(String.class);
+
+        List<Object> objects = new ArrayList<>();
+        objects.add(null);
+        objects.add(null);
+        objects.add(null);
+
+        storeable = new SStoreable(objects, list);
+    }
 
     @Test
     public void testGetIntAt() throws Exception {

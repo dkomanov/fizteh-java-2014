@@ -18,11 +18,9 @@ public class SStoreable implements Storeable {
         return types;
     }
 
-    public SStoreable(List<Object> objects, List<Class<?>> classes) {
+    public SStoreable(List<Object> objects, List<Class<?>> classes) throws ColumnFormatException {
         if (classes.size() != objects.size()) {
-            System.err.println("Wrong type size (" + classes.size() + ", " + objects.size() + ")");
-
-            System.exit(1);
+            throw new ColumnFormatException("Wrong type size (" + classes.size() + ", " + objects.size() + ")");
         }
 
 

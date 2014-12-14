@@ -7,7 +7,6 @@ import ru.fizteh.fivt.storage.structured.Table;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 public class STable implements Table {
     private ThreadLocal<Map<String, String>> fMap = new ThreadLocal<>();
@@ -27,8 +26,7 @@ public class STable implements Table {
             typesFile = new File(path + "/" + "signature.tsv");
 
             if (!typesFile.createNewFile()) {
-                System.err.println("Can't create signature.tsv");
-                System.exit(1);
+                throw new ExceptionInInitializerError("Can't create signature.tsv");
             }
 
             typesList = columnTypes;
@@ -39,11 +37,8 @@ public class STable implements Table {
                 write.write(type.getSimpleName().getBytes());
             }
 
-        } catch (SecurityException e) {
-            System.err.println(e.getMessage());
+        } catch (SecurityException|IOException|ExceptionInInitializerError e) {
             incorrectFile();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
         }
         changes = 0;
     }
@@ -56,19 +51,16 @@ public class STable implements Table {
         try {
             tableDir = new File(path);
             if (!tableDir.exists()) {
-                System.err.println("Incorrect Table");
-                System.exit(1);
+                throw new ExceptionInInitializerError("Incorrect Table");
             }
             typesFile = new File(path + "/" + "signature.tsv");
             if (!typesFile.exists()) {
-                System.err.println("Does not exist signature.tsv");
-                System.exit(1);
+                throw new ExceptionInInitializerError("Does not exist signature.tsv");
             }
 
             getFile();
 
-        } catch (SecurityException e) {
-            System.err.println(e.getMessage());
+        } catch (SecurityException|ExceptionInInitializerError e) {
             incorrectFile();
         }
         changes = 0;
@@ -153,7 +145,7 @@ public class STable implements Table {
         List<String> result = null;
         try {
             lock.lock();
-            result = fMap.get().keySet().stream().collect(Collectors.toList());
+            result = new ArrayList<>(fMap.get().keySet());
         } finally {
             lock.unlock();
         }
@@ -161,71 +153,71 @@ public class STable implements Table {
     }
 
     void getFile() {
-        if (tableDir == null || tableDir.list() == null) {
-            return;
-        }
-        lock.lock();
-        fMap.get().clear();
-        typesFile = new File(tableDir.getAbsolutePath() + "/" + "signature.tsv");
-        if (!typesFile.exists() || !typesFile.isFile()) {
-            System.err.println("Wrong typeFile");
-            lock.unlock();
-            System.exit(1);
-        }
-
         try {
-            Scanner reader = new Scanner(new FileReader(typesFile));
-            String[] getTypes = reader.nextLine().split(" +");
-            typesList = new Vector<>(getTypes.length);
-            for (String name : getTypes) {
-                switch (name) {
-                    case "Integer":
-                        typesList.add(Integer.class);
-                        break;
-                    case "Long":
-                        typesList.add(Long.class);
-                        break;
-                    case "Byte":
-                        typesList.add(Byte.class);
-                        break;
-                    case "Float":
-                        typesList.add(Float.class);
-                        break;
-                    case "Double":
-                        typesList.add(Double.class);
-                        break;
-                    case "Boolean":
-                        typesList.add(Boolean.class);
-                        break;
-                    case "String":
-                        typesList.add(String.class);
-                        break;
-                    default:
-                        System.err.println("Wrong class");
-                        lock.unlock();
-                        System.exit(1);
-                }
+            if (tableDir == null || tableDir.list() == null) {
+                return;
+            }
+            lock.lock();
+            fMap.get().clear();
+            typesFile = new File(tableDir.getAbsolutePath() + "/" + "signature.tsv");
+            if (!typesFile.exists() || !typesFile.isFile()) {
+                lock.unlock();
+                throw new ExceptionInInitializerError("Wrong typeFile");
             }
 
-        } catch (FileNotFoundException e) {
-            System.err.println(e.getMessage());
+            try {
+                Scanner reader = new Scanner(new FileReader(typesFile));
+                String[] getTypes = reader.nextLine().split(" +");
+                typesList = new Vector<>(getTypes.length);
+                for (String name : getTypes) {
+                    switch (name) {
+                        case "Integer":
+                            typesList.add(Integer.class);
+                            break;
+                        case "Long":
+                            typesList.add(Long.class);
+                            break;
+                        case "Byte":
+                            typesList.add(Byte.class);
+                            break;
+                        case "Float":
+                            typesList.add(Float.class);
+                            break;
+                        case "Double":
+                            typesList.add(Double.class);
+                            break;
+                        case "Boolean":
+                            typesList.add(Boolean.class);
+                            break;
+                        case "String":
+                            typesList.add(String.class);
+                            break;
+                        default:
+                            lock.unlock();
+                            incorrectFile();
+                    }
+                }
+
+            } catch (FileNotFoundException e) {
+                lock.unlock();
+                incorrectFile();
+            }
+
+
+            for (String dirName : tableDir.list()) {
+                File subDir = new File(tableDir.getAbsolutePath() + "/" + dirName);
+                if (subDir.list() != null && subDir.isDirectory()) {
+                    for (String fileName : subDir.list()) {
+                        readFile(subDir.getAbsolutePath() + "/" + fileName, Integer.parseInt(dirName.split(".dir")[0]),
+                                Integer.parseInt(fileName.split(".dat")[0]));
+                    }
+                }
+            }
+        } finally {
+            changes = 0;
+            rollBackMap.set(fMap.get());
             lock.unlock();
-            System.exit(1);
         }
-
-
-        for (String dirName : tableDir.list()) {
-            File subDir = new File(tableDir.getAbsolutePath() + "/" + dirName);
-            if (subDir.list() != null && subDir.isDirectory()) {
-                for (String fileName : subDir.list()) {
-                    readFile(subDir.getAbsolutePath() + "/" + fileName, Integer.parseInt(dirName.split(".dir")[0]),
-                            Integer.parseInt(fileName.split(".dat")[0]));
-                }
-            }
-        }
-        changes = 0;
-        rollBackMap.set(fMap.get());
-        lock.unlock();
     }
 
     private void readFile(String path, int firstHash, int secondHash) {
@@ -233,15 +225,14 @@ public class STable implements Table {
         try {
             randomAccessFile = new RandomAccessFile(path, "rw");
         } catch (FileNotFoundException e) {
-            System.err.println(e.getMessage());
             incorrectFile();
-            System.exit(1);
         }
         try {
             int sizeLength;
             long readied = 1;
             try {
                 while (true) {
+                    assert randomAccessFile != null;
                     sizeLength = randomAccessFile.readInt();
                     readied += 4;
 
@@ -257,35 +248,27 @@ public class STable implements Table {
                         readied += sizeLength;
                         if (Math.abs((new String(key, "UTF-8")).hashCode()) % 16 != firstHash
                                 || (Math.abs((new String(key, "UTF-8")).hashCode()) / 16) % 16 != secondHash) {
-                            System.err.println("Incorrect files");
-                            System.err.println(new String(key, "UTF-8"));
-                            System.err.println(firstHash + " " + secondHash);
-                            System.exit(1);
+                            incorrectFile("Incorrect files\n" + new String(key, "UTF-8") + " " + firstHash + " " + secondHash);
                         }
                         fMap.get().put(new String(key, "UTF-8"), new String(value, "UTF-8"));
                     } catch (EOFException e) {
-                        System.err.println(e.getMessage());
                         randomAccessFile.close();
-                        incorrectFile();
+                        incorrectFile(e.getMessage());
                     }
                 }
             } catch (EOFException e) {
                 if (readied < randomAccessFile.length()) {
-                    System.err.println(randomAccessFile.length());
-                    System.err.println(readied);
-                    System.err.println(e.getMessage());
                     incorrectFile();
                 }
                 randomAccessFile.close();
             }
         } catch (IOException | OutOfMemoryError ioe) {
-            System.err.println(ioe.getMessage());
-            incorrectFile();
+            incorrectFile(ioe.getMessage());
         }
     }
 
     @Override
-    public int commit() {
+    public int commit() throws IOException {
         if (tableDir == null) {
             return 0;
         }
@@ -296,8 +279,7 @@ public class STable implements Table {
                     File dir = new File(tableDir.getAbsolutePath() + "/" + i + ".dir");
                     if (!dir.exists()) {
                         if (!dir.mkdir()) {
-                            System.err.println("Can not create a directory");
-                            incorrectFile();
+                            incorrectFile("Can not create a directory");
                         }
                     }
                     RandomAccessFile tmp =
@@ -322,8 +304,7 @@ public class STable implements Table {
                 }
             }
         } catch (IOException | OutOfMemoryError ioe) {
-            System.err.println(ioe.getMessage());
-            incorrectFile();
+            incorrectFile(ioe.getMessage());
         } finally {
             deleteEmptyFiles();
             rollBackMap.set(fMap.get());
@@ -334,7 +315,7 @@ public class STable implements Table {
         return size();
     }
 
-    private void deleteEmptyFiles() {
+    private void deleteEmptyFiles() throws IOException {
         if (tableDir.list() == null) {
             return;
         }
@@ -349,9 +330,7 @@ public class STable implements Table {
                 File hashFile = new File(dir.getAbsolutePath() + "/" + fileName);
                 if (hashFile.length() == 0) {
                     if (!hashFile.delete()) {
-                        System.err.println("Can not remove file!");
-                        System.err.println(hashFile.getAbsolutePath());
-                        System.exit(1);
+                        incorrectFile("Can not remove file!\n" + hashFile.getAbsolutePath());
                     }
                 } else {
                     isEmpty = false;
@@ -359,24 +338,29 @@ public class STable implements Table {
             }
             if (isEmpty) {
                 if (!dir.delete()) {
-                    System.err.println("Can not remove directory!");
-                    System.err.println(dir.getAbsolutePath());
-                    System.exit(1);
+                    throw new IOException("Can not remove directory! " + dir.getAbsolutePath());
                 }
             }
         }
     }
 
     private void incorrectFile() {
-        System.err.println("Incorrect files");
-        System.exit(1);
+        throw new ExceptionInInitializerError("Incorrect files");
+    }
+
+    private void incorrectFile(String s) {
+        throw new ExceptionInInitializerError(s);
     }
 
     @Override
     public int size() {
-        lock.lock();
-        int result = fMap.get().size();
-        lock.unlock();
+        int result = 0;
+        try {
+            lock.lock();
+            result = fMap.get().size();
+        } finally {
+            lock.unlock();
+        }
         return result;
     }
 
@@ -432,10 +416,8 @@ public class STable implements Table {
             }
         }
         if (!tmp.delete()) {
-            System.err.println("Can not delete file");
-            System.err.println(tmp.getAbsoluteFile());
             lock.unlock();
-            System.exit(1);
+            incorrectFile("Can not delete file " + tmp.getAbsoluteFile());
         }
     }
 }
