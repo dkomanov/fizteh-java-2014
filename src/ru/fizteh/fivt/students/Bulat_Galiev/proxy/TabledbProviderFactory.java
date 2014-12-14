@@ -12,6 +12,7 @@ public class TabledbProviderFactory implements TableProviderFactory {
         }
     }
 
+    @Override
     public final TableProvider create(final String dir) {
         if (dir != null) {
             return new TabledbProvider(dir);

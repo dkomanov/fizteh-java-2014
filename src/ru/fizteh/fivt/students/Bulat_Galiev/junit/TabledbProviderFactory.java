@@ -4,6 +4,7 @@ import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 
 public class TabledbProviderFactory implements TableProviderFactory {
+    @Override
     public final TableProvider create(final String dir) {
         if (dir != null) {
             return new TabledbProvider(dir);

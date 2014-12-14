@@ -180,7 +180,9 @@ public class DatabaseSerializer {
         Storeable putValue = fileMap.get().put(key, value);
         if (putValue == null) {
             unsavedRecordsNumber.set(unsavedRecordsNumber.get() + 1);
-            putValue = savedFileMap.get(key);
+            if (!fileMap.get().containsKey(key)) {
+                putValue = savedFileMap.get(key);
+            }
         }
         return putValue;
     }

@@ -82,6 +82,7 @@ public final class TabledbProvider implements TableProvider {
         }
     }
 
+    @Override
     public Table createTable(final String name, final List<Class<?>> columnTypes) {
         lock.writeLock().lock();
         try {
@@ -186,6 +187,7 @@ public final class TabledbProvider implements TableProvider {
         }
     }
 
+    @Override
     public void removeTable(final String name) {
         lock.writeLock().lock();
         try {
@@ -217,6 +219,7 @@ public final class TabledbProvider implements TableProvider {
         return currentTable;
     }
 
+    @Override
     public Table getTable(final String name) {
         lock.writeLock().lock();
         try {

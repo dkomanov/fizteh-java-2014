@@ -33,6 +33,7 @@ public final class Tabledb implements Table {
         }
     }
 
+    @Override
     public String getName() {
         return tableName;
     }
@@ -46,6 +47,7 @@ public final class Tabledb implements Table {
         return diffNumRecords;
     }
 
+    @Override
     public int commit() {
         try {
             int diffNumRecords = writeTableToDir();
@@ -55,6 +57,7 @@ public final class Tabledb implements Table {
         }
     }
 
+    @Override
     public int rollback() {
         Iterator<Entry<CellForKey, DatabaseSerializer>> it = databaseFiles
                 .entrySet().iterator();
@@ -69,6 +72,7 @@ public final class Tabledb implements Table {
         return diffNumRecords;
     }
 
+    @Override
     public String get(final String oldkey) {
         if (oldkey != null) {
             String key = oldkey.trim();
@@ -92,6 +96,7 @@ public final class Tabledb implements Table {
         }
     }
 
+    @Override
     public String put(final String oldkey, final String oldvalue) {
         try {
             if ((oldkey != null) && (oldvalue != null)) {
@@ -123,6 +128,7 @@ public final class Tabledb implements Table {
 
     }
 
+    @Override
     public String remove(final String oldkey) {
         if (oldkey != null) {
             String key = oldkey.trim();
@@ -146,6 +152,7 @@ public final class Tabledb implements Table {
         }
     }
 
+    @Override
     public int size() {
         int numrecords = 0;
         for (Entry<CellForKey, DatabaseSerializer> databaseFile : databaseFiles
@@ -155,6 +162,7 @@ public final class Tabledb implements Table {
         return numrecords;
     }
 
+    @Override
     public List<String> list() {
         List<String> list = new LinkedList<String>();
         for (Entry<CellForKey, DatabaseSerializer> pair : databaseFiles

@@ -42,10 +42,14 @@ public class Interpreter {
     }
 
     public final void run(final String[] args) throws Exception {
-        if (args.length == 0) {
-            interactiveMode();
-        } else {
-            batchMode(args);
+        try {
+            if (args.length == 0) {
+                interactiveMode();
+            } else {
+                batchMode(args);
+            }
+        } catch (ExitException e) {
+            System.exit(e.getStatus());
         }
     }
 

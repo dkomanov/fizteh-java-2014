@@ -76,6 +76,7 @@ public final class TabledbProvider implements TableProvider {
         }
     }
 
+    @Override
     public Table createTable(final String name, final List<Class<?>> columnTypes) {
         try {
             if (name != null && !name.equals("")) {
@@ -171,6 +172,7 @@ public final class TabledbProvider implements TableProvider {
         return this.createTable(name, listOfClasses);
     }
 
+    @Override
     public void removeTable(final String name) throws IOException {
         try {
             if (name != null && !name.equals("")) {
@@ -197,6 +199,7 @@ public final class TabledbProvider implements TableProvider {
         return currentTable;
     }
 
+    @Override
     public Table getTable(final String name) {
         try {
             if (name != null && !name.equals("")) {

@@ -55,6 +55,7 @@ public final class Tabledb implements Table, AutoCloseable {
         }
     }
 
+    @Override
     public String getName() {
         isClosed();
         return tableName;
@@ -65,6 +66,7 @@ public final class Tabledb implements Table, AutoCloseable {
         return localProvider;
     }
 
+    @Override
     public int commit() {
         isClosed();
         lock.writeLock().lock();
@@ -81,6 +83,7 @@ public final class Tabledb implements Table, AutoCloseable {
         }
     }
 
+    @Override
     public int rollback() {
         isClosed();
         lock.readLock().lock();
@@ -101,6 +104,7 @@ public final class Tabledb implements Table, AutoCloseable {
         }
     }
 
+    @Override
     public Storeable get(final String oldkey) {
         isClosed();
         lock.readLock().lock();
@@ -130,6 +134,7 @@ public final class Tabledb implements Table, AutoCloseable {
         }
     }
 
+    @Override
     public Storeable put(final String oldkey, final Storeable value) {
         isClosed();
         lock.writeLock().lock();
@@ -226,6 +231,7 @@ public final class Tabledb implements Table, AutoCloseable {
 
     }
 
+    @Override
     public Storeable remove(final String oldkey) {
         isClosed();
         if (oldkey != null) {
@@ -250,6 +256,7 @@ public final class Tabledb implements Table, AutoCloseable {
         }
     }
 
+    @Override
     public int size() {
         isClosed();
         lock.writeLock().lock();
@@ -266,6 +273,7 @@ public final class Tabledb implements Table, AutoCloseable {
         }
     }
 
+    @Override
     public List<String> list() {
         isClosed();
         lock.readLock().lock();
@@ -423,6 +431,7 @@ public final class Tabledb implements Table, AutoCloseable {
         return diffNumRecords;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName());
@@ -432,6 +441,7 @@ public final class Tabledb implements Table, AutoCloseable {
         return sb.toString();
     }
 
+    @Override
     public void close() {
         rollback();
         closed = true;

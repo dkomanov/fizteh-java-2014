@@ -91,6 +91,7 @@ public final class TabledbProvider implements TableProvider, AutoCloseable {
         }
     }
 
+    @Override
     public Table createTable(final String name, final List<Class<?>> columnTypes) {
         isClosed();
         try {
@@ -188,6 +189,7 @@ public final class TabledbProvider implements TableProvider, AutoCloseable {
         return this.createTable(name, listOfClasses);
     }
 
+    @Override
     public void removeTable(final String name) throws IOException {
         isClosed();
         try {
@@ -216,6 +218,7 @@ public final class TabledbProvider implements TableProvider, AutoCloseable {
         return currentTable;
     }
 
+    @Override
     public Table getTable(final String name) {
         isClosed();
         lock.writeLock().lock();

@@ -68,6 +68,7 @@ public final class TabledbProvider implements TableProvider {
         }
     }
 
+    @Override
     public Table createTable(final String name) {
         try {
             if (name != null && !name.equals("")) {
@@ -91,6 +92,7 @@ public final class TabledbProvider implements TableProvider {
         }
     }
 
+    @Override
     public void removeTable(final String name) {
         try {
             if (name != null && !name.equals("")) {
@@ -124,6 +126,7 @@ public final class TabledbProvider implements TableProvider {
         return tablesDirPath;
     }
 
+    @Override
     public Table getTable(final String name) {
         try {
             if (name != null && !name.equals("")) {
