@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.VasilevKirill.proxy.structures;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 
@@ -184,22 +183,14 @@ public class MyStorable implements Storeable {
 
     @Override
     public String toString() {
-        try {
-            JSONArray arr = new JSONArray(dataList);
-            String result = arr.toString();
-            result = result.replace("null", "");
-            return result;
-        } catch (JSONException e) {
-            return null;
-        }
+        JSONArray arr = new JSONArray(dataList);
+        String result = arr.toString();
+        result = result.replace("null", "");
+        return result;
     }
 
     public String toFileFormat() {
-        try {
-            JSONArray arr = new JSONArray(dataList);
-            return arr.toString();
-        } catch (JSONException e) {
-            return null;
-        }
+        JSONArray arr = new JSONArray(dataList);
+        return arr.toString();
     }
 }
