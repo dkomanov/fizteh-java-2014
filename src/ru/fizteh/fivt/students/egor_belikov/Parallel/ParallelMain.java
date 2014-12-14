@@ -22,7 +22,7 @@ public class ParallelMain {
 
 
     public static void main(String[] args) {
-        currentPath = System.getProperty("fizteh.db.dir");//System.getProperty("user.dir") + File.separator + "db";
+        currentPath = System.getProperty("fizteh.db.dir"); //System.getProperty("user.dir") + File.separator + "db";
         initListsOfCommands();
         MyTableProviderFactory myTableProviderFactory = new MyTableProviderFactory();
         try {

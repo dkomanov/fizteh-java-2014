@@ -14,7 +14,7 @@ import static ru.fizteh.fivt.students.egor_belikov.Storeable.MyTableProvider.lis
  */
 public class Create implements Command {
 
-    public void execute(String args[], MyTableProvider myTableProvider) throws Exception{
+    public void execute(String[] args, MyTableProvider myTableProvider) throws Exception {
         String stringTypes = "";
         for (int i = 2; i != args.length; i++) {
             stringTypes = stringTypes + " " + args[i];
