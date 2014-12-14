@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsTableProvider.*;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -36,8 +35,8 @@ public class CommandExecutor {
             parsedArguments = oneCommand.trim().split("\\s+");
             if (parsedArguments[0].equals("put")) {
                 if (oneCommand.contains("<")) {
-                    String valueForPut = oneCommand.trim().substring(oneCommand.indexOf('<'));
-                    parsedArguments[2] = valueForPut;
+                    String valueForPut = oneCommand.substring(oneCommand.indexOf('<'));
+                    parsedArguments[2] = valueForPut.trim();
                 }
             }
             if (parsedArguments.length == 0 || parsedArguments[0].equals("")) {

@@ -27,7 +27,7 @@ public class CommandPutDistribute extends CommandTableProviderExtended {
         try {
             currentTable.put(args[1], Serializator.deserialize(currentTable, args[2]));
         } catch (ParseException e) {
-            System.out.println("wrong type (" + e.getMessage() + ")");
+            System.out.println("HERE wrong type (" + e.getMessage() + ")");
             return false;
         } catch (NoSuchElementException e) {
             System.out.println("error: not xml format value");

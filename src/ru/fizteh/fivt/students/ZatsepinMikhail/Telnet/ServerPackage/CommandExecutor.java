@@ -37,8 +37,8 @@ public class CommandExecutor {
             parsedArguments = oneCommand.trim().split("\\s+");
             if (parsedArguments[0].equals("put")) {
                 if (oneCommand.contains("<")) {
-                    String valueForPut = oneCommand.trim().substring(oneCommand.indexOf('<'));
-                    parsedArguments[3] = valueForPut;
+                    String valueForPut = oneCommand.substring(oneCommand.indexOf('<'));
+                    parsedArguments[3] = valueForPut.trim();
                 }
             }
             if (parsedArguments.length == 0 || parsedArguments[0].equals("")) {
