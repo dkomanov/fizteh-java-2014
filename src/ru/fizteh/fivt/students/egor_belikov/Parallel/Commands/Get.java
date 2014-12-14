@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.egor_belikov.Parallel.Commands;
 
+import ru.fizteh.fivt.students.egor_belikov.Parallel.MyTable;
 import ru.fizteh.fivt.students.egor_belikov.Parallel.MyTableProvider;
 import ru.fizteh.fivt.students.egor_belikov.Parallel.ParallelMain;
 
@@ -9,12 +10,12 @@ import ru.fizteh.fivt.students.egor_belikov.Parallel.ParallelMain;
 public class Get implements Command {
     @Override
     public void execute(String[] args, MyTableProvider myTableProvider) throws Exception {
-        if (myTableProvider.getTable(ParallelMain.currentTable).get(args[1]) == null) {
+        MyTable toGetFrom = (MyTable) myTableProvider.getTable(ParallelMain.currentTable);
+        if (toGetFrom.get(args[1]) == null) {
             System.out.println("not found");
         } else {
             System.out.println("found");
-            System.out.println(myTableProvider.serialize(MyTableProvider.currentTable,
-                    MyTableProvider.currentTable.get(args[1])));
+            System.out.println(myTableProvider.serialize(toGetFrom, toGetFrom.get(args[1])));
         }
     }
 }
