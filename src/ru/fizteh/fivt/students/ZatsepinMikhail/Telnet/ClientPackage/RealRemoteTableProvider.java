@@ -39,6 +39,9 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
         }
         String answerFromServer = input.nextLine();
         int numberOfUncommittedChanges = Integer.parseInt(answerFromServer);
+        if (numberOfUncommittedChanges == -1) {
+            throw new IllegalStateException(name + " not exists");
+        }
         if (numberOfUncommittedChanges != 0) {
             throw new IllegalStateException(numberOfUncommittedChanges + " unsaved changes");
         }
