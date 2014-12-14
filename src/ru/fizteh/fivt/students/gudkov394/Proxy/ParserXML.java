@@ -15,6 +15,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.ParseException;
 import java.util.IdentityHashMap;
 
 /**
@@ -22,7 +23,7 @@ import java.util.IdentityHashMap;
  */
 public class ParserXML {
 
-    public String parse(Object[] objects) {
+    public String parse(Object[] objects) throws ParseException {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.newDocument();
@@ -43,8 +44,7 @@ public class ParserXML {
             transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
             return stringWriter.toString();
         } catch (ParserConfigurationException | TransformerException e) {
-            System.err.println("I can't parse XML");
-            return null;
+            throw new ParseException(e.getMessage(), 0);
         }
     }
 

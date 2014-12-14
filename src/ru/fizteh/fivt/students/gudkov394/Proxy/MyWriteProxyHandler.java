@@ -1,17 +1,9 @@
 package ru.fizteh.fivt.students.gudkov394.Proxy;
 
 
-import org.w3c.dom.Document;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.io.StringWriter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -33,51 +25,69 @@ public class MyWriteProxyHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<invoke timestamp=\"").append(System.currentTimeMillis()).
-                append("\" class=\"").append(object.getClass().getCanonicalName()).
-                append("\" name=\"").append(method.getName()).append("\">");
-        if (args != null && args.length > 0) {
-            stringBuilder.append((new ParserXML()).parse(args));
-        } else {
-            stringBuilder.append("<arguments/>");
-        }
         try {
-            Object result;
-            if (args != null) {
-                result = method.invoke(object, args);
+            XMLOutputFactory xml = XMLOutputFactory.newInstance();
+            XMLStreamWriter xsw = xml.createXMLStreamWriter(writer);
+            xsw.writeStartElement("invoke");
+            xsw.writeAttribute("timestamp", String.valueOf(System.currentTimeMillis()));
+            xsw.writeAttribute("class", object.getClass().getName());
+            xsw.writeAttribute("name", method.getName());
+            if (args == null || args.length == 0) {
+                xsw.writeEmptyElement("arguments");
             } else {
-                result = method.invoke(object);
-            }
-            if (method.getReturnType() != void.class) {
-                String res;
-                if (result == null || result instanceof Iterable) {
-                    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                    Document document = builder.newDocument();
-                    Transformer transformer = TransformerFactory.newInstance().newTransformer();
-                    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-                    StringWriter stringWriter = new StringWriter();
-                    transformer.transform(new DOMSource((new ParserXML()).parseObject(result,
-                                    new IdentityHashMap<>(), document)),
-                            new StreamResult(stringWriter));
-                    res = stringWriter.toString();
-                } else {
-                    res = result.toString();
+                xsw.writeStartElement("arguments");
+                for (Object arg : args) {
+                    xsw.writeStartElement("argument");
+                    serializeObject(arg, xsw, new IdentityHashMap<>());
+                    xsw.writeEndElement();
                 }
-                stringBuilder.append("<return>").append(res).append("</return>");
+                xsw.writeEndElement();
             }
-            return result;
-        } catch (InvocationTargetException e) {
-            stringBuilder.append("<thrown>").append(e.getTargetException()).append("</thrown>");
-            throw e;
-        } finally {
-            stringBuilder.append("</invoke>");
             try {
-                writer.write(stringBuilder.toString());
-            } catch (IOException e) {
-                System.out.println("I can't write log");
+                Object result = method.invoke(object, args);
+                if (method.getReturnType() != void.class) {
+                    xsw.writeStartElement("return");
+                    serializeObject(result, xsw, new IdentityHashMap<>());
+                    xsw.writeEndElement();
+                }
+                return result;
+            } catch (InvocationTargetException e) {
+                xsw.writeStartElement("thrown");
+                xsw.writeCharacters(e.getTargetException().toString());
+                xsw.writeEndElement();
+                throw e.getTargetException();
+            } finally {
+                xsw.writeEndDocument();
+                xsw.writeCharacters("\n");
+                xsw.flush();
+                xsw.close();
             }
-            writer.flush();
+        } catch (XMLStreamException e) {
+            return null;
+        }
+    }
+
+    private void serializeObject(Object object, XMLStreamWriter xsw, IdentityHashMap<Object, Object> set)
+            throws XMLStreamException {
+        if (object == null) {
+            xsw.writeEmptyElement("null");
+        } else {
+            if (object instanceof Iterable) {
+                if (set.containsKey(object)) {
+                    xsw.writeEmptyElement("cyclic");
+                } else {
+                    set.put(object, null);
+                    xsw.writeStartElement("list");
+                    for (Object element : (Iterable) object) {
+                        xsw.writeStartElement("value");
+                        serializeObject(element, xsw, set);
+                        xsw.writeEndElement();
+                    }
+                    xsw.writeEndElement();
+                }
+            } else {
+                xsw.writeCharacters(object.toString());
+            }
         }
     }
 }
