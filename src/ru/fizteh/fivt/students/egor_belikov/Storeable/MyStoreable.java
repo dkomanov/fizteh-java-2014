@@ -41,7 +41,7 @@ public class MyStoreable implements Storeable {
         if (columnIndex > columnsNum) {
             throw new IndexOutOfBoundsException("This column does not exist");
         }
-        if (currentValues.get(columnIndex).getClass().equals(Integer.class)) {
+        if (!currentValues.get(columnIndex).getClass().equals(Integer.class)) {
             throw new ColumnFormatException("Column is not Integer");
         }
         return (Integer) currentValues.get(columnIndex);
@@ -107,7 +107,7 @@ public class MyStoreable implements Storeable {
         if (columnIndex > columnsNum) {
             throw new IndexOutOfBoundsException("This column does not exist");
         }
-        if (!(currentValues.get(columnIndex).getClass().equals(Boolean.class))) {
+        if (!(currentValues.get(columnIndex).getClass().equals(String.class))) {
             throw new ColumnFormatException("Column is not String");
         }
         return (String) currentValues.get(columnIndex);
