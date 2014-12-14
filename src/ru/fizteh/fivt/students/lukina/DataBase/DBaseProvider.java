@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
-
 public class DBaseProvider implements TableProvider, AutoCloseable {
     DBaseLoader loader;
     private HashMap<String, DBase> tableBase;
@@ -66,8 +65,8 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
     }
 
     public boolean checkTableName(String tableName) {
-        if (tableName == null || tableName.isEmpty() || tableName.contains(".") || tableName.contains(";")
-                || tableName.contains("/") || tableName.contains("\\")) {
+        if ((tableName == null) || tableName.isEmpty()
+                || tableName.matches(".*[.|;|/|\\\\].*")) {
             return false;
         }
         return true;
@@ -80,60 +79,51 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
             throw new IllegalArgumentException("name is incorrect");
         }
         DBase getTable = null;
-        try {
-            getTable = tableBase.get(name);
-            if (getTable == null) {
-                getTable = loader.loadTable(new File(rootDir + name));
-            }
-        } finally {
-            //lock.unlock();
+        getTable = tableBase.get(name);
+        if (getTable == null) {
+            getTable = loader.loadTable(new File(rootDir + name));
         }
         return getTable;
     }
 
-    private void fillTypesFile(File types, List<Class<?>> columnTypes) throws IOException {
-        FileOutputStream out = new FileOutputStream(types);
-        try {
-            StringBuffer res = new StringBuffer();
-            for (Class<?> type : columnTypes) {
-                String name = type.getSimpleName();
-                switch (name) {
-                    case "Integer":
-                        res.append("int ");
-                        break;
-                    case "Long":
-                        res.append("long ");
-                        break;
-                    case "Byte":
-                        res.append("byte ");
-                        break;
-                    case "Float":
-                        res.append("float ");
-                        break;
-                    case "Double":
-                        res.append("double ");
-                        break;
-                    case "Boolean":
-                        res.append("boolean ");
-                        break;
-                    case "String":
-                        res.append("String ");
-                        break;
-                    default:
-                        throw new RuntimeException("Incorrect type in file " + name);
+    private void fillTypesFile(File types, List<Class<?>> columnTypes)
+            throws IOException {
+        try (FileOutputStream out = new FileOutputStream(types)) {
+            try {
+                StringBuffer res = new StringBuffer();
+                for (Class<?> type : columnTypes) {
+                    String name = type.getSimpleName();
+                    switch (name) {
+                        case "Integer":
+                            res.append("int ");
+                            break;
+                        case "Long":
+                            res.append("long ");
+                            break;
+                        case "Byte":
+                            res.append("byte ");
+                            break;
+                        case "Float":
+                            res.append("float ");
+                            break;
+                        case "Double":
+                            res.append("double ");
+                            break;
+                        case "Boolean":
+                            res.append("boolean ");
+                            break;
+                        case "String":
+                            res.append("String ");
+                            break;
+                        default:
+                            throw new RuntimeException("Incorrect type in file " + name);
+                    }
                 }
-            }
-            res.setLength(res.length() - 1);
-            out.write((res.toString()).getBytes("UTF-8"));
-        } catch (IOException e) {
-            throw new IOException("Cannot create file " + types.getAbsolutePath(), e);
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (Throwable e) {
-// not OK
-                }
+                res.setLength(res.length() - 1);
+                out.write((res.toString()).getBytes("UTF-8"));
+            } catch (IOException e) {
+                throw new IOException("Cannot create file "
+                        + types.getAbsolutePath(), e);
             }
         }
     }
@@ -166,7 +156,8 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
     }
 
     @Override
-    public Table createTable(String name, List<Class<?>> typesList) throws IOException {
+    public Table createTable(String name, List<Class<?>> typesList)
+            throws IOException {
         checkClosed();
         if (!checkTableName(name)) {
             throw new IllegalArgumentException("name is incorrect");
@@ -179,26 +170,22 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
         }
         ArrayList<Class<?>> columnTypes = checkColumnTypes(typesList);
         File fileTable = new File(rootDir + name);
-        //lock.lock();
         if (!fileTable.exists()) {
-            try {
-                if (!fileTable.mkdir()) {
-                    throw new IOException("Cannot create directory " + fileTable.getAbsolutePath());
-                }
-                File types = new File(rootDir + name + File.separator + "signature.tsv");
-                if (!types.createNewFile()) {
-                    throw new IOException("Cannot create file " + types.getAbsolutePath());
-                }
-                fillTypesFile(types, columnTypes);
-                DBase table = new DBase(name, rootDir, this);
-                table.setTypes(columnTypes);
-                tableBase.put(name, table);
-                return table;
-            } finally {
-                //lock.unlock();
+            if (!fileTable.mkdir()) {
+                throw new IOException("Cannot create directory "
+                        + fileTable.getAbsolutePath());
             }
-        } else {
-            //lock.unlock();
+            File types = new File(rootDir + name + File.separator
+                    + "signature.tsv");
+            if (!types.createNewFile()) {
+                throw new IOException("Cannot create file "
+                        + types.getAbsolutePath());
+            }
+            fillTypesFile(types, columnTypes);
+            DBase table = new DBase(name, rootDir, this);
+            table.setTypes(columnTypes);
+            tableBase.put(name, table);
+            return table;
         }
         return null;
     }
@@ -210,26 +197,16 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
             throw new IllegalArgumentException("name is incorrect");
         }
         File fileTable = new File(rootDir + name);
-        //lock.lock();
-        try {
-            if (!fileTable.exists() && tableBase.get(name) == null) {
-                throw new IllegalStateException("table not exists");
-            }
-            doDelete(fileTable);
-            tableBase.get(name).setRemoved();
-            tableBase.remove(name);
-        } finally {
-            //lock.unlock();
+        if (!fileTable.exists() && tableBase.get(name) == null) {
+            throw new IllegalStateException("table not exists");
         }
+        doDelete(fileTable);
+        tableBase.get(name).setRemoved();
+        tableBase.remove(name);
     }
 
     protected void closeTable(String name) {
-        //lock.lock();
-        try {
-            tableBase.remove(name);
-        } finally {
-            //lock.unlock();
-        }
+        tableBase.remove(name);
     }
 
     public Class<?> getClassFromString(String name) {
@@ -253,7 +230,8 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
         }
     }
 
-    public Object getObjectFromString(String text, Class<?> type) throws IOException {
+    public Object getObjectFromString(String text, Class<?> type)
+            throws IOException {
         switch (type.getSimpleName()) {
             case "Integer":
                 return Integer.parseInt(text);
@@ -275,7 +253,8 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
     }
 
     @Override
-    public Storeable deserialize(Table table, String value) throws ParseException {
+    public Storeable deserialize(Table table, String value)
+            throws ParseException {
         checkClosed();
         DBaseRow row = new DBaseRow(table);
         XMLInputFactory xmlFactory = XMLInputFactory.newFactory();
@@ -288,7 +267,8 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
             }
             reader.nextTag();
             if (!reader.getLocalName().equals("row")) {
-                throw new ParseException("Incorrect xml format", reader.getLocation().getCharacterOffset());
+                throw new ParseException("Incorrect xml format", reader
+                        .getLocation().getCharacterOffset());
             }
             int columnIndex = 0;
             while (reader.hasNext()) {
@@ -299,14 +279,19 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
                 } else {
                     if (!reader.getLocalName().equals("col")) {
                         if (!reader.isEndElement()) {
-                            throw new ParseException("Incorrect xml format", reader.getLocation().getCharacterOffset());
+                            throw new ParseException("Incorrect xml format",
+                                    reader.getLocation().getCharacterOffset());
                         }
-                        if (reader.isEndElement() && reader.getLocalName().equals("row")) {
+                        if (reader.isEndElement()
+                                && reader.getLocalName().equals("row")) {
                             break;
                         }
                     }
                     String text = reader.getElementText();
-                    row.setColumnAt(columnIndex, getObjectFromString(text, table.getColumnType(columnIndex)));
+                    row.setColumnAt(
+                            columnIndex,
+                            getObjectFromString(text,
+                                    table.getColumnType(columnIndex)));
                 }
                 columnIndex++;
             }
@@ -318,7 +303,7 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
             try {
                 reader.close();
             } catch (Throwable e) {
-// not OK
+                // not OK
             }
         }
         return row;
@@ -331,7 +316,8 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
         try {
             for (int i = 0; i < t.getColumnsCount(); ++i) {
                 Object valueObj = value.getColumnAt(i);
-                if (valueObj != null && !valueObj.getClass().equals(t.getColumnType(i))) {
+                if (valueObj != null
+                        && !valueObj.getClass().equals(t.getColumnType(i))) {
                     throw new ColumnFormatException("incorrect column format");
                 }
             }
@@ -342,12 +328,13 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
             value.getColumnAt(t.getColumnsCount());
             throw new ColumnFormatException("more columns in value");
         } catch (IndexOutOfBoundsException e) {
-// it's OK
+            // it's OK
         }
     }
 
     @Override
-    public String serialize(Table table, Storeable value) throws ColumnFormatException {
+    public String serialize(Table table, Storeable value)
+            throws ColumnFormatException {
         checkClosed();
         checkColumns(table, value);
         XMLOutputFactory xmlFactory = XMLOutputFactory.newFactory();
@@ -375,7 +362,7 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
             try {
                 str.close();
             } catch (Throwable e) {
-// not OK
+                // not OK
             }
         }
         return str.toString();
@@ -388,7 +375,8 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
     }
 
     @Override
-    public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+    public Storeable createFor(Table table, List<?> values)
+            throws ColumnFormatException, IndexOutOfBoundsException {
         checkClosed();
         DBaseRow row = new DBaseRow(table);
         if (values.size() != table.getColumnsCount()) {
@@ -419,4 +407,3 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
     }
 
 }
-

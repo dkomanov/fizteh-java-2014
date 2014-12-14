@@ -10,13 +10,11 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DBase implements Table, AutoCloseable {
     private static String rootDir = "";
-    protected ThreadLocal<HashMap<String, Storeable>> dataMap
-            = new ThreadLocal<HashMap<String, Storeable>>() {
+    protected ThreadLocal<HashMap<String, Storeable>> dataMap = new ThreadLocal<HashMap<String, Storeable>>() {
         @Override
         public HashMap<String, Storeable> initialValue() {
             return new HashMap<>();
@@ -27,8 +25,8 @@ public class DBase implements Table, AutoCloseable {
     protected DBaseProvider provider;
     private ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(
             true);
-    private Lock read = readWriteLock.readLock();
-    private Lock write = readWriteLock.writeLock();
+    // private Lock read = readWriteLock.readLock();
+    // private Lock write = readWriteLock.writeLock();
     private String currTable = "";
     private volatile boolean closed = false;
 
@@ -69,12 +67,7 @@ public class DBase implements Table, AutoCloseable {
     }
 
     public void setHashMap(HashMap<String, Storeable> map) {
-        write.lock();
-        try {
-            copyMap(commonDataMap, map);
-        } finally {
-            write.unlock();
-        }
+        copyMap(commonDataMap, map);
     }
 
     public void setTypes(List<Class<?>> columnTypes) {
@@ -95,7 +88,6 @@ public class DBase implements Table, AutoCloseable {
 
     protected void unloadData() {
         RandomAccessFile[] filesArray = new RandomAccessFile[256];
-        write.lock();
         try {
             for (int i = 0; i < 16; ++i) {
                 DBaseProvider.doDelete(getDirWithNum(i));
@@ -152,24 +144,18 @@ public class DBase implements Table, AutoCloseable {
                     }
                 }
             }
-            write.unlock();
         }
     }
 
     private void mergeMaps() {
-        write.lock();
-        try {
-            for (Map.Entry<String, Storeable> entry : dataMap.get().entrySet()) {
-                String key = entry.getKey();
-                Storeable val = entry.getValue();
-                if (val == null) {
-                    commonDataMap.remove(key);
-                } else {
-                    commonDataMap.put(key, val);
-                }
+        for (Map.Entry<String, Storeable> entry : dataMap.get().entrySet()) {
+            String key = entry.getKey();
+            Storeable val = entry.getValue();
+            if (val == null) {
+                commonDataMap.remove(key);
+            } else {
+                commonDataMap.put(key, val);
             }
-        } finally {
-            write.unlock();
         }
     }
 
@@ -178,12 +164,7 @@ public class DBase implements Table, AutoCloseable {
         dest.clear();
         Set<Map.Entry<String, Storeable>> entries = source.entrySet();
         for (Map.Entry<String, Storeable> entry : entries) {
-            write.lock();
-            try {
-                dest.put(entry.getKey(), entry.getValue());
-            } finally {
-                write.unlock();
-            }
+            dest.put(entry.getKey(), entry.getValue());
         }
     }
 
@@ -214,12 +195,7 @@ public class DBase implements Table, AutoCloseable {
         if (dataMap.get().containsKey(key)) {
             val = dataMap.get().get(key);
         } else {
-            read.lock();
-            try {
-                val = commonDataMap.get(key);
-            } finally {
-                read.unlock();
-            }
+            val = commonDataMap.get(key);
         }
         return val;
     }
@@ -237,12 +213,7 @@ public class DBase implements Table, AutoCloseable {
         if (dataMap.get().containsKey(key)) {
             oldValue = dataMap.get().get(key);
         } else {
-            read.lock();
-            try {
-                oldValue = commonDataMap.get(key);
-            } finally {
-                read.unlock();
-            }
+            oldValue = commonDataMap.get(key);
         }
         dataMap.get().put(key, value);
         return oldValue;
@@ -256,12 +227,7 @@ public class DBase implements Table, AutoCloseable {
         if (dataMap.get().containsKey(key)) {
             val = dataMap.get().get(key);
         } else {
-            read.lock();
-            try {
-                val = commonDataMap.get(key);
-            } finally {
-                read.unlock();
-            }
+            val = commonDataMap.get(key);
         }
         if (val != null) {
             dataMap.get().put(key, null);
@@ -273,21 +239,16 @@ public class DBase implements Table, AutoCloseable {
     public int size() {
         checkClosed();
         int size = 0;
-        read.lock();
-        try {
-            size = commonDataMap.size();
-            for (Map.Entry<String, Storeable> entry : dataMap.get().entrySet()) {
-                String key = entry.getKey();
-                Storeable value = entry.getValue();
-                if (value == null && commonDataMap.containsKey(key)) {
-                    --size;
-                }
-                if (value != null && !commonDataMap.containsKey(key)) {
-                    ++size;
-                }
+        size = commonDataMap.size();
+        for (Map.Entry<String, Storeable> entry : dataMap.get().entrySet()) {
+            String key = entry.getKey();
+            Storeable value = entry.getValue();
+            if (value == null && commonDataMap.containsKey(key)) {
+                --size;
             }
-        } finally {
-            read.unlock();
+            if (value != null && !commonDataMap.containsKey(key)) {
+                ++size;
+            }
         }
         return size;
     }
@@ -306,23 +267,19 @@ public class DBase implements Table, AutoCloseable {
     public int getNumberOfUncommittedChanges() {
         int count = 0;
         Set<Map.Entry<String, Storeable>> entries = dataMap.get().entrySet();
-        read.lock();
-        try {
-            for (Map.Entry<String, Storeable> entry : entries) {
-                String key = entry.getKey();
-                Storeable value = entry.getValue();
-                Storeable oldValue = null;
-                oldValue = commonDataMap.get(key);
-                if ((((value == null) || (oldValue == null)) && (value != oldValue))
-                        || ((value != null) && (oldValue != null) && !provider
-                        .serialize(this, value).equals(
-                                provider.serialize(this, oldValue)))) {
-                    count++;
-                }
+        for (Map.Entry<String, Storeable> entry : entries) {
+            String key = entry.getKey();
+            Storeable value = entry.getValue();
+            Storeable oldValue = null;
+            oldValue = commonDataMap.get(key);
+            if ((((value == null) || (oldValue == null)) && (value != oldValue))
+                    || ((value != null) && (oldValue != null) && !provider
+                    .serialize(this, value).equals(
+                            provider.serialize(this, oldValue)))) {
+                count++;
             }
-        } finally {
-            read.unlock();
         }
+
         return count;
     }
 
@@ -373,7 +330,8 @@ public class DBase implements Table, AutoCloseable {
         }
         if (fileKeySet != null) {
             for (String key : f) {
-                if (commonDataMap.containsKey(key) && !dataMap.get().containsKey(key)
+                if (commonDataMap.containsKey(key)
+                        && !dataMap.get().containsKey(key)
                         || dataMap.get().get(key) != null) {
                     keys.add(key);
                 }
@@ -381,6 +339,5 @@ public class DBase implements Table, AutoCloseable {
         }
         return keys;
     }
-
 
 }

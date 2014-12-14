@@ -70,8 +70,7 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
     }
 
     public boolean checkTableName(String tableName) {
-        if (tableName == null || tableName.isEmpty() || tableName.contains(".") || tableName.contains(";")
-                || tableName.contains("/") || tableName.contains("\\")) {
+        if ((tableName == null) || tableName.isEmpty() || tableName.matches(".*[.|;|/|\\\\].*")) {
             return false;
         }
         return true;
@@ -97,48 +96,41 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
     }
 
     private void fillTypesFile(File types, List<Class<?>> columnTypes) throws IOException {
-        FileOutputStream out = new FileOutputStream(types);
-        try {
-            StringBuffer res = new StringBuffer();
-            for (Class<?> type : columnTypes) {
-                String name = type.getSimpleName();
-                switch (name) {
-                    case "Integer":
-                        res.append("int ");
-                        break;
-                    case "Long":
-                        res.append("long ");
-                        break;
-                    case "Byte":
-                        res.append("byte ");
-                        break;
-                    case "Float":
-                        res.append("float ");
-                        break;
-                    case "Double":
-                        res.append("double ");
-                        break;
-                    case "Boolean":
-                        res.append("boolean ");
-                        break;
-                    case "String":
-                        res.append("String ");
-                        break;
-                    default:
-                        throw new RuntimeException("Incorrect type in file " + name);
+        try (FileOutputStream out = new FileOutputStream(types)) {
+            try {
+                StringBuffer res = new StringBuffer();
+                for (Class<?> type : columnTypes) {
+                    String name = type.getSimpleName();
+                    switch (name) {
+                        case "Integer":
+                            res.append("int ");
+                            break;
+                        case "Long":
+                            res.append("long ");
+                            break;
+                        case "Byte":
+                            res.append("byte ");
+                            break;
+                        case "Float":
+                            res.append("float ");
+                            break;
+                        case "Double":
+                            res.append("double ");
+                            break;
+                        case "Boolean":
+                            res.append("boolean ");
+                            break;
+                        case "String":
+                            res.append("String ");
+                            break;
+                        default:
+                            throw new RuntimeException("Incorrect type in file " + name);
+                    }
                 }
-            }
-            res.setLength(res.length() - 1);
-            out.write((res.toString()).getBytes("UTF-8"));
-        } catch (IOException e) {
-            throw new IOException("Cannot create file " + types.getAbsolutePath(), e);
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (Throwable e) {
-// not OK
-                }
+                res.setLength(res.length() - 1);
+                out.write((res.toString()).getBytes("UTF-8"));
+            } catch (IOException e) {
+                throw new IOException("Cannot create file " + types.getAbsolutePath(), e);
             }
         }
     }
@@ -380,7 +372,7 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
             try {
                 str.close();
             } catch (Throwable e) {
-// not OK
+                // not OK
             }
         }
         return str.toString();

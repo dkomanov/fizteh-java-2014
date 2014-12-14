@@ -35,6 +35,7 @@ public class DBaseProviderTest {
 
     @Test
     public void testCheckTableName() {
+        assertTrue(test.checkTableName("qwer"));
         assertFalse(test.checkTableName(".qwer"));
         assertFalse(test.checkTableName("..qwer"));
         assertFalse(test.checkTableName("/qwer"));
