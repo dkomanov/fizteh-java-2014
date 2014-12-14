@@ -23,10 +23,13 @@ public class CommandListDistribute extends CommandTableProviderExtended {
         List<String> listOfKeys = currentTable.list();
         int counter = 0;
         for (String oneString : listOfKeys) {
-            System.out.println(oneString);
+            System.out.print(oneString);
             if (++counter < listOfKeys.size()) {
-                System.out.println(", ");
+                System.out.print(", ");
             }
+        }
+        if (counter > 0) {
+            System.out.println();
         }
         return true;
     }

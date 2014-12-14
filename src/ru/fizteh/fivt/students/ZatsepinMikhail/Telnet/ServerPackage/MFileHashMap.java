@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.AbstractStoreable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
@@ -10,7 +11,10 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesU
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.shell.FileUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,7 +26,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class MFileHashMap implements TableProviderExtended, AutoCloseable {
     private String dataBaseDirectory;
     private HashMap<String, FileMap> tables;
-    private HashMap<String, FileMap> closedTables;
     private FileMap currentTable;
     private ReentrantReadWriteLock lockForCreateAndGet;
     private boolean isClosed;
@@ -30,10 +33,9 @@ public class MFileHashMap implements TableProviderExtended, AutoCloseable {
     public MFileHashMap(String newDirectory) throws IOException {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
-        closedTables = new HashMap<>();
         lockForCreateAndGet = new ReentrantReadWriteLock();
-        isClosed = false;
         init();
+        isClosed = false;
     }
 
     @Override
@@ -42,13 +44,10 @@ public class MFileHashMap implements TableProviderExtended, AutoCloseable {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
+
         lockForCreateAndGet.readLock().lock();
-        FileMap returnValue;
+        Table returnValue;
         if (tables.containsKey(name)) {
-            if (tables.get(name).isClosed()) {
-                returnValue = FileMap.createIdenticalButOpened(tables.get(name));
-                tables.put(name, returnValue);
-            }
             returnValue = tables.get(name);
         } else {
             returnValue = null;
@@ -65,18 +64,17 @@ public class MFileHashMap implements TableProviderExtended, AutoCloseable {
         }
         TypesUtils.checkTypes(columnTypes);
 
-        lockForCreateAndGet.writeLock().lock();
-        Table returnValue;
-        if (tables.containsKey(name)) {
-            returnValue = null;
-        } else {
-            Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
-            Path pathOfNewTableSignatureFile = Paths.get(dataBaseDirectory, name, "signature.tsv");
-            if (Files.exists(pathOfNewTable) & Files.isDirectory(pathOfNewTable)) {
-                lockForCreateAndGet.writeLock().unlock();
-                throw new IllegalArgumentException("this directory already exists");
-            }
-            try {
+        try {
+            lockForCreateAndGet.writeLock().lock();
+            Table returnValue;
+            if (tables.containsKey(name)) {
+                returnValue = null;
+            } else {
+                Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
+                Path pathOfNewTableSignatureFile = Paths.get(dataBaseDirectory, name, "signature.tsv");
+                if (Files.exists(pathOfNewTable) & Files.isDirectory(pathOfNewTable)) {
+                    throw new IllegalArgumentException("this directory already exists");
+                }
                 Files.createDirectory(pathOfNewTable);
                 Files.createFile(pathOfNewTableSignatureFile);
                 try (FileWriter fileOut = new FileWriter(pathOfNewTableSignatureFile.toString())) {
@@ -85,13 +83,11 @@ public class MFileHashMap implements TableProviderExtended, AutoCloseable {
                 FileMap newTable = new FileMap(pathOfNewTable.toString(), columnTypes, this);
                 tables.put(name, newTable);
                 returnValue = newTable;
-            } catch (IOException e) {
-                lockForCreateAndGet.writeLock().unlock();
-                throw new IOException();
             }
+            return returnValue;
+        } finally {
+            lockForCreateAndGet.writeLock().unlock();
         }
-        lockForCreateAndGet.writeLock().unlock();
-        return returnValue;
     }
 
     @Override
@@ -100,16 +96,18 @@ public class MFileHashMap implements TableProviderExtended, AutoCloseable {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-        lockForCreateAndGet.writeLock().lock();
-        if (tables.containsKey(name)) {
-            Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
-            tables.remove(name);
-            currentTable = null;
-            FileUtils.rmdir(pathForRemoveTable);
+        try {
+            lockForCreateAndGet.writeLock().lock();
+            if (tables.containsKey(name)) {
+                Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
+                tables.remove(name);
+                currentTable = null;
+                FileUtils.rmdir(pathForRemoveTable);
+            } else {
+                throw new IllegalStateException("table \'" + name + "\' doesn't exist");
+            }
+        } finally {
             lockForCreateAndGet.writeLock().unlock();
-        } else {
-            lockForCreateAndGet.writeLock().unlock();
-            throw new IllegalStateException("table \'" + name + "\' doesn't exist");
         }
     }
 
@@ -147,7 +145,7 @@ public class MFileHashMap implements TableProviderExtended, AutoCloseable {
         for (int i = 0; i < table.getColumnsCount(); ++i) {
             if (!table.getColumnType(i).equals(value.getColumnAt(i).getClass())) {
                 throw new ColumnFormatException("need: " + table.getColumnType(i)
-                    + ", but got:" + value.getColumnAt(i).getClass());
+                        + ", but got:" + value.getColumnAt(i).getClass());
             }
         }
         return Serializator.serialize(table, value);
@@ -189,12 +187,7 @@ public class MFileHashMap implements TableProviderExtended, AutoCloseable {
         return currentTable;
     }
 
-    @Override
-    public void setCurrentTable(Table newTable) {
-        currentTable = (FileMap) newTable;
-    }
-
-    public boolean init() throws IOException {
+    public boolean init() {
         String[] listOfFiles = new File(dataBaseDirectory).list();
         for (String oneFile: listOfFiles) {
             Path oneTablePath = Paths.get(dataBaseDirectory, oneFile);
@@ -225,18 +218,6 @@ public class MFileHashMap implements TableProviderExtended, AutoCloseable {
         }
         return allRight;
     }
-
-
-
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "[" + Paths.get(dataBaseDirectory).toAbsolutePath().toString() + "]";
-    }
-
-    /*
-    private methods
-    */
 
     private void assertNotClosed() throws IllegalStateException {
         if (isClosed) {

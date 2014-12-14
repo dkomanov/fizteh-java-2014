@@ -22,7 +22,6 @@ public class CommandExecutor {
         shellCommands.put("rollback", new CommandRollback());
         shellCommands.put("show", new CommandShowTables());
         shellCommands.put("size", new CommandSize());
-        shellCommands.put("use", new CommandUse());
         shellCommands.put("describe", new CommandDescribe());
         shellCommands.put("current", new CommandCurrentTable());
         shellCommands.put("uncomm-changes", new CommandNumberOfUncommittedChanges());
@@ -39,7 +38,7 @@ public class CommandExecutor {
             if (parsedArguments[0].equals("put")) {
                 if (oneCommand.contains("<")) {
                     String valueForPut = oneCommand.trim().substring(oneCommand.indexOf('<'));
-                    parsedArguments[2] = valueForPut;
+                    parsedArguments[3] = valueForPut;
                 }
             }
             if (parsedArguments.length == 0 || parsedArguments[0].equals("")) {

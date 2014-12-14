@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface TableProviderExtended extends TableProvider, Closeable {
     Table getCurrentTable();
-    void setCurrentTable(Table newTable);
     List<String> showTables();
 }
