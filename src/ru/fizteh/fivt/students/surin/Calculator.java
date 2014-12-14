@@ -159,16 +159,22 @@ public class Calculator {
         return res;
     }
 
-    public double run(String arg) throws ParseException {
+    public double calculate(String arg) throws ParseException {
         ArrayList<String> tk = split(arg);
         return calcExpr(tk, 0, tk.size(), Operator.MINPRIORITY);
     }
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         if (args.length != 1) {
+            System.err.println("invalid number of arguments");
             System.exit(2);
         }
-        System.out.format("%f", (new Calculator()).run(args[0]));
+        try {
+            System.out.format("%f", (new Calculator()).calculate(args[0]));
+        } catch (ParseException e) {
+            System.err.format("parse error in token %d: %s", e.getErrorOffset(), e.getMessage());
+            System.exit(2);
+        }
     }
 
 }
