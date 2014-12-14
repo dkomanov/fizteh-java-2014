@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 public class UnitTestsForMyTable {
 
-    private final String testDir = System.getProperty("user.dir") + File.separator + "DbTestDir";
+    private final String testDir = System.getProperty("java.io.tmpdir") + File.separator + "DbTestDir";
     private final String testKey1 = "ключ тестирования";
     private final String testKey2 = "тестирования ключ";
     private Table test;

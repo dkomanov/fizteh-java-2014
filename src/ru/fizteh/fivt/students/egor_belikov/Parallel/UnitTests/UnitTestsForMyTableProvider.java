@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNull;
 
 public class UnitTestsForMyTableProvider {
     private final Path testDirectory
-            = Paths.get(System.getProperty("user.dir"));
+            = Paths.get(System.getProperty("java.io.tmpdir"));
     private final String testTableName = "tableForTesting";
     private String tempString = "[1,\"1\"]";
     private List<Class<?>> sig;
