@@ -1,9 +1,12 @@
-package storeable.util;
+package parallel.util;
 
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -15,6 +18,8 @@ import storeable.structured.TableProvider;
 public class MyTableProvider implements TableProvider{
     File root;
     MyTable currentTable;
+    Map<String, ReentrantReadWriteLock> locks = new HashMap<String, ReentrantReadWriteLock>();
+    ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     public MyTableProvider(File file) {
         root = file;
@@ -28,19 +33,27 @@ public class MyTableProvider implements TableProvider{
         if (name == null) {
             throw new IllegalArgumentException("Bad name");
         }
-
-        File tableFile = new File(root, name);
-        if (!tableFile.isDirectory()) {
-            System.out.println("table not exists");
-            return null;
-        } else {
-            if (currentTable != null && currentTable.diff() != 0) {
-                System.out.println(currentTable.diff() + " unsaved changes");
-                throw new IllegalArgumentException(currentTable.diff() + " unsaved changes");
+        
+        lock.readLock().lock();
+        try {
+            File tableFile = new File(root, name);
+            if (!tableFile.isDirectory()) {
+                return null;
+            } else {
+                if (currentTable != null 
+                        && currentTable.getNumberOfUncommittedChanges() != 0) {
+                    throw new IllegalArgumentException(currentTable.
+                            getNumberOfUncommittedChanges() + " unsaved changes");
+                }
             }
-                System.out.println("using " + name);
+            if (locks.get(name) == null) {
+                locks.put(name, new ReentrantReadWriteLock(true));
+            }
+            currentTable = new MyTable(tableFile, this, locks.get(name));
+        } finally {
+            lock.readLock().unlock();
         }
-        currentTable = new MyTable(tableFile, this);
+
         return currentTable;
     }
 
@@ -49,17 +62,24 @@ public class MyTableProvider implements TableProvider{
         if (name == null) {
             throw new IllegalArgumentException("Bad name");
         }
-
-        File tableFile = new File(root, name);
-        if (tableFile.exists()) {
-            System.out.println("tablename exists");
-            return null;
-        } else {
-            tableFile.mkdir();
-            System.out.println("created");
-            FolderData.saveSignature(tableFile, columnTypes);
+        
+        lock.writeLock().lock();
+        try {
+            File tableFile = new File(root, name);
+            if (tableFile.exists()) {
+                return null;
+            } else {
+                tableFile.mkdir();
+                FolderData.saveSignature(tableFile, columnTypes);
+            }
+            if (locks.get(name) == null) {
+                locks.put(name, new ReentrantReadWriteLock(true));
+            }
+            currentTable = new MyTable(tableFile, this, locks.get(name));
+        } finally {
+            lock.writeLock().unlock();
         }
-        currentTable = new MyTable(tableFile, this);
+
         return currentTable;
     }
     
@@ -68,32 +88,32 @@ public class MyTableProvider implements TableProvider{
         if (name == null) {
             throw new IllegalArgumentException("Bad name");
         }
-
+        
+        lock.writeLock().lock();
         File tableFile = new File(root, name);
         if (!tableFile.isDirectory()) {
-            System.out.println("tablename not exist");
             throw new IllegalStateException("Table doesn't exist");
-        } else {
-            try {
-                File signature = new File(tableFile, "signature.tsv");
-                signature.delete();
-                for (int i = 0; i < 16; i++) {
-                    File folder = new File(tableFile, i + ".dir");
-                    if (folder.exists()) {
-                        for (int j = 0; j < 16; j++) {
-                            File file = new File(folder, j + ".dat");
-                            if (file.exists()) {
-                                file.delete();
-                            }
+        }
+        try {
+            File signature = new File(tableFile, "signature.tsv");
+            signature.delete();
+            for (int i = 0; i < 16; i++) {
+                File folder = new File(tableFile, i + ".dir");
+                if (folder.exists()) {
+                    for (int j = 0; j < 16; j++) {
+                        File file = new File(folder, j + ".dat");
+                        if (file.exists()) {
+                            file.delete();
                         }
-                        folder.delete();
                     }
+                    folder.delete();
                 }
-                tableFile.delete();
-                System.out.println("dropped");
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Some of directories is not empty");
             }
+            tableFile.delete();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Some of directories is not empty");
+        } finally {
+            lock.writeLock().unlock();
         }
     }
     
@@ -160,18 +180,23 @@ public class MyTableProvider implements TableProvider{
 
     @Override
     public List<String> getTableNames() {
+        lock.readLock().lock();
         List<String> tables = new ArrayList<String>();
+        try {
 
-        for (File table : root.listFiles()) {
-            if (table.getName().equals(root.getName())) {
-                tables.add(table.getName());
-            } else if (table.isDirectory()) {
-                try {
+            for (File table : root.listFiles()) {
+                if (table.getName().equals(root.getName())) {
                     tables.add(table.getName());
-                } catch (Exception e) {
-                    tables.add("Problem with one of Data Bases");
+                } else if (table.isDirectory()) {
+                    try {
+                        tables.add(table.getName());
+                    } catch (Exception e) {
+                        tables.add("Problem with one of Data Bases");
+                    }
                 }
             }
+        } finally {
+            lock.readLock().unlock();
         }
         return tables;
     }

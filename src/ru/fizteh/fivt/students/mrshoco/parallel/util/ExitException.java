@@ -1,4 +1,4 @@
-package storeable.util;
+package parallel.util;
 
 @SuppressWarnings("serial")
 public class ExitException extends Exception {

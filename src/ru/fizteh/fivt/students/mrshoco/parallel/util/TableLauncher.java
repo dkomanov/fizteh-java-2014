@@ -1,4 +1,4 @@
-package storeable.util;
+package parallel.util;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,18 +38,29 @@ public class TableLauncher {
                 strings = Arrays.copyOfRange(cmd, 2, cmd.length);
 
                 table = tableProvider.createTable(cmd[1], TypesTransformer.toListTypes(strings));
+                if (table == null) {
+                    System.out.println("tablename exists");
+                } else {
+                    System.out.println("created");
+                }
                 break;
             case "drop":
                 if (cmd.length != 2) {
                     throw new Exception("Wrong number of arguments");
                 }
                 tableProvider.removeTable(cmd[1]);
+                System.out.println("dropped");
                 break;
             case "use":
                 if (cmd.length != 2) {
                     throw new Exception("Wrong number of arguments");
                 }
                 table = tableProvider.getTable(cmd[1]);
+                if (table == null) {
+                    System.out.println("table not exists");
+                } else {
+                    System.out.println("using " + table.getName());
+                }
                 break;
             case "show":
                 if (cmd.length != 2 || !cmd[1].equals("tables")) {
@@ -104,25 +115,27 @@ public class TableLauncher {
                 if (cmd.length != 1) {
                     throw new IndexOutOfBoundsException("Wrong number of arguments");
                 }
-                table.list();
+                for (String el : table.list()) {
+                    System.out.println(el);
+                }
                 break;
             case "size":
                 if (cmd.length != 1) {
                     throw new IndexOutOfBoundsException("Wrong number of arguments");
                 }
-                table.size();
+                System.out.println(table.size());
                 break;
             case "commit":
                 if (cmd.length != 1) {
                     throw new IndexOutOfBoundsException("Wrong number of arguments");
                 }
-                table.commit();
+                System.out.println(table.commit());
                 break;
             case "rollback":
                 if (cmd.length != 1) {
                     throw new IndexOutOfBoundsException("Wrong number of arguments");
                 }
-                table.rollback();
+                System.out.println(table.rollback());
                 break;
             case "exit":
                 if (cmd.length != 1) {

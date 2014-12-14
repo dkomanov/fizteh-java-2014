@@ -1,27 +1,26 @@
-package storeable.util;
+package parallel.util;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import storeable.structured.ColumnFormatException;
-import storeable.structured.Storeable;
-import storeable.structured.Table;
-import storeable.structured.TableProvider;
+import storeable.structured.*;
 
 public class MyTable implements Table {
     TableProvider myTableProvider;
     File tableRoot;
     Map<String, Storeable> data;
     List<Class<?>> types;
+    ReentrantReadWriteLock lock;
+    ThreadLocal<Diff> diff;
 
-    public MyTable(File tableFile, TableProvider tableProvider) {
+    public MyTable(File tableFile, TableProvider tableProvider, 
+                                                ReentrantReadWriteLock passedLock) {
+        lock = passedLock;
         myTableProvider = tableProvider;
         try {
             types = FolderData.loadSignature(tableFile);
@@ -33,9 +32,20 @@ public class MyTable implements Table {
             throw new IllegalArgumentException("Error while parsing values");
         }
         tableRoot = tableFile;
+        
+        final MyTable thisTable = this;
+        diff = new ThreadLocal<Diff>() {
+            @Override
+            protected Diff initialValue() {
+                return new Diff(thisTable, data, lock);
+            }
+        };
     }
     
     private Storeable copy(Storeable storeable) {
+        if (storeable == null) {
+            return null;
+        }
         try {
             return myTableProvider.deserialize(this,
                     myTableProvider.serialize(this, storeable));
@@ -54,12 +64,8 @@ public class MyTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("Bad key value");
         }
-
-        if (data.containsKey(key)) {
-            return data.get(key);
-        } else {
-            return null;
-        }
+        Storeable value = copy(diff.get().get(key));
+        return value;
     }
 
     @Override
@@ -68,14 +74,9 @@ public class MyTable implements Table {
             throw new IllegalArgumentException("Bad key value");
         }
 
-        if (data.containsKey(key)) {
-                Storeable oldValue = copy(data.get(key));
-                data.put(key, copy(value));
-                return oldValue;
-        } else {
-            data.put(key, copy(value));
-            return null;
-        }
+        Storeable oldValue = get(key);
+        diff.get().put(key, copy(value));
+        return oldValue;
     }
 
     @Override
@@ -84,34 +85,25 @@ public class MyTable implements Table {
             throw new IllegalArgumentException("Bad key value");
         }
 
-        if (data.containsKey(key)) {
-            Storeable oldValue = data.get(key);
-            data.remove(key);
-            return oldValue;
-        } else {
-            return null;
-        }
+        Storeable oldValue = get(key);
+        diff.get().remove(key);
+        return oldValue;
     }
 
     @Override
     public int size() {
-        List<String> keyList = new ArrayList<String>();
-        for (String key : data.keySet()) {
-            keyList.add(key);
-        }
-        System.out.println(keyList.size());
-        return keyList.size();
+        return diff.get().size();
     }
     
     @Override
-    public int commit() {
-        int diffSize = diff();
-        FolderData.saveDb(serializeMap(data), tableRoot);
-        System.out.println(diffSize);
+    public int commit() throws IOException {
+        int diffSize = diff.get().diff();
+        diff.get().commit();
+        diff.get().clear();
         return diffSize;
     }
 
-    private Map<String, String> serializeMap(Map<String, Storeable> map) {
+    protected Map<String, String> serializeMap(Map<String, Storeable> map) {
         Map<String, String> hashMap = new HashMap<String, String>();
         for (Map.Entry<String, Storeable> entry : map.entrySet()) {
             hashMap.put(entry.getKey(), myTableProvider.serialize(this, entry.getValue()));
@@ -122,18 +114,13 @@ public class MyTable implements Table {
 
     @Override
     public int rollback() {
-        int diffSize = diff();
-        try {
-            data = deserializeMap(FolderData.loadDb(tableRoot));
-        } catch (ParseException e) {
-            System.err.println("failed to load old data");
-        }
-        System.out.println(diffSize);
+        int diffSize = diff.get().diff();
+        diff.get().clear();
         return diffSize;
     }
 
 
-    private Map<String, Storeable> deserializeMap(Map<String, String> map) 
+    protected Map<String, Storeable> deserializeMap(Map<String, String> map) 
                                                             throws ParseException {
         Map<String, Storeable> hashMap = new HashMap<String, Storeable>();
         for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -143,37 +130,18 @@ public class MyTable implements Table {
         return hashMap;
     }
 
-    protected int diff() {
-        Map<String, String> oldData = FolderData.loadDb(tableRoot);
-        Set<String> allKeys = new HashSet<String>(oldData.keySet());
-        Map<String, String> sData = serializeMap(data);
-        allKeys.addAll(sData.keySet());
-        
-        int size = 0;
-
-        for (String k : allKeys) {
-            if ((sData.containsKey(k) && !oldData.containsKey(k))
-                    || (!sData.containsKey(k) && oldData.containsKey(k))
-                        || (!sData.get(k).equals(oldData.get(k)))) {
-                size++;
-            }
-        }
-        return size;
+    protected File getTableRoot() {
+        return tableRoot;
     }
 
     @Override
     public List<String> list() {
-        List<String> keyList = new ArrayList<String>();
-        for (String key : data.keySet()) {
-            System.out.println(key);
-            keyList.add(key);
-        }
-        return keyList;
+        return diff.get().list();
     }
 
     @Override
     public int getNumberOfUncommittedChanges() {
-        return diff();
+        return diff.get().diff();
     }
 
     @Override

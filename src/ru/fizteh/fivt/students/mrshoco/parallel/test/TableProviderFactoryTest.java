@@ -1,11 +1,11 @@
-package storeable.test;
+package parallel.test;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import storeable.structured.TableProviderFactory;
-import storeable.util.MyTableProviderFactory;
+import parallel.util.MyTableProviderFactory;
 
 import java.io.IOException;
 

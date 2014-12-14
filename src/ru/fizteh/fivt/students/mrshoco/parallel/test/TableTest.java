@@ -1,16 +1,17 @@
-package storeable.test;
+package parallel.test;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.junit.Assert.assertThat;
 
 import storeable.structured.*;
-import storeable.util.MyTableProviderFactory;
+import parallel.util.MyTableProviderFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -68,6 +69,7 @@ public class TableTest {
         Storeable old = table.put("key", value);
         assertEquals(old.getColumnAt(0), 5);
         assertEquals(table.get("key").getColumnAt(0), 2);
+        assertNull(table.get("nothere"));
     }
 
     @Test
@@ -167,13 +169,17 @@ public class TableTest {
     }
 
     @Test
-    public void testList() {
+    public void testList() throws IOException {
         Storeable value = provider.createFor(table);
         table.put("1", value);
         table.put("2", value);
         table.put("3", value);
         assertEquals(3, table.list().size());
-        assertTrue(table.list().containsAll(new LinkedList<String>(Arrays.asList("1", "2", "3"))));
+        assertThat(table.list(), containsInAnyOrder("1", "2", "3"));
+        table.commit();
+        table.remove("1");
+        assertEquals(2, table.list().size());
+        assertThat(table.list(), containsInAnyOrder("2", "3"));
     }
 
     @Test
