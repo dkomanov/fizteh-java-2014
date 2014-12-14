@@ -57,7 +57,7 @@ public class FileMap implements Table, AutoCloseable {
      */
     public FileMap(String newDirectory, List<Class<?>> newTypeList, TableProvider newParent) throws IOException {
         directoryOfTable = newDirectory;
-        stableData = new HashMap<String, Storeable>();
+        stableData = new HashMap<>();
         typeList = newTypeList;
         numberOfColumns = typeList.size();
         parent = newParent;
@@ -70,8 +70,7 @@ public class FileMap implements Table, AutoCloseable {
 
     public static FileMap createIdenticalButOpened(FileMap closedTable) {
         try {
-            FileMap result = new FileMap(closedTable.directoryOfTable, closedTable.typeList, closedTable.parent);
-            return result;
+            return new FileMap(closedTable.directoryOfTable, closedTable.typeList, closedTable.parent);
         } catch (IOException e) {
             //suppress
         }
@@ -200,7 +199,7 @@ public class FileMap implements Table, AutoCloseable {
         tmpBufferAdded.keySet().retainAll(stableData.keySet());
         tmpChangedData.putAll(tmpBufferAdded);
 
-        removedData.get().retainAll(stableData.entrySet());
+        removedData.get().retainAll(stableData.keySet());
         int result = tmpChangedData.size()
                 + removedData.get().size() + tmpAddedData.size();
         stableData.keySet().removeAll(removedData.get());

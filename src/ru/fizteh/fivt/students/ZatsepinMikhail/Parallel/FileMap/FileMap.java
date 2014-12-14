@@ -202,7 +202,7 @@ public class FileMap implements Table {
         tmpBufferAdded.keySet().retainAll(stableData.keySet());
         tmpChangedData.putAll(tmpBufferAdded);
 
-        removedData.get().retainAll(stableData.entrySet());
+        removedData.get().retainAll(stableData.keySet());
         int result = tmpChangedData.size()
                 + removedData.get().size() + tmpAddedData.size();
         stableData.keySet().removeAll(removedData.get());
