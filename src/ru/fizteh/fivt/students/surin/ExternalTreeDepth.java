@@ -7,9 +7,8 @@ import java.util.ArrayList;
  * Created by mike on 11.12.14.
  */
 public class ExternalTreeDepth {
-    static Integer root = null;
 
-    static void findRoot(File edges, int n) throws IOException {
+    static Integer findRoot(File edges, int n) throws IOException {
         File buf1 = File.createTempFile("iterate", ".tmp");
         File buf2 = File.createTempFile("iterate", ".tmp");
         try (ObjectOutputStream os = new ObjectOutputStream(buf1, ExternalTreeDepth::writeInt);
@@ -28,29 +27,29 @@ public class ExternalTreeDepth {
             }
             throw e;
         }
+        Integer root = null;
         try {
             new ExternalSorter<Integer>(buf1, buf2, ExternalTreeDepth::readInt, ExternalTreeDepth::writeInt).run();
-            // anonymous class because we need internal state (prev)
-            IterTools.Consumer consumer =
-                    new IterTools.Consumer() {
-                        int prev = 0;
 
-                        @Override
-                        public void consume(Object o) throws IOException {
-                            Integer cur = (Integer) o;
-                            if (cur - prev > 1) {
-                                ExternalTreeDepth.root = prev + 1;
-                            }
-                            prev = cur;
-                        }
-                    };
-
-            IterTools.forEach(new ObjectInputStream(buf2, ExternalTreeDepth::readInt), consumer);
+            try (ObjectInputStream<Integer> inp =
+                         new ObjectInputStream<>(buf2, ExternalTreeDepth::readInt)) {
+                Integer cur;
+                Integer prev = 0;
+                while ((cur = inp.read()) != null) {
+                    if (cur - prev > 1) {
+                        root = prev + 1;
+                    }
+                    prev = cur;
+                }
+            } catch (IOException e) {
+                throw e;
+            }
         } finally {
             if (!buf1.delete() || !buf2.delete()) {
                 System.err.println("failed to delete temporary files");
             }
         }
+        return root;
     }
 
     static void iterate(File parents) throws IOException {
@@ -115,8 +114,6 @@ public class ExternalTreeDepth {
         return new Pair<>(readInt(is), new Pair<>(readInt(is), readInt(is)));
     }
 
-    static Integer result;
-
     public static void main(String[] args) {
         if (args.length != 2) {
             System.err.println("2 arguments needed");
@@ -133,6 +130,7 @@ public class ExternalTreeDepth {
         }
         File parents = null;
         File tmp = null;
+        Integer result = null;
         try {
             parents = File.createTempFile("tree", ".tmp");
             tmp = File.createTempFile("tree", ".tmp");
@@ -154,7 +152,7 @@ public class ExternalTreeDepth {
                     }
                 }
                 inp.close();
-                findRoot(infile, n);
+                Integer root = findRoot(infile, n);
                 assert root != null;
 
                 os.write(new Pair<>(root, new Pair<>(root, 0)));
@@ -170,14 +168,16 @@ public class ExternalTreeDepth {
                 iterate(parents);
                 d *= 2;
             }
-            result = Integer.MIN_VALUE;
-            IterTools.forEach(
-                    new ObjectInputStream(parents, ExternalTreeDepth::readTriple),
-                    (Object o) -> {
-                        Pair<Integer, Pair<Integer, Integer>> trp = (Pair<Integer, Pair<Integer, Integer>>) o;
-                        result = Math.max(result, trp.second.second);
-                    }
-            );
+            try (ObjectInputStream<Pair<Integer, Pair<Integer, Integer>>> is =
+                         new ObjectInputStream(parents, ExternalTreeDepth::readTriple)) {
+                result = Integer.MIN_VALUE;
+                Pair<Integer, Pair<Integer, Integer>> trp;
+                while ((trp = is.read()) != null) {
+                    result = Math.max(result, trp.second.second);
+                }
+            } catch (IOException e) {
+                throw e;
+            }
         } catch (IOException e) {
             parents.delete();
             tmp.delete();
