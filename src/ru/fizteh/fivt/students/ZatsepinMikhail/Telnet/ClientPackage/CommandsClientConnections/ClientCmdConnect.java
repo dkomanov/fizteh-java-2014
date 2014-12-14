@@ -1,9 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClientConnections;
 
 import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandExecutor;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandExtended;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProviderFactory;
 
 import java.io.IOException;
 

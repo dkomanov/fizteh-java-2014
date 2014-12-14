@@ -273,4 +273,3 @@ public class RealRemoteTableProviderTest {
         assertTrue(remoteProvider.describeTable(TABLE_NAME).equals("int String"));
     }
 }
-

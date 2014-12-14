@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.MFileHashMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.PrintStream;

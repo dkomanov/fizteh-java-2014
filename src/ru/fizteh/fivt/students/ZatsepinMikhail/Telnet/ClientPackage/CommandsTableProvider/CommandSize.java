@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsTableProvider;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.MultiFileHashMap.MFileHashMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProvider;
 
