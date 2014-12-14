@@ -25,10 +25,8 @@ public class ListenThread extends Thread {
     public void run() {
         started = true;
         while (started) {
-            System.err.println("i am listening");
             try {
                 Socket client = server.accept();
-                System.err.println("accept new client: " + client.getRemoteSocketAddress());
                 TalkingThread newClientThread = new TalkingThread(client, dataBase);
                 clients.add(newClientThread);
                 newClientThread.start();

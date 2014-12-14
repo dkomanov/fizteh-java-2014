@@ -20,7 +20,7 @@ public class CommandShowTables extends CommandTableProviderExtended {
         System.out.println("table_name row_count");
         List<String> tablesDescription = dataBase.getTableNames();
         for (String oneTable : tablesDescription) {
-            System.out.println(oneTable);
+            System.out.println(oneTable + " " + dataBase.getTable(oneTable).size());
         }
         return true;
     }

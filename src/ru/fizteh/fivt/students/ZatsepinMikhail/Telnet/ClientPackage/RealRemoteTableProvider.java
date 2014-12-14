@@ -107,7 +107,7 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-        output.println("remove " + name);
+        output.println("drop " + name);
         String message = input.nextLine();
         if (!"dropped".equals(message)) {
             throw new IllegalStateException("table \'" + name + "\' doesn't exist");
