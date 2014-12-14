@@ -16,6 +16,7 @@ public class Status {
     Object object;
     private RemoteTableProvider remote;
     private TableProvider serverTable;
+    private Object monitor;
 
     public Status(Object object) {
         this.object = object;
@@ -63,5 +64,13 @@ public class Status {
 
     public void setServerTable(TableProvider serverTable) {
         this.serverTable = serverTable;
+    }
+
+    public void setMonitor(Object monitor) {
+        this.monitor = monitor;
+    }
+
+    public Object getMonitor() {
+        return monitor;
     }
 }

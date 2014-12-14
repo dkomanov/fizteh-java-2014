@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet;
 
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.ServerMain;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -21,6 +22,7 @@ public class StopCommand implements Command {
         }
         ss.close();
         System.out.println("stopped at " + ss.getLocalPort());
+        ServerMain.closeServer();
         return 0;
     }
 

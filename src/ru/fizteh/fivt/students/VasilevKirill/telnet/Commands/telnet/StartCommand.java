@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet;
 
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
+import ru.fizteh.fivt.students.VasilevKirill.telnet.ServerMain;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -36,6 +37,10 @@ public class StartCommand implements Command {
         }
         status.setServerSocket(new ServerSocket(port));
         System.out.println("started at " + port);
+        synchronized (status.getMonitor()) {
+            ServerMain.startServer();
+            status.getMonitor().notifyAll();
+        }
         return 0;
     }
 

@@ -54,42 +54,6 @@ public class ClientThread implements Runnable {
             while (!endOfCycle) {
                 String firstCommand = in.readUTF();
                 String[] args = firstCommand.split("\\s+");
-                /*switch (args[0]) {
-                    case "get":
-                        getCommand(out, args);
-                        break;
-                    case "create":
-                        createCommand(out, args);
-                        break;
-                    case "drop":
-                        removeCommand(out, args);
-                        break;
-                    case "close":
-                        closeCommand();
-                        break;
-                    case "put":
-                        tableCommand(args);
-                        break;
-                    case "remove":
-                        tableCommand(args);
-                        break;
-                    case "commit":
-                        tableCommand(args);
-                        break;
-                    case "rollback":
-                        tableCommand(args);
-                        break;
-                    case "disconnect":
-                        endOfCycle = true;
-                        break;
-                    case "set":
-                        setCommand(args);
-                        break;
-                    case "alive":
-                        isAlive(out);
-                        break;
-                    default:
-                }*/
                 if (args[0].equals("disconnect")) {
                     endOfCycle = true;
                 }
