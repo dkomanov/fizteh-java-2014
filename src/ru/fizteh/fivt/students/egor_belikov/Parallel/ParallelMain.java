@@ -2,15 +2,11 @@ package ru.fizteh.fivt.students.egor_belikov.Parallel;
 
 import com.google.common.base.Joiner;
 import javafx.util.Pair;
-import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.Table;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
 
-import static ru.fizteh.fivt.students.egor_belikov.Parallel.MySerializer.returningClass;
 import static ru.fizteh.fivt.students.egor_belikov.Parallel.MyTableProvider.listOfTables;
 import ru.fizteh.fivt.students.egor_belikov.Parallel.Commands.*;
 
@@ -100,7 +96,7 @@ public class ParallelMain {
                 execute(s);
             }
         } catch (Exception exception) {
-            throw new Exception("StoreableMain: some exception in pack method");
+            throw new Exception("ParallelMain: some exception in pack method");
         }
     }
 
