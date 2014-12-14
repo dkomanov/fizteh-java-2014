@@ -1,15 +1,18 @@
 package ru.fizteh.fivt.students.egor_belikov.Storeable;
 
-import java.io.*;
-import java.text.ParseException;
-import java.util.*;
-
 import com.google.common.base.Joiner;
+import javafx.util.Pair;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.*;
+
 import static ru.fizteh.fivt.students.egor_belikov.Storeable.MySerializer.returningClass;
-import static ru.fizteh.fivt.students.egor_belikov.Storeable.MyTableProvider.*;
+import static ru.fizteh.fivt.students.egor_belikov.Storeable.MyTableProvider.listOfTables;
+import ru.fizteh.fivt.students.egor_belikov.Storeable.Commands.*;
 
 public class StoreableMain {
     public static String currentPath;
@@ -18,15 +21,19 @@ public class StoreableMain {
 
 
     public static String currentTable;
-    static String separator;
+    private static TreeMap<String, Pair<Boolean, Integer>> listOfCommandsDescription;
+    private static TreeMap<String, Command> listOfCommands;
 
 
-    public void main(String[] args) throws Exception {
-        separator = File.separator;
-        currentPath = System.getProperty("fizteh.db.dir");
-
+    public static void main(String[] args) {
+        currentPath = System.getProperty("fizteh.db.dir");//System.getProperty("user.dir") + File.separator + "db";
+        initListsOfCommands();
         MyTableProviderFactory myTableProviderFactory = new MyTableProviderFactory();
-        myTableProvider = (MyTableProvider) myTableProviderFactory.create(currentPath);
+        try {
+            myTableProvider = (MyTableProvider) myTableProviderFactory.create(currentPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (currentPath == null) {
             throw new IllegalArgumentException("Storeable.main: null path");
         }
@@ -53,7 +60,39 @@ public class StoreableMain {
         }
     }
 
-    public void pack(String[] args) {
+    private static void initListsOfCommands() {
+        listOfCommandsDescription = new TreeMap<>();
+        listOfCommandsDescription.put("create", new Pair<>(false, 2));
+        listOfCommandsDescription.put("drop", new Pair<>(false, 2));
+        listOfCommandsDescription.put("put", new Pair<>(true, 2));
+        listOfCommandsDescription.put("get", new Pair<>(true, 3));
+        listOfCommandsDescription.put("use", new Pair<>(false, 2));
+        listOfCommandsDescription.put("show", new Pair<>(false, 2));
+        listOfCommandsDescription.put("remove", new Pair<>(true, 2));
+        listOfCommandsDescription.put("list", new Pair<>(true, 1));
+        listOfCommandsDescription.put("commit", new Pair<>(true, 1));
+        listOfCommandsDescription.put("rollback", new Pair<>(true, 1));
+        listOfCommandsDescription.put("size", new Pair<>(true, 1));
+        listOfCommandsDescription.put("exit", new Pair<>(false, 1));
+
+        listOfCommands = new TreeMap<>();
+        listOfCommands.put("create", new Create());
+        listOfCommands.put("drop", new Drop());
+        listOfCommands.put("put", new Put());
+        listOfCommands.put("get", new Get());
+        listOfCommands.put("use", new Use());
+        listOfCommands.put("show", new Show());
+        listOfCommands.put("remove", new Remove());
+        listOfCommands.put("list", new ListCommand());
+        listOfCommands.put("commit", new Commit());
+        listOfCommands.put("rollback", new Rollback());
+        listOfCommands.put("size", new Size());
+        listOfCommands.put("exit", new Exit());
+
+
+    }
+
+    public static void pack(String[] args) {
         String commands = Joiner.on(" ").join(args);
         String[] splittedCommands = commands.trim().split(";");
         try {
@@ -65,7 +104,7 @@ public class StoreableMain {
         }
     }
 
-    public void interactive() {
+    public static void interactive() {
         Scanner scanner = new Scanner(System.in);
         try  {
             while (true) {
@@ -90,9 +129,26 @@ public class StoreableMain {
         }
     }
 
-    public void execute(String s) throws Exception {
+    public static void execute(String s) throws Exception {
         try {
             String[] args = s.trim().split("\\s+");
+            if (listOfCommands.containsKey(args[0])) {
+                if (listOfCommandsDescription.get(args[0]).getKey() && currentTable == null) {
+                    throw new Exception("no table");
+                }
+                if (!listOfCommandsDescription.get(args[0]).getValue().equals(args.length)) {
+                    throw new Exception(args[0] + ": invalid number of arguments");
+                }
+                listOfCommands.get(args[0]).execute(args, myTableProvider);
+            } else {
+                throw new Exception("Invalid command");
+            }
+            /*
+            if (!listOfCommands.containsKey(args[0])) {
+                throw new Exception("Invalid command");
+            } else {
+
+            }
             if (args[0].equals("get") || args[0].equals("remove") || args[0].equals("list") || args[0].equals("put")
                     || args[0].equals("commit") || args[0].equals("rollback")) {
                 if (currentTable == null) {
@@ -124,7 +180,7 @@ public class StoreableMain {
                     use(args);
                     break;
                 case "show":
-                    show();
+                    show(args);
                     break;
                 case "put":
                     put(args);
@@ -152,7 +208,7 @@ public class StoreableMain {
                     break;
                 default:
                     throw new Exception("Invalid command");
-            }
+            }*/
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
             if (!isInteractiveMode) {
@@ -221,7 +277,10 @@ public class StoreableMain {
         }
     }
 
-    public static void show() {
+    public void show(String args[]) throws Exception {
+        if (!args[1].equals("tables")) {
+            throw new Exception("show: invalid arguments");
+        }
         System.out.println("table_name row_count");
         for (Map.Entry<String, Table> i :  listOfTables.entrySet()) {
             String key = i.getKey();
