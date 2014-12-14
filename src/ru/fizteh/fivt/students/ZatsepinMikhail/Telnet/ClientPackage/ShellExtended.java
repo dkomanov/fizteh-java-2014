@@ -50,7 +50,8 @@ public class ShellExtended extends Shell<RemoteTableProviderFactory> {
                         ended = true;
                         break;
                     }
-                    CommandExtended<RemoteTableProviderFactory> commandToExecute = shellCommands.get(parsedArguments[0]);
+                    CommandExtended<RemoteTableProviderFactory> commandToExecute
+                            = shellCommands.get(parsedArguments[0]);
                     if (commandToExecute != null) {
                         try {
                             if (commandToExecute.getNumberOfArguments() != parsedArguments.length
@@ -65,11 +66,8 @@ public class ShellExtended extends Shell<RemoteTableProviderFactory> {
                             errorOccuried = true;
                         }
                     } else {
-                        if (((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider() == null) {
-                            System.out.println("you are disconnected now");
-                        } else {
-                            interpeter.run(oneCommand, System.out, ((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider());
-                        }
+                        interpeter.run(oneCommand, System.out,
+                                ((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider());
                     }
                 }
                 if (!ended) {

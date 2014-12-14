@@ -22,7 +22,7 @@ public class CommandExecutor {
         shellCommands.put("show", new CommandShowTables());
         shellCommands.put("size", new CommandSize());
         shellCommands.put("use", new CommandUse());
-        //shellCommands.put("describe", new CommandDescribe());
+        shellCommands.put("describe", new CommandDescribe());
     }
 
     public void run(String message, PrintStream output, TableProvider dataBase) {
