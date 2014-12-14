@@ -10,10 +10,13 @@ import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProvider;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Kirill on 06.12.2014.
@@ -45,11 +48,13 @@ public class ClientThread implements Runnable {
             }
             DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            Set<String> tableCommands = fulfilTableCommands();
+            Set<String> providerCommands = fulfilProviderCommands();
             boolean endOfCycle = false;
             while (!endOfCycle) {
                 String firstCommand = in.readUTF();
                 String[] args = firstCommand.split("\\s+");
-                switch (args[0]) {
+                /*switch (args[0]) {
                     case "get":
                         getCommand(out, args);
                         break;
@@ -84,12 +89,25 @@ public class ClientThread implements Runnable {
                         isAlive(out);
                         break;
                     default:
+                }*/
+                if (args[0].equals("disconnect")) {
+                    endOfCycle = true;
+                }
+                if (tableCommands.contains(args[0])) {
+                    tableCommand(args);
+                }
+                if (providerCommands.contains(args[0])) {
+                    Class[] paramTypes = {DataOutputStream.class, String[].class};
+                    try {
+                        Method method = this.getClass().getMethod(args[0] + "Command", paramTypes);
+                        method.invoke(this, out, args);
+                    } catch (Exception e) {
+                        System.out.println("Server couldn't invoke the method with name " + args[0] + "Command");
+                    }
                 }
             }
         } catch (IOException e) {
-            if (e.getMessage().equals("socket closed")) {
-                System.exit(0);
-            } else {
+            if (!e.getMessage().equals("socket closed")) {
                 System.err.println(e.getMessage());
             }
         }
@@ -140,7 +158,7 @@ public class ClientThread implements Runnable {
         }
     }
 
-    public void removeCommand(DataOutputStream out, String[] args) throws IOException {
+    public void dropCommand(DataOutputStream out, String[] args) throws IOException {
         try {
             if (args.length != 2) {
                 throw new IOException("Remove: incorrect arguments");
@@ -153,7 +171,7 @@ public class ClientThread implements Runnable {
         }
     }
 
-    public void closeCommand() {
+    public void closeCommand(DataOutputStream out, String[] args) {
         try {
             synchronized (isClosedMonitor) {
                 ServerMain.closeServer();
@@ -168,7 +186,7 @@ public class ClientThread implements Runnable {
         ((MyTableProvider) tableProvider).handleTable(args);
     }
 
-    public void setCommand(String[] args) throws IOException {
+    public void setCommand(DataOutputStream out, String[] args) throws IOException {
         ((MyTableProvider) tableProvider).setWorkingTable(args[1]);
     }
 
@@ -176,7 +194,7 @@ public class ClientThread implements Runnable {
         return clientInformation;
     }
 
-    public void isAlive(DataOutputStream out) {
+    public void aliveCommand(DataOutputStream out, String[] args) {
         try {
             synchronized (isClosedMonitor) {
                 if (ServerMain.isServerClosed()) {
@@ -188,5 +206,25 @@ public class ClientThread implements Runnable {
         } catch (IOException e) {
             System.out.println("isAlive: failed to send data");
         }
+    }
+
+    private Set<String> fulfilTableCommands() {
+        Set<String> tableCommands = new HashSet<>();
+        tableCommands.add("put");
+        tableCommands.add("remove");
+        tableCommands.add("rollback");
+        tableCommands.add("commit");
+        return tableCommands;
+    }
+
+    private Set<String> fulfilProviderCommands() {
+        Set<String> providerCommands = new HashSet<>();
+        providerCommands.add("get");
+        providerCommands.add("create");
+        providerCommands.add("drop");
+        providerCommands.add("close");
+        providerCommands.add("set");
+        providerCommands.add("alive");
+        return providerCommands;
     }
 }
