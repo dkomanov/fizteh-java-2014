@@ -37,7 +37,7 @@ public class STable implements Table {
                 write.write(type.getSimpleName().getBytes());
             }
 
-        } catch (SecurityException|IOException|ExceptionInInitializerError e) {
+        } catch (SecurityException | IOException | ExceptionInInitializerError e) {
             incorrectFile();
         }
         changes = 0;
@@ -60,7 +60,7 @@ public class STable implements Table {
 
             getFile();
 
-        } catch (SecurityException|ExceptionInInitializerError e) {
+        } catch (SecurityException | ExceptionInInitializerError e) {
             incorrectFile();
         }
         changes = 0;
@@ -248,7 +248,8 @@ public class STable implements Table {
                         readied += sizeLength;
                         if (Math.abs((new String(key, "UTF-8")).hashCode()) % 16 != firstHash
                                 || (Math.abs((new String(key, "UTF-8")).hashCode()) / 16) % 16 != secondHash) {
-                            incorrectFile("Incorrect files\n" + new String(key, "UTF-8") + " " + firstHash + " " + secondHash);
+                            incorrectFile("Incorrect files\n" +
+                                    new String(key, "UTF-8") + " " + firstHash + " " + secondHash);
                         }
                         fMap.get().put(new String(key, "UTF-8"), new String(value, "UTF-8"));
                     } catch (EOFException e) {
