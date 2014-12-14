@@ -85,7 +85,7 @@ public class ClientThread implements Runnable {
             out.flush();
         } else {
             List<String> keys = table.list();
-            out.writeUTF("" + keys.size());
+            out.writeInt(keys.size());
             StringBuilder typesBuilder = new StringBuilder();
             for (int i = 0; i < table.getColumnsCount(); ++i) {
                 typesBuilder.append(table.getColumnType(i).getSimpleName());
