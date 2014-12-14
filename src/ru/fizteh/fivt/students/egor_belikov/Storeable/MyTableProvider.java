@@ -18,6 +18,8 @@ public class MyTableProvider implements TableProvider {
     public static String currentPath;
     public static Map<String, Table> listOfTables;
     public static MyTable currentTable;
+    private MySerializer ts = new MySerializer();
+
 
     public MyTableProvider(String p) {
         if (p == null) {
@@ -83,7 +85,6 @@ public class MyTableProvider implements TableProvider {
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        MySerializer ts = new MySerializer();
         return ts.serialize(table, value);
     }
 

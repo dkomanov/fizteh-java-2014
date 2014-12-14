@@ -135,11 +135,11 @@ public class MyTable implements Table {
                     if (!file.exists()) {
                         file.createNewFile();
                     }
-                    DataOutputStream outStream = new DataOutputStream(
-                            new FileOutputStream(pathToFile, true));
-                    writeValue(outStream, key, value);
-                    outStream.close();
-
+                    try(DataOutputStream outStream = new DataOutputStream(
+                            new FileOutputStream(pathToFile, true))) {
+                        writeValue(outStream, key, value);
+                        outStream.close();
+                    }
                 }
             } catch (IOException e) {
                 System.err.println(e.getMessage());
