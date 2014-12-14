@@ -23,6 +23,7 @@ import java.util.IdentityHashMap;
  */
 public class ParserXML {
 
+
     public String parse(Object[] objects) throws ParseException {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
