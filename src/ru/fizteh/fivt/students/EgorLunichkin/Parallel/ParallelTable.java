@@ -44,7 +44,7 @@ public class ParallelTable implements Table {
         try {
             return provider.deserialize(this, oldValue);
         } catch (ParseException ex) {
-            ParallelException.printException(ex);
+            System.err.println(ex.getMessage());
             return null;
         }
     }
@@ -77,7 +77,7 @@ public class ParallelTable implements Table {
         try {
             return provider.deserialize(this, oldValue);
         } catch (ParseException ex) {
-            ParallelException.printException(ex);
+            System.err.println(ex.getMessage());
             return null;
         }
     }

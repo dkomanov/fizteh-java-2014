@@ -35,9 +35,6 @@ public class ParallelTableProvider implements TableProvider {
         }
         lock.readLock().lock();
         try {
-            if (!tables.containsKey(name)) {
-                return null;
-            }
             return tables.get(name);
         } finally {
             lock.readLock().unlock();

@@ -11,16 +11,21 @@ public class Executor {
         try {
             tableProvider = new ParallelTableProvider(dbPath);
         } catch (IOException ex) {
-            throw new ExitException(ex.getMessage());
+            throw new ExitException(ex.getCause());
         }
+        this.args = args;
+    }
+
+    private ParallelTableProvider tableProvider;
+    private String[] args;
+
+    public void run() throws ExitException {
         if (args.length == 0) {
             interactiveMode();
         } else {
             packageMode(args);
         }
     }
-
-    private ParallelTableProvider tableProvider;
 
     private void interactiveMode() throws ExitException {
         Scanner in = new Scanner(System.in);
@@ -51,7 +56,7 @@ public class Executor {
         } catch (ParallelException ex) {
             System.err.println(ex.getMessage());
         } catch (IOException ex) {
-            throw new ExitException(ex.getMessage());
+            throw new ExitException(ex.getCause());
         }
     }
 }
