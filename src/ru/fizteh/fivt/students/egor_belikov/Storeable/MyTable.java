@@ -112,7 +112,7 @@ public class MyTable implements Table {
                 if (!file.exists()) {
                     file.createNewFile();
                 }
-                try(DataOutputStream outStream = new DataOutputStream(
+                try (DataOutputStream outStream = new DataOutputStream(
                             new FileOutputStream(pathToFile, true))) {
                     writeValue(outStream, key, value);
                     outStream.close();

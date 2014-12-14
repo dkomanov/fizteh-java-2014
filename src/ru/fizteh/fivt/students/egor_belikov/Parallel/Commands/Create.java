@@ -13,8 +13,7 @@ import static ru.fizteh.fivt.students.egor_belikov.Parallel.MyTableProvider.list
  * Created by egor on 13.12.14.
  */
 public class Create implements Command {
-
-    public void execute(String args[], MyTableProvider myTableProvider) throws Exception{
+    public void execute(String args[], MyTableProvider myTableProvider) throws Exception {
         String stringTypes = "";
         for (int i = 2; i != args.length; i++) {
             stringTypes = stringTypes + " " + args[i];
