@@ -20,14 +20,14 @@ import static ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTabl
 import static ru.fizteh.fivt.students.andreyzakharov.remotefilemap.MultiFileTableUtils.stringToClass;
 
 public class MultiFileTable implements Table, AutoCloseable {
-    class MultiFileTableDiff {
+    private class MultiFileTableDiff {
         Map<String, Storeable> added = new HashMap<>();
         Map<String, Storeable> changed = new HashMap<>();
         Set<String> removed = new HashSet<>();
         int pending = 0;
     }
 
-    private ArrayList<Class<?>> signature = new ArrayList<>();
+    private List<Class<?>> signature = new ArrayList<>();
     private Map<String, Storeable> stableData = new HashMap<>();
     private ThreadLocal<MultiFileTableDiff> diff = new ThreadLocal<MultiFileTableDiff>() {
         @Override
@@ -128,21 +128,23 @@ public class MultiFileTable implements Table, AutoCloseable {
         } else if (key.isEmpty()) {
             throw new IllegalArgumentException("empty argument");
         }
-        lock.readLock().lock();
-        sync();
 
-        Storeable value;
-        if (diff.get().removed.contains(key)) {
-            value = null;
-        } else if (diff.get().added.containsKey(key)) {
-            value = diff.get().added.get(key);
-        } else if (diff.get().changed.containsKey(key)) {
-            value = diff.get().changed.get(key);
-        } else {
-            value = stableData.get(key);
+        try {
+            lock.readLock().lock();
+            sync();
+
+            if (diff.get().removed.contains(key)) {
+                return null;
+            } else if (diff.get().added.containsKey(key)) {
+                return diff.get().added.get(key);
+            } else if (diff.get().changed.containsKey(key)) {
+                return diff.get().changed.get(key);
+            } else {
+                return stableData.get(key);
+            }
+        } finally {
+            lock.readLock().unlock();
         }
-        lock.readLock().unlock();
-        return value;
     }
 
     @Override
@@ -153,40 +155,42 @@ public class MultiFileTable implements Table, AutoCloseable {
         } else if (key.isEmpty()) {
             throw new IllegalArgumentException("empty argument");
         }
-        lock.readLock().lock();
-        sync();
 
-        Storeable result;
-        if (diff.get().removed.remove(key)) {
-            if (stableData.get(key).equals(value)) {
-                --diff.get().pending;
+        try {
+            lock.readLock().lock();
+            sync();
+
+            if (diff.get().removed.remove(key)) {
+                if (stableData.get(key).equals(value)) {
+                    --diff.get().pending;
+                } else {
+                    diff.get().changed.put(key, value);
+                }
+                return null;
             } else {
-                diff.get().changed.put(key, value);
-            }
-            result = null;
-        } else {
-            if (stableData.containsKey(key)) {
-                if (diff.get().changed.containsKey(key)) {
-                    if (stableData.get(key).equals(value)) {
-                        --diff.get().pending;
-                        result = diff.get().changed.remove(key);
+                if (stableData.containsKey(key)) {
+                    if (diff.get().changed.containsKey(key)) {
+                        if (stableData.get(key).equals(value)) {
+                            --diff.get().pending;
+                            return diff.get().changed.remove(key);
+                        } else {
+                            return diff.get().changed.put(key, value);
+                        }
                     } else {
-                        result = diff.get().changed.put(key, value);
+                        ++diff.get().pending;
+                        diff.get().changed.put(key, value);
+                        return stableData.get(key);
                     }
                 } else {
-                    ++diff.get().pending;
-                    diff.get().changed.put(key, value);
-                    result = stableData.get(key);
+                    if (!diff.get().added.containsKey(key)) {
+                        ++diff.get().pending;
+                    }
+                    return diff.get().added.put(key, value);
                 }
-            } else {
-                if (!diff.get().added.containsKey(key)) {
-                    ++diff.get().pending;
-                }
-                result = diff.get().added.put(key, value);
             }
+        } finally {
+            lock.readLock().unlock();
         }
-        lock.readLock().unlock();
-        return result;
     }
 
     @Override
@@ -197,97 +201,108 @@ public class MultiFileTable implements Table, AutoCloseable {
         } else if (key.isEmpty()) {
             throw new IllegalArgumentException("empty argument");
         }
-        lock.readLock().lock();
-        sync();
 
-        Storeable result;
-        if (stableData.containsKey(key)) {
-            if (diff.get().removed.add(key)) {
-                if (diff.get().changed.containsKey(key)) {
-                    result = diff.get().changed.remove(key);
+        try {
+            lock.readLock().lock();
+            sync();
+
+            if (stableData.containsKey(key)) {
+                if (diff.get().removed.add(key)) {
+                    if (diff.get().changed.containsKey(key)) {
+                        return diff.get().changed.remove(key);
+                    } else {
+                        ++diff.get().pending;
+                        return stableData.get(key);
+                    }
                 } else {
-                    ++diff.get().pending;
-                    result = stableData.get(key);
+                    return null;
                 }
             } else {
-                result = null;
+                if (diff.get().added.containsKey(key)) {
+                    --diff.get().pending;
+                    return diff.get().added.remove(key);
+                } else {
+                    return null;
+                }
             }
-        } else {
-            if (diff.get().added.containsKey(key)) {
-                --diff.get().pending;
-                result = diff.get().added.remove(key);
-            } else {
-                result = null;
-            }
+        } finally {
+            lock.readLock().unlock();
         }
-        lock.readLock().unlock();
-        return result;
     }
 
     @Override
     public int size() {
         checkClosed();
-        lock.readLock().lock();
-        sync();
-
-        int s = stableData.size() + diff.get().added.size() - diff.get().removed.size();
-        lock.readLock().unlock();
-        return s;
+        try {
+            lock.readLock().lock();
+            sync();
+            return stableData.size() + diff.get().added.size() - diff.get().removed.size();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public int getNumberOfUncommittedChanges() {
         checkClosed();
-        lock.readLock().lock();
-        sync();
-        lock.readLock().unlock();
-
-        return diff.get().pending;
+        try {
+            lock.readLock().lock();
+            sync();
+            return diff.get().pending;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public int commit() {
         checkClosed();
-        lock.writeLock().lock();
-        sync();
-
-        stableData.keySet().removeAll(diff.get().removed);
-        stableData.putAll(diff.get().changed);
-        stableData.putAll(diff.get().added);
-
         try {
-            unload();
-        } catch (ConnectionInterruptException e) {
+            lock.writeLock().lock();
+            sync();
+
+            stableData.keySet().removeAll(diff.get().removed);
+            stableData.putAll(diff.get().changed);
+            stableData.putAll(diff.get().added);
+
+            try {
+                unload();
+            } catch (ConnectionInterruptException e) {
+                lock.writeLock().unlock();
+                return -1;
+            }
+
+            diff.get().removed.clear();
+            diff.get().changed.clear();
+            diff.get().added.clear();
+            int p = diff.get().pending;
+            diff.get().pending = 0;
+
+            ++stableVersion;
+            version.set(version.get() + 1);
+
+            return p;
+        } finally {
             lock.writeLock().unlock();
-            return -1;
         }
-
-        diff.get().removed.clear();
-        diff.get().changed.clear();
-        diff.get().added.clear();
-        int p = diff.get().pending;
-        diff.get().pending = 0;
-
-        ++stableVersion;
-        version.set(version.get() + 1);
-
-        lock.writeLock().unlock();
-        return p;
     }
 
     @Override
     public int rollback() {
         checkClosed();
-        lock.readLock().lock();
-        sync();
+        try {
+            lock.readLock().lock();
+            sync();
 
-        diff.get().removed.clear();
-        diff.get().changed.clear();
-        diff.get().added.clear();
-        int p = diff.get().pending;
-        diff.get().pending = 0;
-        lock.readLock().unlock();
-        return p;
+            diff.get().removed.clear();
+            diff.get().changed.clear();
+            diff.get().added.clear();
+            int p = diff.get().pending;
+            diff.get().pending = 0;
+            return p;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     private void sync() {
@@ -338,12 +353,15 @@ public class MultiFileTable implements Table, AutoCloseable {
     @Override
     public List<String> list() {
         checkClosed();
-        lock.readLock().lock();
-        List<String> keySet = new ArrayList<>(stableData.keySet());
-        keySet.removeAll(diff.get().removed);
-        keySet.addAll(diff.get().added.keySet());
-        lock.readLock().unlock();
-        return keySet;
+        try {
+            lock.readLock().lock();
+            List<String> keySet = new ArrayList<>(stableData.keySet());
+            keySet.removeAll(diff.get().removed);
+            keySet.addAll(diff.get().added.keySet());
+            return keySet;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     private void clear() {

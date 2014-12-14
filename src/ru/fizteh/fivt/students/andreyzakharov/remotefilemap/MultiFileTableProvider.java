@@ -6,20 +6,18 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.andreyzakharov.remotefilemap.commands.CommandRunner;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvider {
     private Path dbRoot;
@@ -30,16 +28,13 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
     private boolean closed;
     private CommandRunner commandRunner = new CommandRunner();
     private Socket outgoingSocket;
-    private Thread serverThread;
-    private ServerSocket serverSocket;
 
     private ProviderStatus status = ProviderStatus.LOCAL;
     private String host = null;
     private int port = -1;
-    private final int connectionLimit = 50;
 
-    private ExecutorService clientPool;
-    private Map<Integer, Host> clientMap = new ConcurrentHashMap<>();
+    private List<ClientHandler> threadList;
+    private ConnectionAccepter serverThread;
 
     public class Host {
         public String host;
@@ -57,56 +52,84 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
         CONNECTED
     }
 
-    class ConnectionAccepter implements Runnable {
+    class ConnectionAccepter extends Thread implements Closeable {
+        ServerSocket serverSocket;
+
         @Override
         public void run() {
             try {
                 serverSocket = new ServerSocket(port);
-                while (!serverThread.isInterrupted()) {
+                while (!Thread.interrupted()) {
                     Socket clientSocket = serverSocket.accept();
-                    clientPool.submit(new ClientTask(clientSocket));
+                    ClientHandler clientHandler = new ClientHandler(clientSocket);
+                    clientHandler.start();
                 }
-            } catch (SocketException e) {
-                // interrupted
             } catch (IOException e) {
-                System.err.println("server: " + e.getMessage());
+                for (ClientHandler clientHandler : threadList) {
+                    try {
+                        clientHandler.close();
+                        clientHandler.interrupt();
+                    } catch (IOException e1) {
+                        // continue...
+                    }
+                }
             }
+        }
+
+        @Override
+        public void close() throws IOException {
+            serverSocket.close();
         }
     }
 
-    class ClientTask implements Runnable {
+    class ClientHandler extends Thread implements Closeable {
         Socket socket;
+        Host host;
 
-        ClientTask(Socket socket) {
+        ClientHandler(Socket socket) {
             this.socket = socket;
+        }
+
+        public Host getHost() {
+            return host;
         }
 
         @Override
         public void run() {
-            clientMap.put(this.hashCode(),
-                    new Host(socket.getInetAddress().toString().replace("/", ""), socket.getPort()));
-            byte[] buffer = new byte[64 * 1024];
             try {
-                while (!Thread.currentThread().isInterrupted()) {
+                host = new Host(socket.getInetAddress().toString().replace("/", ""), socket.getPort());
+                byte[] buffer = new byte[64 * 1024];
+                threadList.add(this);
+                while (!Thread.interrupted()) {
                     int len = socket.getInputStream().read(buffer);
                     if (len == -1) {
                         break;
                     }
                     String request = new String(buffer, 0, len, "UTF-8");
-                    String reply;
+                    String reply = "";
                     try {
                         reply = MultiFileTableProvider.this.run(request);
-                        socket.getOutputStream().write(reply.getBytes("UTF-8"));
                     } catch (CommandInterruptException e) {
                         reply = "remote: " + e.getMessage();
+                    } finally {
                         socket.getOutputStream().write(reply.getBytes("UTF-8"));
                     }
                 }
-                socket.close();
             } catch (IOException e) {
-                // connection failed
+                // shutdown
+            } finally {
+                threadList.remove(this);
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    // ignore
+                }
             }
-            clientMap.remove(this.hashCode());
+        }
+
+        @Override
+        public void close() throws IOException {
+            socket.close();
         }
     }
 
@@ -140,7 +163,7 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
                         table.unload();
                     }
                 } catch (ConnectionInterruptException e) {
-                    // suppress the exception
+                    // shutdown
                 }
             }
         }
@@ -153,10 +176,10 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
     }
 
     public String run(String commands) throws CommandInterruptException {
+        checkClosed();
         StringBuilder result = new StringBuilder();
         for (String command : commands.split("\\s*[;\\n]\\s*")) {
             if (status == ProviderStatus.CONNECTED && !commandRunner.isLocal(command)) {
-//                result.append("@REMOTE: ");
                 try {
                     outgoingSocket.getOutputStream().write(command.getBytes("UTF-8"));
                     byte[] buffer = new byte[64 * 1024];
@@ -173,7 +196,6 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
                     return result.toString();
                 }
             } else {
-//                result.append("@LOCAL: ");
                 try {
                     result.append(commandRunner.run(this, command));
                 } catch (CommandInterruptException e) {
@@ -186,43 +208,43 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
     }
 
     public void start(int port) throws IllegalArgumentException {
+        checkClosed();
         if (port < 0 || port > 65536) {
             throw new IllegalArgumentException("connection: invalid port number");
         }
         if (status == ProviderStatus.LOCAL) {
             status = ProviderStatus.SERVER;
-            clientPool = Executors.newFixedThreadPool(connectionLimit);
             this.port = port;
-            serverThread = new Thread(new ConnectionAccepter());
+            threadList = new ArrayList<>();
+            serverThread = new ConnectionAccepter();
             serverThread.start();
+//            clientPool = Executors.newFixedThreadPool(connectionLimit + 1);
+//            clientPool.submit(new ConnectionAccepter());
         }
     }
 
-    public int stop() {
-        try {
-            if (status == ProviderStatus.SERVER) {
-                status = ProviderStatus.LOCAL;
-                clientPool.shutdownNow();
-                clientPool = null;
-                serverThread.interrupt();
-                serverSocket.close();
-                return port;
-            }
-        } catch (IOException e) {
-            //
+    public int stop() throws IOException {
+        checkClosed();
+        if (status == ProviderStatus.SERVER) {
+            status = ProviderStatus.LOCAL;
+            serverThread.close();
+            serverThread.interrupt();
+            return port;
         }
         return -1;
     }
 
     public Collection<Host> getUsers() {
+        checkClosed();
         if (status == ProviderStatus.SERVER) {
-            return clientMap.values();
+            return threadList.stream().map(ClientHandler::getHost).collect(Collectors.toList());
         } else {
             return null;
         }
     }
 
     public void connect(String host, int port) throws IllegalArgumentException, ConnectionInterruptException {
+        checkClosed();
         if (port < 0 || port > 65536) {
             throw new IllegalArgumentException("connection: invalid port number");
         }
@@ -239,6 +261,7 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
     }
 
     public void disconnect() throws ConnectionInterruptException {
+        checkClosed();
         if (status == ProviderStatus.CONNECTED) {
             status = ProviderStatus.LOCAL;
             try {
@@ -263,14 +286,17 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
     }
 
     public ProviderStatus getStatus() {
+        checkClosed();
         return status;
     }
 
     public String getHost() {
+        checkClosed();
         return status == ProviderStatus.CONNECTED ? host : null;
     }
 
     public int getPort() {
+        checkClosed();
         return status == ProviderStatus.CONNECTED ? port : -1;
     }
 
