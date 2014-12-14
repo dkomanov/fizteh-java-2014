@@ -77,6 +77,9 @@ public class FileMap implements Table {
         parent = newParent;
         lockForCommit = new ReentrantLock();
         diff = ThreadLocal.withInitial(()->new Difference());
+        if (!init()) {
+            throw new IOException("error while initialization");
+        }
     }
 
     public TableProvider getTableProvider() {
