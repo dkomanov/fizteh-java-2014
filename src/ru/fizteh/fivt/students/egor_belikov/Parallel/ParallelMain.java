@@ -35,12 +35,12 @@ public class ParallelMain {
             e.printStackTrace();
         }
         if (currentPath == null) {
-            throw new IllegalArgumentException("Storeable.main: null path");
+            throw new IllegalArgumentException("Parallel.main: null path");
         }
         try {
             File directoryOnPath = new File(currentPath);
             if (!directoryOnPath.exists() || !directoryOnPath.isDirectory()) {
-                throw new Exception("Storeable.main: directory does not exists");
+                throw new Exception("Parallel.main: directory does not exists");
             }
             File[] children = directoryOnPath.listFiles();
             for (File child : Objects.requireNonNull(children)) {
@@ -96,7 +96,7 @@ public class ParallelMain {
         String commands = Joiner.on(" ").join(args);
         String[] splittedCommands = commands.trim().split(";");
         try {
-            for (String s: splittedCommands) {
+            for (String s : splittedCommands) {
                 execute(s);
             }
         } catch (Exception exception) {
@@ -106,7 +106,7 @@ public class ParallelMain {
 
     public static void interactive() {
         Scanner scanner = new Scanner(System.in);
-        try  {
+        try {
             while (true) {
                 System.out.print("$ ");
                 String commands;
@@ -143,225 +143,11 @@ public class ParallelMain {
             } else {
                 throw new Exception("Invalid command");
             }
-            /*
-            if (!listOfCommands.containsKey(args[0])) {
-                throw new Exception("Invalid command");
-            } else {
-
-            }
-            if (args[0].equals("get") || args[0].equals("remove") || args[0].equals("list") || args[0].equals("put")
-                    || args[0].equals("commit") || args[0].equals("rollback")) {
-                if (currentTable == null) {
-                    throw new Exception("no table");
-                }
-            }
-            if (args[0].equals("drop") || args[0].equals("use")
-                    || args[0].equals("get") || args[0].equals("remove")
-                    || args[0].equals("show")) {
-                if (args.length != 2) {
-                    throw new Exception(args[0] + ": invalid number of arguments");
-                }
-            }
-            if (args[0].equals("list") || args[0].equals("exit") || args[0].equals("commit")
-                    || args[0].equals("rollback") || args[0].equals("size")) {
-                if (args.length != 1) {
-                    throw new Exception(args[0] + ": invalid number of arguments");
-                }
-            }
-
-            switch (args[0]) {
-                case "create":
-                    create(args);
-                    break;
-                case "drop":
-                    drop(args);
-                    break;
-                case "use":
-                    use(args);
-                    break;
-                case "show":
-                    show(args);
-                    break;
-                case "put":
-                    put(args);
-                    break;
-                case "get":
-                    get(args);
-                    break;
-                case "remove":
-                    remove(args);
-                    break;
-                case "list":
-                    list();
-                    break;
-                case "commit":
-                    commit();
-                    break;
-                case "rollback":
-                    rollback();
-                    break;
-                case "size":
-                    size();
-                    break;
-                case "exit":
-                    System.exit(0);
-                    break;
-                default:
-                    throw new Exception("Invalid command");
-            }*/
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
             if (!isInteractiveMode) {
                 System.exit(1);
             }
         }
-    }
-
-    public void create(String[] args) throws Exception {
-        String stringTypes = "";
-        for (int i = 2; i != args.length; i++) {
-            stringTypes = stringTypes + " " + args[i];
-        }
-        stringTypes = stringTypes.trim();
-        if (stringTypes.length() < 3
-                || stringTypes.charAt(0) != '('
-                || stringTypes.charAt(stringTypes.length() - 1) != ')') {
-            throw new IllegalArgumentException("wrong types (signature)");
-        }
-        List<Class<?>> signature = new ArrayList<>();
-        String[] types = stringTypes.substring(1, stringTypes.length() - 1).split("\\s+");
-        for (String type : types) {
-            if (type.trim().isEmpty()) {
-                throw new Exception("wrong types (signature)");
-            }
-            Class<?> c = returningClass(type.trim());
-            if (c == null) {
-                throw new Exception("wrong type (" + type.trim() + " is not a valid type name)");
-            }
-            signature.add(c);
-        }
-        if (types.length == 0) {
-            throw new Exception("wrong type (empty type is not allowed)");
-        }
-        MyTable t = (MyTable) myTableProvider.createTable(args[1], signature);
-        t.writeSignature();
-        if (t != null) {
-            System.out.println("created");
-            listOfTables.put(args[1], t);
-        } else {
-            System.out.println(args[1] + " exists");
-        }
-    }
-
-    public void drop(String[] args) {
-        try {
-            myTableProvider.removeTable(args[1]);
-            System.out.println("dropped");
-        } catch (IllegalStateException ist) {
-            System.out.println(args[1] + " does not exists");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void use(String[] args) {
-        if (listOfTables.get(args[1]) == null) {
-            System.out.println(args[1] + " not exists");
-        } else {
-            if (MyTableProvider.currentTable != null && MyTableProvider.currentTable.numberOfUnsavedChanges > 0) {
-                System.out.println(MyTableProvider.currentTable.numberOfUnsavedChanges + " unsaved changes");
-            } else {
-                MyTableProvider.currentTable = (MyTable) listOfTables.get(args[1]);
-                System.out.println("using " + args[1]);
-            }
-        }
-    }
-
-    public void show(String args[]) throws Exception {
-        if (!args[1].equals("tables")) {
-            throw new Exception("show: invalid arguments");
-        }
-        System.out.println("table_name row_count");
-        for (Map.Entry<String, Table> i :  listOfTables.entrySet()) {
-            String key = i.getKey();
-            int num = ((MyTable) (i.getValue())).numberOfElements;
-            System.out.println(key + " " + num);
-        }
-    }
-
-    public void put(String[] args) {
-        String arguments = args[2];
-        if (args.length > 3) {
-            for (int i = 3; i != args.length; i++) {
-                arguments = arguments + " " + args[i];
-            }
-        }
-        Storeable value = null;
-        try {
-            value = myTableProvider.deserialize(MyTableProvider.currentTable, arguments);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        if (MyTableProvider.currentTable.put(args[1], value) == null) {
-            System.out.println("new");
-        } else {
-            System.out.println("overwrite");
-        }
-    }
-
-    public void get(String[] args) {
-        if (MyTableProvider.currentTable.get(args[1]) == null) {
-            System.out.println("not found");
-        } else {
-            System.out.println("found");
-            System.out.println(myTableProvider.serialize(MyTableProvider.currentTable,
-                    MyTableProvider.currentTable.get(args[1])));
-        }
-    }
-
-    public void remove(String[] args) {
-        if (MyTableProvider.currentTable.remove(args[1]) == null) {
-            System.out.println("not found");
-        } else {
-            System.out.println("removed");
-        }
-    }
-
-    public void list() {
-        int counter = 0;
-        List<String> list = MyTableProvider.currentTable.list();
-        for (String current : list) {
-            ++counter;
-            System.out.print(current);
-            if (counter != list.size()) {
-                System.out.print(", ");
-            }
-        }
-        System.out.println();
-    }
-
-    public void deleteDirectory(File dir) {
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (String aChildren : children) {
-                File f = new File(dir, aChildren);
-                deleteDirectory(f);
-            }
-        }
-        dir.delete();
-    }
-
-    public static void size() {
-        System.out.println(MyTableProvider.currentTable.numberOfElements);
-    }
-
-    public void commit() throws Exception {
-        System.out.println(MyTableProvider.currentTable.commit());
-
-    }
-
-    public void rollback() {
-        System.out.println(MyTableProvider.currentTable.rollback());
-
     }
 }
