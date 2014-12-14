@@ -17,43 +17,52 @@ import java.util.List;
  */
 public class MyProxyLogger implements InvocationHandler {
     private Object object;
-    private Writer writer;
+    private XMLStreamWriter xmlWriter;
 
     public MyProxyLogger(Object object, Writer writer) {
         this.object = object;
-        this.writer = writer;
+        try {
+            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
+        } catch (XMLStreamException e) {
+            //Прогатываем исключение, как сказано в условии.
+        }
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        Object retValue = null;
+        if (xmlWriter == null) {
+            return null;
+        }
         try {
-            Object retValue = null;
-            XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            XMLStreamWriter xmlWriter = factory.createXMLStreamWriter(writer);
-            if (xmlWriter == null) {
-                return null;
-            }
             xmlWriter.writeStartElement("invoke");
             xmlWriter.writeAttribute("timestamp", ((Long) System.currentTimeMillis()).toString());
             xmlWriter.writeAttribute("class", object.getClass().toString());
             xmlWriter.writeAttribute("name", method.getName());
             putArguments(xmlWriter, args);
-            Throwable throwable = null;
-            try {
-                retValue = method.invoke(object, args);
-            } catch (InvocationTargetException e) {
-                throwable = e.getTargetException();
-            }
+        } catch (Exception e) {
+            //Прогатываем исключение, как сказано в условии.
+        }
+        Throwable throwable = null;
+        try {
+            retValue = method.invoke(object, args);
+        } catch (InvocationTargetException e) {
+            throwable = e.getTargetException();
+        }
+        try {
             if (throwable != null) {
                 putThrowable(xmlWriter, throwable);
             } else {
                 putReturnValue(xmlWriter, method, retValue);
             }
             xmlWriter.writeEndElement();
+            xmlWriter.flush();
+            xmlWriter.close();
+            return retValue;
         } catch (Exception e) {
-            int a = 1; //Just for checkstyle
+            //Прогатываем исключение, как сказано в условии.
+            return null;
         }
-        return null;
     }
 
     public void putArguments(XMLStreamWriter xmlWriter, Object[] args) throws XMLStreamException {
@@ -109,7 +118,7 @@ public class MyProxyLogger implements InvocationHandler {
                 xmlWriter.writeEndElement();
             }
         } catch (XMLStreamException e) {
-            int a = 1;
+            //Прогатываем исключение, как сказано в условии.
         }
     }
 }
