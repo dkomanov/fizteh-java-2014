@@ -172,6 +172,18 @@ public class ClientThread implements Runnable {
         }
     }
 
+    public void showCommand(DataOutputStream out, String[] args) {
+        try {
+            List<String> tableNames = tableProvider.getTableNames();
+            out.writeInt(tableNames.size());
+            for (String it : tableNames) {
+                out.writeUTF(it);
+            }
+        } catch (IOException e) {
+            System.out.println("Show tables: failed to send data");
+        }
+    }
+
     private Set<String> fulfilTableCommands() {
         Set<String> tableCommands = new HashSet<>();
         tableCommands.add("put");
@@ -189,6 +201,7 @@ public class ClientThread implements Runnable {
         providerCommands.add("close");
         providerCommands.add("set");
         providerCommands.add("alive");
+        providerCommands.add("show");
         return providerCommands;
     }
 }

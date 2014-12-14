@@ -4,6 +4,7 @@ import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Command;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by Kirill on 20.10.2014.
@@ -14,7 +15,11 @@ public class ShowTablesCommand implements Command {
         if (!checkArgs(args)) {
             throw new IOException("Wrong arguments");
         }
-        status.getMultiMap().showTables();
+        //status.getMultiMap().showTables();
+        List<String> tableNames = status.getTableProvider().getTableNames();
+        for (String it : tableNames) {
+            System.out.println(it);
+        }
         return 0;
     }
 

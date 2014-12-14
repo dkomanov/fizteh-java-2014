@@ -25,7 +25,7 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
     private String workingTableName;
     private Map<String, Table> tables = new HashMap<>();
 
-    MyRemoteTableProvider(Socket socket) throws IOException {
+    public MyRemoteTableProvider(Socket socket) throws IOException {
         this.socket = socket;
         try {
             out = new DataOutputStream(socket.getOutputStream());
@@ -42,13 +42,6 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             throw new IllegalArgumentException();
         }
         try {
-            /*out.writeUTF("alive");
-            String isAlive = in.readUTF();
-            if (isAlive.equals("no")) {
-                System.out.println("Server was closed");
-                String[] disconnectArgs = {"disconnect", "please"};
-                new DisconnectCommand().execute(disconnectArgs, new Status(null));
-            }*/
             out.writeUTF("get " + name);
             out.flush();
             int numRows = in.readInt(); //number
@@ -82,13 +75,6 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        /*out.writeUTF("alive");
-        String isAlive = in.readUTF();
-        if (isAlive.equals("no")) {
-            System.out.println("Server was closed");
-            String[] disconnectArgs = {"disconnect", "please"};
-            new DisconnectCommand().execute(disconnectArgs, new Status(null));
-        }*/
         StringBuilder types = new StringBuilder();
         for (Class it : columnTypes) {
             types.append(it.getSimpleName());
@@ -117,13 +103,6 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
 
     @Override
     public void removeTable(String name) throws IOException {
-        /*out.writeUTF("alive");
-        String isAlive = in.readUTF();
-        if (isAlive.equals("no")) {
-            System.out.println("Server was closed");
-            String[] disconnectArgs = {"disconnect", "please"};
-            new DisconnectCommand().execute(disconnectArgs, new Status(null));
-        }*/
         out.writeUTF("drop " + name);
         int num = 0;
         try {
@@ -190,13 +169,6 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
     @Override
     public List<String> getTableNames() {
         try {
-            /*out.writeUTF("alive");
-            String isAlive = in.readUTF();
-            if (isAlive.equals("no")) {
-                System.out.println("Server was closed");
-                String[] disconnectArgs = {"disconnect", "please"};
-                new DisconnectCommand().execute(disconnectArgs, new Status(null));
-            }*/
             List<String> retValue = new ArrayList<>();
             out.writeUTF("show");
             int numTables = in.readInt();
@@ -221,13 +193,6 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
 
     @Override
     public void close() throws IOException {
-        /*out.writeUTF("alive");
-        String isAlive = in.readUTF();
-        if (isAlive.equals("no")) {
-            System.out.println("Server was closed");
-            String[] disconnectArgs = {"disconnect", "please"};
-            new DisconnectCommand().execute(disconnectArgs, new Status(null));
-        }*/
         out.writeUTF("close");
         out.flush();
         out.close();
@@ -238,17 +203,6 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
     }
 
     public void setWorkingTableName(String name) {
-        /*try {
-            out.writeUTF("alive");
-            String isAlive = in.readUTF();
-            if (isAlive.equals("no")) {
-                System.out.println("Server was closed");
-                String[] disconnectArgs = {"disconnect", "please"};
-                new DisconnectCommand().execute(disconnectArgs, new Status(null));
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }*/
         if (name == workingTableName) {
             return;
         }
