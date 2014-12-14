@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
 import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.Exceptions.StopExecutionException;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.StoreablePackage.Serializator;
 
 import java.io.Closeable;
@@ -11,6 +12,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -36,8 +38,11 @@ public class RealRemoteTable implements Table, Closeable {
             throw new IllegalArgumentException("null argument");
         }
         outputStream.println("put " + name + " " + key + " " + Serializator.serialize(this, value));
-        String message = inputStream.nextLine();
-        if ("new".equals(message)) {
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = inputStream.nextLine();
+        if ("new".equals(answerFromServer)) {
             return null;
         } else {
             String oldValue = inputStream.nextLine();
@@ -55,8 +60,11 @@ public class RealRemoteTable implements Table, Closeable {
             throw new IllegalArgumentException("null argument");
         }
         outputStream.println("get " + name + " " + key);
-        String message = inputStream.nextLine();
-        if ("found".equals(message)) {
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = inputStream.nextLine();
+        if ("found".equals(answerFromServer)) {
             String value = inputStream.nextLine();
             try {
                 return parentProvider.deserialize(this, value);
@@ -74,8 +82,11 @@ public class RealRemoteTable implements Table, Closeable {
             throw new IllegalArgumentException("null argument");
         }
         outputStream.println("remove " + name + " " + key);
-        String message = inputStream.nextLine();
-        if ("not found".equals(message)) {
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = inputStream.nextLine();
+        if ("not found".equals(answerFromServer)) {
             return null;
         } else {
             String value = inputStream.nextLine();
@@ -91,50 +102,74 @@ public class RealRemoteTable implements Table, Closeable {
     @Override
     public int size() {
         outputStream.println("size " + name);
-        return Integer.parseInt(inputStream.nextLine());
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = inputStream.nextLine();
+        return Integer.parseInt(answerFromServer);
     }
 
     @Override
     public List<String> list() {
         outputStream.println("list " + name);
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
         String answerFromServer = inputStream.nextLine();
         String[] parsedKeys = answerFromServer.split(", ");
-        List<String> result = new ArrayList<String>();
-        for (String oneKey : parsedKeys) {
-            result.add(oneKey);
-        }
+        List<String> result = new ArrayList<>();
+        result.addAll(Arrays.asList(parsedKeys));
         return result;
     }
 
     @Override
     public int commit() throws IOException {
         outputStream.println("commit " + name);
-        return Integer.parseInt(inputStream.nextLine());
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = inputStream.nextLine();
+        return Integer.parseInt(answerFromServer);
     }
 
     @Override
     public int rollback() {
         outputStream.println("rollback " + name);
-        return Integer.parseInt(inputStream.nextLine());
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = inputStream.nextLine();
+        return Integer.parseInt(answerFromServer);
     }
 
     @Override
     public int getNumberOfUncommittedChanges() {
-        return 0; //tmp
+        outputStream.println("uncomm-changes " + name);
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = inputStream.nextLine();
+        return Integer.parseInt(answerFromServer);
     }
 
     @Override
     public int getColumnsCount() {
         outputStream.println("describe " + name);
-        String message = inputStream.nextLine();
-        return message.split(" ").length;
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = inputStream.nextLine();
+        return answerFromServer.split(" ").length;
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
         outputStream.println("describe " + name);
-        String message = inputStream.nextLine();
-        String[] types = message.split(" ");
+        if (!inputStream.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = inputStream.nextLine();
+        String[] types = answerFromServer.split(" ");
         return TypesUtils.toTypeList(types).get(columnIndex);
     }
 

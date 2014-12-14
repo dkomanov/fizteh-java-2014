@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
 import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.Exceptions.StopExecutionException;
 
 import java.util.HashMap;
 import java.util.Scanner;
@@ -66,8 +67,14 @@ public class ShellExtended extends Shell<RemoteTableProviderFactory> {
                             errorOccuried = true;
                         }
                     } else {
-                        interpeter.run(oneCommand, System.out,
-                                ((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider());
+                        try {
+                            interpeter.run(oneCommand, System.out,
+                                    ((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider());
+                        } catch (StopExecutionException e) {
+                            System.out.println("Server has been stopped!");
+                            ((RealRemoteTableProviderFactory) objectForShell).disconnectCurrentProvider();
+                            return false;
+                        }
                     }
                 }
                 if (!ended) {
@@ -79,7 +86,7 @@ public class ShellExtended extends Shell<RemoteTableProviderFactory> {
     }
 
     public boolean packetMode(final String[] arguments) {
-
+        CommandExecutor interpeter = new CommandExecutor();
         String[] parsedCommands;
         String[] parsedArguments;
         String commandLine = arguments[0];
@@ -111,8 +118,14 @@ public class ShellExtended extends Shell<RemoteTableProviderFactory> {
                     errorOccuried = true;
                 }
             } else {
-                System.out.println(parsedArguments[0] + ": command not found");
-                errorOccuried = true;
+                try {
+                    interpeter.run(oneCommand, System.out,
+                            ((RealRemoteTableProviderFactory) objectForShell).getCurrentProvider());
+                } catch (StopExecutionException e) {
+                    System.out.println("Server has been stopped!");
+                    ((RealRemoteTableProviderFactory) objectForShell).disconnectCurrentProvider();
+                    return false;
+                }
             }
         }
         return !errorOccuried;

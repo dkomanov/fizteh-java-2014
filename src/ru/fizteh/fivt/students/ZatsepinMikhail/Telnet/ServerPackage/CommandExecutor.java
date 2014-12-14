@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTableProvider.*;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Exceptions.ExitException;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.Exceptions.ExitException;
 
 import java.io.PrintStream;
 import java.util.HashMap;

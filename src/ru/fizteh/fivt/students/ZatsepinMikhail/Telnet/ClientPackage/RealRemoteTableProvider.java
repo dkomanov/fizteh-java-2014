@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.AbstractStoreable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.Exceptions.StopExecutionException;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.StoreablePackage.Serializator;
 
 import java.io.*;
@@ -34,6 +35,9 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
 
     public void setCurrentTable(String name) throws IllegalStateException {
         output.println("uncomm-changes " + name);
+        if (!input.hasNextLine()) {
+            throw new StopExecutionException();
+        }
         String answerFromServer = input.nextLine();
         int numberOfUncommittedChanges = Integer.parseInt(answerFromServer);
         if (numberOfUncommittedChanges != 0) {
@@ -62,12 +66,8 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
             throw new IllegalArgumentException("null argument");
         }
         List<String> tablesOnServer = getTableNames();
-        for (String oneTable : tables.keySet()) {
-            if (!tablesOnServer.contains(oneTable)) {
-                tables.remove(oneTable);
-                // можно ли так делать?
-            }
-        }
+        tables.keySet().removeIf((String oneTable) -> !tablesOnServer.contains(oneTable));
+
         for (String oneTable : tablesOnServer) {
             try {
                 if (!tables.containsKey(oneTable)) {
@@ -90,8 +90,11 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
             return null;
         } else {
             output.println("create " + name + " (" + TypesUtils.toFileSignature(columnTypes) + ")");
-            String message = input.nextLine();
-            if ("created".equals(message)) {
+            if (!input.hasNextLine()) {
+                throw new StopExecutionException();
+            }
+            String answerFromServer = input.nextLine();
+            if ("created".equals(answerFromServer)) {
                 try {
                     tables.put(name, new RealRemoteTable(name, hostName, port, this));
                 } catch (IOException e) {
@@ -108,8 +111,11 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
             throw new IllegalArgumentException("null argument");
         }
         output.println("drop " + name);
-        String message = input.nextLine();
-        if (!"dropped".equals(message)) {
+        if (!input.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = input.nextLine();
+        if (!"dropped".equals(answerFromServer)) {
             throw new IllegalStateException("table \'" + name + "\' doesn't exist");
         }
     }
@@ -160,7 +166,11 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
     public List<String> getTableNames() {
         output.println("show tables");
         List<String> result = new ArrayList<>();
-        int size = Integer.parseInt(input.nextLine());
+        if (!input.hasNextLine()) {
+            throw new StopExecutionException();
+        }
+        String answerFromServer = input.nextLine();
+        int size = Integer.parseInt(answerFromServer);
         for (int i = 0; i < size; ++i) {
             result.add(input.nextLine());
         }
@@ -169,6 +179,9 @@ public class RealRemoteTableProvider implements RemoteTableProvider {//, TablePr
 
     public String describeTable(String name) {
         output.println("describe " + name);
+        if (!input.hasNextLine()) {
+            throw new StopExecutionException();
+        }
         return input.nextLine();
     }
 

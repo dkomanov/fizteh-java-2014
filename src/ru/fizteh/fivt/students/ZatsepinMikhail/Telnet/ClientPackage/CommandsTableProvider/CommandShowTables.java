@@ -17,8 +17,8 @@ public class CommandShowTables extends CommandTableProviderExtended {
             System.out.println(name + ": wrong arguments");
             return false;
         }
-        System.out.println("table_name row_count");
         List<String> tablesDescription = dataBase.getTableNames();
+        System.out.println("table_name row_count");
         for (String oneTable : tablesDescription) {
             System.out.println(oneTable + " " + dataBase.getTable(oneTable).size());
         }

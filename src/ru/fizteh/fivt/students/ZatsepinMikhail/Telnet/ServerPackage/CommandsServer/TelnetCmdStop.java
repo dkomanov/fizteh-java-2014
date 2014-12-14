@@ -13,12 +13,12 @@ public class TelnetCmdStop extends TelnetCommand {
     @Override
     public boolean run(Server myServer, String[] args) {
         if (!myServer.isStarted()) {
-            System.err.println("not started");
+            System.out.println("not started");
             return false;
         }
         try {
             myServer.stopServer();
-            System.err.println("stopped at port " + myServer.getActivePort());
+            System.out.println("stopped at port " + myServer.getActivePort());
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }

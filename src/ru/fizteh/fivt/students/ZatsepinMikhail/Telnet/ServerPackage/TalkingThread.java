@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Exceptions.ExitException;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.Exceptions.ExitException;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -48,7 +48,6 @@ public class TalkingThread extends Thread {
         } catch (Exception e) {
             //suppress
         }
-        output.println("S: server has been stopped!");
         client.close();
     }
 }
