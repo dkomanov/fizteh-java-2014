@@ -7,15 +7,11 @@ import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.shelldata.Status;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.ListUsersCommand;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.StartCommand;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.Commands.telnet.StopCommand;
-import ru.fizteh.fivt.students.VasilevKirill.telnet.ServerMain;
 import ru.fizteh.fivt.students.VasilevKirill.telnet.structures.MyTableProvider;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
