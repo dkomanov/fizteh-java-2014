@@ -233,7 +233,7 @@ public class RemoteTableProviderTests {
                     Table result = tableProvider.getTable(name);
                     assertNotNull(result);
                     serverOut.writeInt(0);
-                    serverOut.writeUTF("java.lang.Integer java.lang.String");
+                    serverOut.writeUTF("Integer String");
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }

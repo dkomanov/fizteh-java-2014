@@ -22,8 +22,7 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
-    private String workingTableName;
-    private Map<String, Table> tables = new HashMap<>();
+    private Table workingTable;
 
     public MyRemoteTableProvider(Socket socket) throws IOException {
         this.socket = socket;
@@ -47,13 +46,13 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             int numRows = in.readInt(); //number
             if (numRows == -1) {
                 String receivedError = in.readUTF();
-                throw new IOException(receivedError);
+                return null;
             }
             String typeStr = in.readUTF(); //type1 type2 type3
             String[] typesStr = typeStr.split("\\s+");
             Class[] types = new Class[typesStr.length];
             for (int i = 0; i < types.length; ++i) {
-                types[i] = Class.forName(typesStr[i]);
+                types[i] = Class.forName("java.lang." + typesStr[i]);
             }
             table = new MyRemoteTable(socket, name, Arrays.asList(types));
             for (int i = 0; i < numRows; ++i) {
@@ -87,7 +86,7 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
                 String receivedError = in.readUTF();
                 throw new IOException(receivedError);
             }
-            tables.put(name, new MyRemoteTable(socket, name, columnTypes));
+            //tables.put(name, new MyRemoteTable(socket, name, columnTypes));
         } catch (IOException e) {
             String[] errorMessage = e.getMessage().split("\\s+");
             if (errorMessage[0].equals("Software")) {
@@ -198,22 +197,28 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
         out.close();
     }
 
-    public Table getWorkingTableName() {
-        return getTable(workingTableName);
-    }
-
     public void setWorkingTableName(String name) {
-        if (name == workingTableName) {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (workingTable != null && name.equals(workingTable.getName())) {
             return;
         }
-        if (tables.get(name) == null) {
+        Table table = getTable(name);
+        if (table == null) {
+            System.out.println("not found");
+            return;
+        }
+        /*if (tables.get(name) == null) {
             System.out.println("not found");
             return;
         }
         if (workingTableName != null) {
             System.out.println(tables.get(workingTableName).getNumberOfUncommittedChanges() + " unsaved");
+        }*/
+        if (workingTable != null) {
+            System.out.println(workingTable.getNumberOfUncommittedChanges() + " unsaved");
         }
-        workingTableName = name;
         try {
             out.writeUTF("set " + name);
         } catch (IOException e) {
@@ -224,14 +229,15 @@ public class MyRemoteTableProvider implements RemoteTableProvider {
             }
             System.out.println("Use: failed to send data");
         }
+        workingTable = table;
     }
 
     public void handleTable(String[] args) throws IOException {
-        if (workingTableName == null) {
+        if (workingTable == null) {
             System.out.println("no table");
             return;
         }
-        Table workingTable = tables.get(workingTableName);
+        //Table workingTable = tables.get(workingTableName);
         Class[] typeList = new Class[workingTable.getColumnsCount()];
         for (int i = 0; i < typeList.length; ++i) {
             typeList[i] = workingTable.getColumnType(i);
