@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -11,9 +11,9 @@ public class Server {
     private boolean started;
     private ListenThread listener;
     private int activePort;
-    private TableProvider dataBase;
+    private TableProviderExtended dataBase;
 
-    public Server(TableProvider newDataBase) {
+    public Server(TableProviderExtended newDataBase) {
         started = false;
         dataBase = newDataBase;
     }

@@ -89,7 +89,6 @@ public class RealRemoteTable implements Table, Closeable {
             return null;
         } else {
             String value = inputStream.nextLine();
-            System.err.println(value);
             try {
                 return parentProvider.deserialize(this, value);
             } catch (ParseException e) {

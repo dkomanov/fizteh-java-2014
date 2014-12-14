@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,10 +12,10 @@ import java.util.List;
 public class ListenThread extends Thread {
     ServerSocket server;
     HashSet<TalkingThread> clients;
-    TableProvider dataBase;
+    TableProviderExtended dataBase;
     boolean started;
 
-    public ListenThread(ServerSocket newServer, TableProvider newDataBase) {
+    public ListenThread(ServerSocket newServer, TableProviderExtended newDataBase) {
         server = newServer;
         clients = new HashSet<>();
         dataBase = newDataBase;

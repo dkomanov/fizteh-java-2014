@@ -1,17 +1,17 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.Shell;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsServer.TelnetCmdListUsers;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsServer.TelnetCmdStart;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsServer.TelnetCmdStop;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.IOException;
 
 public class ServerMain {
     public static void main(String[] args) {
         String baseDir = System.getProperty("fizteh.db.dir");
-        TableProvider dataBase;
+        TableProviderExtended dataBase;
         try {
             dataBase = new MFileHashMap(baseDir);
             Server myServer = new Server(dataBase);

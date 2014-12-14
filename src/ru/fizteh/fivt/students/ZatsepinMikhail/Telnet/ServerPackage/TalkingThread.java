@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage;
 
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.Exceptions.ExitException;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -10,11 +10,11 @@ import java.util.Scanner;
 
 public class TalkingThread extends Thread {
     private Socket client;
-    private TableProvider dataBase;
+    private TableProviderExtended dataBase;
     Scanner input;
     PrintStream output;
 
-    public TalkingThread(Socket newClient, TableProvider newDataBase) {
+    public TalkingThread(Socket newClient, TableProviderExtended newDataBase) {
         client = newClient;
         dataBase = newDataBase;
     }
@@ -44,7 +44,7 @@ public class TalkingThread extends Thread {
 
     public void stopExecution() {
         try {
-            ((MFileHashMap) dataBase).close();
+            dataBase.close();
             client.close();
         } catch (IOException e) {
             System.err.println(e.getMessage());
