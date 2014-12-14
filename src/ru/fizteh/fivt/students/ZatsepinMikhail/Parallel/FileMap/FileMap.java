@@ -19,33 +19,26 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class FileMap implements Table {
+
+    private class Difference {
+        private HashMap<String, Storeable> addedData;
+        private HashMap<String, Storeable> changedData;
+        private HashSet<String> removedData;
+
+        Difference() {
+            addedData = new HashMap<>();
+            changedData = new HashMap<>();
+            removedData = new HashSet<>();
+        }
+    }
+
     private HashMap<String, Storeable> stableData;
-    private ThreadLocal<HashMap<String, Storeable>> addedData
-            = new ThreadLocal<HashMap<String, Storeable>>() {
-        @Override
-        protected HashMap<String, Storeable> initialValue() {
-            return new HashMap<>();
-        }
-    };
-    private ThreadLocal<HashMap<String, Storeable>> changedData
-            = new ThreadLocal<HashMap<String, Storeable>>() {
-        @Override
-        protected HashMap<String, Storeable> initialValue() {
-            return new HashMap<>();
-        }
-    };
-    private ThreadLocal<HashSet<String>> removedData
-            = new ThreadLocal<HashSet<String>>() {
-        @Override
-        protected HashSet<String> initialValue() {
-            return new HashSet<>();
-        }
-    };
     private List<Class<?>> typeList;
     private int numberOfColumns;
     private String directoryOfTable;
     private TableProvider parent;
     private Lock lockForCommit;
+    private ThreadLocal<Difference> diff;
 
     private int getNumberOfDirectory(int hash) {
         int result = hash % 16;
@@ -64,9 +57,10 @@ public class FileMap implements Table {
     }
 
     private void clearStaff() {
-        removedData.set(new HashSet<>());
-        addedData.set(new HashMap<>());
-        changedData.set(new HashMap<>());
+        Difference innerDiff = diff.get();
+        innerDiff.removedData = new HashSet<>();
+        innerDiff.addedData = new HashMap<>();
+        innerDiff.changedData = new HashMap<>();
     }
 
     /**
@@ -82,6 +76,12 @@ public class FileMap implements Table {
         numberOfColumns = typeList.size();
         parent = newParent;
         lockForCommit = new ReentrantLock();
+        diff = new ThreadLocal<Difference>() {
+            @Override
+            protected Difference initialValue() {
+                return new Difference();
+            }
+        };
         if (!init()) {
             throw new IOException("error while initialization");
         }
@@ -101,14 +101,15 @@ public class FileMap implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        if (removedData.get().contains(key)) {
+        Difference innerDiff = diff.get();
+        if (innerDiff.removedData.contains(key)) {
             return null;
         }
-        if (changedData.get().containsKey(key)) {
-            return changedData.get().get(key);
+        if (innerDiff.changedData.containsKey(key)) {
+            return innerDiff.changedData.get(key);
         }
-        if (addedData.get().containsKey(key)) {
-            return addedData.get().get(key);
+        if (innerDiff.addedData.containsKey(key)) {
+            return innerDiff.addedData.get(key);
         }
         return stableData.get(key);
     }
@@ -118,18 +119,19 @@ public class FileMap implements Table {
         if (key == null) {
             throw new IllegalArgumentException("null argument");
         }
-        if (removedData.get().contains(key)) {
+        Difference innerDiff = diff.get();
+        if (innerDiff.removedData.contains(key)) {
             return null;
         }
-        if (addedData.get().containsKey(key)) {
-            return addedData.get().remove(key);
+        if (innerDiff.addedData.containsKey(key)) {
+            return innerDiff.addedData.remove(key);
         }
-        if (changedData.get().containsKey(key)) {
-            removedData.get().add(key);
-            return changedData.get().remove(key);
+        if (innerDiff.changedData.containsKey(key)) {
+            innerDiff.removedData.add(key);
+            return innerDiff.changedData.remove(key);
         }
         if (stableData.containsKey(key)) {
-            removedData.get().add(key);
+            innerDiff.removedData.add(key);
         }
         return stableData.get(key);
     }
@@ -141,21 +143,22 @@ public class FileMap implements Table {
         }
         TypesUtils.checkNewStorableValue(typeList, value);
         boolean wasDeleted = false;
-        if (removedData.get().contains(key)) {
-            removedData.get().remove(key);
+        Difference innerDiff = diff.get();
+        if (innerDiff.removedData.contains(key)) {
+            innerDiff.removedData.remove(key);
             wasDeleted = true;
         }
-        if (changedData.get().containsKey(key)) {
-            return changedData.get().put(key, value);
+        if (innerDiff.changedData.containsKey(key)) {
+            return innerDiff.changedData.put(key, value);
         }
-        if (addedData.get().containsKey(key)) {
-            return addedData.get().put(key, value);
+        if (innerDiff.addedData.containsKey(key)) {
+            return innerDiff.addedData.put(key, value);
         }
 
         if (stableData.containsKey(key)) {
-            changedData.get().put(key, value);
+            innerDiff.changedData.put(key, value);
         } else {
-            addedData.get().put(key, value);
+            innerDiff.addedData.put(key, value);
         }
 
         if (wasDeleted) {
@@ -167,7 +170,8 @@ public class FileMap implements Table {
 
     @Override
     public int size() {
-        return stableData.size() + addedData.get().size() - removedData.get().size();
+        Difference innerDiff = diff.get();
+        return stableData.size() + innerDiff.addedData.size() - innerDiff.removedData.size();
     }
 
     @Override
@@ -182,70 +186,77 @@ public class FileMap implements Table {
 
     @Override
     public int rollback() {
-        int result = changedData.get().size() + removedData.get().size() + addedData.get().size();
+        Difference innerDiff = diff.get();
+        int result = innerDiff.changedData.size() + innerDiff.removedData.size() + innerDiff.addedData.size();
         clearStaff();
         return result;
     }
 
     @Override
     public int commit() throws IOException {
-        lockForCommit.lock();
+        try {
+            lockForCommit.lock();
 
-        HashMap<String, Storeable> tmpAddedData = new HashMap<>(addedData.get());
-        HashMap<String, Storeable> tmpBufferAdded = new HashMap<>(addedData.get());
-        HashMap<String, Storeable> tmpChangedData = new HashMap<>(changedData.get());
-        HashMap<String, Storeable> tmpBufferChanged = new HashMap<>(changedData.get());
+            Difference innerDiff = diff.get();
+            HashMap<String, Storeable> tmpAddedData = new HashMap<>(innerDiff.addedData);
+            HashMap<String, Storeable> tmpBufferAdded = new HashMap<>(innerDiff.addedData);
+            HashMap<String, Storeable> tmpChangedData = new HashMap<>(innerDiff.changedData);
+            HashMap<String, Storeable> tmpBufferChanged = new HashMap<>(innerDiff.changedData);
 
-        tmpAddedData.keySet().removeAll(stableData.keySet());
-        tmpBufferChanged.keySet().removeAll(stableData.keySet());
-        tmpAddedData.putAll(tmpBufferChanged);
+            tmpAddedData.keySet().removeAll(stableData.keySet());
+            tmpBufferChanged.keySet().removeAll(stableData.keySet());
+            tmpAddedData.putAll(tmpBufferChanged);
 
-        tmpChangedData.keySet().retainAll(stableData.keySet());
-        tmpBufferAdded.keySet().retainAll(stableData.keySet());
-        tmpChangedData.putAll(tmpBufferAdded);
+            tmpChangedData.keySet().retainAll(stableData.keySet());
+            tmpBufferAdded.keySet().retainAll(stableData.keySet());
+            tmpChangedData.putAll(tmpBufferAdded);
 
-        removedData.get().retainAll(stableData.entrySet());
-        int result = tmpChangedData.size()
-                + removedData.get().size() + tmpAddedData.size();
-        stableData.keySet().removeAll(removedData.get());
-        stableData.putAll(tmpChangedData);
-        stableData.putAll(tmpAddedData);
+            innerDiff.removedData.retainAll(stableData.entrySet());
+            int result = tmpChangedData.size()
+                    + innerDiff.removedData.size() + tmpAddedData.size();
+            stableData.keySet().removeAll(innerDiff.removedData);
+            stableData.putAll(tmpChangedData);
+            stableData.putAll(tmpAddedData);
 
-        boolean allRight = true;
-        if (tmpChangedData.size() + removedData.get().size() > 0) {
-            Set<String> reloadKeys = removedData.get();
-            reloadKeys.addAll(tmpChangedData.keySet());
-            for (String oneKey : reloadKeys) {
-                if (!load(oneKey, false)) {
+            boolean allRight = true;
+            if (tmpChangedData.size() + innerDiff.removedData.size() > 0) {
+                Set<String> reloadKeys = innerDiff.removedData;
+                reloadKeys.addAll(tmpChangedData.keySet());
+                for (String oneKey : reloadKeys) {
+                    if (!load(oneKey, false)) {
+                        allRight = false;
+                    }
+                }
+            }
+            for (String oneKey : tmpAddedData.keySet()) {
+                if (!load(oneKey, true)) {
                     allRight = false;
                 }
             }
-        }
-        for (String oneKey : tmpAddedData.keySet()) {
-            if (!load(oneKey, true)) {
-                allRight = false;
+            if (allRight) {
+                return result;
+            } else {
+                throw new IOException();
             }
-        }
-        lockForCommit.unlock();
-
-        clearStaff();
-        if (allRight) {
-            return result;
-        } else {
-            throw new IOException();
+        } finally {
+            lockForCommit.unlock();
+            clearStaff();
         }
     }
 
     public List<String> list() {
+        Difference innerDiff = diff.get();
         ArrayList<String> keyList = new ArrayList<>(stableData.keySet());
-        keyList.removeAll(removedData.get());
-        keyList.addAll(addedData.get().keySet());
+        keyList.removeAll(innerDiff.removedData);
+        keyList.addAll(innerDiff.addedData.keySet());
         return keyList;
     }
 
     @Override
     public int getNumberOfUncommittedChanges() {
-        return addedData.get().size() + changedData.get().size() + removedData.get().size();
+        Difference innerDiff = diff.get();
+        return innerDiff.addedData.size() + innerDiff.changedData.size()
+                + innerDiff.removedData.size();
     }
 
 
