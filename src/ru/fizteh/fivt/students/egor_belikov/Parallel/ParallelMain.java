@@ -92,7 +92,7 @@ public class ParallelMain {
 
     }
 
-    public static void pack(String[] args) {
+    public static void pack(String[] args) throws Exception {
         String commands = Joiner.on(" ").join(args);
         String[] splittedCommands = commands.trim().split(";");
         try {
@@ -100,7 +100,7 @@ public class ParallelMain {
                 execute(s);
             }
         } catch (Exception exception) {
-            System.exit(1);
+            throw new Exception("StoreableMain: some exception in pack method");
         }
     }
 
