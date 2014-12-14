@@ -21,7 +21,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 
 /**
  * Represents the data table containing pairs key-value. The keys must be
@@ -31,7 +30,7 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
  * not thread safe.
  */
 public final class DbTable implements Table, AutoCloseable {
-    private TableProvider provider;
+    private TableManager manager;
     private String name;
     private AtomicBoolean invalid;
     private Path tableDirectoryPath;
@@ -50,9 +49,9 @@ public final class DbTable implements Table, AutoCloseable {
      * @throws IllegalArgumentException
      *             If
      */
-    public DbTable(TableProvider provider, Path tableDirectoryPath)
+    public DbTable(TableManager manager, Path tableDirectoryPath)
             throws DataBaseIOException {
-        if (provider == null || tableDirectoryPath == null) {
+        if (manager == null || tableDirectoryPath == null) {
             throw new IllegalArgumentException("Unable to create table for"
                     + " null provider or/and null path to table directory");
         }
@@ -60,7 +59,7 @@ public final class DbTable implements Table, AutoCloseable {
         diff = ThreadLocal.withInitial(() -> new HashMap<>());
         structure = new ArrayList<>();
         lock = new ReentrantReadWriteLock(true);
-        this.provider = provider;
+        this.manager = manager;
         this.tableDirectoryPath = tableDirectoryPath;
         this.name = tableDirectoryPath.getName(
                 tableDirectoryPath.getNameCount() - 1).toString();
@@ -84,9 +83,9 @@ public final class DbTable implements Table, AutoCloseable {
     @Override
     public int commit() throws IOException {
         lock.writeLock().lock();
-        checkTableIsNotRemoved();
-        int savedChangesCounter = diff.get().size();
         try {
+            checkTableIsNotRemoved();
+            int savedChangesCounter = diff.get().size();
             for (Entry<String, Storeable> pair : diff.get().entrySet()) {
                 TablePart part = parts.get(getHash(pair.getKey()));
                 if (pair.getValue() == null) {
@@ -122,8 +121,8 @@ public final class DbTable implements Table, AutoCloseable {
     @Override
     public int rollback() {
         lock.readLock().lock();
-        checkTableIsNotRemoved();
         try {
+            checkTableIsNotRemoved();
             int rolledChangesCounter = diff.get().size();
             diff.get().clear();
             return rolledChangesCounter;
@@ -218,10 +217,11 @@ public final class DbTable implements Table, AutoCloseable {
     @Override
     public void close() {
         lock.writeLock().lock();
-        checkTableIsNotRemoved();
         try {
+            checkTableIsNotRemoved();
             rollback();
             invalid.set(true);
+            manager.removeTableFromList(name);
         } finally {
             lock.writeLock().unlock();
         }
@@ -241,8 +241,8 @@ public final class DbTable implements Table, AutoCloseable {
     @Override
     public Storeable get(String key) {
         lock.readLock().lock();
-        checkTableIsNotRemoved();
         try {
+            checkTableIsNotRemoved();
             if (key == null) {
                 throw new IllegalArgumentException("Key is null");
             }
@@ -285,8 +285,8 @@ public final class DbTable implements Table, AutoCloseable {
     public Storeable put(String key, Storeable value)
             throws ColumnFormatException {
         lock.readLock().lock();
-        checkTableIsNotRemoved();
         try {
+            checkTableIsNotRemoved();
             if (key == null || value == null) {
                 throw new IllegalArgumentException(
                         "Key or value is a null-string");
@@ -340,8 +340,8 @@ public final class DbTable implements Table, AutoCloseable {
     @Override
     public Storeable remove(String key) {
         lock.readLock().lock();
-        checkTableIsNotRemoved();
         try {
+            checkTableIsNotRemoved();
             if (key == null) {
                 throw new IllegalArgumentException("Key is null");
             }
@@ -375,8 +375,8 @@ public final class DbTable implements Table, AutoCloseable {
     @Override
     public int size() {
         lock.readLock().lock();
-        checkTableIsNotRemoved();
         try {
+            checkTableIsNotRemoved();
             int numberOfRecords = 0;
             for (Entry<Long, TablePart> part : parts.entrySet()) {
                 numberOfRecords += part.getValue().getNumberOfRecords();
@@ -402,8 +402,8 @@ public final class DbTable implements Table, AutoCloseable {
     @Override
     public List<String> list() {
         lock.readLock().lock();
-        checkTableIsNotRemoved();
         try {
+            checkTableIsNotRemoved();
             Set<String> keySet = new HashSet<>();
             for (Entry<Long, TablePart> pair : parts.entrySet()) {
                 keySet.addAll(pair.getValue().list());
@@ -440,9 +440,9 @@ public final class DbTable implements Table, AutoCloseable {
      * 
      * @return TableProvider which provided this table.
      */
-    TableProvider getProvider() {
+    TableManager getManager() {
         checkTableIsNotRemoved();
-        return provider;
+        return manager;
     }
 
     /**

@@ -129,11 +129,11 @@ public final class TableManager implements TableProvider, AutoCloseable {
     @Override
     public Table getTable(String tableName) {
         lock.readLock().lock();
-        checkTableManagerIsNotInvalid();
-        if (tableName == null) {
-            throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
-        }
         try {
+            checkTableManagerIsNotInvalid();
+            if (tableName == null) {
+                throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
+            }
             tablesDirectoryPath.resolve(tableName);
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
                 throw new InvalidPathException(tableName,
@@ -169,11 +169,11 @@ public final class TableManager implements TableProvider, AutoCloseable {
     public Table createTable(String tableName, List<Class<?>> columnTypes)
             throws DataBaseIOException {
         lock.writeLock().lock();
-        checkTableManagerIsNotInvalid();
-        if (tableName == null) {
-            throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
-        }
         try {
+            checkTableManagerIsNotInvalid();
+            if (tableName == null) {
+                throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
+            }
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
                 throw new InvalidPathException(tableName,
                         ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
@@ -191,9 +191,12 @@ public final class TableManager implements TableProvider, AutoCloseable {
         } catch (InvalidPathException e) {
             throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": "
                     + e.getMessage(), e);
-        } catch (DataBaseIOException | IllegalArgumentException e) {
+        } catch (DataBaseIOException e) {
             throw new DataBaseIOException("Unable to create table '"
                     + tableName + "': " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unable to create table: "
+                    + e.getMessage(), e);
         } finally {
             lock.writeLock().unlock();
         }
@@ -253,11 +256,11 @@ public final class TableManager implements TableProvider, AutoCloseable {
     @Override
     public void removeTable(String tableName) throws DataBaseIOException {
         lock.writeLock().lock();
-        checkTableManagerIsNotInvalid();
-        if (tableName == null) {
-            throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
-        }
         try {
+            checkTableManagerIsNotInvalid();
+            if (tableName == null) {
+                throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
+            }
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
                 throw new InvalidPathException(tableName,
                         ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
@@ -463,15 +466,27 @@ public final class TableManager implements TableProvider, AutoCloseable {
                 + tablesDirectoryPath.toAbsolutePath() + "]";
     }
 
+    void removeTableFromList(String tableName) {
+        lock.writeLock().lock();
+        try {
+            checkTableManagerIsNotInvalid();
+            tables.remove(tableName);
+        } catch (IllegalStateException e) {
+            // Do nothing.
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
     @Override
     public void close() {
         lock.writeLock().lock();
-        checkTableManagerIsNotInvalid();
         try {
+            checkTableManagerIsNotInvalid();
+            invalid.set(true);
             for (Entry<String, DbTable> pair : tables.entrySet()) {
                 pair.getValue().close();
             }
-            invalid.set(true);
         } finally {
             lock.writeLock().unlock();
         }

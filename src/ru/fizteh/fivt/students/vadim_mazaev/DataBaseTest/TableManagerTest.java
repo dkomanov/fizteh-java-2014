@@ -90,7 +90,7 @@ public class TableManagerTest {
         test.close();
     }
 
-    @Test(expected = DataBaseIOException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testCreateTableThrowsExceptionCalledForNullTableStructureList()
             throws IOException {
         TableManager test = new TableManager(TestHelper.TEST_DIR.toString());
@@ -98,7 +98,7 @@ public class TableManagerTest {
         test.close();
     }
 
-    @Test(expected = DataBaseIOException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testCreateTableThrowsExceptionCalledForEmptyTableStructureList()
             throws IOException {
         TableManager test = new TableManager(TestHelper.TEST_DIR.toString());
