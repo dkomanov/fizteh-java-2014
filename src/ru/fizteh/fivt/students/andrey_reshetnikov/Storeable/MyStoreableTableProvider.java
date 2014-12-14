@@ -7,7 +7,7 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.andrey_reshetnikov.JUnit.HybridTable;
 import ru.fizteh.fivt.students.andrey_reshetnikov.JUnit.JUnitDataBaseDir;
 import ru.fizteh.fivt.students.andrey_reshetnikov.JUnit.MyTableProvider;
-
+import ru.fizteh.fivt.students.andrey_reshetnikov.MultiFileHashMap.ConstClass;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
@@ -32,7 +32,7 @@ public class MyStoreableTableProvider implements TableProvider {
     private String using;
 
     private String readSignature(File signature) throws IOException {
-        Charset charset = Charset.forName("UTF-8");
+        Charset charset = Charset.forName(ConstClass.MY_FORMAT);
         Path path = signature.toPath();
         String line;
         try (BufferedReader stream = Files.newBufferedReader(path, charset)) {
@@ -45,7 +45,7 @@ public class MyStoreableTableProvider implements TableProvider {
     }
 
     private void writeSignature(File signature, String line) throws IOException {
-        Charset charset = Charset.forName("UTF-8");
+        Charset charset = Charset.forName(ConstClass.MY_FORMAT);
         Path path = signature.toPath();
         try (BufferedWriter stream = Files.newBufferedWriter(path, charset)) {
             stream.write(line);

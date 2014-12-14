@@ -21,7 +21,6 @@ public class XmlSerializer {
 
     public static String serializeObjectList(List<Object> objects) {
         try {
-            //okey google, how to build xml java
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.newDocument();
             Element row = document.createElement("row");
@@ -79,7 +78,6 @@ public class XmlSerializer {
             throws ParseException, ParserConfigurationException {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         try {
-            //okey google, how to parse xml java
             Document document = builder.parse(new InputSource(new StringReader(xmlInput)));
             //we have many rows
             if (document.getChildNodes().getLength() != 1) {
@@ -91,9 +89,8 @@ public class XmlSerializer {
                 throw new ParseException("Root tag must be named row", 0);
             }
             NodeList cols = row.getChildNodes();
-            //if size of cols different of columns
             if (cols.getLength() != types.size()) {
-                throw new ParseException("Incorrect number of columns in string for this table", 0);
+                throw new ParseException("Incorrect number of columns in string", 0);
             }
             List<Object> result = new Vector<>();
             for (int i = 0; i < row.getChildNodes().getLength(); i++) {
