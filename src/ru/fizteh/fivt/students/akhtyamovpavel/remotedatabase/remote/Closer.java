@@ -15,6 +15,13 @@ public class Closer extends Thread {
 
     @Override
     public void run() {
+        while (provider.isGuested()) {
+            try {
+                provider.disconnect();
+            } catch (IOException e) {
+                //skip exception to stop server
+            }
+        }
         while (provider.isServerStarted()) {
             try {
                 provider.stopServer();
