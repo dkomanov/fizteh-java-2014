@@ -15,6 +15,8 @@ import java.util.List;
 public class ServerMain {
     private static volatile List<String> userInformation = new ArrayList<>();
     private static volatile boolean isClosed = false;
+    private static volatile boolean isServerStarted = false;
+    private static volatile boolean isConnected = false;
 
     public static void main(String[] args) {
         try {
@@ -27,8 +29,10 @@ public class ServerMain {
             ServerConsoleThread serverThread = new ServerConsoleThread(args, monitor, rootDirectory);
             Thread mainThread = new Thread(serverThread);
             mainThread.start();
-            synchronized (monitor) {
-                monitor.wait();
+            while (!isServerStarted) {
+                synchronized (monitor) {
+                    monitor.wait();
+                }
             }
             Thread hook = new ShutdownHookThread(serverThread.getTableProvider());
             Runtime.getRuntime().addShutdownHook(hook);
@@ -42,9 +46,12 @@ public class ServerMain {
                 Thread clientThread = new Thread(client);
                 clients.add(clientThread);
                 clientThread.start();
-                synchronized (isClientConnected) {
-                    isClientConnected.wait();
+                while (!isConnected) {
+                    synchronized (isClientConnected) {
+                        isClientConnected.wait();
+                    }
                 }
+                setClientConnected(false);
                 if (isClosed) {
                     break;
                 }
@@ -53,7 +60,7 @@ public class ServerMain {
             for (Thread it : clients) {
                 it.join();
             }
-            mainThread.join(); //
+            mainThread.join();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -69,6 +76,14 @@ public class ServerMain {
 
     public static boolean isServerClosed() {
         return isClosed;
+    }
+
+    public static void startServer() {
+        isServerStarted = true;
+    }
+
+    public static void setClientConnected(boolean value) {
+        isConnected = value;
     }
 }
 

@@ -30,40 +30,6 @@ public class ServerConsoleThread implements Runnable {
         this.tableProvider = new MyTableProvider(directory);
     }
 
-    /*@Override
-    public void run() {
-        try {
-            Map<String, Command> commands = new HashMap<String, Command>();
-            commands.put(new StartCommand().toString(), new StartCommand());
-            commands.put(new StopCommand().toString(), new StopCommand());
-            try {
-                int retValue = 0;
-                String rootDirectory = System.getProperty("fizteh.db.dir");
-                if (rootDirectory == null) {
-                    throw new IOException("Can't find the directory");
-                }
-                TableProvider dataBase = new MyTableProviderFactory().create(rootDirectory);
-                Status status = new Status(dataBase);
-                if (args.length == 0) {
-                    new Shell(commands, status, monitor).handle(System.in);
-                } else {
-                    retValue = new Shell(commands, status, monitor).handle(args);
-                }
-                System.exit(retValue);
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-                System.exit(-1);
-            }
-        } catch (Exception e) {
-            if (e.getMessage().equals("")) {
-                System.out.println(e);
-            } else {
-                System.out.println(e.getMessage());
-            }
-            System.exit(-1);
-        }
-    }*/
-
     @Override
     public void run() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
@@ -77,6 +43,7 @@ public class ServerConsoleThread implements Runnable {
                     case "start":
                         new StartCommand().execute(args, status);
                         synchronized (monitor) {
+                            ServerMain.startServer();
                             monitor.notifyAll();
                         }
                         break;

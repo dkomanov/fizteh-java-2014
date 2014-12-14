@@ -24,7 +24,7 @@ public class ClientThread implements Runnable {
     private List<Class<?>> currentTypeList = new ArrayList<>();
     private volatile String clientInformation;
     private Object isClientConnected;
-    private volatile boolean isClosed = false;
+    private Object isClosedMonitor = new Object();
 
     public ClientThread(ServerSocket serverSocket, TableProvider tableProvider, Object isClientConnected) {
         this.serverSocket = serverSocket;
@@ -39,12 +39,8 @@ public class ClientThread implements Runnable {
             StringBuilder clientInformationBuilder = new StringBuilder();
             clientInformationBuilder.append(socket.getInetAddress().toString() + ":" + socket.getLocalPort());
             clientInformation = new String(clientInformationBuilder).substring(1);
-            if (ServerMain.isServerClosed()) {
-                synchronized (isClientConnected) {
-                    isClientConnected.notifyAll();
-                }
-            }
             synchronized (isClientConnected) {
+                ServerMain.setClientConnected(true);
                 isClientConnected.notifyAll();
             }
             DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -159,6 +155,9 @@ public class ClientThread implements Runnable {
 
     public void closeCommand() {
         try {
+            synchronized (isClosedMonitor) {
+                ServerMain.closeServer();
+            }
             ((MyTableProvider) tableProvider).close();
         } catch (Exception e) {
             System.out.println("Failed to close");
@@ -179,17 +178,15 @@ public class ClientThread implements Runnable {
 
     public void isAlive(DataOutputStream out) {
         try {
-            if (isClosed) {
-                out.writeUTF("no");
-            } else {
-                out.writeUTF("yes");
+            synchronized (isClosedMonitor) {
+                if (ServerMain.isServerClosed()) {
+                    out.writeUTF("no");
+                } else {
+                    out.writeUTF("yes");
+                }
             }
         } catch (IOException e) {
             System.out.println("isAlive: failed to send data");
         }
-    }
-
-    public void closeConnection() {
-        isClosed = true;
     }
 }
