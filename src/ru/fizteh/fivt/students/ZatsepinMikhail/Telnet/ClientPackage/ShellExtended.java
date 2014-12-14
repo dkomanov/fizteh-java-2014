@@ -74,6 +74,8 @@ public class ShellExtended extends Shell<RemoteTableProviderFactory> {
                             System.out.println("Server has been stopped!");
                             ((RealRemoteTableProviderFactory) objectForShell).disconnectCurrentProvider();
                             return false;
+                        } catch (IllegalStateException e) {
+                            errorOccuried = true;
                         }
                     }
                 }
@@ -125,6 +127,8 @@ public class ShellExtended extends Shell<RemoteTableProviderFactory> {
                     System.out.println("Server has been stopped!");
                     ((RealRemoteTableProviderFactory) objectForShell).disconnectCurrentProvider();
                     return false;
+                } catch (IllegalStateException e) {
+                    errorOccuried = true;
                 }
             }
         }

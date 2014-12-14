@@ -42,12 +42,12 @@ public class TalkingThread extends Thread {
         }
     }
 
-    public void stopExecution() throws IOException {
+    public void stopExecution() {
         try {
             ((MFileHashMap) dataBase).close();
-        } catch (Exception e) {
-            //suppress
+            client.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
-        client.close();
     }
 }

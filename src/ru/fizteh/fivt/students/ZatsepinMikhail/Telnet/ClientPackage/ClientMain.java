@@ -7,6 +7,7 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.CommandsClie
 public class ClientMain {
     public static void main(String[] args) {
         RealRemoteTableProviderFactory factory = new RealRemoteTableProviderFactory();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> factory.disconnectCurrentProvider()));
         ShellExtended myShell = new ShellExtended(factory);
         setUpShell(myShell);
         myShell.interactiveMode();

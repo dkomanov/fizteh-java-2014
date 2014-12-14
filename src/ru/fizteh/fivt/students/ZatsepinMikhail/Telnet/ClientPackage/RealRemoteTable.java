@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.Exceptions.StopExecutionException;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.StoreablePackage.Serializator;
 
 import java.io.Closeable;
 import java.io.IOException;

@@ -4,7 +4,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProvider;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.StoreablePackage.Serializator;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.Serializator;
 
 import java.io.PrintStream;
 

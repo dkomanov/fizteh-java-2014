@@ -15,6 +15,7 @@ public class ServerMain {
         try {
             dataBase = new MFileHashMap(baseDir);
             Server myServer = new Server(dataBase);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> myServer.stopServer()));
             Shell<Server> myShell = new Shell<>(myServer);
             setUpShell(myShell);
             myShell.interactiveMode();

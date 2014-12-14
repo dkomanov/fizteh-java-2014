@@ -1,8 +1,7 @@
-package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.StoreablePackage;
+package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTable;
 
 import javax.xml.stream.*;
 import javax.xml.stream.events.StartElement;

@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTab
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.StoreablePackage.Serializator;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 

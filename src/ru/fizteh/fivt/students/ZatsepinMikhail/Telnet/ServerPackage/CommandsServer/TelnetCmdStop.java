@@ -2,8 +2,6 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsSer
 
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.Server;
 
-import java.io.IOException;
-
 public class TelnetCmdStop extends TelnetCommand {
     public TelnetCmdStop() {
         name = "stop";
@@ -16,12 +14,8 @@ public class TelnetCmdStop extends TelnetCommand {
             System.out.println("not started");
             return false;
         }
-        try {
-            myServer.stopServer();
-            System.out.println("stopped at port " + myServer.getActivePort());
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
+        myServer.stopServer();
+        System.out.println("stopped at port " + myServer.getActivePort());
         return true;
     }
 }

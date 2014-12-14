@@ -39,7 +39,7 @@ public class Server {
         return activePort;
     }
 
-    public void stopServer() throws IOException {
+    public void stopServer() {
         listener.stopExecution();
         started = false;
     }

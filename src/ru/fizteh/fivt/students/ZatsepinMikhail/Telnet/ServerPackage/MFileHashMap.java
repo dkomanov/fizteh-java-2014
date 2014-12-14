@@ -4,9 +4,7 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap.FileMap;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.AbstractStoreable;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.shell.FileUtils;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;

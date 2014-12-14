@@ -42,9 +42,6 @@ public class CommandExecutor {
             if (parsedArguments.length == 0 || parsedArguments[0].equals("")) {
                 continue;
             }
-            if (parsedArguments[0].equals("exit")) {
-                //do smth
-            }
             CommandTableProviderExtended commandToExecute = shellCommands.get(parsedArguments[0]);
             if (commandToExecute != null) {
                 try {
@@ -64,7 +61,7 @@ public class CommandExecutor {
                 errorOccuried = true;
             }
             if (errorOccuried) {
-                //throw new IllegalStateException();
+                throw new IllegalStateException();
             }
         }
     }

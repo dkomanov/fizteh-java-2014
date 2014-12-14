@@ -28,7 +28,7 @@ public class TelnetCmdStart extends TelnetCommand {
             return false;
         }
         if (myServer.startServer(port)) {
-            System.out.println("started at " + port);
+            System.out.println("started at port " + port);
             return true;
         } else {
             System.out.println("not started: wrong port number");

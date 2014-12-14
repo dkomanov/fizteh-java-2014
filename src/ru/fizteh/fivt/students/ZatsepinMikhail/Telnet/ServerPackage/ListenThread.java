@@ -45,11 +45,15 @@ public class ListenThread extends Thread {
         return result;
     }
 
-    public void stopExecution() throws IOException {
+    public void stopExecution() {
         for (TalkingThread client : clients) {
             client.stopExecution();
         }
-        server.close();
-        started = false;
+        try {
+            server.close();
+            started = false;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
