@@ -43,7 +43,10 @@ public class LoggingProxyFactoryClass implements LoggingProxyFactory {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("<invoke timestamp=\"").append(System.currentTimeMillis()).append("\" class=\"").append(implementation.getClass().getCanonicalName()).append("\" name=\"").append(method.getName()).append("\">");
+            stringBuilder.append("<invoke timestamp=\"")
+                    .append(System.currentTimeMillis()).append("\" class=\"")
+                    .append(implementation.getClass().getCanonicalName()).append("\" name=\"")
+                    .append(method.getName()).append("\">");
             if (args != null && args.length > 0) {
                 stringBuilder.append(xmlParser.parse(args));
             } else {
