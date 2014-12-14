@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ServerPackage.CommandsTab
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.StoreablePackage.Serializator;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.TableProviderExtended;
 
 
@@ -23,6 +24,7 @@ public class CommandRemoveDistribute extends CommandTableProviderExtended {
         Storeable value = currentTable.remove(args[2]);
         if (value != null) {
             output.println("removed");
+            output.println(Serializator.serialize(currentTable, value));
         } else {
             output.println("not found");
         }

@@ -1,11 +1,8 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage;
 
-import ru.fizteh.fivt.storage.structured.ColumnFormatException;
-import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
-import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
+import ru.fizteh.fivt.storage.structured.*;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Storeable.StoreablePackage.TypesUtils;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.StoreablePackage.Serializator;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -14,7 +11,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -60,7 +56,6 @@ public class RealRemoteTable implements Table, Closeable {
         }
         outputStream.println("get " + name + " " + key);
         String message = inputStream.nextLine();
-        System.err.println("in client: " + message);
         if ("found".equals(message)) {
             String value = inputStream.nextLine();
             try {
@@ -84,6 +79,7 @@ public class RealRemoteTable implements Table, Closeable {
             return null;
         } else {
             String value = inputStream.nextLine();
+            System.err.println(value);
             try {
                 return parentProvider.deserialize(this, value);
             } catch (ParseException e) {
@@ -151,5 +147,9 @@ public class RealRemoteTable implements Table, Closeable {
     public void close() throws IOException {
         rollback();
         server.close();
+    }
+
+    public TableProvider getTableProvider() {
+        return parentProvider;
     }
 }

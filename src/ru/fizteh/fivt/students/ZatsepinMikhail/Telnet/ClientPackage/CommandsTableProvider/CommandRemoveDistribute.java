@@ -4,6 +4,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTable;
 import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.ClientPackage.RealRemoteTableProvider;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Telnet.StoreablePackage.Serializator;
 
 import java.io.PrintStream;
 
@@ -23,7 +24,7 @@ public class CommandRemoveDistribute extends CommandTableProviderExtended {
         Storeable value = currentTable.remove(args[1]);
         if (value != null) {
             System.out.println("removed");
-            System.out.println(currentTable.get(args[1]));
+            System.out.println(Serializator.serialize(currentTable, value));
         } else {
             System.out.println("not found");
         }
