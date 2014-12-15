@@ -70,6 +70,7 @@ public class ListSort {
         } catch (IOException e) {
             throw new RuntimeException("Can't merge files: " + e.getMessage());
         }
+
         return result;
     }
 
@@ -113,7 +114,15 @@ public class ListSort {
         // Сортируем каждый по отдельности и соединяем
         File newFirst = mergeSort(first, index);
         File newSecond = mergeSort(second, index);
-        return merge(newFirst, newSecond, index);
+        File result = merge(newFirst, newSecond, index);
+
+        // Удаляем за собой
+        first.delete();
+        second.delete();
+        newFirst.delete();
+        newSecond.delete();
+
+        return result;
     }
 
     /*
@@ -197,7 +206,7 @@ public class ListSort {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Can't create init file: " + e.getMessage());
+            throw new RuntimeException("Can't create colored file: " + e.getMessage());
         }
 
         return colored;
@@ -364,6 +373,8 @@ public class ListSort {
             throw new RuntimeException("Can't reduce files: " + e.getMessage());
         }
 
+        // Удаляем временный файл за собой
+        tmp.delete();
         return result;
     }
 
@@ -377,6 +388,10 @@ public class ListSort {
         File sortFirst = mergeSort(colored, 0);
         File sortSecond = mergeSort(colored, 1);
         File next = join(sortSecond, sortFirst);
+        // Удаляем файлы которые нам больше не понадобятся
+        colored.delete();
+        sortFirst.delete();
+        sortSecond.delete();
         // Решаем рекурсивно, сводим задачу к меньшей
         next = sort(next);
         return reduce(init, next);

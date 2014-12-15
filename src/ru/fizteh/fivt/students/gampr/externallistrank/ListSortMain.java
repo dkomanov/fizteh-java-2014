@@ -27,10 +27,8 @@ public class ListSortMain {
             System.exit(1);
         } finally {
             // Удаляем за собой
-            if (dirTmp.listFiles() != null) {
-                for (File f : dirTmp.listFiles()) {
-                    f.delete();
-                }
+            for (File f : dirTmp.listFiles()) {
+                f.delete();
             }
             dirTmp.delete();
         }
