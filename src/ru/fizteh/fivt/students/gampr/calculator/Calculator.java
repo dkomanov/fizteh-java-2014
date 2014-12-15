@@ -10,26 +10,29 @@ public class Calculator {
     }
 
     String getToken(String expr) {
-        int ibeg = 0;
-        int iend;
-        while(expr.charAt(ibeg) == ' ') {
-            ibeg ++;
+        if (expr.charAt(0) == ' ') {
+            expr.replaceFirst("\\s+", "");
         }
-        if("+-*/".contains(expr.charAt(ibeg))) {
-            return
+        if ("+-*/()".contains(expr.substring(0, 0))) {
+            return expr.substring(0, 0);
         }
-        return
-        //Тут надо токенизатор
+        String[] tmp = "[\\+\\-\\*/]".split(expr);
+        String res = tmp[0];
+        for (String s : tmp) {
+            System.out.print(s + " || ");
+        }
+        System.out.println();
+        return res;
     }
 
-    Double calc () {
+    Double calc() {
         Stack<Double> res = new Stack<>();
         Stack<Operation> oper = new Stack<>();
         Boolean operPred;
         while (!expr.isEmpty()) {
             String token = getToken(expr);
             expr = expr.substring(token.length());
-            if ("*/-+()".contains(token)) {
+            if ("+-*/()".contains(token)) {
                 operPred = true;
                 Operation op = new Operation(token);
                 switch (token) {
@@ -49,7 +52,7 @@ public class Calculator {
                         break;
                     case ("+"):
                     case ("-"):
-                        if(operPred) {
+                        if (operPred) {
 
                             break;
                         }
@@ -73,6 +76,4 @@ public class Calculator {
         }
         return res.pop();
     }
-
-
 }
