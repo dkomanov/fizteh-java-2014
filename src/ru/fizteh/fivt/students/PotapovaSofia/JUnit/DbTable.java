@@ -9,13 +9,37 @@ import java.nio.file.Path;
 import java.util.*;
 
 class ValueWrapper {
-    public String value;
-    public boolean isRemoved;
-    public boolean isContains;
+    private String value;
+    private boolean isRemoved;
+    private boolean isContains;
 
     public ValueWrapper(String value, boolean isRemoved, boolean isContains) {
         this.value = value;
         this.isRemoved = isRemoved;
+        this.isContains = isContains;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public boolean isRemoved() {
+        return isRemoved;
+    }
+
+    public void setIsRemoved(boolean isRemoved) {
+        this.isRemoved = isRemoved;
+    }
+
+    public boolean isContains() {
+        return isContains;
+    }
+
+    public void setIsContains(boolean isContains) {
         this.isContains = isContains;
     }
 }
@@ -23,21 +47,20 @@ class ValueWrapper {
 public class DbTable implements Table {
     String tableName;
     private Path tablePath;
-    private Map<String, ValueWrapper>  diff; //0 = out; 1 = remove
+    private Map<String, ValueWrapper>  diff;
     private Map<String, String> state;
 
     static final int DIR_COUNT = 16;
     static final int FILE_COUNT = 16;
     static final String CODING = "UTF-8";
 
-    public DbTable(Path path, String name) throws RuntimeException {
+    public DbTable(Path path, String name) {
         tableName = name;
         tablePath = path;
         diff = new HashMap<>();
         try {
             readFromDisk();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
             throw new RuntimeException("Error reading table " + tableName + e.getMessage());
         }
     }
@@ -57,8 +80,8 @@ public class DbTable implements Table {
         String value = null;
         if (diff.containsKey(key)) {
             ValueWrapper valueWrapper = diff.get(key);
-            if (!valueWrapper.isRemoved) {
-                value = valueWrapper.value;
+            if (!valueWrapper.isRemoved()) {
+                value = valueWrapper.getValue();
             }
         } else {
             value = state.get(key);
@@ -77,10 +100,10 @@ public class DbTable implements Table {
         }
         if (diff.containsKey(key)) {
             ValueWrapper valueWrapper = diff.get(key);
-            if (valueWrapper.isRemoved) {
-                valueWrapper.isRemoved = false;
+            if (valueWrapper.isRemoved()) {
+                valueWrapper.setIsRemoved(false);
             } else {
-                oldValue = valueWrapper.value;
+                oldValue = valueWrapper.getValue();
                 diff.remove(key);
                 diff.put(key, new ValueWrapper(value, false, isContains));
             }
@@ -99,10 +122,10 @@ public class DbTable implements Table {
         String removedValue = null;
         if (diff.containsKey(key)) {
             ValueWrapper valueWrapper = diff.get(key);
-            if (!valueWrapper.isRemoved) {
-                removedValue = diff.get(key).value;
+            if (!valueWrapper.isRemoved()) {
+                removedValue = diff.get(key).getValue();
                 diff.remove(key);
-                if (valueWrapper.isContains) {
+                if (valueWrapper.isContains()) {
                     diff.put(key, new ValueWrapper(removedValue, true, true));
                 }
             }
@@ -120,10 +143,10 @@ public class DbTable implements Table {
         int recordsCount = state.size();
         for (Map.Entry<String, ValueWrapper> f : diff.entrySet()) {
             ValueWrapper valueWrapper = f.getValue();
-            if (valueWrapper.isRemoved) {
+            if (valueWrapper.isRemoved()) {
                 recordsCount--;
             } else {
-                if (!valueWrapper.isContains) {
+                if (!valueWrapper.isContains()) {
                     recordsCount++;
                 }
             }
@@ -136,13 +159,13 @@ public class DbTable implements Table {
         int commitCount = diff.size();
         for (Map.Entry<String, ValueWrapper> f : diff.entrySet()) {
             ValueWrapper valueWrapper = f.getValue();
-            if (valueWrapper.isRemoved) {
+            if (valueWrapper.isRemoved()) {
                 state.remove(f.getKey());
             } else {
-                if (valueWrapper.isContains) {
+                if (valueWrapper.isContains()) {
                     state.remove(f.getKey());
                 }
-                state.put(f.getKey(), valueWrapper.value);
+                state.put(f.getKey(), valueWrapper.getValue());
             }
         }
         try {
@@ -170,10 +193,10 @@ public class DbTable implements Table {
         }
         for (Map.Entry<String, ValueWrapper> f : diff.entrySet()) {
             ValueWrapper valueWrapper = f.getValue();
-            if (valueWrapper.isRemoved) {
+            if (valueWrapper.isRemoved()) {
                 keySet.remove(f.getKey());
             } else {
-                if (!valueWrapper.isContains) {
+                if (!valueWrapper.isContains()) {
                     keySet.add(f.getKey());
                 }
             }

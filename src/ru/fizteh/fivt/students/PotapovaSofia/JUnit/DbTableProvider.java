@@ -17,6 +17,8 @@ public class DbTableProvider implements TableProvider {
     private Map<String, Table> tables;
     private Path dbPath;
 
+    static final String ILLEGAL_TABLE_NAME_PATTERN = ".*[\\\\/\\.]+.*";
+
     public DbTableProvider(String dir) {
         try {
             dbPath = Paths.get(dir);
@@ -48,7 +50,7 @@ public class DbTableProvider implements TableProvider {
     @Override
     public Table getTable(String name) {
         Utils.checkOnNull(name, "Table name is null");
-        Utils.checkTableName(name);
+        checkTableName(name);
         try {
             dbPath.resolve(name);
             return tables.get(name);
@@ -60,7 +62,7 @@ public class DbTableProvider implements TableProvider {
     @Override
     public Table createTable(String name) {
         Utils.checkOnNull(name, "Table name is null");
-        Utils.checkTableName(name);
+        checkTableName(name);
         try {
             if (tables.get(name) != null) {
                 return null;
@@ -78,7 +80,7 @@ public class DbTableProvider implements TableProvider {
     @Override
     public void removeTable(String name) {
         Utils.checkOnNull(name, "Table name is null");
-        Utils.checkTableName(name);
+        checkTableName(name);
         try {
             Path tableDir = dbPath.resolve(name);
             Table removedTable = tables.remove(name);
@@ -106,6 +108,12 @@ public class DbTableProvider implements TableProvider {
         }
         if (!file.delete()) {
             throw new IOException("Unable to delete: " + file);
+        }
+    }
+
+    private static void checkTableName(String name) {
+        if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
+            throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
         }
     }
 }

@@ -9,8 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    static final String ILLEGAL_TABLE_NAME_PATTERN = ".*[\\\\/\\.]+.*";
-
     public static void interpreterError(String errorMessage) {
         System.out.println(errorMessage);
     }
@@ -53,12 +51,6 @@ public class Utils {
             });
         } catch (IOException | SecurityException e) {
             throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    public static void checkTableName(String name) {
-        if (name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
-            throw new InvalidPathException(name, "contains '\',  or '/',  or '.'");
         }
     }
 }

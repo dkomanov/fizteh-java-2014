@@ -29,12 +29,14 @@ public class DbTableProviderTest {
     @Test
     public void testOnCreatedForNonexistentDirectory() {
         new DbTableProvider(dirPath.toString());
+        assertTrue(dirPath.toFile().exists());
     }
 
     @Test
     public void testOnCreatedForExistentDirectory() {
         dirPath.toFile().mkdir();
         new DbTableProvider(dirPath.toString());
+        assertTrue(dirPath.toFile().exists());
     }
 
     @Test(expected = IllegalArgumentException.class)
