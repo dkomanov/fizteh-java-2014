@@ -134,12 +134,14 @@ public class ExternalListRank {
                     (Object o) -> outp.println(((Pair<Integer, Pair<Integer, Integer>>) o).second.first)
             );
         } catch (IOException e) {
-            buf.delete();
-            par.delete();
-            System.exit(2);
-        }
-        if (!buf.delete() || !par.delete()) {
-            System.err.println("failed to delete temporary files");
+            System.err.println("I/O error: " + e.getMessage());
+        } finally {
+            if (buf != null && !buf.delete()) {
+                System.err.println("failed to delete temporary files");
+            }
+            if (par != null && !par.delete()) {
+                System.err.println("failed to delete temporary file");
+            }
         }
     }
 }
