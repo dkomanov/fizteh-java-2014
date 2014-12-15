@@ -45,11 +45,7 @@ public class DBaseWorker {
         }
         String tableName = args[1];
         List<Class<?>> types = parseTypes(args);
-        out.println("before");
-        System.out.println(tableProvider == null);
         Table createdTable = tableProvider.createTable(tableName, types);
-        out.println("after");
-
         if (createdTable == null) {
             out.println(tableName + " exists");
         } else {
@@ -90,6 +86,9 @@ public class DBaseWorker {
         for (String tableName : tableNames) {
             int valuesNumber = tableProvider.getTable(tableName).size();
             out.println(tableName + " " + valuesNumber);
+        }
+        if (tableNames.size() == 0) {
+            out.println();
         }
     }
 
@@ -209,11 +208,9 @@ public class DBaseWorker {
         List<String> typeNames = new ArrayList<>();
         for (int argsIndex = 2; argsIndex < args.length; argsIndex++) {
             typeNames.add(args[argsIndex]);
-            System.out.println(args[argsIndex]);
         }
         typeNames = deleteCommas(typeNames);
         for (String typeName : typeNames) {
-            System.out.println(typeName);
             types.add(getClassFromString(typeName));
         }
         return types;
@@ -221,7 +218,6 @@ public class DBaseWorker {
 
     private List<String> deleteCommas(List<String> typeNames) throws Exception {
         int firstIndex = 0;
-        out.println("in del commas");
         if (typeNames.get(firstIndex).startsWith("(")) {
             typeNames.add(firstIndex, typeNames.get(firstIndex).substring(1));
             typeNames.remove(firstIndex + 1);

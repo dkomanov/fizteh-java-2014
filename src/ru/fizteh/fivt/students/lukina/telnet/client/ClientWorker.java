@@ -81,7 +81,7 @@ public class ClientWorker {
             out.println("not connected");
             return;
         }
-        if (socket.isInputShutdown()) {
+        if (socket.isInputShutdown() || socket.isOutputShutdown() || !socket.isConnected() || socket.isClosed()) {
             this.disconnect();
             out.println("Server disconnected. Try to connect again.");
         }
@@ -91,6 +91,11 @@ public class ClientWorker {
             Thread.sleep(100);
             do {
                 String answerFromServer = fromServerStream.readLine();
+                if (answerFromServer == null) {
+                    this.disconnect();
+                    out.println("Server disconnected. Try to connect again.");
+                    return;
+                }
                 out.println(answerFromServer);
             } while (fromServerStream.ready());
         } catch (IOException e) {
