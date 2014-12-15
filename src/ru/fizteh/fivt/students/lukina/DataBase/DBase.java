@@ -25,8 +25,6 @@ public class DBase implements Table, AutoCloseable {
     protected DBaseProvider provider;
     private ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(
             true);
-    // private Lock read = readWriteLock.readLock();
-    // private Lock write = readWriteLock.writeLock();
     private String currTable = "";
     private volatile boolean closed = false;
 

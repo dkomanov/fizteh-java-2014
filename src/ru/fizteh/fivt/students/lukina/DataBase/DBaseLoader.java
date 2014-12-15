@@ -174,23 +174,6 @@ public class DBaseLoader {
     }
 
     private Class<?> getClassFromString(String str) throws IOException {
-        switch (str) {
-            case "int":
-                return Integer.class;
-            case "long":
-                return Long.class;
-            case "byte":
-                return Byte.class;
-            case "float":
-                return Float.class;
-            case "double":
-                return Double.class;
-            case "boolean":
-                return Boolean.class;
-            case "String":
-                return String.class;
-            default:
-                throw new IOException("Incorrect DataBase: incorrect type in signature file");
-        }
+        return DBaseProvider.getClassFromString(str);
     }
 }

@@ -23,7 +23,7 @@ public class DBaseTest {
     DBaseProviderFactory fact;
 
     @Before
-    public void initializeAnsdFillingBase() {
+    public void initializeAndFillingBase() {
         fact = new DBaseProviderFactory();
         try {
             prov = fact.create(root.newFolder().toString());

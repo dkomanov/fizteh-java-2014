@@ -6,15 +6,10 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
 import javax.xml.stream.*;
-
 import java.io.*;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Vector;
 
 public class DBaseProvider implements TableProvider, AutoCloseable {
     DBaseLoader loader;
@@ -55,6 +50,22 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
                     throw e;
                 }
             }
+        }
+    }
+
+    static public Class<?> getClassFromString(String name) {
+        HashMap<String, Class<?>> classes = new HashMap<>();
+        classes.put("int", Integer.class);
+        classes.put("long", Long.class);
+        classes.put("byte", Byte.class);
+        classes.put("float", Float.class);
+        classes.put("double", Double.class);
+        classes.put("boolean", Boolean.class);
+        classes.put("String", String.class);
+        if (classes.containsKey(name)) {
+            return classes.get(name);
+        } else {
+            throw new RuntimeException("Incorrect type " + name);
         }
     }
 
@@ -207,27 +218,6 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
 
     protected void closeTable(String name) {
         tableBase.remove(name);
-    }
-
-    public Class<?> getClassFromString(String name) {
-        switch (name) {
-            case "int":
-                return Integer.class;
-            case "long":
-                return Long.class;
-            case "byte":
-                return Byte.class;
-            case "float":
-                return Float.class;
-            case "double":
-                return Double.class;
-            case "boolean":
-                return Boolean.class;
-            case "String":
-                return String.class;
-            default:
-                throw new RuntimeException("Incorrect type " + name);
-        }
     }
 
     public Object getObjectFromString(String text, Class<?> type)
