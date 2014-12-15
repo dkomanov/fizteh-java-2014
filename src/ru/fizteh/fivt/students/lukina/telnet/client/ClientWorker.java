@@ -104,7 +104,7 @@ public class ClientWorker {
         }
     }
 
-    public void WhereAmI() {
+    public void whereAmI() {
         if (!connected) {
             out.println("local");
         } else {

@@ -84,7 +84,7 @@ public class ClientParser {
                 case "whereami":
                     if (checkArgs(1, args)) {
                         try {
-                            worker.WhereAmI();
+                            worker.whereAmI();
                         } catch (Exception e) {
                             printError(e.getMessage());
                         }
