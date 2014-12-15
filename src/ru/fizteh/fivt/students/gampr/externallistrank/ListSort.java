@@ -10,7 +10,7 @@ public class ListSort {
     private File dirTmp;
 
     // Простенький конструктор
-    ListSort(File fileIn, File fileOut, File dirTmp) {
+    public ListSort(File fileIn, File fileOut, File dirTmp) {
         this.fileIn = fileIn;
         this.fileOut = fileOut;
         this.dirTmp = dirTmp;
@@ -19,15 +19,14 @@ public class ListSort {
     /*
         Считает кол-во строк в файле
     */
-    int countLines(File file) {
+    public int countLines(File file) throws IOException {
         int count = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             while (reader.readLine() != null) {
                 count++;
             }
         } catch (IOException e) {
-            System.err.println("Can't count lines");
-            System.exit(1);
+            throw new IOException("Can't count lines: " + e.getMessage());
         }
         return count;
     }
@@ -35,15 +34,14 @@ public class ListSort {
     /*
         Для mergeSort соединить оба файла
      */
-    File merge(File first, File second, int index) {
-        File result = null;
+    private File merge(File first, File second, int index) throws IOException {
+        File result;
 
         // Создаем файл для результата
         try {
             result = File.createTempFile("mergeResult", ".txt", dirTmp);
         } catch (IOException e) {
-            System.err.println("Can't create mergeResult file");
-            System.exit(1);
+            throw new IOException("Can't create mergeResult file: " + e.getMessage());
         }
 
         try (BufferedReader readerFirst = new BufferedReader(new FileReader(first))) {
@@ -70,30 +68,29 @@ public class ListSort {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Can't merge files");
-            System.exit(1);
+            throw new IOException("Can't merge files: " + e.getMessage());
         }
+
         return result;
     }
 
     /*
         Сортировка файла, index задает номер числа, по которому проходит сортировка
      */
-    File mergeSort(File file, int index) {
+    public File mergeSort(File file, int index) throws IOException {
         int count = countLines(file);
         if (count <= 1) {
             return file;
         }
-        File first = null;
-        File second = null;
+        File first;
+        File second;
 
         // Создаем вспомогательные файлы
         try {
             first = File.createTempFile("mergeFirst", ".txt", dirTmp);
             second = File.createTempFile("mergeSecond", ".txt", dirTmp);
         } catch (IOException e) {
-            System.err.println("Can't create merge file");
-            System.exit(1);
+            throw new IOException("Can't create merge file: " + e.getMessage());
         }
 
         //Разбиваем файл на два
@@ -111,14 +108,21 @@ public class ListSort {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Can't fill mergeFirst and mergeSecond files");
-            System.exit(1);
+            throw new IOException("Can't fill mergeFirst and mergeSecond files: " + e.getMessage());
         }
 
         // Сортируем каждый по отдельности и соединяем
         File newFirst = mergeSort(first, index);
         File newSecond = mergeSort(second, index);
-        return merge(newFirst, newSecond, index);
+        File result = merge(newFirst, newSecond, index);
+
+        // Удаляем за собой
+        first.delete();
+        second.delete();
+        newFirst.delete();
+        newSecond.delete();
+
+        return result;
     }
 
     /*
@@ -128,15 +132,14 @@ public class ListSort {
         Изначально ранг всех элементов положим единице
         В конце алгоритма мы получим правильные значения рангов всех элементов
      */
-    File initialization() {
-        File fileInit = null;
+    public File initialization() throws IOException {
+        File fileInit;
 
         // Создаем новый файл
         try {
             fileInit = File.createTempFile("init", ".txt", dirTmp);
         } catch (IOException e) {
-            System.err.println("Can't create init file");
-            System.exit(1);
+            throw new IOException("Can't create init file: " + e.getMessage());
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileIn))) {
@@ -148,8 +151,7 @@ public class ListSort {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Can't create init file");
-            System.exit(1);
+            throw new IOException("Can't create init file: " + e.getMessage());
         }
 
         return fileInit;
@@ -159,7 +161,7 @@ public class ListSort {
         Запустим сортировку списка
         Запишем нужную ниформацию в выходной файл
     */
-    void go() {
+    public void go() throws IOException {
         File fileInit = initialization();
         // Получаем файл, каждая строчка которого имеет вид
         // <номер_вершины> <номер_следующей_вершины> -<расстояние_до_конца>
@@ -176,8 +178,7 @@ public class ListSort {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Can't write answer");
-            System.exit(1);
+            throw new IOException("Can't write answer: " + e.getMessage());
         }
     }
 
@@ -186,15 +187,14 @@ public class ListSort {
         Каждый строчка результирующего файла имеет вид
         <номер_вершины> <номер_следующей_вершины> -<расстояние_до_конца> <цвет_вершины>
      */
-    File coloring(File file) {
-        File colored = null;
+    public File coloring(File file) throws IOException {
+        File colored;
 
         // Создаем файл для хранения результата
         try {
             colored = File.createTempFile("colored", ".txt", dirTmp);
         } catch (IOException e) {
-            System.err.println("Can't create colored file");
-            System.exit(1);
+            throw new IOException("Can't create colored file: " + e.getMessage());
         }
 
         // Случайно красим вершины
@@ -206,8 +206,7 @@ public class ListSort {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Can't create init file");
-            System.exit(1);
+            throw new IOException("Can't create colored file: " + e.getMessage());
         }
 
         return colored;
@@ -218,15 +217,14 @@ public class ListSort {
         Объединяем соседние для этих вершин элементы, поддерживая целостность списка и адекватность значений рангов
         Значение цвета удаляем
      */
-    File join(File first, File second) {
-        File result = null;
+    public File join(File first, File second) throws IOException {
+        File result;
 
         // Создаем вспомогательный файл
         try {
             result = File.createTempFile("join", ".txt", dirTmp);
         } catch (IOException e) {
-            System.err.println("Can't create join file");
-            System.exit(1);
+            throw new IOException("Can't create join file: " + e.getMessage());
         }
 
         try (BufferedReader readerFirst = new BufferedReader(new FileReader(first))) {
@@ -279,8 +277,7 @@ public class ListSort {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Can't join files");
-            System.exit(1);
+            throw new IOException("Can't join files: " + e.getMessage());
         }
 
         return result;
@@ -290,17 +287,16 @@ public class ListSort {
         Обновляем значения рангов элементов, записанных в файле first
         Для этого используем значения рангов из файла second(там они уже посчитаны)
      */
-    File reduce(File first, File second) {
-        File result = null;
-        File tmp = null;
+    public File reduce(File first, File second) throws IOException {
+        File result;
+        File tmp;
 
         // Создаем вспомогательные файлы
         try {
             result = File.createTempFile("reduce", ".txt", dirTmp);
             tmp = File.createTempFile("reduce_tmp", ".txt", dirTmp);
         } catch (IOException e) {
-            System.err.println("Can't create reduce file");
-            System.exit(1);
+            throw new IOException("Can't create reduce file: " + e.getMessage());
         }
 
         first = mergeSort(first, 0);
@@ -374,15 +370,15 @@ public class ListSort {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Can't reduce files!");
-            System.exit(1);
+            throw new IOException("Can't reduce files: " + e.getMessage());
         }
 
+        // Удаляем временный файл за собой
+        tmp.delete();
         return result;
     }
 
-    File sort(File init) {
-        System.out.println(countLines(init));
+    public File sort(File init) throws IOException {
         if (countLines(init) <= 1) {
             return init;
         }
@@ -392,6 +388,10 @@ public class ListSort {
         File sortFirst = mergeSort(colored, 0);
         File sortSecond = mergeSort(colored, 1);
         File next = join(sortSecond, sortFirst);
+        // Удаляем файлы которые нам больше не понадобятся
+        colored.delete();
+        sortFirst.delete();
+        sortSecond.delete();
         // Решаем рекурсивно, сводим задачу к меньшей
         next = sort(next);
         return reduce(init, next);
