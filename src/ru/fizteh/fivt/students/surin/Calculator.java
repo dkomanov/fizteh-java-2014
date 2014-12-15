@@ -53,15 +53,6 @@ public class Calculator {
             MINPRIORITY = mnp;
         }
 
-        public static boolean isOperator(char x) {
-            for (char c: SYMBOLS) {
-                if (x == c) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public static Operator getOperator(char x) {
             for (Operator i: values()) {
                 if (i.getSymbol() == x) {
