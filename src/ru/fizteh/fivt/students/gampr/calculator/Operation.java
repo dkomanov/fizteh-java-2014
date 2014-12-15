@@ -13,9 +13,15 @@ public class Operation {
         return type;
     }
 
+    /*
+        Применяем нашу операцию на стэке
+     */
     public void apply(Stack<Double> st) {
         Double mem1 = st.pop();
         Double mem2 = 0.0;
+        /*
+            Если операция бинарная, то нужен второй аргумент
+         */
         if ("+-/*".contains(type.substring(0))) {
             mem2 = st.pop();
         }
@@ -24,26 +30,27 @@ public class Operation {
             case "+":
                 res = mem1 + mem2;
                 break;
-            case "0-":
+            case "0-": // Унарный минус
                 res = -mem1;
                 break;
             case "-":
-                res = mem1 - mem2;
+                res = mem2 - mem1;
                 break;
             case "*":
                 res = mem1 * mem2;
                 break;
             case "/":
-                if (mem2 == 0) {
+                if (mem1 == 0) {
                     System.err.println("Division by zero");
                     System.exit(1);
                 }
-                res = mem1 / mem2;
+                res = mem2 / mem1;
                 break;
             default:
-                System.err.println("Something is wrong");
+                System.err.println("Count brackets is wrong");
                 System.exit(1);
         }
+        // Результат операции помещаем обратно в стэк
         st.push(res);
     }
 }
