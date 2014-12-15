@@ -9,7 +9,7 @@ import ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell.SomethingIsWrongExcepti
 
 public class SingleFileTable extends SomeTable {
     
-    public static final String DATABASENAME = "db.dat";
+    public static final String DATABASENAME = "1.new";
 
     public SingleFileTable(String dir, String name) {
         super(dir, name);
