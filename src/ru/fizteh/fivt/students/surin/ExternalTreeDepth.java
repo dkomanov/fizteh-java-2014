@@ -178,19 +178,20 @@ public class ExternalTreeDepth {
             } catch (IOException e) {
                 throw e;
             }
+            try (PrintWriter outp = new PrintWriter(outfile)) {
+                outp.print(result + 1);
+            } catch (IOException e) {
+                throw e;
+            }
         } catch (IOException e) {
-            parents.delete();
-            tmp.delete();
-            System.exit(2);
-        }
-        if (!parents.delete() || !tmp.delete()) {
-            System.err.println("failed to delete temporary files");
-            System.exit(2);
-        }
-        try (PrintWriter outp = new PrintWriter(outfile)) {
-            outp.print(result + 1);
-        } catch (IOException e) {
-            System.out.println("failed to write answer");
+            System.out.println("I/O Error: " + e.getCause());
+        } finally {
+            if (parents != null && !parents.delete()) {
+                System.err.println("failed to delete temporary file");
+            }
+            if (tmp != null && !tmp.delete()) {
+                System.err.println("failed to delete temporary file");
+            }
         }
     }
 }
