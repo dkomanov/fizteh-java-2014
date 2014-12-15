@@ -30,34 +30,46 @@ public class ThreadSafeCachingTableProvider implements TableProvider {
     @Override
     public Table getTable(String name) {
         tableMapLock.lock();
-        Table ret = tableMap.get(name);
-        if (ret == null) {
-            ret = delegate.getTable(name);
-            if (ret != null)
-                tableMap.put(name, ret);
+        Table ret;
+        try {
+            ret = tableMap.get(name);
+            if (ret == null) {
+                ret = delegate.getTable(name);
+                if (ret != null) {
+                    tableMap.put(name, ret);
+                }
+            }
+        } finally {
+            tableMapLock.unlock();
         }
-        tableMapLock.unlock();
         return ret;
     }
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
         tableMapLock.lock();
-        if (tableMap.containsKey(name)) {
-            return null;
+        Table ret;
+        try {
+            if (tableMap.containsKey(name)) {
+                return null;
+            }
+            ret = delegate.createTable(name, columnTypes);
+            tableMap.put(name, ret);
+        } finally {
+            tableMapLock.unlock();
         }
-        Table ret = delegate.createTable(name, columnTypes);
-        tableMap.put(name, ret);
-        tableMapLock.unlock();
         return ret;
     }
 
     @Override
     public void removeTable(String name) throws IOException {
         tableMapLock.lock();
-        delegate.removeTable(name);
-        tableMap.remove(name);
-        tableMapLock.unlock();
+        try {
+            delegate.removeTable(name);
+            tableMap.remove(name);
+        } finally {
+            tableMapLock.unlock();
+        }
     }
 
     @Override
