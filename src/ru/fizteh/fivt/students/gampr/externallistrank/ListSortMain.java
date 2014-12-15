@@ -20,11 +20,19 @@ public class ListSortMain {
         dirTmp.mkdir();
 
         ListSort list = new ListSort(fin, fout, dirTmp);
-        list.go();
-        // Удаляем за собой
-        for (File f : dirTmp.listFiles()) {
-            f.delete();
+        try {
+            list.go();
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        } finally {
+            // Удаляем за собой
+            if (dirTmp.listFiles() != null) {
+                for (File f : dirTmp.listFiles()) {
+                    f.delete();
+                }
+            }
+            dirTmp.delete();
         }
-        dirTmp.delete();
     }
 }
