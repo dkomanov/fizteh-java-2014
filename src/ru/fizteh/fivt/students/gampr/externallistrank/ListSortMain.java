@@ -22,7 +22,7 @@ public class ListSortMain {
         ListSort list = new ListSort(fin, fout, dirTmp);
         try {
             list.go();
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         } finally {
