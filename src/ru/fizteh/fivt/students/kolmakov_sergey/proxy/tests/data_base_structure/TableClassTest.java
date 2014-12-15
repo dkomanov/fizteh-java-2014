@@ -59,6 +59,10 @@ public class TableClassTest {
 
     @Test(expected = DatabaseCorruptedException.class)
     public void testTableClassThrowsExceptionWhenUnexpectedFolderFound() throws DatabaseCorruptedException {
+        /*
+        While creating table, table tries to read folders (1-16.dir), but here we create folder with unexpected name,
+        so table say that this directory is unsuitable for table creating because holds external file.
+         */
         testDir.resolve(unexpectedFolderName).toFile().mkdir();
         new TableClass(testDir, tableName, provider, columnTypes);
     }

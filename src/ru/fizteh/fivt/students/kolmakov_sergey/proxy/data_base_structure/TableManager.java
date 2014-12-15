@@ -25,7 +25,10 @@ public class TableManager implements TableProvider, AutoCloseable {
     static final String FOLDER_NAME_PATTERN = "([0-9]|1[0-5])\\.dir";
     static final String FILE_NAME_PATTERN = "([0-9]|1[0-5])\\.dat";
     private static final String ILLEGAL_TABLE_NAME_PATTERN = ".*\\.|\\..*|.*(/|\\\\).*";
-    private static final String REGEXP_TO_SPLIT_JSON = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+    private static final String QUOTES_TYPES = "[^\"]";
+    private static final String DELIMITER = ",";
+    private static final String REGEXP_TO_SPLIT_JSON = DELIMITER + "(?=(" + QUOTES_TYPES + "*\"" + QUOTES_TYPES
+            + "*\")*" + QUOTES_TYPES + "*$)";
     private final ReadWriteLock lock;
     private boolean closed = false;
 
