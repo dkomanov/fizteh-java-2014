@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.kinanAlsarmini.filemap.base;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Set;
 
 public class FileMapUtils {

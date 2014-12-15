@@ -4,9 +4,9 @@ import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.AbstractCommand;
 import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.CommandParser;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ListCommand<Table, Key, Value, State extends BaseFileMapShellState<Table, Key, Value>> extends AbstractCommand<State> {
+public class ListCommand<Table, Key, Value, State extends BaseFileMapShellState<Table, Key, Value>>
+                                                    extends AbstractCommand<State> {
     public ListCommand() {
         super("list", "list");
     }

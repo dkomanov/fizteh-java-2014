@@ -14,7 +14,7 @@ public class DatabaseProviderFactoryTests {
         try {
             factory.create(null);
         } catch (IOException e) {
-            //
+            // SAD
         }
     }
 }

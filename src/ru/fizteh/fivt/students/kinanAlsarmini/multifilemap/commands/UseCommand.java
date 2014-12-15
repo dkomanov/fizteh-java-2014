@@ -6,7 +6,8 @@ import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.CommandParser;
 
 import java.util.ArrayList;
 
-public class UseCommand<Table, Key, Value, State extends BaseDatabaseShellState<Table, Key, Value>> extends AbstractCommand<State> {
+public class UseCommand<Table, Key, Value, State extends BaseDatabaseShellState<Table, Key, Value>>
+                                                    extends AbstractCommand<State> {
     public UseCommand() {
         super("use", "use <table name>");
     }

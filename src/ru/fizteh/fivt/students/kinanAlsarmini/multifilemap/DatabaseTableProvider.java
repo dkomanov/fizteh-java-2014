@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.kinanAlsarmini.multifilemap;
 
 import ru.fizteh.fivt.storage.strings.*;
 
-import javax.swing.plaf.multi.MultiInternalFrameUI;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +42,8 @@ public class DatabaseTableProvider implements TableProvider {
         }
 
         if (activeTable != null && activeTable.getUncommittedChangesCount() > 0) {
-            throw new IllegalStateException(String.format("%d unsaved changes", activeTable.getUncommittedChangesCount()));
+            throw new IllegalStateException(String.format("%d unsaved changes",
+                        activeTable.getUncommittedChangesCount()));
         }
 
         activeTable = table;

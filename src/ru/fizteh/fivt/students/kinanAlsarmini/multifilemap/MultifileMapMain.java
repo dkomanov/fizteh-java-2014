@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultifileMapMain {
-    public static void main(String[] Args) {
+    public static void main(String[] args) {
         Shell<MultifileMapShellState> shell = new Shell<MultifileMapShellState>();
 
         List<Command<?>> commands = new ArrayList<Command<?>>();
@@ -57,7 +57,7 @@ public class MultifileMapMain {
             String databaseDirectory = System.getProperty("fizteh.db.dir");
             MultifileMapShellState shellState = new MultifileMapShellState();
             DatabaseFactory factory = new DatabaseFactory();
-            shellState.tableProvider = (DatabaseTableProvider)factory.create(databaseDirectory);
+            shellState.tableProvider = (DatabaseTableProvider) factory.create(databaseDirectory);
             shell.setShellState(shellState);
         } catch (IllegalArgumentException e) {
             System.err.println("error: " + e.getMessage());

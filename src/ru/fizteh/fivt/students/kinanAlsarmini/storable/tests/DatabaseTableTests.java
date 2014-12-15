@@ -26,7 +26,7 @@ public class DatabaseTableTests {
         try {
             provider = factory.create(DATABASE);
         } catch (IOException e) {
-
+            // SAD
         }
 
         List<Class<?>> columnTypes = new ArrayList<>();
@@ -76,12 +76,11 @@ public class DatabaseTableTests {
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void testPutValueWithWhiteSpaces()
-    {
+    public void testPutValueWithWhiteSpaces() {
         Storeable newValue = provider.createFor(currentTable);
         DatabaseRow row = (DatabaseRow) newValue;
 
-        List<Object> values = new ArrayList<Object>() {{
+        List<Object> values = new ArrayList<Object>() { {
             add(1);
             add("    ");
         }};

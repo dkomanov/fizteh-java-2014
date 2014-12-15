@@ -49,8 +49,8 @@ public enum TypesFormatter {
         this.type = type;
     }
 
-    private static final Map<String, TypesFormatter> typesByName;
-    private static final Map<Class<?>, TypesFormatter> typesByClass;
+    private static final Map<String, TypesFormatter> TYPES_BY_NAME;
+    private static final Map<Class<?>, TypesFormatter> TYPES_BY_CLASS;
 
     static {
         HashMap<String, TypesFormatter> tempByName = new HashMap<>();
@@ -61,12 +61,12 @@ public enum TypesFormatter {
             tempByClass.put(value.type, value);
         }
 
-        typesByName = Collections.unmodifiableMap(tempByName);
-        typesByClass = Collections.unmodifiableMap(tempByClass);
+        TYPES_BY_NAME = Collections.unmodifiableMap(tempByName);
+        TYPES_BY_CLASS = Collections.unmodifiableMap(tempByClass);
     }
 
     public static Class<?> getTypeByName(String name) {
-        TypesFormatter typesFormatter = typesByName.get(name);
+        TypesFormatter typesFormatter = TYPES_BY_NAME.get(name);
 
         if (typesFormatter == null) {
             throw new IllegalArgumentException("unknown type");
@@ -76,7 +76,7 @@ public enum TypesFormatter {
     }
 
     public static String getSimpleName(Class<?> type) {
-        TypesFormatter typesFormatter = typesByClass.get(type);
+        TypesFormatter typesFormatter = TYPES_BY_CLASS.get(type);
 
         if (typesFormatter == null) {
             throw new IllegalArgumentException("unknown type");
@@ -88,7 +88,7 @@ public enum TypesFormatter {
     public abstract Object parseValue(String string);
 
     public static Object parseByClass(String string, Class<?> type) {
-        TypesFormatter typesFormatter = typesByClass.get(type);
+        TypesFormatter typesFormatter = TYPES_BY_CLASS.get(type);
 
         if (typesFormatter == null) {
             throw new IllegalArgumentException("unknown type");

@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.kinanAlsarmini.multifilemap;
 
 import ru.fizteh.fivt.students.kinanAlsarmini.filemap.base.FilemapReader;
-import ru.fizteh.fivt.students.kinanAlsarmini.filemap.base.SimpleTableBuilder;
 import ru.fizteh.fivt.students.kinanAlsarmini.filemap.base.TableBuilder;
 
 import java.io.File;

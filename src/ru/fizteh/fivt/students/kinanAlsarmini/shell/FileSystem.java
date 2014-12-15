@@ -62,7 +62,8 @@ public class FileSystem {
         File directoryFile = directoryPath.toFile();
 
         if (directoryFile.exists()) {
-            throw new IllegalArgumentException(String.format("cannot create directory '%s': File exists", directoryName));
+            throw new IllegalArgumentException(String.format("cannot create directory '%s': File exists",
+                        directoryName));
 
         }
 
@@ -73,7 +74,8 @@ public class FileSystem {
         File file = getPath(fileName).toFile();
 
         if (!file.exists()) {
-            throw new IllegalArgumentException(String.format("cannot storageRemove '%s': No such file or directory", fileName));
+            throw new IllegalArgumentException(String.format("cannot storageRemove '%s': No such file or directory",
+                        fileName));
         }
 
         if (file.isFile()) {
@@ -136,7 +138,9 @@ public class FileSystem {
             }
 
             if (Files.isDirectory(sourcePath)) {
-                throw new IllegalArgumentException(String.format("cannot overwrite non-directory '%s' with directory '%s'", destination, source));
+                throw new IllegalArgumentException(String.format("cannot overwrite non-directory" + 
+                            "'%s' with directory '%s'",
+                            destination, source));
             }
         }
 
@@ -168,22 +172,23 @@ public class FileSystem {
                 Path destinationFile = destinationPath.resolve(relative);
 
                 if (Files.exists(destinationFile)) {
-                    throw new IllegalArgumentException(String.format("'%s': file already exists", destinationFile.toString()));
+                    throw new IllegalArgumentException(String.format("'%s': file already exists",
+                            destinationFile.toString()));
                 }
 
                 Files.copy(file, destinationFile);
 
-                return FileVisitResult.CONTINUE;  //To change body of implemented methods use File | Settings | File Templates.
+                return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                return FileVisitResult.CONTINUE;  //To change body of implemented methods use File | Settings | File Templates.
+                return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                return FileVisitResult.CONTINUE;  //To change body of implemented methods use File | Settings | File Templates.
+                return FileVisitResult.CONTINUE;
             }
         });
     }

@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.kinanAlsarmini.storable.database;
 
-
 import java.util.ArrayList;
 import java.util.List;
 

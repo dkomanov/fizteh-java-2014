@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.kinanAlsarmini.shell;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
@@ -85,7 +84,7 @@ public class Shell<State> {
         String commandName = CommandParser.getCommandName(command);
         String params = CommandParser.getParameters(command);
 
-        if (commandName == "") {
+        if (commandName.equals("")) {
             System.err.println("empty command!");
             return true;
         }

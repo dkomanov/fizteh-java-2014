@@ -6,20 +6,15 @@ import ru.fizteh.fivt.students.kinanAlsarmini.storable.database.DatabaseTablePro
 
 import java.io.IOException;
 
-public class DatabaseProviderTests {
-    TableProviderFactory factory = new DatabaseTableProviderFactory();
-
-    @Test(expected = IOException.class)
-    public void createProviderUnavailableShouldFail() throws IOException {
-        factory.create("F:\\");
-    }
-
+public class DatabaseProviderFactoryTests {
     @Test(expected = IllegalArgumentException.class)
-    public void createProviderEmptyShouldFail() {
+    public void createProviderNullDirectoryTest() {
+        TableProviderFactory factory = new DatabaseTableProviderFactory();
+
         try {
-            factory.create("");
+            factory.create(null);
         } catch (IOException e) {
-            // SAD
+            //
         }
     }
 }

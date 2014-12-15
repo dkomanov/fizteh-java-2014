@@ -19,7 +19,8 @@ public class DatabaseTable extends AbstractStorage<String, Storeable> implements
 
     private List<Class<?>> columnTypes;
 
-    public DatabaseTable(DatabaseTableProvider provider, String databaseDirectory, String tableName, List<Class<?>> columnTypes) {
+    public DatabaseTable(DatabaseTableProvider provider, String databaseDirectory, String tableName,
+            List<Class<?>> columnTypes) {
         super(databaseDirectory, tableName);
 
         if (columnTypes == null || columnTypes.isEmpty()) {
@@ -131,7 +132,8 @@ public class DatabaseTable extends AbstractStorage<String, Storeable> implements
             File[] children = tableDirectory.listFiles();
 
             if (children == null || children.length == 0) {
-                throw new IllegalArgumentException(String.format("table directory: %s is empty", tableDirectory.getAbsolutePath()));
+                throw new IllegalArgumentException(String.format("table directory: %s is empty",
+                            tableDirectory.getAbsolutePath()));
             }
         }
     }

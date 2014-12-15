@@ -137,8 +137,7 @@ public class MultifileTableTest {
     }
 
     @Test
-    public void testRollbackCommit()
-    {
+    public void testRollbackCommit() {
         for (int index = 0; index < KEYS_COUNT; ++index) {
             String key = String.format("key%d", index);
             String value = String.format("value%d", index);

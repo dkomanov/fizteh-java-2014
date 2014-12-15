@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.kinanAlsarmini.filemap.base;
 
 import java.util.List;
-import java.util.ArrayList;
 
 import ru.fizteh.fivt.storage.strings.Table;
 

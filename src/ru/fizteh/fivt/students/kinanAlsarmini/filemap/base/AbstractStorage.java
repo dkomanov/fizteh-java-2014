@@ -1,13 +1,9 @@
 package ru.fizteh.fivt.students.kinanAlsarmini.filemap.base;
 
-import ru.fizteh.fivt.storage.strings.Table;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
@@ -16,14 +12,15 @@ public abstract class AbstractStorage<Key, Value> {
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     // Data
     protected final HashMap<Key, Value> oldData;
-    protected final ThreadLocal<HashMap<Key, ValueDifference<Value>>> modifiedData = new ThreadLocal<HashMap<Key, ValueDifference<Value>>>() {
+    protected final ThreadLocal<HashMap<Key, ValueDifference<Value>>> modifiedData =
+                                new ThreadLocal<HashMap<Key, ValueDifference<Value>>>() {
         @Override
         protected HashMap<Key, ValueDifference<Value>> initialValue() {
             return new HashMap<Key, ValueDifference<Value>>();
         }
     };
 
-    final private String tableName;
+    private String tableName;
     private int size;
     private String directory;
     private int uncommittedChangesCount;

@@ -45,7 +45,7 @@ public class StoreableMain {
         try {
             DatabaseTableProviderFactory factory = new DatabaseTableProviderFactory();
             StoreableShellState shellState = new StoreableShellState();
-            shellState.provider = (DatabaseTableProvider)factory.create(databaseDirectory);
+            shellState.provider = (DatabaseTableProvider) factory.create(databaseDirectory);
             shell.setShellState(shellState);
         } catch (IOException e) {
             System.err.println("some error occured during loading");

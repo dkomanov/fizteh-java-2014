@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.kinanAlsarmini.shell.commands;
 
-import java.io.IOException;
-
 public abstract class AbstractCommand<State> implements Command<State> {
     private final String commandName;
     private final String helpString;

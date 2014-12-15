@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.kinanAlsarmini.multifilemap.commands;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.kinanAlsarmini.multifilemap.MultifileMapUtils;
 import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.AbstractCommand;
 import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.CommandParser;
 

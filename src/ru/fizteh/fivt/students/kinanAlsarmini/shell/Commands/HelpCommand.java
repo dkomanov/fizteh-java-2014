@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.kinanAlsarmini.shell.commands;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 

@@ -5,7 +5,6 @@ import ru.fizteh.fivt.students.kinanAlsarmini.storable.StoreableUtils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DatabaseRow implements Storeable {

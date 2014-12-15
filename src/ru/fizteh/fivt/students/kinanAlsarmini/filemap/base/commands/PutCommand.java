@@ -5,7 +5,8 @@ import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.CommandParser;
 
 import java.util.ArrayList;
 
-public class PutCommand<Table, Key, Value, State extends BaseFileMapShellState<Table, Key, Value>> extends AbstractCommand<State> {
+public class PutCommand<Table, Key, Value, State extends BaseFileMapShellState<Table, Key, Value>>
+                                                    extends AbstractCommand<State> {
     public PutCommand() {
         super("put", "put <key> <value>");
     }

@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.util.AbstractMap;
 
 public interface BaseDatabaseShellState<Table, Key, Value> extends BaseFileMapShellState<Table, Key, Value> {
-    public Table useTable(String name);
+    Table useTable(String name);
 
-    public void dropTable(String name) throws IOException;
+    void dropTable(String name) throws IOException;
 
-    public Table createTable(String parameters);
+    Table createTable(String parameters);
 
-    public String getActiveTableName();
+    String getActiveTableName();
 
-    public AbstractMap<String, Integer> getTables();
+    AbstractMap<String, Integer> getTables();
 }

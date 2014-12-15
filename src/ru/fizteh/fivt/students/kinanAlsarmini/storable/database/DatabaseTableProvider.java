@@ -17,9 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class DatabaseTableProvider implements TableProvider {
     static final String SIGNATURE_FILE = "signature.tsv";
@@ -84,7 +81,8 @@ public class DatabaseTableProvider implements TableProvider {
         }
 
         if (activeTable != null && activeTable.getUncommittedChangesCount() > 0) {
-            throw new IllegalStateException(String.format("%d unsaved changes", activeTable.getUncommittedChangesCount()));
+            throw new IllegalStateException(String.format("%d unsaved changes",
+                        activeTable.getUncommittedChangesCount()));
         }
 
         activeTable = table;

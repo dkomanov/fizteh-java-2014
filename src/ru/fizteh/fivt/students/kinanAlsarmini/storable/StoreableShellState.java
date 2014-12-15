@@ -2,17 +2,13 @@ package ru.fizteh.fivt.students.kinanAlsarmini.storable;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.kinanAlsarmini.filemap.base.commands.BaseFileMapShellState;
 import ru.fizteh.fivt.students.kinanAlsarmini.multifilemap.commands.BaseDatabaseShellState;
-import ru.fizteh.fivt.students.kinanAlsarmini.storable.StoreableUtils;
 import ru.fizteh.fivt.students.kinanAlsarmini.storable.database.TableInfo;
 import ru.fizteh.fivt.students.kinanAlsarmini.storable.database.DatabaseTableProvider;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.List;
 
 public class StoreableShellState implements BaseDatabaseShellState<Table, String, Storeable> {

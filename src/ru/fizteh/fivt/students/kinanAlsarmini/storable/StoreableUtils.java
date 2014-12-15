@@ -8,10 +8,10 @@ import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.CommandParser;
 import ru.fizteh.fivt.students.kinanAlsarmini.storable.database.TableInfo;
-import ru.fizteh.fivt.students.kinanAlsarmini.storable.xml.XmlDeserializer;
 
 public class StoreableUtils {
-    public static List<Object> parseValues(List<String> valuesRepresentation, Table table) throws ColumnFormatException {
+    public static List<Object> parseValues(List<String> valuesRepresentation,
+            Table table) throws ColumnFormatException {
         // values start from index 1
         List<Object> values = new ArrayList<>(valuesRepresentation.size() - 1);
 
@@ -92,6 +92,9 @@ public class StoreableUtils {
                 if (checkStringCorrect(stringValue)) {
                     throw new ParseException("value cannot be null", 0);
                 }
+                break;
+            default:
+                // SAD
                 break;
         }
     }

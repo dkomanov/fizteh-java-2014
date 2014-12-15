@@ -88,8 +88,9 @@ public class FilemapReader implements Closeable {
         try {
             result = (file.getFilePointer() == valuesOffset);
         } catch (IOException e) {
-
+            // SAD
         }
+
         return result;
     }
 
@@ -97,8 +98,7 @@ public class FilemapReader implements Closeable {
         long currentOffset = file.getFilePointer();
         int nextOffset;
 
-        if (readKey() == null) // if we do not have other keys
-        {
+        if (readKey() == null) {
             nextOffset = (int) file.length();
         } else {
             nextOffset = readOffset();

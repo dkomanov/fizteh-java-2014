@@ -5,7 +5,8 @@ import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.CommandParser;
 
 import java.util.ArrayList;
 
-public class RemoveCommand<Table, Key, Value, State extends BaseFileMapShellState<Table, Key, Value>> extends AbstractCommand<State> {
+public class RemoveCommand<Table, Key, Value, State extends BaseFileMapShellState<Table, Key, Value>>
+                                                        extends AbstractCommand<State> {
     public RemoveCommand() {
         super("remove", "remove <key>");
     }

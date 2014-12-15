@@ -3,27 +3,27 @@ package ru.fizteh.fivt.students.kinanAlsarmini.filemap.base.commands;
 import java.util.List;
 
 public interface BaseFileMapShellState<Table, Key, Value> {
-    public Value put(Key key, Value value);
+    Value put(Key key, Value value);
 
-    public Value remove(Key key);
+    Value remove(Key key);
 
-    public Value get(Key key);
+    Value get(Key key);
 
-    public int commit();
+    int commit();
 
-    public int rollback();
+    int rollback();
 
-    public int size();
+    int size();
 
-    public List<Key> listKeys();
+    List<Key> listKeys();
 
-    public Table getTable();
+    Table getTable();
 
-    public String keyToString(Key key);
+    String keyToString(Key key);
 
-    public String valueToString(Value value);
+    String valueToString(Value value);
 
-    public Key parseKey(String key);
+    Key parseKey(String key);
 
-    public Value parseValue(String value);
+    Value parseValue(String value);
 }

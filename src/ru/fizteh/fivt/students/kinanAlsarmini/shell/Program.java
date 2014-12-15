@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Program {
-    public static void main(String[] Args) throws IOException {
+    public static void main(String[] args) throws IOException {
         Shell shell = new Shell();
 
         ArrayList<Command<?>> commands = new ArrayList<Command<?>>();
@@ -44,7 +44,7 @@ public class Program {
 
         shell.setCommands(commands);
         shell.setShellState(new FileSystemShellState());
-        shell.setArgs(Args);
+        shell.setArgs(args);
         shell.start();
     }
 }

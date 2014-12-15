@@ -35,8 +35,7 @@ public class MultifileMapUtils {
         throw new IllegalArgumentException("incorrect bucket name");
     }
 
-    public static int parseCurrentFileNumber(File file)
-    {
+    public static int parseCurrentFileNumber(File file) {
         String name = file.getName();
         Matcher matcher = FILE_PATTERN.matcher(name);
 
