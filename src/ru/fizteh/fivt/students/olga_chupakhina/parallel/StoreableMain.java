@@ -47,7 +47,7 @@ public class StoreableMain {
         }
     }
 
-    public static void interactive() throws Exception{
+    public static void interactive() throws Exception {
         Scanner sc = new Scanner(System.in);
         try {
             while (true) {
@@ -171,7 +171,8 @@ public class StoreableMain {
             System.out.println("not found");
         } else {
             System.out.println("found");
-            System.out.println(tableProvider.serialize(tableProvider.currentTable, tableProvider.currentTable.get(args[1])));
+            System.out.println(tableProvider.serialize(tableProvider.currentTable, 
+            tableProvider.currentTable.get(args[1])));
         }
     }
 
