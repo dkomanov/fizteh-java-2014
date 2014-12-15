@@ -4,8 +4,6 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.kinanAlsarmini.multifilemap.MultifileMapUtils;
 import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.AbstractCommand;
 
-import java.util.ArrayList;
-
 public class CreateCommand<Table, Key, Value, State extends BaseDatabaseShellState<Table, Key, Value>>
                                                         extends AbstractCommand<State> {
     public CreateCommand() {

@@ -138,8 +138,8 @@ public class FileSystem {
             }
 
             if (Files.isDirectory(sourcePath)) {
-                throw new IllegalArgumentException(String.format("cannot overwrite non-directory" + 
-                            "'%s' with directory '%s'",
+                throw new IllegalArgumentException(String.format("cannot overwrite non-directory"
+                            + "'%s' with directory '%s'",
                             destination, source));
             }
         }
