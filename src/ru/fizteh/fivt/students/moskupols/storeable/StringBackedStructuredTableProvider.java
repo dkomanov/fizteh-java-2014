@@ -44,6 +44,9 @@ public class StringBackedStructuredTableProvider
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
+        if (columnTypes == null) {
+            throw new IllegalArgumentException("columnTypes must not be null");
+        }
         final KnownDiffTable stringTable = stringProvider.createTable(name);
         if (stringTable == null) {
             return null;
@@ -57,6 +60,9 @@ public class StringBackedStructuredTableProvider
 
     @Override
     public void removeTable(String name) throws IOException {
+        if (name == null) {
+            throw new IllegalArgumentException("columnTypes must not be null");
+        }
         final Path tablePath = dbPath.resolve(name);
         removeSignatureFile(tablePath);
         stringProvider.removeTable(name);
