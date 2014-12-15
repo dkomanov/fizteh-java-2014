@@ -10,7 +10,7 @@ public class ListSort {
     private File dirTmp;
 
     // Простенький конструктор
-    ListSort(File fileIn, File fileOut, File dirTmp) {
+    public ListSort(File fileIn, File fileOut, File dirTmp) {
         this.fileIn = fileIn;
         this.fileOut = fileOut;
         this.dirTmp = dirTmp;
@@ -19,7 +19,7 @@ public class ListSort {
     /*
         Считает кол-во строк в файле
     */
-    int countLines(File file) throws RuntimeException {
+    public int countLines(File file) throws RuntimeException {
         int count = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             while (reader.readLine() != null) {
@@ -34,7 +34,7 @@ public class ListSort {
     /*
         Для mergeSort соединить оба файла
      */
-    File merge(File first, File second, int index) throws RuntimeException {
+    private File merge(File first, File second, int index) throws RuntimeException {
         File result;
 
         // Создаем файл для результата
@@ -76,7 +76,7 @@ public class ListSort {
     /*
         Сортировка файла, index задает номер числа, по которому проходит сортировка
      */
-    File mergeSort(File file, int index) throws RuntimeException {
+    public File mergeSort(File file, int index) throws RuntimeException {
         int count = countLines(file);
         if (count <= 1) {
             return file;
@@ -123,7 +123,7 @@ public class ListSort {
         Изначально ранг всех элементов положим единице
         В конце алгоритма мы получим правильные значения рангов всех элементов
      */
-    File initialization() throws RuntimeException {
+    public File initialization() throws RuntimeException {
         File fileInit;
 
         // Создаем новый файл
@@ -152,7 +152,7 @@ public class ListSort {
         Запустим сортировку списка
         Запишем нужную ниформацию в выходной файл
     */
-    void go() throws RuntimeException {
+    public void go() throws RuntimeException {
         File fileInit = initialization();
         // Получаем файл, каждая строчка которого имеет вид
         // <номер_вершины> <номер_следующей_вершины> -<расстояние_до_конца>
@@ -178,7 +178,7 @@ public class ListSort {
         Каждый строчка результирующего файла имеет вид
         <номер_вершины> <номер_следующей_вершины> -<расстояние_до_конца> <цвет_вершины>
      */
-    File coloring(File file) throws RuntimeException {
+    public File coloring(File file) throws RuntimeException {
         File colored;
 
         // Создаем файл для хранения результата
@@ -208,7 +208,7 @@ public class ListSort {
         Объединяем соседние для этих вершин элементы, поддерживая целостность списка и адекватность значений рангов
         Значение цвета удаляем
      */
-    File join(File first, File second) throws RuntimeException {
+    public File join(File first, File second) throws RuntimeException {
         File result;
 
         // Создаем вспомогательный файл
@@ -278,7 +278,7 @@ public class ListSort {
         Обновляем значения рангов элементов, записанных в файле first
         Для этого используем значения рангов из файла second(там они уже посчитаны)
      */
-    File reduce(File first, File second) throws RuntimeException {
+    public File reduce(File first, File second) throws RuntimeException {
         File result;
         File tmp;
 
@@ -367,7 +367,7 @@ public class ListSort {
         return result;
     }
 
-    File sort(File init) throws RuntimeException {
+    public File sort(File init) throws RuntimeException {
         if (countLines(init) <= 1) {
             return init;
         }
