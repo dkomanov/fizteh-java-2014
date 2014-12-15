@@ -1,109 +1,112 @@
 package ru.fizteh.fivt.students.kinanAlsarmini.shell;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.HashMap;
 import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 
-public class Shell {
-    private boolean terminated;
-    private Path currentPath;
-    private ExternalCommand[] possibleCommands;
+import ru.fizteh.fivt.students.kinanAlsarmini.shell.commands.*;
 
-    public Shell(ExternalCommand[] possibleCommands) {
-        this.possibleCommands = possibleCommands;
+public class Shell<State> {
+    private HashMap<String, Command> commands = new HashMap<String, Command>();
+    private String[] args;
+    private String prompt = "$ ";
+    private State shellState;
 
-        terminated = false;
-
-        currentPath = Utilities.getAbsolutePath(Paths.get(""));
+    public void setArgs(String[] args) {
+        this.args = args;
     }
 
-    public void terminate() {
-        terminated = true;
-    }
-
-    private void runCommand(String command) throws IOException {
-        String[] tokens = command.split("\\s+");
-
-        if (tokens.length == 0) {
-            throw new IllegalArgumentException("Empty command.");
+    public void start() {
+        if (args == null || args.length == 0) {
+            startInteractive();
+        } else {
+            packageMode();
         }
+    }
 
-        boolean foundCommand = false;
-        for (ExternalCommand ex: possibleCommands) {
-            if (tokens[0].equals(ex.getName())) {
-                foundCommand = true;
+    public void setShellState(State shellState) {
+        this.shellState = shellState;
+    }
 
-                if (!ex.checkArgNumber(tokens.length - 1)) {
-                    throw new IllegalArgumentException(tokens[0] + " does not take "
-                            + (tokens.length - 1) + " argument(s).");
-                }
+    public void setCommands(List<Command<?>> commands) {
+        for (final Command<?> command : commands) {
+            this.commands.put(command.getCommandName(), command);
+        }
+    }
 
-                ex.execute(Arrays.copyOfRange(tokens, 1, tokens.length), this);
+    private void startInteractive() {
+        Scanner scanner = new Scanner(System.in);
+
+        printPrompt();
+
+        while (scanner.hasNext()) {
+            String command = scanner.nextLine();
+            String[] commands = CommandParser.parseCommands(command);
+
+            if (commands.length == 0) {
+                System.out.println("no commands");
             }
-        }
 
-        if (!foundCommand) {
-            throw new IllegalArgumentException("Unknown command.");
-        }
-    }
-
-    public void changeDirectory(String extPath) {
-        Path pextPath = Paths.get(extPath).normalize();
-        Path tempPath = Utilities.joinPaths(currentPath, pextPath);
-
-        if (Files.notExists(tempPath)) {
-            throw new IllegalArgumentException("cd: Invalid directory.");
-        }
-
-        currentPath = tempPath;
-    }
-
-    public Path getCurrentPath() {
-        return Paths.get(currentPath.toString());
-    }
-
-    public void startInteractive() {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
-        while (!terminated) {
-            try {
-                System.out.print("$ ");
-
-                String currentCommand = in.readLine();
-
-                if (currentCommand == null) {
+            for (final String com : commands) {
+                if (!processCommand(com)) {
                     break;
                 }
+            }
 
-                runCommands(currentCommand);
-            } catch (IllegalArgumentException | IOException e) {
-                System.err.println(e.getMessage());
+            printPrompt();
+        }
+    }
+
+    private void packageMode() {
+        StringBuilder sb = new StringBuilder();
+
+        for (final String st : args) {
+            sb.append(st + " ");
+        }
+
+        String[] commands = CommandParser.parseCommands(sb.toString());
+
+        for (final String command : commands) {
+            boolean status = processCommand(command);
+
+            if (!status) {
+                System.exit(-1);
             }
         }
     }
 
-    public void startBatch(String commands) {
-        try {
-            runCommands(commands);
-        } catch (IOException | IllegalArgumentException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
+    private void printPrompt() {
+        System.out.print(prompt);
     }
 
-    private void runCommands(String mergedCommands) throws IOException {
-        if (mergedCommands.trim().equals("")) {
-            return;
+    private boolean processCommand(String command) {
+        String commandName = CommandParser.getCommandName(command);
+        String params = CommandParser.getParameters(command);
+
+        if (commandName == "") {
+            System.err.println("empty command!");
+            return true;
         }
 
-        String[] commands = mergedCommands.trim().split("\\s*;\\s*");
-
-        for (int i = 0; i < commands.length && !terminated; i++) {
-            runCommand(commands[i]);
+        if (!commands.containsKey(commandName)) {
+            System.err.println(String.format("%s: command not found. Type help to get help", commandName));
+            return false;
         }
+
+        boolean status = true;
+
+        try {
+            commands.get(commandName).executeCommand(params, shellState);
+        } catch (IllegalArgumentException e) {
+            System.err.println(commandName + ": " + e.getMessage());
+            status = false;
+        } catch (IOException e) {
+            System.err.println(commandName + ": " + e.getMessage());
+            status = false;
+        }
+
+        return status;
     }
 }
