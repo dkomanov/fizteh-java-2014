@@ -88,12 +88,12 @@ public class MySerializer {
         try {
             value = value.trim();
             if (value == null || (value.charAt(0) != '[' && value.charAt(value.length() - 1) != ']')) {
-                throw new IllegalArgumentException("StoreableParser: illegal argument");
+                throw new IllegalArgumentException("MySerializer: illegal argument");
             }
             List<Object> values = new ArrayList<>();
             JSONArray parser = new JSONArray(value);
             if (parser.length() != table.getColumnsCount()) {
-                throw new ParseException("column count mismatch", 0);
+                throw new ParseException("MySerializer: column count mismatch", 0);
             }
             for (int i = 0; i < parser.length(); ++i) {
                 try {
