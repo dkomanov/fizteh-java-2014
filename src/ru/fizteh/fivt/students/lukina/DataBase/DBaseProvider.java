@@ -53,7 +53,7 @@ public class DBaseProvider implements TableProvider, AutoCloseable {
         }
     }
 
-    static public Class<?> getClassFromString(String name) {
+    public static Class<?> getClassFromString(String name) {
         HashMap<String, Class<?>> classes = new HashMap<>();
         classes.put("int", Integer.class);
         classes.put("long", Long.class);
