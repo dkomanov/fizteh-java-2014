@@ -10,11 +10,15 @@ public class MyTableProviderFactory implements TableProviderFactory{
         }
 
     @Override
-    public TableProvider create(String dir) {
+    public TableProvider create(String dir) throws DataBaseException {
         if (dir == null) {
             throw new IllegalArgumentException("Directory name is null");
         }
-        return  new MyTableProvider(dir); 
+        try {
+            return new MyTableProvider(dir);
+        } catch (IllegalArgumentException e) {
+            throw new DataBaseException(e.getMessage());
+        }
     }    
 
 }

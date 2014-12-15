@@ -43,7 +43,7 @@ public final class Interpreter {
         }
     }
     
-    private void interactiveMode() throws Exception {
+    private void interactiveMode() {
        try (Scanner in = new Scanner(this.in)) {
             List<String[]> inputString = new LinkedList<String[]>();
             Parser parser = new Parser();
@@ -60,14 +60,24 @@ public final class Interpreter {
                     for (int i = 1; i < cmd.length; i++) {
                         args[i - 1] = new String(cmd[i]);
                     }
+                    Command command = commands.get(commandName);
+                    if (command == null) {
+                        System.err.println("Command '" + commandName + "' doesn't supported");
+
+                    } else {
+                        try {
+                            command.execute(connector, args);
+                        } catch (ExecuteException e) {
+                            System.err.println(e.getMessage());
+
+                        }
+                    }
                 }
-                Command command = commands.get(commandName);
-                command.execute(connector, args);
             } while (!commandName.equals("exit"));
         }
     }
     
-    void batchMode(String[] args) throws Exception {
+    void batchMode(String[] args) {
         List<String[]> inputString = new LinkedList<String[]>();
         Parser parser = new Parser();
         String request = new String();
@@ -82,9 +92,14 @@ public final class Interpreter {
             for (int i = 1; i < cmd.length; i++) {
                 args[i] = new String(cmd[i]);
             }
+            Command command = commands.get(commandName);
+            try {
+                command.execute(connector, args);
+            } catch (ExecuteException e) {
+                System.err.println(e.getMessage());
+            }
         }
-        Command command = commands.get(commandName);
-        command.execute(connector, args);
+
     }
     
     class Parser {

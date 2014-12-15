@@ -18,9 +18,9 @@ public class Command {
         return name;
     }
     
-    public final void execute(Object connector, String[] args) throws Exception {
+    public final void execute(Object connector, String[] args) throws ExecuteException {
         if (args.length != numberOfArgs) {
-            throw new Exception(name + ": Incorrect number of arguments: " 
+            throw new ExecuteException(name + ": Incorrect number of arguments: "
                     + numberOfArgs + " expected, but " + args.length + " found.");
         } else {
             callback.accept(connector, args);

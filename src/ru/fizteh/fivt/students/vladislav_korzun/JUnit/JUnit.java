@@ -10,15 +10,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public class Main {
+public class JUnit {
     public static void main(String[] args) throws Exception {
         String dbDirPath = System.getProperty("fizteh.db.dir");
         if (dbDirPath == null) {
             System.err.println("You must specify fizteh.db.dir via -Ddb.file JVM parameter");
             System.exit(1);
         }
-        TableProviderFactory factory = new MyTableProviderFactory();
-        run(new TableConnector(factory.create(dbDirPath)), args);
+        try {
+            TableProviderFactory factory = new MyTableProviderFactory();
+            run(new TableConnector(factory.create(dbDirPath)), args);
+        } catch (DataBaseException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+        }
+
     }
 
     private static void run(Object state, String[] args) throws Exception {
@@ -192,7 +200,7 @@ public class Main {
                                 System.out.println(curTable.getName() + " " + curTable.size());
                             }
                         } else {
-                           System.out.println("wrong command");
+                           System.err.println("Command 'show " + args[0] + "' doesn't supported");
                         }
                         
                     }
@@ -204,11 +212,6 @@ public class Main {
                     }
                 }),
         });
-        try {
-           dbInterpeter.run(args);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
+        dbInterpeter.run(args);
     }
 }

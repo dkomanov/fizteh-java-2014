@@ -7,24 +7,22 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 public class FileManager {
     
-    public Map<String, String> filemap;    
-    
+    public Map<String, String> fileMap;
+    private static final String CODING = "UTF-8";
+    private static final String FILE_EXTENTION = ".dat";
+    private static final String DIR_EXTENTION = ".dir";
+
     public FileManager() {
-        filemap = new TreeMap<String, String>();
+        fileMap = new HashMap<>();
     }
 
-    void readTable(Path tabledir) {
-        filemap.clear();
-        File[] dirs = tabledir.toFile().listFiles();
+    void readTable(Path tableDir) {
+        fileMap.clear();
+        File[] dirs = tableDir.toFile().listFiles();
         for (File dir: dirs) {
             if (dir.isDirectory()) {
                 readDir(dir);
@@ -49,10 +47,10 @@ public class FileManager {
     
     void readFile(File file) throws IOException {
         RandomAccessFile db = new RandomAccessFile(file, "r");
-        List<Integer> offset = new LinkedList<Integer>() ;
+        List<Integer> offset = new LinkedList<>() ;
         int counter = 0;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        List<String> keys = new LinkedList<String>();
+        List<String> keys = new LinkedList<>();
         Byte bt = null;
         try {
             do {
@@ -63,7 +61,7 @@ public class FileManager {
                         buffer.write(bt);
                     }
                 } while (bt != 0);
-                keys.add(buffer.toString("UTF-8"));
+                keys.add(buffer.toString(CODING));
                 buffer.reset();
                 offset.add(db.readInt());
                 counter += 4;
@@ -75,7 +73,7 @@ public class FileManager {
                     counter++;
                     buffer.write(bt);
                 }
-                filemap.put(keys.get(i - 1), buffer.toString("UTF-8"));
+                fileMap.put(keys.get(i - 1), buffer.toString(CODING));
                 buffer.reset();
             }
             buffer.close();
@@ -88,11 +86,11 @@ public class FileManager {
         }
     }
     
-    void writeTable(Path tabledir) {
+    void writeTable(Path tableDir) {
         
         Map<String, String> buffer = new TreeMap<String, String>();
-        removedat(tabledir); 
-        Set<String> keys = filemap.keySet();
+        removeDat(tableDir);
+        Set<String> keys = fileMap.keySet();
         int numberDirectory = 16;
         int numberFile = 16;
         try {
@@ -100,24 +98,24 @@ public class FileManager {
                 for (int j = 0; j < numberFile; j++) {
                     for (String key : keys) {
                         byte bt = key.getBytes("UTF-8")[0];
-                        int ndirectory = Math.abs(bt % 16);
-                        int nfile =  Math.abs(bt / 16 % 16);
-                        if (ndirectory == i && nfile == j) {
-                            buffer.put(key, filemap.get(key));
+                        int nDirectory = Math.abs(bt % 16);
+                        int nFile =  Math.abs(bt / 16 % 16);
+                        if (nDirectory == i && nFile == j) {
+                            buffer.put(key, fileMap.get(key));
                         }
                     }
                     if (!buffer.isEmpty()) {
                         Integer newDirectory = i;
                         Integer newFile = j;
-                        String path = new String(newDirectory.toString() + ".dir");
+                        String path = new String(newDirectory.toString() + DIR_EXTENTION);
                         
-                        File dbdir = new File(tabledir.resolve(path).toString());
+                        File dbdir = new File(tableDir.resolve(path).toString());
                         if (!dbdir.exists()) {
                             if (!dbdir.mkdir()) {
                                 throw new IOException("Can't create directory");
                             }
                         }
-                        path = new String(newFile.toString() + ".dat");
+                        path = new String(newFile.toString() + FILE_EXTENTION);
                         File dbfile = new File(dbdir.toPath().resolve(path).toString());
                         if (!dbfile.exists()) {
                             if (!dbfile.createNewFile()) {
@@ -137,8 +135,8 @@ public class FileManager {
                 
     }
     
-    void removedat(Path tabledir) {
-        File table = new File(tabledir.toString());
+    void removeDat(Path tableDir) {
+        File table = new File(tableDir.toString());
         File[] dirs = table.listFiles();
         for (File dir : dirs) {
             File[] fls = dir.listFiles();
@@ -153,24 +151,24 @@ public class FileManager {
         
         try (RandomAccessFile db = new RandomAccessFile(file, "rw")) {
             db.setLength(0);
-            LinkedList<Integer> offset = new LinkedList<Integer>();
+            LinkedList<Integer> offset = new LinkedList<>();
             Set<String> keys = map.keySet();
             for (String key : keys) {
-                db.write(key.getBytes("UTF-8"));
+                db.write(key.getBytes(CODING));
                 db.write('\0');
                 offset.add((int) db.getFilePointer());
                 db.writeInt(0);
             }
             Collection<String> vals = map.values();
             int i = 0;
-            int pointer = 0;
+            int pointer;
             for (String val: vals) {
                 pointer = (int) db.getFilePointer(); 
                 db.seek(offset.get(i));
                 i++;
                 db.writeInt(pointer);
                 db.seek(pointer);
-                db.write(val.getBytes("UTF-8"));
+                db.write(val.getBytes(CODING));
             }
         } catch (UnsupportedEncodingException e) {
             System.err.println("Named charset is not supported ");

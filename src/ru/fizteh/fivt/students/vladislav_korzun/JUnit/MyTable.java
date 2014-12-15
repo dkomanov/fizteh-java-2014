@@ -12,18 +12,18 @@ public class MyTable implements Table{
     
     private String name;
     private Path path;
-    private Map<String, String> filemap;
-    private Map<String, String> buffermap;
+    private Map<String, String> fileMap;
+    private Map<String, String> bufferMap;
     private int changes;
 
     public MyTable(Path currentTablePath, String currentTable) {
-        filemap = new HashMap<>();
+        fileMap = new HashMap<>();
         this.path = currentTablePath;
         this.name = currentTable;
         FileManager filemanager = new FileManager();
         filemanager.readTable(this.path);
-        this.filemap = filemanager.filemap;
-        this.buffermap = this.filemap;
+        this.fileMap = filemanager.fileMap;
+        this.bufferMap = new HashMap<>(this.fileMap);
         changes = 0;
     }
 
@@ -34,7 +34,7 @@ public class MyTable implements Table{
 
     @Override
     public String get(String key) {
-        String val = filemap.get(key);
+        String val = fileMap.get(key);
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
@@ -43,14 +43,14 @@ public class MyTable implements Table{
 
     @Override
     public String put(String key, String value) {
-        String val = filemap.put(key, value);
+        String val = fileMap.put(key, value);
         changes++;
         return val;
     }
 
     @Override
     public String remove(String key) {
-        String val = filemap.remove(key);
+        String val = fileMap.remove(key);
         if (key == null) {
             throw new IllegalArgumentException("Key is null");
         }
@@ -60,27 +60,28 @@ public class MyTable implements Table{
 
     @Override
     public int size() {
-        return this.filemap.size();
+        return this.fileMap.size();
     }
 
     @Override
     public int commit() {
         FileManager filemanager = new FileManager();
-        filemanager.filemap = this.filemap;
+        filemanager.fileMap = this.fileMap;
         filemanager.writeTable(path);
+        this.bufferMap = new HashMap<>(this.fileMap);
         changes = 0;
         return 0;
     }
 
     @Override
     public int rollback() {        
-        this.filemap = this.buffermap;
+        this.fileMap = new HashMap<>(this.bufferMap);
         return this.unsavedChanges();
     }
 
     @Override
     public List<String> list() {
-        Set<String> keys = filemap.keySet();
+        Set<String> keys = fileMap.keySet();
         List<String> keylist = new ArrayList<String>();
         for (String key : keys) {
             keylist.add(key);
