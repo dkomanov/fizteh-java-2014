@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.text.ParseException;
 import java.util.*;
 
-public class RealRemoteTableProvider implements RemoteTableProvider {//, TableProviderExtended {
+public class RealRemoteTableProvider implements RemoteTableProvider {
     private HashMap<String, RealRemoteTable> tables;
     private Socket server;
     private Scanner input;
