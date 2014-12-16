@@ -33,26 +33,37 @@ public class ConnectionManager implements Callable<Integer> {
 
         try {
 
-            lock.readLock().lock();
-            System.out.println("Port: " + data.getPort());
-            ServerSocket serverSocket = new ServerSocket(data.getPort());
-            ExecutorService service = Executors.newFixedThreadPool(5);
-            lock.readLock().unlock();
+            ServerSocket serverSocket;
+            ExecutorService service;
+
+            try {
+                lock.readLock().lock();
+                System.out.println("Port: " + data.getPort());
+                serverSocket = new ServerSocket(data.getPort());
+                service = Executors.newFixedThreadPool(5);
+                
+            } finally {
+                lock.readLock().unlock();
+
+            }
 
             while (true) {
 
                 System.out.println("Waiting for the connection...");
                 Socket socket = serverSocket.accept();
 
-                lock.writeLock().lock();
-                Set<String> users = data.getUsers();
-                users.add(socket.getInetAddress().toString());
-                lock.writeLock().unlock();
+                try {
+                    lock.writeLock().lock();
+                    Set<String> users = data.getUsers();
+                    users.add(socket.getInetAddress().toString());
+                } finally {
+                    lock.writeLock().unlock();
+                }
 
                 System.out.println("New client connected: " + socket.getInetAddress().getCanonicalHostName()
                         + ":" + socket.getPort());
 
-                Future<Integer> future = service.submit(new ClientAgent(socket, data));
+                service.submit(new ClientAgent(socket, data));
             }
 
 

@@ -17,16 +17,12 @@ public class CommonData {
     private ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     public CommonData(DbTableProvider db) {
-
         this.db = db;
-
     }
 
 
     public void setPort(int port) {
-        lock.writeLock().lock();
         this.port = port;
-        lock.writeLock().unlock();
     }
 
     public int getPort() {
@@ -34,9 +30,7 @@ public class CommonData {
     }
 
     public void setDb(DbTableProvider db) {
-        lock.writeLock().lock();
         this.db = db;
-        lock.writeLock().unlock();
     }
 
     public DbTableProvider getDb() {
@@ -49,9 +43,7 @@ public class CommonData {
     }
 
     public void setUsers(Set<String> users) {
-        lock.writeLock().lock();
         this.users = users;
-        lock.writeLock().unlock();
     }
 
     public boolean isStarted() {
@@ -59,8 +51,6 @@ public class CommonData {
     }
 
     public void setStarted(boolean started) {
-        lock.writeLock().lock();
         this.started = started;
-        lock.writeLock().unlock();
     }
 }

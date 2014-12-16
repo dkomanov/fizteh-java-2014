@@ -20,9 +20,12 @@ public class ClientAgent implements Callable<Integer> {
 
         this.socket = socket;
 
-        lock.readLock().lock();
-        this.data = data;
-        lock.readLock().unlock();
+        try {
+            lock.readLock().lock();
+            this.data = data;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
 

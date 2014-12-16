@@ -94,9 +94,8 @@ public class DbTable implements Table {
         }
 
 
-        lock.readLock().lock();
-
         try {
+            lock.readLock().lock();
             sync();
 
             Storeable value = diff.get().addedData.get(key);
@@ -148,10 +147,10 @@ public class DbTable implements Table {
             throw new IllegalArgumentException("Table \"" + tableName + "\": put: empty key");
         }
 
-        lock.readLock().lock();
 
         try {
 
+            lock.readLock().lock();
             sync();
 
             if (committedData.containsKey(key)) {
@@ -206,9 +205,10 @@ public class DbTable implements Table {
             throw new IllegalArgumentException("Table \"" + tableName + "\": remove: empty key");
         }
 
-        lock.readLock().lock();
 
         try {
+
+            lock.readLock().lock();
             sync();
 
             if (diff.get().addedData.containsKey(key)) {
@@ -257,9 +257,9 @@ public class DbTable implements Table {
     @Override
     public int commit() {
 
-        lock.writeLock().lock();
 
         try {
+            lock.writeLock().lock();
 
             committedData.keySet().removeAll(diff.get().removedData);
             committedData.putAll(diff.get().addedData);
@@ -465,10 +465,10 @@ public class DbTable implements Table {
 
     public void read() throws MyIOException {
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             for (int dir = 0; dir < 16; ++dir) {
                 for (int file = 0; file < 16; ++file) {
                     Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
@@ -504,10 +504,8 @@ public class DbTable implements Table {
 
     public void write() throws MyIOException {
 
-        lock.writeLock().lock();
-
-
         try {
+            lock.writeLock().lock();
             if (Files.exists(tablePath)) {
                 FileSystem.deleteContent(tablePath);
             } else {

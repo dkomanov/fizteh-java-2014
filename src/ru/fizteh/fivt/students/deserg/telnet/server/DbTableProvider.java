@@ -61,10 +61,10 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
             throw new IllegalArgumentException("Database \"" + name + "\": getTable: unacceptable table name");
         }
 
-        lock.readLock().lock();
 
         try {
 
+            lock.readLock().lock();
             if (removedTables.contains(name)) {
                 throw new IllegalStateException("Database \"" + name + "\": getTable: table was removed");
             } else {
@@ -117,10 +117,10 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
             throw new IllegalArgumentException("Database \"" + name + "\": createTable: unacceptable table name");
         }
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             if (tables.containsKey(name)) {
                 return null;
             } else {
@@ -173,10 +173,10 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
             throw new IllegalArgumentException("Database \"" + name + "\": removeTable: unacceptable table name");
         }
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             if (!tables.containsKey(name)) {
                 lock.readLock().unlock();
                 throw new IllegalStateException("Database \"" + dbPath + "\": removeTable: table does not exist");
@@ -278,10 +278,10 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     @Override
     public List<String> getTableNames() {
 
-        lock.readLock().lock();
 
         try {
 
+            lock.readLock().lock();
             List<String> list = new LinkedList<>();
             list.addAll(tables.keySet());
             return list;
@@ -316,9 +316,9 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
     //Constructor
     public DbTableProvider(Path inpPath) {
 
-        lock.writeLock().lock();
 
         try {
+            lock.writeLock().lock();
             dbPath = inpPath;
             read();
         } finally {
@@ -370,10 +370,10 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
 
     public String setCurrentTable(String name) {
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             if (!tables.containsKey(name)) {
                 return name + " not exists";
             }
@@ -393,10 +393,10 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
 
     public String showTableSet() {
 
-        lock.readLock().lock();
 
         try {
 
+            lock.readLock().lock();
             String result = "table_name row_count\n";
             for (HashMap.Entry<String, DbTable> entry : tables.entrySet()) {
                 DbTable table = entry.getValue();
@@ -438,9 +438,9 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
 
     public void read() {
 
-        lock.writeLock().lock();
 
         try {
+            lock.writeLock().lock();
             if (dbPath == null) {
                 return;
             }
@@ -490,10 +490,10 @@ public class DbTableProvider implements TableProvider, AutoCloseable {
 
     public void write() {
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             FileSystem.deleteContent(dbPath);
 
             for (HashMap.Entry<String, DbTable> entry : tables.entrySet()) {
