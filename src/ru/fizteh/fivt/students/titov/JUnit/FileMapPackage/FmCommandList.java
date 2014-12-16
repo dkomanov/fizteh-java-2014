@@ -14,13 +14,13 @@ public class FmCommandList extends CommandFileMap {
         int counter = 0;
         for (String oneKey : allKeys) {
             if (counter > 0) {
-                System.out.print(", ");
+                System.err.print(", ");
             }
-            System.out.print(oneKey);
+            System.err.print(oneKey);
             ++counter;
         }
         if (counter > 0) {
-            System.out.println();
+            System.err.println();
         }
         return true;
     }

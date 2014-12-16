@@ -9,10 +9,9 @@ public class CommandShowTables extends CommandMultiFileHashMap {
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
         if (!args[1].equals("tables")) {
-            System.out.println(name + ": wrong arguments");
+            System.err.println(name + ": wrong arguments");
             return false;
         }
-        System.out.println("table_name row_count");
         myMap.showTables();
         return true;
     }

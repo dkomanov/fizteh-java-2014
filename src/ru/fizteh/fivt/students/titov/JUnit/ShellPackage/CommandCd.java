@@ -16,7 +16,7 @@ public class CommandCd extends Command {
             return true;
         }
         if (arguments.length != numberOfArguments) {
-            System.out.println("wrong number of arguments");
+            System.err.println("wrong number of arguments");
             return false;
         }
         Path newWorkDirectory = PathsFunction.toAbsolutePathString(arguments[1]);
@@ -25,10 +25,10 @@ public class CommandCd extends Command {
             return true;
         } else {
             if (Files.exists(newWorkDirectory)) {
-                System.out.println(name + ": \'" + arguments[1]
+                System.err.println(name + ": \'" + arguments[1]
                                    + "\': Not a directory");
             } else {
-                System.out.println(name + ": \'" + arguments[1]
+                System.err.println(name + ": \'" + arguments[1]
                                    + "\': No such file or directory");
             }
             return false;

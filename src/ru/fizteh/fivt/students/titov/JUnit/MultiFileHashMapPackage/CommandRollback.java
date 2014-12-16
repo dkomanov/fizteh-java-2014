@@ -11,10 +11,8 @@ public class CommandRollback extends CommandMultiFileHashMap {
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
         FileMap currentTable = myMap.getCurrentTable();
-        if (currentTable == null) {
-            System.out.println("no table");
-        } else {
-            System.out.println(currentTable.rollback());
+        if (!isTable(currentTable)) {
+            System.err.println(currentTable.rollback());
         }
         return true;
     }

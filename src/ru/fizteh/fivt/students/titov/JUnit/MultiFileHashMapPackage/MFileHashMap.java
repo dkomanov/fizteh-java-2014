@@ -89,7 +89,7 @@ public class MFileHashMap implements TableProvider {
     public void showTables() {
         Set<Entry<String, FileMap>> pairSet = tables.entrySet();
         for (Entry<String, FileMap> oneTable: pairSet) {
-            System.out.println(oneTable.getKey() + " "
+            System.err.println(oneTable.getKey() + " "
                     + oneTable.getValue().size());
         }
     }

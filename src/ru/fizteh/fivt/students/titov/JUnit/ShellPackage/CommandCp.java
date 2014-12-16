@@ -16,7 +16,7 @@ public class CommandCp extends Command {
     public boolean run(final String[] arguments) {
         if (arguments.length != numberOfArguments
                 & arguments.length != numberOfArguments - 1) {
-            System.out.println("wrong number of arguments");
+            System.err.println("wrong number of arguments");
             return false;
         }
         boolean recursive =
@@ -30,7 +30,7 @@ public class CommandCp extends Command {
 
     private boolean generalCopy(final String[] arguments) {
         if (numberOfArguments - 1 != arguments.length) {
-            System.out.println("wrong number of arguments");
+            System.err.println("wrong number of arguments");
             return  false;
         }
         Path startPath = PathsFunction.toAbsolutePathString(arguments[1]);
@@ -38,18 +38,18 @@ public class CommandCp extends Command {
         Path fileName = Paths.get(arguments[1]).getFileName();
 
         if (startPath.equals(destinationPath)) {
-            System.out.println(name + ": \'" + arguments[1] + "\' and \'"
+            System.err.println(name + ": \'" + arguments[1] + "\' and \'"
                                + arguments[2] + "\' are the same file or directory");
             return false;
         }
         if (Files.isDirectory(startPath)) {
-            System.out.println(name + ": " + arguments[1]
+            System.err.println(name + ": " + arguments[1]
                                + " is a directory (not copied).");
             return false;
         }
 
         if (!Files.exists(startPath)) {
-            System.out.println(name + ": cannot copy \'" + arguments[1] + "\'"
+            System.err.println(name + ": cannot copy \'" + arguments[1] + "\'"
                                + ": No such file or directory");
             return false;
         }
@@ -57,7 +57,7 @@ public class CommandCp extends Command {
         if (Files.isDirectory(destinationPath)) {
             destinationPath = destinationPath.resolve(fileName);
         } else if (destinationPath.toString().endsWith("/")) {
-            System.out.println(name + ": cannot copy \'" + fileName + "\' to \'"
+            System.err.println(name + ": cannot copy \'" + fileName + "\' to \'"
                                + arguments[2] + "\': Not a directory");
             return false;
         }
@@ -65,7 +65,7 @@ public class CommandCp extends Command {
         try {
             Files.copy(startPath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
-            System.out.println(name + "; cannot create regular file \'" + arguments[2]
+            System.err.println(name + "; cannot create regular file \'" + arguments[2]
                                + "\'" + ": Not a directory");
             return false;
         }
@@ -79,11 +79,11 @@ public class CommandCp extends Command {
 
 
         if (!Files.isDirectory(destinationPath) & Files.exists(destinationPath)) {
-            System.out.println("\'" + arguments[3] + "\' isn't a directory");
+            System.err.println("\'" + arguments[3] + "\' isn't a directory");
             return false;
         }
         if (startPath.equals(destinationPath)) {
-            System.out.println(name + ": \'" + arguments[2] + "\' and \'"
+            System.err.println(name + ": \'" + arguments[2] + "\' and \'"
                     + arguments[3] + "\' are the same file or directory");
             return false;
         }

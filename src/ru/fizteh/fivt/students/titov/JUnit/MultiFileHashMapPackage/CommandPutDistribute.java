@@ -12,8 +12,7 @@ public class CommandPutDistribute extends CommandMultiFileHashMap {
     @Override
     public boolean run(MFileHashMap myMap, String[] args) {
         FileMap currentTable = myMap.getCurrentTable();
-        if (myMap.getCurrentTable() == null) {
-            System.out.println("no table");
+        if (isTable(currentTable)) {
             return true;
         }
         FmCommandPut commandPut = new FmCommandPut();

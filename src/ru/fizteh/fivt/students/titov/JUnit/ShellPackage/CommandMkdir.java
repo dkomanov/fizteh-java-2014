@@ -11,7 +11,7 @@ public class CommandMkdir extends Command {
     @Override
     public boolean run(final String[] arguments) {
         if (arguments.length != numberOfArguments) {
-            System.out.println("wrong number of arguments");
+            System.err.println("wrong number of arguments");
             return false;
         }
         try {

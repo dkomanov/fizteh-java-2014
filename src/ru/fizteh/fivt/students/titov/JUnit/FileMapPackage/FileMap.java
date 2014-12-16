@@ -12,8 +12,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class FileMap implements Table {
-    private static final int MAXNUMBEROFDIRS = 16;
-    private static final int MAXNUMBEROFFILES = 16;
+    private static final int MAX_NUMBER_OF_DIRS = 16;
+    private static final int MAX_NUMBER_OF_FILES = 16;
     private HashMap<String, String> stableData;
     private HashMap<String, String> addedData;
     private HashMap<String, String> changedData;
@@ -21,17 +21,17 @@ public class FileMap implements Table {
     private String directoryOfTable;
 
     private int getNumberOfDirectory(int hash) {
-        int result = hash % MAXNUMBEROFDIRS;
+        int result = hash % MAX_NUMBER_OF_DIRS;
         if (result < 0) {
-            result += MAXNUMBEROFDIRS;
+            result += MAX_NUMBER_OF_DIRS;
         }
         return result;
     }
 
     private int getNumberOfFile(int hash) {
-        int result = hash / MAXNUMBEROFDIRS % MAXNUMBEROFFILES;
+        int result = hash / MAX_NUMBER_OF_DIRS % MAX_NUMBER_OF_FILES;
         if (result < 0) {
-            result += MAXNUMBEROFFILES;
+            result += MAX_NUMBER_OF_FILES;
         }
         return result;
     }
@@ -136,16 +136,16 @@ public class FileMap implements Table {
         stableData.putAll(addedData);
         boolean allRight = true;
         if (changedData.size() + removedData.size() > 0) {
-            Set<String> reloadKeys = removedData;
-            reloadKeys.addAll(changedData.keySet());
-            for (String oneKey : reloadKeys) {
-                if (!load(oneKey, false)) {
+            Set<String> resaveKeys = removedData;
+            resaveKeys.addAll(changedData.keySet());
+            for (String oneKey : resaveKeys) {
+                if (!save(oneKey, false)) {
                     allRight = false;
                 }
             }
         }
         for (String oneKey : addedData.keySet()) {
-            if (!load(oneKey, true)) {
+            if (!save(oneKey, true)) {
                 allRight = false;
             }
         }
@@ -175,14 +175,14 @@ public class FileMap implements Table {
             return true;
         }
         for (String oneDirectory: listOfDirectories) {
-            String currentDirectory = directoryOfTable + System.getProperty("file.separator")
+            String currentDirectory = directoryOfTable + File.separator
                     + oneDirectory;
             if (!Files.isDirectory(Paths.get(currentDirectory))) {
                 continue;
             }
             String[] listOfFiles = new File(currentDirectory).list();
             for (String oneFile : listOfFiles) {
-                String currentFile = currentDirectory + System.getProperty("file.separator")
+                String currentFile = currentDirectory + File.separator
                         + oneFile;
                 int numberOfDirectory = oneDirectory.charAt(0) - '0';
                 if (oneDirectory.charAt(1) != '.') {
@@ -200,7 +200,7 @@ public class FileMap implements Table {
                         bufferFromDisk =
                                 inputChannel.map(MapMode.READ_ONLY, 0, inputChannel.size());
                     } catch (IOException e) {
-                        System.out.println("io exception");
+                        System.err.println("io exception");
                         return false;
                     }
                     try {
@@ -213,6 +213,10 @@ public class FileMap implements Table {
                                 keySize = bufferFromDisk.getInt();
                                 key = new byte[keySize];
                             } else {
+                                throw new BadFileException();
+                            }
+
+                            if (keySize < 0) {
                                 throw new BadFileException();
                             }
 
@@ -243,21 +247,21 @@ public class FileMap implements Table {
                             try {
                                 stableData.put(new String(key, "UTF-8"), new String(value, "UTF-8"));
                             } catch (UnsupportedEncodingException e) {
-                                System.out.println("unsupported encoding");
+                                System.err.println("unsupported encoding");
                                 return false;
                             }
                         }
                     } catch (NullPointerException e) {
-                        System.out.println("null pointer exception");
+                        System.err.println("null pointer exception");
                     }
                 } catch (FileNotFoundException e) {
-                    System.out.println("file not found");
+                    System.err.println("file not found");
                     return false;
                 } catch (BadFileException e) {
-                    System.out.println("problems with database file");
+                    System.err.println("problems with database file");
                     return false;
                 } catch (IOException e) {
-                    System.out.println("io exception");
+                    System.err.println("io exception");
                     return false;
                 }
             }
@@ -265,7 +269,7 @@ public class FileMap implements Table {
         return true;
     }
 
-    public boolean load(String key, boolean appendFile) {
+    public boolean save(String key, boolean appendFile) {
         HashSet<String> keySet = new HashSet<>();
         ByteBuffer bufferForSize = ByteBuffer.allocate(4);
 
@@ -284,30 +288,30 @@ public class FileMap implements Table {
             }
         }
 
-        Path directoryForLoad;
-        Path fileForLoad;
-        directoryForLoad = Paths.get(directoryOfTable, numberOfDirectory + ".dir");
-        if (!Files.exists(directoryForLoad)) {
+        Path directoryForsave;
+        Path fileForsave;
+        directoryForsave = Paths.get(directoryOfTable, numberOfDirectory + ".dir");
+        if (!Files.exists(directoryForsave)) {
             try {
-                Files.createDirectory(directoryForLoad);
+                Files.createDirectory(directoryForsave);
             } catch (IOException e) {
-                System.out.println("error while creating directory for load");
+                System.err.println("error while creating directory for save");
                 return false;
             }
         }
 
-        fileForLoad = Paths.get(directoryForLoad.toString(), numberOfFile + ".dat");
-        if (!Files.exists(fileForLoad)) {
+        fileForsave = Paths.get(directoryForsave.toString(), numberOfFile + ".dat");
+        if (!Files.exists(fileForsave)) {
             try {
-                Files.createFile(fileForLoad);
+                Files.createFile(fileForsave);
             } catch (IOException e) {
-                System.out.println("error while creating file for load");
+                System.err.println("error while creating file for save");
                 return false;
             }
         }
 
         try (FileOutputStream outputStream
-                     = new FileOutputStream(fileForLoad.toString(), appendFile)) {
+                     = new FileOutputStream(fileForsave.toString(), appendFile)) {
             for (String oneKey : keySet) {
                 try {
                     byte[] keyByte = oneKey.getBytes("UTF-8");
@@ -317,23 +321,23 @@ public class FileMap implements Table {
                     outputStream.write(bufferForSize.putInt(0, valueByte.length).array());
                     outputStream.write(valueByte);
                 } catch (UnsupportedEncodingException e) {
-                    System.out.println("unsupported encoding");
+                    System.err.println("unsupported encoding");
                     return false;
                 } catch (IOException e) {
-                    System.out.println("io exception");
+                    System.err.println("io exception");
                     return false;
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("file not found");
+            System.err.println("file not found");
             return false;
         } catch (IOException e) {
-            System.out.println("io exception");
+            System.err.println("io exception");
             return false;
         }
 
         if (!appendFile) {
-            deleteEmptyFiles(directoryForLoad, fileForLoad);
+            deleteEmptyFiles(directoryForsave, fileForsave);
         }
         return true;
     }

@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) {
 
         if (System.getProperty(PROJECTPROPERTY) == null) {
-            System.out.println("we need working directory");
+            System.err.println("we need working directory");
             System.exit(6);
         }
         Path dataBaseDirectory
@@ -71,6 +71,7 @@ public class Main {
         myShell.addCommand(new CommandRollback());
         myShell.addCommand(new CommandCommit());
         myShell.addCommand(new CommandSize());
+        myShell.addCommand(new CommandExit());
     }
 }
 

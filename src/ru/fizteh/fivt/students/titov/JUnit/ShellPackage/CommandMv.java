@@ -12,7 +12,7 @@ public class CommandMv extends Command {
     @Override
     public boolean run(final String[] arguments) {
         if (arguments.length != numberOfArguments) {
-            System.out.println("wrong number of arguments");
+            System.err.println("wrong number of arguments");
             return false;
         }
         Path startPath = PathsFunction.toAbsolutePathString(arguments[1]);
@@ -20,7 +20,7 @@ public class CommandMv extends Command {
         Path fileName = startPath.getFileName();
 
         if (!Files.exists(startPath)) {
-            System.out.println(name + ": cannot stat \'" + arguments[1]
+            System.err.println(name + ": cannot stat \'" + arguments[1]
                                + "\': No such file or directory");
             return false;
         }
@@ -28,7 +28,7 @@ public class CommandMv extends Command {
         if (Files.isDirectory(destinationPath)) {
             destinationPath = destinationPath.resolve(fileName);
         } else if (destinationPath.toString().endsWith("/")) {
-            System.out.println(name + ": cannot move \'" + arguments[1] + "\' to \'"
+            System.err.println(name + ": cannot move \'" + arguments[1] + "\' to \'"
                                + arguments[2] + "\': Not a directory");
             return false;
         }

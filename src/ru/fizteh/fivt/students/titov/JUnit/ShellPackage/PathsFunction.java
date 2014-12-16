@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.titov.JUnit.ShellPackage;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
@@ -7,7 +8,7 @@ public class PathsFunction {
 
     public static Path toAbsolutePathString(final String myPath) {
         String absolutePathString;
-        String fileSeparator = System.getProperty("file.separator");
+        String fileSeparator = File.separator;
         if (Paths.get(myPath).isAbsolute()) {
             absolutePathString = myPath;
         } else {

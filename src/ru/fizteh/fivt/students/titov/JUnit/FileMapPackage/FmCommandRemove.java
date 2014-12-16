@@ -9,9 +9,9 @@ public class FmCommandRemove extends CommandFileMap {
     public boolean run(FileMap myFileMap, String[] args) {
         String value = myFileMap.remove(args[1]);
         if (value != null) {
-            System.out.println("removed");
+            System.err.println("removed");
         } else {
-            System.out.println("not found");
+            System.err.println("not found");
         }
         return true;
     }
