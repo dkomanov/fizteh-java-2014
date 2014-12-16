@@ -63,11 +63,11 @@ public class Calculator {
         }
     }
 
-    boolean bracket(char x) {
+    private boolean bracket(char x) {
         return x == '(' || x == ')';
     }
 
-    ArrayList<String> split(String s) {
+    private ArrayList<String> split(String s) {
         ArrayList<String> res = new ArrayList<>();
         StringBuilder cur = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
@@ -94,7 +94,7 @@ public class Calculator {
         return res;
     }
 
-    int jump(ArrayList<String> expr, int pos, int priority, int r) throws ParseException {
+    private int jump(ArrayList<String> expr, int pos, int priority, int r) throws ParseException {
         int bal = 0;
         for (int i = pos; i < r; i++) {
             if (expr.get(i).equals("(")) {
@@ -114,7 +114,7 @@ public class Calculator {
         return r;
     }
 
-    double calcAtom(ArrayList<String> expr, int l, int r) throws ParseException {
+    private double calcAtom(ArrayList<String> expr, int l, int r) throws ParseException {
         if (l + 1 != r) {
             if (!expr.get(l).equals("(")) {
                 throw new ParseException("invalid token", l);
@@ -131,7 +131,7 @@ public class Calculator {
         }
     }
 
-    double calcExpr(ArrayList<String> expr, int l, int r, int priority) throws ParseException {
+    private double calcExpr(ArrayList<String> expr, int l, int r, int priority) throws ParseException {
         if (priority == Operator.MAXPRIORITY + 1) {
             return calcAtom(expr, l, r);
         }
