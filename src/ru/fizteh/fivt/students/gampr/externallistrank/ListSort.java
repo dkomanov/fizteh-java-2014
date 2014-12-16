@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.gampr.externallistrank;
 
 import java.io.*;
 
-import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
 
 public class ListSort {
     private File fileIn;
@@ -19,8 +19,8 @@ public class ListSort {
     /*
         Считает кол-во строк в файле
     */
-    public int countLines(File file) throws IOException {
-        int count = 0;
+    public long countLines(File file) throws IOException {
+        long count = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             while (reader.readLine() != null) {
                 count++;
@@ -57,7 +57,7 @@ public class ListSort {
                             writerResult.write(strSecond + "\n");
                             strSecond = readerSecond.readLine();
                         } else
-                        if ((parseInt(strFirst.split(" ")[index]) < parseInt(strSecond.split(" ")[index]))) {
+                        if ((parseLong(strFirst.split(" ")[index]) < parseLong(strSecond.split(" ")[index]))) {
                             writerResult.write(strFirst + "\n");
                             strFirst = readerFirst.readLine();
                         } else {
@@ -78,7 +78,7 @@ public class ListSort {
         Сортировка файла, index задает номер числа, по которому проходит сортировка
      */
     public File mergeSort(File file, int index) throws IOException {
-        int count = countLines(file);
+        long count = countLines(file);
         if (count <= 1) {
             return file;
         }
@@ -97,7 +97,7 @@ public class ListSort {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             try (BufferedWriter writerFirst = new BufferedWriter(new FileWriter(first))) {
                 try (BufferedWriter writerSecond = new BufferedWriter(new FileWriter(second))) {
-                    for (int iLine = 0; iLine < count; iLine++) {
+                    for (long iLine = 0; iLine < count; iLine++) {
                         String s = reader.readLine();
                         if (iLine < (count / 2)) {
                             writerFirst.write(s + "\n");
@@ -202,7 +202,7 @@ public class ListSort {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(colored))) {
                 String string;
                 while ((string = reader.readLine()) != null) {
-                    writer.write(string + " " + (int) (Math.random() * 2) + "\n");
+                    writer.write(string + " " + (long) (Math.random() * 2) + "\n");
                 }
             }
         } catch (IOException e) {
@@ -264,7 +264,7 @@ public class ListSort {
                             writerResult.write(stringsFirst[0] + " ");
                             writerResult.write(stringsSecond[1] + " ");
                             // Ранг меняется
-                            writerResult.write((parseInt(stringsFirst[2]) + parseInt(stringsSecond[2])) + "\n");
+                            writerResult.write((parseLong(stringsFirst[2]) + parseLong(stringsSecond[2])) + "\n");
                         } else if (stringsSecond[1].equals("0")) {
                             // Сохраняем второй элемент, цвет удаляем
                             writerResult.write(stringsSecond[0] + " ");
@@ -345,18 +345,18 @@ public class ListSort {
                     while (strTmp != null && strSecond != null) {
                         String[] stringsTmp = strTmp.split(" ");
                         String[] stringsSecond = strSecond.split(" ");
-                        if (parseInt(stringsTmp[1]) < parseInt(stringsSecond[0])) {
+                        if (parseLong(stringsTmp[1]) < parseLong(stringsSecond[0])) {
                             // Для этого элемента ранг уже посчитан верно
                             writerResult.write(strTmp + "\n");
                             strTmp = readerTmp.readLine();
                         } else
-                        if (parseInt(stringsTmp[1]) > parseInt(stringsSecond[0])) {
+                        if (parseLong(stringsTmp[1]) > parseLong(stringsSecond[0])) {
                             strSecond = readerSecond.readLine();
                         } else {
                             writerResult.write(stringsTmp[0] + " ");
                             writerResult.write(stringsTmp[1] + " ");
                             // Обновляем ранг
-                            writerResult.write((parseInt(stringsTmp[2]) + parseInt(stringsSecond[2])) + "\n");
+                            writerResult.write((parseLong(stringsTmp[2]) + parseLong(stringsSecond[2])) + "\n");
 
                             strTmp = readerTmp.readLine();
                             strSecond = readerSecond.readLine();
