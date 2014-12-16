@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit;
 
 import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.DatabaseIOException;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.Utility;
 
 import java.io.*;
 import java.nio.file.Files;
