@@ -60,10 +60,10 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + name + "\": getTable: unacceptable table name");
         }
 
-        lock.readLock().lock();
 
         try {
 
+            lock.readLock().lock();
             if (removedTables.contains(name)) {
                 throw new IllegalStateException("Database \"" + name + "\": getTable: table was removed");
             } else {
@@ -116,10 +116,10 @@ public class DbTableProvider implements TableProvider {
         }
 
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             if (tables.containsKey(name)) {
                 return null;
             } else {
@@ -171,10 +171,10 @@ public class DbTableProvider implements TableProvider {
             throw new IllegalArgumentException("Database \"" + name + "\": removeTable: unacceptable table name");
         }
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             if (!tables.containsKey(name)) {
                 throw new IllegalStateException("Database \"" + dbPath + "\": removeTable: table does not exist");
             }
@@ -275,10 +275,10 @@ public class DbTableProvider implements TableProvider {
     @Override
     public List<String> getTableNames() {
 
-        lock.readLock().lock();
 
         try {
 
+            lock.readLock().lock();
             List<String> list = new LinkedList<>();
             list.addAll(tables.keySet());
             return list;
@@ -295,9 +295,9 @@ public class DbTableProvider implements TableProvider {
      */
 
     public DbTableProvider(Path inpPath) {
-        lock.writeLock().lock();
 
         try {
+            lock.writeLock().lock();
             dbPath = inpPath;
             read();
         } finally {
@@ -311,10 +311,10 @@ public class DbTableProvider implements TableProvider {
 
     public void setCurrentTable(String name) {
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             if (!tables.containsKey(name)) {
                 System.out.println(name + " not exists");
                 return;
@@ -338,10 +338,10 @@ public class DbTableProvider implements TableProvider {
 
     public void showTableSet() {
 
-        lock.readLock().lock();
 
         try {
 
+            lock.readLock().lock();
             System.out.println("table_name row_count");
             for (HashMap.Entry<String, DbTable> entry : tables.entrySet()) {
                 DbTable table = entry.getValue();
@@ -381,10 +381,10 @@ public class DbTableProvider implements TableProvider {
 
     public void read() {
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             if (dbPath == null) {
                 return;
             }
@@ -433,10 +433,10 @@ public class DbTableProvider implements TableProvider {
 
     public void write() {
 
-        lock.writeLock().lock();
 
         try {
 
+            lock.writeLock().lock();
             Shell.deleteContent(dbPath);
 
             for (HashMap.Entry<String, DbTable> entry : tables.entrySet()) {
