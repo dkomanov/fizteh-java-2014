@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.Volodin_Denis.JUnit.Tests;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.students.Volodin_Denis.JUnit.database.WorkWithFile;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.database.FileUtils;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
 
-public class WorkWithFileTest {
+public class FileUtilsTest {
 
     public final String end = ".." + File.separator + "test123321123321";
 
@@ -21,14 +21,14 @@ public class WorkWithFileTest {
 
     @Test
     public void testConstructor() {
-        WorkWithFile wwf = new WorkWithFile();
+        FileUtils wwf = new FileUtils();
         wwf.get("Test");
     }
 
     @Test
     public void testCreateDirectoryWithOneArgument() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath();
-        WorkWithFile.createDirectory(path.toString());
+        FileUtils.createDirectory(path.toString());
         if (!path.toFile().exists()) {
             throw new Exception("not exists");
         }
@@ -37,75 +37,73 @@ public class WorkWithFileTest {
     @Test
     public void testCreateDirectoryWithTwoArguments() throws Exception {
         Path path = Paths.get(temporaryFolder.toString()).toAbsolutePath();
-        WorkWithFile.createDirectory(path.toString(), end);
-        if (!Paths.get(path.toString(), end).toFile().exists()) {
-            throw new Exception("not exists");
-        }
+        FileUtils.createDirectory(path.toString(), end);
+        assertTrue("not exists", Paths.get(path.toString(), end).toFile().exists());
         Files.delete(Paths.get(path.toString(), end)); }
 
     @Test
     public void testDelete() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath();
         Files.createDirectory(path);
-        WorkWithFile.delete(path.toString(), "dgdfg/.."); }
+        FileUtils.delete(path.toString(), "dgdfg/.."); }
 
     @Test
     public void testExistsWithOneArgument() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath();
-        assertEquals(path.toFile().exists(), WorkWithFile.exists(path.toString())); }
+        assertEquals(path.toFile().exists(), FileUtils.exists(path.toString())); }
 
     @Test
     public void testExistsWithTwoArguments() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath();
-        assertEquals(path.toFile().exists(), WorkWithFile.exists(temporaryFolder.toString(), path.getFileName()
+        assertEquals(path.toFile().exists(), FileUtils.exists(temporaryFolder.toString(), path.getFileName()
                 .toString())); }
 
     @Test
     public void testGetWithOneArgument() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
-        assertEquals(path, WorkWithFile.get(path.toString())); }
+        assertEquals(path, FileUtils.get(path.toString())); }
 
     @Test
     public void testGetWithTwoArguments() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
-        assertEquals(Paths.get(path.toString(), "1"), WorkWithFile.get(path.toString(), "1")); }
+        assertEquals(Paths.get(path.toString(), "1"), FileUtils.get(path.toString(), "1")); }
 
     @Test
     public void testGetFileNameWithOneArgument() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
-        assertEquals(path.getFileName().toString(), WorkWithFile.getFileName(path.toString())); }
+        assertEquals(path.getFileName().toString(), FileUtils.getFileName(path.toString())); }
 
     @Test
     public void testGetFileNameWithTwoArguments() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
-        assertEquals(path.getFileName().toString(), WorkWithFile
+        assertEquals(path.getFileName().toString(), FileUtils
                 .getFileName(path.toString(), "1" + File.separator + "..")); }
 
 
     @Test
     public void testGetParentName() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
-        assertEquals(path.getParent().getFileName().toString(), WorkWithFile.getParentName(path.toString())); }
+        assertEquals(path.getParent().getFileName().toString(), FileUtils.getParentName(path.toString())); }
 
     @Test
     public void testGetParentNameWithTwoArguments() {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
         assertEquals(path.getParent().getFileName().toString(),
-                WorkWithFile.getParentName(path.toString(), "1" + File.separator + "..")); }
+                FileUtils.getParentName(path.toString(), "1" + File.separator + "..")); }
 
     @Test
     public void testIsDirectoryWithOneArgument() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
-        assertEquals(path.toFile().isDirectory(), WorkWithFile.isDirectory(path.toString())); }
+        assertEquals(path.toFile().isDirectory(), FileUtils.isDirectory(path.toString())); }
 
     @Test
     public void testIsDirectoryWithTwoArguments() throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
         assertEquals(Paths.get(path.toString(), "../1").toFile().isDirectory(),
-                WorkWithFile.isDirectory(path.toString(), ".." + File.separator + "/1")); }
+                FileUtils.isDirectory(path.toString(), ".." + File.separator + "/1")); }
 
     @Test
     public void testToAbsolutePath()  throws Exception {
         Path path = Paths.get(temporaryFolder.toString(), end).toAbsolutePath().normalize();
-        assertEquals(path.toString(), WorkWithFile.toAbsolutePath(path.toString())); }
+        assertEquals(path.toString(), FileUtils.toAbsolutePath(path.toString())); }
 }

@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.Volodin_Denis.JUnit.database;
 
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.strings.Table;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -19,7 +20,7 @@ public class TableByVolodden implements Table {
     private FileMap fileMap;
     
     public TableByVolodden(final String path) throws Exception {
-        dbPath = WorkWithFile.toAbsolutePath(path);
+        dbPath = FileUtils.toAbsolutePath(path);
         fileMap = new FileMap(dbPath);
     }
 
@@ -47,10 +48,10 @@ public class TableByVolodden implements Table {
             databasePath = dbPath;
             database = new HashMap<String, String>();
             diff = new HashMap<String, String>();
-            if (WorkWithFile.exists(databasePath)) {
+            if (FileUtils.exists(databasePath)) {
                 readFromDisk();
             } else {
-                WorkWithFile.createDirectory(databasePath);
+                FileUtils.createDirectory(databasePath);
             }
         }
 
@@ -213,7 +214,7 @@ public class TableByVolodden implements Table {
         // Not used.
         @Override
         public Set<java.util.Map.Entry<String, String>> entrySet() {
-            return null;
+            throw new NotImplementedException();
         }
 
         @Override
@@ -286,7 +287,7 @@ public class TableByVolodden implements Table {
         // Not used.
         @Override
         public void putAll(Map<? extends String, ? extends String> m) {
-            return;
+            throw new NotImplementedException();
         }
 
         @Override
@@ -336,7 +337,7 @@ public class TableByVolodden implements Table {
 
     @Override
     public String getName() {
-        return WorkWithFile.getFileName(dbPath);
+        return FileUtils.getFileName(dbPath);
     }
 
     @Override
