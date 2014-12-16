@@ -8,10 +8,10 @@ import java.util.ArrayList;
  */
 public class ExternalTreeDepth {
 
-    static Integer findRoot(File edges, int n) throws IOException {
+    private static Integer findRoot(File edges, int n) throws IOException {
         File buf1 = File.createTempFile("iterate", ".tmp");
         File buf2 = File.createTempFile("iterate", ".tmp");
-        try (ObjectOutputStream os = new ObjectOutputStream(buf1, ExternalTreeDepth::writeInt);
+        try (ObjectOutputStream os = new ObjectOutputStream(buf1, ObjectOutputStream::writeInt);
              BufferedReader inp = new BufferedReader(new FileReader(edges))) {
             os.write(n + 1);
             String ss;
@@ -29,10 +29,10 @@ public class ExternalTreeDepth {
         }
         Integer root = null;
         try {
-            new ExternalSorter<Integer>(buf1, buf2, ExternalTreeDepth::readInt, ExternalTreeDepth::writeInt).run();
+            new ExternalSorter<Integer>(buf1, buf2, ObjectInputStream::readInt, ObjectOutputStream::writeInt).run();
 
             try (ObjectInputStream<Integer> inp =
-                         new ObjectInputStream<>(buf2, ExternalTreeDepth::readInt)) {
+                         new ObjectInputStream<Integer>(buf2, ObjectInputStream::readInt)) {
                 Integer cur;
                 Integer prev = 0;
                 while ((cur = inp.read()) != null) {
@@ -52,11 +52,11 @@ public class ExternalTreeDepth {
         return root;
     }
 
-    static void iterate(File parents) throws IOException {
+    private static void iterate(File parents) throws IOException {
         File buf1 = File.createTempFile("iterate", ".tmp");
         File buf2 = File.createTempFile("iterate", ".tmp");
-        IterTools.map(new ObjectInputStream(parents, ExternalTreeDepth::readTriple),
-                         new ObjectOutputStream(buf1, ExternalTreeDepth::writeTriple),
+        IterTools.map(new ObjectInputStream(parents, ObjectInputStream::readTriple),
+                         new ObjectOutputStream(buf1, ObjectOutputStream::writeTriple),
                 (Object o, ArrayList out) -> {
                     Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
                     Integer v = p.first;
@@ -65,10 +65,10 @@ public class ExternalTreeDepth {
                     out.add(new Pair<>(par, new Pair<>(v, h)));
                 });
         new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, buf2,
-                ExternalTreeDepth::readTriple, ExternalTreeDepth::writeTriple).run();
-        IterTools.joinWith(new ObjectInputStream(buf2, ExternalTreeDepth::readTriple),
-                                new ObjectInputStream(parents, ExternalTreeDepth::readTriple),
-                                new ObjectOutputStream(buf1, ExternalTreeDepth::writeTriple),
+                ObjectInputStream::readTriple, ObjectOutputStream::writeTriple).run();
+        IterTools.joinWith(new ObjectInputStream(buf2, ObjectInputStream::readTriple),
+                                new ObjectInputStream(parents, ObjectInputStream::readTriple),
+                                new ObjectOutputStream(buf1, ObjectOutputStream::writeTriple),
                 (Object a, Object b) -> ((Pair) a).first.compareTo(((Pair) b).first),
                 (Object req, Object orig) -> {
                     Pair<Integer, Pair<Integer, Integer>> org = (Pair<Integer, Pair<Integer, Integer>>) orig;
@@ -80,38 +80,9 @@ public class ExternalTreeDepth {
                 }
         );
         new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, parents,
-                ExternalTreeDepth::readTriple, ExternalTreeDepth::writeTriple).run();
+                ObjectInputStream::readTriple, ObjectOutputStream::writeTriple).run();
         buf1.delete();
         buf2.delete();
-    }
-
-    static void writeInt(Object value, OutputStream os) throws IOException {
-        int n = (Integer) value;
-        byte[] buf = new byte[] {
-                (byte) (n >> 24),
-                (byte) (n >> 16),
-                (byte) (n >> 8),
-                (byte) n};
-        os.write(buf);
-    }
-
-    static int readInt(InputStream is) throws IOException {
-        byte[] buf = new byte[4];
-        if (is.read(buf) != 4) {
-            throw new EOFException("eof");
-        }
-        return buf[3] + (((int) buf[2]) << 8) + (((int) buf[1]) << 16) + (((int) buf[0]) << 24);
-    }
-
-    static void writeTriple(Object o, OutputStream os) throws IOException {
-        Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
-        writeInt(p.first, os);
-        writeInt(p.second.first, os);
-        writeInt(p.second.second, os);
-    }
-
-    static Pair<Integer, Pair<Integer, Integer>> readTriple(InputStream is) throws IOException {
-        return new Pair<>(readInt(is), new Pair<>(readInt(is), readInt(is)));
     }
 
     public static void main(String[] args) {
@@ -140,7 +111,7 @@ public class ExternalTreeDepth {
         }
         try {
             int n = 1;
-            try (ObjectOutputStream os = new ObjectOutputStream(tmp, ExternalTreeDepth::writeTriple)) {
+            try (ObjectOutputStream os = new ObjectOutputStream(tmp, ObjectOutputStream::writeTriple)) {
                 String ss;
                 while ((ss = inp.readLine()) != null) {
                     String[] tokens = ss.split(" ");
@@ -161,7 +132,7 @@ public class ExternalTreeDepth {
             }
 
             new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(tmp, parents,
-                    ExternalTreeDepth::readTriple, ExternalTreeDepth::writeTriple).run();
+                    ObjectInputStream::readTriple, ObjectOutputStream::writeTriple).run();
 
             int d = 1;
             while (d < n) {
@@ -169,7 +140,7 @@ public class ExternalTreeDepth {
                 d *= 2;
             }
             try (ObjectInputStream<Pair<Integer, Pair<Integer, Integer>>> is =
-                         new ObjectInputStream(parents, ExternalTreeDepth::readTriple)) {
+                         new ObjectInputStream(parents, ObjectInputStream::readTriple)) {
                 result = Integer.MIN_VALUE;
                 Pair<Integer, Pair<Integer, Integer>> trp;
                 while ((trp = is.read()) != null) {
