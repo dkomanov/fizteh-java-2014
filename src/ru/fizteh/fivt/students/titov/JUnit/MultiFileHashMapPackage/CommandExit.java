@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.titov.JUnit.MultiFileHashMapPackage;
 
-import ru.fizteh.fivt.students.titov.JUnit.FileMapPackage.FileMap;
-
-public class CommandExit extends CommandMultiFileHashMap{
+public class CommandExit extends CommandMultiFileHashMap {
     public CommandExit() {
         name = "exit";
         numberOfArguments = 1;
