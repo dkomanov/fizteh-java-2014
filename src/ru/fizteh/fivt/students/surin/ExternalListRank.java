@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class ExternalListRank {
 
-    static void iterate(File fcur) throws IOException {
+    private static void iterate(File fcur) throws IOException {
         File buf1;
         File buf2;
         try {
@@ -19,18 +19,18 @@ public class ExternalListRank {
             throw new IOException();
         }
         try {
-            IterTools.map(new ObjectInputStream(fcur, ExternalListRank::readTriple),
-                    new ObjectOutputStream(buf1, ExternalListRank::writeTriple),
+            IterTools.map(new ObjectInputStream(fcur, ObjectInputStream::readTriple),
+                    new ObjectOutputStream(buf1, ObjectOutputStream::writeTriple),
                     (Object o, ArrayList out) -> {
                         Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
                         out.add(new Pair(p.second.first, new Pair(p.first, p.second.second)));
                     }
             );
             new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, buf2,
-                    ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
-            IterTools.joinWith(new ObjectInputStream(buf2, ExternalListRank::readTriple),
-                    new ObjectInputStream(fcur, ExternalListRank::readTriple),
-                    new ObjectOutputStream(buf1, ExternalListRank::writeTriple),
+                    ObjectInputStream::readTriple, ObjectOutputStream::writeTriple).run();
+            IterTools.joinWith(new ObjectInputStream(buf2, ObjectInputStream::readTriple),
+                    new ObjectInputStream(fcur, ObjectInputStream::readTriple),
+                    new ObjectOutputStream(buf1, ObjectOutputStream::writeTriple),
                     (Object a, Object b) -> ((Pair) a).first.compareTo(((Pair) b).first),
                     (Object req, Object orig) -> {
                         Pair<Integer, Pair<Integer, Integer>> org = (Pair<Integer, Pair<Integer, Integer>>) orig;
@@ -41,41 +41,12 @@ public class ExternalListRank {
                     }
             );
             new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf1, fcur,
-                    ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+                    ObjectInputStream::readTriple, ObjectOutputStream::writeTriple).run();
         } finally {
             if (!buf1.delete() || !buf2.delete()) {
                 System.err.println("failed to delete temporary files");
             }
         }
-    }
-
-    static void writeInt(Object value, OutputStream os) throws IOException {
-        int n = (Integer) value;
-        byte[] buf = new byte[] {
-                (byte) (n >> 24),
-                (byte) (n >> 16),
-                (byte) (n >> 8),
-                (byte) n};
-        os.write(buf);
-    }
-
-    static int readInt(InputStream is) throws IOException {
-        byte[] buf = new byte[4];
-        if (is.read(buf) != 4) {
-            throw new EOFException("eof");
-        }
-        return buf[3] + (((int) buf[2]) << 8) + (((int) buf[1]) << 16) + (((int) buf[0]) << 24);
-    }
-
-    static void writeTriple(Object o, OutputStream os) throws IOException {
-        Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
-        writeInt(p.first, os);
-        writeInt(p.second.first, os);
-        writeInt(p.second.second, os);
-    }
-
-    static Pair<Integer, Pair<Integer, Integer>> readTriple(InputStream is) throws IOException {
-        return new Pair<>(readInt(is), new Pair<>(readInt(is), readInt(is)));
     }
 
     public static void main(String[] args) {
@@ -98,7 +69,7 @@ public class ExternalListRank {
                 throw e;
             }
             int n = 0;
-            try (ObjectOutputStream b = new ObjectOutputStream(buf, ExternalListRank::writeTriple)) {
+            try (ObjectOutputStream b = new ObjectOutputStream(buf, ObjectOutputStream::writeTriple)) {
                 String line;
                 while ((line = inp.readLine()) != null) {
                     String[] tokens = line.split(" ");
@@ -112,7 +83,7 @@ public class ExternalListRank {
             }
 
             new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf, par,
-                    ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
+                    ObjectInputStream::readTriple, ObjectOutputStream::writeTriple).run();
 
             int d = 1;
 
@@ -121,16 +92,16 @@ public class ExternalListRank {
                 d *= 2;
             }
 
-            IterTools.map(new ObjectInputStream(par, ExternalListRank::readTriple),
-                    new ObjectOutputStream(buf, ExternalListRank::writeTriple),
+            IterTools.map(new ObjectInputStream(par, ObjectInputStream::readTriple),
+                    new ObjectOutputStream(buf, ObjectOutputStream::writeTriple),
                     (Object o, ArrayList out) -> {
                         Pair<Integer, Pair<Integer, Integer>> p = (Pair<Integer, Pair<Integer, Integer>>) o;
                         out.add(new Pair(-p.second.second, new Pair(p.first, 0)));
                     }
             );
             new ExternalSorter<Pair<Integer, Pair<Integer, Integer>>>(buf, par,
-                    ExternalListRank::readTriple, ExternalListRank::writeTriple).run();
-            IterTools.forEach(new ObjectInputStream(par, ExternalListRank::readTriple),
+                    ObjectInputStream::readTriple, ObjectOutputStream::writeTriple).run();
+            IterTools.forEach(new ObjectInputStream(par, ObjectInputStream::readTriple),
                     (Object o) -> outp.println(((Pair<Integer, Pair<Integer, Integer>>) o).second.first)
             );
         } catch (IOException e) {
