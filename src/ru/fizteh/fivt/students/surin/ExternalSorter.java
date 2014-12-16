@@ -24,8 +24,8 @@ public class ExternalSorter<T extends Comparable<T>> {
     }
 
     private final int blockLim = 500000;
-    ArrayList<T> buf = new ArrayList<>();
-    List<File> tmps = new ArrayList<>();
+    private ArrayList<T> buf = new ArrayList<>();
+    private List<File> tmps = new ArrayList<>();
 
     public void run() throws IOException {
         IterTools.forEach(is, (Object o) -> {
