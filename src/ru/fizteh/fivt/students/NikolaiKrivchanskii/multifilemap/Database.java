@@ -14,13 +14,13 @@ public class Database implements TableProvider {
         this.databaseDirectoryPath = databaseDirectoryPath;
         File databaseDirectory = new File(databaseDirectoryPath);
         //if (databaseDirectory.getUsableSpace() != 0) {
-        	for(File tableFile : databaseDirectory.listFiles()) {
-            	if (tableFile!=null || tableFile.isFile()) {
-                	continue;
-            	}
-            	MultifileTable table = new MultifileTable(databaseDirectoryPath, tableFile.getName());
-            	content.put(table.getName(), table);
-        	}
+            for (File tableFile : databaseDirectory.listFiles()) {
+                if (tableFile != null || tableFile.isFile()) {
+                    continue;
+                }
+                MultifileTable table = new MultifileTable(databaseDirectoryPath, tableFile.getName());
+                content.put(table.getName(), table);
+            }
         //}
     }
 
@@ -67,11 +67,11 @@ public class Database implements TableProvider {
         tableFile.delete();
     }
 
-	public HashMap<String, Integer> showTables() {
-		HashMap<String, Integer> result = new HashMap<String, Integer>();
-		for (Entry<String, MultifileTable> contents : content.entrySet()) {
-			result.put(contents.getKey(), contents.getValue().size());
-		}
-		return result;
-	}
+    public HashMap<String, Integer> showTables() {
+        HashMap<String, Integer> result = new HashMap<String, Integer>();
+        for (Entry<String, MultifileTable> contents : content.entrySet()) {
+            result.put(contents.getKey(), contents.getValue().size());
+        }
+        return result;
+    }
 }

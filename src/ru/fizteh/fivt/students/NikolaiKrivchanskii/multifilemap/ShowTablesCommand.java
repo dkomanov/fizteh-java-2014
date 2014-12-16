@@ -8,21 +8,21 @@ import java.util.Map.Entry;
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell.*;
 
 public class ShowTablesCommand implements Commands<MultiFileMapShellState> {
-	public String getCommandName() {
-		return "show";
-	}
-	
-	public int getArgumentQuantity() {
-		return 1;
-	}
-	
-	public void implement(String[] args, MultiFileMapShellState state) throws SomethingIsWrongException {
-		if(args[0] != "tables") {
-			throw new SomethingIsWrongException("no command with this name");
-		}
-		HashMap<String, Integer> tables = state.tableProvider.showTables();
-		for(Entry<String, Integer> iterator : tables.entrySet()) {
-			System.out.println(iterator.getKey() + ' ' + iterator.getValue());
-		}
-	}
+    public String getCommandName() {
+        return "show";
+    }
+    
+    public int getArgumentQuantity() {
+        return 1;
+    }
+    
+    public void implement(String[] args, MultiFileMapShellState state) throws SomethingIsWrongException {
+        if (!args[0].equals("tables")) {
+            throw new SomethingIsWrongException("no command with this name");
+        }
+        HashMap<String, Integer> tables = state.tableProvider.showTables();
+        for (Entry<String, Integer> iterator : tables.entrySet()) {
+            System.out.println(iterator.getKey() + ' ' + iterator.getValue());
+        }
+    }
 }

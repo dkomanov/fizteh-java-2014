@@ -22,86 +22,86 @@ public abstract class SomeStorage<Key, Value> {
     };
     
     class Transactions {
-    	HashMap<Key, Value> currentData;
-    	int size;
-    	int unsavedChangesCounter;
-    	
-    	Transactions() {
-    		this.currentData = new HashMap<Key, Value>();
-    		this.size = 0;
-    		this.unsavedChangesCounter = 0;
-    	}
-    	
-    	public void newModification(Key key, Value value) {
-    		currentData.put(key, value);
-    	}
-    	
-    	public int saveModifications() {
-    		int changesCounter = 0;
-    		for(Key key : currentData.keySet()) {
-    			Value newOne = currentData.get(key);
-    			if(!GlobalUtils.compare(newOne, unchangedOldData.get(key))) {
-    				if (newOne != null) {
-    					unchangedOldData.put(key, newOne);
-    				} else {
-    					unchangedOldData.remove(key);
-    				}
-    				changesCounter++;
-    			}
-    		}
-    		return changesCounter;
-    	}
-    	
-    	public int calculateChangesQuantity() {
-    		int changesCounter = 0;
-    		for(Key key : currentData.keySet()) {
-    			Value newOne = currentData.get(key);
-    			if(!GlobalUtils.compare(newOne, unchangedOldData.get(key))) {
-    				changesCounter++;
-    			}
-    		}
-    		return changesCounter;
-    	}
-    	
-    	public int calculateSize() {
-    		int size = unchangedOldData.size();
-    		for(Key key : currentData.keySet()) {
-    			Value newOne = currentData.get(key);
-    			Value oldOne = unchangedOldData.get(key);
-    			if (newOne == null && oldOne != null) {
-    				size--;
-    			} else if (newOne != null && oldOne == null) {
-    				size++;
-    			}
-    		}
-    		return size;
-    	}
-    	
-    	public Value getVal(Key key) {
-    		if (currentData.containsKey(key)) {
-    			return currentData.get(key);
-    		}
-    		return unchangedOldData.get(key);
-    	}
-    	
-    	public int getSize() {
-    		return unchangedOldData.size() + calculateSize();
-    	}
-    	
-    	public void incrementUnsavedChangesCounter() {
-    		unsavedChangesCounter++;
-    	}
-    	
-    	public int getUnsavedChangesCounter() {
-    		return unsavedChangesCounter;
-    	}
-    	
-    	public void clear() {
-    		currentData.clear();
-    		unsavedChangesCounter = 0;
-    		size = 0;
-    	}
-    	
+        HashMap<Key, Value> currentData;
+        int size;
+        int unsavedChangesCounter;
+        
+        Transactions() {
+            this.currentData = new HashMap<Key, Value>();
+            this.size = 0;
+            this.unsavedChangesCounter = 0;
+        }
+        
+        public void newModification(Key key, Value value) {
+            currentData.put(key, value);
+        }
+        
+        public int saveModifications() {
+            int changesCounter = 0;
+            for (Key key : currentData.keySet()) {
+                Value newOne = currentData.get(key);
+                if (!GlobalUtils.compare(newOne, unchangedOldData.get(key))) {
+                    if (newOne != null) {
+                        unchangedOldData.put(key, newOne);
+                    } else {
+                        unchangedOldData.remove(key);
+                    }
+                    changesCounter++;
+                }
+            }
+            return changesCounter;
+        }
+        
+        public int calculateChangesQuantity() {
+            int changesCounter = 0;
+            for (Key key : currentData.keySet()) {
+                Value newOne = currentData.get(key);
+                if (!GlobalUtils.compare(newOne, unchangedOldData.get(key))) {
+                    changesCounter++;
+                }
+            }
+            return changesCounter;
+        }
+        
+        public int calculateSize() {
+            int size = unchangedOldData.size();
+            for (Key key : currentData.keySet()) {
+                Value newOne = currentData.get(key);
+                Value oldOne = unchangedOldData.get(key);
+                if (newOne == null && oldOne != null) {
+                    size--;
+                } else if (newOne != null && oldOne == null) {
+                    size++;
+                }
+            }
+            return size;
+        }
+        
+        public Value getVal(Key key) {
+            if (currentData.containsKey(key)) {
+                return currentData.get(key);
+            }
+            return unchangedOldData.get(key);
+        }
+        
+        public int getSize() {
+            return unchangedOldData.size() + calculateSize();
+        }
+        
+        public void incrementUnsavedChangesCounter() {
+            unsavedChangesCounter++;
+        }
+        
+        public int getUnsavedChangesCounter() {
+            return unsavedChangesCounter;
+        }
+        
+        public void clear() {
+            currentData.clear();
+            unsavedChangesCounter = 0;
+            size = 0;
+        }
+        
     }
     
     public String getParentDirectory() {
@@ -109,11 +109,11 @@ public abstract class SomeStorage<Key, Value> {
     }
     
     public void setAutoCommit(boolean status) {
-    	doAutoCommit = status;
+        doAutoCommit = status;
     }
     
     public boolean getAutoCommit() {
-    	return doAutoCommit;
+        return doAutoCommit;
     }
     
     public String getName() {
@@ -138,16 +138,16 @@ public abstract class SomeStorage<Key, Value> {
         try {
             load();
         } catch (IOException e) {
-        	if (e.getMessage() != "didn't exist" && e.getMessage() != "empty file") {
-        	    throw new IllegalArgumentException("invalid file format " + e.getMessage());
-        	}
+            if (!e.getMessage().equals("didn't exist") && !e.getMessage().equals("empty file")) {
+                throw new IllegalArgumentException("invalid file format " + e.getMessage());
+            }
         }
         
     }
     
     public Value getFromStorage(Key key) {
         if (key == null) {
-        	throw new IllegalArgumentException ("key cannot be null");
+            throw new IllegalArgumentException("key cannot be null");
         }
         return transaction.get().getVal(key);
     }
@@ -159,12 +159,12 @@ public abstract class SomeStorage<Key, Value> {
     }
     
     public Value removeFromStorage(Key key) {
-    	if (key == null ) {
-        	throw new IllegalArgumentException("key cannot be null");
+        if (key == null) {
+            throw new IllegalArgumentException("key cannot be null");
         }
-    	if (getFromStorage(key) == null) {
-    		return null;
-    	}
+        if (getFromStorage(key) == null) {
+            return null;
+        }
         Value oldVal = transaction.get().getVal(key);
         transaction.get().newModification(key, null);
         transaction.get().incrementUnsavedChangesCounter();
@@ -178,28 +178,28 @@ public abstract class SomeStorage<Key, Value> {
     }
     
     public int commitStorage() {
-    	try{
-    		transactionLock.lock();
-        	int commitCount = transaction.get().saveModifications();
-        	transaction.get().clear();
-        	try {
-        		save();
-        	} catch (IOException e) {
-        		System.err.println("commit error: " + e.getMessage());
-        		return 0;
-        	}
-        	return commitCount;
+        try {
+            transactionLock.lock();
+            int commitCount = transaction.get().saveModifications();
+            transaction.get().clear();
+            try {
+                save();
+            } catch (IOException e) {
+                System.err.println("commit error: " + e.getMessage());
+                return 0;
+            }
+            return commitCount;
         } finally {
-        	transactionLock.unlock();
+            transactionLock.unlock();
         }
     }
     
     void rawPut(Key key, Value value) {
-    	unchangedOldData.put(key, value);
+        unchangedOldData.put(key, value);
     }
     
     Value rawGet(Key key) {
-    	return unchangedOldData.get(key);
+        return unchangedOldData.get(key);
     }
 
 

@@ -8,17 +8,13 @@ import java.util.Scanner;
 import java.util.Set;
 
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.multifilemap.MultiFileMapShellState;
-import ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell.Parser;
-import ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell.SomethingIsWrongException;
-import ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell.UtilMethods;
-
 
 public class Shell<State> {
     private final Map<String, Commands> availableCommands;
     private static final String GREETING = "$ ";
     State state;
     
-    
+        
     public Shell(Set<Commands> commands) {
         Map<String, Commands> tempCommands = new HashMap<String, Commands>();
         for (Commands<State> temp : commands) {
@@ -89,8 +85,8 @@ public class Shell<State> {
         forInput.close();
     }
 
-	public void run(String[] args, Shell<MultiFileMapShellState> shell) {
-		if (args.length != 0) {
+    public void run(String[] args, Shell<MultiFileMapShellState> shell) {
+        if (args.length != 0) {
             String arg = UtilMethods.uniteItems(Arrays.asList(args), " ");
             String[] commands = Parser.parseFullCommand(arg);
             try {
@@ -107,7 +103,7 @@ public class Shell<State> {
             consoleWay(state);
         }
         System.exit(0);
-	}
+    }
     
    /* public static void notmain(String[] args) {
         ShellState state = new ShellState(System.getProperty("user.dir"));

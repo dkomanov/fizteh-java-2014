@@ -12,7 +12,7 @@ import ru.fizteh.fivt.students.NikolaiKrivchanskii.filemap.MyTable;
 
 public class DatabaseTest {
 
-	DatabaseFactory factory;
+    DatabaseFactory factory;
     TableProvider provider;
 
     @Before
@@ -84,7 +84,7 @@ public class DatabaseTest {
     
     @After
     public void testAfter() throws SomethingIsWrongException {
-    	provider.removeTable("table1");
+        provider.removeTable("table1");
         provider.removeTable("table2");
     }
 }
