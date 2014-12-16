@@ -79,6 +79,8 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
     }
 
 
+
+
     public String connect(String host, int port) throws IOException {
         if (isGuested()) {
             return "not connected: already connected";
@@ -150,6 +152,7 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         while (!scanner.hasNext()) {
             //wait for stream
         }
+
         return scanner.nextLine();
     }
 

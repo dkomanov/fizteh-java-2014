@@ -18,7 +18,7 @@ public class ShowTablesCommand extends TableCommand implements Command {
     @Override
     public String executeCommand(ArrayList<String> arguments) throws Exception {
         if (shell.isGuested()) {
-            sendCommand(arguments);
+            return sendCommand(arguments);
         }
         if (arguments.size() != 1) {
             throw new Exception("usage: show tables");
@@ -26,11 +26,11 @@ public class ShowTablesCommand extends TableCommand implements Command {
         if (!"tables".equals(arguments.get(0))) {
             throw new Exception("usage: show tables");
         }
-
+        StringBuilder result = new StringBuilder();
         for (Map.Entry<String, Integer> entry : shell.getTableList().entrySet()) {
-            System.out.println(entry.getKey() + " " + entry.getValue());
+            result.append(entry.getKey() + " " + entry.getValue() + "; ");
         }
-        return null;
+        return result.toString();
     }
 
     @Override

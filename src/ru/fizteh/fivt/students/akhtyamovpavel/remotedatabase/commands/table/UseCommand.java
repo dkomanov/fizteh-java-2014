@@ -27,6 +27,7 @@ public class UseCommand extends TableCommand implements Command {
 
 
         try {
+
             if (shell.isGuested()) {
                 sendCommand(arguments);
             }
