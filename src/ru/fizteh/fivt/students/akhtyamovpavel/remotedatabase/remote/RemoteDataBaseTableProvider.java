@@ -8,8 +8,9 @@ import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTable;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.DataBaseTableProvider;
 import ru.fizteh.fivt.students.akhtyamovpavel.remotedatabase.Shell;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -48,7 +49,9 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
 
 
     Scanner scanner;
-    PrintStream outputStream;
+    PrintWriter outputStream;
+
+    DataOutputStream outStream;
     Shell shell;
     List<ServerListener> listeners;
 
@@ -78,7 +81,14 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         this.port = port;
     }
 
-
+    public void checkStreamError() {
+        if (isGuested()) {
+            if (outputStream.checkError()) {
+                guested = false;
+                outputStream.close();
+            }
+        }
+    }
 
 
     public String connect(String host, int port) throws IOException {
@@ -89,7 +99,8 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
                 socketClientChannel = new Socket();
                 InetSocketAddress address = new InetSocketAddress(host, port);
                 socketClientChannel.connect(address);
-                outputStream = new PrintStream(socketClientChannel.getOutputStream());
+                outStream = new DataOutputStream(socketClientChannel.getOutputStream());
+                //outputStream = new PrintWriter(socketClientChannel.getOutputStream());
                 scanner = new Scanner(socketClientChannel.getInputStream());
             } catch (IOException e) {
                 throw new IOException("not connected: " + e.getMessage());
@@ -144,7 +155,11 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
 
 
     public void sendMessage(String string) throws IOException {
-        outputStream.println(string);
+        outStream.writeUTF(string);
+        outStream.writeUTF("\n");
+        outStream.flush();
+
+        //outputStream.println(string);
     }
 
 
