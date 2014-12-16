@@ -46,7 +46,7 @@ public class DatabaseSerializer {
         }
     }
 
-    public final String readUTF8String(final int dataLength) throws IOException {
+    public final String readEncodedString(final int dataLength) throws IOException {
         byte[] byteData = new byte[dataLength];
         int read = inputStream.read(byteData);
         if (read < 0 || read != dataLength) {
@@ -66,8 +66,8 @@ public class DatabaseSerializer {
 
             bytesLeft -= BYTES_NUMBER;
 
-            String key = readUTF8String(keyLength);
-            String value = readUTF8String(valueLength);
+            String key = readEncodedString(keyLength);
+            String value = readEncodedString(valueLength);
             int nbytes = key.getBytes(ENCODING)[0];
             int ndirectory = Math.abs(nbytes % NUMBER_OF_DIRS);
             int nfile = Math.abs((nbytes / NUMBER_OF_DIRS) % NUMBER_OF_FILES);
