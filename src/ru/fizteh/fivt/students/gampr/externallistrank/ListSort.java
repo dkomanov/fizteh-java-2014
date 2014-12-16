@@ -57,7 +57,7 @@ public class ListSort {
                             writerResult.write(strSecond + "\n");
                             strSecond = readerSecond.readLine();
                         } else
-                        if ((parseLong(strFirst.split(" ")[index]) < parseLong(strSecond.split(" ")[index]))) {
+                        if ((parseLong(strFirst.split(" ")[index]) <= parseLong(strSecond.split(" ")[index]))) {
                             writerResult.write(strFirst + "\n");
                             strFirst = readerFirst.readLine();
                         } else {
