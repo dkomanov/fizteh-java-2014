@@ -3,11 +3,6 @@ package ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.TableState;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.ExitException;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.Command;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.Interpreter;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.DatabaseIOException;
 
 import java.util.List;
 import java.util.Map;

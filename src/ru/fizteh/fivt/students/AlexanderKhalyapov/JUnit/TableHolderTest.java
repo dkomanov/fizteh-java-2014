@@ -3,9 +3,6 @@ package ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.TableHolder;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.DatabaseIOException;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.Utility;
 
 import java.io.IOException;
 import java.nio.file.Files;

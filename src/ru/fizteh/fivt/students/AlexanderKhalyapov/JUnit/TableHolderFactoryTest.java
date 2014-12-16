@@ -5,8 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.TableHolderFactory;
-import ru.fizteh.fivt.students.AlexanderKhalyapov.JUnit.Utility;
 
 import java.io.IOException;
 import java.nio.file.Files;
