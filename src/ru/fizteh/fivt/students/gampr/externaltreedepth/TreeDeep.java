@@ -4,7 +4,7 @@ import ru.fizteh.fivt.students.gampr.externallistrank.ListSort;
 
 import java.io.*;
 
-import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
 
 public class TreeDeep {
     private File fileIn;
@@ -17,7 +17,14 @@ public class TreeDeep {
         this.fileIn = fileIn;
         this.fileOut = fileOut;
         this.dirTmp = dirTmp;
-        this.list = new ListSort(fileIn, fileOut, dirTmp);
+    }
+
+    /*
+        Одна вершина при разворачивании дерева может раздробиться
+        Чтобы нумеровать эти части используем двойной индекс - номер сына, номер вершины
+     */
+    long makeIndex(long first, long second, long size) {
+        return first * (size + 1) + second;
     }
 
     /*
@@ -29,6 +36,12 @@ public class TreeDeep {
     public File initialization() throws IOException {
         File fileInit;
 
+        // Инициализируем вспомогательный класс
+        list = new ListSort(fileIn, fileOut, dirTmp);
+
+        // Посчитаемкол-во строк во входном файле, чтобыосуществить двойную индексацию
+        long size = list.countLines(fileIn);
+
         // Создаем новый файл
         try {
             fileInit = File.createTempFile("init", ".txt", dirTmp);
@@ -36,14 +49,108 @@ public class TreeDeep {
             throw new IOException("Can't create init file: " + e.getMessage());
         }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileIn))) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileInit))) {
+        File tmp;
+        try {
+            tmp = File.createTempFile("initTmp", ".txt", dirTmp);
+        } catch (IOException e) {
+            throw new IOException("Can't create init file: " + e.getMessage());
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileInit))) {
+            // Сначала добавляем в наш список те ребра, которые действительно есть в нашем дереве
+            long root = 0; // задетектируем корень
+            long prev = -1;
+            long prevTo = -1;
+
+            File first = list.mergeSort(fileIn, 0);
+            File second = list.mergeSort(fileIn, 1);
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(first))) {
                 String string;
                 while ((string = reader.readLine()) != null) {
-                    // Изначально ранг всех ребер положим единице
-                    writer.write(string + " -1\n");
-                }
+                    // Изначально ранг всех ребер положим единице, ведь это ребра вниз
 
+                    long now = parseLong(string.split(" ")[0]);
+                    if (prev != now) {
+                        if (!string.split(" ")[1].equals("0")) {
+                            writer.write(string + " 1\n");
+                        }
+                        prev = now;
+                        root ^= prev; // детектируем корень
+                    } else if (!string.split(" ")[1].equals("0")) {
+                        writer.write(makeIndex(prevTo, now, size) + " " + string.split(" ")[1] + " 1\n");
+                    }
+                    prevTo = parseLong(string.split(" ")[1]);
+                    root ^= prevTo; // детектируем корень
+                }
+            } catch (IOException e) {
+                throw new IOException("Can't create init file: " + e.getMessage());
+            }
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(first))) {
+                try (BufferedWriter writerTmp = new BufferedWriter(new FileWriter(tmp))) {
+                    String string;
+                    prev = -1;
+                    long max = -1;
+                    while ((string = reader.readLine()) != null) {
+                        long now = parseLong(string.split(" ")[0]);
+                        if (prev != now) {
+                            if (prev != -1) {
+                                if (prev == root) {
+                                    // Нужно кинуть ребро из корня в фиктивную вершину
+                                    writer.write(makeIndex(max, root, size) + " 0 -1\n");
+                                }
+                                writerTmp.write(prev + " " + max + "\n");
+                                max = -1;
+                            }
+                            prev = now;
+                            if (max < parseLong(string.split(" ")[1])) {
+                                max = parseLong(string.split(" ")[1]);
+                            }
+                        }
+                    }
+                    if (prev != -1) {
+                        if (prev == root) {
+                            // Нужно кинуть ребро из корня в фиктивную вершину
+                            writer.write(makeIndex(max, root, size) + " 0 -1\n");
+                        }
+                        writerTmp.write(prev + " " + max + "\n");
+                    }
+                }
+            }
+            first = tmp;
+
+            // Теперь можно добавить "обратные" ребра, наверх
+            try (BufferedReader readerFirst = new BufferedReader(new FileReader(first))) {
+                try (BufferedReader readerSecond = new BufferedReader(new FileReader(second))) {
+                    String stringFirst = readerFirst.readLine();
+                    String stringSecond = readerSecond.readLine();
+                    long prevSecond = -1;
+                    long prevToSecond = -1;
+                    long prevFirst = -1;
+                    long prevToFirst = -1;
+                    while (stringFirst != null && stringSecond != null) {
+                        // Изначально ранг всех ребер положим минус единице, ведь это ребра вверх
+                        prevSecond = parseLong(stringSecond.split(" ")[0]);
+                        prevToSecond = parseLong(stringSecond.split(" ")[1]);
+                        prevFirst = parseLong(stringFirst.split(" ")[0]);
+                        prevToFirst = parseLong(stringFirst.split(" ")[1]);
+                        if (prevToSecond < prevFirst) {
+                            stringSecond = readerSecond.readLine();
+                        } else if (prevToSecond > prevFirst) {
+                            stringFirst = readerFirst.readLine();
+                        } else {
+                            if (prevToFirst == 0) {
+                                writer.write(prevToSecond + " " + makeIndex(prevToSecond, prevSecond, size) + " -1\n");
+                            } else {
+                                writer.write(makeIndex(prevToFirst, prevFirst, size)
+                                        + " " + makeIndex(prevToSecond, prevSecond, size) + " -1\n");
+                            }
+                            stringFirst = readerFirst.readLine();
+                            stringSecond = readerSecond.readLine();
+                        }
+                    }
+                }
             }
         } catch (IOException e) {
             throw new IOException("Can't create init file: " + e.getMessage());
@@ -68,7 +175,7 @@ public class TreeDeep {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileOut))) {
                 String string = reader.readLine();
                 String[] numbers = string.split(" ");
-                writer.write(-parseInt(numbers[2]) + "\n");
+                writer.write(-parseLong(numbers[2]) + "\n");
             }
         } catch (IOException e) {
             throw new IOException("Can't write answer: " + e.getMessage());

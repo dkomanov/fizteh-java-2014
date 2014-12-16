@@ -28,10 +28,10 @@ public class TreeDeepMain {
             System.exit(1);
         } finally {
             // Удаляем за собой
-            for (File f : dirTmp.listFiles()) {
-                f.delete();
-            }
-            dirTmp.delete();
+//            for (File f : dirTmp.listFiles()) {
+//                f.delete();
+//            }
+//            dirTmp.delete();
         }
     }
 }
