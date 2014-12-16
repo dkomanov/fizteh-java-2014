@@ -95,10 +95,10 @@ public class DbTable implements Table, AutoCloseable {
         }
 
 
-        lock.readLock().lock();
 
         try {
 
+            lock.readLock().lock();
             sync();
             Storeable value = diff.get().addedData.get(key);
             if (value != null) {
@@ -149,9 +149,10 @@ public class DbTable implements Table, AutoCloseable {
             throw new IllegalArgumentException("Table \"" + tableName + "\": put: empty key");
         }
 
-        lock.readLock().lock();
 
         try {
+
+            lock.readLock().lock();
             sync();
 
             if (committedData.containsKey(key)) {
@@ -265,9 +266,9 @@ public class DbTable implements Table, AutoCloseable {
 
         checkClosed();
 
-        lock.writeLock().lock();
         try {
 
+            lock.writeLock().lock();
             committedData.keySet().removeAll(diff.get().removedData);
             committedData.putAll(diff.get().addedData);
             committedData.putAll(diff.get().changedData);
@@ -496,9 +497,9 @@ public class DbTable implements Table, AutoCloseable {
 
     public void read() throws MyIOException {
 
-        lock.writeLock().lock();
 
         try {
+            lock.writeLock().lock();
             for (int dir = 0; dir < 16; ++dir) {
                 for (int file = 0; file < 16; ++file) {
                     Path filePath = tablePath.resolve(dir + ".dir").resolve(file + ".dat");
@@ -534,9 +535,9 @@ public class DbTable implements Table, AutoCloseable {
 
     public void write() throws MyIOException {
 
-        lock.writeLock().lock();
 
         try {
+            lock.writeLock().lock();
             if (Files.exists(tablePath)) {
                 Shell.deleteContent(tablePath);
             } else {
