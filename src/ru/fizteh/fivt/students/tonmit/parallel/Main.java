@@ -38,7 +38,12 @@ public final class Main {
         });
 
         try {
-            System.exit(dbInterpreter.run(args));
+            int workResult = dbInterpreter.run(args);
+            if (workResult == 0) {
+                System.exit(0);
+            } else {
+                throw new Exception();
+            }
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 System.out.println(e.getMessage());

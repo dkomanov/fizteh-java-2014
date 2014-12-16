@@ -116,9 +116,10 @@ public class TableClass implements Table {
     @Override
     public int commit() {
         checkActuality();
-        lock.writeLock().lock();
         int numberOfChanges = difference.get().size();
-        try { // Apply difference to tableMap.
+        try {
+            lock.writeLock().lock();
+
             for (Entry<String, Storeable> currentOperation : difference.get().entrySet()) {
                 DataFile dataFile = tableMap.get(new Coordinates(currentOperation.getKey(),
                         TableManager.NUMBER_OF_PARTITIONS));
@@ -163,8 +164,8 @@ public class TableClass implements Table {
             throw new IllegalArgumentException("get: null key");
         }
         checkActuality();
-        lock.readLock().lock();
         try {
+            lock.readLock().lock();
             Storeable value;
             if (difference.get().containsKey(key)) {
                 value = difference.get().get(key);
@@ -187,9 +188,9 @@ public class TableClass implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("put: null arguments");
         }
-        lock.readLock().lock();
-        checkActuality();
         try {
+            lock.readLock().lock();
+            checkActuality();
             Storeable oldValue;
             if (!difference.get().containsKey(key)) {
                 DataFile expectedDataFile = tableMap.get(new Coordinates(key, TableManager.NUMBER_OF_PARTITIONS));
@@ -237,8 +238,8 @@ public class TableClass implements Table {
     @Override
     public List<String> list() {
         checkActuality();
-        lock.readLock().lock();
         try {
+            lock.readLock().lock();
             Set<String> mergeResult = new HashSet<>();
             for (DataFile dataFile : tableMap.values()) {
                 mergeResult.addAll(dataFile.list());
