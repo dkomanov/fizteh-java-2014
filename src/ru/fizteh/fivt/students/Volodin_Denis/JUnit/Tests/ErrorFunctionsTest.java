@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.Volodin_Denis.JUnit.Tests;
 
 import org.junit.Test;
+import ru.fizteh.fivt.students.Volodin_Denis.JUnit.exceptions.*;
 import ru.fizteh.fivt.students.Volodin_Denis.JUnit.main.ErrorFunctions;
 
 public class ErrorFunctionsTest {
@@ -14,15 +15,15 @@ public class ErrorFunctionsTest {
         ErrorFunctions error = new ErrorFunctions();
         error.nameIsNull(name, string); }
 
-    @Test(expected = Exception.class)
+    @Test(expected = DatabaseReadErrorException.class)
     public void testErrorRead() throws Exception {
         ErrorFunctions.errorRead(); }
 
-    @Test(expected = Exception.class)
+    @Test(expected = DatabaseWriteErrorException.class)
     public void testErrorWrite() throws Exception {
         ErrorFunctions.errorWrite(); }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InterpreterInvalidCommandNameException.class)
     public void testInvalidName() throws Exception {
         ErrorFunctions.invalidName(name, string); }
 
@@ -42,15 +43,15 @@ public class ErrorFunctionsTest {
     public void testNotMkdir() throws IllegalArgumentException {
         ErrorFunctions.notMkdir(name, string); }
 
-    @Test(expected = Exception.class)
+    @Test(expected = ProhibitedAccessException.class)
     public void testSecurity() throws Exception {
         ErrorFunctions.security(name, string); }
 
-    @Test(expected = Exception.class)
+    @Test(expected = SomethingWrongException.class)
     public void testSmthWrong1() throws Exception {
         ErrorFunctions.smthWrong(name); }
 
-    @Test(expected = Exception.class)
+    @Test(expected = SomethingWrongException.class)
     public void testSmthWrong2() throws Exception {
         ErrorFunctions.smthWrong(name, string); }
 
@@ -58,11 +59,11 @@ public class ErrorFunctionsTest {
     public void testTableNameIsFile() throws IllegalArgumentException {
         ErrorFunctions.tableNameIsFile(name, string); }
 
-    @Test(expected = Exception.class)
+    @Test(expected = WrongInputException.class)
     public void testWrongInput() throws Exception {
         ErrorFunctions.wrongInput(name); }
 
-    @Test(expected = Exception.class)
+    @Test(expected = WrongQuantityOfArgumentsException.class)
     public void testWrongQuantity() throws Exception {
         ErrorFunctions.wrongQuantityOfArguments(name); }
 }
