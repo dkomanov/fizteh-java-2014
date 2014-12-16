@@ -42,29 +42,25 @@ public class TreeDeep {
         // Посчитаемкол-во строк во входном файле, чтобыосуществить двойную индексацию
         long size = list.countLines(fileIn);
 
-        // Создаем новый файл
+        // Создаем новые файлы, а том числе вспомогательные
+        File tmp;
         try {
+            tmp = File.createTempFile("initTmp", ".txt", dirTmp);
             fileInit = File.createTempFile("init", ".txt", dirTmp);
         } catch (IOException e) {
             throw new IOException("Can't create init file: " + e.getMessage());
         }
 
-        File tmp;
-        try {
-            tmp = File.createTempFile("initTmp", ".txt", dirTmp);
-        } catch (IOException e) {
-            throw new IOException("Can't create init file: " + e.getMessage());
-        }
-
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileInit))) {
-            // Сначала добавляем в наш список те ребра, которые действительно есть в нашем дереве
             long root = 0; // задетектируем корень
             long prev = -1;
             long prevTo = -1;
 
-            File first = list.mergeSort(fileIn, 0);
+            // получим 2 сортированных файла, чтобы их по хитрому соединить
+            File first = list.mergeSort(list.mergeSort(fileIn, 1), 0);
             File second = list.mergeSort(fileIn, 1);
 
+            // Сначала добавляем в наш список те ребра, которые действительно есть в нашем дереве
             try (BufferedReader reader = new BufferedReader(new FileReader(first))) {
                 String string;
                 while ((string = reader.readLine()) != null) {
@@ -83,10 +79,9 @@ public class TreeDeep {
                     prevTo = parseLong(string.split(" ")[1]);
                     root ^= prevTo; // детектируем корень
                 }
-            } catch (IOException e) {
-                throw new IOException("Can't create init file: " + e.getMessage());
             }
 
+            // Заполняем вспомогательный файл, закидываем ребро от корня к нулю
             try (BufferedReader reader = new BufferedReader(new FileReader(first))) {
                 try (BufferedWriter writerTmp = new BufferedWriter(new FileWriter(tmp))) {
                     String string;
@@ -96,22 +91,22 @@ public class TreeDeep {
                         long now = parseLong(string.split(" ")[0]);
                         if (prev != now) {
                             if (prev != -1) {
+                                // Нужно кинуть ребро из корня в фиктивную вершину
                                 if (prev == root) {
-                                    // Нужно кинуть ребро из корня в фиктивную вершину
                                     writer.write(makeIndex(max, root, size) + " 0 -1\n");
                                 }
                                 writerTmp.write(prev + " " + max + "\n");
                                 max = -1;
                             }
                             prev = now;
-                            if (max < parseLong(string.split(" ")[1])) {
-                                max = parseLong(string.split(" ")[1]);
-                            }
+                        }
+                        if (max < parseLong(string.split(" ")[1])) {
+                            max = parseLong(string.split(" ")[1]);
                         }
                     }
                     if (prev != -1) {
+                        // Нужно кинуть ребро из корня в фиктивную вершину
                         if (prev == root) {
-                            // Нужно кинуть ребро из корня в фиктивную вершину
                             writer.write(makeIndex(max, root, size) + " 0 -1\n");
                         }
                         writerTmp.write(prev + " " + max + "\n");
@@ -125,16 +120,17 @@ public class TreeDeep {
                 try (BufferedReader readerSecond = new BufferedReader(new FileReader(second))) {
                     String stringFirst = readerFirst.readLine();
                     String stringSecond = readerSecond.readLine();
-                    long prevSecond = -1;
-                    long prevToSecond = -1;
-                    long prevFirst = -1;
-                    long prevToFirst = -1;
+                    long prevSecond;
+                    long prevToSecond;
+                    long prevFirst;
+                    long prevToFirst;
                     while (stringFirst != null && stringSecond != null) {
                         // Изначально ранг всех ребер положим минус единице, ведь это ребра вверх
                         prevSecond = parseLong(stringSecond.split(" ")[0]);
                         prevToSecond = parseLong(stringSecond.split(" ")[1]);
                         prevFirst = parseLong(stringFirst.split(" ")[0]);
                         prevToFirst = parseLong(stringFirst.split(" ")[1]);
+
                         if (prevToSecond < prevFirst) {
                             stringSecond = readerSecond.readLine();
                         } else if (prevToSecond > prevFirst) {
