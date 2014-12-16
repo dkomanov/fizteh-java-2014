@@ -1,6 +1,0 @@
-# Ignore unnessesary IntellijIdea files
-*.class
-out/
-.idea
-multifilehashmap.iml
-db/
