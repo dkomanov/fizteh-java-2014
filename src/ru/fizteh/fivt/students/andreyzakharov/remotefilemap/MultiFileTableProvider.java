@@ -157,13 +157,26 @@ public class MultiFileTableProvider implements AutoCloseable, RemoteTableProvide
     public void close() {
         if (!closed) {
             closed = true;
+            if (status == ProviderStatus.CONNECTED) {
+                try {
+                    disconnect();
+                } catch (ConnectionInterruptException e) {
+                    // skip
+                }
+            } else if (status == ProviderStatus.SERVER) {
+                try {
+                    stop();
+                } catch (IOException e) {
+                    // skip
+                }
+            }
             if (tables != null) {
                 try {
                     for (MultiFileTable table : tables.values()) {
                         table.unload();
                     }
                 } catch (ConnectionInterruptException e) {
-                    // shutdown
+                    // skip
                 }
             }
         }

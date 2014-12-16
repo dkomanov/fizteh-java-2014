@@ -25,6 +25,12 @@ public class MultiFileTableShell {
 
     void run(String[] args) {
         try (MultiFileTableProvider connector = new MultiFileTableProvider(dbPath)) {
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    connector.close();
+                }
+            }));
             if (batch) {
                 StringBuilder sb = new StringBuilder();
                 for (String s : args) {
