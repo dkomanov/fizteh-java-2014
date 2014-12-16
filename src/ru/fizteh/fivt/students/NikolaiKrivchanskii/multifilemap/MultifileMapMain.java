@@ -9,7 +9,7 @@ import ru.fizteh.fivt.students.NikolaiKrivchanskii.filemap.*;
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.Shell.Shell;
 
 public class MultifileMapMain {
-     public static void main(String args[]) {
+     public static void main(String[] args) {
         Set<Commands<FileMapShellState>> com =  new HashSet<Commands<FileMapShellState>>() 
                     { { add(new ExitCommand()); add(new RollbackCommand()); add(new CommitCommand()); 
                     add(new PutCommand()); add(new GetCommand()); add(new RemoveKeyCommand());

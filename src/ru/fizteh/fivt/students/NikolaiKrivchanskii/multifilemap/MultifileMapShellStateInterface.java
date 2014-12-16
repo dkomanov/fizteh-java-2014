@@ -4,7 +4,8 @@ import java.io.IOException;
 
 import ru.fizteh.fivt.students.NikolaiKrivchanskii.filemap.FileMapShellStateInterface;
 
-public interface MultifileMapShellStateInterface<Table, Key, Value> extends FileMapShellStateInterface<Table, Key, Value> {
+public interface MultifileMapShellStateInterface<Table, Key, Value> 
+       extends FileMapShellStateInterface<Table, Key, Value> {
     Table useTable(String name);
     
     Table createTable(String arguments);
