@@ -81,14 +81,6 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
         this.port = port;
     }
 
-    public void checkStreamError() {
-        if (isGuested()) {
-            if (outputStream.checkError()) {
-                guested = false;
-                outputStream.close();
-            }
-        }
-    }
 
 
     public String connect(String host, int port) throws IOException {
@@ -100,7 +92,6 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
                 InetSocketAddress address = new InetSocketAddress(host, port);
                 socketClientChannel.connect(address);
                 outStream = new DataOutputStream(socketClientChannel.getOutputStream());
-                //outputStream = new PrintWriter(socketClientChannel.getOutputStream());
                 scanner = new Scanner(socketClientChannel.getInputStream());
             } catch (IOException e) {
                 throw new IOException("not connected: " + e.getMessage());
@@ -155,11 +146,17 @@ public class RemoteDataBaseTableProvider implements RemoteTableProvider{
 
 
     public void sendMessage(String string) throws IOException {
-        outStream.writeUTF(string);
-        outStream.writeUTF("\n");
-        outStream.flush();
 
-        //outputStream.println(string);
+        try {
+            outStream.writeUTF(string);
+            outStream.writeUTF("\n");
+            outStream.flush();
+        } catch (IOException e) {
+            guested = false;
+            throw new IOException(e.getMessage());
+        }
+
+
     }
 
 
