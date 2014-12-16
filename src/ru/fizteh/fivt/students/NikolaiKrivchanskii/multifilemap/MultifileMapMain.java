@@ -20,8 +20,8 @@ public class MultifileMapMain {
                   {{add(new DropCommand()); add(new UseCommand()); add(new CreateCommand()); 
                   add(new ShowTablesCommand());}};
         ArrayList<Commands> res = new ArrayList<Commands>();
-        res.addAll(com);  //такое страшное создание для того чтобы можно было явно видеть какие команды откуда
-        res.addAll(com1); //как-то более красиво класть с шаблонными параметрами не получается. или я не очень в курсе как
+        res.addAll(com);
+        res.addAll(com1);
         HashSet<Commands> actualResult = new HashSet<Commands>(res);
         Shell<MultiFileMapShellState> shell = new Shell<MultiFileMapShellState>(actualResult);
         try {
