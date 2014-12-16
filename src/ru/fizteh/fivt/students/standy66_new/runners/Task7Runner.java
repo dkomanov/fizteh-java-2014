@@ -16,6 +16,7 @@ import java.util.Map;
  *         Created by andrew on 30.11.14.
  */
 public class Task7Runner {
+    //It is not full scale tests, that one can be found in /tests/task7/JSONLoggingProxyFactoryTest.java
     public static void main(String[] args) throws Throwable {
         JSONLoggingProxyFactory factory = new JSONLoggingProxyFactory();
         HashMap map = new HashMap();
