@@ -11,7 +11,7 @@ public class ListusersCommand implements Command {
         } else if (connector.getUsers() != null && connector.getUsers().size() > 0) {
             StringBuilder sb = new StringBuilder();
             for (MultiFileTableProvider.Host host : connector.getUsers()) {
-                sb.append(host.host).append(':').append(host.port).append('\n');
+                sb.append(host.getHost()).append(':').append(host.getPort()).append('\n');
             }
             return sb.substring(0, sb.length() - 1);
         } else {
