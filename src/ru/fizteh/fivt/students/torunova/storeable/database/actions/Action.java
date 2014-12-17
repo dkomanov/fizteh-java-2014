@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.storeable.actions;
+package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
+import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 
 import java.io.IOException;
 
@@ -27,12 +27,16 @@ public abstract class Action {
         return true;
     }
 
-    public abstract boolean run(String[] args, CurrentTable currentTable)
+    public abstract boolean run(String args, TableHolder currentTable)
                                   throws IOException;
     public abstract String getName();
 
     public String getDisplayName() {
         return getName();
+    }
+
+    public String[] parseArguments(String notParsedArgs) {
+          return notParsedArgs.split("\\s+");
     }
 }
 

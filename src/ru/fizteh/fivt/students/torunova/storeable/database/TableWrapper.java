@@ -1,10 +1,10 @@
-package ru.fizteh.fivt.students.torunova.storeable;
+package ru.fizteh.fivt.students.torunova.storeable.database;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.TableNotCreatedException;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.TableNotCreatedException;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -27,10 +27,9 @@ public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table{
         headOfTable = new StoreableType(newTypes);
         tableProvider = newTableProvider;
     }
-    public TableWrapper(TableImpl newTable, DatabaseWrapper newTableProvider, Class<?>... newTypes) {
-        table = newTable;
-        headOfTable = new StoreableType(newTypes);
-        tableProvider = newTableProvider;
+    public TableWrapper(TableImpl newTable, DatabaseWrapper newTableProvider, Class<?>... newTypes) throws TableNotCreatedException,
+            IOException, IncorrectFileException {
+        this(newTable.getName(), newTableProvider, newTypes);
     }
 
     @Override

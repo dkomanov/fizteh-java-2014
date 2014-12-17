@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.storeable.actions;
+package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
+import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 
 import java.io.IOException;
 
@@ -9,18 +9,19 @@ import java.io.IOException;
  */
 public class DropTable extends Action {
     @Override
-    public boolean run(String[] args, CurrentTable currentTable) throws IOException {
-        if (!checkNumberOfArguments(1, args.length)) {
+    public boolean run(String args, TableHolder currentTable) throws IOException {
+        String[] parameters = parseArguments(args);
+        if (!checkNumberOfArguments(1, parameters.length)) {
             return false;
         }
         try {
-            currentTable.getDb().removeTable(args[0]);
+            currentTable.getDb().removeTable(parameters[0]);
         } catch (IllegalStateException e) {
             System.err.println(e.getMessage());
             return false;
         }
         if (currentTable.get() != null) {
-            if (currentTable.get().getName().equals(args[0])) {
+            if (currentTable.get().getName().equals(parameters[0])) {
                 currentTable.reset();
             }
         }

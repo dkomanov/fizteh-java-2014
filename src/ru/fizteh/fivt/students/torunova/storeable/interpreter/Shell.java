@@ -1,23 +1,29 @@
-package ru.fizteh.fivt.students.torunova.storeable;
+package ru.fizteh.fivt.students.torunova.storeable.interpreter;
 
 /**
  * Created by nastya on 21.10.14.
  */
 
-import ru.fizteh.fivt.students.torunova.storeable.actions.Action;
+import ru.fizteh.fivt.students.torunova.storeable.database.Database;
+import ru.fizteh.fivt.students.torunova.storeable.database.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
+import ru.fizteh.fivt.students.torunova.storeable.database.actions.Action;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.util.*;
 import java.util.regex.Pattern;
 public class Shell {
-    private static final String REGEXP_TO_SPLIT_JSON =  ",(?=([^\"]\"[^\"]\")[^\"]$)";
     private Map<String, Action> commands;
     private Scanner scanner;
     private Database db;
-    private CurrentTable currentTable;
+    private TableHolder currentTable;
     private boolean interactive;
+    private String nameOfExitCommand;
 
-    public Shell(Set<Action> cmds, InputStream is, String dbfile, boolean isInteractive) {
+    public Shell(Set<Action> cmds, InputStream is, OutputStream os, String dbfile, String nameOfExitCommand, boolean isInteractive) {
         commands = new HashMap<>();
         for (Action action : cmds) {
             commands.put(action.getName(), action);
@@ -25,13 +31,15 @@ public class Shell {
         scanner = new Scanner(is);
         try {
             db = new Database(dbfile);
+            currentTable = new TableHolder(new DatabaseWrapper(db.getDbName()));
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
             abort();
         }
         interactive = isInteractive;
-        currentTable = new CurrentTable(new DatabaseWrapper(db));
+        this.nameOfExitCommand = nameOfExitCommand;
+
     }
 
     public void run() {
@@ -52,20 +60,16 @@ public class Shell {
             functions = nextCommand.split(";");
             for (String function : functions) {
                 function = function.trim();
-                String[] args = parseArguments(function);
-                String name = args[0];
-                args = Arrays.copyOfRange(args, 1, args.length);
+                String name = getNameOfFunction(function);
+                String parameters = getTheRestOfArguments(function);
                 if (commands.containsKey(name)) {
                     boolean res = false;
                     try {
-                        if (name.equals("create")) {
-                            args = argsForCreate(function);
-                        }
-                         res = commands.get(name).run(args, currentTable);
+                         res = commands.get(name).run(parameters, currentTable);
                     } catch (Exception e) {
                         e.printStackTrace();
                         System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
-                        if (!interactive || name.equals("exit")) {
+                        if (!interactive || name.equals(nameOfExitCommand)) {
                             abort();
                         }
                     }
@@ -93,28 +97,14 @@ public class Shell {
         }
     }
 
-    private String[] argsForCreate(String args) {
-        args = args.replaceAll("\\s+", " ");
-        String typesWithoutBrakets;
-        String tableName;
-        try {
-            String newArgs = args.substring(args.indexOf(' ') + 1);
-            tableName = newArgs.substring(0, newArgs.indexOf(' '));
-            String argsWithoutTableName = newArgs.substring(newArgs.indexOf(' '));
-            typesWithoutBrakets = argsWithoutTableName.substring(argsWithoutTableName.indexOf('(') + 1,
-                                                                 argsWithoutTableName.lastIndexOf(')'));
-        } catch (StringIndexOutOfBoundsException e) {
-            throw new RuntimeException("create: wrong command format");
-        }
-        List<String> normalArgs = new ArrayList<>();
-        normalArgs.add(tableName);
-        normalArgs.addAll(Arrays.asList(typesWithoutBrakets.split("\\s+")));
-        return normalArgs.toArray(new String[0]);
+    private String getNameOfFunction(String args) {
+        return args.substring(0, args.indexOf(" "));
     }
 
-    private String[] parseArguments(String arg) {
-        return arg.split("\\s+");
+    private String getTheRestOfArguments(String args) {
+        return args.substring(args.indexOf(" ") + 1);
     }
+
     private void abort() {
         System.err.println("Aborting...");
         System.exit(1);

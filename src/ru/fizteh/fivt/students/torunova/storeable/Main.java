@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.torunova.storeable;
-import ru.fizteh.fivt.students.torunova.storeable.actions.*;
+import ru.fizteh.fivt.students.torunova.storeable.database.actions.*;
+import ru.fizteh.fivt.students.torunova.storeable.interpreter.Shell;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashSet;

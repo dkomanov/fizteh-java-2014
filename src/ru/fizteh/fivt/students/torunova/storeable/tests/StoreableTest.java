@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.torunova.storeable.tests;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
-import ru.fizteh.fivt.students.torunova.storeable.StoreableType;
+import ru.fizteh.fivt.students.torunova.storeable.database.StoreableType;
 
 import static org.junit.Assert.*;
 

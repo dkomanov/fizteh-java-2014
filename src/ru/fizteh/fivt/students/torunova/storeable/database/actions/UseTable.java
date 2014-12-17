@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.storeable.actions;
+package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
+import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 
 import java.io.IOException;
 
@@ -9,8 +9,9 @@ import java.io.IOException;
  */
 public class UseTable extends Action{
     @Override
-    public boolean run(String[] args, CurrentTable currentTable) throws IOException {
-        if (!checkNumberOfArguments(1, args.length)) {
+    public boolean run(String args, TableHolder currentTable) throws IOException {
+        String[] parameters = parseArguments(args);
+        if (!checkNumberOfArguments(1, parameters.length)) {
             return false;
         }
         if (currentTable.get() != null) {
@@ -20,11 +21,11 @@ public class UseTable extends Action{
                 return false;
             }
         }
-        if (currentTable.set(args[0])) {
-            System.out.println("using " + args[0]);
+        if (currentTable.set(parameters[0])) {
+            System.out.println("using " + parameters[0]);
             return true;
         } else {
-            System.out.println(args[0] + " does not exist");
+            System.out.println(parameters[0] + " does not exist");
             return false;
         }
     }

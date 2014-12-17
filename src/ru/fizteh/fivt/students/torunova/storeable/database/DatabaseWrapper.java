@@ -1,13 +1,13 @@
-package ru.fizteh.fivt.students.torunova.storeable;
+package ru.fizteh.fivt.students.torunova.storeable.database;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectDbException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectDbNameException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.TableNotCreatedException;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.IncorrectDbException;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.IncorrectDbNameException;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.TableNotCreatedException;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;

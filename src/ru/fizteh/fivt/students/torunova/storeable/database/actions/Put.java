@@ -1,7 +1,7 @@
-package ru.fizteh.fivt.students.torunova.storeable.actions;
+package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
-import ru.fizteh.fivt.students.torunova.storeable.StoreableType;
+import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
+import ru.fizteh.fivt.students.torunova.storeable.database.StoreableType;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -12,10 +12,11 @@ import java.util.Arrays;
  */
 public class Put extends Action {
     @Override
-    public boolean run(String[] args, CurrentTable currentTable) throws IOException {
+    public boolean run(String args, TableHolder currentTable) throws IOException {
         String[] arguments = new String[2];
-        arguments[0] = args[0];
-        arguments[1] = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        String[] parameters = parseArguments(args);
+        arguments[0] = parameters[0];
+        arguments[1] = String.join(" ", Arrays.copyOfRange(parameters, 1, parameters.length));
         if (!checkNumberOfArguments(2, arguments.length)) {
             return false;
         }
@@ -31,7 +32,7 @@ public class Put extends Action {
             //it is never thrown.
         }
         oldValue = currentTable.getDb().serialize(currentTable.get(),
-                currentTable.get().put(args[0], deserializedValue));
+                currentTable.get().put(parameters[0], deserializedValue));
         if (oldValue == null) {
             System.out.println("new");
         } else {

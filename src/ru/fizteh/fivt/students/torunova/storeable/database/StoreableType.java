@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.torunova.storeable;
+package ru.fizteh.fivt.students.torunova.storeable.database;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 

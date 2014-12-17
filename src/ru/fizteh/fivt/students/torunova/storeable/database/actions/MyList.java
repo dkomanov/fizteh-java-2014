@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.storeable.actions;
+package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
+import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 
 import java.util.List;
 
@@ -9,8 +9,9 @@ import java.util.List;
  */
 public class MyList extends Action {
     @Override
-    public boolean run(String[] args, CurrentTable currentTable) {
-        if (!checkNumberOfArguments(0, args.length)) {
+    public boolean run(String args, TableHolder currentTable) {
+        String[] parameters = parseArguments(args);
+        if (!checkNumberOfArguments(0, parameters.length)) {
             return false;
         }
         if (currentTable.get() == null) {

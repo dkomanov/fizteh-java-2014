@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.storeable.actions;
+package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.CurrentTable;
+import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 
 import java.io.IOException;
 
@@ -9,9 +9,10 @@ import java.io.IOException;
  */
 public class Rollback extends Action {
     @Override
-    public boolean run(String[] args, CurrentTable currentTable)
+    public boolean run(String args, TableHolder currentTable)
             throws IOException {
-        if (checkNumberOfArguments(0, args.length)) {
+        String[] parameters = parseArguments(args);
+        if (checkNumberOfArguments(0, parameters.length)) {
             if (currentTable.get() == null) {
                 System.err.println("no table");
                 return false;

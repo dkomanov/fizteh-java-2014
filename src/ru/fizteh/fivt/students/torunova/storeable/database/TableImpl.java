@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.storeable;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.TableNotCreatedException;
+package ru.fizteh.fivt.students.torunova.storeable.database;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.TableNotCreatedException;
 
 import java.io.File;
 import java.io.IOException;

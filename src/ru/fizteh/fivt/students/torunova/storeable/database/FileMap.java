@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.storeable;
+package ru.fizteh.fivt.students.torunova.storeable.database;
 
-import ru.fizteh.fivt.students.torunova.storeable.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.IncorrectFileException;
 
 import java.io.*;
 import java.util.HashMap;
