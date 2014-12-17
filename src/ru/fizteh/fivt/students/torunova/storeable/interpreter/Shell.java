@@ -4,15 +4,11 @@ package ru.fizteh.fivt.students.torunova.storeable.interpreter;
  * Created by nastya on 21.10.14.
  */
 
-import ru.fizteh.fivt.students.torunova.storeable.database.Database;
-import ru.fizteh.fivt.students.torunova.storeable.database.DatabaseWrapper;
 import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 import ru.fizteh.fivt.students.torunova.storeable.database.actions.Action;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.util.*;
 import java.util.regex.Pattern;
 public class Shell {
@@ -22,7 +18,8 @@ public class Shell {
     private boolean interactive;
     private String nameOfExitCommand;
 
-    public Shell(Set<Action> cmds, InputStream is, OutputStream os, TableHolder currentTable, String nameOfExitCommand, boolean isInteractive) {
+    public Shell(Set<Action> cmds, InputStream is, OutputStream os,
+                 TableHolder currentTable, String nameOfExitCommand, boolean isInteractive) {
         commands = new HashMap<>();
         for (Action action : cmds) {
             commands.put(action.getName(), action);

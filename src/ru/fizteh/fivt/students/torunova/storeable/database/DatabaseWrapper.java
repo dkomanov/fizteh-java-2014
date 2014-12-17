@@ -118,7 +118,9 @@ public class DatabaseWrapper implements TableProvider {
             try {
                 if (values[i].equals("null")) {
                     storeableValue.setColumnAt(i, null);
-                } else if (!types[i].equals(Integer.class) && !types[i].equals(String.class) && !types[i].equals(Boolean.class)) {
+                } else if (!types[i].equals(Integer.class)
+                        && !types[i].equals(String.class)
+                        && !types[i].equals(Boolean.class)) {
                     try {
 
                         storeableValue.setColumnAt(i,
@@ -130,7 +132,8 @@ public class DatabaseWrapper implements TableProvider {
                     } catch (InvocationTargetException e) {
                         Throwable exception = e.getTargetException();
                         if (exception.getClass() == NumberFormatException.class) {
-                            throw new IllegalArgumentException("column " + (i + 1) + " should contain " + classForName(types[i].getSimpleName()));
+                            throw new IllegalArgumentException("column " + (i + 1)
+                                    + " should contain " + classForName(types[i].getSimpleName()));
                         } else {
                             throw new RuntimeException(exception);
                         }
@@ -258,7 +261,8 @@ public class DatabaseWrapper implements TableProvider {
     }
     private void checkJsonFormat(String value) {
         if (!value.startsWith("[") || !value.endsWith("]")) {
-            throw new IllegalStateException("wrong value format (it should be like this: [value1, value2,..., valueN])");
+            throw new IllegalStateException("wrong value format "
+                    + "(it should be like this: [value1, value2,..., valueN])");
         }
     }
 }

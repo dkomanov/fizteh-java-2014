@@ -27,7 +27,8 @@ public class TableWrapper implements ru.fizteh.fivt.storage.structured.Table{
         headOfTable = new StoreableType(newTypes);
         tableProvider = newTableProvider;
     }
-    public TableWrapper(TableImpl newTable, DatabaseWrapper newTableProvider, Class<?>... newTypes) throws TableNotCreatedException,
+    public TableWrapper(TableImpl newTable, DatabaseWrapper newTableProvider, Class<?>... newTypes)
+            throws TableNotCreatedException,
             IOException, IncorrectFileException {
         this(newTable.getName(), newTableProvider, newTypes);
     }

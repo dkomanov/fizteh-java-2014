@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 
-import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
-
 import java.io.IOException;
 
 /**
