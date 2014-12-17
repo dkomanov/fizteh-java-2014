@@ -8,8 +8,12 @@ import java.io.IOException;
  * Created by nastya on 01.11.14.
  */
 public class Rollback extends Action {
+    TableHolder currentTable;
+    public Rollback(TableHolder currentTable) {
+        this.currentTable = currentTable;
+    }
     @Override
-    public boolean run(String args, TableHolder currentTable)
+    public boolean run(String args)
             throws IOException {
         String[] parameters = parseArguments(args);
         if (checkNumberOfArguments(0, parameters.length)) {

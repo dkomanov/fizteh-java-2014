@@ -27,7 +27,7 @@ public abstract class Action {
         return true;
     }
 
-    public abstract boolean run(String args, TableHolder currentTable)
+    public abstract boolean run(String args)
                                   throws IOException;
     public abstract String getName();
 

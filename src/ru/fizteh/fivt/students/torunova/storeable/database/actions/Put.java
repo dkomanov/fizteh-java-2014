@@ -11,8 +11,12 @@ import java.util.Arrays;
  * Created by nastya on 21.10.14.
  */
 public class Put extends Action {
+    TableHolder currentTable;
+    public Put(TableHolder currentTable) {
+        this.currentTable = currentTable;
+    }
     @Override
-    public boolean run(String args, TableHolder currentTable) throws IOException {
+    public boolean run(String args) throws IOException {
         String[] arguments = new String[2];
         String[] parameters = parseArguments(args);
         arguments[0] = parameters[0];

@@ -18,25 +18,17 @@ import java.util.regex.Pattern;
 public class Shell {
     private Map<String, Action> commands;
     private Scanner scanner;
-    private Database db;
     private TableHolder currentTable;
     private boolean interactive;
     private String nameOfExitCommand;
 
-    public Shell(Set<Action> cmds, InputStream is, OutputStream os, String dbfile, String nameOfExitCommand, boolean isInteractive) {
+    public Shell(Set<Action> cmds, InputStream is, OutputStream os, TableHolder currentTable, String nameOfExitCommand, boolean isInteractive) {
         commands = new HashMap<>();
         for (Action action : cmds) {
             commands.put(action.getName(), action);
         }
         scanner = new Scanner(is);
-        try {
-            db = new Database(dbfile);
-            currentTable = new TableHolder(new DatabaseWrapper(db.getDbName()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
-            abort();
-        }
+        this.currentTable = currentTable;
         interactive = isInteractive;
         this.nameOfExitCommand = nameOfExitCommand;
 
@@ -65,9 +57,9 @@ public class Shell {
                 if (commands.containsKey(name)) {
                     boolean res = false;
                     try {
-                         res = commands.get(name).run(parameters, currentTable);
+                         res = commands.get(name).run(parameters);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
                         System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
                         if (!interactive || name.equals(nameOfExitCommand)) {
                             abort();

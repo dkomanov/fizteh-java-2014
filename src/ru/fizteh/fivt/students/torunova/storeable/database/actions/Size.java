@@ -8,8 +8,12 @@ import java.io.IOException;
  * Created by nastya on 02.11.14.
  */
 public class Size extends Action {
+    TableHolder currentTable;
+    public Size(TableHolder currentTable) {
+        this.currentTable = currentTable;
+    }
     @Override
-    public boolean run(String args, TableHolder currentTable)
+    public boolean run(String args)
             throws IOException {
         String[] parameters = parseArguments(args);
         if (!checkNumberOfArguments(0, parameters.length)) {

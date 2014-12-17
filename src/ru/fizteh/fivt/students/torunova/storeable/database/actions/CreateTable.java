@@ -12,8 +12,12 @@ import java.util.List;
  * Created by nastya on 21.10.14.
  */
 public class CreateTable extends Action{
+    TableHolder currentTable;
+    public CreateTable(TableHolder currentTable) {
+        this.currentTable = currentTable;
+    }
     @Override
-    public boolean run(String args, TableHolder currentTable) throws IOException {
+    public boolean run(String args) throws IOException {
         String[] parameters = parseArguments(args);
         if (!checkNumberOfArguments(2, parameters.length)) {
             return false;

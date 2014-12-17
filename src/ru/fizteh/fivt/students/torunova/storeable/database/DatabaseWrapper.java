@@ -60,7 +60,11 @@ public class DatabaseWrapper implements TableProvider {
         while (scanner.hasNext()) {
             types.add(classForName(scanner.next()));
         }
-        return new TableWrapper(db.getTable(name), this, types.toArray(new Class[0]));
+        try {
+            return new TableWrapper(db.getTable(name), this, types.toArray(new Class[0]));
+        } catch (TableNotCreatedException | IOException | IncorrectFileException e) {
+            throw  new RuntimeException(e);
+        }
     }
 
     @Override
@@ -69,7 +73,12 @@ public class DatabaseWrapper implements TableProvider {
         if (t == null) {
             return null;
         }
-        TableWrapper table = new TableWrapper(t, this, columnTypes.toArray(new Class[0]));
+        TableWrapper table;
+        try {
+            table = new TableWrapper(t, this, columnTypes.toArray(new Class[0]));
+        } catch (TableNotCreatedException | IncorrectFileException e) {
+            throw new RuntimeException(e);
+        }
         File tableDir = new File(db.getDbName(), name);
         File signature = new File(tableDir, SIGNATURE_FILE);
         signature.createNewFile();
@@ -96,6 +105,8 @@ public class DatabaseWrapper implements TableProvider {
         if (value == null) {
             return null;
         }
+        checkJsonFormat(value);
+
         value = value.substring(value.indexOf('[') + 1, value.lastIndexOf(']'));
         value = value.trim();
         String[] values = Stream.of(value.split(REGEXP_TO_SPLIT_JSON)).
@@ -107,25 +118,40 @@ public class DatabaseWrapper implements TableProvider {
             try {
                 if (values[i].equals("null")) {
                     storeableValue.setColumnAt(i, null);
-                } else if (!types[i].equals(Integer.class) && !types[i].equals(String.class)) {
+                } else if (!types[i].equals(Integer.class) && !types[i].equals(String.class) && !types[i].equals(Boolean.class)) {
                     try {
+
                         storeableValue.setColumnAt(i,
                                 types[i].getMethod("parse" + types[i].getSimpleName(),
                                         String.class).invoke(null, values[i]));
                     } catch (NoSuchMethodException
-                            | InvocationTargetException
-                            | IllegalArgumentException
                             | IllegalAccessException e) {
                         throw new RuntimeException(e);
+                    } catch (InvocationTargetException e) {
+                        Throwable exception = e.getTargetException();
+                        if (exception.getClass() == NumberFormatException.class) {
+                            throw new IllegalArgumentException("column " + (i + 1) + " should contain " + classForName(types[i].getSimpleName()));
+                        } else {
+                            throw new RuntimeException(exception);
+                        }
+
                     }
                 } else if (types[i].equals(Integer.class)) {
                     storeableValue.setColumnAt(i, Integer.parseInt(values[i]));
                 } else if (types[i].equals(String.class)) {
+                    if (!values[i].contains("\"")) {
+                        throw new IllegalArgumentException("column " + (i + 1) + " should contain string");
+                    }
                     storeableValue.setColumnAt(i,
                             values[i].substring(values[i].indexOf('"') + 1,
                                     values[i].lastIndexOf('"')));
+                } else if (types[i].equals(Boolean.class)) {
+                    if (!Boolean.parseBoolean(values[i]) && !values[i].equals("false")) {
+                        throw new IllegalArgumentException("column " + (i + 1) + " should contain boolean");
+                    }
+                    storeableValue.setColumnAt(i, Boolean.parseBoolean(values[i]));
                 }
-            } catch (RuntimeException e) {
+            } catch (IllegalArgumentException e) {
                 throw new RuntimeException("wrong type( " + e.getMessage() + " )");
             }
         }
@@ -228,6 +254,11 @@ public class DatabaseWrapper implements TableProvider {
             case "String" :
                 return simpleName;
             default: throw new RuntimeException("Unsupported type " + simpleName);
+        }
+    }
+    private void checkJsonFormat(String value) {
+        if (!value.startsWith("[") || !value.endsWith("]")) {
+            throw new IllegalStateException("wrong value format (it should be like this: [value1, value2,..., valueN])");
         }
     }
 }

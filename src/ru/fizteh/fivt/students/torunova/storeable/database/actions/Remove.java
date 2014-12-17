@@ -6,8 +6,12 @@ import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
  * Created by nastya on 21.10.14.
  */
 public class Remove extends Action {
+    TableHolder currentTable;
+    public Remove(TableHolder currentTable) {
+        this.currentTable = currentTable;
+    }
     @Override
-    public boolean run(String args, TableHolder currentTable) {
+    public boolean run(String args) {
         String[] parameters = parseArguments(args);
         if (!checkNumberOfArguments(1, parameters.length)) {
             return false;

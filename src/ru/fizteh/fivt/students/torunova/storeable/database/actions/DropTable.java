@@ -8,8 +8,12 @@ import java.io.IOException;
  * Created by nastya on 21.10.14.
  */
 public class DropTable extends Action {
+    TableHolder currentTable;
+    public DropTable(TableHolder currentTable) {
+        this.currentTable = currentTable;
+    }
     @Override
-    public boolean run(String args, TableHolder currentTable) throws IOException {
+    public boolean run(String args) throws IOException {
         String[] parameters = parseArguments(args);
         if (!checkNumberOfArguments(1, parameters.length)) {
             return false;

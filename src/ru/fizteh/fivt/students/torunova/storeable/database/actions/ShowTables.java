@@ -9,8 +9,12 @@ import java.util.Map;
  * Created by nastya on 21.10.14.
  */
 public class ShowTables extends Action {
+    TableHolder currentTable;
+    public ShowTables(TableHolder currentTable) {
+        this.currentTable = currentTable;
+    }
     @Override
-    public boolean run(String args, TableHolder currentTable)
+    public boolean run(String args)
                                throws IOException {
         String[] parameters = parseArguments(args);
         if (parameters.length > 1) {

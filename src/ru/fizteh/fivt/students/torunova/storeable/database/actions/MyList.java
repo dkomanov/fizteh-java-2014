@@ -8,8 +8,12 @@ import java.util.List;
  * Created by nastya on 21.10.14.
  */
 public class MyList extends Action {
+    TableHolder currentTable;
+    public MyList(TableHolder currentTable) {
+        this.currentTable = currentTable;
+    }
     @Override
-    public boolean run(String args, TableHolder currentTable) {
+    public boolean run(String args) {
         String[] parameters = parseArguments(args);
         if (!checkNumberOfArguments(0, parameters.length)) {
             return false;
