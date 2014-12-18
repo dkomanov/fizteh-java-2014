@@ -37,7 +37,7 @@ public abstract class Action {
     public String[] parseArguments(String notParsedArgs) {
           if (notParsedArgs == null) {
               return null;
-          } else if (notParsedArgs.equals("")){
+          } else if (notParsedArgs.equals("")) {
               return new String[0];
           }
           return notParsedArgs.split("\\s+");

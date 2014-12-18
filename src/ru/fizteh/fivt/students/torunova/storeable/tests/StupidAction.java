@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.torunova.storeable.tests;
 
 
-import ru.fizteh.fivt.students.torunova.junit.CurrentTable;
 import ru.fizteh.fivt.students.torunova.storeable.database.actions.Action;
 
 import java.io.IOException;

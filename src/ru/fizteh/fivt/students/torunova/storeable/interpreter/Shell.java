@@ -4,7 +4,6 @@ package ru.fizteh.fivt.students.torunova.storeable.interpreter;
  * Created by nastya on 21.10.14.
  */
 
-import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 import ru.fizteh.fivt.students.torunova.storeable.database.actions.Action;
 
 import java.io.IOException;

@@ -31,25 +31,29 @@ public class ShellTest {
     }
     @Test
     public void testRunWithExistingCommand() {
-        shell = new Shell(actions, new ByteArrayInputStream("stupid some arguments;exit".getBytes()), out, "exit", false);
+        shell = new Shell(actions,
+                new ByteArrayInputStream("stupid some arguments;exit".getBytes()),
+                out, "exit", false);
         shell.run();
         String buffer = out.toString();
         assertEquals("stupid some arguments", buffer.substring(0, buffer.indexOf("\n")));
     }
     @Test
     public void testRunWithNonExistentCommand() {
-        shell = new Shell(actions, new ByteArrayInputStream("strangeCommand some arguments;exit".getBytes()), out, "exit", false);
+        shell = new Shell(actions,
+                new ByteArrayInputStream("strangeCommand some arguments;exit".getBytes()),
+                out, "exit", false);
         shell.run();
         String buffer = out.toString();
         assertEquals("Command not found.", buffer.substring(0, buffer.indexOf("\n")));
     }
     @Test
     public void testRunCommandWithException() {
-        shell = new Shell(actions, new ByteArrayInputStream("stupidExcept some arguments;exit".getBytes()), out, "exit", false);
+        shell = new Shell(actions,
+                new ByteArrayInputStream("stupidExcept some arguments;exit".getBytes()),
+                out, "exit", false);
         shell.run();
         String buffer = out.toString();
         assertEquals("Caught StupidException: exception", buffer.substring(0, buffer.indexOf("\n")));
     }
-
-
 }
