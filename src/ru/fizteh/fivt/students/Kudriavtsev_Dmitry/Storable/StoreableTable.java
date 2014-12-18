@@ -18,8 +18,8 @@ public class StoreableTable implements Table {
 
     protected static final int FILES_COUNT = 16;
     protected static final int DIRECTORIES_COUNT = 16;
-    private static final String formatOfDirectory = ".dir";
-    private static final String formatOfFile = ".dat";
+    private final String formatOfDirectory = ".dir";
+    private final String formatOfFile = ".dat";
     private final String encoding = "UTF-8";
     private final String signatureFileName = "signature.tsv";
 
