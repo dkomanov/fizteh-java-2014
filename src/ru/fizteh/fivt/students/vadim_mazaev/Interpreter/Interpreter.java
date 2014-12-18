@@ -2,17 +2,23 @@ package ru.fizteh.fivt.students.vadim_mazaev.Interpreter;
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class Interpreter {
     public static final String PROMPT = "$ ";
-    public static final String COMMAND_SEPARATOR = ";";
     public static final String NO_SUCH_COMMAND_MSG = "No such command declared: ";
+    private static final String IGNORE_IN_DOUBLE_QUOTES_REGEX = "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+    private static final String SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX
+        = "\\s*(\".*\"|\\(.*\\)|\\[.*\\]|[^\\s]+)\\s*";
+    public static final String COMMAND_SEPARATOR = ";";
     private InputStream in;
     private PrintStream out;
     private Object connector;
@@ -37,7 +43,7 @@ public final class Interpreter {
     }
     
     public int run(String[] args) throws Exception {
-        int exitStatus = 0;
+        int exitStatus;
         try {
             if (args.length == 0) {
                 exitStatus = interactiveMode();
@@ -55,12 +61,7 @@ public final class Interpreter {
     }
     
     private int batchMode(String[] args) throws Exception {
-        StringBuilder builder = new StringBuilder();
-        for (String current : args) {
-            builder.append(current);
-            builder.append(" ");
-        }
-        int exitStatus = executeLine(builder.toString());
+        int exitStatus = executeLine(String.join(" ", args));
         if (exitHandler != null) {
             exitHandler.call();
         }
@@ -87,10 +88,17 @@ public final class Interpreter {
     }
     
     private int executeLine(String line) throws Exception {
-        String[] cmds = line.split(COMMAND_SEPARATOR);
+        String[] cmds = line.split(COMMAND_SEPARATOR + IGNORE_IN_DOUBLE_QUOTES_REGEX);
+        Pattern p = Pattern.compile(SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX);
+        List<String> tokens = new LinkedList<>();
         try {
             for (String current : cmds) {
-                    parse(current.trim().split("\\s+"));
+                tokens.clear();
+                Matcher m = p.matcher(current.trim());
+                while (m.find()) {
+                    tokens.add(m.group().trim());
+                }
+                parse(tokens.toArray(new String[tokens.size()]));
             }
             return 0;
         } catch (StopLineInterpretationException e) {
@@ -116,7 +124,16 @@ public final class Interpreter {
             if (command == null) {
                 throw new StopLineInterpretationException(NO_SUCH_COMMAND_MSG + commandName);
             } else {
-                String[] args = Arrays.copyOfRange(cmdWithArgs, 1, cmdWithArgs.length);
+                String[] args = new String[cmdWithArgs.length - 1];
+                //Exclude quotes along the edges of the string, if they presents.
+                for (int i = 1; i < cmdWithArgs.length; i++) {
+                    if (cmdWithArgs[i].charAt(0) == '"'
+                            && cmdWithArgs[i].charAt(cmdWithArgs[i].length() - 1) == '"') {
+                        args[i - 1] = cmdWithArgs[i].substring(1, cmdWithArgs[i].length() - 1);
+                    } else {
+                        args[i - 1] = cmdWithArgs[i];
+                    }
+                }
                 try {
                     command.execute(connector, args);
                 } catch (RuntimeException e) {

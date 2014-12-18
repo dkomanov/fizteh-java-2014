@@ -19,8 +19,12 @@ public class Command {
 
     public final void execute(Object connector, String[] args) throws Exception {
         if (numberOfArgs != args.length) {
-            throw new StopLineInterpretationException(name + ": Incorrect number of arguments: "
-                    + numberOfArgs + " expected, but " + args.length + " found.");
+            String message = name + ": Incorrect number of arguments: "
+                    + numberOfArgs + " expected, but found " + args.length;
+            if (args.length > 0) {
+                message += ": '" + String.join("', '", args) + "'";
+            }
+            throw new StopLineInterpretationException(message);
         }
         callback.accept(connector, args);
     }
