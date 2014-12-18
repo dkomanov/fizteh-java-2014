@@ -18,6 +18,8 @@ public class StoreableTable implements Table {
 
     protected static final int FILES_COUNT = 16;
     protected static final int DIRECTORIES_COUNT = 16;
+    private static final String formatOfDirectory = ".dir";
+    private static final String formatOfFile = ".dat";
     private final String encoding = "UTF-8";
     private final String signatureFileName = "signature.tsv";
 
@@ -286,18 +288,19 @@ public class StoreableTable implements Table {
         return count;
     }
 
-    private Path nameOfPath(String nameOfTable, int i, int j) {
+    private Path nameOfPath(String nameOfTable, int directory, int file) {
         if (nameOfTable.equals("")) {
-            return dbPath.resolve(i + ".dir" + File.separator + j + ".dat");
+            return dbPath.resolve(directory + formatOfDirectory + File.separator + file + formatOfFile);
         }
-        return dbPath.resolve(nameOfTable + File.separator + i + ".dir" + File.separator + j + ".dat");
+        return dbPath.resolve(nameOfTable + File.separator + directory + formatOfDirectory
+            + File.separator + file + formatOfFile);
     }
 
-    private Path nameOfPath(String nameOfTable, int i) {
+    private Path nameOfPath(String nameOfTable, int directory) {
         if (nameOfTable.equals("")) {
-            return dbPath.resolve(i + ".dir" + File.separator);
+            return dbPath.resolve(directory + formatOfDirectory + File.separator);
         }
-        return dbPath.resolve(nameOfTable + File.separator + i + ".dir" + File.separator);
+        return dbPath.resolve(nameOfTable + File.separator + directory + formatOfDirectory + File.separator);
     }
 
     public AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<Integer, Integer>>

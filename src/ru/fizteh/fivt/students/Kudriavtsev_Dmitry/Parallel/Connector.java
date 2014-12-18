@@ -24,7 +24,7 @@ public class Connector {
 
     public Map<String, StoreableTable> getTables() {
         lock.readLock().lock();
-        try{
+        try {
             return tables;
         } finally {
             lock.readLock().unlock();
@@ -33,7 +33,7 @@ public class Connector {
 
     public StoreableTable getActiveTable() {
         lock.readLock().lock();
-        try{
+        try {
             return activeTable;
         } finally {
             lock.readLock().unlock();
@@ -46,7 +46,7 @@ public class Connector {
 
     public StoreableTableProvider getActiveTableProvider() {
         lock.readLock().lock();
-        try{
+        try {
             return activeTableProvider;
         } finally {
             lock.readLock().unlock();

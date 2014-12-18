@@ -19,8 +19,8 @@ public class StoreableTable implements Table {
 
     protected static final int FILES_COUNT = 16;
     protected static final int DIRECTORIES_COUNT = 16;
-    private static final String encoding = "UTF-8";
-    private static final String signatureFileName = "signature.tsv";
+    private static final String ENCODING = "UTF-8";
+    private static final String SIGNATUREFILENAME = "signature.tsv"; 
 
     public final Path dbPath;
     public String name;
@@ -28,25 +28,25 @@ public class StoreableTable implements Table {
     private List<Class<?>> signature;
     private final ReentrantReadWriteLock lock;
 
-    private final ThreadLocal< Map<String, Integer> > changedFiles = new ThreadLocal< Map<String, Integer> >() {
+    private final ThreadLocal<Map<String, Integer>> changedFiles = new ThreadLocal<Map<String, Integer>>() {
             @Override
             protected Map<String, Integer> initialValue() {
                 return new TreeMap<>();
             }
     };
-    private final ThreadLocal< Map<String, Storeable> > activeTable = new ThreadLocal< Map<String, Storeable> >() {
+    private final ThreadLocal<Map<String, Storeable>> activeTable = new ThreadLocal<Map<String, Storeable>>() {
         @Override
         protected Map<String, Storeable> initialValue() {
             return new HashMap<>();
         }
     };
-    private final ThreadLocal< Map<String, Storeable> > removed = new ThreadLocal< Map<String, Storeable> >() {
+    private final ThreadLocal<Map<String, Storeable>> removed = new ThreadLocal<Map<String, Storeable>>() {
         @Override
         protected Map<String, Storeable> initialValue() {
             return new HashMap<>();
         }
     };
-    private final ThreadLocal< Map<String, Storeable> > newKey = new ThreadLocal< Map<String, Storeable> >() {
+    private final ThreadLocal<Map<String, Storeable>> newKey = new ThreadLocal<Map<String, Storeable>>() {
         @Override
         protected Map<String, Storeable> initialValue() {
             return new HashMap<>();
@@ -108,7 +108,7 @@ public class StoreableTable implements Table {
             for (String subdirectory : dbDir.list()) {
                 String dirPath = dbDirPath + File.separator + subdirectory;
                 File dir = new File(dirPath);
-                if (signatureFileName.equals(dir.getName())) {
+                if (SIGNATUREFILENAME.equals(dir.getName())) {
                     continue;
                 }
                 if (!dir.isDirectory() || !isCorrectName(subdirectory, ".dir") || !isCorrectSubdirectory(dir)) {
@@ -118,7 +118,7 @@ public class StoreableTable implements Table {
                     readFile(new File(dirPath + File.separator + file));
                 }
             }
-            Scanner fw = new Scanner(new File(dbDirPath + File.separator + signatureFileName));
+            Scanner fw = new Scanner(new File(dbDirPath + File.separator + SIGNATUREFILENAME));
             String[] newSignature = fw.nextLine().split(" ");
             signature = new ArrayList<>();
             for (String aNewSignature : newSignature) {
@@ -191,7 +191,7 @@ public class StoreableTable implements Table {
         int size = stream.readInt();
         byte[] buf = new byte[size];
         stream.readFully(buf);
-        return new String(buf, encoding);
+        return new String(buf, ENCODING);
     }
 
     public int countOfCollisionsInFile(final Path path) {
@@ -210,14 +210,15 @@ public class StoreableTable implements Table {
     }
 
     @Override
-    public Storeable put(final String key,final Storeable value)
+    public Storeable put(final String key, final Storeable value)
             throws IllegalArgumentException {
         checkArg("key", key);
         checkArg("value", value);
         checkSignature(value);
         lock.readLock().lock();
         try {
-            if (activeTable.get().containsKey(key) && ((CurrentStoreable) activeTable.get().get(key)).getValues().equals(
+            if (activeTable.get().containsKey(key) 
+                && ((CurrentStoreable) activeTable.get().get(key)).getValues().equals(
                     ((CurrentStoreable) value).getValues())) {
                 if (newKey.get().containsKey(key)) {
                     newKey.get().remove(key);
@@ -231,7 +232,7 @@ public class StoreableTable implements Table {
         }
     }
 
-    private void checkArg(final String name,final  Object value)
+    private void checkArg(final String name, final  Object value)
             throws IllegalArgumentException {
         if (value == null) {
             throw new IllegalArgumentException(name + " shouldn't be null");
@@ -329,22 +330,23 @@ public class StoreableTable implements Table {
         return count.get();
     }
 
-    private Path nameOfPath(final String nameOfTable, final int i, final int j) {
+    private Path nameOfPath(String nameOfTable, int directory, int file) {
         if (nameOfTable.equals("")) {
-            return dbPath.resolve(i + ".dir" + File.separator + j + ".dat");
+            return dbPath.resolve(directory + formatOfDirectory + File.separator + file + formatOfFile);
         }
-        return dbPath.resolve(nameOfTable + File.separator + i + ".dir" + File.separator + j + ".dat");
+        return dbPath.resolve(nameOfTable + File.separator + directory + formatOfDirectory
+            + File.separator + file + formatOfFile);
     }
 
-    private Path nameOfPath(final String nameOfTable,final int i) {
+    private Path nameOfPath(String nameOfTable, int directory) {
         if (nameOfTable.equals("")) {
-            return dbPath.resolve(i + ".dir" + File.separator);
+            return dbPath.resolve(directory + formatOfDirectory + File.separator);
         }
-        return dbPath.resolve(nameOfTable + File.separator + i + ".dir" + File.separator);
+        return dbPath.resolve(nameOfTable + File.separator + directory + formatOfDirectory + File.separator);
     }
 
     public AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<Integer, Integer>>
-                                            whereToSave(final String nameOfTable,final String value) {
+                                            whereToSave(final String nameOfTable, final String value) {
         int hashCode = value.hashCode();
         int d = hashCode % DIRECTORIES_COUNT;
         int f = hashCode / DIRECTORIES_COUNT % FILES_COUNT;
@@ -353,7 +355,7 @@ public class StoreableTable implements Table {
                 new AbstractMap.SimpleEntry<>(d, f));
     }
 
-    public void deleteFiles(final String nameOfTable,final boolean all) {
+    public void deleteFiles(final String nameOfTable, final boolean all) {
         lock.readLock().lock();
         try {
             for (int i = 0; i < DIRECTORIES_COUNT; ++i) {
@@ -451,7 +453,7 @@ public class StoreableTable implements Table {
     }
 
     private void writeToken(final DataOutputStream stream, final String str) throws IOException {
-        byte[] strBytes = str.getBytes(encoding);
+        byte[] strBytes = str.getBytes(ENCODING);
         stream.writeInt(strBytes.length);
         stream.write(strBytes);
     }

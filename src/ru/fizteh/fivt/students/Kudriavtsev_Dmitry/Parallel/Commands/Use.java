@@ -51,7 +51,8 @@ public class Use extends StoreableCommand {
                 return true;
             }
             if (dbConnector.getActiveTable() != null) {
-                dbConnector.getActiveTable().unload(dbConnector.getActiveTable(), dbConnector.getActiveTable().getName());
+                dbConnector.getActiveTable().unload(
+                    dbConnector.getActiveTable(), dbConnector.getActiveTable().getName());
                 if (dbConnector.getActiveTable().dbPath.getFileName().toString().equals(args[0])) {
                     System.out.println("using " + args[0]);
                     return true;
