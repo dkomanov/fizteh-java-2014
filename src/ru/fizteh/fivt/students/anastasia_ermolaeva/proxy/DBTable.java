@@ -160,7 +160,7 @@ public class DBTable implements Table, AutoCloseable {
     }
 
     private void writeTableToDisk() throws IOException {
-        tableOperationsLock.readLock().lock();
+        tableOperationsLock.writeLock().lock();
         try {
             Map<String, String>[][] db = new HashMap[DIR_AMOUNT][FILES_AMOUNT];
 
@@ -216,7 +216,7 @@ public class DBTable implements Table, AutoCloseable {
                 }
             }
         } finally {
-            tableOperationsLock.readLock().unlock();
+            tableOperationsLock.writeLock().unlock();
         }
     }
 
