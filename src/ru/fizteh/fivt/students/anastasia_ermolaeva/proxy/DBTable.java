@@ -28,7 +28,6 @@ public class DBTable implements Table, AutoCloseable {
     public static final String DIR_TYPE = "Directory ";
     public static final String FILE_TYPE = "File ";
 
-    private static final int START_P = 0;
     public static final int DIR_AMOUNT = 16;
     public static final int FILES_AMOUNT = 16;
     private TableProvider tableProvider;
@@ -93,7 +92,7 @@ public class DBTable implements Table, AutoCloseable {
                     }
                     int nDirectory;
                     try {
-                        nDirectory = Integer.parseInt(tableSubdirectoryName.substring(START_P, k));
+                        nDirectory = Integer.parseInt(tableSubdirectoryName.substring(0, k));
                     } catch (NumberFormatException n) {
                         throw new DatabaseFormatException(DIR_TYPE
                                 + tableSubdirectoryName
@@ -113,7 +112,7 @@ public class DBTable implements Table, AutoCloseable {
                             }
                             int nFile;
                             try {
-                                nFile = Integer.parseInt(fileName.substring(START_P, k));
+                                nFile = Integer.parseInt(fileName.substring(0, k));
                             } catch (NumberFormatException n) {
                                 throw new DatabaseFormatException(FILE_TYPE
                                         + fileName
