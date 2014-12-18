@@ -10,12 +10,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class FileMapProvider implements TableProvider, AutoCloseable {
     private File location;
     private HashMap<String, MultiFileMap> used;
     private TransactionPool transactionPool;
     private volatile boolean valid;
+    private ReentrantReadWriteLock lockForCreateAndGet;
 
     public FileMapProvider(File location) {
         if (location == null) {
@@ -25,19 +27,11 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         used = new HashMap<>();
         valid = true;
         transactionPool = new TransactionPool(5);
+        lockForCreateAndGet = new ReentrantReadWriteLock();
     }
 
     private boolean badSymbolCheck(final String string) {
-        String badSymbols = "\\/*:<>\"|?";
-        char[] array = badSymbols.toCharArray();
-        for (int i = 0; i < string.length(); i++) {
-            for (char ch : array) {
-                if (string.charAt(i) == ch) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return !string.matches("[\\/*:<>\"|?]");
     }
 
     public boolean isValidLocation() {
@@ -66,7 +60,7 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         return transactionPool;
     }
 
-    public synchronized MultiFileMap getTable(String name) {
+    public MultiFileMap getTable(String name) {
         checkState();
         if (name == null) {
             throw new IllegalArgumentException("Null name");
@@ -80,29 +74,35 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         if (!isValidLocation()) {
             throw new RuntimeException("Database location is invalid");
         }
-        File dir = new File(location, name);
-        if (!dir.exists()) {
-            return null;
-        }
-        if (dir.exists() && !dir.isDirectory()) {
-            throw new RuntimeException(String.format("%s is not a directory", name));
-        }
-        MultiFileMap newMap = used.get(name);
-        if (newMap != null && !newMap.isClosed()) {
-            return newMap;
-        } else {
-            newMap = new MultiFileMap(dir, 16, this, transactionPool);
-            try {
-                newMap.loadFromDisk();
-            } catch (IOException | ParseException e) {
-                throw new RuntimeException("Error loading from disk:", e);
+
+        try {
+            lockForCreateAndGet.readLock().lock();
+            File dir = new File(location, name);
+            if (!dir.exists()) {
+                return null;
             }
-            used.put(name, newMap);
-            return newMap;
+            if (dir.exists() && !dir.isDirectory()) {
+                throw new RuntimeException(String.format("%s is not a directory", name));
+            }
+            MultiFileMap newMap = used.get(name);
+            if (newMap != null && !newMap.isClosed()) {
+                return newMap;
+            } else {
+                newMap = new MultiFileMap(dir, 16, this, transactionPool);
+                try {
+                    newMap.loadFromDisk();
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException("Error loading from disk:", e);
+                }
+                used.put(name, newMap);
+                return newMap;
+            }
+        } finally {
+            lockForCreateAndGet.readLock().unlock();
         }
     }
 
-    public synchronized MultiFileMap createTable(String name, List<Class<?>> columnTypes) throws IOException {
+    public MultiFileMap createTable(String name, List<Class<?>> columnTypes) throws IOException {
         checkState();
         if (name == null) {
             throw new IllegalArgumentException("Null name");
@@ -138,23 +138,29 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         if (!isValidLocation()) {
             throw new RuntimeException("Database location is invalid");
         }
-        File dir = new File(location, name);
-        if (dir.exists() && !dir.isDirectory()) {
-            throw new RuntimeException(String.format("%s is not a directory", name));
+
+        try {
+            lockForCreateAndGet.writeLock().lock();
+            File dir = new File(location, name);
+            if (dir.exists() && !dir.isDirectory()) {
+                throw new RuntimeException(String.format("%s is not a directory", name));
+            }
+            if (dir.exists()) {
+                return null;
+            }
+            if (!dir.mkdir()) {
+                throw new RuntimeException("Can't create directory for the table");
+            }
+            MultiFileMap result = new MultiFileMap(dir, 16, this, transactionPool, columnTypes);
+            result.writeToDisk();
+            used.put(name, result);
+            return result;
+        } finally {
+            lockForCreateAndGet.writeLock().unlock();
         }
-        if (dir.exists()) {
-            return null;
-        }
-        if (!dir.mkdir()) {
-            throw new RuntimeException("Can't create directory for the table");
-        }
-        MultiFileMap result = new MultiFileMap(dir, 16, this, transactionPool, columnTypes);
-        result.writeToDisk();
-        used.put(name, result);
-        return result;
     }
 
-    public synchronized void removeTable(String name) throws IOException {
+    public void removeTable(String name) throws IOException {
         checkState();
         if (name == null) {
             throw new IllegalArgumentException("Null name");
@@ -168,19 +174,25 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         if (!isValidLocation()) {
             throw new RuntimeException("Database location is invalid");
         }
-        File dir = new File(location, name);
-        if (dir.exists() && !dir.isDirectory()) {
-            throw new RuntimeException(String.format("%s is not a directory", name));
-        }
-        if (!dir.exists()) {
-            throw new IllegalStateException("Table doesn't exist");
-        }
-        if (!deleteFileRecursively(dir)) {
-            throw new RuntimeException("Unable to delete some files");
-        }
-        MultiFileMap table = used.remove(name);
-        if (table != null) {
-            table.close();
+
+        try {
+            lockForCreateAndGet.writeLock().lock();
+            File dir = new File(location, name);
+            if (dir.exists() && !dir.isDirectory()) {
+                throw new RuntimeException(String.format("%s is not a directory", name));
+            }
+            if (!dir.exists()) {
+                throw new IllegalStateException("Table doesn't exist");
+            }
+            if (!deleteFileRecursively(dir)) {
+                throw new RuntimeException("Unable to delete some files");
+            }
+            MultiFileMap table = used.remove(name);
+            if (table != null) {
+                table.close();
+            }
+        } finally {
+            lockForCreateAndGet.writeLock().unlock();
         }
     }
 
