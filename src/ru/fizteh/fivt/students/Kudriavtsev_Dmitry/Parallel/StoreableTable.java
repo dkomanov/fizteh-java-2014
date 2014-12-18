@@ -357,7 +357,8 @@ public class StoreableTable implements Table {
                 new AbstractMap.SimpleEntry<>(d, f));
     }
 
-    public void deleteFiles(final String nameOfTable, final boolean all) {
+    public void deleteFiles(final String nameOfTable,final boolean all)
+            throws IllegalArgumentException {
         lock.readLock().lock();
         try {
             for (int i = 0; i < DIRECTORIES_COUNT; ++i) {
@@ -375,13 +376,14 @@ public class StoreableTable implements Table {
             }
         } catch (IOException e) {
             System.err.println("Can't delete from disk: " + e.getMessage());
-            System.exit(-1);
+            throw new IllegalArgumentException("Can't delete from disk: " + e.getMessage());
         } finally {
             lock.readLock().unlock();
         }
     }
 
-    public void unload(final StoreableTable currentTable, final String nameOfTable) {
+    public void unload(final StoreableTable currentTable, final String nameOfTable)
+            throws IllegalArgumentException {
         deleteFiles(nameOfTable, false);
         boolean[] dir = new boolean[DIRECTORIES_COUNT];
         DataOutputStream[][] streams = new DataOutputStream[DIRECTORIES_COUNT][FILES_COUNT];

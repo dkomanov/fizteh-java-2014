@@ -309,25 +309,7 @@ public class StoreableTableProvider implements TableProvider {
     }
 
     private String valueToString(final Object value) {
-        if (value.getClass() == Integer.class) {
-            return Integer.toString((Integer) value);
-        }
-        if (value.getClass() == Long.class) {
-            return Long.toString((Long) value);
-        }
-        if (value.getClass() == Byte.class) {
-            return Byte.toString((Byte) value);
-        }
-        if (value.getClass() == Float.class) {
-            return Float.toString((Float) value);
-        }
-        if (value.getClass() == Double.class) {
-            return Double.toString((Double) value);
-        }
-        if (value.getClass() == Boolean.class) {
-            return Boolean.toString((Boolean) value);
-        }
-        return (String) value;
+        return value.toString();
     }
 
     @Override
