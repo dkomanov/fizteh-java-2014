@@ -3,25 +3,29 @@ package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 /**
  * Created by nastya on 01.11.14.
  */
 public class Commit extends Action {
     TableHolder currentTable;
-    public Commit(TableHolder currentTable) {
+    PrintWriter writer;
+    public Commit(TableHolder currentTable, OutputStream os) {
         this.currentTable = currentTable;
+        writer = new PrintWriter(os, true);
     }
     @Override
     public boolean run(String args)
             throws IOException {
         String[] parameters = parseArguments(args);
-        if (checkNumberOfArguments(0, parameters.length)) {
+        if (checkNumberOfArguments(0, parameters.length, writer)) {
             if (currentTable.get() == null) {
-                System.err.println("no table");
+                writer.println("no table");
                 return false;
             }
-            System.out.println(currentTable.get().commit());
+            writer.println(currentTable.get().commit());
             return true;
         }
         return false;

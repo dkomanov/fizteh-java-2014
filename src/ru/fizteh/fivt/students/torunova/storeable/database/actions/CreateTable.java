@@ -4,6 +4,8 @@ import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 import ru.fizteh.fivt.students.torunova.storeable.database.TableWrapper;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,13 +15,15 @@ import java.util.List;
  */
 public class CreateTable extends Action{
     TableHolder currentTable;
-    public CreateTable(TableHolder currentTable) {
+    PrintWriter writer;
+    public CreateTable(TableHolder currentTable, OutputStream os) {
         this.currentTable = currentTable;
+        writer = new PrintWriter(os, true);
     }
     @Override
     public boolean run(String args) throws IOException {
         String[] parameters = parseArguments(args);
-        if (!checkNumberOfArguments(2, parameters.length)) {
+        if (!checkNumberOfArguments(2, parameters.length, writer)) {
             return false;
         }
         String tableName = parameters[0];
@@ -31,22 +35,22 @@ public class CreateTable extends Action{
         try {
             table = (TableWrapper) currentTable.getDb().createTable(tableName, classes);
         } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
+            writer.println(e.getMessage());
             return false;
         } catch (RuntimeException e) {
-            System.err.println(e.getMessage());
+            writer.println(e.getMessage());
         }
         if (table != null) {
-            System.out.println("created");
+            writer.println("created");
             return true;
         } else {
-            System.out.println(tableName + " exists");
+            writer.println(tableName + " exists");
             return false;
         }
     }
 
     @Override
-    boolean checkNumberOfArguments(int expected, int real) {
+    boolean checkNumberOfArguments(int expected, int real, PrintWriter writer) {
       return real >= expected;
     }
 

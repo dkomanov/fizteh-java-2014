@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 
 import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -9,22 +11,24 @@ import java.util.List;
  */
 public class MyList extends Action {
     TableHolder currentTable;
-    public MyList(TableHolder currentTable) {
+    PrintWriter writer;
+    public MyList(TableHolder currentTable, OutputStream os) {
         this.currentTable = currentTable;
+        writer = new PrintWriter(os, true);
     }
     @Override
     public boolean run(String args) {
         String[] parameters = parseArguments(args);
-        if (!checkNumberOfArguments(0, parameters.length)) {
+        if (!checkNumberOfArguments(0, parameters.length, writer)) {
             return false;
         }
         if (currentTable.get() == null) {
-            System.out.println("no table");
+            writer.println("no table");
             return false;
         }
         List<String> keys = currentTable.get().list();
         String result = String.join(", ", keys);
-        System.out.println(result);
+        writer.println(result);
         return true;
     }
 

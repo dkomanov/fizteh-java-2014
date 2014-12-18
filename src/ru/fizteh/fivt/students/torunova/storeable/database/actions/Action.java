@@ -1,25 +1,26 @@
 package ru.fizteh.fivt.students.torunova.storeable.database.actions;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Created by nastya on 21.10.14.
  */
 public abstract class Action {
-    void tooManyArguments() {
-        System.err.println(getDisplayName() + ": too many arguments.");
+    void tooManyArguments(PrintWriter writer) {
+        writer.println(getDisplayName() + ": too many arguments.");
     }
 
-    void tooFewArguments() {
-        System.err.println(getDisplayName() + ": too few arguments.");
+    void tooFewArguments(PrintWriter writer) {
+        writer.println(getDisplayName() + ": too few arguments.");
     }
 
-    boolean checkNumberOfArguments(int expected, int real) {
+    boolean checkNumberOfArguments(int expected, int real, PrintWriter writer) {
         if (real > expected) {
-            tooManyArguments();
+            tooManyArguments(writer);
             return false;
         } else if (real < expected) {
-            tooFewArguments();
+            tooFewArguments(writer);
             return false;
         }
         return true;
@@ -34,6 +35,11 @@ public abstract class Action {
     }
 
     public String[] parseArguments(String notParsedArgs) {
+          if (notParsedArgs == null) {
+              return null;
+          } else if (notParsedArgs.equals("")){
+              return new String[0];
+          }
           return notParsedArgs.split("\\s+");
     }
 }

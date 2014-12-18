@@ -28,27 +28,31 @@ public class Main {
             System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
         }
         Set<Action> actions = new HashSet<>();
-        actions.add(new Put(currentTable));
-        actions.add(new Get(currentTable));
-        actions.add(new MyList(currentTable));
-        actions.add(new Remove(currentTable));
-        actions.add(new CreateTable(currentTable));
-        actions.add(new DropTable(currentTable));
-        actions.add(new UseTable(currentTable));
-        actions.add(new ShowTables(currentTable));
-        actions.add(new Commit(currentTable));
-        actions.add(new Rollback(currentTable));
+        actions.add(new Put(currentTable, System.out));
+        actions.add(new Get(currentTable, System.out));
+        actions.add(new MyList(currentTable, System.out));
+        actions.add(new Remove(currentTable, System.out));
+        actions.add(new CreateTable(currentTable, System.out));
+        actions.add(new DropTable(currentTable, System.out));
+        actions.add(new UseTable(currentTable, System.out));
+        actions.add(new ShowTables(currentTable, System.out));
+        actions.add(new Commit(currentTable, System.out));
+        actions.add(new Rollback(currentTable, System.out));
         actions.add(new Exit(currentTable));
-        actions.add(new Size(currentTable));
+        actions.add(new Size(currentTable, System.out));
         Shell shell;
 
         if (args.length > 0) {
             ByteArrayInputStream is = new ByteArrayInputStream(parseCommandsFromArray(args).getBytes());
-            shell = new Shell(actions, is, System.out, currentTable, "exit", false);
+            shell = new Shell(actions, is, System.out, "exit", false);
         } else {
-            shell = new Shell(actions, System.in, System.out, currentTable, "exit", true);
+            shell = new Shell(actions, System.in, System.out, "exit", true);
         }
-        shell.run();
+        if (!shell.run()) {
+            System.exit(1);
+        } else {
+            System.exit(0);
+        }
     }
 
     private static String parseCommandsFromArray(final String[] commands) {

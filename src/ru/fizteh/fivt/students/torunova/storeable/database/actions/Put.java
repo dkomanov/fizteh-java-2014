@@ -4,6 +4,8 @@ import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 import ru.fizteh.fivt.students.torunova.storeable.database.StoreableType;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.Arrays;
 
@@ -12,8 +14,10 @@ import java.util.Arrays;
  */
 public class Put extends Action {
     TableHolder currentTable;
-    public Put(TableHolder currentTable) {
+    PrintWriter writer;
+    public Put(TableHolder currentTable, OutputStream os) {
         this.currentTable = currentTable;
+        writer = new PrintWriter(os, true);
     }
     @Override
     public boolean run(String args) throws IOException {
@@ -21,11 +25,11 @@ public class Put extends Action {
         String[] parameters = parseArguments(args);
         arguments[0] = parameters[0];
         arguments[1] = String.join(" ", Arrays.copyOfRange(parameters, 1, parameters.length));
-        if (!checkNumberOfArguments(2, arguments.length)) {
+        if (!checkNumberOfArguments(2, arguments.length, writer)) {
             return false;
         }
         if (currentTable.get() == null) {
-            System.out.println("no table");
+            writer.println("no table");
             return false;
         }
         String oldValue;
@@ -38,10 +42,10 @@ public class Put extends Action {
         oldValue = currentTable.getDb().serialize(currentTable.get(),
                 currentTable.get().put(parameters[0], deserializedValue));
         if (oldValue == null) {
-            System.out.println("new");
+            writer.println("new");
         } else {
-            System.out.println("overwrite");
-            System.out.println(oldValue);
+            writer.println("overwrite");
+            writer.println(oldValue);
         }
         return true;
     }

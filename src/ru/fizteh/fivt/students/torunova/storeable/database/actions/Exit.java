@@ -14,20 +14,24 @@ public class Exit extends Action {
     }
 
     @Override
-    public boolean run(String args)
-            throws IOException {
+    public boolean run(String args) {
         String[] parameters = parseArguments(args);
-        if (!checkNumberOfArguments(0, parameters.length)) {
-            return false;
-        }
+
         if (currentTable.get() != null) {
             currentTable.get().commit();
         }
-        System.exit(0);
+        if (parameters.length == 1) {
+            System.exit(getStatus(args));
+        } else {
+            System.exit(0);
+        }
         return true;
     }
     @Override
     public String getName() {
         return "exit";
+    }
+    private int getStatus(String args) {
+        return Integer.parseInt(args);
     }
 }

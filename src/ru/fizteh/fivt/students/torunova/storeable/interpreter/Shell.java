@@ -7,46 +7,57 @@ package ru.fizteh.fivt.students.torunova.storeable.interpreter;
 import ru.fizteh.fivt.students.torunova.storeable.database.TableHolder;
 import ru.fizteh.fivt.students.torunova.storeable.database.actions.Action;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.regex.Pattern;
 public class Shell {
+    private static final String COMMAND_DELIMITER = ";";
+    private static final String PROMPT = "$ ";
     private Map<String, Action> commands;
     private Scanner scanner;
-    private TableHolder currentTable;
+    private PrintWriter writer;
     private boolean interactive;
     private String nameOfExitCommand;
 
     public Shell(Set<Action> cmds, InputStream is, OutputStream os,
-                 TableHolder currentTable, String nameOfExitCommand, boolean isInteractive) {
+                  String nameOfExitCommand, boolean isInteractive) {
         commands = new HashMap<>();
         for (Action action : cmds) {
             commands.put(action.getName(), action);
         }
         scanner = new Scanner(is);
-        this.currentTable = currentTable;
+        writer = new PrintWriter(os, true);
         interactive = isInteractive;
         this.nameOfExitCommand = nameOfExitCommand;
 
     }
 
-    public void run() {
-        String nextCommand;
+    public boolean run() {
+        String nextCommand = null;
         String[] functions;
         while (true) {
             if (interactive) {
-                System.out.print("$ ");
+                writer.print(PROMPT);
+                writer.flush();
             }
             try {
                 nextCommand = scanner.nextLine();
             } catch (NoSuchElementException e) {
-                if (currentTable.get() != null) {
-                    currentTable.get().commit();
+                String status = "0";
+                try {
+                    commands.get(nameOfExitCommand).run(status);
+                } catch (IOException e1) {
+                    writer.println("Caught IOException in exit command");
+                    abort();
+                    return false;
+                } catch (ShellInterruptException e2) {
+                    return true;
                 }
-                return;
             }
-            functions = nextCommand.split(";");
+            functions = nextCommand.split(COMMAND_DELIMITER);
             for (String function : functions) {
                 function = function.trim();
                 String name = getNameOfFunction(function);
@@ -57,27 +68,37 @@ public class Shell {
                          res = commands.get(name).run(parameters);
                     } catch (Exception e) {
                         //e.printStackTrace();
-                        System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                        writer.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
                         if (!interactive || name.equals(nameOfExitCommand)) {
                             abort();
+                            return false;
                         }
                     }
                     if (!interactive && !res) {
-                        if (currentTable.get() != null) {
-                            currentTable.get().commit();
+                        String status = "1";
+                        try {
+                            commands.get(nameOfExitCommand).run(status);
+                        } catch (IOException e) {
+                            writer.println("Caught IOException in exit command");
+                            abort();
+                            return false;
                         }
-                        System.exit(1);
                     } else if (!res) {
                         break;
                     }
                 } else if (!Pattern.matches("\\s*", name)) {
-                    System.err.println("Command not found.");
+                    writer.println("Command not found.");
                     if (!interactive) {
-                        if (currentTable.get() != null) {
-                            currentTable.get().commit();
+                        String status = "1";
+                        try {
+                            commands.get(nameOfExitCommand).run(status);
+                        } catch (IOException e) {
+                            writer.println("Caught IOException in exit command");
+                            abort();
+                            return false;
+                        } catch (ShellInterruptException e) {
+                            return true;
                         }
-                            System.exit(1);
-
                     } else {
                         break;
                     }
@@ -87,16 +108,21 @@ public class Shell {
     }
 
     private String getNameOfFunction(String args) {
+        if (args.indexOf(" ") < 0) {
+            return args.trim();
+        }
         return args.substring(0, args.indexOf(" "));
     }
 
     private String getTheRestOfArguments(String args) {
+        if (args.indexOf(" ") < 0) {
+            return "";
+        }
         return args.substring(args.indexOf(" ") + 1);
     }
 
     private void abort() {
-        System.err.println("Aborting...");
-        System.exit(1);
+        writer.println("Aborting...");
     }
 }
 
