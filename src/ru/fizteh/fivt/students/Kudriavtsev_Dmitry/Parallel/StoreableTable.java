@@ -21,8 +21,8 @@ public class StoreableTable implements Table {
     protected static final int DIRECTORIES_COUNT = 16;
     private static final String ENCODING = "UTF-8";
     private static final String SIGNATUREFILENAME = "signature.tsv";
-    private static final String formatOfDirectory = ".dir";
-    private static final String formatOfFile = ".dat"; 
+    private static final String FORMATOFDIRECTORY = ".dir";
+    private static final String FORMATOFFILE = ".dat"; 
 
     public final Path dbPath;
     public String name;
@@ -334,17 +334,17 @@ public class StoreableTable implements Table {
 
     private Path nameOfPath(String nameOfTable, int directory, int file) {
         if (nameOfTable.equals("")) {
-            return dbPath.resolve(directory + formatOfDirectory + File.separator + file + formatOfFile);
+            return dbPath.resolve(directory + FORMATOFDIRECTORY + File.separator + file + FORMATOFFILE);
         }
-        return dbPath.resolve(nameOfTable + File.separator + directory + formatOfDirectory
-            + File.separator + file + formatOfFile);
+        return dbPath.resolve(nameOfTable + File.separator + directory + FORMATOFDIRECTORY
+            + File.separator + file + FORMATOFFILE);
     }
 
     private Path nameOfPath(String nameOfTable, int directory) {
         if (nameOfTable.equals("")) {
-            return dbPath.resolve(directory + formatOfDirectory + File.separator);
+            return dbPath.resolve(directory + FORMATOFDIRECTORY + File.separator);
         }
-        return dbPath.resolve(nameOfTable + File.separator + directory + formatOfDirectory + File.separator);
+        return dbPath.resolve(nameOfTable + File.separator + directory + FORMATOFDIRECTORY + File.separator);
     }
 
     public AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<Integer, Integer>>
@@ -357,7 +357,7 @@ public class StoreableTable implements Table {
                 new AbstractMap.SimpleEntry<>(d, f));
     }
 
-    public void deleteFiles(final String nameOfTable,final boolean all)
+    public void deleteFiles(final String nameOfTable, final boolean all)
             throws IllegalArgumentException {
         lock.readLock().lock();
         try {
