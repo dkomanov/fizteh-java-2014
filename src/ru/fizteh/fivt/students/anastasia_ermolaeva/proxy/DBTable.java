@@ -160,57 +160,63 @@ public class DBTable implements Table, AutoCloseable {
     }
 
     private void writeTableToDisk() throws IOException {
-        Map<String, String>[][] db = new HashMap[DIR_AMOUNT][FILES_AMOUNT];
-        for (int i = 0; i < DIR_AMOUNT; i++) {
-            for (int j = 0; j < FILES_AMOUNT; j++) {
-                db[i][j] = new HashMap<>();
-            }
-        }
+        tableOperationsLock.readLock().lock();
+        try {
+            Map<String, String>[][] db = new HashMap[DIR_AMOUNT][FILES_AMOUNT];
 
-        for (Map.Entry<String, Storeable> entry : allRecords.entrySet()) {
-            String key = entry.getKey();
-            String value = tableProvider.serialize(this, entry.getValue());
-            try {
-                int nDirectory = Math.abs(key.getBytes(Utility.ENCODING)[0] % DIR_AMOUNT);
-                int nFile = Math.abs((key.getBytes(Utility.ENCODING)[0] / DIR_AMOUNT) % FILES_AMOUNT);
-                db[nDirectory][nFile].put(key, value);
-            } catch (UnsupportedEncodingException e) {
-                throw new IOException(e.getMessage(), e);
+            for (int i = 0; i < DIR_AMOUNT; i++) {
+                for (int j = 0; j < FILES_AMOUNT; j++) {
+                    db[i][j] = new HashMap<>();
+                }
             }
-        }
-        for (int nDirectory = 0; nDirectory < DIR_AMOUNT; nDirectory++) {
-            for (int nFile = 0; nFile < FILES_AMOUNT; nFile++) {
-                if (!db[nDirectory][nFile].isEmpty()) {
-                    Path newPath = dbPath.resolve(nDirectory + DIR_SUFFIX);
-                    if (!Files.exists(newPath)) {
-                        Files.createDirectory(newPath);
-                    }
-                    Path newFilePath = newPath.resolve(nFile + FILE_SUFFIX);
-                    Files.deleteIfExists(newFilePath);
-                    Files.createFile(newFilePath);
-                    try (RandomAccessFile dbFile = new RandomAccessFile(newFilePath.toFile(), "rw")) {
-                        dbFile.setLength(0);
-                        for (Map.Entry<String, String> entry : db[nDirectory][nFile].entrySet()) {
-                            String key = entry.getKey();
-                            String value = entry.getValue();
-                            Utility.writeUtil(key, dbFile);
-                            Utility.writeUtil(value, dbFile);
+
+            for (Map.Entry<String, Storeable> entry : allRecords.entrySet()) {
+                String key = entry.getKey();
+                String value = tableProvider.serialize(this, entry.getValue());
+                try {
+                    int nDirectory = Math.abs(key.getBytes(Utility.ENCODING)[0] % DIR_AMOUNT);
+                    int nFile = Math.abs((key.getBytes(Utility.ENCODING)[0] / DIR_AMOUNT) % FILES_AMOUNT);
+                    db[nDirectory][nFile].put(key, value);
+                } catch (UnsupportedEncodingException e) {
+                    throw new IOException(e.getMessage(), e);
+                }
+            }
+            for (int nDirectory = 0; nDirectory < DIR_AMOUNT; nDirectory++) {
+                for (int nFile = 0; nFile < FILES_AMOUNT; nFile++) {
+                    if (!db[nDirectory][nFile].isEmpty()) {
+                        Path newPath = dbPath.resolve(nDirectory + DIR_SUFFIX);
+                        if (!Files.exists(newPath)) {
+                            Files.createDirectory(newPath);
                         }
-                    }
-                } else {
+                        Path newFilePath = newPath.resolve(nFile + FILE_SUFFIX);
+                        Files.deleteIfExists(newFilePath);
+                        Files.createFile(newFilePath);
+                        try (RandomAccessFile dbFile = new RandomAccessFile(newFilePath.toFile(), "rw")) {
+                            dbFile.setLength(0);
+                            for (Map.Entry<String, String> entry : db[nDirectory][nFile].entrySet()) {
+                                String key = entry.getKey();
+                                String value = entry.getValue();
+                                Utility.writeUtil(key, dbFile);
+                                Utility.writeUtil(value, dbFile);
+                            }
+                        }
+                    } else {
                     /*
                     *Deleting empty files and directories.
                     */
-                    Path newPath = dbPath.resolve(nDirectory + DIR_SUFFIX);
-                    if (Files.exists(newPath)) {
-                        Path newFilePath = newPath.resolve(nFile + FILE_SUFFIX);
-                        Files.deleteIfExists(newFilePath);
-                        if (newPath.toFile().list().length == 0) {
-                            Files.delete(newPath);
+                        Path newPath = dbPath.resolve(nDirectory + DIR_SUFFIX);
+                        if (Files.exists(newPath)) {
+                            Path newFilePath = newPath.resolve(nFile + FILE_SUFFIX);
+                            Files.deleteIfExists(newFilePath);
+                            if (newPath.toFile().list().length == 0) {
+                                Files.delete(newPath);
+                            }
                         }
                     }
                 }
             }
+        } finally {
+            tableOperationsLock.readLock().unlock();
         }
     }
 
