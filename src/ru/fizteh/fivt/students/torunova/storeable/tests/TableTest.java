@@ -5,8 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
-import ru.fizteh.fivt.students.torunova.storeable.DatabaseWrapper;
-import ru.fizteh.fivt.students.torunova.storeable.TableWrapper;
+import ru.fizteh.fivt.students.torunova.storeable.database.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.storeable.database.TableWrapper;
 
 import java.io.File;
 import java.util.Arrays;

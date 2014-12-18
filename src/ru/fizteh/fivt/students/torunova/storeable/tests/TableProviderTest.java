@@ -4,9 +4,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.students.torunova.storeable.DatabaseWrapper;
-import ru.fizteh.fivt.students.torunova.storeable.StoreableType;
-import ru.fizteh.fivt.students.torunova.storeable.TableWrapper;
+import ru.fizteh.fivt.students.torunova.storeable.database.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.storeable.database.StoreableType;
+import ru.fizteh.fivt.students.torunova.storeable.database.TableWrapper;
 
 import java.io.File;
 import java.util.Arrays;
@@ -79,7 +79,7 @@ public class TableProviderTest {
     }
 
     @Test
-    public void testCreateFor() throws Exception {
+    public void testCreateForWithValues() throws Exception {
         TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(
                 String.class, Integer.class, Boolean.class));
         StoreableType value = new StoreableType(String.class, Integer.class, Boolean.class);
@@ -90,7 +90,7 @@ public class TableProviderTest {
     }
 
     @Test
-    public void testCreateFor1() throws Exception {
+    public void testCreateForWithoutValues() throws Exception {
         TableWrapper table = (TableWrapper) db.createTable("table", Arrays.asList(
                 String.class, Integer.class, Boolean.class));
         StoreableType value = new StoreableType(String.class, Integer.class, Boolean.class);
