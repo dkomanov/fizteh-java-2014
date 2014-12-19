@@ -276,12 +276,7 @@ public class TableManager implements TableProvider, AutoCloseable {
 
     @Override
     public String toString() {
-        lock.readLock().lock();
-        try {
-            return getClass().getSimpleName() + "[" + databasePath.normalize().toString() + "]";
-        } finally {
-            lock.readLock().unlock();
-        }
+        return getClass().getSimpleName() + "[" + databasePath.normalize().toString() + "]";
     }
 
     private void checkIfClosed() {
