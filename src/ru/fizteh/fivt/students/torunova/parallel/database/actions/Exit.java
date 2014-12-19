@@ -1,9 +1,6 @@
 package ru.fizteh.fivt.students.torunova.parallel.database.actions;
 
 import ru.fizteh.fivt.students.torunova.parallel.database.TableHolder;
-import ru.fizteh.fivt.students.torunova.storeable.database.actions.*;
-
-import java.io.IOException;
 
 /**
  * Created by nastya on 01.11.14.

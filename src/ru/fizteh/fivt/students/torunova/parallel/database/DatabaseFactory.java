@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.torunova.parallel.database;
 
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.torunova.parallel.database.Database;
 import ru.fizteh.fivt.students.torunova.parallel.database.exceptions.IncorrectDbException;
 import ru.fizteh.fivt.students.torunova.parallel.database.exceptions.IncorrectDbNameException;
 import ru.fizteh.fivt.students.torunova.parallel.database.exceptions.IncorrectFileException;
