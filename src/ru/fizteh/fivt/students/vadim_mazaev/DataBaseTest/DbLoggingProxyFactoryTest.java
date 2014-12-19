@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.vadim_mazaev.DataBaseTest;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -17,22 +19,41 @@ public class DbLoggingProxyFactoryTest {
     private TableManagerFactory test;
     private StringWriter proxyWriter = new StringWriter();
     private TableProvider manager;
+    private static final String TIMESTAMP_REGEX = "timestamp=\"\\d*\"";
+    private static final String PATH_REGEX = "\\[.*\\]";
 
     @Before
     public void setUp() throws IOException {
         TestHelper.TEST_DIR.toFile().mkdir();
         test = new TableManagerFactory();
         manager = (TableProvider) new DbLoggingProxyFactory().wrap(proxyWriter,
-                test.create(TestHelper.TEST_DIR.toString()),
-                TableProvider.class);
+                test.create(TestHelper.TEST_DIR.toString()), TableProvider.class);
     }
 
     // Unable to check logging by string comparison because of timestamp.
+    // @formatter:off
     @Test
     public void testLogging() throws IOException {
-        try (DbTable table = (DbTable) manager.createTable(
-                TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE)) {
-            System.out.println(proxyWriter.toString());
+        try (DbTable table = (DbTable) manager.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE)) {
+            String expectedlogString = "<invoke timestamp=\"\""
+                    + " class=\"ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManager\" name=\"createTable\">"
+                    + "<arguments>"
+                        + "<argument>testTable</argument>"
+                        + "<argument>"
+                            + "<list>"
+                            + "<value>class java.lang.Integer</value>"
+                            + "<value>class java.lang.Long</value>"
+                            + "<value>class java.lang.Byte</value>"
+                            + "<value>class java.lang.Float</value>"
+                            + "<value>class java.lang.Double</value>"
+                            + "<value>class java.lang.Boolean</value>"
+                            + "<value>class java.lang.String</value>"
+                            + "</list>"
+                        + "</argument>"
+                    + "</arguments>"
+                    + "<return>DbTable[]</return>"
+                    + "</invoke>";
+            assertLogs(expectedlogString, proxyWriter.toString());
         }
     }
 
@@ -41,8 +62,22 @@ public class DbLoggingProxyFactoryTest {
         try {
             manager.removeTable(TestHelper.TEST_TABLE_NAME);
         } finally {
-            System.out.println(proxyWriter.toString());
+            String expectedlogString = "<invoke timestamp=\"\""
+                    + " class=\"ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManager\" name=\"removeTable\">"
+                    + "<arguments>"
+                        + "<argument>testTable</argument>"
+                    + "</arguments>"
+                    + "<thrown>java.lang.IllegalStateException: There is no such table</thrown>"
+                    + "</invoke>";
+            assertLogs(expectedlogString, proxyWriter.toString());
         }
+    }
+    // @formatter:on
+
+    void assertLogs(String expected, String actual) {
+        String log1 = expected.replaceAll(TIMESTAMP_REGEX, "timestamp=\"\"").replaceAll(PATH_REGEX, "[]");
+        String log2 = actual.replaceAll(TIMESTAMP_REGEX, "timestamp=\"\"").replaceAll(PATH_REGEX, "[]");
+        assertEquals(log1, log2);
     }
 
     @After
