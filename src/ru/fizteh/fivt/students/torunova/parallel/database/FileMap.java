@@ -181,12 +181,8 @@ public class FileMap {
                     newSavedCopy.put(entry.getKey(), diff.get().get(entry.getKey()));
                 }
             }
-            readWriteLock.writeLock().lock();
-            try {
-                savedCopy = newSavedCopy;
-            } finally {
-                readWriteLock.writeLock().unlock();
-            }
+
+            savedCopy = newSavedCopy;
             diff.get().clear();
             changes.get().clear();
             return  numberOfChangedEntries;
