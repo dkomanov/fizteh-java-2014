@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.test;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.ProxyFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -92,8 +93,8 @@ public class ProxyFactoryDummyInterfaceTest {
         InterfaceToProxyImplementation dummy = new InterfaceToProxyImplementation();
         instance = (InterfaceToProxy) proxyFactory.wrap(writer, dummy, InterfaceToProxy.class);
 
-        String logBeginning = "<invoke timestamp=\"1\" "
-                + "class=\"ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.test."
+        String logBeginning = "<invoke timestamp=\"1\" " +
+                "class=\"ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.test."
                 + "ProxyFactoryDummyInterfaceTest$InterfaceToProxyImplementation\"";
         String logEnding = "</invoke>" + System.getProperty("line.separator");
         StringBuilder builder = new StringBuilder(logBeginning);

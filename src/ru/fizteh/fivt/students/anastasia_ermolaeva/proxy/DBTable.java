@@ -364,7 +364,7 @@ public class DBTable implements Table, AutoCloseable {
     @Override
     public int size() {
         validLock.readLock().lock();
-        try {
+        try{
             checkIfValid();
             return size.get();
         } finally {
