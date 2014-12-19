@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import ru.fizteh.fivt.proxy.LoggingProxyFactory;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
@@ -28,7 +29,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class ProxyFactoryRealInterfaceTest {
-    private static ProxyFactory proxyFactory = new ProxyFactory();
+    private static LoggingProxyFactory proxyFactory = new ProxyFactory();
     private static TableProvider testProvider;
     private static Table testTable;
     private static StringWriter writer = new StringWriter();

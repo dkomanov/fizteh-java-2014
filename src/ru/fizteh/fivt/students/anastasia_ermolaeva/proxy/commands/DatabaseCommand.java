@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.commands;
 
+import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.DataBase;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.TableHolder;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.IllegalCommandException;
 
@@ -9,21 +10,21 @@ import java.util.function.Function;
 public class DatabaseCommand implements Command {
     protected String name;
     protected int numArguments;
-    protected BiConsumer<TableHolder, String[]> callback;
-    protected TableHolder tableHolder;
+    protected BiConsumer<DataBase, String[]> callback;
+    protected DataBase dataBase;
     protected Function<String[], String[]> argumentsHandler;
 
-    public DatabaseCommand(TableHolder tableHolder, String name,
-                           int numArguments, BiConsumer<TableHolder, String[]> callback) {
-        this.tableHolder = tableHolder;
+    public DatabaseCommand(DataBase dataBase, String name,
+                           int numArguments, BiConsumer<DataBase, String[]> callback) {
+        this.dataBase = dataBase;
         this.name = name;
         this.numArguments = numArguments;
         this.callback = callback;
     }
 
-    public DatabaseCommand(TableHolder tableHolder, String name, int numArguments,
-                           BiConsumer<TableHolder, String[]> callback, Function<String[], String[]> handler) {
-        this(tableHolder, name, numArguments, callback);
+    public DatabaseCommand(DataBase dataBase, String name, int numArguments,
+                           BiConsumer<DataBase, String[]> callback, Function<String[], String[]> handler) {
+        this(dataBase, name, numArguments, callback);
         argumentsHandler = handler;
     }
 
@@ -51,6 +52,6 @@ public class DatabaseCommand implements Command {
 
     @Override
     public void run(final String[] arguments) {
-        callback.accept(tableHolder, checkAndCorrectArguments(arguments));
+        callback.accept(dataBase, checkAndCorrectArguments(arguments));
     }
 }

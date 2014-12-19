@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.test;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.DataBase;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.Interpreter;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.TableHolder;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.commands.Command;
@@ -21,8 +22,8 @@ public class InterpreterTest {
     private static String newLine = System.getProperty("line.separator");
     private static String testCommand = "command";
     private static String testOutput = "TEST";
-    private static BiConsumer<TableHolder, String[]> testConsumer;
-    private static BiConsumer<TableHolder, String[]> emptyConsumer;
+    private static BiConsumer<DataBase, String[]> testConsumer;
+    private static BiConsumer<DataBase, String[]> emptyConsumer;
     private ByteArrayOutputStream outputStream;
     private PrintStream printStream;
 

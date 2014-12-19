@@ -56,20 +56,6 @@ public class TableHolder implements TableProvider, AutoCloseable {
         }
     }
 
-    public Table getActiveTable() {
-        return activeTable;
-    }
-
-    public void setActiveTable(Table activeTable) {
-        this.activeTable = activeTable;
-    }
-
-    public final void checkActiveTable() {
-        if (activeTable == null) {
-            throw new NoActiveTableException();
-        }
-    }
-
     /**
      * Возвращает таблицу с указанным названием.
      * <p>
@@ -344,7 +330,6 @@ public class TableHolder implements TableProvider, AutoCloseable {
             checkIfValid();
             List<String> tableNames = new ArrayList<>();
             tableMap.forEach((String s, DBTable table) -> tableNames.add(s));
-
             return tableNames;
         } finally {
             validLock.readLock().unlock();

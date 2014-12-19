@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.commands;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.DataBase;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.TableHolder;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Utility;
 
@@ -15,16 +16,16 @@ public class CommandsPackage {
     private static final String PARAM_DELIMITER = "\\s+";
     public Command[] pack;
 
-    public CommandsPackage(TableHolder tableHolder) {
+    public CommandsPackage(DataBase dataBase) {
         pack = new Command[]{
-                new DatabaseCommand(tableHolder, "create", 3, (holder, arguments) -> {
+                new DatabaseCommand(dataBase, "create", 3, (database, arguments) -> {
                     String tableName = arguments[1];
                     String typesList = arguments[2].substring(1, arguments[2].length() - 1);
                     String[] typesNames = typesList.trim().split(PARAM_DELIMITER);
                     List<String> typesNamesList = new ArrayList<>(Arrays.asList(typesNames));
                     List<Class<?>> types = Utility.fillTypes(typesNamesList);
                     try {
-                        if (holder.createTable(tableName, types) != null) {
+                        if (database.createTable(tableName, types) != null) {
                             System.out.println("created");
                         } else {
                             System.out.println(tableName + " exists");
@@ -61,14 +62,14 @@ public class CommandsPackage {
                     return new String[]
                             {strings[0], strings[1], typesList.toString()};
                 }),
-                new DatabaseCommand(tableHolder, "drop", 2, (holder, arguments) -> {
-                    Table activeTable = holder.getActiveTable();
+                new DatabaseCommand(dataBase, "drop", 2, (database, arguments) -> {
+                    Table activeTable = database.getActiveTable();
                     String tableName = arguments[1];
                     if (!(activeTable == null) && activeTable.getName().equals(tableName)) {
-                        holder.setActiveTable(null);
+                        database.setActiveTable(null);
                     }
                     try {
-                        holder.removeTable(tableName);
+                        database.removeTable(tableName);
                         System.out.println("dropped");
                     } catch (IllegalStateException e) {
                         System.out.println(tableName + " not exists");
@@ -77,10 +78,10 @@ public class CommandsPackage {
                         System.exit(1);
                     }
                 }),
-                new DatabaseCommand(tableHolder, "use", 2, (holder, arguments) -> {
+                new DatabaseCommand(dataBase, "use", 2, (database, arguments) -> {
                     String tableName = arguments[1];
-                    Table newActiveTable = holder.getTable(tableName);
-                    Table activeTable = holder.getActiveTable();
+                    Table newActiveTable = database.getTable(tableName);
+                    Table activeTable = database.getActiveTable();
                     if (newActiveTable != null) {
                         if (activeTable != null) {
                             if (activeTable.getNumberOfUncommittedChanges() > 0) {
@@ -88,11 +89,11 @@ public class CommandsPackage {
                                         + " unsaved changes");
                                 throw new IllegalStateException();
                             } else {
-                                holder.setActiveTable(newActiveTable);
+                                database.setActiveTable(newActiveTable);
                                 System.out.println("using " + tableName);
                             }
                         } else {
-                            holder.setActiveTable(newActiveTable);
+                            database.setActiveTable(newActiveTable);
                             System.out.println("using " + tableName);
                         }
                     } else {
@@ -100,12 +101,12 @@ public class CommandsPackage {
                         throw new IllegalStateException();
                     }
                 }),
-                new DatabaseCommand(tableHolder, "show", 2, (holder, arguments) -> {
-                    List<String> keySet = holder.getTableNames();
+                new DatabaseCommand(dataBase, "show", 2, (database, arguments) -> {
+                    List<String> keySet = database.getTableNames();
                     System.out.println("table_name row_count");
                     keySet.forEach((tableName) -> {
                         System.out.print(tableName + " ");
-                        System.out.println(holder.getTable(tableName).size());
+                        System.out.println(database.getTable(tableName).size());
                     });
                 }, (strings) -> {
                     if (strings.length == 2 && strings[1].equals("tables")) {
@@ -114,13 +115,13 @@ public class CommandsPackage {
                         throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
                     }
                 }),
-                new DatabaseTableCommand(tableHolder, "put", 3, (holder, arguments) -> {
+                new DatabaseTableCommand(dataBase, "put", 3, (database, arguments) -> {
                     String key = arguments[1];
                     String valueList = arguments[2];
                     Storeable oldValue = null;
-                    Table activeTable = holder.getActiveTable();
+                    Table activeTable = database.getActiveTable();
                     try {
-                        oldValue = activeTable.put(key, holder.deserialize(activeTable, valueList));
+                        oldValue = activeTable.put(key, database.deserialize(activeTable, valueList));
                     } catch (ParseException e) {
                         throw new IllegalArgumentException(e.getMessage(), e);
                     }
@@ -128,7 +129,7 @@ public class CommandsPackage {
                         System.out.println("new");
                     } else {
                         System.out.println("overwrite");
-                        System.out.println(holder.serialize(activeTable, oldValue));
+                        System.out.println(database.serialize(activeTable, oldValue));
                     }
 
                 }, (strings) -> {
@@ -152,56 +153,56 @@ public class CommandsPackage {
                     typesList.append(strings[i]);
                     return new String[]{strings[0], strings[1], typesList.toString()};
                 }),
-                new DatabaseTableCommand(tableHolder, "get", 2, (holder, arguments) -> {
+                new DatabaseTableCommand(dataBase, "get", 2, (database, arguments) -> {
                     String key = arguments[1];
-                    Storeable value = holder.getActiveTable().get(key);
+                    Storeable value = database.getActiveTable().get(key);
                     if (value == null) {
                         System.out.println("not found");
                     } else {
                         System.out.println("found");
-                        System.out.println(holder.serialize(holder.getActiveTable(), value));
+                        System.out.println(database.serialize(database.getActiveTable(), value));
                     }
 
                 }),
-                new DatabaseTableCommand(tableHolder, "remove", 2, (holder, arguments) -> {
+                new DatabaseTableCommand(dataBase, "remove", 2, (database, arguments) -> {
                     String key = arguments[1];
-                    Storeable value = holder.getActiveTable().remove(key);
+                    Storeable value = database.getActiveTable().remove(key);
                     if (value == null) {
                         System.out.println("not found");
                     } else {
                         System.out.println("removed");
                     }
                 }),
-                new DatabaseTableCommand(tableHolder, "list", 1, (holder, arguments) -> {
-                    List<String> list = holder.getActiveTable().list();
+                new DatabaseTableCommand(dataBase, "list", 1, (database, arguments) -> {
+                    List<String> list = database.getActiveTable().list();
                     String joined = String.join(", ", list);
                     System.out.println(joined);
 
                 }),
-                new DatabaseTableCommand(tableHolder, "size", 1,
-                        (holder, arguments) -> System.out.println(tableHolder.getActiveTable().size())
+                new DatabaseTableCommand(dataBase, "size", 1,
+                        (database, arguments) -> System.out.println(database.getActiveTable().size())
                 ),
-                new DatabaseTableCommand(tableHolder, "commit", 1, (holder, arguments) -> {
+                new DatabaseTableCommand(dataBase, "commit", 1, (database, arguments) -> {
                     try {
-                        System.out.println(holder.getActiveTable().commit());
+                        System.out.println(database.getActiveTable().commit());
                     } catch (IOException io) {
                         System.err.println(Utility.IO_MSG + io.getMessage());
                         System.exit(1);
                     }
                 }),
-                new DatabaseTableCommand(tableHolder, "rollback", 1,
-                        (holder, arguments) -> System.out.println(holder.getActiveTable().rollback())
+                new DatabaseTableCommand(dataBase, "rollback", 1,
+                        (database, arguments) -> System.out.println(database.getActiveTable().rollback())
                 ),
-                new DatabaseCommand(tableHolder, "exit", 1, (holder, arguments) -> {
+                new DatabaseCommand(dataBase, "exit", 1, (database, arguments) -> {
                     try {
-                        if (holder.getActiveTable() != null) {
-                            holder.getActiveTable().commit();
+                        if (database.getActiveTable() != null) {
+                            database.getActiveTable().commit();
                         }
                     } catch (IOException io) {
                         System.err.println("Some i/o error occured " + io.getMessage());
                         System.exit(1);
                     }
-                    holder.close();
+                    database.close();
                     System.exit(0);
                 })
         };

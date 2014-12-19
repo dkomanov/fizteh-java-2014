@@ -19,7 +19,7 @@ public class Main {
         }
         TableProviderFactory factory = new TableHolderFactory();
         try {
-            start((TableHolder) factory.create(rootDirectory), args);
+            start(new DataBase((TableHolder) factory.create(rootDirectory)), args);
         } catch (DatabaseFormatException e) {
             System.err.println(e.getMessage());
             System.exit(1);
@@ -31,7 +31,7 @@ public class Main {
         }
     }
 
-    private static void start(TableHolder tableHolder, final String[] args) throws ExitException {
-        new Interpreter(new CommandsPackage(tableHolder).pack).run(args);
+    private static void start(DataBase dataBase, final String[] args) throws ExitException {
+        new Interpreter(new CommandsPackage(dataBase).pack).run(args);
     }
 }
