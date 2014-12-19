@@ -1,16 +1,16 @@
-package ru.fizteh.fivt.students.torunova.junit.tests;
+package ru.fizteh.fivt.students.torunova.storeable.tests;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.torunova.junit.Database;
-import ru.fizteh.fivt.students.torunova.junit.DatabaseFactory;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.students.torunova.storeable.database.DatabaseFactoryWrapper;
+import ru.fizteh.fivt.students.torunova.storeable.database.DatabaseWrapper;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TableProviderFactoryTest {
     TableProviderFactory tableProviderFactory;
@@ -19,12 +19,12 @@ public class TableProviderFactoryTest {
     public TemporaryFolder folder = new TemporaryFolder();
     @Before
     public void setUp() throws Exception {
-        tableProviderFactory = new DatabaseFactory();
+        tableProviderFactory = new DatabaseFactoryWrapper();
         testDirectory = folder.newFolder("db");
     }
     @Test
     public void testCreate() throws Exception {
-        Database db = new Database(testDirectory.getAbsolutePath());
+        DatabaseWrapper db = new DatabaseWrapper(testDirectory.getAbsolutePath());
         assertEquals(db, tableProviderFactory.create(testDirectory.getAbsolutePath()));
     }
     @Test(expected = IllegalArgumentException.class)
@@ -39,5 +39,4 @@ public class TableProviderFactoryTest {
     public void testCreateTableProviderWithIllegalName2() throws Exception {
         tableProviderFactory.create("..");
     }
-
 }

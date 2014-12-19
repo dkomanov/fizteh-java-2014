@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.junit;
-import ru.fizteh.fivt.students.torunova.junit.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.junit.exceptions.TableNotCreatedException;
+package ru.fizteh.fivt.students.torunova.storeable.database;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.storeable.database.exceptions.TableNotCreatedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
     private static final String DIRECTORY_PATTERN = "([0-9]|1[0-5])\\.dir";
     private static final String FILE_PATTERN = "([0-9]|1[0-5])\\.dat";
     String tableName;
-    Map<File, FileMap> files = new HashMap<>();
+    private Map<File, FileMap> files = new HashMap<>();
     int numberOfEntries;
 
     @Override
@@ -36,6 +36,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
 
     public TableImpl(String newTableName) throws TableNotCreatedException, IncorrectFileException, IOException {
         File table = new File(newTableName).getAbsoluteFile();
+        checkTableName(table.getName());
         if (!table.exists()) {
             if (!table.mkdirs()) {
                 throw new TableNotCreatedException();
@@ -46,7 +47,8 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
         File[] filesOfDir;
         if (tableFiles != null) {
             for (File nextDir : tableFiles) {
-                if (!(Pattern.matches(DIRECTORY_PATTERN, nextDir.getName()) && nextDir.isDirectory())) {
+                if (!(Pattern.matches(DIRECTORY_PATTERN, nextDir.getName()) && nextDir.isDirectory())
+                        && !(nextDir.isFile() && nextDir.getName().equals("signature.tsv"))) {
                     throw new TableNotCreatedException("Table " + getName()
                             + " contains illegal files: " + nextDir.getAbsolutePath());
                 }
@@ -129,6 +131,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
         }
         return fm.get(key);
     }
+
     @Override
     public String remove(String key) {
         String result;
@@ -197,6 +200,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
         }
         return numberOfRevertedChanges;
     }
+
     public int countChangedEntries() {
         int numberOfChangedEntries = 0;
         for (FileMap fm:files.values()) {
@@ -220,6 +224,12 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
         builder.append(nfile).append(".dat");
         return  builder.toString();
 
+    }
+    private void checkTableName(String name) {
+        if (name == null || Pattern.matches(".*" + Pattern.quote(File.separator) + ".*", name)
+                || name.equals("..") || name.equals(".")) {
+            throw new IllegalArgumentException("illegal table name");
+        }
     }
 
 }
