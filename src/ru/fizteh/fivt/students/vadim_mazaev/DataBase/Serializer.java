@@ -15,24 +15,26 @@ public class Serializer implements Storeable {
         this.structure = new ArrayList<>(structure);
     }
 
-    private void checkIndexInBounds(int columnIndex)
-            throws IndexOutOfBoundsException {
-        if (columnIndex < 0 || columnIndex >= structure.size()) {
-            throw new IndexOutOfBoundsException();
+    public static void checkIndexInBounds(int maxIndex, int columnIndex) throws IndexOutOfBoundsException {
+        if (columnIndex < 0 || columnIndex >= maxIndex) {
+            throw new IndexOutOfBoundsException("Column index out of bounds: " + "expected index from 0 to " + maxIndex
+                    + ", but found " + columnIndex);
         }
+    }
+
+    private void checkIndexInBounds(int columnIndex) throws IndexOutOfBoundsException {
+        checkIndexInBounds(structure.size(), columnIndex);
     }
 
     private void checkColumnFormat(int columnIndex, Class<?> classType) {
         if (structure.get(columnIndex) != classType) {
-            throw new ColumnFormatException("Expected '"
-                    + structure.get(columnIndex).getSimpleName()
-                    + "' but found '" + classType.getSimpleName() + "'");
+            throw new ColumnFormatException("Expected '" + structure.get(columnIndex).getSimpleName() + "' but found '"
+                    + classType.getSimpleName() + "'");
         }
     }
 
     @Override
-    public void setColumnAt(int columnIndex, Object value)
-            throws ColumnFormatException, IndexOutOfBoundsException {
+    public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
         checkIndexInBounds(columnIndex);
         if (value != null) {
             checkColumnFormat(columnIndex, value.getClass());
@@ -57,20 +59,17 @@ public class Serializer implements Storeable {
     }
 
     @Override
-    public Integer getIntAt(int columnIndex) throws ColumnFormatException,
-            IndexOutOfBoundsException {
+    public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         return checkAndGetType(columnIndex, Integer.class);
     }
 
     @Override
-    public Long getLongAt(int columnIndex) throws ColumnFormatException,
-            IndexOutOfBoundsException {
+    public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         return checkAndGetType(columnIndex, Long.class);
     }
 
     @Override
-    public Byte getByteAt(int columnIndex) throws ColumnFormatException,
-            IndexOutOfBoundsException {
+    public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         Object value = getColumnAt(columnIndex);
         checkColumnFormat(columnIndex, Byte.class);
         if (value != null) {
@@ -81,26 +80,22 @@ public class Serializer implements Storeable {
     }
 
     @Override
-    public Float getFloatAt(int columnIndex) throws ColumnFormatException,
-            IndexOutOfBoundsException {
+    public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         return checkAndGetType(columnIndex, Float.class);
     }
 
     @Override
-    public Double getDoubleAt(int columnIndex) throws ColumnFormatException,
-            IndexOutOfBoundsException {
+    public Double getDoubleAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         return checkAndGetType(columnIndex, Double.class);
     }
 
     @Override
-    public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException,
-            IndexOutOfBoundsException {
+    public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         return checkAndGetType(columnIndex, Boolean.class);
     }
 
     @Override
-    public String getStringAt(int columnIndex) throws ColumnFormatException,
-            IndexOutOfBoundsException {
+    public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
         return checkAndGetType(columnIndex, String.class);
     }
 
@@ -116,7 +111,6 @@ public class Serializer implements Storeable {
             }
             i++;
         }
-        return getClass().getSimpleName() + "[" + String.join(",", values)
-                + "]";
+        return getClass().getSimpleName() + "[" + String.join(",", values) + "]";
     }
 }

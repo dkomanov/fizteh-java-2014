@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.vadim_mazaev.DataBase;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,43 +34,35 @@ import ru.fizteh.fivt.storage.structured.Table;
 public final class DbTable implements Table, AutoCloseable {
     private TableManager manager;
     private String name;
-    private AtomicBoolean invalid;
+    private AtomicBoolean invalid = new AtomicBoolean(false);
     private Path tableDirectoryPath;
-    private List<Class<?>> structure;
-    private Map<Long, TablePart> parts;
-    private ReadWriteLock lock;
-    private ThreadLocal<Map<String, Storeable>> diff;
+    private List<Class<?>> structure = new ArrayList<>();
+    private Map<Long, TablePart> parts = new HashMap<>();
+    private ReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private ThreadLocal<Map<String, Storeable>> diff = ThreadLocal.withInitial(HashMap::new);
 
     /**
      * @param provider
      *            Link to TableProvider, which created the table.
      * @param tableDirectoryPath
      *            Path to table directory.
-     * @throws DataBaseIOException
+     * @throws IOException
      *             If table directory is corrupted.
      * @throws IllegalArgumentException
      *             If
      */
-    public DbTable(TableManager manager, Path tableDirectoryPath)
-            throws DataBaseIOException {
+    public DbTable(TableManager manager, Path tableDirectoryPath) throws IOException {
         if (manager == null || tableDirectoryPath == null) {
             throw new IllegalArgumentException("Unable to create table for"
                     + " null provider or/and null path to table directory");
         }
-        parts = new HashMap<>();
-        diff = ThreadLocal.withInitial(() -> new HashMap<>());
-        structure = new ArrayList<>();
-        lock = new ReentrantReadWriteLock(true);
         this.manager = manager;
         this.tableDirectoryPath = tableDirectoryPath;
-        this.name = tableDirectoryPath.getName(
-                tableDirectoryPath.getNameCount() - 1).toString();
-        invalid = new AtomicBoolean(false);
+        this.name = tableDirectoryPath.getName(tableDirectoryPath.getNameCount() - 1).toString();
         try {
             readTableDir();
         } catch (DataBaseIOException e) {
-            throw new DataBaseIOException("Error reading table '" + getName()
-                    + "': " + e.getMessage(), e);
+            throw new DataBaseIOException("Error reading table '" + getName() + "': " + e.getMessage(), e);
         }
     }
 
@@ -95,8 +89,7 @@ public final class DbTable implements Table, AutoCloseable {
                         long hash = getHash(pair.getKey());
                         int dirNumber = Helper.unhashFirstIntFromLong(hash);
                         int fileNumber = Helper.unhashSecondIntFromLong(hash);
-                        part = new TablePart(this, tableDirectoryPath,
-                                dirNumber, fileNumber);
+                        part = new TablePart(this, tableDirectoryPath, dirNumber, fileNumber);
                         parts.put(hash, part);
                     }
                     part.put(pair.getKey(), pair.getValue());
@@ -106,8 +99,7 @@ public final class DbTable implements Table, AutoCloseable {
             writeTableToDir();
             return savedChangesCounter;
         } catch (IOException e) {
-            throw new IOException("Error writing table '" + getName()
-                    + "' to its directory: " + e.getMessage(), e);
+            throw new IOException("Error writing table '" + getName() + "' to its directory: " + e.getMessage(), e);
         } finally {
             lock.writeLock().unlock();
         }
@@ -163,14 +155,9 @@ public final class DbTable implements Table, AutoCloseable {
      *             Wrong index of column.
      */
     @Override
-    public Class<?> getColumnType(int columnIndex)
-            throws IndexOutOfBoundsException {
+    public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
         checkTableIsNotRemoved();
-        if (columnIndex < 0 || columnIndex >= structure.size()) {
-            throw new IndexOutOfBoundsException("Column index out of bounds: "
-                    + "expected index from 0 to " + structure.size()
-                    + ", but found " + columnIndex);
-        }
+        Serializer.checkIndexInBounds(structure.size(), columnIndex);
         return structure.get(columnIndex);
     }
 
@@ -186,14 +173,11 @@ public final class DbTable implements Table, AutoCloseable {
         int dirNumber;
         int fileNumber;
         try {
-            dirNumber = Math.abs(key.getBytes(Helper.ENCODING)[0]
+            dirNumber = Math.abs(key.getBytes(Helper.ENCODING)[0] % Helper.NUMBER_OF_PARTITIONS);
+            fileNumber = Math.abs((key.getBytes(Helper.ENCODING)[0] / Helper.NUMBER_OF_PARTITIONS)
                     % Helper.NUMBER_OF_PARTITIONS);
-            fileNumber = Math
-                    .abs((key.getBytes(Helper.ENCODING)[0] / Helper.NUMBER_OF_PARTITIONS)
-                            % Helper.NUMBER_OF_PARTITIONS);
         } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unable to encode key to "
-                    + Helper.ENCODING, e);
+            throw new IllegalArgumentException("Unable to encode key to " + Helper.ENCODING, e);
         }
         return Helper.hashIntPairAsLong(dirNumber, fileNumber);
     }
@@ -206,8 +190,7 @@ public final class DbTable implements Table, AutoCloseable {
      */
     private void checkTableIsNotRemoved() {
         if (invalid.get()) {
-            throw new IllegalStateException("This table '" + name
-                    + "' has already removed");
+            throw new IllegalStateException("This table '" + name + "' has already removed");
         }
     }
 
@@ -282,28 +265,22 @@ public final class DbTable implements Table, AutoCloseable {
      *             columns of table.
      */
     @Override
-    public Storeable put(String key, Storeable value)
-            throws ColumnFormatException {
+    public Storeable put(String key, Storeable value) throws ColumnFormatException {
         lock.readLock().lock();
         try {
             checkTableIsNotRemoved();
             if (key == null || value == null) {
-                throw new IllegalArgumentException(
-                        "Key or value is a null-string");
+                throw new IllegalArgumentException("Key or value is a null-string");
             }
             // Check Storeable structure.
             try {
                 for (int i = 0; i < structure.size(); i++) {
-                    if (value.getColumnAt(i) != null
-                            && structure.get(i) != value.getColumnAt(i)
-                                    .getClass()) {
-                        throw new ColumnFormatException(
-                                "Storeable has a wrong column format");
+                    if (value.getColumnAt(i) != null && structure.get(i) != value.getColumnAt(i).getClass()) {
+                        throw new ColumnFormatException("Storeable has a wrong column format");
                     }
                 }
             } catch (IndexOutOfBoundsException e) {
-                throw new ColumnFormatException("Storeable has a wrong "
-                        + "column format: " + e.getMessage(), e);
+                throw new ColumnFormatException("Storeable has a wrong " + "column format: " + e.getMessage(), e);
             }
             // End of checking section.
             Storeable oldValue;
@@ -450,55 +427,45 @@ public final class DbTable implements Table, AutoCloseable {
      */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "["
-                + tableDirectoryPath.toAbsolutePath() + "]";
+        return getClass().getSimpleName() + "[" + tableDirectoryPath.toAbsolutePath() + "]";
     }
 
     /**
      * Read and check table directory. Not thread safe.
      * 
-     * @throws DataBaseIOException
+     * @throws IOException
      *             If directory checking fails.
      */
-    private void readTableDir() throws DataBaseIOException {
+    private void readTableDir() throws IOException {
         readSignature();
-        String[] dirList = tableDirectoryPath.toFile().list();
-        for (String dir : dirList) {
-            Path dirPath = tableDirectoryPath.resolve(dir);
-            if (!dir.matches(Helper.DIR_NAME_REGEX)
-                    || !dirPath.toFile().isDirectory()) {
-                if (dir.equals(Helper.SIGNATURE_FILE_NAME)
-                        && dirPath.toFile().isFile()) {
-                    // Ignore signature file.
-                    continue;
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(tableDirectoryPath)) {
+            for (Path dir : stream) {
+                Path dirPath = tableDirectoryPath.resolve(dir);
+                if (!dir.getFileName().toString().matches(Helper.DIR_NAME_REGEX) || !dirPath.toFile().isDirectory()) {
+                    if (dir.getFileName().toString().equals(Helper.SIGNATURE_FILE_NAME) && dirPath.toFile().isFile()) {
+                        // Ignore signature file.
+                        continue;
+                    }
+                    throw new DataBaseIOException(String.format("File '" + dir + "' is not a directory or "
+                            + "doesn't match required name '[0-%1$d].dir'", Helper.NUMBER_OF_PARTITIONS - 1));
                 }
-                throw new DataBaseIOException(String.format("File '" + dir
-                        + "' is not a directory or "
-                        + "doesn't match required name '[0-%1$d].dir'",
-                        Helper.NUMBER_OF_PARTITIONS - 1));
-            }
-            String[] fileList = dirPath.toFile().list();
-            if (fileList.length == 0) {
-                throw new DataBaseIOException("Directory '" + dir
-                        + "' is empty.");
-            }
-            for (String file : fileList) {
-                Path filePath = dirPath.resolve(file);
-                if (!file.matches(Helper.FILE_NAME_REGEX)
-                        || !filePath.toFile().isFile()) {
-                    throw new DataBaseIOException(String.format("File '" + file
-                            + "'" + " in directory '" + dir
-                            + "' is not a regular file or"
-                            + " doesn't match required name '[0-%1$d].dat'",
-                            Helper.NUMBER_OF_PARTITIONS - 1));
+                String[] fileList = dirPath.toFile().list();
+                if (fileList.length == 0) {
+                    throw new DataBaseIOException("Directory '" + dir + "' is empty.");
                 }
-                int dirNumber = Integer.parseInt(dir.substring(0,
-                        dir.length() - 4));
-                int fileNumber = Integer.parseInt(file.substring(0,
-                        file.length() - 4));
-                TablePart part = new TablePart(this, tableDirectoryPath,
-                        dirNumber, fileNumber);
-                parts.put(Helper.hashIntPairAsLong(dirNumber, fileNumber), part);
+                for (String file : fileList) {
+                    Path filePath = dirPath.resolve(file);
+                    if (!file.matches(Helper.FILE_NAME_REGEX) || !filePath.toFile().isFile()) {
+                        throw new DataBaseIOException(String.format("File '" + file + "'" + " in directory '" + dir
+                                + "' is not a regular file or" + " doesn't match required name '[0-%1$d].dat'",
+                                Helper.NUMBER_OF_PARTITIONS - 1));
+                    }
+                    int dirNumber = Integer.parseInt(dir.getFileName().toString()
+                            .substring(0, dir.getFileName().toString().length() - 4));
+                    int fileNumber = Integer.parseInt(file.substring(0, file.length() - 4));
+                    TablePart part = new TablePart(this, tableDirectoryPath, dirNumber, fileNumber);
+                    parts.put(Helper.hashIntPairAsLong(dirNumber, fileNumber), part);
+                }
             }
         }
     }
@@ -513,25 +480,22 @@ public final class DbTable implements Table, AutoCloseable {
      *             If file is corrupted or can't be read.
      */
     private void readSignature() throws DataBaseIOException {
-        Path signatureFilePath = tableDirectoryPath
-                .resolve(Helper.SIGNATURE_FILE_NAME);
+        Path signatureFilePath = tableDirectoryPath.resolve(Helper.SIGNATURE_FILE_NAME);
         if (!signatureFilePath.toFile().isFile()) {
-            throw new DataBaseIOException("Signature file '"
-                    + Helper.SIGNATURE_FILE_NAME + "' is missing");
+            throw new DataBaseIOException("Signature file '" + Helper.SIGNATURE_FILE_NAME + "' is missing");
         }
         try (Scanner scanner = new Scanner(signatureFilePath)) {
             String[] types = scanner.nextLine().split("\\s+");
             for (String typeName : types) {
-                Class<?> typeClass = Helper.SUPPORTED_NAMES_TO_TYPES
-                        .get(typeName);
+                Class<?> typeClass = Helper.SUPPORTED_NAMES_TO_TYPES.get(typeName);
                 if (typeClass == null) {
                     throw new IOException("file contains wrong type names");
                 }
                 structure.add(typeClass);
             }
         } catch (IOException | NoSuchElementException e) {
-            throw new DataBaseIOException("Unable read signature from "
-                    + signatureFilePath.toString() + ": " + e.getMessage(), e);
+            throw new DataBaseIOException("Unable read signature from " + signatureFilePath.toString() + ": "
+                    + e.getMessage(), e);
         }
     }
 

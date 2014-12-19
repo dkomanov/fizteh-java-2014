@@ -35,7 +35,7 @@ public class TableManagerFactoryTest {
 
     @After
     public void tearDown() throws IOException {
-        Helper.recoursiveDelete(TestHelper.TEST_DIR.toFile());
+        Helper.recoursiveDelete(TestHelper.TEST_DIR);
     }
 
 }

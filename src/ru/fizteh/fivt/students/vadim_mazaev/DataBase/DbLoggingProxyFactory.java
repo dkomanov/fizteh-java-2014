@@ -20,10 +20,9 @@ public class DbLoggingProxyFactory implements LoggingProxyFactory {
                 || !interfaceClass.isInterface()) {
             throw new IllegalArgumentException();
         }
-        Class<?>[] interfaces = {interfaceClass};
         return Proxy.newProxyInstance(implementation.getClass()
-                .getClassLoader(), interfaces, new DbLogger(writer,
-                implementation));
+                .getClassLoader(), new Class<?>[] {interfaceClass},
+                new DbLogger(writer, implementation));
     }
 }
 

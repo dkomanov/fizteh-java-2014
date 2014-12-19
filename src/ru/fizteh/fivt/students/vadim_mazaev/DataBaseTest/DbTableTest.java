@@ -44,25 +44,20 @@ public class DbTableTest {
         test = new TableManager(TestHelper.TEST_DIR.toString());
         test.createTable(TestHelper.TEST_TABLE_NAME, TestHelper.STRUCTURE);
         testTable = test.getTable(TestHelper.TEST_TABLE_NAME);
-        testStoreable = test.deserialize(testTable,
-                TestHelper.SERIALIZED_VALUES);
+        testStoreable = test.deserialize(testTable, TestHelper.SERIALIZED_VALUES);
         test.createTable("tempTable", TestHelper.MIXED_STRUCTURE);
         Table tempTable = test.getTable("tempTable");
-        wrongStoreable = test.deserialize(tempTable,
-                TestHelper.MIXED_SERIALIZED_VALUES);
+        wrongStoreable = test.deserialize(tempTable, TestHelper.MIXED_SERIALIZED_VALUES);
         test.removeTable("tempTable");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testDbTableThrowsExceptionCreatedForNullProvider()
-            throws DataBaseIOException {
-        new DbTable(null,
-                TestHelper.TEST_DIR.resolve(TestHelper.TEST_TABLE_NAME));
+    public void testDbTableThrowsExceptionCreatedForNullProvider() throws IOException {
+        new DbTable(null, TestHelper.TEST_DIR.resolve(TestHelper.TEST_TABLE_NAME));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testDbTableThrowsExceptionCreatedForNullPathToTableDirectory()
-            throws DataBaseIOException {
+    public void testDbTableThrowsExceptionCreatedForNullPathToTableDirectory() throws IOException {
         new DbTable(test, null);
     }
 
@@ -166,16 +161,14 @@ public class DbTableTest {
     }
 
     @Test
-    public void testCommitRemovingNonexistentKeyFromNonCommitedFile()
-            throws IOException {
+    public void testCommitRemovingNonexistentKeyFromNonCommitedFile() throws IOException {
         assertNull(testTable.remove(testKey));
         int numberOfChanges = testTable.getNumberOfUncommittedChanges();
         assertEquals(numberOfChanges, testTable.commit());
     }
 
     @Test
-    public void testCommitRemovingExistentKeyFromNonCommitedFile()
-            throws IOException {
+    public void testCommitRemovingExistentKeyFromNonCommitedFile() throws IOException {
         assertNull(testTable.put(testKey, testStoreable));
         assertEquals(testStoreable, testTable.remove(testKey));
         int numberOfChanges = testTable.getNumberOfUncommittedChanges();
@@ -183,8 +176,7 @@ public class DbTableTest {
     }
 
     @Test
-    public void testCommitRemovingExistentKeyFromCommitedFile()
-            throws IOException {
+    public void testCommitRemovingExistentKeyFromCommitedFile() throws IOException {
         assertNull(testTable.put(testKey, testStoreable));
         int numberOfChanges = testTable.getNumberOfUncommittedChanges();
         assertEquals(numberOfChanges, testTable.commit());
@@ -194,8 +186,7 @@ public class DbTableTest {
     }
 
     @Test
-    public void testCommitRemovingNonexistentKeyFromCommitedFile()
-            throws IOException {
+    public void testCommitRemovingNonexistentKeyFromCommitedFile() throws IOException {
         assertNull(testTable.remove(testKey));
         int numberOfChanges = testTable.getNumberOfUncommittedChanges();
         assertEquals(numberOfChanges, testTable.commit());
@@ -265,8 +256,7 @@ public class DbTableTest {
         assertEquals(numberOfChanges, testTable.commit());
         String subdirectoryName = testKey.getBytes()[0] % 16 + ".dir";
         String fileName = (testKey.getBytes()[0] / 16) % 16 + ".dat";
-        Path filePath = Paths.get(TestHelper.TEST_DIR.toString(),
-                subdirectoryName, fileName);
+        Path filePath = Paths.get(TestHelper.TEST_DIR.toString(), subdirectoryName, fileName);
         assertFalse(filePath.toFile().exists());
     }
 
@@ -290,25 +280,22 @@ public class DbTableTest {
     }
 
     @Test(expected = DataBaseIOException.class)
-    public void testReloadCorruptedTableWithoutSignatureFile()
-            throws IOException {
+    public void testReloadCorruptedTableWithoutSignatureFile() throws IOException {
         testTable.put(testKey, testStoreable);
         testTable.commit();
 
-        Paths.get(TestHelper.TEST_DIR.toString(), TestHelper.TEST_TABLE_NAME,
-                Helper.SIGNATURE_FILE_NAME).toFile().delete();
+        Paths.get(TestHelper.TEST_DIR.toString(), TestHelper.TEST_TABLE_NAME, Helper.SIGNATURE_FILE_NAME).toFile()
+                .delete();
         new TableManager(TestHelper.TEST_DIR.toString());
     }
 
     @Test(expected = DataBaseIOException.class)
-    public void testReloadTableWithCorruptedEmptySignatureFile()
-            throws IOException {
+    public void testReloadTableWithCorruptedEmptySignatureFile() throws IOException {
         testTable.put(testKey, testStoreable);
         testTable.commit();
 
-        File signatureFile = Paths.get(TestHelper.TEST_DIR.toString(),
-                TestHelper.TEST_TABLE_NAME, Helper.SIGNATURE_FILE_NAME)
-                .toFile();
+        File signatureFile = Paths.get(TestHelper.TEST_DIR.toString(), TestHelper.TEST_TABLE_NAME,
+                Helper.SIGNATURE_FILE_NAME).toFile();
         signatureFile.delete();
         signatureFile.createNewFile();
 
@@ -320,9 +307,8 @@ public class DbTableTest {
         testTable.put(testKey, testStoreable);
         testTable.commit();
 
-        File signatureFile = Paths.get(TestHelper.TEST_DIR.toString(),
-                TestHelper.TEST_TABLE_NAME, Helper.SIGNATURE_FILE_NAME)
-                .toFile();
+        File signatureFile = Paths.get(TestHelper.TEST_DIR.toString(), TestHelper.TEST_TABLE_NAME,
+                Helper.SIGNATURE_FILE_NAME).toFile();
         try (PrintWriter printer = new PrintWriter(signatureFile.toString())) {
             printer.print("unsupportedType");
         }
@@ -335,8 +321,7 @@ public class DbTableTest {
         testTable.put(testKey, testStoreable);
         testTable.commit();
 
-        File tableDirectory = TestHelper.TEST_DIR.resolve(
-                TestHelper.TEST_TABLE_NAME).toFile();
+        File tableDirectory = TestHelper.TEST_DIR.resolve(TestHelper.TEST_TABLE_NAME).toFile();
         for (File subdirectory : tableDirectory.listFiles()) {
             if (subdirectory.isDirectory()) {
                 for (File file : subdirectory.listFiles()) {
@@ -353,8 +338,7 @@ public class DbTableTest {
         testTable.put(testKey, testStoreable);
         testTable.commit();
 
-        File tableDirectory = TestHelper.TEST_DIR.resolve(
-                TestHelper.TEST_TABLE_NAME).toFile();
+        File tableDirectory = TestHelper.TEST_DIR.resolve(TestHelper.TEST_TABLE_NAME).toFile();
         for (File subdirectory : tableDirectory.listFiles()) {
             if (subdirectory.isDirectory()) {
                 Path newName = tableDirectory.toPath().resolve("wrongName");
@@ -371,13 +355,11 @@ public class DbTableTest {
         testTable.put(testKey, testStoreable);
         testTable.commit();
 
-        File tableDirectory = TestHelper.TEST_DIR.resolve(
-                TestHelper.TEST_TABLE_NAME).toFile();
+        File tableDirectory = TestHelper.TEST_DIR.resolve(TestHelper.TEST_TABLE_NAME).toFile();
         for (File subdirectory : tableDirectory.listFiles()) {
             if (subdirectory.isDirectory()) {
                 for (File file : subdirectory.listFiles()) {
-                    Path newName = Paths.get(tableDirectory.getAbsolutePath(),
-                            subdirectory.getName(), "wrongName");
+                    Path newName = Paths.get(tableDirectory.getAbsolutePath(), subdirectory.getName(), "wrongName");
                     file.renameTo(newName.toFile());
                 }
                 break;
@@ -389,6 +371,6 @@ public class DbTableTest {
 
     @After
     public void tearDown() throws IOException {
-        Helper.recoursiveDelete(TestHelper.TEST_DIR.toFile());
+        Helper.recoursiveDelete(TestHelper.TEST_DIR);
     }
 }

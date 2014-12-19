@@ -48,7 +48,7 @@ public class DbLoggingProxyFactoryTest {
     @After
     public void tearDown() throws IOException {
         test.close();
-        Helper.recoursiveDelete(TestHelper.TEST_DIR.toFile());
+        Helper.recoursiveDelete(TestHelper.TEST_DIR);
     }
 
 }

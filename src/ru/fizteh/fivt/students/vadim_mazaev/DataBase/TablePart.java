@@ -22,10 +22,10 @@ import ru.fizteh.fivt.storage.structured.Storeable;
  * Class represents a single file of type *.dir/*.dat.
  */
 final class TablePart {
-    private Map<String, Storeable> data; // Keep all data, which this .dat file
-                                         // contains.
-    private boolean changed; // Using this flag, the method learns whether to
-                             // update the data on the disk.
+    private Map<String, Storeable> data = new HashMap<>();
+    // Keep all data, which this .dat file contains.
+    private boolean changed;
+    // Using this flag, the method learns whether to update the data on disk.
     private DbTable table; // Link to table, which stores this .dat file.
     private Path tablePartDirectoryPath; // Path to table directory.
     private int fileNumber; // Number of file in directory, which contains data
@@ -52,8 +52,6 @@ final class TablePart {
         this.directoryNumber = directoryNumber;
         this.fileNumber = fileNumber;
         this.table = table;
-        data = new HashMap<>();
-        changed = false;
         if (tablePartDirectoryPath.toFile().exists()) {
             try {
                 readFile();

@@ -54,57 +54,48 @@ public final class TableManager implements TableProvider, AutoCloseable {
             return Boolean.parseBoolean(string);
         });
         unitializerMap.put(String.class, string -> {
-            if (string.charAt(0) != '"'
-                    || string.charAt(string.length() - 1) != '"') {
+            if (string.charAt(0) != '"' || string.charAt(string.length() - 1) != '"') {
                 throw new ColumnFormatException("String must be quoted");
             }
             return string.substring(1, string.length() - 1);
         });
         PARSER_METHODS = Collections.unmodifiableMap(unitializerMap);
     }
-    private ReadWriteLock lock;
-    private AtomicBoolean invalid;
-    private Map<String, DbTable> tables;
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    private AtomicBoolean invalid = new AtomicBoolean(false);
+    private Map<String, DbTable> tables = new HashMap<>();
     private Path tablesDirectoryPath;
 
     /**
      * @param directoryPath
      *            Path to the directory containing the tables.
      * 
-     * @throws DataBaseIOException
+     * @throws IOException
      *             If structure of data base is corrupted.
      * @throws IllegalArgumentException
      *             If path is incorrect or doesn't lead to a directory.
      */
-    public TableManager(String directoryPath) throws DataBaseIOException {
+    public TableManager(String directoryPath) throws IOException {
         try {
             tablesDirectoryPath = Paths.get(directoryPath);
             if (!tablesDirectoryPath.toFile().exists()) {
                 tablesDirectoryPath.toFile().mkdir();
             }
             if (!tablesDirectoryPath.toFile().isDirectory()) {
-                throw new IllegalArgumentException(
-                        ERROR_CONNECTING_TO_DATABASE_MSG
-                                + ": path is incorrect or does not lead to a directory");
+                throw new IllegalArgumentException(ERROR_CONNECTING_TO_DATABASE_MSG
+                        + ": path is incorrect or does not lead to a directory");
             }
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException(ERROR_CONNECTING_TO_DATABASE_MSG
-                    + ": '" + directoryPath + "' is illegal directory name", e);
+            throw new IllegalArgumentException(ERROR_CONNECTING_TO_DATABASE_MSG + ": '" + directoryPath
+                    + "' is illegal directory name", e);
         }
-        invalid = new AtomicBoolean(false);
-        tables = new HashMap<>();
-        lock = new ReentrantReadWriteLock();
         for (String tableDirectoryName : tablesDirectoryPath.toFile().list()) {
-            Path tableDirectoryPath = tablesDirectoryPath
-                    .resolve(tableDirectoryName);
+            Path tableDirectoryPath = tablesDirectoryPath.resolve(tableDirectoryName);
             if (tableDirectoryPath.toFile().isDirectory()) {
                 try {
-                    tables.put(tableDirectoryName, new DbTable(this,
-                            tableDirectoryPath));
+                    tables.put(tableDirectoryName, new DbTable(this, tableDirectoryPath));
                 } catch (DataBaseIOException e) {
-                    throw new DataBaseIOException(
-                            ERROR_CONNECTING_TO_DATABASE_MSG + ": "
-                                    + e.getMessage(), e);
+                    throw new DataBaseIOException(ERROR_CONNECTING_TO_DATABASE_MSG + ": " + e.getMessage(), e);
                 }
             } else {
                 throw new DataBaseIOException(ERROR_CONNECTING_TO_DATABASE_MSG
@@ -136,13 +127,11 @@ public final class TableManager implements TableProvider, AutoCloseable {
             }
             tablesDirectoryPath.resolve(tableName);
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
-                throw new InvalidPathException(tableName,
-                        ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
+                throw new InvalidPathException(tableName, ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
             }
             return tables.get(tableName);
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": "
-                    + e.getMessage(), e);
+            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": " + e.getMessage(), e);
         } finally {
             lock.readLock().unlock();
         }
@@ -162,12 +151,11 @@ public final class TableManager implements TableProvider, AutoCloseable {
      * @throws IllegalArgumentException
      *             If the name of the table is null or invalid. If columns types
      *             list is null or contains invalid values.
-     * @throws DataBaseIOException
+     * @throws IOException
      *             If I/O errors occurred.
      */
     @Override
-    public Table createTable(String tableName, List<Class<?>> columnTypes)
-            throws DataBaseIOException {
+    public Table createTable(String tableName, List<Class<?>> columnTypes) throws IOException {
         lock.writeLock().lock();
         try {
             checkTableManagerIsNotInvalid();
@@ -175,28 +163,23 @@ public final class TableManager implements TableProvider, AutoCloseable {
                 throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
             }
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
-                throw new InvalidPathException(tableName,
-                        ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
+                throw new InvalidPathException(tableName, ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
             }
             if (tables.containsKey(tableName)) {
                 return null;
             }
             Path newTablePath = tablesDirectoryPath.resolve(tableName);
             newTablePath.toFile().mkdir();
-            writeSignature(newTablePath.resolve(Helper.SIGNATURE_FILE_NAME),
-                    columnTypes);
+            writeSignature(newTablePath.resolve(Helper.SIGNATURE_FILE_NAME), columnTypes);
             DbTable newTable = new DbTable(this, newTablePath);
             tables.put(tableName, newTable);
             return newTable;
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": "
-                    + e.getMessage(), e);
+            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": " + e.getMessage(), e);
         } catch (DataBaseIOException e) {
-            throw new DataBaseIOException("Unable to create table '"
-                    + tableName + "': " + e.getMessage(), e);
+            throw new DataBaseIOException("Unable to create table '" + tableName + "': " + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unable to create table: "
-                    + e.getMessage(), e);
+            throw new IllegalArgumentException("Unable to create table: " + e.getMessage(), e);
         } finally {
             lock.writeLock().unlock();
         }
@@ -216,25 +199,21 @@ public final class TableManager implements TableProvider, AutoCloseable {
      * @throws IllegalArgumentException
      *             If list of column types is null.
      */
-    private void writeSignature(Path filePath, List<Class<?>> columnTypes)
-            throws DataBaseIOException {
+    private void writeSignature(Path filePath, List<Class<?>> columnTypes) throws DataBaseIOException {
         checkTableManagerIsNotInvalid();
         if (columnTypes == null || columnTypes.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "List of column types can't be null or empty");
+            throw new IllegalArgumentException("List of column types can't be null or empty");
         }
         try (PrintWriter printer = new PrintWriter(filePath.toString())) {
             StringBuilder typesStringBuilder = new StringBuilder();
             for (Class<?> typeClass : columnTypes) {
-                typesStringBuilder.append(Helper.SUPPORTED_TYPES_TO_NAMES
-                        .get(typeClass));
+                typesStringBuilder.append(Helper.SUPPORTED_TYPES_TO_NAMES.get(typeClass));
                 typesStringBuilder.append(" ");
             }
             typesStringBuilder.deleteCharAt(typesStringBuilder.length() - 1);
             printer.print(typesStringBuilder.toString());
         } catch (IOException e) {
-            throw new DataBaseIOException("Unable write signature to "
-                    + filePath.toString(), e);
+            throw new DataBaseIOException("Unable write signature to " + filePath.toString(), e);
         }
     }
 
@@ -262,23 +241,20 @@ public final class TableManager implements TableProvider, AutoCloseable {
                 throw new IllegalArgumentException(TABLE_NAME_IS_NULL_MSG);
             }
             if (tableName.matches(Helper.ILLEGAL_TABLE_NAME_REGEX)) {
-                throw new InvalidPathException(tableName,
-                        ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
+                throw new InvalidPathException(tableName, ILLEGAL_SYMBOL_IN_TABLE_NAME_MSG);
             }
             Path tableDirectory = tablesDirectoryPath.resolve(tableName);
             DbTable removedTable = tables.remove(tableName);
             if (removedTable == null) {
                 throw new IllegalStateException("There is no such table");
             } else {
-                Helper.recoursiveDelete(tableDirectory.toFile());
+                Helper.recoursiveDelete(tableDirectory);
                 removedTable.close();
             }
         } catch (InvalidPathException e) {
-            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": "
-                    + e.getMessage(), e);
+            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME_MSG + ": " + e.getMessage(), e);
         } catch (IOException e) {
-            throw new DataBaseIOException("Unable to remove table: "
-                    + e.getMessage(), e);
+            throw new DataBaseIOException("Unable to remove table: " + e.getMessage(), e);
         } finally {
             lock.writeLock().unlock();
         }
@@ -320,8 +296,7 @@ public final class TableManager implements TableProvider, AutoCloseable {
      *             other.
      */
     @Override
-    public Storeable createFor(Table table, List<?> values)
-            throws ColumnFormatException, IndexOutOfBoundsException {
+    public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
         checkTableManagerIsNotInvalid();
         List<Class<?>> types = new ArrayList<>();
         for (int i = 0; i < table.getColumnsCount(); i++) {
@@ -348,24 +323,19 @@ public final class TableManager implements TableProvider, AutoCloseable {
      *             If any discrepancies in the read data.
      */
     @Override
-    public Storeable deserialize(Table table, String value)
-            throws ParseException {
+    public Storeable deserialize(Table table, String value) throws ParseException {
         checkTableManagerIsNotInvalid();
         value = value.trim();
         if (value.charAt(0) != '[') {
-            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG
-                    + ": '[' at the begging is missing", 0);
+            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": '[' at the begging is missing", 0);
         }
         if (value.charAt(value.length() - 1) != ']') {
-            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG
-                    + ": ']' at the end is missing", 0);
+            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": ']' at the end is missing", 0);
         }
         value = value.substring(1, value.length() - 1);
-        String[] tokens = value.split(","
-                + Helper.IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);
+        String[] tokens = value.split("," + Helper.IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);
         if (tokens.length != table.getColumnsCount()) {
-            throw new ParseException("Incorrect number of tokens: "
-                    + table.getColumnsCount() + " expected, but "
+            throw new ParseException("Incorrect number of tokens: " + table.getColumnsCount() + " expected, but "
                     + tokens.length + " found.", 0);
         }
         Storeable deserialized = createFor(table);
@@ -376,19 +346,14 @@ public final class TableManager implements TableProvider, AutoCloseable {
                     deserialized.setColumnAt(columnIndex, null);
                 } else {
                     deserialized.setColumnAt(columnIndex,
-                            PARSER_METHODS
-                                    .get(table.getColumnType(columnIndex))
-                                    .apply(token));
+                            PARSER_METHODS.get(table.getColumnType(columnIndex)).apply(token));
                 }
             } catch (ColumnFormatException e) {
-                throw new ParseException("Token " + columnIndex
-                        + " is not correct: " + e.getMessage(), 0);
+                throw new ParseException("Token " + columnIndex + " is not correct: " + e.getMessage(), 0);
             } catch (NumberFormatException e) {
-                throw new ParseException("Token " + columnIndex
-                        + " is not correct: " + "Input string '"
+                throw new ParseException("Token " + columnIndex + " is not correct: " + "Input string '"
                         + tokens[columnIndex].trim() + "' is not a number of '"
-                        + table.getColumnType(columnIndex).getSimpleName()
-                        + "' type", 0);
+                        + table.getColumnType(columnIndex).getSimpleName() + "' type", 0);
             }
         }
         return deserialized;
@@ -408,15 +373,13 @@ public final class TableManager implements TableProvider, AutoCloseable {
      *             match each other.
      */
     @Override
-    public String serialize(Table table, Storeable value)
-            throws ColumnFormatException {
+    public String serialize(Table table, Storeable value) throws ColumnFormatException {
         checkTableManagerIsNotInvalid();
         String[] tokens = new String[table.getColumnsCount()];
         for (int columnIndex = 0; columnIndex < tokens.length; columnIndex++) {
             try {
                 Object tokenType = table.getColumnType(columnIndex);
-                Object token = Helper.GETTERS.get(tokenType).invoke(value,
-                        columnIndex);
+                Object token = Helper.GETTERS.get(tokenType).invoke(value, columnIndex);
                 if (token == null) {
                     tokens[columnIndex] = null;
                 } else if (token.getClass().equals(String.class)) {
@@ -425,11 +388,9 @@ public final class TableManager implements TableProvider, AutoCloseable {
                     tokens[columnIndex] = token.toString();
                 }
             } catch (InvocationTargetException e) {
-                throw new ColumnFormatException(e.getTargetException()
-                        .getMessage(), e);
+                throw new ColumnFormatException(e.getTargetException().getMessage(), e);
             } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException("Unable to serialize: "
-                        + e.getMessage(), e);
+                throw new IllegalArgumentException("Unable to serialize: " + e.getMessage(), e);
             }
         }
         return '[' + String.join(", ", tokens) + ']';
@@ -462,8 +423,7 @@ public final class TableManager implements TableProvider, AutoCloseable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "["
-                + tablesDirectoryPath.toAbsolutePath() + "]";
+        return getClass().getSimpleName() + "[" + tablesDirectoryPath.toAbsolutePath() + "]";
     }
 
     void removeTableFromList(String tableName) {
