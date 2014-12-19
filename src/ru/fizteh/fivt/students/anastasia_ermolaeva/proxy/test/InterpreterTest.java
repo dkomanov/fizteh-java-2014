@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.DataBase;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.Interpreter;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.TableHolder;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.commands.Command;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.commands.DatabaseCommand;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.ExitException;

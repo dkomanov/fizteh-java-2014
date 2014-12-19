@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.test;
 
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.ProxyFactory;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Utility;
 
 import javax.xml.stream.XMLOutputFactory;
