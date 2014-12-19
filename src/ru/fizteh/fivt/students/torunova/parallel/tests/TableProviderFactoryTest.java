@@ -5,8 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
-import ru.fizteh.fivt.students.torunova.parallel.DatabaseFactoryWrapper;
-import ru.fizteh.fivt.students.torunova.parallel.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.parallel.database.DatabaseFactoryWrapper;
+import ru.fizteh.fivt.students.torunova.parallel.database.DatabaseWrapper;
 
 import java.io.File;
 
