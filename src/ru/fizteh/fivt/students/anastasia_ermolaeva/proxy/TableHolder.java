@@ -6,7 +6,6 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Utility;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.DatabaseFormatException;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.NoActiveTableException;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;

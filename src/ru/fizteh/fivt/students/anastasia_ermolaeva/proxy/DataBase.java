@@ -18,8 +18,7 @@ public class DataBase implements TableProvider, AutoCloseable {
     public DataBase(TableHolder tableHolder){
         this.tableHolder = tableHolder;
     }
-    public Table getActiveTable() {
-        return activeTable;
+    public Table getActiveTable() { return activeTable;
     }
 
     public void setActiveTable(Table activeTable) {

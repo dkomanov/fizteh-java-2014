@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.commands;
 
 import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.DataBase;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.proxy.TableHolder;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
