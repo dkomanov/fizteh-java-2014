@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class Utility {
     public static final String NULL_MSG = "Object is null";
@@ -417,7 +418,9 @@ public class Utility {
     }
 
     private static String getIncompatibleTypesErrMessage(String currentValue, Class<?> required) {
-        return "wrong type (value " + currentValue + " can't be applied to " + WRAPPERS_TO_PRIMITIVE.get(required) + ")";
+        return "wrong type (value " + currentValue
+                + " can't be applied to "
+                + WRAPPERS_TO_PRIMITIVE.get(required) + ")";
     }
 
     /*
@@ -477,5 +480,58 @@ public class Utility {
                 }
             }
         }
+    }
+
+    public static Function<String[], String[]> getStringHandlerForCreate() {
+        return (String[] strings) -> {
+            String firstArgument = strings[1];
+            if (firstArgument.contains("(")) {
+                throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
+            }
+            StringBuilder typesList = new StringBuilder();
+            int i = 0;
+            while ((i < strings.length) && !strings[i].contains("(")) {
+                i++;
+            }
+            if (i != 2) {
+                throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
+            }
+            while (i < strings.length - 1) {
+                typesList.append(strings[i]);
+                typesList.append(" ");
+                i++;
+            }
+            typesList.append(strings[i]);
+            int length = typesList.length();
+            if (!(typesList.toString().charAt(0) == '(')
+                    && !(typesList.toString().charAt(length - 1) == ')')) {
+                throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
+            }
+            return new String[]{strings[0], strings[1], typesList.toString()};
+        };
+
+    }
+    public static Function<String[], String[]> getStringHandlerForPut() {
+        return (String[] strings) -> {
+            String firstArgument = strings[1];
+            if (firstArgument.contains("[")) {
+                throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
+            }
+            StringBuilder typesList = new StringBuilder();
+            int i = 0;
+            while ((i < strings.length) && !strings[i].contains("[")) {
+                i++;
+            }
+            if (i != 2) {
+                throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
+            }
+            while (i < strings.length - 1) {
+                typesList.append(strings[i]);
+                typesList.append(" ");
+                i++;
+            }
+            typesList.append(strings[i]);
+            return new String[]{strings[0], strings[1], typesList.toString()};
+        };
     }
 }

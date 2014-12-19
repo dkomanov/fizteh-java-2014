@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 public class Main {
 
@@ -40,8 +41,10 @@ public class Main {
         }
     }
 
+
+
     public static void start(DBState tableState, final String[] args) throws ExitException {
-        new Interpreter(tableState, new Command[]{
+        new Interpreter(tableState, new Command[] {
                 new ArgsListCommand("create", 3, (Object tableS, String[] arguments) -> {
                     DBState state = (DBState) tableS;
                     TableProvider provider = (TableProvider) state.getTableHolder();
@@ -61,33 +64,7 @@ public class Main {
                         System.err.println(Utility.IO_MSG + io.getMessage());
                         System.exit(1);
                     }
-                }, (String[] strings) -> {
-                    String firstArgument = strings[1];
-                    if (firstArgument.contains("(")) {
-                        throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
-                    }
-                    StringBuilder typesList = new StringBuilder();
-                    int i = 0;
-                    while ((i < strings.length) && !strings[i].contains("(")) {
-                        i++;
-                    }
-                    if (i != 2) {
-                        throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
-                    }
-                    while (i < strings.length - 1) {
-                        typesList.append(strings[i]);
-                        typesList.append(" ");
-                        i++;
-                    }
-                    typesList.append(strings[i]);
-                    int length = typesList.length();
-                    if (!(typesList.toString().charAt(0) == '(')
-                            && !(typesList.toString().charAt(length - 1) == ')')) {
-                        throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
-                    }
-                    String[] newArguments = new String[]{strings[0], strings[1], typesList.toString()};
-                    return newArguments;
-                }),
+                }, Utility.getStringHandlerForCreate()),
                 new Command("drop", 2, (Object tableS, String[] arguments) -> {
                     DBState state = (DBState) tableS;
                     TableProvider provider = (TableProvider) state.getTableHolder();
@@ -169,29 +146,7 @@ public class Main {
                             System.out.println(provider.serialize(currentTable, oldValue));
                         }
                     }
-                }, (String[] strings) -> {
-                    String firstArgument = strings[1];
-                    if (firstArgument.contains("[")) {
-                        throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
-                    }
-                    StringBuilder typesList = new StringBuilder();
-                    int i = 0;
-                    while ((i < strings.length) && !strings[i].contains("[")) {
-                        i++;
-                    }
-                    if (i != 2) {
-                        throw new IllegalArgumentException(strings[0] + Utility.INVALID_ARGUMENTS);
-                    }
-                    while (i < strings.length - 1) {
-                        typesList.append(strings[i]);
-                        typesList.append(" ");
-                        i++;
-                    }
-                    typesList.append(strings[i]);
-                    String[] newArguments = new String[]{strings[0], strings[1], typesList.toString()};
-                    return newArguments;
-
-                }),
+                }, Utility.getStringHandlerForPut()),
                 new Command("get", 2, (Object tableS, String[] arguments) -> {
                     DBState state = (DBState) tableS;
                     TableProvider provider = (TableProvider) state.getTableHolder();
