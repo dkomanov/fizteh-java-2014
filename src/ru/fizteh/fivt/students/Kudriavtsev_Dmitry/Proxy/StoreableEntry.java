@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  */
 public class StoreableEntry extends CurrentStoreable implements Storeable {
 
-    public StoreableEntry (List<Class<?>> newSignature) {
+    public StoreableEntry(List<Class<?>> newSignature) {
         super(newSignature);
     }
 
