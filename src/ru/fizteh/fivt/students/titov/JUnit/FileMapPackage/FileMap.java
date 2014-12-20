@@ -227,6 +227,9 @@ public class FileMap implements Table {
                             }
 
                             if (bufferFromDisk.remaining() >= 4) {
+                                if (valueSize < 0) {
+                                    throw new BadFileException();
+                                }
                                 valueSize = bufferFromDisk.getInt();
                                 value = new byte[valueSize];
                             } else {
