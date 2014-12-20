@@ -20,7 +20,7 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
             obtainExceptionsThrownByExecuteSafely();
     /**
      * Used for unsafe calls. Catches and handles all exceptions thrown by {@link
-     * ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.AbstractCommand#executeSafely
+     * AbstractCommand#executeSafely
      * (SingleDatabaseShellState, String[]) } and {@link IllegalArgumentException }.
      */
     protected static final AccurateExceptionHandler<SingleDatabaseShellState> DATABASE_ERROR_HANDLER =
@@ -82,7 +82,9 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
     }
 
     /**
-     * In implementation of {@link AbstractCommand} arguments number is checked first and then
+     * In implementation of {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell
+     * .AbstractCommand}
+     * arguments number is checked first and then
      * {@link #executeSafely(SingleDatabaseShellState, String[])} is invoked.<br/> If you want to
      * disable forced arguments number checking, override this method without invocation super
      * method and put empty implementation inside {@link #executeSafely(SingleDatabaseShellState,

@@ -230,9 +230,13 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         createAndUseTable(table);
 
         runBatchExpectZero(
-                false, "put a [\"b\"]; put b [\"c\"]; put c [\"d\"]; put d [\"e\"]; put e [\"a\"]; exit");
+                "put a [\"b\"]; put b [\"c\"]; put c [\"d\"]; put d [\"e\"]; put e [\"a\"]; exit");
         runInteractiveExpectZero(
-                "use " + table, "show tables", "use " + fakeTable + "; list", "use " + table + "; list");
+                true,
+                "use " + table,
+                "show tables",
+                "use " + fakeTable + "; list",
+                "use " + table + "; list");
 
         String regex = makeTerminalExpectedRegex(
                 GREETING_REGEX,

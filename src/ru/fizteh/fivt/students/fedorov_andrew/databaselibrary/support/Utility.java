@@ -92,7 +92,7 @@ public final class Utility {
      */
     public static void rm(final Path removePath) throws IOException {
         if (Files.isDirectory(removePath)) {
-            Files.walkFileTree(removePath, new Utility.FileTreeRemover());
+            Files.walkFileTree(removePath, new FileTreeRemover());
         } else {
             Files.delete(removePath);
         }
@@ -205,7 +205,7 @@ public final class Utility {
      * @param <V>
      *         Value type in the source map.
      * @return An inversed map. It is not guaranteed that it is instance of the same class as source map has.
-     * @throws java.lang.IllegalArgumentException
+     * @throws IllegalArgumentException
      *         If there are two keys having the same values.
      * @see Object#equals(Object)
      */
@@ -246,7 +246,8 @@ public final class Utility {
      * @param escapeSequence
      *         Escape sequence. Quotes and this sequence occurrences will be prepended by escape sequence.
      * @return Endcoded string inside quotes. Returns null for null string.
-     * @see Utility#unquoteString(String, String, String)
+     * @see ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility#unquoteString(String,
+     * String, String)
      */
     public static String quoteString(String s, String quoteSequence, String escapeSequence) {
         if (s == null) {
@@ -260,7 +261,9 @@ public final class Utility {
     }
 
     /**
-     * Decodes a quoted via {@link Utility#quoteString(String, String, String)} method string.
+     * Decodes a quoted via {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support
+     * .Utility#quoteString(String,
+     * String, String)} method string.
      * @param s
      *         Quoted string (must start and end with quote sequence).
      * @param quoteSequence

@@ -8,7 +8,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Usual map extended with method {@link ConvenientMap#putNext(Object, Object)}.
+ * Usual map extended with method {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support
+ * .ConvenientMap#putNext(Object,
+ * Object)}.
  */
 public class ConvenientMap<K, V> implements Map<K, V> {
     private final Map<K, V> baseMap;

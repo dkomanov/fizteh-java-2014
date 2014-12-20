@@ -9,12 +9,9 @@ import org.junit.rules.ExpectedException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.Shell;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.ShellState;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.BAOSDuplicator;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -28,13 +25,8 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      * '$ ', 'some-words $', etc.
      */
     protected static final String GREETING_REGEX = "(.* )?\\$ ";
-    protected static PrintStream stdErr;
-    // Standard out and error streams are stored here.
-    private static PrintStream stdOut;
-    /**
-     * Here shell output can be found.
-     */
-    private static ByteArrayOutputStream out;
+
+    private static final DuplicatedIOTestBase IO_DUPLICATOR = new DuplicatedIOTestBase();
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
@@ -43,22 +35,12 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
 
     @BeforeClass
     public static void globalPrepareInterpreterTestBase() {
-        stdOut = System.out;
-        stdErr = System.err;
-        out = new BAOSDuplicator(stdOut);
-
-        /*
-      Wrap over {@link #out} that is used as {@link System#out} and {@link System#err}.
-     */
-        PrintStream outAndErrPrintStream = new PrintStream(out);
-        System.setOut(outAndErrPrintStream);
-        System.setErr(outAndErrPrintStream);
+        DuplicatedIOTestBase.globalPrepareDuplicatedIOTestBase();
     }
 
     @AfterClass
     public static void globalCleanupInterpreterTestBase() {
-        System.setOut(stdOut);
-        System.setErr(stdErr);
+        DuplicatedIOTestBase.globalCleanupDuplicatedIOTestBase();
     }
 
     protected abstract Shell<ShellStateImpl> constructInterpreter() throws TerminalException;
@@ -79,8 +61,7 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
     @After
     public void cleanup() throws IOException {
         interpreter = null;
-        stdOut.println();
-        stdOut.println("-------------------------------------------------");
+        IO_DUPLICATOR.cleanup();
     }
 
     /**
@@ -113,7 +94,7 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      * Obtains everything that was output by the interpreter.<br/>
      */
     protected String getOutput() {
-        return out.toString();
+        return IO_DUPLICATOR.getOutput();
     }
 
     /**
@@ -128,9 +109,9 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      */
     protected int runBatch(boolean reinit, String... commands) throws TerminalException {
         // Clean what has been output before.
-        out.reset();
+        IO_DUPLICATOR.prepare();
 
-        stdOut.println(Arrays.toString(commands));
+        IO_DUPLICATOR.printlnDirectlyToStdOut(Arrays.toString(commands));
         for (int i = 0, len = commands.length; i < len; i++) {
             commands[i] = commands[i].trim();
             if (!commands[i].endsWith(";")) {
@@ -159,10 +140,10 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      * @throws TerminalException
      */
     protected int runInteractive(boolean reinit, String... lines) throws TerminalException {
-        out.reset();
+        IO_DUPLICATOR.prepare();
 
         for (String cmd : lines) {
-            stdOut.println(cmd);
+            IO_DUPLICATOR.printlnDirectlyToStdOut(cmd);
         }
         StringBuilder sb = new StringBuilder();
         for (String cmd : lines) {

@@ -14,8 +14,10 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 
 /**
@@ -34,10 +36,14 @@ public final class StringTableImpl {
     private final Path tableRoot;
     private final String tableName;
     /**
+     * Lock for exploit of table and writing to the file system.
+     */
+    private final ReadWriteLock persistenceLock = new ReentrantReadWriteLock(true);
+    /**
      * Mapping between table parts and local hashes of keys that can be stored inside them.
      * @see #getHash(String)
      */
-    private HashMap<Integer, TablePart> tableParts;
+    private Map<Integer, TablePart> tableParts;
 
     /**
      * Constructor for cloning and safe table creation/obtaining.
@@ -138,6 +144,16 @@ public final class StringTableImpl {
         return table;
     }
 
+    /**
+     * Get read-write lock for the table.<br/>
+     * Write lock is acquired when something is going to be written to the file system (before this data is
+     * updated using the diff for the calling thread).<br/>
+     * In all other cases read lock is acquired.
+     */
+    ReadWriteLock getPersistenceLock() {
+        return persistenceLock;
+    }
+
     public Path getTableRoot() {
         return tableRoot;
     }
@@ -214,50 +230,42 @@ public final class StringTableImpl {
     }
 
     public void readFromFileSystem() throws DBFileCorruptIOException, TableCorruptIOException {
-        StringTableImpl thisClone = clone();
-        tableParts.clear();
-
+        persistenceLock.writeLock().lock();
         try {
-            for (int dir = 0; dir < DIRECTORIES_COUNT; dir++) {
-                for (int file = 0; file < FILES_COUNT; file++) {
-                    int partHash = buildHash(dir, file);
 
-                    TablePart fmap = new TablePart(makeTablePartFilePath(partHash));
-                    if (Files.exists(fmap.getTablePartFilePath())) {
-                        fmap.readFromFile();
-                    }
+            Map<Integer, TablePart> oldTableParts = tableParts;
+            tableParts = new HashMap<>();
 
-                    // checking keys' hashes
-                    Set<String> keySet = fmap.keySet();
-                    for (String key : keySet) {
-                        int keyHash = getHash(key);
-                        if (keyHash != partHash) {
-                            throw new TableCorruptIOException(
-                                    tableName, "Some keys are stored in improper places");
+            try {
+                for (int dir = 0; dir < DIRECTORIES_COUNT; dir++) {
+                    for (int file = 0; file < FILES_COUNT; file++) {
+                        int partHash = buildHash(dir, file);
+
+                        TablePart tablePart = new TablePart(makeTablePartFilePath(partHash));
+                        if (Files.exists(tablePart.getTablePartFilePath())) {
+                            tablePart.readFromFile();
                         }
+
+                        // checking keys' hashes
+                        Set<String> keySet = tablePart.keySet();
+                        for (String key : keySet) {
+                            int keyHash = getHash(key);
+                            if (keyHash != partHash) {
+                                throw new TableCorruptIOException(
+                                        tableName, "Some keys are stored in improper places");
+                            }
+                        }
+
+                        tableParts.put(partHash, tablePart);
                     }
-
-                    tableParts.put(partHash, fmap);
                 }
+            } catch (Exception exc) {
+                this.tableParts = oldTableParts;
+                throw exc;
             }
-        } catch (Exception exc) {
-            this.tableParts = thisClone.tableParts;
-            throw exc;
+        } finally {
+            persistenceLock.writeLock().unlock();
         }
-    }
-
-    /**
-     * Clones the whole table
-     */
-    @Override
-    protected StringTableImpl clone() {
-        StringTableImpl cloneTable = new StringTableImpl(tableRoot);
-
-        for (Entry<Integer, TablePart> entry : tableParts.entrySet()) {
-            cloneTable.tableParts.put(entry.getKey(), entry.getValue().clone());
-        }
-
-        return cloneTable;
     }
 
     public String getName() {
@@ -265,16 +273,31 @@ public final class StringTableImpl {
     }
 
     public String get(String key) {
-        return obtainTablePart(key).get(key);
+        persistenceLock.readLock().lock();
+        try {
+            return obtainTablePart(key).get(key);
+        } finally {
+            persistenceLock.readLock().unlock();
+        }
     }
 
     public String put(String key, String value) {
         Utility.checkNotNull(value, "Value");
-        return obtainTablePart(key).put(key, value);
+        persistenceLock.readLock().lock();
+        try {
+            return obtainTablePart(key).put(key, value);
+        } finally {
+            persistenceLock.readLock().unlock();
+        }
     }
 
     public String remove(String key) {
-        return obtainTablePart(key).remove(key);
+        persistenceLock.readLock().lock();
+        try {
+            return obtainTablePart(key).remove(key);
+        } finally {
+            persistenceLock.readLock().unlock();
+        }
     }
 
     /**
@@ -283,8 +306,13 @@ public final class StringTableImpl {
     public int size() {
         int rowsNumber = 0;
 
-        for (TablePart part : tableParts.values()) {
-            rowsNumber += part.size();
+        persistenceLock.readLock().lock();
+        try {
+            for (TablePart part : tableParts.values()) {
+                rowsNumber += part.size();
+            }
+        } finally {
+            persistenceLock.readLock().unlock();
         }
 
         return rowsNumber;
@@ -292,16 +320,29 @@ public final class StringTableImpl {
 
     public int commit() throws DatabaseIOException {
         int diffsCount = 0;
-        for (TablePart part : tableParts.values()) {
-            diffsCount += part.commit();
+
+        persistenceLock.writeLock().lock();
+        try {
+            for (TablePart part : tableParts.values()) {
+                diffsCount += part.commit();
+            }
+        } finally {
+            persistenceLock.writeLock().unlock();
         }
         return diffsCount;
     }
 
     public int rollback() {
         int diffsCount = 0;
-        for (TablePart part : tableParts.values()) {
-            diffsCount += part.rollback();
+
+        persistenceLock.readLock().lock();
+        try {
+            for (TablePart part : tableParts.values()) {
+                diffsCount += part.rollback();
+            }
+
+        } finally {
+            persistenceLock.readLock().unlock();
         }
         return diffsCount;
     }
@@ -312,8 +353,13 @@ public final class StringTableImpl {
     public List<String> list() {
         List<String> keySet = new LinkedList<>();
 
-        for (TablePart part : tableParts.values()) {
-            keySet.addAll(part.keySet());
+        persistenceLock.readLock().lock();
+        try {
+            for (TablePart part : tableParts.values()) {
+                keySet.addAll(part.keySet());
+            }
+        } finally {
+            persistenceLock.readLock().unlock();
         }
 
         return keySet;
@@ -330,7 +376,8 @@ public final class StringTableImpl {
     }
 
     /**
-     * Gets {@link TablePart} instance assigned to this {@code hash} from memory
+     * Gets {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.TablePart} instance assigned to
+     * this {@code hash} from memory. Not thread-safe.
      * @param key
      *         key that is hold by desired table.
      */
@@ -339,6 +386,9 @@ public final class StringTableImpl {
         return tableParts.get(getHash(key));
     }
 
+    /**
+     * Counts number of uncommitted changes for this thread.
+     */
     public int getNumberOfUncommittedChanges() {
         int diffsCount = 0;
         for (TablePart part : tableParts.values()) {

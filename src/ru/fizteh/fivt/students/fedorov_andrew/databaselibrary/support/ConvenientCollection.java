@@ -8,7 +8,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * Usual collection over the given base collection with extension {@link ConvenientCollection#addNext
+ * Usual collection over the given base collection with extension {@link ru.fizteh.fivt.students
+ * .fedorov_andrew.databaselibrary.support.ConvenientCollection#addNext
  * (Object)}.
  */
 public class ConvenientCollection<T> implements Collection<T> {
