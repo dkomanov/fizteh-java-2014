@@ -41,30 +41,27 @@ public class InterpreterTest {
 
     @Test
     public void runInteractiveMode() throws IOException {
-        state = new Welcome(tmpFolder.getRoot().toPath(), null);
-        Interpreter interpreter = new Interpreter(state, new ByteArrayInputStream(
+        Interpreter interpreter = new Interpreter(new Welcome(), new ByteArrayInputStream(
                 (testCommand + commandSeparator + "exit").getBytes()), printStream, printStream);
         interpreter.interactiveMode();
         String actual = outputStream.toString();
-        String expected = "$" + "All is well\r\n";
+        String expected = "$ All is well\r\n";
         assertEquals(actual, expected);
     }
 
     @Test
     public void runInteractiveModeWithWrongCommand() throws IOException {
-        state = new Welcome(tmpFolder.getRoot().toPath(), null);
-        Interpreter interpreter = new Interpreter(state, new ByteArrayInputStream(
+        Interpreter interpreter = new Interpreter(new Welcome(), new ByteArrayInputStream(
                 ("wtf" + commandSeparator + "exit").getBytes()), printStream, printStream);
         interpreter.interactiveMode();
         String actual = outputStream.toString();
-        String expected = "Not found command: wtf\r\n";
+        String expected = "$ Not found command: wtf\r\n";
         assertEquals(actual, expected);
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void runInteractiveModeWithWrongNumberOfArguments() throws IOException {
-        state = new Welcome(tmpFolder.getRoot().toPath(), null);
-        Interpreter interpreter = new Interpreter(state, new ByteArrayInputStream(
+        Interpreter interpreter = new Interpreter(new Welcome(), new ByteArrayInputStream(
                 (testCommand + " 1" + commandSeparator + "exit").getBytes()), printStream, printStream);
         interpreter.interactiveMode();
         String actual = outputStream.toString();
@@ -95,7 +92,5 @@ public class InterpreterTest {
         String[] args = new String[]{"wtf"};
         state = new Welcome(tmpFolder.getRoot().toPath(), args);
     }
-
-
 
 }

@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
@@ -79,11 +80,11 @@ public class Interpreter {
         boolean exit = false;
         while (true) {
             try {
-                out.print("$ ");
+                if (sc.hasNext()) {
+                    out.print("$ ");
+                }
                 s1 = sc.nextLine();
             } catch (Exception e) {
-                err.println("Exception: " + e.getMessage());
-                System.exit(-1);
                 return;
             }
             String[] s = s1.split(";");

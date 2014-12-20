@@ -2,12 +2,16 @@ package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel;
 
 import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
+
+//Привет, у меня вопрос насчёт интерпретатора: я переношу в него интерактивный, пакетный режим и run(), в welcome(класс с методом main) - open(), close() и инициализацию команд, и избавляемся от connector, но что тогда мне передавать во все команды, если я туда всегда передавал dbConnector? welcome? тогда я по сути перенёс connector кроме метода run
 
 /**
  * Created by Дмитрий on 09.10.14.
@@ -18,7 +22,7 @@ public class Welcome {
     private StoreableTable activeTable;
     private final StoreableTableProvider activeTableProvider;
 
-    public final Map<String, Command> commands = new HashMap<>();
+    public Map<String, Command> commands = new HashMap<>();
 
     public Map<String, StoreableTable> getTables() {
         return tables;
@@ -49,12 +53,7 @@ public class Welcome {
         dbRoot = dbPath;
         open();
 
-        Command[] commandsArray = {new Create(), new Drop(), new Use(), new Show(),
-                new Put(), new Get(), new List(), new Remove(),
-                new Commit(), new Rollback(), new Size(), new Test()};
-        for (Command command : commandsArray) {
-            commands.put(command.name, command);
-        }
+        commands = allCommands();
 
         Interpreter interpreter = new Interpreter(this, System.in, System.out, System.err);
         if (args != null && args.length != 0) {
@@ -64,6 +63,23 @@ public class Welcome {
         }
 
         close();
+    }
+
+    public Welcome() {
+        dbRoot = null;
+        activeTableProvider = null;
+        commands = allCommands();
+    }
+
+    public Map<String, Command> allCommands() {
+        Map<String, Command> result = new HashMap<>();
+        Command[] commandsArray = {new Create(), new Drop(), new Use(), new Show(),
+                new Put(), new Get(), new List(), new Remove(),
+                new Commit(), new Rollback(), new Size(), new Test()};
+        for (Command command : commandsArray) {
+            result.put(command.name, command);
+        }
+        return result;
     }
 
     private void open() {
