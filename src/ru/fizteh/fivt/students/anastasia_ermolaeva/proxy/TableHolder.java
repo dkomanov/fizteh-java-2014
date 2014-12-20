@@ -25,7 +25,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class TableHolder implements TableProvider, AutoCloseable {
     private Path rootPath;
     private Map<String, DBTable> tableMap;
-    //private Table activeTable;
     private ReadWriteLock tableAccessLock = new ReentrantReadWriteLock(true);
 
     private boolean valid = true;
