@@ -2,16 +2,12 @@ package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel;
 
 import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-
-//Привет, у меня вопрос насчёт интерпретатора: я переношу в него интерактивный, пакетный режим и run(), в welcome(класс с методом main) - open(), close() и инициализацию команд, и избавляемся от connector, но что тогда мне передавать во все команды, если я туда всегда передавал dbConnector? welcome? тогда я по сути перенёс connector кроме метода run
 
 /**
  * Created by Дмитрий on 09.10.14.

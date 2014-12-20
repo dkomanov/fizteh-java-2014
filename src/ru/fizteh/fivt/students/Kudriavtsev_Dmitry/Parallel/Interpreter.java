@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
