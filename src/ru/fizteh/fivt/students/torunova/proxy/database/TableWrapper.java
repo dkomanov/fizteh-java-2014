@@ -1,9 +1,9 @@
-package ru.fizteh.fivt.students.torunova.proxy;
+package ru.fizteh.fivt.students.torunova.proxy.database;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.TableNotCreatedException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.TableNotCreatedException;
 
 import java.io.*;
 import java.text.ParseException;

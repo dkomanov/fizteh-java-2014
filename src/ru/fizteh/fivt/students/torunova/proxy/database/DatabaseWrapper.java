@@ -1,13 +1,13 @@
-package ru.fizteh.fivt.students.torunova.proxy;
+package ru.fizteh.fivt.students.torunova.proxy.database;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectDbException;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectDbNameException;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.TableNotCreatedException;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.IncorrectDbException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.IncorrectDbNameException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.TableNotCreatedException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.IncorrectFileException;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -112,6 +112,7 @@ public class DatabaseWrapper implements TableProvider, AutoCloseable {
         if (value == null) {
             return null;
         }
+        checkJsonFormat(value);
         value = value.substring(value.indexOf('[') + 1, value.lastIndexOf(']'));
         value = value.trim();
         String[] values = Stream.of(value.split(REGEXP_TO_SPLIT_JSON)).
@@ -123,25 +124,49 @@ public class DatabaseWrapper implements TableProvider, AutoCloseable {
             try {
                 if (values[i].equals("null")) {
                     storeableValue.setColumnAt(i, null);
-                } else if (!types[i].equals(Integer.class) && !types[i].equals(String.class)) {
+                } else if (!types[i].equals(Integer.class)
+                        && !types[i].equals(String.class)
+                        && !types[i].equals(Boolean.class)) {
                     try {
+
                         storeableValue.setColumnAt(i,
                                 types[i].getMethod("parse" + types[i].getSimpleName(),
                                         String.class).invoke(null, values[i]));
                     } catch (NoSuchMethodException
-                            | InvocationTargetException
-                            | IllegalArgumentException
                             | IllegalAccessException e) {
                         throw new RuntimeException(e);
+                    } catch (InvocationTargetException e) {
+                        Throwable exception = e.getTargetException();
+                        if (exception.getClass() == NumberFormatException.class) {
+                            throw new IllegalArgumentException("column " + (i + 1)
+                                    + " should contain " + classForName(types[i].getSimpleName()));
+                        } else {
+                            throw new RuntimeException(exception);
+                        }
+
                     }
                 } else if (types[i].equals(Integer.class)) {
-                    storeableValue.setColumnAt(i, Integer.parseInt(values[i]));
+                    int intValue;
+                    try {
+                        intValue = Integer.parseInt(values[i]);
+                    } catch (NumberFormatException e) {
+                        throw new NumberFormatException("column " + (i + 1) + " should contain int");
+                    }
+                    storeableValue.setColumnAt(i, intValue);
                 } else if (types[i].equals(String.class)) {
+                    if (!values[i].contains("\"")) {
+                        throw new IllegalArgumentException("column " + (i + 1) + " should contain string");
+                    }
                     storeableValue.setColumnAt(i,
                             values[i].substring(values[i].indexOf('"') + 1,
                                     values[i].lastIndexOf('"')));
+                } else if (types[i].equals(Boolean.class)) {
+                    if (!Boolean.parseBoolean(values[i]) && !values[i].equals("false")) {
+                        throw new IllegalArgumentException("column " + (i + 1) + " should contain boolean");
+                    }
+                    storeableValue.setColumnAt(i, Boolean.parseBoolean(values[i]));
                 }
-            } catch (RuntimeException e) {
+            } catch (IllegalArgumentException e) {
                 throw new RuntimeException("wrong type( " + e.getMessage() + " )");
             }
         }
@@ -260,5 +285,11 @@ public class DatabaseWrapper implements TableProvider, AutoCloseable {
     public void close() throws Exception {
         closed = true;
         db.close();
+    }
+    private void checkJsonFormat(String value) {
+        if (!value.startsWith("[") || !value.endsWith("]")) {
+            throw new IllegalStateException("wrong value format "
+                    + "(it should be like this: [value1, value2,..., valueN])");
+        }
     }
 }

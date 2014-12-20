@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.torunova.proxy;
+package ru.fizteh.fivt.students.torunova.proxy.database;
 
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.IncorrectFileException;
 
 import java.io.*;
 import java.util.HashMap;
@@ -36,12 +36,7 @@ public class FileMap {
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public FileMap(final String f) throws IncorrectFileException, IOException {
         file = f;
-        readWriteLock.readLock().lock();
-        try {
-            readFile();
-        } finally {
-            readWriteLock.readLock().unlock();
-        }
+        readFile();
     }
 
     public String put(String key, String value) {

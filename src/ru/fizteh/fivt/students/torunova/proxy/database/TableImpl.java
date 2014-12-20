@@ -1,7 +1,7 @@
-package ru.fizteh.fivt.students.torunova.proxy;
+package ru.fizteh.fivt.students.torunova.proxy.database;
 
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectFileException;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.TableNotCreatedException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.TableNotCreatedException;
 
 import java.io.File;
 import java.io.IOException;

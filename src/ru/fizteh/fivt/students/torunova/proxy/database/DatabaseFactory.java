@@ -1,11 +1,11 @@
-package ru.fizteh.fivt.students.torunova.proxy;
+package ru.fizteh.fivt.students.torunova.proxy.database;
 
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectDbException;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectDbNameException;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.TableNotCreatedException;
-import ru.fizteh.fivt.students.torunova.proxy.exceptions.IncorrectFileException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.IncorrectDbException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.IncorrectDbNameException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.TableNotCreatedException;
+import ru.fizteh.fivt.students.torunova.proxy.database.exceptions.IncorrectFileException;
 
 import java.io.IOException;
 

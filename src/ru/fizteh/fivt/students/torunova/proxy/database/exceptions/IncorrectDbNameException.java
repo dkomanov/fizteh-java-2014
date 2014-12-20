@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.torunova.proxy.exceptions;
+package ru.fizteh.fivt.students.torunova.proxy.database.exceptions;
 
 /**
  * Created by nastya on 24.10.14.

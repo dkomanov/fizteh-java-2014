@@ -4,9 +4,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.students.torunova.proxy.StoreableType;
-import ru.fizteh.fivt.students.torunova.proxy.TableWrapper;
-import ru.fizteh.fivt.students.torunova.proxy.DatabaseWrapper;
+import ru.fizteh.fivt.students.torunova.proxy.database.StoreableType;
+import ru.fizteh.fivt.students.torunova.proxy.database.TableWrapper;
+import ru.fizteh.fivt.students.torunova.proxy.database.DatabaseWrapper;
 
 import java.io.File;
 import java.util.Arrays;
