@@ -16,7 +16,7 @@ public class CommandsPackage {
     public Command[] pack;
 
     public CommandsPackage(DataBase dataBase) {
-        pack = new Command[]{
+        pack = new Command[] {
                 new DatabaseCommand(dataBase, "create", 3, (database, arguments) -> {
                     String tableName = arguments[1];
                     String typesList = arguments[2].substring(1, arguments[2].length() - 1);

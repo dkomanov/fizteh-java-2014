@@ -9,11 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TableHolderFactory implements TableProviderFactory, AutoCloseable {
-    private boolean valid;
+    private boolean valid = true;
     private List<TableHolder> createdTableHolders;
 
     public TableHolderFactory() {
-        valid = true;
         createdTableHolders = new ArrayList<>();
     }
 
