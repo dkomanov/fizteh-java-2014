@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands;
 
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Connector;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Welcome;
+
+import java.io.PrintStream;
 
 /**
  * Created by Дмитрий on 31.10.2014.
@@ -11,8 +13,8 @@ public class Commit extends StoreableCommand {
     }
 
     @Override
-    public  boolean exec(Connector dbConnector, String[] args) {
-        if (!checkArguments(args.length)) {
+    public  boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err) {
+        if (!checkArguments(args.length, err)) {
             return !batchModeInInteractive;
         }
         if (dbConnector.getActiveTable() == null) {
@@ -20,10 +22,10 @@ public class Commit extends StoreableCommand {
                 System.err.println("No table");
                 return false;
             }
-            noTable();
+            noTable(err);
             return true;
         }
-        System.out.println(dbConnector.getActiveTable().commit());
+        out.println(dbConnector.getActiveTable().commit());
         return true;
     }
 }

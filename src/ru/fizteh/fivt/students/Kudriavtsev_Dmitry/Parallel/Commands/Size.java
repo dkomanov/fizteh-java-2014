@@ -1,7 +1,8 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands;
 
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Connector;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Welcome;
 
+import java.io.PrintStream;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -13,8 +14,8 @@ public class Size extends StoreableCommand {
     }
 
     @Override
-    public boolean exec(Connector dbConnector, String[] args) {
-        if (!checkArguments(args.length)) {
+    public boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err) {
+        if (!checkArguments(args.length, err)) {
             return !batchModeInInteractive;
         }
         int size = 0;
@@ -30,7 +31,7 @@ public class Size extends StoreableCommand {
         } finally {
             lock.readLock().unlock();
         }
-        System.out.println(size);
+        out.println(size);
         return true;
     }
 }

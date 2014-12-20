@@ -1,9 +1,10 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands;
 
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Connector;
 import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.StoreableTable;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Welcome;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -17,8 +18,8 @@ public class Drop extends StoreableCommand {
     }
 
     @Override
-    public  boolean exec(Connector dbConnector, String[] args) {
-        if (!checkArguments(args.length)) {
+    public  boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err) {
+        if (!checkArguments(args.length, err)) {
             return !batchModeInInteractive;
         }
 
@@ -32,7 +33,7 @@ public class Drop extends StoreableCommand {
                 inProvider = false;
             }
             if (map == null) {
-                System.err.println(args[0] + " not exists");
+                err.println(args[0] + " not exists");
                 if (batchModeInInteractive) {
                     return false;
                 }
@@ -65,14 +66,14 @@ public class Drop extends StoreableCommand {
                 }
                 Files.delete(map.dbPath);
             } catch (Exception e) {
-                System.err.println("Exception in drop: can't delete " + map.dbPath.toString()
+                err.println("Exception in drop: can't delete " + map.dbPath.toString()
                         + " because " + e.getLocalizedMessage());
                 System.exit(-1);
             }
         } finally {
             lock.readLock().unlock();
         }
-        System.out.println("dropped");
+        out.println("dropped");
         return true;
     }
 }

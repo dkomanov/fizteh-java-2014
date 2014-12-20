@@ -1,10 +1,11 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Connector;
 import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.CurrentStoreable;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Welcome;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.text.ParseException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -18,9 +19,9 @@ public class Put extends StoreableCommand {
     }
 
     @Override
-    public boolean exec(Connector dbConnector, String[] args) {
+    public boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err) {
         if (args == null || args.length <= 1) {
-            System.err.println("Incorrect number of arguments in " + name);
+            err.println("Incorrect number of arguments in " + name);
             if (batchMode) {
                 System.exit(-1);
             }
@@ -33,10 +34,10 @@ public class Put extends StoreableCommand {
         }
         if (dbConnector.getActiveTable() == null) {
             if (batchModeInInteractive) {
-                System.err.println("No table");
+                err.println("No table");
                 return false;
             }
-            noTable();
+            noTable(err);
             return true;
         }
         Storeable value;
@@ -47,16 +48,16 @@ public class Put extends StoreableCommand {
                 value = dbConnector.getActiveTable().put(args[0],
                         dbConnector.getActiveTableProvider().deserialize(dbConnector.getActiveTable(), args[1]));
             } catch (ParseException e) {
-                System.err.println("Parse Exception in deserialize");
+                err.println("Parse Exception in deserialize");
                 return !batchModeInInteractive;
             }
             if (value != null) {
-                System.out.println("overwrite");
+                out.println("overwrite");
                 for (Object val : ((CurrentStoreable) value).getValues()) {
-                    System.out.println(val.toString());
+                    out.println(val.toString());
                 }
             } else {
-                System.out.println("new");
+                out.println("new");
             }
             String newPath = dbConnector.getActiveTable().whereToSave("", args[0]).getKey();
             if (new File(newPath).exists() || dbConnector.getActiveTable().getChangedFiles().containsKey(newPath)) {

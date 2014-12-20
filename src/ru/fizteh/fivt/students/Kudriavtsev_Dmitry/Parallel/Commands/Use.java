@@ -1,8 +1,9 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands;
 
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Connector;
 import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.StoreableTable;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Welcome;
 
+import java.io.PrintStream;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -15,8 +16,8 @@ public class Use extends StoreableCommand {
     }
 
     @Override
-    public boolean exec(Connector dbConnector, String[] args) {
-        if (!checkArguments(args.length)) {
+    public boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err) {
+        if (!checkArguments(args.length, err)) {
             return !batchModeInInteractive;
         }
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -32,7 +33,7 @@ public class Use extends StoreableCommand {
                         }
                     }
                     count += dbConnector.getActiveTable().getNewKey().size();
-                    System.out.println(count + " unsaved changes");
+                    out.println(count + " unsaved changes");
                     return true;
                 }
             }
@@ -41,7 +42,7 @@ public class Use extends StoreableCommand {
                 map = dbConnector.getTables().get(args[0]);
             }
             if (map == null) {
-                System.err.println(args[0] + " not exists");
+                err.println(args[0] + " not exists");
                 if (batchModeInInteractive) {
                     return false;
                 }
@@ -54,7 +55,7 @@ public class Use extends StoreableCommand {
                 dbConnector.getActiveTable().unload(
                     dbConnector.getActiveTable(), dbConnector.getActiveTable().getName());
                 if (dbConnector.getActiveTable().dbPath.getFileName().toString().equals(args[0])) {
-                    System.out.println("using " + args[0]);
+                    out.println("using " + args[0]);
                     return true;
                 }
             }
@@ -62,7 +63,7 @@ public class Use extends StoreableCommand {
         } finally {
             lock.readLock().unlock();
         }
-        System.out.println("using " + args[0]);
+        out.println("using " + args[0]);
         return true;
     }
 

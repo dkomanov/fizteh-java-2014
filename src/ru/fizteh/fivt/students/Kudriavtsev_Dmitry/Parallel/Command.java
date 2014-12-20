@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel;
 
+import java.io.PrintStream;
+
 /**
  * Created by Дмитрий on 07.10.14.
  */
@@ -19,18 +21,18 @@ public abstract class Command {
         this(null, 0);
     }
 
-    protected boolean checkArguments(int argLen) {
+    protected boolean checkArguments(int argLen, PrintStream err) {
         if (argLen != this.argLen) {
-            System.err.println("Incorrect number of arguments in " + name);
-            if (batchMode) {
+            throw new IllegalStateException("Incorrect number of arguments in " + name);
+            /*if (batchMode) {
                 System.exit(-1);
             }
-            return false;
+            return false;*/
         }
         return true;
     }
 
-    protected boolean checkMoreArguments(int argLen) {
+    protected boolean checkMoreArguments(int argLen, PrintStream err) {
         if (argLen <= 1) {
             System.err.println("Incorrect number of arguments in " + name);
             if (batchMode) {
@@ -41,7 +43,7 @@ public abstract class Command {
         return true;
     }
 
-    public abstract boolean exec(Connector dbConnector, String[] args);
+    public abstract boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err);
 
     @Override
     public final String toString() {

@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands;
 
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Connector;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Welcome;
+
+import java.io.PrintStream;
 
 /**
  * Created by Дмитрий on 04.10.14.
@@ -11,28 +13,28 @@ public class List extends StoreableCommand {
     }
 
     @Override
-    public boolean exec(Connector dbConnector, String[] args) {
-        if (!checkArguments(args.length)) {
+    public boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err) {
+        if (!checkArguments(args.length, err)) {
             return !batchModeInInteractive;
         }
         if (dbConnector.getActiveTable() == null) {
             if (batchModeInInteractive) {
-                System.err.println("No table");
+                err.println("No table");
                 return false;
             }
-            noTable();
+            noTable(err);
             return true;
         }
         java.util.List<String> keySet = dbConnector.getActiveTable().list();
         int count = 0;
         for (String key : keySet) {
-            System.out.print(key);
+            out.print(key);
             if (count != keySet.size() - 1) {
-                System.out.print(", ");
+                out.print(", ");
                 ++count;
             }
         }
-        System.out.println();
+        out.println();
         return true;
     }
 }

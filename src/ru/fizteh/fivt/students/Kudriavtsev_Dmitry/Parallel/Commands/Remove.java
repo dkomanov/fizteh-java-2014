@@ -1,7 +1,8 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands;
 
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Connector;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Welcome;
 
+import java.io.PrintStream;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -13,27 +14,27 @@ public class Remove extends StoreableCommand {
     }
 
     @Override
-    public boolean exec(Connector dbConnector, String[] args) {
-        if (!checkArguments(args.length)) {
+    public boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err) {
+        if (!checkArguments(args.length, err)) {
             return !batchModeInInteractive;
         }
         if (dbConnector.getActiveTable() == null) {
             if (batchModeInInteractive) {
-                System.err.println("No table");
+                err.println("No table");
                 return false;
             }
-            noTable();
+            noTable(err);
             return true;
         }
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         lock.readLock().lock();
         try {
             if (dbConnector.getActiveTable().remove(args[0]) != null) {
-                System.out.println("removed");
+                out.println("removed");
                 dbConnector.getActiveTable().getChangedFiles().put(
                         dbConnector.getActiveTable().whereToSave("", args[0]).getKey(), 0);
             } else {
-                System.err.println("not found");
+                err.println("not found");
                 if (batchModeInInteractive) {
                     return false;
                 }

@@ -1,8 +1,9 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands;
 
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Connector;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Welcome;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -28,12 +29,12 @@ public class Create extends StoreableCommand {
     }
 
     @Override
-    public boolean exec(Connector dbConnector, String[] args) {
-        if (!checkMoreArguments(args.length)) {
+    public boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err) {
+        if (!checkMoreArguments(args.length, err)) {
             return !batchModeInInteractive;
         }
         if (!args[1].startsWith("(") || !args[args.length - 1].endsWith(")")) {
-            System.err.println("wrong arguments: ( ) not found");
+            err.println("wrong arguments: ( ) not found");
             return !batchModeInInteractive;
         }
         java.util.List<Class<?>> types = new ArrayList<>();
@@ -46,15 +47,15 @@ public class Create extends StoreableCommand {
             }
             for (Class<?> myType: types) {
                 if (!TYPES.containsValue(myType)) {
-                    System.out.println("wrong type ( don't have type: " + myType + " )");
+                    out.println("wrong type ( don't have type: " + myType + " )");
                     return !batchModeInInteractive;
                 }
             }
             if (dbConnector.getActiveTableProvider().createTable(args[0], types) != null) {
-                System.out.println("created");
+                out.println("created");
             }
         } catch (IOException e) {
-            System.err.println("Some IOException happen (in createTable)");
+            err.println("Some IOException happen (in createTable)");
             return !batchModeInInteractive;
         }
         return true;

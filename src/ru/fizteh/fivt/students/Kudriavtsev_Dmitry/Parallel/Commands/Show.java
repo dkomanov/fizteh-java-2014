@@ -1,8 +1,9 @@
 package ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Commands;
 
-import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Connector;
 import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.StoreableTable;
+import ru.fizteh.fivt.students.Kudriavtsev_Dmitry.Parallel.Welcome;
 
+import java.io.PrintStream;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -15,8 +16,8 @@ public class Show extends StoreableCommand {
         super("show", 1);
     }
 
-    private boolean checkForArgs() {
-        System.err.println("Bad show tables command.");
+    private boolean checkForArgs(PrintStream err) {
+        err.println("Bad show tables command.");
         if (batchModeInInteractive) {
             return false;
         }
@@ -27,14 +28,14 @@ public class Show extends StoreableCommand {
     }
 
     @Override
-    public boolean exec(Connector dbConnector, String[] args) {
+    public boolean exec(Welcome dbConnector, String[] args, PrintStream out, PrintStream err) {
 
         if (args.length == 0) {
-            return checkForArgs();
+            return checkForArgs(err);
         }
 
         if (!args[0].equals("tables") || args.length > 1) {
-            return checkForArgs();
+            return checkForArgs(err);
         }
 
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -45,7 +46,7 @@ public class Show extends StoreableCommand {
             }
 
             for (Map.Entry<String, StoreableTable> a : dbConnector.getActiveTableProvider().getTables().entrySet()) {
-                System.out.println(a.getKey() + " " + a.getValue().size());
+                out.println(a.getKey() + " " + a.getValue().size());
             }
         } finally {
             lock.readLock().unlock();
