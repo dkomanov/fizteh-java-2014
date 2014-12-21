@@ -5,12 +5,10 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.students.dnovikov.storeable.Exceptions.LoadOrSaveException;
 import ru.fizteh.fivt.students.dnovikov.storeable.Exceptions.TableNotFoundException;
 import ru.fizteh.fivt.students.dnovikov.storeable.Interpreter.Interpreter;
-import ru.fizteh.fivt.students.dnovikov.storeable.Interpreter.InterpreterState;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 public class MultiFileHashMapMain {
 
