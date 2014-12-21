@@ -5,9 +5,6 @@ package ru.fizteh.fivt.students.torunova.proxy.interpreter;
  */
 
 import ru.fizteh.fivt.students.torunova.proxy.database.actions.Action;
-import ru.fizteh.fivt.students.torunova.proxy.database.TableHolder;
-import ru.fizteh.fivt.students.torunova.proxy.database.Database;
-import ru.fizteh.fivt.students.torunova.proxy.database.DatabaseWrapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +67,7 @@ public class Shell {
                     try {
                         res = commands.get(name).run(parameters);
                     } catch (Exception e) {
-                        //e.printStackTrace();
+                        e.printStackTrace();
                         writer.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
                         if (!interactive || name.equals(nameOfExitCommand)) {
                             abort();

@@ -2,8 +2,6 @@ package ru.fizteh.fivt.students.torunova.proxy.database.actions;
 
 import ru.fizteh.fivt.students.torunova.proxy.database.TableHolder;
 
-import java.io.IOException;
-
 /**
  * Created by nastya on 01.11.14.
  */

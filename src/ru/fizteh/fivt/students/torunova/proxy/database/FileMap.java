@@ -100,7 +100,8 @@ public class FileMap {
                 return keys;
             } else {
                 for (String key : workingCopyKeySet) {
-                    if (changes.get().get(key) == null || (changes.get().get(key) != null && changes.get().get(key) != DELETED)) {
+                    if (changes.get().get(key) == null
+                            || (changes.get().get(key) != null && changes.get().get(key) != DELETED)) {
                         keys.add(key);
                     }
                 }
@@ -151,7 +152,7 @@ public class FileMap {
     }
 
     public int rollback() {
-        int numberOfRevertedChanges = diff.get().size();
+        int numberOfRevertedChanges = countChangedEntries();
         diff.get().clear();
         changes.get().clear();
         return numberOfRevertedChanges;
@@ -189,7 +190,18 @@ public class FileMap {
         }
     }
     public int countChangedEntries() {
-        return diff.get().size();
+        int counter = 0;
+        readWriteLock.readLock().lock();
+        try {
+            for (Map.Entry<String, String> entry : diff.get().entrySet()) {
+                if (savedCopy.get(entry.getKey()) == null || !savedCopy.get(entry.getKey()).equals(entry.getValue())) {
+                    counter++;
+                }
+            }
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+        return counter;
     }
     private void readFile() throws IncorrectFileException, IOException {
         readWriteLock.writeLock().lock();

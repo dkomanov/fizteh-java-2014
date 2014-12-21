@@ -95,7 +95,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
             result = files.get(file).put(key, value);
         } else {
                 if (!file.getParentFile().mkdirs()) {
-                    throw new RuntimeException("directory "+ dirName + " cannot be created");
+                    throw new RuntimeException("directory " + dirName + " cannot be created");
                 }
             FileMap fm;
             try {

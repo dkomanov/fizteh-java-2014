@@ -41,7 +41,7 @@ public class  Database implements TableProvider {
             IncorrectDbException {
         File db = new File(name).getAbsoluteFile();
         if (!db.exists()) {
-            if(!db.mkdirs()) {
+            if (!db.mkdirs()) {
                 throw new RuntimeException("database cannot be created");
             }
         } else if (!db.isDirectory()) {
