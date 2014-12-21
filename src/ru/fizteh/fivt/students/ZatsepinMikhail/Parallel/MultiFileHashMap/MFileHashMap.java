@@ -40,16 +40,18 @@ public class MFileHashMap implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-
-        lockForCreateAndGet.readLock().lock();
-        Table returnValue;
-        if (tables.containsKey(name)) {
-            returnValue = tables.get(name);
-        } else {
-            returnValue = null;
+        try {
+            lockForCreateAndGet.readLock().lock();
+            Table returnValue;
+            if (tables.containsKey(name)) {
+                returnValue = tables.get(name);
+            } else {
+                returnValue = null;
+            }
+            return returnValue;
+        } finally {
+            lockForCreateAndGet.readLock().unlock();
         }
-        lockForCreateAndGet.readLock().unlock();
-        return returnValue;
     }
 
     @Override
