@@ -95,14 +95,19 @@ public class FileMap {
             Set<String> workingCopyKeySet = savedCopy.keySet();
             Set<String> diffKeySet = diff.get().keySet();
             Set<String> keys = new HashSet<>();
-            for (String key : workingCopyKeySet) {
-                if (changes.get().get(key) != DELETED) {
-                    keys.add(key);
+            if (changes == null || changes.get() == null) {
+                keys.addAll(workingCopyKeySet);
+                return keys;
+            } else {
+                for (String key : workingCopyKeySet) {
+                    if (changes.get().get(key) == null || (changes.get().get(key) != null && changes.get().get(key) != DELETED)) {
+                        keys.add(key);
+                    }
                 }
-            }
-            for (String key : diffKeySet) {
-                if (changes.get().get(key) != DELETED) {
-                    keys.add(key);
+                for (String key : diffKeySet) {
+                    if (changes.get().get(key) != null && changes.get().get(key) != DELETED) {
+                        keys.add(key);
+                    }
                 }
             }
             return keys;
@@ -114,20 +119,15 @@ public class FileMap {
     public boolean isEmpty() {
         readWriteLock.readLock().lock();
         try {
-            Set<String> allKeys = new HashSet<>();
-            allKeys.addAll(savedCopy.keySet());
-            allKeys.addAll(diff.get().keySet());
-            if (allKeys == null) {
-                return true;
-            }
-            for (String key : allKeys) {
-                if (changes != null && changes.get() != null && changes.get().get(key) != null) {
-                    if (changes.get().get(key) != DELETED) {
-                        return false;
-                    }
+            Map<String, String> newSavedCopy = new HashMap<>(savedCopy);
+            for (Map.Entry<String, Integer> entry : changes.get().entrySet()) {
+                if (entry.getValue() == DELETED) {
+                    newSavedCopy.remove(entry.getKey());
+                } else {
+                    newSavedCopy.put(entry.getKey(), diff.get().get(entry.getKey()));
                 }
             }
-            return true;
+            return newSavedCopy.isEmpty();
         } finally {
             readWriteLock.readLock().unlock();
         }
@@ -136,16 +136,15 @@ public class FileMap {
     public int size() {
         readWriteLock.readLock().lock();
         try {
-            Set<String> allKeys = new HashSet<>();
-            allKeys.addAll(savedCopy.keySet());
-            allKeys.addAll(diff.get().keySet());
-            int size = allKeys.size();
-            for (String key : allKeys) {
-                if (changes.get().get(key) == DELETED) {
-                    size--;
+            Map<String, String> newSavedCopy = new HashMap<>(savedCopy);
+            for (Map.Entry<String, Integer> entry : changes.get().entrySet()) {
+                if (entry.getValue() == DELETED) {
+                    newSavedCopy.remove(entry.getKey());
+                } else {
+                    newSavedCopy.put(entry.getKey(), diff.get().get(entry.getKey()));
                 }
             }
-            return size;
+            return newSavedCopy.size();
         } finally {
             readWriteLock.readLock().unlock();
         }
@@ -173,7 +172,7 @@ public class FileMap {
                 fos.write((valueFromDiff == null ? valueFromSavedCopy : valueFromDiff).getBytes(ENCODING));
             }
             int numberOfChangedEntries = countChangedEntries();
-            Map<String, String> newSavedCopy = savedCopy;
+            Map<String, String> newSavedCopy = new HashMap<>(savedCopy);
             for (Map.Entry<String, Integer> entry : changes.get().entrySet()) {
                 if (entry.getValue() == DELETED) {
                     newSavedCopy.remove(entry.getKey());
@@ -181,12 +180,7 @@ public class FileMap {
                     newSavedCopy.put(entry.getKey(), diff.get().get(entry.getKey()));
                 }
             }
-            readWriteLock.writeLock().lock();
-            try {
-                savedCopy = newSavedCopy;
-            } finally {
-                readWriteLock.writeLock().unlock();
-            }
+            savedCopy = newSavedCopy;
             diff.get().clear();
             changes.get().clear();
             return  numberOfChangedEntries;
@@ -198,7 +192,7 @@ public class FileMap {
         return diff.get().size();
     }
     private void readFile() throws IncorrectFileException, IOException {
-        readWriteLock.readLock().lock();
+        readWriteLock.writeLock().lock();
         try {
             DataInputStream fis = new DataInputStream(new FileInputStream(file));
             int length;
@@ -228,15 +222,11 @@ public class FileMap {
                 if (fis.read(value) != length) {
                     throw new IncorrectFileException("File " + file + " has wrong structure.");
                 }
-                readWriteLock.writeLock().lock();
-                try {
-                    savedCopy.put(new String(key, ENCODING), new String(value, ENCODING));
-                } finally {
-                    readWriteLock.writeLock().unlock();
-                }
+
+                savedCopy.put(new String(key, ENCODING), new String(value, ENCODING));
             }
         } finally {
-            readWriteLock.readLock().unlock();
+            readWriteLock.writeLock().unlock();
         }
     }
     private int getIndexOfFile() {
