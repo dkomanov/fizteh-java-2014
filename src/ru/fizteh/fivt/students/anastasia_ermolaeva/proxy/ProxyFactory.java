@@ -15,8 +15,6 @@ import java.lang.reflect.Proxy;
 import java.util.Iterator;
 
 public class ProxyFactory implements LoggingProxyFactory {
-    public ProxyFactory() {
-    }
 
     static class LoggerInvocationHandler implements InvocationHandler {
         private final Object target;
@@ -174,14 +172,10 @@ public class ProxyFactory implements LoggingProxyFactory {
     @Override
     public Object wrap(Writer writer, Object implementation, Class<?> interfaceClass) {
         Utility.checkIfObjectsNotNull(writer, implementation, interfaceClass);
-        checkInterface(interfaceClass);
-        return Proxy.newProxyInstance(implementation.getClass().getClassLoader(),
-                new Class[]{interfaceClass}, new LoggerInvocationHandler(implementation, writer));
-    }
-
-    private void checkInterface(Class<?> interfaceClass) {
         if (!interfaceClass.isInterface()) {
             throw new IllegalArgumentException(interfaceClass + " is not an interface");
         }
+        return Proxy.newProxyInstance(implementation.getClass().getClassLoader(),
+                new Class[]{interfaceClass}, new LoggerInvocationHandler(implementation, writer));
     }
 }
