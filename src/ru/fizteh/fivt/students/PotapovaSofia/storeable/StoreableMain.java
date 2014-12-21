@@ -77,7 +77,7 @@ public class StoreableMain {
                                     tableProvider.deserialize(currentTable, args1[1]));
                             if (oldValue != null) {
                                 System.out.println("overwrite");
-                                System.out.println(oldValue);
+                                System.out.println(tableProvider.serialize(currentTable, oldValue));
                             } else {
                                 System.out.println("new");
                             }
