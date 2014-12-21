@@ -17,6 +17,9 @@ import java.io.IOException;
 
 public class LoggingProxyFactoryClassTest {
     private final Path testDir = Paths.get(System.getProperty("java.io.tmpdir"), "DataBaseTestDirectory");
+    private final String tableName = "table1";
+    private final String nonExistentName = "non-existent";
+    private final String TIMESTAMP_PATTERN = ".*timestamp=\"\\d*\".*";
     List<Class<?>> signature;
     TableProvider provider;
     StringWriter writer = new StringWriter();
@@ -33,16 +36,31 @@ public class LoggingProxyFactoryClassTest {
 
     @Test
     public void testLoggingWithoutException() throws IOException {
-        provider.createTable("table1", signature);
-        System.out.println(writer.toString());
+        provider.createTable(tableName, signature);
+        String needed = new String ("class=\"ru.fizteh.fivt.students.kolmakov_sergey."
+                + "proxy.data_base_structure.TableManager\" "
+                + "name=\"createTable\">"
+                + "<arguments><argument>table1</argument><argument>"
+                + "<list><value>class java.lang.Integer</value>"
+                + "<value>class java.lang.String</value>"
+                + "</list></argument></arguments>"
+                + "<return>TableClass["
+                + testDir + "\\" + tableName
+        + "]</return></invoke>");
+        assert (writer.toString().matches(TIMESTAMP_PATTERN));
+        assert (writer.toString().contains(needed));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLoggingWithExceptions() throws IOException {
         try {
-            provider.removeTable("non-existent");
+            provider.removeTable(nonExistentName);
         } finally {
-            System.out.println(writer.toString());
+            String needed = "class=\"ru.fizteh.fivt.students.kolmakov_sergey.proxy.data_base_structure.TableManager\""
+            + " name=\"removeTable\"><arguments><argument>" + nonExistentName + "</argument></arguments><thrown>"
+            + "java.lang.IllegalStateException: Table not found</thrown></invoke>";
+            assert (writer.toString().contains(needed));
+            assert (writer.toString().matches(TIMESTAMP_PATTERN));
         }
     }
 
