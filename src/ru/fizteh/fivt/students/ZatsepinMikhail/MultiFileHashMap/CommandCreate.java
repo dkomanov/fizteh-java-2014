@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap.FileMapPackage.FileMap;
+import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
