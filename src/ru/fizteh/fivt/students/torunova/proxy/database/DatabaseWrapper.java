@@ -71,7 +71,7 @@ public class DatabaseWrapper implements TableProvider, AutoCloseable {
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
         if (closed) {
-            throw new IllegalStateException("Table provide is closed.");
+            throw new IllegalStateException("Table provider is closed.");
         }
         readWriteLock.writeLock().lock();
         try {
@@ -116,7 +116,7 @@ public class DatabaseWrapper implements TableProvider, AutoCloseable {
         value = value.substring(value.indexOf('[') + 1, value.lastIndexOf(']'));
         value = value.trim();
         String[] values = Stream.of(value.split(REGEXP_TO_SPLIT_JSON)).
-                map(s -> s.trim()).toArray(size -> new String[size]);
+                map(String::trim).toArray(String[]::new);
         if (values.length != types.length) {
             throw new ColumnFormatException("Wrong number of values");
         }

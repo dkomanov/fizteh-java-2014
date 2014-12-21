@@ -41,7 +41,7 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
         File table = new File(newTableName).getAbsoluteFile();
         if (!table.exists()) {
             if (!table.mkdirs()) {
-                throw new TableNotCreatedException();
+                throw new TableNotCreatedException("table cannot be created");
             }
         }
         tableName = table.getAbsolutePath();
@@ -94,7 +94,9 @@ public class TableImpl implements ru.fizteh.fivt.storage.strings.Table{
         if (files.containsKey(file)) {
             result = files.get(file).put(key, value);
         } else {
-                file.getParentFile().mkdirs();
+                if (!file.getParentFile().mkdirs()) {
+                    throw new RuntimeException("directory "+ dirName + " cannot be created");
+                }
             FileMap fm;
             try {
                 file.createNewFile();

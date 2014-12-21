@@ -41,7 +41,9 @@ public class  Database implements TableProvider {
             IncorrectDbException {
         File db = new File(name).getAbsoluteFile();
         if (!db.exists()) {
-            db.mkdirs();
+            if(!db.mkdirs()) {
+                throw new RuntimeException("database cannot be created");
+            }
         } else if (!db.isDirectory()) {
             throw new IncorrectDbNameException("File with this name already exists.");
         }

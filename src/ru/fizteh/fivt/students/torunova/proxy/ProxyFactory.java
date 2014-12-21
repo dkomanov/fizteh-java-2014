@@ -27,7 +27,7 @@ public class ProxyFactory implements LoggingProxyFactory {
         private Object implementation;
         private Document document;
         private Transformer transformer;
-        private Writer writer;
+        private final Writer writer;
         public Logger(Object newImplementation, Writer newWriter) {
             implementation = newImplementation;
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

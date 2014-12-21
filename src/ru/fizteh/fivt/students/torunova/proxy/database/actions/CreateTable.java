@@ -32,14 +32,15 @@ public class CreateTable extends Action{
         for (int i = 1; i < parameters.length; i++) {
             classes.add(currentTable.getDb().classForName(parameters[i]));
         }
-        try {
+        //try {
             table = (TableWrapper) currentTable.getDb().createTable(tableName, classes);
-        } catch (IllegalArgumentException e) {
+       /* } catch (IllegalArgumentException e) {
             writer.println(e.getMessage());
             return false;
         } catch (RuntimeException e) {
+            //e.printStackTrace();
             writer.println(e.getMessage());
-        }
+        }*/
         if (table != null) {
             writer.println("created");
             return true;
@@ -65,7 +66,7 @@ public class CreateTable extends Action{
         String typesWithoutBrakets;
         String tableName;
         try {
-            String newArgs = args.substring(args.indexOf(' ') + 1);
+            String newArgs = args;
             tableName = newArgs.substring(0, newArgs.indexOf(' '));
             String argsWithoutTableName = newArgs.substring(newArgs.indexOf(' '));
             typesWithoutBrakets = argsWithoutTableName.substring(argsWithoutTableName.indexOf('(') + 1,

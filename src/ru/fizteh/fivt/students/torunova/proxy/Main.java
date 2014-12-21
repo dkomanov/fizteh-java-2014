@@ -27,6 +27,7 @@ public class Main {
             currentTable = new TableHolder(new DatabaseWrapper(db.getDbName()));
         } catch (Exception e) {
             System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            System.exit(1);
         }
         Set<Action> actions = new HashSet<>();
         actions.add(new Put(currentTable, System.out));
