@@ -30,14 +30,7 @@ public class ProxyFactory implements LoggingProxyFactory {
         private final Writer writer;
         public Logger(Object newImplementation, Writer newWriter) {
             implementation = newImplementation;
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = null;
-            try {
-                builder = factory.newDocumentBuilder();
-            } catch (ParserConfigurationException e) {
-                //ignored.
-            }
-            document = builder.newDocument();
+            document = createNewDocument();
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             try {
                 transformer = transformerFactory.newTransformer();
@@ -49,6 +42,7 @@ public class ProxyFactory implements LoggingProxyFactory {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            document = createNewDocument();
             Element invoke = document.createElement("invoke");
             invoke.setAttribute("timestamp", String.valueOf(System.currentTimeMillis()));
             invoke.setAttribute("class", implementation.getClass().getName());
@@ -57,14 +51,18 @@ public class ProxyFactory implements LoggingProxyFactory {
             Element arguments = document.createElement("arguments");
             invoke.appendChild(arguments);
             Element argument;
-            for (Object obj: args) {
-                argument = document.createElement("argument");
-                if (obj instanceof Iterable) {
-                    logIterable(argument, (Iterable) obj, new IdentityHashMap());
-                } else {
-                    argument.appendChild(document.createTextNode(obj.toString()));
+            if (args != null) {
+                for (Object obj : args) {
+                    argument = document.createElement("argument");
+                    if (obj instanceof Iterable) {
+                        IdentityHashMap map = new IdentityHashMap();
+                        map.put(obj, null);
+                        logIterable(argument, (Iterable) obj, map);
+                    } else {
+                        argument.appendChild(document.createTextNode(obj.toString()));
+                    }
+                    arguments.appendChild(argument);
                 }
-                arguments.appendChild(argument);
             }
             Element returnTag = document.createElement("return");
             Object result = null;
@@ -72,13 +70,15 @@ public class ProxyFactory implements LoggingProxyFactory {
                 result = method.invoke(implementation, args);
             } catch (InvocationTargetException e) {
                 Element thrown = document.createElement("thrown");
-                thrown.appendChild(document.createTextNode(e.getMessage()));
+                thrown.appendChild(document.createTextNode(e.getTargetException().toString()));
                 invoke.appendChild(thrown);
                 transformer.transform(new DOMSource(document), new StreamResult(writer));
                 throw e.getTargetException();
 
             }
-            returnTag.appendChild(document.createTextNode(result.toString()));
+            if (method.getReturnType() != void.class) {
+                returnTag.appendChild(document.createTextNode(result.toString()));
+            }
             invoke.appendChild(returnTag);
             synchronized (writer) {
                 transformer.transform(new DOMSource(document), new StreamResult(writer));
@@ -93,7 +93,6 @@ public class ProxyFactory implements LoggingProxyFactory {
                 value = document.createElement("value");
                 if (elements.containsKey(obj)) {
                     value.appendChild(document.createTextNode("cyclic"));
-                    return;
                 } else if (obj instanceof Iterable) {
                     IdentityHashMap map = new IdentityHashMap(elements);
                     map.put(obj, null);
@@ -104,6 +103,16 @@ public class ProxyFactory implements LoggingProxyFactory {
                 list.appendChild(value);
             }
 
+        }
+        private Document createNewDocument() {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = null;
+            try {
+                builder = factory.newDocumentBuilder();
+            } catch (ParserConfigurationException e) {
+                //ignored.
+            }
+            return  builder.newDocument();
         }
     }
     @Override

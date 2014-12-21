@@ -15,7 +15,7 @@ public class TestInterfaceImpl implements TestInterface {
     }
 
     @Override
-    public Object methodWithException(Exception e) throws Exception {
+    public Object methodWithException(TestException e) throws TestException {
         throw e;
     }
 
@@ -45,7 +45,7 @@ public class TestInterfaceImpl implements TestInterface {
     }
 
     @Override
-    public char methodRetunsChar(char ch) {
+    public char methodReturnsChar(char ch) {
         return ch;
     }
 
