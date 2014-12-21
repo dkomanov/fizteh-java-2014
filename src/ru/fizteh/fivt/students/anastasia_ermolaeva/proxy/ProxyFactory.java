@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.proxy;
 
 
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.TimeStampGenerator;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Utility;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -15,8 +16,22 @@ import java.lang.reflect.Proxy;
 import java.util.Iterator;
 
 public class ProxyFactory implements LoggingProxyFactory {
+    private TimeStampGenerator timeStampGenerator;
+    public ProxyFactory() {
+        this.timeStampGenerator = new RealTimeGenerator();
+    }
+    public ProxyFactory(TimeStampGenerator timeStampGenerator) {
+        this.timeStampGenerator = timeStampGenerator;
+    }
 
-    static class LoggerInvocationHandler implements InvocationHandler {
+    class RealTimeGenerator implements TimeStampGenerator {
+        @Override
+        public long getTimeStamp() {
+            return System.currentTimeMillis();
+        }
+    }
+
+    class LoggerInvocationHandler implements InvocationHandler {
         private final Object target;
         private final Writer loggerWriter;
         private static final String INVOKE = "invoke";
@@ -45,7 +60,8 @@ public class ProxyFactory implements LoggingProxyFactory {
             }
         }
 
-        private void writeIterable(Iterable iterable, XMLStreamWriter writer) throws XMLStreamException {
+        private void writeIterable(Iterable iterable, XMLStreamWriter writer)
+                throws XMLStreamException {
             Iterator iterator = iterable.iterator();
             if (!iterator.hasNext()) {
                 writer.writeEmptyElement(LIST);
@@ -87,7 +103,7 @@ public class ProxyFactory implements LoggingProxyFactory {
             XMLStreamWriter writer = outputFactory.createXMLStreamWriter(loggerWriter);
             try {
                 writer.writeStartElement(INVOKE);
-                writer.writeAttribute(TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+                writer.writeAttribute(TIMESTAMP, String.valueOf(timeStampGenerator.getTimeStamp()));
                 writer.writeAttribute(CLASS, target.getClass().getName());
                 writer.writeAttribute(NAME, method.getName());
                 if (args == null || args.length == 0) {
