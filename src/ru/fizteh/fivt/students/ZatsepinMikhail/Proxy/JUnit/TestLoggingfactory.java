@@ -74,23 +74,20 @@ public class TestLoggingfactory {
             //suppress
         }
 
-        try {
-            JSONObject result = new JSONObject(writer.toString());
-            assertTrue(result.has("timestamp"));
-            assertTrue(result.has("class"));
-            assertTrue(result.has("method"));
-            assertTrue(result.has("arguments"));
-            assertTrue(!result.has("returnValue"));
-            assertTrue(result.has("thrown"));
 
-            assertTrue(result.get("method").equals("get"));
-            assertTrue(result.get("thrown").equals("java.lang.IllegalArgumentException"));
-            JSONArray args = result.getJSONArray("arguments");
-            assertTrue(args.length() == 1);
-            assertTrue(args.get(0).toString().equals("null"));
-        } catch (JSONException e) {
-            //
-        }
+        JSONObject result = new JSONObject(writer.toString());
+        assertTrue(result.has("timestamp"));
+        assertTrue(result.has("class"));
+        assertTrue(result.has("method"));
+        assertTrue(result.has("arguments"));
+        assertTrue(!result.has("returnValue"));
+        assertTrue(result.has("thrown"));
+
+        assertTrue(result.get("method").equals("get"));
+        assertTrue(result.get("thrown").equals("java.lang.IllegalArgumentException"));
+        JSONArray args = result.getJSONArray("arguments");
+        assertTrue(args.length() == 1);
+        assertTrue(args.get(0).toString().equals("null"));
     }
 
     @Test
