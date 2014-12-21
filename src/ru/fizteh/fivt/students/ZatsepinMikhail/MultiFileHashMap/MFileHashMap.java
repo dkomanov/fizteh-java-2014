@@ -1,15 +1,14 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.MultiFileHashMap;
 
-import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
-
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
+import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 
 public class MFileHashMap {
     private String dataBaseDirectory;

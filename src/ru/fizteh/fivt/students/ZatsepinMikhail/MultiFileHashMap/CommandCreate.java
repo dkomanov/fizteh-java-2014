@@ -4,8 +4,8 @@ import ru.fizteh.fivt.students.ZatsepinMikhail.FileMap.FileMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Path;
 
 public class CommandCreate extends CommandMultiFileHashMap {
     public CommandCreate() {
