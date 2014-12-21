@@ -1,25 +1,45 @@
 package ru.fizteh.fivt.students.gampr.calculator;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
+import java.util.StringJoiner;
 
 public class Calculator {
-    String expr;
+    static String numString;
+    static {
+        numString = "0123456789.";
+    }
 
-    Calculator(String expr) {
-        this.expr = expr;
+    String expr;
+    String operString;
+    Map<Character, Operation> operations;
+
+    Calculator(String expr, Operation[] operations) {
+        this.operations = new HashMap<>();
+
+        StringJoiner joiner = new StringJoiner("");
+        for (Operation operat : operations) {
+            this.operations.put(operat.getType(), operat);
+            joiner.add(Character.toString(operat.getType()));
+        }
+        operString = joiner.toString();
+
+        this.expr = expr.replaceAll("\\s+", "");
     }
 
     // Проверяем, явлеется ли строка числом
     boolean isDouble(String num) {
         int countComma = 0;
         for (int iChar = 0; iChar < num.length(); iChar ++) {
-            if (!(num.charAt(iChar) <= '9' && num.charAt(iChar) >= '0')) {
+            if (!numString.contains(num.substring(iChar, iChar + 1)) || num.charAt(iChar) == '.') {
                 if (
                     !(iChar == 0 || iChar == num.length() - 1)      // последний и первый символ не могут быть запятыми
                     && num.charAt(iChar) == '.'
                     && countComma == 0
                 ) {                            // запятая только одна
-                    countComma++;
+                    countComma ++;
                 } else {
                     return false;
                 }
@@ -30,22 +50,9 @@ public class Calculator {
     }
 
     /*
-        Удаляем все ведущие пробелы
+        Возвращает якобы число (но в виде строки)
      */
-    String deleteSpace(String expr) {
-        if (!expr.isEmpty() && expr.charAt(0) == ' ') {
-            return expr.replaceFirst("\\s+", "");
-        }
-        return expr;
-    }
-
-    /*
-        Возвращает либо операцию, либо скобку, либо число (но в виде строки)
-     */
-    String getToken(String expr) {
-        if ("+-*/()".contains(expr.substring(0, 1))) {
-            return expr.substring(0, 1);
-        }
+    String getNumString(String expr) {
         return expr.split("[\\+\\-\\*/() ]+")[0];
     }
 
@@ -54,66 +61,58 @@ public class Calculator {
         алгоритма на двух стэках.
         В одном хранятся числа, а в другом операции(скобки тоже считаются)
      */
-    Double calc() {
+    Double calc() throws IOException {
         Stack<Double> res = new Stack<>();
-        Stack<Operation> oper = new Stack<>();
-        Boolean operPred = true;
+        Stack<Character> oper = new Stack<>();
+
+        boolean operPred = true; // для унарных плюсов
         while (!expr.isEmpty()) {
-            expr = deleteSpace(expr);
-            String token = getToken(expr);
-            expr = expr.substring(token.length());
-            if ("+-*/()".contains(token)) {
-                Operation op = new Operation(token);
-                switch (token) {
-                    case ("("):
-                        oper.push(op);
-                        break;
-                    case (")"):
-                        operPred = false;
-                        while (!oper.empty() && !oper.peek().getType().equals("(")) {
-                            oper.pop().apply(res);
-                        }
-                        if (oper.empty()) {
-                            System.err.println("Count brackets is wrong");
-                            System.exit(1);
-                        }
-                        oper.pop();
-                        break;
-                    case ("-"):
-                        if (operPred) {
-                            op = new Operation("0-");
-                            oper.push(op);
-                            break;
-                        }
-                    case ("+"):
-                        if (!operPred) {
-                            while (!oper.empty() && !oper.peek().getType().equals("(")) {
-                                oper.pop().apply(res);
-                            }
-                            oper.push(op);
-                        }
-                        break;
-                    case ("/"):
-                    case ("*"):
-                        if (operPred) {
-                            System.err.println("Bad expression");
-                            System.exit(1);
-                        }
-                        while (!oper.empty()
-                                && (oper.peek().getType().equals("*") || oper.peek().getType().equals("/"))) {
-                            oper.pop().apply(res);
-                        }
-                        oper.push(op);
-                        break;
-                    default:
+            if (operations.containsKey(expr.charAt(0)) || expr.charAt(0) == '(' || expr.charAt(0) == ')') {
+                char ch = expr.charAt(0);
+                expr = expr.substring(1);
+
+                // Сначала обработаем скобки
+                if (ch == ')') {
+                    while (!oper.empty() && !oper.peek().equals('(')) {
+                        res = operations.get(oper.pop()).apply(res);
+                    }
+                    if (oper.empty() || !oper.peek().equals('(')) {
+                        throw new IOException("Count brackets is wrong");
+                    }
+                    oper.pop();
+
+                    operPred = false;
+
+                    continue;
                 }
-                if ("+-*/(".contains(token)) {
-                    operPred = true;
+
+                // Обработаем унарные плюсы/минусы
+                if ((ch == '-' || ch == '+') && operPred) {
+                    if (ch == '-') {
+                        oper.push('~');
+                    }
+                    continue;
                 }
+                if (ch == '+' || ch == '-') {
+                    while (!oper.empty() && !oper.peek().equals('(')) {
+                        res = operations.get(oper.pop()).apply(res);
+                    }
+                }
+                if (ch == '*' || ch == '/') {
+                    while (!oper.empty()
+                            && (oper.peek().equals('*') || oper.peek().equals('/'))) {
+                        res = operations.get(oper.pop()).apply(res);
+                    }
+                }
+
+                oper.push(ch);
+                operPred = true;
             } else {
+                String token = getNumString(expr);
+                expr = expr.substring(token.length());
+
                 if (!isDouble(token)) {
-                    System.err.println("There is bad number");
-                    System.exit(1);
+                    throw new IOException("There is bad number");
                 }
                 res.push(Double.parseDouble(token));
                 operPred = false;
@@ -121,12 +120,11 @@ public class Calculator {
         }
         // Выполняем все операции, что были сохранены в стэк операций
         while (!oper.empty()) {
-            oper.pop().apply(res);
+            res = operations.get(oper.pop()).apply(res);
         }
         // Результат должен оказаться на вершине стэка
         if (res.size() != 1) {
-            System.err.println("It's not right arithmetic expression");
-            System.exit(1);
+            throw new IOException("It's not right arithmetic expression");
         }
         return res.pop();
     }
