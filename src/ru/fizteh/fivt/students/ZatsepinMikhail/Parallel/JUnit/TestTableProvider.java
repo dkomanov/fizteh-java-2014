@@ -142,13 +142,12 @@ public class TestTableProvider {
             wrongValue.setColumnAt(1, "example");
             wrongValue.setColumnAt(2, 5.5);
 
-            boolean exceptionWas = false;
             try {
                 provider.serialize(newTable, wrongValue);
+                fail();
             } catch (ColumnFormatException e) {
-                exceptionWas = true;
+                //all right
             }
-            assertTrue(exceptionWas);
         } catch (IOException e) {
             //suppress
         }
@@ -169,21 +168,19 @@ public class TestTableProvider {
                 assertNotNull(null);
             }
 
-            boolean exceptionWas = false;
             try {
                 provider.deserialize(newTable, stringForParse + 2);
+                fail();
             } catch (ParseException e) {
-                exceptionWas = true;
+                //all right
             }
-            assertTrue(exceptionWas);
 
-            exceptionWas = false;
             try {
                 provider.deserialize(newTable, stringForParse2);
+                fail();
             } catch (ParseException e) {
-                exceptionWas = true;
+                //all right
             }
-            assertTrue(exceptionWas);
         } catch (IOException e) {
             //suppress
         }
@@ -211,27 +208,25 @@ public class TestTableProvider {
             value.add("new");
             Storeable temp = provider.createFor(newTable, value);
             assertTrue(TypesUtils.getSizeOfStoreable(temp) == newTable.getColumnsCount());
-            boolean exceptionWas = false;
 
             try {
                 value = new ArrayList<>();
                 value.add("new");
                 value.add(100);
                 provider.createFor(newTable, value);
+                fail();
             } catch (ColumnFormatException e) {
-                exceptionWas = true;
+                //all right
             }
-            assertTrue(exceptionWas);
 
-            exceptionWas = false;
             try {
                 value = new ArrayList<>();
                 value.add("new2");
                 provider.createFor(newTable, value);
+                fail();
             } catch (IndexOutOfBoundsException e) {
-                exceptionWas = true;
+                //all right
             }
-            assertTrue(exceptionWas);
 
         } catch (IOException e) {
             //suppress
