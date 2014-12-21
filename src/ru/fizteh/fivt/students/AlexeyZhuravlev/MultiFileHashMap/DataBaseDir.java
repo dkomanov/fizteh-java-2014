@@ -9,9 +9,9 @@ import java.util.HashMap;
  */
 public class DataBaseDir {
 
-    HashMap<String, Table> tables;
-    String using;
-    File parentDirectory;
+    public HashMap<String, MultiTable> tables;
+    public String using;
+    public File parentDirectory;
 
     public DataBaseDir(String path) throws Exception {
         parentDirectory = new File(path);
@@ -26,14 +26,14 @@ public class DataBaseDir {
         for (String childName: parentDirectory.list()) {
             File childDirectory = new File(parentDirectory, childName);
             if (childDirectory.isDirectory()) {
-                tables.put(childName, new Table(childDirectory));
+                tables.put(childName, new MultiTable(childDirectory));
             } else {
                 throw new Exception(childName + " from databases directory is not a directory");
             }
         }
     }
 
-    public Table getUsing() {
+    public MultiTable getUsing() {
         return tables.get(using);
     }
 

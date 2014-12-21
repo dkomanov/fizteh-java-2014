@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProvider;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.Shell;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.ConvenientMap;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
@@ -20,7 +19,9 @@ import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
 public class UtilityTest {
-    private static final String QUOTED_STRING_REGEX = Utility.getQuotedStringRegex("\"", "/");
+    private static final char QUOTE_CHARACTER = '"';
+    private static final char ESCAPE_CHARACTER = '\\';
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -41,32 +42,16 @@ public class UtilityTest {
     }
 
     private static String quoteString(String s) {
-        return Utility
-                .quoteString(s, DBTableProvider.QUOTE_CHARACTER + "", DBTableProvider.ESCAPE_CHARACTER + "");
+        return Utility.quoteString(s, QUOTE_CHARACTER + "", ESCAPE_CHARACTER + "");
     }
 
     private static String unquoteString(String s) {
         return Utility.unquoteString(
-                s, DBTableProvider.QUOTE_CHARACTER + "", DBTableProvider.ESCAPE_CHARACTER + "");
+                s, QUOTE_CHARACTER + "", ESCAPE_CHARACTER + "");
     }
 
     private static String[] supplyArray(String... strings) {
         return strings;
-    }
-
-    @Test
-    public void testMatchQuotedStringRegex() {
-        assertFalse("\"/\"".matches(QUOTED_STRING_REGEX));
-    }
-
-    @Test
-    public void testMatchQuotedStringRegex1() {
-        assertTrue("\"//\"".matches(QUOTED_STRING_REGEX));
-    }
-
-    @Test
-    public void testMatchQuotedStringRegex2() {
-        assertFalse("\"//\"\"".matches(QUOTED_STRING_REGEX));
     }
 
     @Test
@@ -111,7 +96,7 @@ public class UtilityTest {
 
     @Test
     public void testSplitString5() {
-        String part = quoteString("\"/ word \"/\"");
+        String part = quoteString("\"\\ word \"\\\"");
         assertArrayEquals(
                 "Invalid string split",
                 supplyArray("create", "table", "(" + part + "," + "1,", "null", ")"),
@@ -155,7 +140,7 @@ public class UtilityTest {
         exception.expectMessage("Source map contains at least two duplicate values");
 
         Utility.inverseMap(
-                new ConvenientMap<Integer, Integer>(new HashMap<Integer, Integer>()).putNext(1, 2).putNext(
+                new ConvenientMap<>(new HashMap<>()).putNext(1, 2).putNext(
                         2, 2));
     }
 

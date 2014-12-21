@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import static org.hamcrest.CoreMatchers.*;
 
 /**
- * Tests {@link TableProviderFactory } mostly for error cases.
+ * Tests {@link ru.fizteh.fivt.storage.structured.TableProviderFactory } mostly for error cases.
  * @author phoenix
  */
 @RunWith(org.junit.runners.JUnit4.class)
@@ -31,9 +31,11 @@ public class TableProviderFactoryTest extends TestBase {
     }
 
     @After
-    public void cleanup() throws IOException {
+    public void cleanup() throws Exception {
+        if (factory instanceof AutoCloseable) {
+            ((AutoCloseable) factory).close();
+        }
         cleanDBRoot();
-        factory = null;
     }
 
     @Test

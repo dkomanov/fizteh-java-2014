@@ -22,20 +22,24 @@ public class MultiRemoveCommand extends Command {
         return 1;
     }
 
+    public MultiRemoveCommand() {}
+
+    public MultiRemoveCommand(String passedKey) {
+        key = passedKey;
+    }
+
     @Override
-    public void execute(DataBaseDir base) throws Exception {
-        if (base.getUsing() == null) {
-            System.out.println("no table");
+    public void executeOnTable(MultiTable table) throws Exception {
+        int hashCode = Math.abs(key.hashCode());
+        int dir = hashCode % 16;
+        int file = hashCode / 16 % 16;
+        RemoveCommand remove = new RemoveCommand(key);
+        if (table.databases[dir][file] == null) {
+            System.out.println("not found");
         } else {
-            int hashCode = Math.abs(key.hashCode());
-            int dir = hashCode % 16;
-            int file = hashCode / 16 % 16;
-            RemoveCommand remove = new RemoveCommand(key);
-            if (base.getUsing().databases[dir][file] == null) {
-                System.out.println("not found");
-            } else {
-                DataBase db = base.getUsing().databases[dir][file];
-                remove.execute(db);
+            DataBase db = table.databases[dir][file];
+            remove.execute(db);
+            if (table.getClass() == MultiTable.class) {
                 if (db.recordsNumber() == 0) {
                     File dbFile = new File(db.dbFileName);
                     try {
@@ -43,10 +47,10 @@ public class MultiRemoveCommand extends Command {
                     } catch (SecurityException | IOException e) {
                         throw new Exception("Access violation: cannon delete database file");
                     }
-                    base.getUsing().databases[dir][file] = null;
+                    table.databases[dir][file] = null;
                     int k = 0;
                     for (int j = 0; j < 16; j++) {
-                        if (base.getUsing().databases[dir][j] == null) {
+                        if (table.databases[dir][j] == null) {
                             k++;
                         }
                     }
@@ -61,6 +65,15 @@ public class MultiRemoveCommand extends Command {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void execute(DataBaseDir base) throws Exception {
+        if (base.getUsing() == null) {
+            System.out.println("no table");
+        } else {
+            executeOnTable(base.getUsing());
         }
     }
 }

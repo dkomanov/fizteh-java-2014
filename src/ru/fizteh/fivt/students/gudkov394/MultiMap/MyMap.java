@@ -1,11 +1,11 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.io.File;
 
 public class MyMap {
     public Map<String, CurrentTable> tables = new HashMap<String, CurrentTable>();

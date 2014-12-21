@@ -8,7 +8,6 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class MyMap {
-    private ArrayList<Class<?>> signature = new ArrayList<Class<?>>();
     public CurrentTable ct = null;
     TableProviderClass tableProviderClass = new TableProviderClass();
 
@@ -80,7 +79,7 @@ public class MyMap {
             forSignature = forSignature.trim();
             forSignature = forSignature.substring(0, forSignature.length() - 1);
             Utils utils = new Utils();
-            signature = utils.signature(forSignature);
+            ArrayList<Class<?>> signature = utils.signature(forSignature);
             try {
                 tableProviderClass.createTable(name, signature);
                 ((CurrentTable) tableProviderClass.getTable(name)).writeSignature(forSignature);

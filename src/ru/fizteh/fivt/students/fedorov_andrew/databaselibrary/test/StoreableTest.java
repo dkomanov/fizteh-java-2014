@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -17,6 +18,7 @@ import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProvider
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -24,6 +26,8 @@ import static org.junit.Assert.*;
 @RunWith(JUnit4.class)
 public class StoreableTest extends TestBase {
     private static final String TABLE_NAME = "table";
+    private static final List<Class<?>> TABLE_COLUMN_TYPES = Arrays.asList(
+            String.class, Integer.class, Double.class, Float.class, Boolean.class, Byte.class, Long.class);
     private static TableProviderFactory factory;
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -36,26 +40,52 @@ public class StoreableTest extends TestBase {
         factory = new DBTableProviderFactory();
     }
 
+    @AfterClass
+    public static void globalCleanup() throws Exception {
+        if (factory instanceof AutoCloseable) {
+            ((AutoCloseable) factory).close();
+        }
+    }
+
     @Before
     public void prepare() throws IOException {
         provider = factory.create(DB_ROOT.toString());
-        table = provider.createTable(
-                TABLE_NAME, Arrays.asList(
-                        String.class,
-                        Integer.class,
-                        Double.class,
-                        Float.class,
-                        Boolean.class,
-                        Byte.class,
-                        Long.class));
+        table = provider.createTable(TABLE_NAME, TABLE_COLUMN_TYPES);
         storeable = provider.createFor(table);
     }
 
     @After
-    public void cleanup() throws IOException {
-        cleanDBRoot();
+    public void cleanup() throws Exception {
+        if (provider instanceof AutoCloseable) {
+            ((AutoCloseable) provider).close();
+        }
         provider = null;
         table = null;
+        cleanDBRoot();
+    }
+
+    @Test
+    public void testToString() {
+        storeable.setColumnAt(0, "value");
+        storeable.setColumnAt(2, 194.1);
+        storeable.setColumnAt(4, true);
+        assertEquals("StoreableImpl[value,,194.1,,true,,]", storeable.toString());
+    }
+
+    @Test
+    public void testStoreableEquals() throws IOException {
+        Table table2 = provider.createTable(TABLE_NAME + "2", TABLE_COLUMN_TYPES);
+        assertEquals(storeable, provider.createFor(table2));
+    }
+
+    @Test
+    public void testStoreableEquals1() throws IOException {
+        Storeable storeable2 = provider.createFor(table);
+
+        storeable.setColumnAt(0, "string1");
+        storeable2.setColumnAt(0, "string2");
+
+        assertNotEquals(storeable, storeable2);
     }
 
     @Test

@@ -7,10 +7,7 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by kagudkov on 25.10.14.
@@ -41,7 +38,7 @@ public class TableProviderClass implements TableProvider {
         if (tables.containsKey(name)) {
             return null;
         } else {
-            CurrentTable newTable = new CurrentTable(name, (ArrayList<Class<?>>) columnTypes);
+            CurrentTable newTable = new CurrentTable(name, columnTypes);
             tables.put(name, newTable);
             newTable.tableProviderClass = this;
             return newTable;
@@ -73,15 +70,18 @@ public class TableProviderClass implements TableProvider {
 
     @Override
     public Storeable createFor(Table table) {
-        List<Object> values = new ArrayList<>(table.getColumnsCount());
-        return new TableContents(values);
+        ArrayList<Object> objects = new ArrayList<>();
+        for (int i = 0; i < table.getColumnsCount(); ++i) {
+            objects.add((Object) table.getColumnType(i));
+        }
+        return new TableContents(objects);
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
         List<Object> valuesTmp = new ArrayList<>(values);
         for (int i = 0; i < valuesTmp.size(); ++i) {
-            if (valuesTmp.get(i).getClass() != table.getColumnType(i)) {
+            if (valuesTmp.get(i) != null && valuesTmp.get(i).getClass() != table.getColumnType(i)) {
                 throw new ColumnFormatException("wrong column type");
             }
         }
@@ -90,7 +90,11 @@ public class TableProviderClass implements TableProvider {
 
     @Override
     public List<String> getTableNames() {
-        return null;
+        ArrayList<String> list = new ArrayList<>();
+        for (String s : tables.keySet()) {
+            list.add(s);
+        }
+        return list;
     }
 
     public void put(String tmp, CurrentTable ct) {

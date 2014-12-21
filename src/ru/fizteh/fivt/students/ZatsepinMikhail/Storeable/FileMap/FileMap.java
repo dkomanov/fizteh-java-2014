@@ -54,7 +54,7 @@ public class FileMap implements Table {
      * @param newDirectory - directory of this FileMap
      * @param newTypeList - list of types (signature of table)
      */
-    public FileMap(String newDirectory, List<Class<?>> newTypeList, TableProvider newParent) {
+    public FileMap(String newDirectory, List<Class<?>> newTypeList, TableProvider newParent) throws IOException {
         directoryOfTable = newDirectory;
         stableData = new HashMap<>();
         addedData = new HashMap<>();
@@ -63,7 +63,9 @@ public class FileMap implements Table {
         typeList = newTypeList;
         numberOfColumns = typeList.size();
         parent = newParent;
-        init();
+        if (!init()) {
+            throw new IOException("error while initialization");
+        }
     }
 
     public TableProvider getTableProvider() {

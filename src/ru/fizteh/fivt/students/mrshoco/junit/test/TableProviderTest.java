@@ -1,11 +1,11 @@
-package test;
+package junit.test;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import strings.*;
-import util.*;
+import junit.strings.*;
+import junit.util.*;
 
 import java.io.IOException;
 

@@ -1,6 +1,6 @@
-package util;
+package junit.util;
 
-import strings.*;
+import junit.strings.*;
 
 public class TableLauncher {
     TableProvider tableProvider;

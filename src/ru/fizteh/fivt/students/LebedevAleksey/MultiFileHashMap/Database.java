@@ -25,7 +25,7 @@ public class Database {
         load();
     }
 
-    Table getCurrentTable() {
+    public Table getCurrentTable() {
         return currentTable;
     }
 
@@ -52,7 +52,7 @@ public class Database {
                 File[] subfolders = getTablesFromRoot(root);
                 for (File folder : subfolders) {
                     String name = folder.getName();
-                    Table table = new Table(name, this);
+                    Table table = generateTable(name);
                     tables.add(table);
                     tableNames.put(name, table);
                 }
@@ -113,7 +113,7 @@ public class Database {
             DatabaseFileStructureException {
         try {
             if (!containsTable(name)) {
-                Table table = new Table(name, this);
+                Table table = generateTable(name);
                 Path rootDirectoryPath = getRootDirectoryPath();
                 Path path = rootDirectoryPath.resolve(name);
                 if (path.startsWith(rootDirectoryPath) && path.getParent().equals(rootDirectoryPath)) {
@@ -137,6 +137,10 @@ public class Database {
         } catch (IOException | SecurityException ex) {
             throw new LoadOrSaveException(CANT_CREATE_TABLE_MESSAGE, ex);
         }
+    }
+
+    protected Table generateTable(String name) throws DatabaseFileStructureException {
+        return new Table(name, getRootDirectoryPath());
     }
 
     public void removeTable(String name) throws TableNotFoundException, LoadOrSaveException,

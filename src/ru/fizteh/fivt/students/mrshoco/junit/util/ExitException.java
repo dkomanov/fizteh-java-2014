@@ -1,4 +1,4 @@
-package util;
+package junit.util;
 
 @SuppressWarnings("serial")
 public class ExitException extends Exception {

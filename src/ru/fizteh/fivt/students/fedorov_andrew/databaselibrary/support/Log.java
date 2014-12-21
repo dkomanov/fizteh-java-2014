@@ -19,7 +19,7 @@ public class Log {
     /**
      * If logging is disabled, no messages are output
      */
-    private static boolean enableLogging = true;
+    private static boolean enableLogging = false;
     /**
      * Writer to the log file.
      */
@@ -30,18 +30,17 @@ public class Log {
     private Log() {
     }
 
-    private static void reopen() {
+    private static synchronized void reopen() {
         try {
             writer = new PrintWriter(new FileOutputStream(LOG_PATH.toAbsolutePath().toString(), !firstOpen));
             firstOpen = false;
         } catch (IOException exc) {
             System.err.println(String.format("Cannot create log file: %s", LOG_PATH));
             System.err.println(exc.toString());
-            System.exit(1);
         }
     }
 
-    public static void close() {
+    public static synchronized void close() {
         if (writer != null) {
             writer.println("Log closing");
             writer.close();
@@ -49,23 +48,27 @@ public class Log {
         }
     }
 
-    public static boolean isEnableLogging() {
+    public static synchronized boolean isEnableLogging() {
         return enableLogging;
     }
 
-    public static void setEnableLogging(boolean enableLogging) {
+    public static synchronized void setEnableLogging(boolean enableLogging) {
         Log.enableLogging = enableLogging;
     }
 
-    public static void log(Class<?> logger, String message) {
+    public static synchronized void log(Class<?> logger, String message) {
         log(logger, null, message);
     }
 
-    public static void log(Class<?> logger, Throwable throwable, String message) {
-        if (writer == null) {
-            reopen();
-        }
+    public static synchronized void log(Class<?> logger, Throwable throwable, String message) {
         if (enableLogging) {
+            if (writer == null) {
+                reopen();
+                if (writer == null) {
+                    return;
+                }
+            }
+
             StringBuilder sb = new StringBuilder(message == null ? 100 : message.length() * 2);
 
             boolean appendSpace = false;
@@ -111,7 +114,7 @@ public class Log {
         }
     }
 
-    public static void log(String message) {
+    public static synchronized void log(String message) {
         log(null, null, message);
     }
 }

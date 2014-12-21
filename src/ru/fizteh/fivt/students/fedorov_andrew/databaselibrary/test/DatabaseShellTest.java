@@ -32,10 +32,10 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         System.setProperty(SingleDatabaseShellState.DB_DIRECTORY_PROPERTY_NAME, DB_ROOT.toString());
     }
 
-    private void createAndUseTable(String table) throws TerminalException {
-        runBatchExpectZero(String.format("create %1$s (String); use %1$s", table));
+    private void createTableWithStringColumn(String table) throws TerminalException {
+        runBatchExpectZero(String.format("create %1$s (String)", table));
         assertEquals(
-                "Creating and using table", String.format("created%nusing %1$s%n", table), getOutput());
+                "Creating table", makeTerminalExpectedMessage("created"), getOutput());
     }
 
     @Test
@@ -52,16 +52,16 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
 
     @Test
     public void testPutCompositeStoreable() throws TerminalException {
-        runBatchExpectZero("create t1 (String  int boolean)", "use t1");
-        runBatchExpectZero("put key [ \"hello\", 2, null ]");
+        runBatchExpectZero("create t1 (String  int boolean)", "use t1", "put key [ \"hello\", 2, null ]");
 
-        assertEquals("Output after put", makeTerminalExpectedMessage("new"), getOutput());
+        assertThat("Output after put", getOutput(), containsString(makeTerminalExpectedMessage("new")));
 
-        runBatchExpectZero(true, "use t1");
-        runBatchExpectZero("get key");
+        runBatchExpectZero("use t1", "get key");
 
-        assertEquals(
-                "Output after get", makeTerminalExpectedMessage("found", "[\"hello\",2,null]"), getOutput());
+        assertThat(
+                "Output after get", getOutput(), containsString(
+                        makeTerminalExpectedMessage(
+                                "found", "[\"hello\",2,null]")));
     }
 
     @Test
@@ -91,13 +91,14 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         String tableA = "tableA";
         String tableB = "tableB";
 
-        createAndUseTable(tableB);
-        createAndUseTable(tableA);
+        createTableWithStringColumn(tableB);
+        createTableWithStringColumn(tableA);
 
         String command = String.format(
-                "put a [\"b\"]; put b [\"c\"]; put c [\"d\"]; remove b; put a [\"bbb\"]; use %s", tableB);
+                "use " + tableA
+                + "; put a [\"b\"]; put b [\"c\"]; put c [\"d\"]; remove b; put a [\"bbb\"]; use %s", tableB);
         String expectedReply = String.format(
-                "new%nnew%nnew%nremoved%noverwrite%nold [\"b\"]%n2 unsaved changes%n");
+                "using tableA%nnew%nnew%nnew%nremoved%noverwrite%nold [\"b\"]%n2 unsaved changes%n");
 
         runBatchExpectNonZero(command);
 
@@ -109,56 +110,57 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         String tableA = "tableA";
         String tableB = "tableB";
 
-        createAndUseTable(tableB);
-        createAndUseTable(tableA);
+        createTableWithStringColumn(tableB);
+        createTableWithStringColumn(tableA);
 
-        String command = String.format(
-                "put a [\"b\"]; put b [\"c\"]; put c [\"d\"]; remove b; put a [\"bbb\"]; use %1$s", tableA);
-        String expectedReply = String.format(
-                "new%nnew%nnew%nremoved%noverwrite%nold [\"b\"]%nusing %1$s%n", tableA);
-
-        runBatchExpectZero(false, command);
+        runBatchExpectZero(
+                "use " + tableA,
+                "put a [\"b\"]; put b [\"c\"]; put c [\"d\"]; remove b; put a [\"bbb\"];",
+                "use " + tableA);
 
         assertEquals(
-                "Attempt to use the same table with uncommitted changes", expectedReply, getOutput());
+                makeTerminalExpectedMessage(
+                        "using " + tableA,
+                        "new",
+                        "new",
+                        "new",
+                        "removed",
+                        "overwrite",
+                        "old [\"b\"]",
+                        "using " + tableA), getOutput());
     }
 
     @Test
     public void testCommit() throws TerminalException {
         String table = "table";
 
-        String command = String.format(
-                "put a [\"b\"]; commit; put b [\"c\"]; remove a; commit");
-        String expectedReply = String.format("new%n1%nnew%nremoved%n2%n");
+        createTableWithStringColumn(table);
+        runBatchExpectZero("use " + table, "put a [\"b\"]; commit; put b [\"c\"]; remove a; commit");
 
-        createAndUseTable(table);
-        runBatchExpectZero(command);
-
-        assertEquals("Changes count test in commit", expectedReply, getOutput());
+        assertEquals(
+                makeTerminalExpectedMessage("using " + table, "new", "1", "new", "removed", "2"),
+                getOutput());
     }
 
     @Test
     public void testCommitFail() throws TerminalException {
         interpreter = new Shell<>(new MutatedSDSS(0));
 
-        runBatchExpectNonZero("create t1 (String)", "use t1", "put a [\"b\"]");
-        runBatchExpectNonZero("commit");
+        runBatchExpectNonZero("create t1 (String)", "use t1", "put a [\"b\"]", "commit");
 
-        assertEquals(makeTerminalExpectedMessage("Fail on commit [test mode]"), getOutput());
+        assertThat(getOutput(), containsString("Fail on commit [test mode]"));
     }
 
     @Test
     public void testRollback() throws TerminalException {
         String table = "table";
 
-        String command = String.format(
-                "put a [\"b\"]; commit; put b [\"c\"]; remove a; rollback");
-        String expectedReply = String.format("new%n1%nnew%nremoved%n2%n");
+        createTableWithStringColumn(table);
+        runBatchExpectZero("use table", "put a [\"b\"]", "commit", "put b [\"c\"];", "remove a", "rollback");
 
-        createAndUseTable(table);
-        runBatchExpectZero(command);
-
-        assertEquals("Changes count test in rollback", expectedReply, getOutput());
+        assertEquals(
+                makeTerminalExpectedMessage("using " + table, "new", "1", "new", "removed", "2"),
+                getOutput());
     }
 
     @Test
@@ -166,13 +168,10 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         String table = "table";
         String key = "not_existent_key";
 
-        String command = String.format("get %2$s", table, key);
-        String expectedReply = String.format("not found%n");
+        createTableWithStringColumn(table);
+        runBatchExpectNonZero("use " + table, "get " + key);
 
-        createAndUseTable(table);
-        runBatchExpectNonZero(command);
-
-        assertEquals("Getting not existent key must raise error", expectedReply, getOutput());
+        assertEquals(makeTerminalExpectedMessage("using " + table, "not found"), getOutput());
     }
 
     @Test
@@ -182,28 +181,24 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         String key = "key";
         String value = "value";
 
-        String command = String.format("put %1$s [\"%2$s\"]; get %1$s", key, value);
-        String expectedReply = String.format("new%nfound%n[\"%s\"]%n", value);
+        createTableWithStringColumn(table);
+        runBatchExpectZero("use " + table, "put " + key + " [\"" + value + "\"]", "get " + key);
 
-        createAndUseTable(table);
-        runBatchExpectZero(command);
-
-        assertEquals("Getting existent key", expectedReply, getOutput());
+        assertEquals(
+                makeTerminalExpectedMessage(
+                        "using " + table, "new", "found", "[\"" + value + "\"]"), getOutput());
     }
 
     @Test
     public void testRemoveNotExistent() throws TerminalException {
         String table = "table";
-        createAndUseTable(table);
+        createTableWithStringColumn(table);
 
         String key = "key";
 
-        String command = String.format("remove %s", key);
-        String expectedReply = String.format("not found%n");
+        runBatchExpectNonZero("use " + table, "remove " + key);
 
-        runBatchExpectNonZero(command);
-
-        assertEquals("Removing not existent key", expectedReply, getOutput());
+        assertEquals(makeTerminalExpectedMessage("using " + table, "not found"), getOutput());
     }
 
     @Test
@@ -227,10 +222,12 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
     public void testInteractiveMode1() throws TerminalException {
         String table = "table";
         String fakeTable = "fake_table";
-        createAndUseTable(table);
+        createTableWithStringColumn(table);
 
         runBatchExpectZero(
-                false, "put a [\"b\"]; put b [\"c\"]; put c [\"d\"]; put d [\"e\"]; put e [\"a\"]; exit");
+                "use " + table,
+                "put a [\"b\"]; put b [\"c\"]; put c [\"d\"]; put d [\"e\"]; put e [\"a\"];",
+                "exit");
         runInteractiveExpectZero(
                 "use " + table, "show tables", "use " + fakeTable + "; list", "use " + table + "; list");
 
@@ -253,8 +250,8 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
     @Test
     public void testDropExistingTable() throws TerminalException {
         String table = "table";
-        createAndUseTable(table);
-        runBatchExpectZero(true, "drop " + table);
+        createTableWithStringColumn(table);
+        runBatchExpectZero("drop " + table);
         assertEquals(
                 "When an existing table is dropped, a good report must be made",
                 String.format("dropped%n"),
@@ -273,11 +270,12 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
     @Test
     public void testSize() throws TerminalException {
         String table = "table";
-        createAndUseTable(table);
+        createTableWithStringColumn(table);
         runBatchExpectZero(
+                "use " + table,
                 "put a [\"b\"]; put c [\"d\"]; put d [\"e\"]; remove c; put d [\"dd\"]; put k [\"a\"]");
-        runBatchExpectZero("size");
-        assertEquals("Improper size printed", String.format("3%n"), getOutput());
+        runBatchExpectZero("use " + table, "size");
+        assertEquals(makeTerminalExpectedMessage("using " + table, "3"), getOutput());
     }
 
     @Test
@@ -363,11 +361,12 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         String tableB = "tableB";
         String corruptTable = "corruptTable";
 
-        createAndUseTable(corruptTable);
-        createAndUseTable(tableB);
-        createAndUseTable(tableA);
+        createTableWithStringColumn(corruptTable);
+        createTableWithStringColumn(tableB);
+        createTableWithStringColumn(tableA);
 
         runBatchExpectZero(
+                "use " + tableA,
                 "put a [\"b\"]; put c [\"d\"]",
                 "commit",
                 "use " + corruptTable,
@@ -381,7 +380,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
             fos.write("failure".getBytes());
         }
 
-        runInteractiveExpectZero(true, "show tables");
+        runInteractiveExpectZero("show tables");
 
         // Table order can be different.
         String lineRegex = String.format("(%s 2|%s 0|%s corrupt)", tableA, tableB, corruptTable);
@@ -396,8 +395,8 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
     public void testUseCorruptTable() throws IOException, TerminalException {
         String table = "corruptTable";
 
-        createAndUseTable(table);
-        runBatchExpectZero("put a [\"b\"]; put c [\"d\"]; put e [\"f\"]; put k [\"j\"]");
+        createTableWithStringColumn(table);
+        runBatchExpectZero("use " + table, "put a [\"b\"]; put c [\"d\"]; put e [\"f\"]; put k [\"j\"]");
 
         Path corruptPath = DB_ROOT.resolve(table).resolve("1.dir").resolve("1.dat");
         if (!Files.exists(corruptPath.getParent())) {
@@ -407,7 +406,7 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
             fos.write(new byte[] {1, 2, 5, 0});
         }
 
-        runBatchExpectNonZero(true, "use " + table);
+        runBatchExpectNonZero("use " + table);
         assertThat(
                 "Using corrupt table must raise error",
                 getOutput(),
@@ -503,10 +502,10 @@ public class DatabaseShellTest extends InterpreterTestBase<SingleDatabaseShellSt
         String name = "existing_table";
         String command = "create " + name + " (String)";
 
-        runBatchExpectZero(true, command);
+        runBatchExpectZero(command);
         assertEquals(
                 "Attempt to create not existing table", String.format("created%n"), getOutput());
-        runBatchExpectNonZero(true, command);
+        runBatchExpectNonZero(command);
         assertEquals(
                 "Attempt to create existing table", String.format("%s exists%n", name), getOutput());
     }

@@ -9,9 +9,15 @@ public class Table {
     protected static final int SUBDIRECTORIES_COUNT = 16;
     private TablePart[][] structuredParts;
     private String tableName;
-    private Database database;
+    private Path tablePath;
 
-    public Table(String name, Database databaseParent) {
+    public Table(String name, Path path) {
+        initParts();
+        tableName = name;
+        tablePath = path;
+    }
+
+    protected void initParts() {
         structuredParts = new TablePart[SUBDIRECTORIES_COUNT][];
         for (int i = 0; i < SUBDIRECTORIES_COUNT; ++i) {
             structuredParts[i] = new TablePart[FILES_COUNT];
@@ -19,8 +25,6 @@ public class Table {
                 structuredParts[i][j] = new TablePart(this, i, j);
             }
         }
-        tableName = name;
-        database = databaseParent;
     }
 
     protected TablePart selectPartForKey(String key)
@@ -42,7 +46,7 @@ public class Table {
     }
 
     public Path getDirectory() throws DatabaseFileStructureException {
-        return database.getRootDirectoryPath().resolve(tableName);
+        return tablePath.resolve(tableName);
     }
 
     public int count() throws LoadOrSaveException, DatabaseFileStructureException {

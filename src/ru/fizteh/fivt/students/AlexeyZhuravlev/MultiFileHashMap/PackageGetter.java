@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class PackageGetter implements CommandGetter {
     AbstractQueue<String> commands;
 
-    PackageGetter(String[] args) {
+    public PackageGetter(String[] args) {
         commands = new ConcurrentLinkedQueue<>();
         StringBuilder allCommands = new StringBuilder();
         for (String s: args) {

@@ -20,8 +20,8 @@ public class Write {
         Set<String> set = currentTable.keySet();
         for (String s : set) {
             int hashcode = s.hashCode();
-            int ndirectory = (hashcode % 16  + 16) % 16;
-            int nfile = (hashcode / 16  % 16 + 16) % 16;
+            int ndirectory = (hashcode % 16 + 16) % 16;
+            int nfile = (hashcode / 16 % 16 + 16) % 16;
 
             FileOutputStream output = null;
             try {
@@ -70,8 +70,8 @@ public class Write {
 
     private void writeWord(final String s, final FileOutputStream output) {
 
-        String key = ((Integer) s.length()).toString();
-        writeBytes(key, output);
+        //  String key = ((Integer) s.length()).toString();
+        //writeBytes(key, output);
         writeBytes(s, output);
     }
 

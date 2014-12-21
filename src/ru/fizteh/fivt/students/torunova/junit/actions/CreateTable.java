@@ -20,7 +20,7 @@ public class CreateTable extends Action{
             return false;
         }
         String tableName = args[0];
-        TableImpl table = null;
+        TableImpl table;
         try {
             table = (TableImpl) currentTable.getDb().createTable(tableName);
         } catch (IllegalArgumentException e) {

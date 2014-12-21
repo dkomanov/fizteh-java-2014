@@ -14,12 +14,17 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.StoreableTableImpl;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.parallel.ControllableAgent;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.parallel.ControllableRunnable;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.parallel.ControllableRunner;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -77,6 +82,11 @@ public class TableTest extends TestBase {
         Storeable oldValueObj = table.remove(key);
         String oldValue = oldValueObj == null ? null : provider.serialize(table, oldValueObj);
         return extractString(oldValue);
+    }
+
+    @Test
+    public void testToString() {
+        assertEquals("StoreableTableImpl[" + DB_ROOT.resolve(TABLE_NAME).normalize() + "]", table.toString());
     }
 
     @Test
@@ -153,7 +163,109 @@ public class TableTest extends TestBase {
         remove("key");
         put("key", "value");
 
-        assertEquals(0, table.getNumberOfUncommittedChanges());
+        assertEquals(1, table.getNumberOfUncommittedChanges());
+    }
+
+    @Test
+    public void testRollbackConcurrent() throws Throwable {
+        ControllableRunner runnerA = new ControllableRunner();
+        ControllableRunner runnerB = new ControllableRunner();
+
+        // Scheme:
+        // runnerA: put values
+        // runnerB: put values, rollback
+        // runnerA: check own changes still exist
+
+        ControllableRunnable contrA = runnerA.createAndAssign(
+                (ControllableAgent agent) -> {
+                    // runnerA: put values
+                    put("a", "b");
+                    put("b", "c");
+
+                    agent.notifyAndWait();
+
+                    // runnerA: check own changes still exist
+                    int changes = table.getNumberOfUncommittedChanges();
+                    assertEquals("Changes of another thread must not have been rolled back", 2, changes);
+
+                });
+
+        ControllableRunnable contrB = runnerB.createAndAssign(
+                (ControllableAgent agent) -> {
+                    // runnerB: put values, rollback
+                    put("a", "b");
+                    put("c", "d");
+                    int changes = table.rollback();
+                    assertEquals("Must have rolled back my changes", 2, changes);
+                });
+
+        new Thread(runnerA, "runnerA").start();
+        new Thread(runnerB, "runnerB").start();
+
+        runnerA.waitUntilPause(); // Wait until pause.
+        runnerB.waitUntilEndOfWork(); // Wait until end of work.
+        runnerA.continueWork();
+        runnerA.waitUntilEndOfWork(); // Wait until end of work.
+    }
+
+    @Test
+    public void testCommitGlobalUpdate() throws Throwable {
+        ControllableRunner runnerA = new ControllableRunner();
+        ControllableRunner runnerB = new ControllableRunner();
+
+        ControllableRunnable contrA = runnerA.createAndAssign(
+                (ControllableAgent agent) -> {
+                    // runnerA: put values
+                    put("a", "b");
+                    put("b", "c");
+
+                    agent.notifyAndWait();
+
+                    // runnerA: commit
+                    //                    System.err.println("A: commit");
+                    int changes = table.commit();
+                    assertEquals("Must have committed my changes.", 2, changes);
+
+                    agent.notifyAndWait();
+
+                    // runnerA: get values
+                    assertNull("Must have been removed.", get("b"));
+                    assertEquals("Committed from another thread.", "d", get("c"));
+                    assertEquals("Committed from me earlier.", "b", get("a"));
+                });
+
+        ControllableRunnable contrB = runnerB.createAndAssign(
+                (ControllableAgent agent) -> {
+                    // runnerB: get values, put values, remove values
+                    assertNull("Must not have been committed.", get("a"));
+                    assertNull("Must not have been committed.", get("b"));
+
+                    put("c", "d");
+                    remove("b");
+
+                    agent.notifyAndWait();
+
+                    // runnerB: get values, commit
+                    assertNull("Committed but replaced", get("b"));
+                    assertEquals("Committed from another thread.", "b", get("a"));
+                    int changes = table.commit();
+                    assertEquals("Must have committed my changes.", 2, changes);
+                });
+
+        // runnerA: put values
+        // runnerB: get values, put values, remove values
+        // runnerA: commit
+        // runnerB: get values, commit
+        // runnerA: get values
+
+        new Thread(runnerA, "runnerA").start();
+        runnerA.waitUntilPause();
+        new Thread(runnerB, "runnerB").start();
+        runnerB.waitUntilPause();
+        runnerA.continueWork();
+        runnerA.waitUntilPause();
+        runnerB.waitUntilEndOfWork();
+        runnerA.waitUntilEndOfWork();
     }
 
     @Test
@@ -167,14 +279,66 @@ public class TableTest extends TestBase {
     }
 
     @Test
-    public void testPutOneStoreableToAnotherTable() throws IOException {
-        Table table2 = provider.createTable(TABLE_NAME + "2", DEFAULT_COLUMN_TYPES);
-        Storeable storeable = provider.createFor(table);
+    public void testManyConcurrentCommits() throws Exception {
+        int threadsNumber = TestUtils.ALPHABET.length;
 
-        exception.expect(IllegalStateException.class);
-        exception.expectMessage("Cannot put storeable assigned to one table to another table");
+        ControllableRunner[] runners = new ControllableRunner[threadsNumber];
 
-        table2.put("key", storeable);
+        for (int i = 0; i < threadsNumber; i++) {
+            final int id = i;
+            runners[i] = new ControllableRunner();
+            runners[i].createAndAssign(
+                    (ControllableAgent agent) -> {
+                        final ThreadLocalRandom random = ThreadLocalRandom.current();
+
+                        Consumer<Integer> trashFiller = (actionsCount) -> {
+                            try {
+                                System.err.println(
+                                        Thread.currentThread().getName() + ": doing " + actionsCount
+                                        + " actions");
+                                for (int j = 0; j < actionsCount; j++) {
+                                    put(
+                                            String.valueOf(random.nextInt(100)),
+                                            String.valueOf(random.nextInt()));
+                                    if (random.nextInt(10) < 5) {
+                                        table.commit();
+                                    }
+                                }
+                            } catch (IOException | ParseException exc) {
+                                throw new AssertionError(exc);
+                            }
+                        };
+
+                        trashFiller.accept(random.nextInt(20, 40));
+
+                        String mainKey = "key" + TestUtils.ALPHABET[id];
+                        String mainValue = "value " + mainKey;
+
+                        put(mainKey, mainValue);
+                        table.commit();
+                        assertEquals("Main key-value not matches", mainValue, get(mainKey));
+
+                        trashFiller.accept(random.nextInt(20, 40));
+
+                        agent.notifyAndWait();
+
+                        assertEquals("Main key-value not matches", mainValue, get(mainKey));
+                    });
+        }
+
+        for (int i = 0; i < threadsNumber; i++) {
+            new Thread(runners[i], "runner " + i).start();
+        }
+
+        // Going to the finish line...
+        for (ControllableRunner runner : runners) {
+            runner.waitUntilPause();
+        }
+
+        // Total check in the end.
+        for (ControllableRunner runner : runners) {
+            runner.waitUntilEndOfWork();
+        }
     }
 
     @Test
