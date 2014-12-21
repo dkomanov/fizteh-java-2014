@@ -1,4 +1,4 @@
-package junit.util;
+package multifilehashmap.util;
 
 @SuppressWarnings("serial")
 public class ExitException extends Exception {

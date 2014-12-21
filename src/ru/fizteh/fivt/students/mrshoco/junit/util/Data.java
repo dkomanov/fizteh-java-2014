@@ -1,4 +1,4 @@
-package util;
+package junit.util;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

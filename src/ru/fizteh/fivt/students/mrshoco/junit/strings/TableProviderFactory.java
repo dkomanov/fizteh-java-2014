@@ -1,4 +1,4 @@
-package strings;
+package junit.strings;
 
 /**
  * Представляет интерфейс для создание экземпляров {@link TableProvider}. Предполагается, что реализация интерфейса
