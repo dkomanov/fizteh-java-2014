@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
+import ru.fizteh.fivt.storage.structured.RemoteTableProviderFactory;
 
-public final class TableManagerFactory implements TableProviderFactory, AutoCloseable {
+public final class RemoteTableManagerFactory implements RemoteTableProviderFactory, AutoCloseable {
     private Set<TableManager> createdManagers = new HashSet<>();
     private boolean invalid;
 
-    public TableManagerFactory() {
+    public RemoteTableManagerFactory() {
         // Do nothing, only for implemented interface.
     }
 
@@ -23,6 +24,12 @@ public final class TableManagerFactory implements TableProviderFactory, AutoClos
         TableManager manager = new TableManager(dir);
         createdManagers.add(manager);
         return manager;
+    }
+
+    @Override
+    public RemoteTableProvider connect(String hostname, int port) throws IOException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
