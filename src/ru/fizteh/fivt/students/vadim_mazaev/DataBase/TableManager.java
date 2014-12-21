@@ -269,12 +269,17 @@ public final class TableManager implements TableProvider, AutoCloseable {
      */
     @Override
     public Storeable createFor(Table table) {
-        checkTableManagerIsNotInvalid();
-        List<Class<?>> types = new ArrayList<>();
-        for (int i = 0; i < table.getColumnsCount(); i++) {
-            types.add(table.getColumnType(i));
+        lock.readLock().lock();
+        try {
+            checkTableManagerIsNotInvalid();
+            List<Class<?>> types = new ArrayList<>();
+            for (int i = 0; i < table.getColumnsCount(); i++) {
+                types.add(table.getColumnType(i));
+            }
+            return new Serializer(types);
+        } finally {
+            lock.readLock().unlock();
         }
-        return new Serializer(types);
     }
 
     /**
@@ -297,16 +302,21 @@ public final class TableManager implements TableProvider, AutoCloseable {
      */
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-        checkTableManagerIsNotInvalid();
-        List<Class<?>> types = new ArrayList<>();
-        for (int i = 0; i < table.getColumnsCount(); i++) {
-            types.add(table.getColumnType(i));
+        lock.readLock().lock();
+        try {
+            checkTableManagerIsNotInvalid();
+            List<Class<?>> types = new ArrayList<>();
+            for (int i = 0; i < table.getColumnsCount(); i++) {
+                types.add(table.getColumnType(i));
+            }
+            Storeable store = new Serializer(types);
+            for (int i = 0; i < values.size(); i++) {
+                store.setColumnAt(i, values.get(i));
+            }
+            return store;
+        } finally {
+            lock.readLock().unlock();
         }
-        Storeable store = new Serializer(types);
-        for (int i = 0; i < values.size(); i++) {
-            store.setColumnAt(i, values.get(i));
-        }
-        return store;
     }
 
     /**
@@ -324,39 +334,44 @@ public final class TableManager implements TableProvider, AutoCloseable {
      */
     @Override
     public Storeable deserialize(Table table, String value) throws ParseException {
-        checkTableManagerIsNotInvalid();
-        value = value.trim();
-        if (value.charAt(0) != '[') {
-            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": '[' at the begging is missing", 0);
-        }
-        if (value.charAt(value.length() - 1) != ']') {
-            throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": ']' at the end is missing", 0);
-        }
-        value = value.substring(1, value.length() - 1);
-        String[] tokens = value.split("," + Helper.IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);
-        if (tokens.length != table.getColumnsCount()) {
-            throw new ParseException("Incorrect number of tokens: " + table.getColumnsCount() + " expected, but "
-                    + tokens.length + " found.", 0);
-        }
-        Storeable deserialized = createFor(table);
-        for (int columnIndex = 0; columnIndex < tokens.length; columnIndex++) {
-            try {
-                String token = tokens[columnIndex].trim();
-                if (token.equals("null")) {
-                    deserialized.setColumnAt(columnIndex, null);
-                } else {
-                    deserialized.setColumnAt(columnIndex,
-                            PARSER_METHODS.get(table.getColumnType(columnIndex)).apply(token));
-                }
-            } catch (ColumnFormatException e) {
-                throw new ParseException("Token " + columnIndex + " is not correct: " + e.getMessage(), 0);
-            } catch (NumberFormatException e) {
-                throw new ParseException("Token " + columnIndex + " is not correct: " + "Input string '"
-                        + tokens[columnIndex].trim() + "' is not a number of '"
-                        + table.getColumnType(columnIndex).getSimpleName() + "' type", 0);
+        lock.readLock().lock();
+        try {
+            checkTableManagerIsNotInvalid();
+            value = value.trim();
+            if (value.charAt(0) != '[') {
+                throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": '[' at the begging is missing", 0);
             }
+            if (value.charAt(value.length() - 1) != ']') {
+                throw new ParseException(DOES_NOT_MATCH_JSON_FORMAT_MSG + ": ']' at the end is missing", 0);
+            }
+            value = value.substring(1, value.length() - 1);
+            String[] tokens = value.split("," + Helper.IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);
+            if (tokens.length != table.getColumnsCount()) {
+                throw new ParseException("Incorrect number of tokens: " + table.getColumnsCount() + " expected, but "
+                        + tokens.length + " found.", 0);
+            }
+            Storeable deserialized = createFor(table);
+            for (int columnIndex = 0; columnIndex < tokens.length; columnIndex++) {
+                try {
+                    String token = tokens[columnIndex].trim();
+                    if (token.equals("null")) {
+                        deserialized.setColumnAt(columnIndex, null);
+                    } else {
+                        deserialized.setColumnAt(columnIndex, PARSER_METHODS.get(table.getColumnType(columnIndex))
+                                .apply(token));
+                    }
+                } catch (ColumnFormatException e) {
+                    throw new ParseException("Token " + columnIndex + " is not correct: " + e.getMessage(), 0);
+                } catch (NumberFormatException e) {
+                    throw new ParseException("Token " + columnIndex + " is not correct: " + "Input string '"
+                            + tokens[columnIndex].trim() + "' is not a number of '"
+                            + table.getColumnType(columnIndex).getSimpleName() + "' type", 0);
+                }
+            }
+            return deserialized;
+        } finally {
+            lock.readLock().unlock();
         }
-        return deserialized;
     }
 
     /**
@@ -374,26 +389,31 @@ public final class TableManager implements TableProvider, AutoCloseable {
      */
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
-        checkTableManagerIsNotInvalid();
-        String[] tokens = new String[table.getColumnsCount()];
-        for (int columnIndex = 0; columnIndex < tokens.length; columnIndex++) {
-            try {
-                Object tokenType = table.getColumnType(columnIndex);
-                Object token = Helper.GETTERS.get(tokenType).invoke(value, columnIndex);
-                if (token == null) {
-                    tokens[columnIndex] = null;
-                } else if (token.getClass().equals(String.class)) {
-                    tokens[columnIndex] = '"' + token.toString() + '"';
-                } else {
-                    tokens[columnIndex] = token.toString();
+        lock.readLock().lock();
+        try {
+            checkTableManagerIsNotInvalid();
+            String[] tokens = new String[table.getColumnsCount()];
+            for (int columnIndex = 0; columnIndex < tokens.length; columnIndex++) {
+                try {
+                    Object tokenType = table.getColumnType(columnIndex);
+                    Object token = Helper.GETTERS.get(tokenType).invoke(value, columnIndex);
+                    if (token == null) {
+                        tokens[columnIndex] = null;
+                    } else if (token.getClass().equals(String.class)) {
+                        tokens[columnIndex] = '"' + token.toString() + '"';
+                    } else {
+                        tokens[columnIndex] = token.toString();
+                    }
+                } catch (InvocationTargetException e) {
+                    throw new ColumnFormatException(e.getTargetException().getMessage(), e);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalArgumentException("Unable to serialize: " + e.getMessage(), e);
                 }
-            } catch (InvocationTargetException e) {
-                throw new ColumnFormatException(e.getTargetException().getMessage(), e);
-            } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException("Unable to serialize: " + e.getMessage(), e);
             }
+            return '[' + String.join(", ", tokens) + ']';
+        } finally {
+            lock.readLock().unlock();
         }
-        return '[' + String.join(", ", tokens) + ']';
     }
 
     /**
@@ -403,10 +423,15 @@ public final class TableManager implements TableProvider, AutoCloseable {
      */
     @Override
     public List<String> getTableNames() {
-        checkTableManagerIsNotInvalid();
-        List<String> namesList = new LinkedList<>();
-        namesList.addAll(tables.keySet());
-        return namesList;
+        lock.readLock().lock();
+        try {
+            checkTableManagerIsNotInvalid();
+            List<String> namesList = new LinkedList<>();
+            namesList.addAll(tables.keySet());
+            return namesList;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     /**

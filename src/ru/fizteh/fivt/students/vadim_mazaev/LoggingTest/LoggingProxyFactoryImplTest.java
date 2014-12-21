@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.vadim_mazaev.DataBaseTest;
+package ru.fizteh.fivt.students.vadim_mazaev.LoggingTest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,12 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
-import ru.fizteh.fivt.students.vadim_mazaev.DataBase.DbLoggingProxyFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.DbTable;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.Helper;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManagerFactory;
+import ru.fizteh.fivt.students.vadim_mazaev.DataBaseTest.TestHelper;
+import ru.fizteh.fivt.students.vadim_mazaev.Logging.LoggingProxyFactoryImpl;
 
-public class DbLoggingProxyFactoryTest {
+public class LoggingProxyFactoryImplTest {
     private TableManagerFactory test;
     private StringWriter proxyWriter = new StringWriter();
     private TableProvider manager;
@@ -26,7 +27,7 @@ public class DbLoggingProxyFactoryTest {
     public void setUp() throws IOException {
         TestHelper.TEST_DIR.toFile().mkdir();
         test = new TableManagerFactory();
-        manager = (TableProvider) new DbLoggingProxyFactory().wrap(proxyWriter,
+        manager = (TableProvider) new LoggingProxyFactoryImpl().wrap(proxyWriter,
                 test.create(TestHelper.TEST_DIR.toString()), TableProvider.class);
     }
 

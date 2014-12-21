@@ -112,15 +112,10 @@ public final class DbTable implements Table, AutoCloseable {
      */
     @Override
     public int rollback() {
-        lock.readLock().lock();
-        try {
-            checkTableIsNotRemoved();
-            int rolledChangesCounter = diff.get().size();
-            diff.get().clear();
-            return rolledChangesCounter;
-        } finally {
-            lock.readLock().unlock();
-        }
+        checkTableIsNotRemoved();
+        int rolledChangesCounter = diff.get().size();
+        diff.get().clear();
+        return rolledChangesCounter;
     }
 
     /**

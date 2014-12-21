@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.vadim_mazaev.DataBase;
+package ru.fizteh.fivt.students.vadim_mazaev.Logging;
 
 import java.io.Writer;
 import java.lang.reflect.InvocationHandler;
@@ -12,7 +12,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
 
-public class DbLoggingProxyFactory implements LoggingProxyFactory {
+public class LoggingProxyFactoryImpl implements LoggingProxyFactory {
     @Override
     public Object wrap(Writer writer, Object implementation,
             Class<?> interfaceClass) {
