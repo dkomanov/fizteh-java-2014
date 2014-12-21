@@ -15,12 +15,16 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by andrew on 07.11.14.
  */
-public class StructuredDatabase implements TableProvider {
+public class StructuredDatabase implements TableProvider, AutoCloseable {
     private StringDatabase backendDatabase;
+    private boolean closed = false;
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public StructuredDatabase(File databaseFile) {
         StringDatabaseFactory stringDatabaseFactory = new StringDatabaseFactory();
@@ -28,16 +32,24 @@ public class StructuredDatabase implements TableProvider {
     }
 
     public StringDatabase getBackendDatabase() {
+        assertNotClosed();
         return backendDatabase;
     }
 
     @Override
-    public synchronized StructuredTable getTable(String name) {
-        return wrap(backendDatabase.getTable(name));
+    public StructuredTable getTable(String name) {
+        assertNotClosed();
+        lock.readLock().lock();
+        try {
+            return wrap(backendDatabase.getTable(name));
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
-    public synchronized StructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
+    public StructuredTable createTable(String name, List<Class<?>> columnTypes) throws IOException {
+        assertNotClosed();
         if (columnTypes == null) {
             throw new IllegalArgumentException("columntTypes is null");
         }
@@ -49,29 +61,42 @@ public class StructuredDatabase implements TableProvider {
         if (columnTypes.size() == 0) {
             throw new IllegalArgumentException("empty type list");
         }
-        StringTable table = backendDatabase.createTable(name);
-        if (table == null) {
-            return null;
+        lock.writeLock().lock();
+        try {
+            StringTable table = backendDatabase.createTable(name);
+            if (table == null) {
+                return null;
+            }
+            TableSignature tableSignature = new TableSignature(columnTypes.toArray(new Class<?>[columnTypes.size()]));
+            File signatureFile = new File(table.getFile(), "signature.tsv");
+            tableSignature.writeToFile(signatureFile);
+            return wrap(table);
+        } finally {
+            lock.writeLock().unlock();
         }
-        TableSignature tableSignature = new TableSignature(columnTypes.toArray(new Class<?>[columnTypes.size()]));
-        File signatureFile = new File(table.getFile(), "signature.tsv");
-        tableSignature.writeToFile(signatureFile);
-        return wrap(table);
     }
 
     @Override
-    public synchronized void removeTable(String name) throws IOException {
-        backendDatabase.removeTable(name);
+    public void removeTable(String name) throws IOException {
+        assertNotClosed();
+        lock.writeLock().lock();
+        try {
+            backendDatabase.removeTable(name);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public TableRow deserialize(Table table, String value) throws ParseException {
+        assertNotClosed();
         TableSignature tableSignature = TableSignature.forTable(table);
         return TableRow.deserialize(tableSignature, value);
     }
 
     @Override
     public String serialize(Table table, Storeable value) throws ColumnFormatException {
+        assertNotClosed();
         TableSignature tableSignature = TableSignature.forTable(table);
         TableRow row = TableRow.fromStoreable(tableSignature, value);
         return row.serialize();
@@ -79,12 +104,14 @@ public class StructuredDatabase implements TableProvider {
 
     @Override
     public TableRow createFor(Table table) {
+        assertNotClosed();
         TableSignature tableSignature = TableSignature.forTable(table);
         return new TableRow(tableSignature);
     }
 
     @Override
     public TableRow createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
+        assertNotClosed();
         TableSignature tableSignature = TableSignature.forTable(table);
         TableRow storeable = new TableRow(tableSignature);
         for (int i = 0; i < values.size(); i++) {
@@ -95,7 +122,26 @@ public class StructuredDatabase implements TableProvider {
 
     @Override
     public List<String> getTableNames() {
-        return backendDatabase.listTableNames();
+        assertNotClosed();
+        lock.readLock().lock();
+        try {
+            return backendDatabase.listTableNames();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s[%s]", getClass().getSimpleName(), backendDatabase.getFile().getAbsolutePath());
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (!closed) {
+            backendDatabase.close();
+            closed = true;
+        }
     }
 
     private StructuredTable wrap(ru.fizteh.fivt.storage.strings.Table table) {
@@ -103,5 +149,11 @@ public class StructuredDatabase implements TableProvider {
             return null;
         }
         return new StructuredTable((StringTable) table, this);
+    }
+
+    private void assertNotClosed() {
+        if (closed) {
+            throw new IllegalStateException("StructuredDatabase had been closed, but then method called");
+        }
     }
 }

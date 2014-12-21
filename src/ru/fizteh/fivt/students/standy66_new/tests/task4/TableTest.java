@@ -27,7 +27,7 @@ public class TableTest {
     @Before
     public void setUp() throws Exception {
         testDirectory = folder.newFolder("table");
-        testTable = new StringTable(testDirectory);
+        testTable = new StringTable(testDirectory, null);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class TableTest {
     }
 
     @Test
-    public void testPutWithOwerwritingOldValue() throws Exception {
+    public void testPutWithOverwritingOldValue() throws Exception {
         testTable.put("key", "value1");
         assertEquals("value1", testTable.put("key", "value2"));
     }
@@ -104,7 +104,7 @@ public class TableTest {
         testTable.put("key2", "value2");
         testTable.remove("key1");
         testTable.commit();
-        StringTable tableAfterCommit = new StringTable(testDirectory);
+        StringTable tableAfterCommit = new StringTable(testDirectory, null);
         assertNotEquals(null, tableAfterCommit.get("key2"));
     }
 
@@ -122,7 +122,7 @@ public class TableTest {
         testTable.put("key2", "value2");
         testTable.remove("key1");
         testTable.rollback();
-        StringTable tableAfterRollback = new StringTable(testDirectory);
+        StringTable tableAfterRollback = new StringTable(testDirectory, null);
         assertEquals(null, tableAfterRollback.get("key2"));
     }
 

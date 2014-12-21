@@ -7,7 +7,11 @@ import ru.fizteh.fivt.students.standy66_new.utility.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 /** TableProvider implementation
@@ -17,7 +21,9 @@ public class StringDatabase implements TableProvider, AutoCloseable {
     private static final boolean FILE_BASED_LOCK_MECHANISM = (System.getProperty("use_locks") != null);
     private final File dbDirectory;
     private final Map<String, StringTable> tableInstances;
-    private File lockFile;
+    private final File lockFile;
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private boolean closed = false;
 
     StringDatabase(File directory) {
         if (directory == null) {
@@ -48,7 +54,7 @@ public class StringDatabase implements TableProvider, AutoCloseable {
         }
         dbDirectory = directory;
 
-        tableInstances = Collections.synchronizedMap(new HashMap<>());
+        tableInstances = new HashMap<>();
 
         initTableInstances(directory);
     }
@@ -75,37 +81,53 @@ public class StringDatabase implements TableProvider, AutoCloseable {
 
     @Override
     public StringTable getTable(String name) {
+        assertNotClosed();
         throwIfIncorrectTableName(name);
-        return tableInstances.get(name);
+        readWriteLock.readLock().lock();
+        try {
+            return tableInstances.get(name);
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
     @Override
     public StringTable createTable(String name) {
+        assertNotClosed();
         throwIfIncorrectTableName(name);
         File tableDirectory = new File(dbDirectory, name);
-        synchronized (tableInstances) {
+        readWriteLock.writeLock().lock();
+        try {
             if (tableInstances.get(name) != null) {
                 return null;
             }
             if (!tableDirectory.mkdirs()) {
                 throw new IllegalArgumentException("table cannot be created");
             }
-            tableInstances.put(name, new StringTable(tableDirectory));
+            tableInstances.put(name, new StringTable(tableDirectory, this));
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
         return tableInstances.get(name);
     }
 
     public List<String> listTableNames() {
-        synchronized (tableInstances) {
+        assertNotClosed();
+        readWriteLock.readLock().lock();
+        try {
             return tableInstances.values().stream()
                     .map(Table::getName).collect(Collectors.toList());
+        } finally {
+            readWriteLock.readLock().unlock();
         }
     }
 
     @Override
     public void removeTable(String name) {
+        assertNotClosed();
         throwIfIncorrectTableName(name);
-        synchronized (tableInstances) {
+        readWriteLock.writeLock().lock();
+        try {
             if (tableInstances.get(name) == null) {
                 throw new IllegalStateException("table doesn't exist");
             }
@@ -113,24 +135,47 @@ public class StringDatabase implements TableProvider, AutoCloseable {
             if (!FileUtility.deleteRecursively(new File(dbDirectory, name))) {
                 throw new IllegalArgumentException("failed to remove table");
             }
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
     }
 
     public void commit() {
-        synchronized (tableInstances) {
+        assertNotClosed();
+        readWriteLock.writeLock().lock();
+        try {
             tableInstances.values().forEach(Table::commit);
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
     }
 
     public void rollback() {
-        synchronized (tableInstances) {
+        assertNotClosed();
+        readWriteLock.writeLock().lock();
+        try {
             tableInstances.values().forEach(Table::rollback);
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
     }
 
     @Override
     public void close() {
-        lockFile.delete();
+        if (!closed) {
+            rollback();
+            lockFile.delete();
+            closed = true;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s[%s]", getClass().getSimpleName(), dbDirectory.getAbsolutePath());
+    }
+
+    void onTableClosed(StringTable table) {
+        tableInstances.put(table.getName(), new StringTable(table.getFile(), this));
     }
 
     private void initTableInstances(File directory) {
@@ -145,11 +190,17 @@ public class StringDatabase implements TableProvider, AutoCloseable {
                                 + e.getMessage(), e);
                     }
 
-                    tableInstances.put(tableName, new StringTable(tableFile));
+                    tableInstances.put(tableName, new StringTable(tableFile, this));
                 }
             }
         } else {
             throw new IllegalArgumentException("illegal arg");
+        }
+    }
+
+    private void assertNotClosed() {
+        if (closed) {
+            throw new IllegalStateException("String Database had been closed, but then method called");
         }
     }
 }
