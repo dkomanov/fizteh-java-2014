@@ -153,7 +153,7 @@ public class FileMap implements AutoCloseable {
 
     private static final class Transaction {
         private final Map<String, String> base;
-        private final Map<String, String> changed = new HashMap<>();
+        private final Map<String, String> chaged = new HashMap<>();
         private final Set<String> deleted = new HashSet<>();
 
         public Transaction(Map<String, String> base) {
@@ -162,19 +162,19 @@ public class FileMap implements AutoCloseable {
 
         public void apply() {
             synchronized (base) {
-                for (Map.Entry<String, String> entry : changed.entrySet()) {
+                for (Map.Entry<String, String> entry : chaged.entrySet()) {
                     base.put(entry.getKey(), entry.getValue());
                 }
                 for (String key : deleted) {
                     base.remove(key);
                 }
             }
-            changed.clear();
+            chaged.clear();
             deleted.clear();
         }
 
         public void clear() {
-            changed.clear();
+            chaged.clear();
             deleted.clear();
         }
 
@@ -184,7 +184,7 @@ public class FileMap implements AutoCloseable {
             if (deleted.contains(key)) {
                 deleted.remove(key);
             }
-            changed.put(key, value);
+            chaged.put(key, value);
 
             return returnValue;
         }
@@ -192,7 +192,7 @@ public class FileMap implements AutoCloseable {
         public String remove(String key) {
             String returnValue = get(key);
 
-            changed.remove(key);
+            chaged.remove(key);
             if (!deleted.contains(key)) {
                 deleted.add(key);
             }
@@ -200,7 +200,7 @@ public class FileMap implements AutoCloseable {
         }
 
         public int diffSize() {
-            return changed.size() + deleted.size();
+            return chaged.size() + deleted.size();
         }
 
         public int size() {
@@ -212,7 +212,7 @@ public class FileMap implements AutoCloseable {
             synchronized (base) {
                 baseSet = new HashSet<>(base.keySet());
             }
-            for (String key : changed.keySet()) {
+            for (String key : chaged.keySet()) {
                 baseSet.add(key);
             }
             for (String key : deleted) {
@@ -225,8 +225,8 @@ public class FileMap implements AutoCloseable {
             if (deleted.contains(key)) {
                 return null;
             }
-            if (changed.containsKey(key)) {
-                return changed.get(key);
+            if (chaged.containsKey(key)) {
+                return chaged.get(key);
             }
             return base.get(key);
         }
