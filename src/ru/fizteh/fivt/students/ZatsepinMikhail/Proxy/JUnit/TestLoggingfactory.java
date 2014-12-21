@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.JUnit;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,18 +48,22 @@ public class TestLoggingfactory {
     public void testIntZeroArguments() {
         testedLoggedTable.rollback();
 
-        JSONObject result = new JSONObject(writer.toString());
-        assertTrue(result.has("timestamp"));
-        assertTrue(result.has("class"));
-        assertTrue(result.has("method"));
-        assertTrue(result.has("arguments"));
-        assertTrue(result.has("returnValue"));
-        assertTrue(!result.has("thrown"));
+        try {
+            JSONObject result = new JSONObject(writer.toString());
+            assertTrue(result.has("timestamp"));
+            assertTrue(result.has("class"));
+            assertTrue(result.has("method"));
+            assertTrue(result.has("arguments"));
+            assertTrue(result.has("returnValue"));
+            assertTrue(!result.has("thrown"));
 
-        assertTrue(result.getInt("returnValue") == 0);
-        assertTrue(result.get("method").equals("rollback"));
-        JSONArray args = result.getJSONArray("arguments");
-        assertTrue(args.length() == 0);
+            assertTrue(result.getInt("returnValue") == 0);
+            assertTrue(result.get("method").equals("rollback"));
+            JSONArray args = result.getJSONArray("arguments");
+            assertTrue(args.length() == 0);
+        } catch (JSONException e) {
+            //
+        }
     }
 
     @Test
@@ -69,19 +74,23 @@ public class TestLoggingfactory {
             //suppress
         }
 
-        JSONObject result = new JSONObject(writer.toString());
-        assertTrue(result.has("timestamp"));
-        assertTrue(result.has("class"));
-        assertTrue(result.has("method"));
-        assertTrue(result.has("arguments"));
-        assertTrue(!result.has("returnValue"));
-        assertTrue(result.has("thrown"));
+        try {
+            JSONObject result = new JSONObject(writer.toString());
+            assertTrue(result.has("timestamp"));
+            assertTrue(result.has("class"));
+            assertTrue(result.has("method"));
+            assertTrue(result.has("arguments"));
+            assertTrue(!result.has("returnValue"));
+            assertTrue(result.has("thrown"));
 
-        assertTrue(result.get("method").equals("get"));
-        assertTrue(result.get("thrown").equals("java.lang.IllegalArgumentException"));
-        JSONArray args = result.getJSONArray("arguments");
-        assertTrue(args.length() == 1);
-        assertTrue(args.get(0).toString().equals("null"));
+            assertTrue(result.get("method").equals("get"));
+            assertTrue(result.get("thrown").equals("java.lang.IllegalArgumentException"));
+            JSONArray args = result.getJSONArray("arguments");
+            assertTrue(args.length() == 1);
+            assertTrue(args.get(0).toString().equals("null"));
+        } catch (JSONException e) {
+            //
+        }
     }
 
     @Test
@@ -90,39 +99,47 @@ public class TestLoggingfactory {
         AbstractStoreable value = new AbstractStoreable(fields, testedLoggedTable);
         testedLoggedTable.put("key", value);
 
-        JSONObject result = new JSONObject(writer.toString());
-        assertTrue(result.has("timestamp"));
-        assertTrue(result.has("class"));
-        assertTrue(result.has("method"));
-        assertTrue(result.has("arguments"));
-        assertTrue(result.has("returnValue"));
-        assertTrue(!result.has("thrown"));
+        try {
+            JSONObject result = new JSONObject(writer.toString());
+            assertTrue(result.has("timestamp"));
+            assertTrue(result.has("class"));
+            assertTrue(result.has("method"));
+            assertTrue(result.has("arguments"));
+            assertTrue(result.has("returnValue"));
+            assertTrue(!result.has("thrown"));
 
-        assertTrue(result.get("method").equals("put"));
-        JSONArray args = result.getJSONArray("arguments");
-        assertTrue(args.length() == 2);
-        assertTrue(args.get(0).equals("key"));
-        assertTrue(args.get(1).equals(value.toString()));
+            assertTrue(result.get("method").equals("put"));
+            JSONArray args = result.getJSONArray("arguments");
+            assertTrue(args.length() == 2);
+            assertTrue(args.get(0).equals("key"));
+            assertTrue(args.get(1).equals(value.toString()));
+        } catch (JSONException e) {
+            //
+        }
     }
 
     @Test
     public void testMethodReturnList() {
         testedLoggedTableProvider.getTableNames();
 
-        JSONObject result = new JSONObject(writer.toString());
-        assertTrue(result.has("timestamp"));
-        assertTrue(result.has("class"));
-        assertTrue(result.has("method"));
-        assertTrue(result.has("arguments"));
-        assertTrue(result.has("returnValue"));
-        assertTrue(!result.has("thrown"));
+        try {
+            JSONObject result = new JSONObject(writer.toString());
+            assertTrue(result.has("timestamp"));
+            assertTrue(result.has("class"));
+            assertTrue(result.has("method"));
+            assertTrue(result.has("arguments"));
+            assertTrue(result.has("returnValue"));
+            assertTrue(!result.has("thrown"));
 
-        assertTrue(result.get("method").equals("getTableNames"));
-        JSONArray args = result.getJSONArray("arguments");
-        assertTrue(args.length() == 0);
-        JSONArray returnValue = result.getJSONArray("returnValue");
-        assertTrue(returnValue.length() == 2);
-        assertTrue(returnValue.get(0).equals("table1"));
-        assertTrue(returnValue.get(1).equals("table2"));
+            assertTrue(result.get("method").equals("getTableNames"));
+            JSONArray args = result.getJSONArray("arguments");
+            assertTrue(args.length() == 0);
+            JSONArray returnValue = result.getJSONArray("returnValue");
+            assertTrue(returnValue.length() == 2);
+            assertTrue(returnValue.get(0).equals("table1"));
+            assertTrue(returnValue.get(1).equals("table2"));
+        } catch (JSONException e) {
+            //
+        }
     }
 }
