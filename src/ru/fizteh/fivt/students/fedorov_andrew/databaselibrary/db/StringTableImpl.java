@@ -144,16 +144,6 @@ public final class StringTableImpl {
         return table;
     }
 
-    /**
-     * Get read-write lock for the table.<br/>
-     * Write lock is acquired when something is going to be written to the file system (before this data is
-     * updated using the diff for the calling thread).<br/>
-     * In all other cases read lock is acquired.
-     */
-    ReadWriteLock getPersistenceLock() {
-        return persistenceLock;
-    }
-
     public Path getTableRoot() {
         return tableRoot;
     }
@@ -229,7 +219,7 @@ public final class StringTableImpl {
         }
     }
 
-    public void readFromFileSystem() throws DBFileCorruptIOException, TableCorruptIOException {
+    void readFromFileSystem() throws DBFileCorruptIOException, TableCorruptIOException {
         persistenceLock.writeLock().lock();
         try {
 
@@ -376,7 +366,7 @@ public final class StringTableImpl {
     }
 
     /**
-     * Gets {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.TablePart} instance assigned to
+     * Gets {@link TablePart} instance assigned to
      * this {@code hash} from memory. Not thread-safe.
      * @param key
      *         key that is hold by desired table.

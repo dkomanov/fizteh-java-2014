@@ -16,7 +16,7 @@ import java.io.PrintStream;
  */
 @Ignore
 public class DuplicatedIOTestBase {
-    protected static PrintStream stdErr;
+    private static PrintStream stdErr;
     // Standard out and error streams are stored here.
     private static PrintStream stdOut;
 
@@ -70,7 +70,7 @@ public class DuplicatedIOTestBase {
         stdOut.println(str);
     }
 
-    public void printlnDirectlyToStdOut() {
+    void printlnDirectlyToStdOut() {
         stdOut.println();
     }
 

@@ -20,10 +20,10 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
             obtainExceptionsThrownByExecuteSafely();
     /**
      * Used for unsafe calls. Catches and handles all exceptions thrown by {@link
-     * AbstractCommand#executeSafely
+     * ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.AbstractCommand#executeSafely
      * (SingleDatabaseShellState, String[]) } and {@link IllegalArgumentException }.
      */
-    protected static final AccurateExceptionHandler<SingleDatabaseShellState> DATABASE_ERROR_HANDLER =
+    static final AccurateExceptionHandler<SingleDatabaseShellState> DATABASE_ERROR_HANDLER =
             (Exception exc, SingleDatabaseShellState shell) -> {
                 boolean found = false;
                 Class<?> actualType = exc.getClass();
@@ -114,7 +114,7 @@ public abstract class AbstractCommand implements Command<SingleDatabaseShellStat
                                                                                       ParseException,
                                                                                       IOException;
 
-    protected void checkArgsNumber(String[] args, int minimal, int maximal) throws TerminalException {
+    void checkArgsNumber(String[] args, int minimal, int maximal) throws TerminalException {
         if (args.length < minimal || args.length > maximal) {
             handleError(null, new WrongArgsNumberException(this, args[0]), true);
         }

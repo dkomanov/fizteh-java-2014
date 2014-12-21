@@ -9,7 +9,7 @@ public interface ExceptionFreeRunnable {
      * Place your implementation here and do not care of exceptions. The given throwables will be caught and
      * become accessible.
      * @throws Exception
-     * @throws java.lang.AssertionError
+     * @throws AssertionError
      */
     void runWithFreedom(ControllableAgent agent) throws Exception, AssertionError;
 }

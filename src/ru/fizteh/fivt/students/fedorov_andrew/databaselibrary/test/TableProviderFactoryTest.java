@@ -31,9 +31,11 @@ public class TableProviderFactoryTest extends TestBase {
     }
 
     @After
-    public void cleanup() throws IOException {
+    public void cleanup() throws Exception {
+        if (factory instanceof AutoCloseable) {
+            ((AutoCloseable) factory).close();
+        }
         cleanDBRoot();
-        factory = null;
     }
 
     @Test

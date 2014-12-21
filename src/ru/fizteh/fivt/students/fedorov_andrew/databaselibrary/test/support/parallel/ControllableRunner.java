@@ -36,7 +36,7 @@ public class ControllableRunner implements Runnable {
     /**
      * Assign the given runnable to execute it once. You can perform this action if you have never assigned
      * runnable to this runner before or the last assigned runnable has finished its execution.
-     * @throws java.lang.IllegalStateException
+     * @throws IllegalStateException
      *         If you cannot assign any runnables now.
      */
     public synchronized void assignRunnable(ControllableRunnable runnable) throws IllegalStateException {
@@ -109,9 +109,9 @@ public class ControllableRunner implements Runnable {
      * Call this method if you want to wait until the next pause and play the role of observer.<br/>
      * If there are no checkpoints expected in future, this method waits until execution ends.
      * @throws InterruptedException
-     * @throws java.lang.Exception
+     * @throws Exception
      *         If thrown during runnable execution.
-     * @throws java.lang.AssertionError
+     * @throws AssertionError
      *         If thrown during runnable execution.
      */
     public synchronized void waitUntilPause() throws InterruptedException, Exception, AssertionError {
@@ -127,9 +127,9 @@ public class ControllableRunner implements Runnable {
      * set. All pauses that can be met in the future will be ignored with order {@link #continueWork()}.<br/>
      * throws exception.
      * @throws InterruptedException
-     * @throws java.lang.Exception
+     * @throws Exception
      *         If thrown during runnable execution.
-     * @throws java.lang.AssertionError
+     * @throws AssertionError
      *         If thrown during runnable execution.
      */
     public synchronized void waitUntilEndOfWork() throws InterruptedException, Exception, AssertionError {
@@ -169,7 +169,7 @@ public class ControllableRunner implements Runnable {
         order = ORDER_NOT_SET;
     }
 
-    public synchronized boolean isRunnableAssigned() {
+    synchronized boolean isRunnableAssigned() {
         return runnable != null;
     }
 
@@ -189,10 +189,6 @@ public class ControllableRunner implements Runnable {
      * Call this method after waiting in {@link #waitUntilPause()} to tell the runnable to continue work.
      * @throws IllegalStateException
      *         If execution has finished.
-     * @throws java.lang.Exception
-     *         If thrown during runnable execution.
-     * @throws java.lang.AssertionError
-     *         If thrown during runnable execution.
      */
     public synchronized void continueWork() throws IllegalStateException {
         checkRunnableAssigned();

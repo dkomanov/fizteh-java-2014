@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -39,6 +40,13 @@ public class StoreableTest extends TestBase {
         factory = new DBTableProviderFactory();
     }
 
+    @AfterClass
+    public static void globalCleanup() throws Exception {
+        if (factory instanceof AutoCloseable) {
+            ((AutoCloseable) factory).close();
+        }
+    }
+
     @Before
     public void prepare() throws IOException {
         provider = factory.create(DB_ROOT.toString());
@@ -47,16 +55,27 @@ public class StoreableTest extends TestBase {
     }
 
     @After
-    public void cleanup() throws IOException {
-        cleanDBRoot();
+    public void cleanup() throws Exception {
+        if (provider instanceof AutoCloseable) {
+            ((AutoCloseable) provider).close();
+        }
         provider = null;
         table = null;
+        cleanDBRoot();
+    }
+
+    @Test
+    public void testToString() {
+        storeable.setColumnAt(0, "value");
+        storeable.setColumnAt(2, 194.1);
+        storeable.setColumnAt(4, true);
+        assertEquals("StoreableImpl[value,,194.1,,true,,]", storeable.toString());
     }
 
     @Test
     public void testStoreableEquals() throws IOException {
         Table table2 = provider.createTable(TABLE_NAME + "2", TABLE_COLUMN_TYPES);
-        assertNotEquals(storeable, provider.createFor(table2));
+        assertEquals(storeable, provider.createFor(table2));
     }
 
     @Test

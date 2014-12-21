@@ -39,9 +39,7 @@ public class ControllableRunnerTest extends DuplicatedIOTestBase {
     public void testWaitForEndOfWork1() throws Exception {
         ControllableRunner runner = new ControllableRunner();
         ControllableRunnable runnable = runner.createControllable(
-                (ControllableAgent agent) -> {
-                    System.err.println("Hello from runnable");
-                });
+                (ControllableAgent agent) -> System.err.println("Hello from runnable"));
         runner.assignRunnable(runnable);
 
         new Thread(runner, "Runnable").start();

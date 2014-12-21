@@ -13,8 +13,8 @@ import java.util.List;
  * Database class responsible for a set of tables assigned to it.
  * @author phoenix
  */
-public class Database {
-    protected final TableProvider provider;
+public class Database implements AutoCloseable {
+    private final TableProvider provider;
     /**
      * Root directory of all database files
      */
@@ -66,6 +66,13 @@ public class Database {
 
         if (tableName.equals(activeTableName)) {
             activeTable = null;
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (provider instanceof AutoCloseable) {
+            ((AutoCloseable) provider).close();
         }
     }
 

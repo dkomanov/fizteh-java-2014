@@ -223,20 +223,6 @@ public final class Utility {
     }
 
     /**
-     * Forms a regular expression for a string inside quotes.
-     * @param quotes
-     *         Sequence of symbols that plays role of quotes.
-     * @param escapeSequence
-     *         Inside quotes escapeSequence and quotes must occur only after escapeSequence.
-     */
-    public static String getQuotedStringRegex(String quotes, String escapeSequence) {
-        // Regex: "((plain text)|(escaped symbols))*"
-
-        return quotes + "([^" + quotes + escapeSequence + "]|(" + escapeSequence + escapeSequence + ")|("
-               + escapeSequence + quotes + "))*" + quotes;
-    }
-
-    /**
      * Returns string between two quotes. All quote and escape sequences inside the string are escaped by
      * escape sequence.
      * @param s
@@ -246,17 +232,15 @@ public final class Utility {
      * @param escapeSequence
      *         Escape sequence. Quotes and this sequence occurrences will be prepended by escape sequence.
      * @return Endcoded string inside quotes. Returns null for null string.
-     * @see ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility#unquoteString(String,
+     * @see Utility#unquoteString(String,
      * String, String)
      */
     public static String quoteString(String s, String quoteSequence, String escapeSequence) {
         if (s == null) {
             return null;
         }
-        s = s.replaceAll(
-                escapeSequence, escapeSequence + escapeSequence);
-        s = s.replaceAll(
-                quoteSequence, escapeSequence + quoteSequence);
+        s = s.replace(escapeSequence, escapeSequence + escapeSequence);
+        s = s.replace(quoteSequence, escapeSequence + quoteSequence);
         return quoteSequence + s + quoteSequence;
     }
 
@@ -280,9 +264,9 @@ public final class Utility {
 
         s = s.substring(1, s.length() - 1);
 
-        s = s.replaceAll(
+        s = s.replace(
                 escapeSequence + "" + quoteSequence, quoteSequence);
-        s = s.replaceAll(
+        s = s.replace(
                 escapeSequence + escapeSequence, escapeSequence);
         return s;
     }

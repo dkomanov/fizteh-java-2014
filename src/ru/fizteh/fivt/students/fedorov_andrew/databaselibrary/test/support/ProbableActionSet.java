@@ -13,7 +13,7 @@ public class ProbableActionSet<Action> {
     private final LinkedList<ProbableAction> actions;
     private int probCasesSum;
 
-    public ProbableActionSet() {
+    private ProbableActionSet() {
         actions = new LinkedList<>();
         probCasesSum = 0;
     }
@@ -41,7 +41,7 @@ public class ProbableActionSet<Action> {
         return set;
     }
 
-    public ProbableActionSet<Action> add(Action action, int probCases) {
+    ProbableActionSet<Action> add(Action action, int probCases) {
         if (probCases <= 0) {
             throw new IllegalArgumentException("probCases must be positive integer");
         }

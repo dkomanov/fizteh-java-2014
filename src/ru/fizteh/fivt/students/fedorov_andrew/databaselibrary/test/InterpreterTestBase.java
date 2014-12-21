@@ -24,14 +24,14 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
     /**
      * '$ ', 'some-words $', etc.
      */
-    protected static final String GREETING_REGEX = "(.* )?\\$ ";
+    static final String GREETING_REGEX = "(.* )?\\$ ";
 
     private static final DuplicatedIOTestBase IO_DUPLICATOR = new DuplicatedIOTestBase();
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
-    protected Shell<ShellStateImpl> interpreter;
+    Shell<ShellStateImpl> interpreter;
 
     @BeforeClass
     public static void globalPrepareInterpreterTestBase() {
@@ -45,10 +45,6 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
 
     protected abstract Shell<ShellStateImpl> constructInterpreter() throws TerminalException;
 
-    /**
-     * Initializes {@link #interpreter}.
-     * @throws TerminalException
-     */
     @Before
     public void prepare() throws TerminalException {
         interpreter = constructInterpreter();
@@ -82,7 +78,7 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      * @return Regex for full interpreter answer.
      * @see java.util.regex.Pattern
      */
-    protected String makeTerminalExpectedRegex(String greetingRegex, String... reports) {
+    String makeTerminalExpectedRegex(String greetingRegex, String... reports) {
         StringBuilder sb = new StringBuilder(String.format("(?m)^%s", greetingRegex));
         for (String s : reports) {
             sb.append(String.format("%s$%n^%s", s, greetingRegex));
@@ -93,21 +89,19 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
     /**
      * Obtains everything that was output by the interpreter.<br/>
      */
-    protected String getOutput() {
+    String getOutput() {
         return IO_DUPLICATOR.getOutput();
     }
 
     /**
      * Runs batch mode with given array of commands.<br/>
      * Output is reset before run.
-     * @param reinit
-     *         if true, {@link #prepare()} method is called before run.
      * @param commands
      *         List of commands. Semicolons are appended to each command that does not end with a
      *         semicolon.
      * @return Exit code.
      */
-    protected int runBatch(boolean reinit, String... commands) throws TerminalException {
+    int runBatch(String... commands) throws TerminalException {
         // Clean what has been output before.
         IO_DUPLICATOR.prepare();
 
@@ -119,12 +113,12 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
             }
         }
 
-        if (reinit) {
-            try {
-                prepare();
-            } catch (TerminalException exc) {
-                throw new AssertionError(exc);
+        try {
+            if (interpreter == null || !interpreter.isValid()) {
+                interpreter = constructInterpreter();
             }
+        } catch (TerminalException exc) {
+            throw new AssertionError(exc);
         }
         return interpreter.run(commands);
     }
@@ -132,14 +126,12 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
     /**
      * Runs interpreter mode with given list of lines.<br/>
      * Output is reset before run.
-     * @param reinit
-     *         If true, {@link #prepare()} method is called before run.
      * @param lines
      *         List of lines. {@link System#lineSeparator()} is appended to each line.
      * @return Exit code.
      * @throws TerminalException
      */
-    protected int runInteractive(boolean reinit, String... lines) throws TerminalException {
+    int runInteractive(String... lines) throws TerminalException {
         IO_DUPLICATOR.prepare();
 
         for (String cmd : lines) {
@@ -150,46 +142,30 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
             sb.append(String.format("%s%n", cmd));
         }
 
-        if (reinit) {
-            try {
-                prepare();
-            } catch (TerminalException exc) {
-                throw new AssertionError(exc);
+        try {
+            if (interpreter == null || !interpreter.isValid()) {
+                interpreter = constructInterpreter();
             }
+        } catch (TerminalException exc) {
+            throw new AssertionError(exc);
         }
         return interpreter.run(new ByteArrayInputStream(sb.toString().getBytes()));
     }
 
-    protected void runInteractiveExpectZero(String... lines) throws TerminalException {
-        runInteractiveExpectZero(false, lines);
+    void runInteractiveExpectZero(String... lines) throws TerminalException {
+        assertEquals("Exit status 0 expected", 0, runInteractive(lines));
     }
 
-    protected void runInteractiveExpectNonZero(String... lines) throws TerminalException {
-        runInteractiveExpectNonZero(false, lines);
+    void runInteractiveExpectNonZero(String... lines) throws TerminalException {
+        assertNotEquals("Non-zero exit status expected", 0, runInteractive(lines));
     }
 
-    protected void runBatchExpectZero(String... commands) throws TerminalException {
-        runBatchExpectZero(false, commands);
+    void runBatchExpectZero(String... commands) throws TerminalException {
+        assertEquals("Exit status 0 expected", 0, runBatch(commands));
     }
 
-    protected void runBatchExpectNonZero(String... commands) throws TerminalException {
-        runBatchExpectNonZero(false, commands);
-    }
-
-    protected void runInteractiveExpectZero(boolean reinit, String... lines) throws TerminalException {
-        assertEquals("Exit status 0 expected", 0, runInteractive(reinit, lines));
-    }
-
-    protected void runInteractiveExpectNonZero(boolean reinit, String... lines) throws TerminalException {
-        assertNotEquals("Non-zero exit status expected", 0, runInteractive(reinit, lines));
-    }
-
-    protected void runBatchExpectZero(boolean reinit, String... commands) throws TerminalException {
-        assertEquals("Exit status 0 expected", 0, runBatch(reinit, commands));
-    }
-
-    protected void runBatchExpectNonZero(boolean reinit, String... commands) throws TerminalException {
-        assertNotEquals("Non-zero exit status expected", 0, runBatch(reinit, commands));
+    void runBatchExpectNonZero(String... commands) throws TerminalException {
+        assertNotEquals("Non-zero exit status expected", 0, runBatch(commands));
     }
 
     /**
@@ -198,7 +174,7 @@ public abstract class InterpreterTestBase<ShellStateImpl extends ShellState<Shel
      * Each report is considered to be a separate line. Lines are separated using {@link
      * System#lineSeparator()}.
      */
-    protected String makeTerminalExpectedMessage(String... reports) {
+    String makeTerminalExpectedMessage(String... reports) {
         StringBuilder sb = new StringBuilder();
         for (String s : reports) {
             sb.append(String.format("%s%n", s));
