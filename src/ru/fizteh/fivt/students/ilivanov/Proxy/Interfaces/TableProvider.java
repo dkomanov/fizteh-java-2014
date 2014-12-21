@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces;
+package ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces;
 
 import java.io.IOException;
 import java.text.ParseException;

@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.ilivanov.Parallel;
+package ru.fizteh.fivt.students.ilivanov.Proxy;
 
-import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.TableProviderFactory;
+import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.TableProviderFactory;
 
 import java.io.File;
 import java.io.IOException;

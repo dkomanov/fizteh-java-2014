@@ -1,8 +1,8 @@
-package ru.fizteh.fivt.students.ilivanov.Parallel;
+package ru.fizteh.fivt.students.ilivanov.Proxy;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import ru.fizteh.fivt.students.ilivanov.Parallel.Interfaces.*;
+import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.*;
 
 import java.io.File;
 import java.io.IOException;
