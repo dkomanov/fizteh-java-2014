@@ -24,7 +24,7 @@ public class MultiMapMain {
             } else {
                 try (TableHolder tableHolder = new TableHolder(rootDirectoryPath)) {
                     TableState tableState = new TableState(tableHolder);
-                    new Interpreter(tableState, new Command[] {
+                    new Interpreter(tableState, new Command[]{
                             new Command("create", 2, (TableState tableS, String[] arguments) -> {
                                 Map<String, Map<String, String>> map = tableS.getMap();
                                 String tableName = arguments[1];
@@ -45,15 +45,15 @@ public class MultiMapMain {
                                 }
                             }),
                             new Command("drop", 2, (TableState tableS, String[] arguments) -> {
-                                Map<String,  Map<String, String>> map = tableS.getMap();
+                                Map<String, Map<String, String>> map = tableS.getMap();
                                 String tableName = arguments[1];
                                 if (!map.containsKey(tableName)) {
                                     System.out.println(tableName + " not exists");
                                 } else {
                                     Path tableDirectory = Paths.get(
-                                        tableHolder.getRootPath().toAbsolutePath().toString()
-                                            + File.separator + tableName);
-                                    String [] subDirs = tableDirectory.toFile().list();
+                                            tableHolder.getRootPath().toAbsolutePath().toString()
+                                                    + File.separator + tableName);
+                                    String[] subDirs = tableDirectory.toFile().list();
                                     if (subDirs.length != 0) {
                                         File[] subDirectories = tableDirectory.toFile().listFiles();
                                         for (File directory : subDirectories) {
@@ -170,7 +170,7 @@ public class MultiMapMain {
                             }),
                             new Command("exit", 1, (TableState tableS, String[] arguments) -> {
                                 try {
-                                    for (Map.Entry<String, Map<String, String>> entry: tableS.getMap().entrySet()) {
+                                    for (Map.Entry<String, Map<String, String>> entry : tableS.getMap().entrySet()) {
                                         tableHolder.getTableMap().put(entry.getKey(),
                                                 new Table(rootDirectoryPath,
                                                         entry.getKey(), entry.getValue()));

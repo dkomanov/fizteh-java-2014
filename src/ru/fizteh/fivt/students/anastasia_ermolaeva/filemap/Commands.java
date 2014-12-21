@@ -4,9 +4,10 @@ import java.util.Iterator;
 import java.util.Set;
 
 public final class Commands {
-    private Commands()  {
+    private Commands() {
         //
     }
+
     public static void main(final String[] args) {
 
     }
@@ -37,7 +38,8 @@ public final class Commands {
             }
         }
     }
-    public static  void get(
+
+    public static void get(
             final DbOperations db, final String[] args) {
         String command = "get";
         if (args.length > 2) {
@@ -60,6 +62,7 @@ public final class Commands {
             }
         }
     }
+
     public static void remove(
             final DbOperations db, final String[] args) {
         String command = "remove";
@@ -83,6 +86,7 @@ public final class Commands {
             }
         }
     }
+
     public static void list(
             final DbOperations db, final String[] args) {
         String command = "list";
@@ -97,8 +101,9 @@ public final class Commands {
         }
         System.out.println();
     }
+
     public static boolean exit(
-            final DbOperations db, final String[] args)  {
+            final DbOperations db, final String[] args) {
         if (args.length > 1) {
             return false;
         }

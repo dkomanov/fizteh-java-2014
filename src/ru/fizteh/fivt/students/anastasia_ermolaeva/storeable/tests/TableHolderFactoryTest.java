@@ -1,19 +1,16 @@
-package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.tests;
+package ru.fizteh.fivt.students.anastasia_ermolaeva.storeable.tests;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.TableHolderFactory;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Utility;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.storeable.TableHolderFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.Assert.assertTrue;
 
 public class TableHolderFactoryTest {
     private final Path testDirectory
@@ -22,28 +19,26 @@ public class TableHolderFactoryTest {
     @Before
     public final void setUp()
             throws IOException {
-        if (!testDirectory.toFile().exists()) {
+        if (!Files.exists(testDirectory)) {
             Files.createDirectory(testDirectory);
         }
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public final void testFactoryThrowsExceptionCreatedNullTableHolder() {
+    public final void testFactoryThrowsExceptionCreatedNullTableHolder() throws IOException {
         TableProviderFactory test = new TableHolderFactory();
         test.create(null);
     }
 
-    @Test
-    public final void testTableHolderFactoryCreatedNewValidTableHolder() {
+    @Test(expected = IllegalArgumentException.class)
+    public final void testFactoryThrowsExceptionCreatedForInvalidPath() throws IOException {
         TableProviderFactory test = new TableHolderFactory();
-        TableProvider testProvider = test.create(testDirectory.toString());
-        testProvider.createTable("MyTable");
-
-        assertTrue(testDirectory.resolve("MyTable").toFile().exists());
+        test.create("\0");
     }
 
     @After
     public final void tearDown() throws IOException {
-        Utility.recursiveDelete(testDirectory);
+        Utility.recursiveDeleteCopy(testDirectory);
     }
+
 }

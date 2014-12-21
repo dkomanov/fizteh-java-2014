@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.TableHolder;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.DatabaseIOException;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.DatabaseIOException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Utility;
 
 import java.io.IOException;
 import java.nio.file.Files;

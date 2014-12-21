@@ -1,17 +1,17 @@
-package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util;
+package ru.fizteh.fivt.students.anastasia_ermolaeva.util;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.NoActiveTableException;
 
-public class TableState {
+public class DBState {
     private String currentTableName = "";
-    private TableProvider holder;
+    private Object providerObject;
 
-    public TableState(final TableProvider tableHolder) {
-        holder = tableHolder;
+    public DBState(final Object tableHolder) {
+        providerObject = tableHolder;
     }
 
-    public final TableProvider getTableHolder() {
-        return holder;
+    public final Object getTableHolder() {
+        return providerObject;
     }
 
     public final String getCurrentTableName() {

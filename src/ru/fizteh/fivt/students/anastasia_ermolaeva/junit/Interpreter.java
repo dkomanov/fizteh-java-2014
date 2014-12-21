@@ -1,4 +1,10 @@
-package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util;
+package ru.fizteh.fivt.students.anastasia_ermolaeva.junit;
+
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Command;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.DBState;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.ExitException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.IllegalCommandException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.NoActiveTableException;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -13,12 +19,12 @@ public class Interpreter {
     public static final String PARAM_REGEXP = "\\s+";
     public static final String ERR_MSG = "Command not found: ";
     private final Map<String, Command> commands;
-    private final TableState tableState;
+    private final DBState tableState;
     private InputStream in;
     private PrintStream out;
     private PrintStream err;
 
-    public Interpreter(final TableState tableState,
+    public Interpreter(final DBState tableState,
                        final Command[] commands,
                        final InputStream inStream,
                        final PrintStream outStream,
@@ -37,7 +43,7 @@ public class Interpreter {
         }
     }
 
-    public Interpreter(final TableState tableState, final Command[] commands) {
+    public Interpreter(final DBState tableState, final Command[] commands) {
         this.in = System.in;
         this.out = System.out;
         this.err = System.err;
@@ -76,7 +82,7 @@ public class Interpreter {
         if (!(tableState == null)) {
             String currentTableName = tableState.getCurrentTableName();
             if (!currentTableName.equals("")) {
-                tableState.getTableHolder().getTable(currentTableName).commit();
+                ((TableHolder) tableState.getTableHolder()).getTable(currentTableName).commit();
             }
         }
         throw new ExitException(0);
