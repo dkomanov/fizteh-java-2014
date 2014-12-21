@@ -3,12 +3,12 @@ package storeable.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -172,6 +172,6 @@ public class TableProviderTest {
         assertEquals(provider.getTableNames().size(), 3);
         provider.removeTable("table");
         assertEquals(provider.getTableNames().size(), 2);
-        assertThat(provider.getTableNames(), containsInAnyOrder("таблица", "табличка"));
-    }
+        assertTrue(provider.getTableNames().containsAll(
+                new LinkedList<String>(Arrays.asList("таблица", "табличка"))));    }
 }
