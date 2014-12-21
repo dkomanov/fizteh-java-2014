@@ -11,7 +11,7 @@ public final class TableManagerFactory implements TableProviderFactory, AutoClos
     private boolean invalid;
 
     public TableManagerFactory() {
-        // Do nothing, only for implemented interface.
+        // Do nothing, only for implemented imterface.
     }
 
     @Override

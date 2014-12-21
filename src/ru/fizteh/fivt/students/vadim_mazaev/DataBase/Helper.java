@@ -30,7 +30,6 @@ public final class Helper {
     public static final String ENCODING = "UTF-8";
     public static final String FILE_NAME_REGEX = "([0-9]|1[0-5])\\.dat";
     public static final String DIR_NAME_REGEX = "([0-9]|1[0-5])\\.dir";
-    public static final int DEFAULT_PORT = 10001;
 
     // Lists, maps, etc.
     // HINT: If you want to add new type, just put it into this map, list and
@@ -47,7 +46,8 @@ public final class Helper {
         unitializerMap.put(Boolean.class, "boolean");
         unitializerMap.put(String.class, "String");
         SUPPORTED_TYPES_TO_NAMES = Collections.unmodifiableMap(unitializerMap);
-        SUPPORTED_TYPES_LIST = Collections.unmodifiableList(new ArrayList<>(unitializerMap.keySet()));
+        SUPPORTED_TYPES_LIST = Collections.unmodifiableList(new ArrayList<>(
+                unitializerMap.keySet()));
     }
     public static final Map<String, Class<?>> SUPPORTED_NAMES_TO_TYPES = inverseMap(SUPPORTED_TYPES_TO_NAMES);
     // Map of getters from Storeable interface.
@@ -65,7 +65,8 @@ public final class Helper {
     public static void recoursiveDelete(Path file) throws IOException {
         Files.walkFileTree(file, new SimpleFileVisitor<Path>() {
             @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
+            public FileVisitResult postVisitDirectory(Path dir, IOException e)
+                    throws IOException {
                 if (e == null) {
                     Files.delete(dir);
                     return FileVisitResult.CONTINUE;
@@ -76,19 +77,22 @@ public final class Helper {
             }
 
             @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            public FileVisitResult visitFile(Path file,
+                    BasicFileAttributes attrs) throws IOException {
                 Files.delete(file);
                 return FileVisitResult.CONTINUE;
             }
         });
     }
 
-    public static <K, V> Map<V, K> inverseMap(Map<K, V> map) throws IllegalArgumentException {
+    public static <K, V> Map<V, K> inverseMap(Map<K, V> map)
+            throws IllegalArgumentException {
         Map<V, K> inversed = new HashMap<>(map.size());
 
         for (Entry<K, V> e : map.entrySet()) {
             if (inversed.containsKey(e.getValue())) {
-                throw new IllegalArgumentException("Source map contains duplicate values");
+                throw new IllegalArgumentException(
+                        "Source map contains duplicate values");
             }
             inversed.put(e.getValue(), e.getKey());
         }

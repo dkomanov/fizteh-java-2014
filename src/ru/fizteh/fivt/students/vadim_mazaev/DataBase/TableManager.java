@@ -20,9 +20,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
-import ru.fizteh.fivt.storage.structured.RemoteTableProvider;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 
 /**
  * Management class for working with the {link Table tables}.
@@ -33,7 +33,7 @@ import ru.fizteh.fivt.storage.structured.Table;
  *
  * This class is thread safe.
  */
-public final class TableManager implements RemoteTableProvider {
+public final class TableManager implements TableProvider, AutoCloseable {
     private static final String ERROR_CONNECTING_TO_DATABASE_MSG = "Error connecting to database";
     private static final String DOES_NOT_MATCH_JSON_FORMAT_MSG = "String doesn't match JSON format";
     private static final String TABLE_NAME_IS_NULL_MSG = "Table name is null";

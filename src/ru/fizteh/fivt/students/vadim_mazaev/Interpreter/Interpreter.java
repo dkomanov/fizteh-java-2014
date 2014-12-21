@@ -16,35 +16,32 @@ public final class Interpreter {
     public static final String PROMPT = "$ ";
     public static final String NO_SUCH_COMMAND_MSG = "No such command declared: ";
     private static final String IGNORE_IN_DOUBLE_QUOTES_REGEX = "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
-    private static final String SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX = "\\s*(\".*\"|\\(.*\\)|\\[.*\\]|[^\\s]+)\\s*";
+    private static final String SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX
+        = "\\s*(\".*\"|\\(.*\\)|\\[.*\\]|[^\\s]+)\\s*";
     public static final String COMMAND_SEPARATOR = ";";
     private InputStream in;
     private PrintStream out;
-    private Object state;
+    private Object connector;
     private Map<String, Command> commands;
     private Callable<Boolean> exitHandler;
-
-    public Interpreter(Object state, Command[] commands, InputStream in, PrintStream out) {
+    
+    public Interpreter(Object connector, Command[] commands, InputStream in, PrintStream out) {
         if (in == null || out == null) {
             throw new IllegalArgumentException("Input or Output stream is null");
         }
         this.commands = new HashMap<>();
         this.in = in;
         this.out = out;
-        this.state = state;
+        this.connector = connector;
         for (Command cmd : commands) {
             this.commands.put(cmd.getName(), cmd);
         }
     }
-
+    
     public Interpreter(Object connector, Command[] commands) {
         this(connector, commands, System.in, System.out);
     }
-
-    public int run() throws Exception {
-        return run(new String[0]);
-    }
-
+    
     public int run(String[] args) throws Exception {
         int exitStatus;
         try {
@@ -58,15 +55,11 @@ public final class Interpreter {
         }
         return exitStatus;
     }
-
+    
     public void setExitHandler(Callable<Boolean> callable) {
         exitHandler = callable;
     }
-
-    public void printMessage(String message) {
-        out.println(message);
-    }
-
+    
     private int batchMode(String[] args) throws Exception {
         int exitStatus = executeLine(String.join(" ", args));
         if (exitHandler != null) {
@@ -93,7 +86,7 @@ public final class Interpreter {
         }
         return exitStatus;
     }
-
+    
     private int executeLine(String line) throws Exception {
         String[] cmds = line.split(COMMAND_SEPARATOR + IGNORE_IN_DOUBLE_QUOTES_REGEX);
         Pattern p = Pattern.compile(SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX);
@@ -109,11 +102,11 @@ public final class Interpreter {
             }
             return 0;
         } catch (StopLineInterpretationException e) {
-            printMessage(e.getMessage());
+            out.println(e.getMessage());
             return 1;
         }
     }
-
+    
     private void parse(String[] commandWithArgs) throws Exception {
         if (commandWithArgs.length > 0 && !commandWithArgs[0].isEmpty()) {
             String commandName = commandWithArgs[0];
@@ -132,8 +125,7 @@ public final class Interpreter {
                 throw new StopLineInterpretationException(NO_SUCH_COMMAND_MSG + commandName);
             } else {
                 String[] args = new String[commandWithArgs.length - 1];
-                // Exclude quotes along the edges of the string, if they
-                // presents.
+                //Exclude quotes along the edges of the string, if they presents.
                 for (int i = 1; i < commandWithArgs.length; i++) {
                     if (commandWithArgs[i].charAt(0) == '"'
                             && commandWithArgs[i].charAt(commandWithArgs[i].length() - 1) == '"') {
@@ -143,7 +135,7 @@ public final class Interpreter {
                     }
                 }
                 try {
-                    command.execute(state, args);
+                    command.execute(connector, args);
                 } catch (RuntimeException e) {
                     throw new StopLineInterpretationException(e.getMessage());
                 }
