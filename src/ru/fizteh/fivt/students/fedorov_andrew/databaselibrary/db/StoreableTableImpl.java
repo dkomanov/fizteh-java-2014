@@ -11,6 +11,9 @@ import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TableCor
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.ConvenientMap;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Log;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Utility;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.ValidityController;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.ValidityController.KillLock;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.ValidityController.UseLock;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.TestBase;
 
 import java.io.IOException;
@@ -25,8 +28,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
-public class StoreableTableImpl implements Table {
+public final class StoreableTableImpl implements AutoCloseableTable {
     private static final Map<Class<?>, String> CLASSES_TO_NAMES_MAP =
             new ConvenientMap<>(new HashMap<Class<?>, String>()).putNext(Integer.class, "int")
                                                                 .putNext(Long.class, "long")
@@ -47,17 +51,24 @@ public class StoreableTableImpl implements Table {
 
     private final List<Class<?>> columnTypes;
 
-    private boolean invalidated;
+    private final ValidityController validityController = new ValidityController();
 
-    private StoreableTableImpl(TableProvider provider, StringTableImpl store, List<Class<?>> columnTypes) {
+    private final Consumer<Table> onTableClosedListener;
+
+    private StoreableTableImpl(TableProvider provider,
+                               Consumer<Table> onTableClosedListener,
+                               StringTableImpl store,
+                               List<Class<?>> columnTypes) {
         this.provider = provider;
-        this.invalidated = false;
+        this.onTableClosedListener = onTableClosedListener;
         this.store = store;
-        this.columnTypes = Collections.unmodifiableList(new ArrayList<Class<?>>(columnTypes));
+        this.columnTypes = Collections.unmodifiableList(new ArrayList<>(columnTypes));
     }
 
-    static StoreableTableImpl createTable(TableProvider provider, Path tablePath, List<Class<?>> columnTypes)
-            throws DatabaseIOException {
+    static AutoCloseableTable createTable(TableProvider provider,
+                                          Consumer<Table> onTableClosedListener,
+                                          Path tablePath,
+                                          List<Class<?>> columnTypes) throws DatabaseIOException {
         // Creating storage.
         StringTableImpl store = StringTableImpl.createTable(tablePath);
 
@@ -76,7 +87,9 @@ public class StoreableTableImpl implements Table {
                     "Failed to create table types description file: " + exc.toString(), exc);
         }
 
-        return new StoreableTableImpl(provider, store, columnTypes);
+        AutoCloseableTable table =
+                new StoreableTableImpl(provider, onTableClosedListener, store, columnTypes);
+        return DBTableProviderFactory.wrapImplementation(table, AutoCloseableTable.class);
     }
 
     /**
@@ -104,7 +117,9 @@ public class StoreableTableImpl implements Table {
         return columnTypes;
     }
 
-    static StoreableTableImpl getTable(TableProvider provider, Path tablePath) throws DatabaseIOException {
+    static AutoCloseableTable getTable(TableProvider provider,
+                                       Consumer<Table> onTableClosedListener,
+                                       Path tablePath) throws DatabaseIOException {
         StringTableImpl store = StringTableImpl
                 .getTable(tablePath, path -> path != null && path.toString().equals(COLUMNS_FORMAT_FILENAME));
         List<Class<?>> columnTypes;
@@ -136,7 +151,8 @@ public class StoreableTableImpl implements Table {
             }
         }
 
-        StoreableTableImpl table = new StoreableTableImpl(provider, store, columnTypes);
+        StoreableTableImpl table =
+                new StoreableTableImpl(provider, onTableClosedListener, store, columnTypes);
 
         // Checking that all stored values are of proper type.
         List<String> keys = table.list();
@@ -150,19 +166,20 @@ public class StoreableTableImpl implements Table {
             }
         }
 
-        return table;
+        return DBTableProviderFactory.wrapImplementation(table, AutoCloseableTable.class);
     }
 
     /**
      * Checks whether the given storeable can be stored in the given table as a value.
-     * @throws ColumnFormatException
+     * @throws ru.fizteh.fivt.storage.structured.ColumnFormatException
      *         If columns count differs or some column has wrong type. Note that if some column has null
      *         value, its type cannot be determined.
-     * @throws java.lang.IllegalStateException
+     * @throws IllegalStateException
      *         If the given storeable is already assigned to another table. This check can be performed only
-     *         for instances of {@link StoreableTableImpl}.
+     *         for instances of {@link ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db
+     *         .StoreableTableImpl}.
      */
-    public static void checkStoreableAppropriate(Table table, Storeable storeable)
+    static void checkStoreableAppropriate(Table table, Storeable storeable)
             throws ColumnFormatException, IllegalStateException {
         Utility.checkNotNull(table, "Table");
         Utility.checkNotNull(storeable, "Value");
@@ -183,97 +200,87 @@ public class StoreableTableImpl implements Table {
             // It should be caught and ignored here for normal work.
         }
 
-        // Checking column types where possible.
-        for (int column = 0, columnsCount = table.getColumnsCount(); column < columnsCount; column++) {
-            Class<?> expectedType = table.getColumnType(column);
-            Object element = storeable.getColumnAt(column);
+        // Optimization for checking column types.
+        if (!(storeable instanceof StoreableImpl && table instanceof StoreableTableImpl
+              && ((StoreableImpl) storeable).getTypes() == ((StoreableTableImpl) table).getColumnTypes())) {
+            // Checking column types where possible.
+            for (int column = 0, columnsCount = table.getColumnsCount(); column < columnsCount; column++) {
+                Class<?> expectedType = table.getColumnType(column);
+                Object element = storeable.getColumnAt(column);
 
-            if (element != null) {
-                Class<?> actualType = element.getClass();
-                if (!expectedType.equals(actualType)) {
-                    throw new ColumnFormatException(
-                            String.format(
-                                    "wrong type (Column #%d expected to have type %s, but actual"
-                                    + " type is %s)",
-                                    column,
-                                    expectedType.getSimpleName(),
-                                    actualType.getSimpleName()));
+                if (element != null) {
+                    Class<?> actualType = element.getClass();
+                    if (!expectedType.equals(actualType)) {
+                        throw new ColumnFormatException(
+                                String.format(
+                                        "wrong type (Column #%d expected to have type %s, but actual"
+                                        + " type is %s)",
+                                        column,
+                                        expectedType.getSimpleName(),
+                                        actualType.getSimpleName()));
+                    }
                 }
             }
         }
-
-        if (storeable instanceof StoreableImpl) {
-            if (((StoreableImpl) storeable).getHost() != table) {
-                throw new IllegalStateException(
-                        "Cannot put storeable assigned to one table to another table");
-            }
-        }
     }
 
-    TableProvider getProvider() {
-        return provider;
-    }
-
-    /**
-     * Mark this table as invalidated (all further operations throw {@link java.lang.IllegalStateException}).
-     */
-    void invalidate() {
-        invalidated = true;
-    }
-
-    private void checkValidity() throws IllegalStateException {
-        if (invalidated) {
-            throw new IllegalStateException(store.getName() + " is invalidated");
-        }
+    List<Class<?>> getColumnTypes() {
+        return columnTypes;
     }
 
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
-        checkValidity();
-        Utility.checkNotNull(key, "Key");
-        Utility.checkNotNull(value, "Value");
-        checkStoreableAppropriate(this, value);
+        try (UseLock lock = validityController.use()) {
+            Utility.checkNotNull(key, "Key");
+            Utility.checkNotNull(value, "Value");
+            checkStoreableAppropriate(this, value);
 
-        Storeable previousValue = getWithoutChecks(key);
-        String serialized = provider.serialize(this, value);
-        store.put(key, serialized);
-        return previousValue;
+            Storeable previousValue = getWithoutChecks(key);
+            String serialized = provider.serialize(this, value);
+            store.put(key, serialized);
+            return previousValue;
+        }
     }
 
     @Override
     public Storeable remove(String key) {
-        checkValidity();
-        Utility.checkNotNull(key, "Key");
+        try (UseLock lock = validityController.use()) {
+            Utility.checkNotNull(key, "Key");
 
-        Storeable previousValue = getWithoutChecks(key);
-        store.remove(key);
-        return previousValue;
+            Storeable previousValue = getWithoutChecks(key);
+            store.remove(key);
+            return previousValue;
+        }
     }
 
     @Override
     public int size() {
-        checkValidity();
-        return store.size();
+        try (UseLock lock = validityController.use()) {
+            return store.size();
+        }
     }
 
     /**
      * Collects all keys from all table parts assigned to this table.
      */
     public List<String> list() {
-        checkValidity();
-        return store.list();
+        try (UseLock lock = validityController.use()) {
+            return store.list();
+        }
     }
 
     @Override
     public int commit() throws DatabaseIOException {
-        checkValidity();
-        return store.commit();
+        try (UseLock lock = validityController.use()) {
+            return store.commit();
+        }
     }
 
     @Override
     public int rollback() {
-        checkValidity();
-        return store.rollback();
+        try (UseLock lock = validityController.use()) {
+            return store.rollback();
+        }
     }
 
     /**
@@ -281,37 +288,42 @@ public class StoreableTableImpl implements Table {
      */
     @Override
     public int getNumberOfUncommittedChanges() {
-        checkValidity();
-        return store.getNumberOfUncommittedChanges();
+        try (UseLock lock = validityController.use()) {
+            return store.getNumberOfUncommittedChanges();
+        }
     }
 
     @Override
     public int getColumnsCount() {
-        checkValidity();
-        return columnTypes.size();
+        try (UseLock lock = validityController.use()) {
+            return columnTypes.size();
+        }
     }
 
     @Override
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
-        checkValidity();
-        if (columnIndex < 0 || columnIndex >= getColumnsCount()) {
-            throw new IndexOutOfBoundsException(
-                    "columnIndex must be between zero (inclusive) and columnsCount (exclusive)");
+        try (UseLock lock = validityController.use()) {
+            if (columnIndex < 0 || columnIndex >= getColumnsCount()) {
+                throw new IndexOutOfBoundsException(
+                        "columnIndex must be between zero (inclusive) and columnsCount (exclusive)");
+            }
+            return columnTypes.get(columnIndex);
         }
-        return columnTypes.get(columnIndex);
     }
 
     @Override
     public String getName() {
-        checkValidity();
-        return store.getName();
+        try (UseLock lock = validityController.use()) {
+            return store.getName();
+        }
     }
 
     @Override
     public Storeable get(String key) {
-        checkValidity();
-        Utility.checkNotNull(key, "Key");
-        return getWithoutChecks(key);
+        try (UseLock lock = validityController.use()) {
+            Utility.checkNotNull(key, "Key");
+            return getWithoutChecks(key);
+        }
     }
 
     /**
@@ -328,6 +340,27 @@ public class StoreableTableImpl implements Table {
         } catch (ParseException exc) {
             // This case can occur only during table check (after reading table).
             throw new ImproperStoreableException(exc.getMessage(), exc);
+        }
+    }
+
+    @Override
+    public String toString() {
+        try (UseLock lock = validityController.use()) {
+            return StoreableTableImpl.class.getSimpleName() + "[" + store.getTableRoot() + "]";
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        close();
+    }
+
+    @Override
+    public void close() {
+        try (KillLock lock = validityController.useAndKill()) {
+            rollback();
+            onTableClosedListener.accept(this);
         }
     }
 }

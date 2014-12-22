@@ -1,4 +1,4 @@
-package util;
+package junit.util;
 
 import java.io.File;
 import java.util.HashMap;

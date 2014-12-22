@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class DataBase {
 
     public String dbFileName;
-    HashMap<String, String> data;
+    public HashMap<String, String> data;
 
     public DataBase(String path) throws Exception {
         dbFileName = path;
@@ -18,6 +18,8 @@ public class DataBase {
             reader.readData(data);
         }
     }
+
+    public DataBase() {}
 
     public void sync() throws Exception {
         try (DbWriter writer = new DbWriter(dbFileName)) {

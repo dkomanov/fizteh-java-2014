@@ -1,13 +1,11 @@
 package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.MultiFileHashMapCommands;
 
-import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.MultiFileHashMapOperationsInterface;
+import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.MultiFileHashMapOperations;
 import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell.ACommand;
 import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell.CommandsParser;
 
-public class CommandCreate<ATable,
-        MultiFileHashMapOperations
-        extends MultiFileHashMapOperationsInterface<ATable>>
-        extends ACommand<MultiFileHashMapOperations> {
+public class CommandCreate extends ACommand<MultiFileHashMapOperations> {
     public CommandCreate() {
         super("create", "create <table name>");
     }
@@ -16,13 +14,13 @@ public class CommandCreate<ATable,
                                      final MultiFileHashMapOperations ops) {
         String[] parameters = CommandsParser.parseCommandParameters(params);
         if (parameters.length > 1) {
-            throw new IllegalArgumentException("too many arguments!");
+            throw new IllegalArgumentException("Too many arguments!");
         }
         if (parameters.length < 1) {
-            throw new IllegalArgumentException("argument missing");
+            throw new IllegalArgumentException("Not enough arguments!");
         }
 
-        ATable newTable = ops.createTable(parameters[0]);
+        Table newTable = ops.tableProvider.createTable(parameters[0]);
         if (newTable == null) {
             System.out.println(String.format("%s exists", parameters[0]));
         } else {

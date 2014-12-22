@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test;
 
+import junit.framework.AssertionFailedError;
 import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -16,6 +18,10 @@ import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProviderFactory;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.StringTableImpl;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.TestUtils;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.parallel.ControllableAgent;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.parallel.ControllableRunnable;
+import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.test.support.parallel.ControllableRunner;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -30,6 +36,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -48,15 +55,28 @@ public class TableProviderTest extends TestBase {
         factory = new DBTableProviderFactory();
     }
 
+    @AfterClass
+    public static void globalCleanup() throws Exception {
+        if (factory instanceof AutoCloseable) {
+            ((AutoCloseable) factory).close();
+        }
+    }
+
     @Before
-    public void prepareProvider() throws IOException {
+    public void prepareProvider() throws Exception {
+        if (provider != null && provider instanceof AutoCloseable) {
+            ((AutoCloseable) provider).close();
+        }
         provider = factory.create(DB_ROOT.toString());
     }
 
     @After
-    public void cleanupProvider() throws IOException {
-        cleanDBRoot();
+    public void cleanupProvider() throws Exception {
+        if (provider instanceof AutoCloseable) {
+            ((AutoCloseable) provider).close();
+        }
         provider = null;
+        cleanDBRoot();
     }
 
     private Table createTable(Class<?>... columnTypes) throws IOException {
@@ -67,6 +87,11 @@ public class TableProviderTest extends TestBase {
         String serialized = provider.serialize(table, storeable);
         Storeable deserialized = provider.deserialize(table, serialized);
         assertTrue(Objects.equals(storeable, deserialized));
+    }
+
+    @Test
+    public void testToString() {
+        assertEquals("DBTableProvider[" + DB_ROOT.normalize().toString() + "]", provider.toString());
     }
 
     @Test
@@ -83,18 +108,80 @@ public class TableProviderTest extends TestBase {
         checkSerialize(table, storeable);
     }
 
-    private void expectJSONRegexMatchFailure() {
-        exception.expect(ParseException.class);
-        exception.expectMessage(
-                wrongTypeMatcherAndAllOf(
-                        containsString(
-                                "Does not match JSON simple list regular expression")));
+    @Test
+    public void testConcurrentCreateTable() throws Exception {
+        final String tableName = "table";
+
+        class TableCreator extends ControllableRunnable {
+            volatile Table createdTable;
+            volatile Table gotTable;
+
+            public TableCreator(ControllableRunner host) {
+                super(host);
+            }
+
+            @Override
+            public void runWithFreedom(ControllableAgent agent) throws Exception, AssertionError {
+                TestUtils.consumeCPU(ThreadLocalRandom.current().nextInt(20, 40));
+                System.err.println("Attempt to create table");
+                createdTable = provider.createTable(tableName, DEFAULT_COLUMN_TYPES);
+                gotTable = provider.getTable(tableName);
+            }
+        }
+
+        int threadsCount = 26;
+
+        ControllableRunner[] runners = new ControllableRunner[threadsCount];
+
+        for (int i = 0; i < threadsCount; i++) {
+            runners[i] = new ControllableRunner();
+            runners[i].assignRunnable(new TableCreator(runners[i]));
+        }
+
+        for (int i = 0; i < threadsCount; i++) {
+            new Thread(runners[i], "Runner " + i).start();
+        }
+
+        for (int i = 0; i < threadsCount; i++) {
+            runners[i].waitUntilEndOfWork();
+        }
+
+        // All gotTable must be equal.
+        // One createdTable must be equal to any gotTable, all other createdTables must be null.
+
+        Table gotTable = ((TableCreator) runners[0].getRunnable()).gotTable;
+
+        for (int i = 1; i < threadsCount; i++) {
+            assertSame(
+                    "All links for gotTable must be the same",
+                    gotTable,
+                    ((TableCreator) runners[i].getRunnable()).gotTable);
+        }
+
+        boolean foundCreated = false;
+
+        for (int i = 0; i < threadsCount; i++) {
+            Table createdTable = ((TableCreator) runners[i].getRunnable()).createdTable;
+            if (createdTable != null) {
+                if (foundCreated) {
+                    throw new AssertionFailedError("More then one created table");
+                } else {
+                    foundCreated = true;
+                }
+            }
+        }
+
+        assertTrue("Must be one created table", foundCreated);
     }
 
     @Test
     public void testDeserialize() throws IOException, ParseException {
         Table table = createTable(Long.class, Byte.class, String.class);
-        expectJSONRegexMatchFailure();
+        exception.expect(ParseException.class);
+        exception.expectMessage(
+                wrongTypeMatcherAndAllOf(
+                        containsString(
+                                "Arguments must be inside square brackets")));
 
         provider.deserialize(table, "3, 1, null");
     }
@@ -102,7 +189,10 @@ public class TableProviderTest extends TestBase {
     @Test
     public void testDeserialize1() throws IOException, ParseException {
         Table table = createTable(Long.class, Byte.class, String.class);
-        expectJSONRegexMatchFailure();
+        exception.expect(ParseException.class);
+        exception.expectMessage(
+                wrongTypeMatcherAndAllOf(
+                        containsString("Empty elements are not allowed in json")));
 
         provider.deserialize(table, "[,,]");
     }
@@ -110,17 +200,10 @@ public class TableProviderTest extends TestBase {
     @Test
     public void testDeserialize2() throws IOException, ParseException {
         Table table = createTable(Long.class, Byte.class, String.class);
-        expectJSONRegexMatchFailure();
+        exception.expect(ParseException.class);
+        exception.expectMessage("Unclosed quotes");
 
         provider.deserialize(table, "[\"]");
-    }
-
-    @Test
-    public void testDeserialize3() throws IOException, ParseException {
-        Table table = createTable(Long.class, Byte.class, String.class);
-        expectJSONRegexMatchFailure();
-
-        provider.deserialize(table, "[\"/say\"]");
     }
 
     @Test
@@ -131,7 +214,7 @@ public class TableProviderTest extends TestBase {
         exception.expectMessage(
                 wrongTypeMatcherAndAllOf(
                         containsString(
-                                "Too many elements in the list; expected: " + table.getColumnsCount())));
+                                "Irregular number of arguments given")));
 
         provider.deserialize(table, "[ 1, 2, 3, 4, 5, \"6\" ]");
     }
@@ -143,8 +226,7 @@ public class TableProviderTest extends TestBase {
         exception.expect(ParseException.class);
         exception.expectMessage(
                 wrongTypeMatcherAndAllOf(
-                        containsString(
-                                "Too few elements in the list; expected: " + table.getColumnsCount())));
+                        containsString("Irregular number of arguments given")));
 
         provider.deserialize(table, "[ \"lonely element\" ]");
     }
@@ -162,13 +244,14 @@ public class TableProviderTest extends TestBase {
     @Test
     public void testSerialize1() throws IOException {
         Table table = createTable(Boolean.class, Double.class, String.class, String.class);
-        Storeable storable = provider.createFor(table, Arrays.asList(false, -2.41, null, "a//b ///\" \" c"));
+        Storeable storable = provider.createFor(table, Arrays.asList(false, -2.41, null, "a\\b \\\" c"));
         String serialized = provider.serialize(table, storable);
 
         System.err.println(serialized);
 
         String regex =
-                "(\\s*)\\[(\\s*)false,(\\s*)-2\\.41,null,(\\s*)\"a////b ///////\" /\" c\"(\\s*)\\](\\s*)";
+                "(\\s*)\\[(\\s*)false,(\\s*)-2\\.41,null,(\\s*)\"a\\\\\\\\b \\\\\\\\\\\\\" c\"(\\s*)\\]"
+                + "(\\s*)";
         assertTrue(serialized.matches(regex));
     }
 
@@ -190,7 +273,7 @@ public class TableProviderTest extends TestBase {
     }
 
     @Test
-    public void testObtainTableWithInvalidSignatureFile() throws IOException {
+    public void testObtainTableWithInvalidSignatureFile() throws Exception {
         String tableName = "table";
         Table table = provider.createTable(tableName, DEFAULT_COLUMN_TYPES);
 
@@ -211,7 +294,7 @@ public class TableProviderTest extends TestBase {
     }
 
     @Test
-    public void testObtainTableWithExtraFile() throws IOException {
+    public void testObtainTableWithExtraFile() throws Exception {
         String tableName = "table";
 
         Files.createDirectories(DB_ROOT.resolve(tableName).resolve("1.dir"));
@@ -224,7 +307,7 @@ public class TableProviderTest extends TestBase {
     }
 
     @Test
-    public void testObtainTableWithMissingSignatureFile() throws IOException {
+    public void testObtainTableWithMissingSignatureFile() throws Exception {
         String tableName = "table";
 
         Files.createDirectory(DB_ROOT.resolve(tableName));
@@ -237,7 +320,7 @@ public class TableProviderTest extends TestBase {
     }
 
     @Test
-    public void testObtainTableWithBadIDOfPartFile() throws IOException {
+    public void testObtainTableWithBadIDOfPartFile() throws Exception {
         String tableName = "table";
 
         Files.createDirectories(DB_ROOT.resolve(tableName).resolve("1.dir"));
@@ -317,7 +400,7 @@ public class TableProviderTest extends TestBase {
         provider.removeTable(name);
 
         exception.expect(IllegalStateException.class);
-        exception.expectMessage(name + " is invalidated");
+        exception.expectMessage("This object has been invalidated");
 
         // Even calling to this simple method can cause IllegalStateException if the table has been removed.
         table.getName();
@@ -378,7 +461,7 @@ public class TableProviderTest extends TestBase {
     }
 
     @Test
-    public void testObtainTableWithEmptySignatureFile() throws IOException {
+    public void testObtainTableWithEmptySignatureFile() throws Exception {
         String tableName = "table";
 
         Files.createDirectory(DB_ROOT.resolve(tableName));

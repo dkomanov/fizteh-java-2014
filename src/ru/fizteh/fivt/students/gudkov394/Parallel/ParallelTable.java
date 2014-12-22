@@ -5,6 +5,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.gudkov394.Storable.src.CurrentTable;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -25,8 +26,8 @@ public class ParallelTable implements Table {
         provider = parallelTableProvider;
         diff = new ThreadLocal<ListDiff>();
         diff.set(new ListDiff(table, lock));
-    }
 
+    }
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
         lock.writeLock().lock();
@@ -121,5 +122,11 @@ public class ParallelTable implements Table {
             System.err.println("We have a problem with parse in get()");
         }
         return null;
+    }
+
+    public String getPath() {
+        File providerFile = new File(provider.getPath());
+        File table = new File(providerFile, getName());
+        return table.getPath();
     }
 }

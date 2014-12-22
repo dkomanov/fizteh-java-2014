@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell;
 
-import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.db.DBTableProvider;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.ExitRequest;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.exception.TerminalException;
 import ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.support.Log;
@@ -27,19 +26,17 @@ import java.util.Map;
  * @see ru.fizteh.fivt.students.fedorov_andrew.databaselibrary.shell.ShellState
  */
 public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
-    public static final String SPLIT_REGEX = "\\s+|$";
-    public static final String USUAL_STRING_PART_REGEX = "[^\"&&\\S]+";
-    public static final String QUOTED_STRING_SURROUNDING_REGEX = "[\\(\\)\\[\\]\\,]";
+    private static final char QUOTE_CHARACTER = '\"';
+    private static final char ESCAPE_CHARACTER = '\\';
 
-    public static final char COMMAND_END_CHARACTER = ';';
+    private static final char COMMAND_END_CHARACTER = ';';
 
-    public static final int READ_BUFFER_SIZE = 16 * 1024;
-
+    private static final int READ_BUFFER_SIZE = 16 * 1024;
     /**
      * Object encapsulating commands and data they work with.
      */
     private final ShellStateImpl shellState;
-
+    private boolean valid = true;
     /**
      * Available commands for invocation.
      */
@@ -61,7 +58,7 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
      *         Commands split by {@link #COMMAND_END_CHARACTER}.
      * @return List of commands, each command is an array of its parts (space splitters are excluded from
      * everywhere except quoted parts).
-     * @throws ParseException
+     * @throws java.text.ParseException
      *         In case of bad format.
      */
     public static List<String[]> splitCommandsString(String commandsStr) throws ParseException {
@@ -77,13 +74,9 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
         for (int start = 0, index = 0, len = commandsStr.length(); index < len; ) {
             char symbol = commandsStr.charAt(index);
 
-            if (symbol == DBTableProvider.QUOTE_CHARACTER) {
+            if (symbol == QUOTE_CHARACTER) {
                 index = Utility.findClosingQuotes(
-                        commandsStr,
-                        index + 1,
-                        len,
-                        DBTableProvider.QUOTE_CHARACTER,
-                        DBTableProvider.ESCAPE_CHARACTER);
+                        commandsStr, index + 1, len, QUOTE_CHARACTER, ESCAPE_CHARACTER);
                 if (index < 0) {
                     throw new ParseException("Cannot find closing quotes", -1);
                 }
@@ -155,10 +148,19 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
         return interactive;
     }
 
+    private void checkValid() throws IllegalStateException {
+        if (!valid) {
+            throw new IllegalStateException("Shell has already run");
+        }
+    }
+
     /**
      * Execute commands from input stream. Commands are awaited till the-end-of-stream.
      */
     public int run(InputStream stream) throws TerminalException {
+        checkValid();
+        valid = false;
+
         interactive = true;
 
         if (stream == null) {
@@ -218,6 +220,9 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
      * @return Exit code. 0 means normal status, anything else - abnormal termination (error).
      */
     public int run(String[] args) throws TerminalException {
+        checkValid();
+        valid = false;
+
         try {
             interactive = false;
 
@@ -259,4 +264,19 @@ public class Shell<ShellStateImpl extends ShellState<ShellStateImpl>> {
         }
     }
 
+    public boolean isValid() {
+        return valid;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        if (valid) {
+            try {
+                shellState.prepareToExit(0);
+            } catch (ExitRequest req) {
+                // Ignore it.
+            }
+        }
+    }
 }

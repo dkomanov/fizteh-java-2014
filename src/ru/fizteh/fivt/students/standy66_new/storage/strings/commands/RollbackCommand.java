@@ -21,6 +21,7 @@ public class RollbackCommand extends ContextualCommand {
         if (currentTable == null) {
             throw new NoTableSelectedException();
         }
-        currentTable.rollback();
+        int numberOfUnsavedChanges = currentTable.rollback();
+        getOutputWriter().format("%d%n", numberOfUnsavedChanges);
     }
 }

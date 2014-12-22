@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TestStoreable {
     static String providerDirectory;
@@ -53,20 +54,19 @@ public class TestStoreable {
     @Test
     public void testSetColumnAt() throws Exception {
         entry.setColumnAt(0, null);
-        boolean exceptionWas = false;
         try {
             entry.setColumnAt(0, "new");
+            fail();
         } catch (ColumnFormatException e) {
-            exceptionWas = true;
+            //all right
         }
-        assertTrue(exceptionWas);
-        exceptionWas = false;
+
         try {
             entry.setColumnAt(2, "new");
+            fail();
         } catch (IndexOutOfBoundsException e) {
-            exceptionWas = true;
+            //all right
         }
-        assertTrue(exceptionWas);
     }
 
     @Test
@@ -74,13 +74,12 @@ public class TestStoreable {
         entry.setColumnAt(0, 1);
         assertTrue((entry.getColumnAt(0)).equals(1));
 
-        boolean exceptionWas = false;
         try {
             entry.getColumnAt(2);
+            fail();
         } catch (IndexOutOfBoundsException e) {
-            exceptionWas = true;
+            //all right
         }
-        assertTrue(exceptionWas);
     }
 
     @Test
@@ -89,20 +88,18 @@ public class TestStoreable {
         entry.setColumnAt(1, "new");
         assertTrue(entry.getIntAt(0) == 1);
 
-        boolean exceptionWas = false;
         try {
             entry.getIntAt(1);
+            fail();
         } catch (ColumnFormatException e) {
-            exceptionWas = true;
+            //all right
         }
-        assertTrue(exceptionWas);
 
-        exceptionWas = false;
         try {
             entry.getIntAt(100);
+            fail();
         } catch (IndexOutOfBoundsException e) {
-            exceptionWas = true;
+            //all right
         }
-        assertTrue(exceptionWas);
     }
 }

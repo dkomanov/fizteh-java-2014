@@ -1,4 +1,4 @@
-package util;
+package junit.util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import strings.Table;
+import junit.strings.Table;
 
 public class MyTable implements Table {
     File tableRoot;

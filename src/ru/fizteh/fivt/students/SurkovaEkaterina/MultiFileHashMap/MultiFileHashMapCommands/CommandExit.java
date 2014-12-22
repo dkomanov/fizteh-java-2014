@@ -1,11 +1,9 @@
 package ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.MultiFileHashMapCommands;
 
-import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.MultiFileHashMapOperationsInterface;
+import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.MultiFileHashMapOperations;
 import ru.fizteh.fivt.students.SurkovaEkaterina.MultiFileHashMap.Shell.ACommand;
 
-public class CommandExit<ATable, MultiFileHashMapOperations
-        extends MultiFileHashMapOperationsInterface<ATable>>
-        extends ACommand<MultiFileHashMapOperations> {
+public class CommandExit extends ACommand<MultiFileHashMapOperations> {
     public CommandExit() {
         super("exit", "exit");
     }

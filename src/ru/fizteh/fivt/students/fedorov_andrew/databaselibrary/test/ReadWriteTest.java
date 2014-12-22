@@ -49,13 +49,15 @@ public class ReadWriteTest {
         }
 
         Path testPath = Paths.get(System.getProperty("user.home"), "test", "java_test.dat");
+        Files.deleteIfExists(testPath);
+
         TablePart testFileMap = new TablePart(testPath);
 
         for (Entry<String, String> e : map.entrySet()) {
             testFileMap.put(e.getKey(), e.getValue());
         }
 
-        testFileMap.writeToFile();
+        testFileMap.commit();
 
         testFileMap = new TablePart(testPath);
 

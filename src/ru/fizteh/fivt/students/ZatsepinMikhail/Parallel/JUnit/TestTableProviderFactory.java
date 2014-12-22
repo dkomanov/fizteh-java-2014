@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TestTableProviderFactory {
     String dir;
@@ -39,7 +39,7 @@ public class TestTableProviderFactory {
         try {
             assertNotNull(testFactory.create(dir));
         } catch (IOException e) {
-            assertTrue(false);
+            fail();
         }
     }
 

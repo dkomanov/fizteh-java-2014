@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.LebedevAleksey.MultiFileHashMap;
 
 public class DatabaseState extends InterpreterState {
-    private Database database;
+    protected Database database;
 
     public DatabaseState() throws DatabaseFileStructureException, LoadOrSaveException {
         super();

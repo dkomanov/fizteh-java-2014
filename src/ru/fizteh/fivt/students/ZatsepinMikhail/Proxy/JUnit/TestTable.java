@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TestTable {
     String key;
@@ -248,12 +249,11 @@ public class TestTable {
     @Test
     public void testGetColumnType() {
         assertTrue(testTable.getColumnType(0).equals(Integer.class));
-        boolean exceptionWas = false;
         try {
             testTable.getColumnType(9);
+            fail();
         } catch (IndexOutOfBoundsException e) {
-            exceptionWas = true;
+            //all right
         }
-        assertTrue(exceptionWas);
     }
 }

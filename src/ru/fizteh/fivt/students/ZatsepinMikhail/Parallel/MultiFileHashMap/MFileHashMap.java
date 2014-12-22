@@ -28,7 +28,7 @@ public class MFileHashMap implements TableProvider {
     private FileMap currentTable;
     private ReentrantReadWriteLock lockForCreateAndGet;
 
-    public MFileHashMap(String newDirectory) {
+    public MFileHashMap(String newDirectory) throws IOException {
         dataBaseDirectory = newDirectory;
         tables = new HashMap<>();
         lockForCreateAndGet = new ReentrantReadWriteLock();
@@ -40,16 +40,18 @@ public class MFileHashMap implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-
-        lockForCreateAndGet.readLock().lock();
-        Table returnValue;
-        if (tables.containsKey(name)) {
-            returnValue = tables.get(name);
-        } else {
-            returnValue = null;
+        try {
+            lockForCreateAndGet.readLock().lock();
+            Table returnValue;
+            if (tables.containsKey(name)) {
+                returnValue = tables.get(name);
+            } else {
+                returnValue = null;
+            }
+            return returnValue;
+        } finally {
+            lockForCreateAndGet.readLock().unlock();
         }
-        lockForCreateAndGet.readLock().unlock();
-        return returnValue;
     }
 
     @Override
@@ -59,18 +61,17 @@ public class MFileHashMap implements TableProvider {
         }
         TypesUtils.checkTypes(columnTypes);
 
-        lockForCreateAndGet.writeLock().lock();
-        Table returnValue;
-        if (tables.containsKey(name)) {
-            returnValue = null;
-        } else {
-            Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
-            Path pathOfNewTableSignatureFile = Paths.get(dataBaseDirectory, name, "signature.tsv");
-            if (Files.exists(pathOfNewTable) & Files.isDirectory(pathOfNewTable)) {
-                lockForCreateAndGet.writeLock().unlock();
-                throw new IllegalArgumentException("this directory already exists");
-            }
-            try {
+        try {
+            lockForCreateAndGet.writeLock().lock();
+            Table returnValue;
+            if (tables.containsKey(name)) {
+                returnValue = null;
+            } else {
+                Path pathOfNewTable = Paths.get(dataBaseDirectory, name);
+                Path pathOfNewTableSignatureFile = Paths.get(dataBaseDirectory, name, "signature.tsv");
+                if (Files.exists(pathOfNewTable) & Files.isDirectory(pathOfNewTable)) {
+                    throw new IllegalArgumentException("this directory already exists");
+                }
                 Files.createDirectory(pathOfNewTable);
                 Files.createFile(pathOfNewTableSignatureFile);
                 try (FileWriter fileOut = new FileWriter(pathOfNewTableSignatureFile.toString())) {
@@ -79,13 +80,11 @@ public class MFileHashMap implements TableProvider {
                 FileMap newTable = new FileMap(pathOfNewTable.toString(), columnTypes, this);
                 tables.put(name, newTable);
                 returnValue = newTable;
-            } catch (IOException e) {
-                lockForCreateAndGet.writeLock().unlock();
-                throw new IOException();
             }
+            return returnValue;
+        } finally {
+            lockForCreateAndGet.writeLock().unlock();
         }
-        lockForCreateAndGet.writeLock().unlock();
-        return returnValue;
     }
 
     @Override
@@ -93,16 +92,18 @@ public class MFileHashMap implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("null argument");
         }
-        lockForCreateAndGet.writeLock().lock();
-        if (tables.containsKey(name)) {
-            Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
-            tables.remove(name);
-            currentTable = null;
-            FileUtils.rmdir(pathForRemoveTable);
+        try {
+            lockForCreateAndGet.writeLock().lock();
+            if (tables.containsKey(name)) {
+                Path pathForRemoveTable = Paths.get(dataBaseDirectory, name);
+                tables.remove(name);
+                currentTable = null;
+                FileUtils.rmdir(pathForRemoveTable);
+            } else {
+                throw new IllegalStateException("table \'" + name + "\' doesn't exist");
+            }
+        } finally {
             lockForCreateAndGet.writeLock().unlock();
-        } else {
-            lockForCreateAndGet.writeLock().unlock();
-            throw new IllegalStateException("table \'" + name + "\' doesn't exist");
         }
     }
 

@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This class provides some utility methods for testing.<br/> Note that some methods are linking to
@@ -18,7 +19,7 @@ import java.util.Random;
  * directly.
  */
 public class TestUtils {
-    private static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+    public static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static final Random RANDOM = new Random();
 
     // Not for constructing
@@ -29,7 +30,7 @@ public class TestUtils {
         return RANDOM.nextInt(b - a + 1) + a;
     }
 
-    public static int randInt(int n) {
+    private static int randInt(int n) {
         return RANDOM.nextInt(n);
     }
 
@@ -39,6 +40,15 @@ public class TestUtils {
             data[i] = ALPHABET[RANDOM.nextInt(ALPHABET.length)];
         }
         return String.valueOf(data);
+    }
+
+    public static void consumeCPU(int actionsCount) {
+        int sum = 0;
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int i = 0; i < actionsCount; i++) {
+            sum += random.nextInt(123512);
+        }
+        random.nextInt(sum);
     }
 
     public static TableProviderFactory obtainFactory() {

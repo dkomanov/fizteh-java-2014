@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.vadim_mazaev.DataBaseTest;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -10,8 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 import ru.fizteh.fivt.students.vadim_mazaev.DataBase.TableManagerFactory;
 
 public class TableManagerFactoryTest {
@@ -23,17 +23,15 @@ public class TableManagerFactoryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testTableManagerFactoryThrowsExceptionCreatedNullTableManager() {
+    public void testTableManagerFactoryThrowsExceptionCreatedNullTableManager() throws IOException {
         TableProviderFactory test = new TableManagerFactory();
         test.create(null);
     }
     
     @Test
-    public void testTableManagerFactoryCreatedNewTableManager() {
+    public void testTableManagerFactoryCreatedNewTableManager() throws IOException {
         TableProviderFactory test = new TableManagerFactory();
-        TableProvider testProvider = test.create(testDir.toString());
-        testProvider.createTable("testTable");
-        assertTrue(testDir.resolve("testTable").toFile().exists());
+        assertNotNull(test.create(testDir.toString()));
     }
     
     @After

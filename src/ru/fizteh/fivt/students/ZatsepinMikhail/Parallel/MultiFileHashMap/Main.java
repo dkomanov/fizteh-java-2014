@@ -35,23 +35,24 @@ public class Main {
                 }
             }
         }
-        MFileHashMap myMFileHashMap = new MFileHashMap(dataBaseDirectory.toString());
-        if (!myMFileHashMap.init()) {
+        try {
+            MFileHashMap myMFileHashMap = new MFileHashMap(dataBaseDirectory.toString());
+            Shell<MFileHashMap> myShell = new Shell<>(myMFileHashMap);
+            setUpShell(myShell);
+
+            if (args.length > 0) {
+                allRight = myShell.packetMode(args);
+            } else {
+                allRight = myShell.interactiveMode();
+            }
+            if (allRight) {
+                System.exit(0);
+            } else {
+                System.exit(1);
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
             System.exit(3);
-        }
-
-        Shell<MFileHashMap> myShell = new Shell<>(myMFileHashMap);
-        setUpShell(myShell);
-
-        if (args.length > 0) {
-            allRight = myShell.packetMode(args);
-        } else {
-            allRight = myShell.interactiveMode();
-        }
-        if (allRight) {
-            System.exit(0);
-        } else {
-            System.exit(1);
         }
     }
 

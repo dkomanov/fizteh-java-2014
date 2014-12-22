@@ -43,6 +43,11 @@ public class TablePart {
                     }
                 }
             }
+        } else {
+            File parent = file.getParentFile();
+            if (parent.exists() && (!parent.isDirectory())) {
+                throw new DatabaseFileStructureException("Can't load: '" + file.getParent() + "' is file");
+            }
         }
     }
 

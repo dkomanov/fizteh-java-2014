@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.vadim_mazaev;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 
 public final class DataBaseState {
     private TableProvider manager;

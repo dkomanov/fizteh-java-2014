@@ -1,10 +1,11 @@
+package calculator;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import calculator.pelement.PElement;
 //To multiply use "x"
-
-import pelement.*;
 
 public class Calculator {
   public static void main(String[] args) {

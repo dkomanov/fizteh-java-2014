@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TestAutoCloseable {
     String providerDirectory;
@@ -85,15 +86,16 @@ public class TestAutoCloseable {
         } catch (Exception e) {
             //suppress
         }
-        boolean exceptionWas = false;
+
         try {
             testFileMap.close();
+            fail();
         } catch (IllegalStateException e) {
-            exceptionWas = true;
+            //all right
         } catch (Exception e) {
             //suppress
         }
-        assertTrue(exceptionWas);
+
         Table newInstance = provider.getTable(tableName);
 
         //check getting new instance of table

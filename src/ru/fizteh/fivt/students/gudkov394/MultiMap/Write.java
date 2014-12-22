@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.gudkov394.MultiMap;
 
-import ru.fizteh.fivt.students.gudkov394.map.*;
 import ru.fizteh.fivt.students.gudkov394.shell.CurrentDirectory;
 import ru.fizteh.fivt.students.gudkov394.shell.RemoveDirectory;
 

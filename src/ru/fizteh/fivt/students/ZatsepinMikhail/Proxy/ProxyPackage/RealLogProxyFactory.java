@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.ProxyPackage;
 
-import org.json.JSONException;
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
 
 import javax.json.*;
@@ -72,12 +71,8 @@ public class RealLogProxyFactory implements LoggingProxyFactory {
             }
 
             synchronized (writer) {
-                try {
-                    JsonWriter writerJson = Json.createWriter(writer);
-                    writerJson.writeObject(logObject.build());
-                } catch (JSONException e) {
-                    //suppress
-                }
+                JsonWriter writerJson = Json.createWriter(writer);
+                writerJson.writeObject(logObject.build());
             }
 
             writer.write("\n");

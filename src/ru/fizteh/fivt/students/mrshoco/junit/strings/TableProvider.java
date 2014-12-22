@@ -1,4 +1,4 @@
-package strings;
+package junit.strings;
 
 /**
  * @author Fedor Lavrentyev
