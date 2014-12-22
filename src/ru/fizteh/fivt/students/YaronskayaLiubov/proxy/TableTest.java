@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.YaronskayaLiubov.proxy;
 
-import static junit.framework.Assert.*;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -19,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import static junit.framework.Assert.*;
 
 /**
  * Created by luba_yaronskaya on 17.11.14.

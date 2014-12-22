@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.YaronskayaLiubov.proxy;
 
-import java.io.IOException;
-
 /**
  * Created by luba_yaronskaya on 10.11.14.
  */

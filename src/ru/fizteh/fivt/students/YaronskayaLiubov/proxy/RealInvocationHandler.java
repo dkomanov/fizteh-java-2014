@@ -1,18 +1,15 @@
 
 package ru.fizteh.fivt.students.YaronskayaLiubov.proxy;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.Writer;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
-import java.util.List;
-
-import com.sun.istack.internal.NotNull;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Created by luba_yaronskaya on 01.12.14.
@@ -37,7 +34,8 @@ public class RealInvocationHandler implements InvocationHandler {
         log.put("timestamp", System.currentTimeMillis());
         log.put("class", implementation.getClass().getName());
         log.put("method", method.getName());
-        log.put("arguments", args == null ? new JSONArray() : getJSONArray(Arrays.asList(args), new IdentityHashMap<>()));
+        log.put("arguments", args == null ? new JSONArray()
+                : getJSONArray(Arrays.asList(args), new IdentityHashMap<>()));
         Throwable thrownException = null;
         Object returnValue = null;
         try {

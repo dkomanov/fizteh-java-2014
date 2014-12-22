@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.YaronskayaLiubov.proxy;
 
-import static junit.framework.Assert.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -11,6 +9,8 @@ import ru.fizteh.fivt.storage.structured.TableProviderFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
+
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * Created by luba_yaronskaya on 17.11.14.

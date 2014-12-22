@@ -136,9 +136,11 @@ public class StoreableDataTableProvider implements TableProvider, AutoCloseable 
                             row.setColumnAt(columnIndex, null);
                         } else {
                             if (!xmlReader.getLocalName().equals("col")) {
-                                throw new ParseException("Incorrect tag name", xmlReader.getLocation().getCharacterOffset());
+                                throw new ParseException("Incorrect tag name",
+                                        xmlReader.getLocation().getCharacterOffset());
                             }
-                            row.setColumnAt(columnIndex, parseXxx(xmlReader.getElementText(), table.getColumnType(columnIndex)));
+                            row.setColumnAt(columnIndex, parseXxx(xmlReader.getElementText(),
+                                    table.getColumnType(columnIndex)));
                         }
                     } catch (NumberFormatException e) {
                         throw new ParseException("Incorrect xml format", xmlReader.getLocation().getCharacterOffset());
@@ -209,6 +211,11 @@ public class StoreableDataTableProvider implements TableProvider, AutoCloseable 
             row.setColumnAt(i, values.get(i));
         }
         return row;
+    }
+
+    @Override
+    public List<String> getTableNames() {
+        return null;
     }
 
     public static Object parseXxx(String value, Class<?> type) throws IOException {
