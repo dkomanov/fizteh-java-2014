@@ -248,7 +248,8 @@ public class MyTable {
         } catch (FileNotFoundException e) {
             throw new RuntimeException("MyTable.readFromFile: File not found", e);
         } catch (IOException e) {
-            throw new RuntimeException(" MyTable.readFromFile: Problems with reading from database file " + e.toString());
+            throw new RuntimeException(" MyTable.readFromFile: "
+                    + "Problems with reading from database file " + e.toString());
         } catch (Exception e) {
             throw new RuntimeException("MyTable.readFromFile: ", e);
         }
