@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.moskupols.storeable;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
+import ru.fizteh.fivt.students.moskupols.junit.KnownDiffTableProviderFactory;
 import ru.fizteh.fivt.students.moskupols.junit.MultiFileMapTableProviderFactory;
 
 import java.io.IOException;
@@ -10,11 +11,15 @@ import java.nio.file.Paths;
 /**
  * Created by moskupols on 09.12.14.
  */
-public class TableProviderFactoryImpl implements TableProviderFactory {
-    private final MultiFileMapTableProviderFactory backingFactory;
+public class StringBackedTableProviderFactory implements TableProviderFactory {
+    private final KnownDiffTableProviderFactory stringTableProviderFactory;
 
-    public TableProviderFactoryImpl() {
-        backingFactory = new MultiFileMapTableProviderFactory();
+    public StringBackedTableProviderFactory() {
+        this(new MultiFileMapTableProviderFactory());
+    }
+
+    public StringBackedTableProviderFactory(KnownDiffTableProviderFactory stringTableProviderFactory) {
+        this.stringTableProviderFactory = stringTableProviderFactory;
     }
 
     @Override
@@ -23,7 +28,7 @@ public class TableProviderFactoryImpl implements TableProviderFactory {
                 Paths.get(path),
                 new XmlSerializer(),
                 new XmlDeserializer(),
-                backingFactory.create(path)
+                stringTableProviderFactory.create(path)
         );
     }
 }

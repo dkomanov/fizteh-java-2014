@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.moskupols.storeable;
+package ru.fizteh.fivt.students.moskupols.parallel;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,21 +6,28 @@ import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
 
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-public class StringBackedStructuredTableProviderTest {
+public class ThreadSafeCachingTableProviderTest {
     private TableProvider provider;
-    private StringBackedTableProviderFactory providerFactory;
-    private String providerDirectory;
 
     @Before
     public void setUp() throws Exception {
-        providerFactory = new StringBackedTableProviderFactory();
-        providerDirectory = Files.createTempDirectory("ProviderTest").toAbsolutePath().toString();
-        provider = providerFactory.create(providerDirectory);
+        provider = new ThreadSafeTableProviderFactory().create(
+                Files.createTempDirectory("ProviderTest").toAbsolutePath().toString());
+    }
+
+    @Test
+    public void testCreateAndGet() throws Exception {
+        assertNull(provider.getTable("tab"));
+
+        Table t = provider.createTable("tab", Arrays.asList(Integer.class, String.class));
+        assertNotNull(t);
+
+        Table t2 = provider.getTable("tab");
+        assertSame(t, t2);
     }
 
     @Test
@@ -73,18 +80,5 @@ public class StringBackedStructuredTableProviderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testRemoveNull() throws Exception {
         provider.removeTable(null);
-    }
-
-    @Test()
-    public void testListNames() throws Exception {
-        assertEquals(new ArrayList<String>(), provider.getTableNames());
-
-        final TableProvider another = providerFactory.create(providerDirectory);
-
-        another.createTable("tab", Arrays.asList(Integer.class));
-        assertEquals(Arrays.asList("tab"), provider.getTableNames());
-
-        another.removeTable("tab");
-        assertEquals(new ArrayList<String>(), provider.getTableNames());
     }
 }

@@ -1,13 +1,11 @@
 package ru.fizteh.fivt.students.moskupols.junit;
 
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
-
 import java.nio.file.Paths;
 
 /**
  * Created by moskupols on 17.11.14.
  */
-public class MultiFileMapTableProviderFactory implements TableProviderFactory {
+public class MultiFileMapTableProviderFactory implements KnownDiffTableProviderFactory {
     @Override
     public KnownDiffTableProvider create(String dir) {
         if (dir == null) {
