@@ -16,7 +16,11 @@ public class ExitCommand implements Command {
 
     @Override
     public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
-        db.exit();
+        int changesNumber = db.exit();
+        if (changesNumber > 0) {
+            outputStream.println(String.format("there are %s + uncommitted changes. Do something", changesNumber));
+            return;
+        }
         System.exit(0);
     }
 

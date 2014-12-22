@@ -120,9 +120,7 @@ public class SingleFileTable implements Table {
     @Override
     public int commit() {
         int result = getChangesCount();
-        for (String key : deleted) {
-            storage.remove(key);
-        }
+        deleted.forEach(storage::remove);
         storage.putAll(changed);
         try {
             FileMapUtils.flush(dbfile, storage);

@@ -29,7 +29,6 @@ public class Database implements MultiTable {
             try {
                 List<Class<?>> columnTypes = FileMapUtils.createListOfTypes(args);
                 currentlyUsedTableProvider.createTable(tableName, columnTypes);
-                //         System.out.println("created");
             } catch (IOException exc) {
                 throw new IllegalArgumentException(exc.getMessage());
             }
@@ -46,7 +45,7 @@ public class Database implements MultiTable {
         try {
             currentlyUsedTableProvider.removeTable(name);
         } catch (IOException exc) {
-            System.err.println(exc.getMessage());
+            throw new IllegalArgumentException("database drop problem:", exc);
         }
     }
 
@@ -57,7 +56,7 @@ public class Database implements MultiTable {
 
     @Override
     public List<String> showTables() {
-        throw new IllegalStateException("this function is not supported in that version");
+        return currentlyUsedTableProvider.getTableNames();
     }
 
     @Override
@@ -87,7 +86,7 @@ public class Database implements MultiTable {
 
     @Override
     public List<String> list() {
-        throw new IllegalStateException("this method is not supported by this implementation");
+        return currentlyUsedTable.list();
     }
 
     @Override
@@ -149,8 +148,7 @@ public class Database implements MultiTable {
 
     @Override
     public int exit() {
-        //FIXME what needs to be done here?
-        return 0;
+        return currentlyUsedTable.getNumberOfUncommittedChanges();
     }
 
     private void checkTableUsed() {

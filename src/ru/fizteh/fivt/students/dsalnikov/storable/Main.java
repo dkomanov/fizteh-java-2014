@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.dsalnikov.storable;
 import ru.fizteh.fivt.students.dsalnikov.filemap.commands.*;
 import ru.fizteh.fivt.students.dsalnikov.multifilemap.commands.CreateCommand;
 import ru.fizteh.fivt.students.dsalnikov.multifilemap.commands.DropCommand;
+import ru.fizteh.fivt.students.dsalnikov.multifilemap.commands.ShowCommand;
 import ru.fizteh.fivt.students.dsalnikov.multifilemap.commands.UseCommand;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 import ru.fizteh.fivt.students.dsalnikov.shell.StorableParser;
@@ -36,6 +37,8 @@ public class Main {
             commands.add(new CommitCommand(state));
             commands.add(new RollbackCommand(state));
             commands.add(new SizeCommand(state));
+            commands.add(new ShowCommand(state));
+            commands.add(new ListCommand(state));
             sh.setCommands(commands);
             if (args.length == 0) {
                 try {

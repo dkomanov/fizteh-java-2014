@@ -9,10 +9,7 @@ import java.util.List;
 
 public class CorrectnessCheck {
     public static boolean isCorrectName(String givenName) {
-        if (givenName == null) {
-            return false;
-        }
-        return givenName.matches("[a-zA-Zа-яА-Я0-9]+");
+        return givenName != null && givenName.matches("[a-zA-Zа-яА-Я0-9]+");
     }
 
     public static boolean isCorrectArgument(String arg) {

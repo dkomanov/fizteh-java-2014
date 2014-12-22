@@ -7,9 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by Dmitriy on 12/3/2014.
- */
 public class TransactionChanges {
 
 

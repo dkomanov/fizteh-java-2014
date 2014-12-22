@@ -17,7 +17,7 @@ public class CommitCommand implements Command {
 
     @Override
     public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
-        db.commit();
+        outputStream.println(db.commit());
     }
 
     @Override

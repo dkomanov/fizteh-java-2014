@@ -40,6 +40,9 @@ public class MultiFileTable implements Table {
     }
 
     public String get(String key) {
+        if (key == null || key.trim().isEmpty()) {
+            throw new IllegalArgumentException("wrong key");
+        }
         SingleFileTable result = db.get(new FilePathsProvider(dbpath.toString(), key).getPath());
         if (result == null) {
             return null;
@@ -50,6 +53,12 @@ public class MultiFileTable implements Table {
 
 
     public String put(String key, String value) {
+        if (key == null || key.trim().isEmpty()) {
+            throw new IllegalArgumentException("key can't be null or empty");
+        }
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("value can't be null or empty");
+        }
         String path = new FilePathsProvider(dbpath.toString(), key).getPath();
         SingleFileTable result = db.get(path);
         if (result == null) {
@@ -70,6 +79,9 @@ public class MultiFileTable implements Table {
     }
 
     public String remove(String key) {
+        if (key == null || key.trim().isEmpty()) {
+            throw new IllegalArgumentException("incorrect key:can't be empty or null");
+        }
         String path = new FilePathsProvider(dbpath.toString(), key).getPath();
         SingleFileTable result = db.get(path);
         if (result == null) {

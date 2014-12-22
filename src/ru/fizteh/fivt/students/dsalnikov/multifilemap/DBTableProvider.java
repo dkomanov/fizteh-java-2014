@@ -2,20 +2,23 @@ package ru.fizteh.fivt.students.dsalnikov.multifilemap;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.dsalnikov.utils.CorrectnessCheck;
 import ru.fizteh.fivt.students.dsalnikov.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 
 public class DBTableProvider implements TableProvider {
-
-    private final String dbdir;
+    private String dbdir;
 
     public DBTableProvider(String dir) throws IOException {
         dbdir = dir;
         File f = new File(dir);
+        if (dir == null || dir.trim().isEmpty()) {
+            throw new IllegalArgumentException("Incorrect provider invocation");
+        }
         if (!f.exists() || !f.isDirectory()) {
-            throw new IOException("Incorrect paths provided!!!!!1111111");
+            throw new IllegalArgumentException("Incorrect paths provided!!!!!1111111");
         }
     }
 
@@ -27,6 +30,9 @@ public class DBTableProvider implements TableProvider {
 
     @Override
     public Table createTable(String name) {
+        if (name == null || name.trim().isEmpty() || !CorrectnessCheck.isCorrectArgument(name)) {
+            throw new IllegalArgumentException("Incorrect name");
+        }
         File dir = new File(dbdir, name);
         if (!dir.exists()) {
             dir.mkdir();

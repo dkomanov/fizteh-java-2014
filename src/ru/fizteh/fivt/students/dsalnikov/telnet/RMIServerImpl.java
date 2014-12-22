@@ -32,9 +32,7 @@ public class RMIServerImpl implements RMIServer, Serializable {
             }
 
 
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (AlreadyBoundException e) {
+        } catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();
         }
     }
@@ -70,7 +68,7 @@ public class RMIServerImpl implements RMIServer, Serializable {
     protected synchronized void stop() {
         this.isStopped = true;
         //shutdown all the clients
-        connectedClients.forEach((v) -> v.disconnect());
+        connectedClients.forEach(ClientState::disconnect);
         connectedClients.clear();
         isStopped = true;
     }

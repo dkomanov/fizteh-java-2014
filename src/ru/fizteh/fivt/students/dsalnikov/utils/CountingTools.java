@@ -26,11 +26,7 @@ public class CountingTools {
 
     public static int countSize(Map<String, String> data,
                                 Map<String, String> changes, Set<String> removedKeys) {
-        for (String key : removedKeys) {
-            if (!data.containsKey(key)) {
-                removedKeys.remove(key);
-            }
-        }
+        removedKeys.stream().filter(key -> !data.containsKey(key)).forEach(removedKeys::remove);
         Set<String> changesKeysSet = changes.keySet();
         Set<String> addedKeysForDeletion = new HashSet<>();
         for (String key : changesKeysSet) {
@@ -90,11 +86,7 @@ public class CountingTools {
 
     public static int storableCountSize(Map<String, Storeable> data,
                                         Map<String, Storeable> changes, Set<String> removedKeys) {
-        for (String key : removedKeys) {
-            if (!data.containsKey(key)) {
-                removedKeys.remove(key);
-            }
-        }
+        removedKeys.stream().filter(key -> !data.containsKey(key)).forEach(removedKeys::remove);
         Set<String> changesKeysSet = changes.keySet();
         Set<String> addedKeysForDeletion = new HashSet<>();
         for (String key : changesKeysSet) {

@@ -9,7 +9,11 @@ public class DBFactory implements TableProviderFactory {
     @Override
     public TableProvider create(String dir) {
         try {
-            return new DBTableProvider(dir);
+            if (dir == null) {
+                throw new IllegalArgumentException("name can't be null");
+            } else {
+                return new DBTableProvider(dir);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

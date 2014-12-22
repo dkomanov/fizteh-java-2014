@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.dsalnikov.storable;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +15,12 @@ public class Storable implements Storeable {
     public Storable(Table t, List<?> values) {
         types = new ArrayList<>();
         objectList = new ArrayList<>();
-        if (t.getColumnsCount() != t.size()) {
+        if (t.getColumnsCount() != values.size()) {
             throw new IndexOutOfBoundsException("storeable row: "
                     + "size of value-list not equals to amount of columns in table");
         }
 
-        for (int i = 0; i < types.size(); ++i) {
+        for (int i = 0; i < values.size(); ++i) {
             if (values.get(i) != null) {
                 if (t.getColumnType(i) != values.get(i).getClass()) {
                     throw new ColumnFormatException("storeable row: "
@@ -27,7 +28,7 @@ public class Storable implements Storeable {
                 }
             }
             types.add(t.getColumnType(i));
-            objectList.add(types.get(i));
+            objectList.add(values.get(i));
         }
     }
 
@@ -116,4 +117,10 @@ public class Storable implements Storeable {
         checkIndexPosition(columnIndex);
         checkTypeMatch(columnIndex, value);
     }
+
+    @Override
+    public String toString() {
+        return StringUtils.createString(getClass().getSimpleName(), objectList);
+    }
 }
+

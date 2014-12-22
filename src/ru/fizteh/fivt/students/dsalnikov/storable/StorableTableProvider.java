@@ -62,7 +62,7 @@ public class StorableTableProvider implements TableProvider, RemoteTableProvider
                 try {
                     newTable = new StorableTable(tableFile, this);
                 } catch (IOException exc) {
-                    System.err.println(exc.getMessage());
+                    throw new IllegalStateException("getTable error:", exc);
                 }
                 tablesMap.put(tableName, newTable);
                 return newTable;
@@ -111,7 +111,7 @@ public class StorableTableProvider implements TableProvider, RemoteTableProvider
             try {
                 FileUtils.forceRemoveDirectory((tableFile));
             } catch (IOException exc) {
-                System.err.println(exc.getMessage());
+                throw new IllegalStateException("removeTable error:", exc);
             }
             tablesMap.remove(tableName);
         } finally {
@@ -150,7 +150,7 @@ public class StorableTableProvider implements TableProvider, RemoteTableProvider
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
         status.canBeSafelyUsed();
-        return new Storable(table, values); //???
+        return new Storable(table, values);
     }
 
     @Override

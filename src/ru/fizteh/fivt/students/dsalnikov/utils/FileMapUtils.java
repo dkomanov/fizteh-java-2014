@@ -386,8 +386,7 @@ public class FileMapUtils {
     }
 
     public static void writeIntoStorableFile(File dataBaseFile, Map<String, String> map) throws IOException {
-        RandomAccessFile dataBaseFileWriter = new RandomAccessFile(dataBaseFile, "rw");
-        try {
+        try (RandomAccessFile dataBaseFileWriter = new RandomAccessFile(dataBaseFile, "rw")) {
             dataBaseFileWriter.setLength(0);
             for (Map.Entry<String, String> element : map.entrySet()) {
                 String key = element.getKey();
@@ -403,8 +402,6 @@ public class FileMapUtils {
             }
         } catch (IOException exc) {
             System.err.println(exc.getMessage());
-        } finally {
-            dataBaseFileWriter.close();
         }
     }
 }

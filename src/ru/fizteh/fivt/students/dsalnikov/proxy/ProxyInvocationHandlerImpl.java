@@ -22,7 +22,7 @@ public class ProxyInvocationHandlerImpl implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (CorrectnessCheck.methodIsCorrectForProxy(method)) {
+        if (!CorrectnessCheck.methodIsCorrectForProxy(method)) {
             return method.invoke(implementation, args);
         }
         Object result = null;
@@ -32,7 +32,7 @@ public class ProxyInvocationHandlerImpl implements InvocationHandler {
             formatter.writeTimeStamp();
             formatter.writeClass(implementation.getClass());
             formatter.writeMethod(method);
-            formatter.writeArgs(args);
+            formatter.writeArguments(args);
             try {
                 result = method.invoke(implementation, args);
                 if (!method.getReturnType().equals(void.class)) {
@@ -40,7 +40,7 @@ public class ProxyInvocationHandlerImpl implements InvocationHandler {
                 }
             } catch (InvocationTargetException ite) {
                 Throwable exc = ite.getTargetException();
-                formatter.writeExceptionThrown(exc);
+                formatter.writeThrown(exc);
                 throw exc;
             } catch (Exception e) {
                 //do nothing

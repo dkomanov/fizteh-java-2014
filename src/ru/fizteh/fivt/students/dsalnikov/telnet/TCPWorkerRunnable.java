@@ -26,7 +26,7 @@ public class TCPWorkerRunnable implements Runnable {
     public void run() {
         try (
                 BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                PrintStream output = new PrintStream(clientSocket.getOutputStream());
+                PrintStream output = new PrintStream(clientSocket.getOutputStream())
         ) {
             String workingDirectory = System.getProperty("fizteh.db.dir");
             StorableTableProviderFactory factory = new StorableTableProviderFactory();

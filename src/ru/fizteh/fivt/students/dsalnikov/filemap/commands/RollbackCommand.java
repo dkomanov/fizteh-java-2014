@@ -16,7 +16,7 @@ public class RollbackCommand implements Command {
 
     @Override
     public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
-        db.rollback();
+        outputStream.println(db.rollback());
     }
 
     @Override

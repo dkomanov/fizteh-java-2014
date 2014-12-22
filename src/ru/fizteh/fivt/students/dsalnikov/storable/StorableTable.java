@@ -40,8 +40,8 @@ public class StorableTable implements Table, AutoCloseable, Serializable {
 //        removed = new ThreadLocal<>().withInitial(HashSet::new);
 //        changesCounter = new ThreadLocal<>().withInitial(() -> 0);
         transactionChanges = new ThreadLocal<>().withInitial(TransactionChanges::new);
-        databaseTableProvider = tableProvider;
-        tableFileDir = tableDir;
+        this.databaseTableProvider = tableProvider;
+        this.tableFileDir = tableDir;
         if (tableProvider == null) {
             throw new IOException("provided tableProvider is incorrect");
         }
@@ -65,9 +65,9 @@ public class StorableTable implements Table, AutoCloseable, Serializable {
 //        removed = new ThreadLocal<>().withInitial(HashSet::new);
 //        changesCounter = new ThreadLocal<>().withInitial(() -> 0);
         transactionChanges = new ThreadLocal<>().withInitial(TransactionChanges::new);
-        databaseTableProvider = givenProvider;
-        tableFileDir = dataDirectory;
-        columnTypes = givenTypes;
+        this.databaseTableProvider = givenProvider;
+        this.tableFileDir = dataDirectory;
+        this.columnTypes = givenTypes;
         containerState = WorkStatus.WORKING;
         FileMapUtils.createSignatureFile(tableFileDir, this);
     }
@@ -203,7 +203,7 @@ public class StorableTable implements Table, AutoCloseable, Serializable {
             try {
                 FileMapUtils.writeIntoFiles(tableFileDir, data, this, databaseTableProvider);
             } catch (Exception exc) {
-                System.err.println("commit: " + exc.getMessage());
+                throw new IllegalStateException(exc.getMessage());
             }
         } finally {
             lockForTransactions.unlock();
