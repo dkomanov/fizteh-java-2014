@@ -1,58 +1,16 @@
 package ru.fizteh.fivt.students.PotapovaSofia.storeable;
 
 import ru.fizteh.fivt.storage.structured.*;
+import ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase.DbTable;
+import ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase.DbTableProvider;
+import ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase.DbTableProviderFactory;
 import ru.fizteh.fivt.students.PotapovaSofia.storeable.Interpreter.Command;
 import ru.fizteh.fivt.students.PotapovaSofia.storeable.Interpreter.Interpreter;
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.Interpreter.StopInterpretationException;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
-import java.util.function.Function;
 
 public class StoreableMain {
-    public static final String SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX = "\\s*(\".*\"|\\(.*\\)|\\[.*\\]|[^\\s]+)\\s*";
-    public static final String IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX = "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
-    public static final String ILLEGAL_TABLE_NAME_PATTERN = ".*\\.|\\..*|.*(/|\\\\).*";
-    public static final String ENCODING = "UTF-8";
-    public static final String TABLE_SIGNATURE = "signature.tsv";
-
-    public static final Map<String, Class> AVAILABLE_TYPES = new HashMap<>();
-    public static final Map<Class, String> AVAILABLE_CLASSES = new HashMap<>();
-    public static final Map<Class<?>, Function<String, Object>> PARSE_TYPES;
-
-    static {
-        String[] primitiveNames = new String[]{"int", "long", "byte", "float", "double", "boolean", "String"};
-        Class[] classes = new Class[]{Integer.class, Long.class, Byte.class, Float.class, Double.class,
-                Boolean.class, String.class};
-
-        for (int i = 0; i < primitiveNames.length; i++) {
-            AVAILABLE_TYPES.put(primitiveNames[i], classes[i]);
-            AVAILABLE_CLASSES.put(classes[i], primitiveNames[i]);
-        }
-    }
-
-    static {
-        Map<Class<?>, Function<String, Object>> unitializerMap = new HashMap<>();
-        unitializerMap.put(Integer.class, Integer::parseInt);
-        unitializerMap.put(Long.class, Long::parseLong);
-        unitializerMap.put(Byte.class, Byte::parseByte);
-        unitializerMap.put(Float.class, Float::parseFloat);
-        unitializerMap.put(Double.class, Double::parseDouble);
-        unitializerMap.put(Boolean.class, string -> {
-            if (!string.matches("(?i)true|false")) {
-                throw new ColumnFormatException("Expected 'true' or 'false'");
-            }
-            return Boolean.parseBoolean(string);
-        });
-        unitializerMap.put(String.class, string -> {
-            if (string.charAt(0) != '"' || string.charAt(string.length() - 1) != '"') {
-                throw new ColumnFormatException("String must be quoted");
-            }
-            return string.substring(1, string.length() - 1);
-        });
-        PARSE_TYPES = Collections.unmodifiableMap(unitializerMap);
-    }
 
     public static void main(String[] args) throws IOException {
         String pathName = System.getProperty("fizteh.db.dir");
@@ -69,8 +27,8 @@ public class StoreableMain {
     private static void start(TableState state, String[] args) {
         Interpreter dbInterpreter = new Interpreter(state, new Command[]{
                 new Command("put", 2, (state1, args1) -> {
-                    TableProvider tableProvider = state1.getTableProvider();
-                    Table currentTable = state1.getUsedTable();
+                    TableProvider tableProvider = ((TableState) state1).getTableProvider();
+                    Table currentTable = ((TableState) state1).getUsedTable();
                     if (currentTable != null) {
                         try {
                             Storeable oldValue = currentTable.put(args1[0],
@@ -89,8 +47,8 @@ public class StoreableMain {
                     }
                 }),
                 new Command("get", 1, (state1, args1) -> {
-                    TableProvider tableProvider = state1.getTableProvider();
-                    Table currentTable = state1.getUsedTable();
+                    TableProvider tableProvider = ((TableState) state1).getTableProvider();
+                    Table currentTable = ((TableState) state1).getUsedTable();
                     if (currentTable != null) {
                         Storeable value = currentTable.get(args1[0]);
                         if (value != null) {
@@ -104,7 +62,7 @@ public class StoreableMain {
                     }
                 }),
                 new Command("remove", 1, (state1, args1) -> {
-                    Table currentTable = state1.getUsedTable();
+                    Table currentTable = ((TableState) state1).getUsedTable();
                     if (currentTable != null) {
                         Storeable removedValue = currentTable.remove(args1[0]);
                         if (removedValue != null) {
@@ -117,7 +75,7 @@ public class StoreableMain {
                     }
                 }),
                 new Command("list", 0, (state1, args1) -> {
-                    Table currentTable = state1.getUsedTable();
+                    Table currentTable = ((TableState) state1).getUsedTable();
                     if (currentTable != null) {
                         System.out.println(String.join(", ", currentTable.list()));
                     } else {
@@ -125,7 +83,7 @@ public class StoreableMain {
                     }
                 }),
                 new Command("size", 0, (state1, args1) -> {
-                    Table currentTable = state1.getUsedTable();
+                    Table currentTable = ((TableState) state1).getUsedTable();
                     if (currentTable != null) {
                         System.out.println(currentTable.size());
                     } else {
@@ -133,7 +91,7 @@ public class StoreableMain {
                     }
                 }),
                 new Command("commit", 0, (state1, args1) -> {
-                    Table currentTable = state1.getUsedTable();
+                    Table currentTable = ((TableState) state1).getUsedTable();
                     if (currentTable != null) {
                         try {
                             System.out.println(currentTable.commit());
@@ -146,7 +104,7 @@ public class StoreableMain {
                     }
                 }),
                 new Command("rollback", 0, (state1, args1) -> {
-                    Table currentTable = state1.getUsedTable();
+                    Table currentTable = ((TableState) state1).getUsedTable();
                     if (currentTable != null) {
                         System.out.println(currentTable.rollback());
                     } else {
@@ -158,7 +116,7 @@ public class StoreableMain {
                     List<Class<?>> typesList = new ArrayList<>();
                     boolean isCreating = true;
                     for (String type : types) {
-                        Class<?> typeClass = AVAILABLE_TYPES.get(type);
+                        Class<?> typeClass = DbTableProvider.AVAILABLE_TYPES.get(type);
                         if (typeClass != null) {
                             typesList.add(typeClass);
                         } else {
@@ -167,7 +125,7 @@ public class StoreableMain {
                         }
                     }
                     if (isCreating) {
-                        TableProvider tableProvider = state1.getTableProvider();
+                        TableProvider tableProvider = ((TableState) state1).getTableProvider();
                         try {
                             if (tableProvider.createTable(args1[0], typesList) != null) {
                                 System.out.println("created");
@@ -180,15 +138,16 @@ public class StoreableMain {
                     }
                 }),
                 new Command("use", 1, (state1, args1) -> {
-                    TableProvider tableProvider = state1.getTableProvider();
+                    TableState dbState = ((TableState) state1);
+                    TableProvider tableProvider = dbState.getTableProvider();
                     Table newTable = tableProvider.getTable(args1[0]);
-                    DbTable usedTable = (DbTable) state1.getUsedTable();
+                    DbTable usedTable = (DbTable) dbState.getUsedTable();
                     if (newTable != null) {
                         if (usedTable != null && (usedTable.getNumberOfUncommittedChanges() > 0)
                                 && (usedTable != newTable)) {
                             System.out.println(usedTable.getNumberOfUncommittedChanges() + " unsaved changes");
                         } else {
-                            state1.setUsedTable(newTable);
+                            dbState.setUsedTable(newTable);
                             System.out.println("using " + args1[0]);
                         }
                     } else {
@@ -196,10 +155,10 @@ public class StoreableMain {
                     }
                 }),
                 new Command("drop", 1, (state1, args1) -> {
-                    TableProvider tableProvider = state1.getTableProvider();
-                    Table currentTable = state1.getUsedTable();
+                    TableProvider tableProvider = ((TableState) state1).getTableProvider();
+                    Table currentTable = ((TableState) state1).getUsedTable();
                     if (currentTable != null && currentTable.getName().equals(args1[0])) {
-                        state1.setUsedTable(null);
+                        ((TableState) state1).setUsedTable(null);
                     }
                     try {
                         tableProvider.removeTable(args1[0]);
@@ -212,7 +171,7 @@ public class StoreableMain {
                 }),
                 new Command("show", 1, (state1, args1) -> {
                     if (args1[0].equals("tables")) {
-                        TableProvider tableProvider = state1.getTableProvider();
+                        TableProvider tableProvider = ((TableState) state1).getTableProvider();
                         List<String> tableNames = tableProvider.getTableNames();
                         System.out.println("table_name row_count");
                         for (String name : tableNames) {
@@ -224,21 +183,20 @@ public class StoreableMain {
                     }
                 }),
                 new Command("exit", 0, (state1, args1) -> {
+                    if (state1 != null) {
+                        TableState dbState = ((TableState) state1);
+                        DbTable usedTable = (DbTable) dbState.getUsedTable();
+                        if (usedTable != null && (usedTable.getNumberOfUncommittedChanges() > 0)) {
+                            System.out.println(usedTable.getNumberOfUncommittedChanges() + " unsaved changes");
+                        } else {
+                            System.exit(0);
+                        }
+                    } else {
+                        System.exit(0);
+                    }
                 })
         });
         dbInterpreter.run(args);
     }
-    public static void exit(TableState state) throws StopInterpretationException {
-        if (state != null) {
-            TableProvider tableProvider = state.getTableProvider();
-            DbTable usedTable = (DbTable) state.getUsedTable();
-            if (usedTable != null && (usedTable.getNumberOfUncommittedChanges() > 0)) {
-                System.out.println(usedTable.getNumberOfUncommittedChanges() + " unsaved changes");
-            } else {
-                throw new StopInterpretationException();
-            }
-        } else {
-            throw new StopInterpretationException();
-        }
-    }
 }
+
