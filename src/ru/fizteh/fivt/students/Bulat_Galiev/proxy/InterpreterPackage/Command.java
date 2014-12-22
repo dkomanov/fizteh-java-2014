@@ -25,9 +25,8 @@ public class Command {
         check(args);
         callback.accept(connector, args);
     }
-    
-    public final void check(String[] args)
-    {
+
+    public final void check(String[] args) {
         if (numberOfArgs + 1 != args.length) {
             throw new StopInterpretationException(name
                     + ": Incorrect number of arguments: " + numberOfArgs
