@@ -120,7 +120,7 @@ public class Utility {
             for (Path directoryFile : stream) {
                 if (!Files.isDirectory(directoryFile)) {
                     if (signatureExists) {
-                        throw new DatabaseFormatException(ru.fizteh.fivt.students.AlexanderKhalyapov.Storeable.DBTable.FILE_TYPE
+                        throw new DatabaseFormatException(ru.fizteh.fivt.students.AlexanderKhalyapov.Proxy.DBTable.FILE_TYPE
                                 + directoryFile.getFileName() + NOT_EXIST_MSG);
                     } else {
                         if (!directoryFile.toAbsolutePath().equals(tableSignaturePath.toAbsolutePath())) {
