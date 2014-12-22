@@ -64,7 +64,8 @@ public class CheckParameters {
             for (int i = 0; i < table.getColumnsCount(); ++i) {
                 if (value.getColumnAt(i).getClass() != table.getColumnType(i)) {
                     throw new ColumnFormatException("wrong type (Expected: "
-                            + table.getColumnType(i).toString() + " Actual: " + value.getColumnAt(i).getClass().toString());
+                            + table.getColumnType(i).toString()
+                            + " Actual: " + value.getColumnAt(i).getClass().toString());
                 }
             }
         } catch (IndexOutOfBoundsException e) {

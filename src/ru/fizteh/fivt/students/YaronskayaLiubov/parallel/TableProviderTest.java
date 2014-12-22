@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.YaronskayaLiubov.parallel;
 
-import static junit.framework.Assert.*;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -18,6 +16,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static junit.framework.Assert.*;
+
 /**
  * Created by luba_yaronskaya on 17.11.14.
  */
@@ -27,7 +27,8 @@ public class TableProviderTest {
     private TableProvider provider;
     static List<Class<?>> columnTypes;
     static List<Class<?>> columnTypes2;
-    static Class<?>[] availableTypes = {Integer.class, Long.class, Byte.class, Float.class, Double.class, Boolean.class, String.class};
+    static Class<?>[] availableTypes = {Integer.class,
+            Long.class, Byte.class, Float.class, Double.class, Boolean.class, String.class};
     static Storeable row;
     static String serializedRow = "<row><col>1</col><col>value</col></row>";
     @Rule

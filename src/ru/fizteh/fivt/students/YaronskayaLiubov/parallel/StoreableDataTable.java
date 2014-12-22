@@ -156,6 +156,11 @@ public class StoreableDataTable implements Table {
         return deltaCount;
     }
 
+    @Override
+    public int getNumberOfUncommittedChanges() {
+        return 0;
+    }
+
     private void clearDelta() {
         deltaAdded.set(new HashMap<String, Storeable>());
         deltaChanged.set(new HashMap<String, Storeable>());
