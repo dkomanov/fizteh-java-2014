@@ -5,8 +5,8 @@ import ru.fizteh.fivt.students.titov.JUnit.file_map.FileMap;
 
 public abstract class MultiFileHashMapCommand extends Command<MFileHashMap> {
 
-    public void initialize(String command_name, int n) {
-        name = command_name;
+    public void initialize(String commandName, int n) {
+        name = commandName;
         numberOfArguments = n;
     }
 
