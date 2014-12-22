@@ -19,8 +19,10 @@ public class CreateCommand implements Command {
             if (!tableDirectory.mkdir()) {
                 throw new MultiFileHashMapException("Unable to create directory for new table");
             }
-            multiDataBase.tables.put(tableName, new Table(tableDirectory));
+            multiDataBase.tables.put(tableName, new MultiTable(tableDirectory));
             System.out.println("created");
         }
     }
+
+    public void runOnTable(MultiTable table) {}
 }

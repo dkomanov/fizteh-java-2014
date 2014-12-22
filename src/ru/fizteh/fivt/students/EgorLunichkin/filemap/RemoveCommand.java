@@ -11,10 +11,10 @@ public class RemoveCommand implements Command {
 
     public void run() throws Exception {
         if (!dataBase.getDataBase().containsKey(key)) {
-            System.out.println("not found");
+            //System.out.println("not found");
         } else {
             dataBase.getDataBase().remove(key);
-            System.out.println("removed");
+            //System.out.println("removed");
         }
         dataBase.writeDataBase();
     }
