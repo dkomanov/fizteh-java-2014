@@ -28,13 +28,21 @@ public class MyTableProviderFactoryTest {
     }
     
     @Test
-    public void createNewTableProviderFactoryTestTest() throws Exception {
+    public void createNewTableProviderFactoryTest() throws Exception {
         TableProviderFactory test = new MyTableProviderFactory();
         TableProvider testProvider = test.create(testDir.toString());
         testProvider.createTable("testTable");
         assertTrue(!testDir.resolve("testTable").toFile().exists());
     }
-    
+
+    @Test (expected = DataBaseException.class)
+    public void createNewTableProviderFactoryOnFileTest() throws Exception {
+        String path = new String(testDir.toString() + "file.dat");
+        File notDir = new File(path.toString());
+        notDir.createNewFile();
+        TableProviderFactory test = new MyTableProviderFactory();
+        test.create(notDir.toString());
+    }
     @After
     public void remodeDat() {
         for (File curFile : testDir.toFile().listFiles()) {
