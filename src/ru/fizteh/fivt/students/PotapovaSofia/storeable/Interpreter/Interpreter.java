@@ -1,8 +1,5 @@
 package ru.fizteh.fivt.students.PotapovaSofia.storeable.Interpreter;
 
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.StoreableMain;
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.TableState;
-
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
@@ -13,14 +10,16 @@ import java.util.regex.Pattern;
 public class Interpreter {
     public static final String PROMPT = "$ ";
     public static final String STATEMENT_DELIMITER = ";";
+    public static final String SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX = "\\s*(\".*\"|\\(.*\\)|\\[.*\\]|[^\\s]+)\\s*";
+    public static final String IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX = "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
     private InputStream in;
     private PrintStream out;
 
     private final Map<String, Command> commands;
-    private final TableState state;
+    private final Object state;
 
-    public Interpreter(TableState state, Command[] commands, InputStream in, PrintStream out) {
+    public Interpreter(Object state, Command[] commands, InputStream in, PrintStream out) {
         if (in == null || out == null) {
             throw new IllegalArgumentException("Input or Output stream is null");
         }
@@ -33,7 +32,7 @@ public class Interpreter {
         }
     }
 
-    public Interpreter(TableState state, Command[] commands) {
+    public Interpreter(Object state, Command[] commands) {
         this.in = System.in;
         this.out = System.out;
         this.state = state;
@@ -73,8 +72,8 @@ public class Interpreter {
     }
 
     private int executeLine(String line) throws StopInterpretationException {
-        String[] cmds = line.split(STATEMENT_DELIMITER + StoreableMain.IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);
-        Pattern p = Pattern.compile(StoreableMain.SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX);
+        String[] cmds = line.split(STATEMENT_DELIMITER + IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);
+        Pattern p = Pattern.compile(SPLIT_BY_SPACES_NOT_IN_BRACKETS_REGEX);
         List<String> tokens = new LinkedList<>();
         for (String current : cmds) {
             tokens.clear();
@@ -90,9 +89,11 @@ public class Interpreter {
     private void parse(String[] cmdWithArgs) throws StopInterpretationException {
         if (cmdWithArgs.length > 0 && !cmdWithArgs[0].isEmpty()) {
             String commandName = cmdWithArgs[0];
+            /*
             if (commandName.equals("exit")) {
-                StoreableMain.exit(this.state);
+                exit(this.state);
             }
+            */
             Command command = commands.get(commandName);
             if (command == null) {
                 out.println("Wrong command: " + commandName);
