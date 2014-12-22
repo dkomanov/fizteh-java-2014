@@ -89,11 +89,6 @@ public class Interpreter {
     private void parse(String[] cmdWithArgs) throws StopInterpretationException {
         if (cmdWithArgs.length > 0 && !cmdWithArgs[0].isEmpty()) {
             String commandName = cmdWithArgs[0];
-            /*
-            if (commandName.equals("exit")) {
-                exit(this.state);
-            }
-            */
             Command command = commands.get(commandName);
             if (command == null) {
                 out.println("Wrong command: " + commandName);
