@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.PotapovaSofia.storeable;
+package ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
@@ -216,12 +216,6 @@ public class DbTable implements Table {
     @Override
     public List<String> list() {
         List<String> list = new LinkedList<>();
-        /*
-        Set<String> keySet = new HashSet<>();
-        for (Map.Entry<String, Storeable> f : state.entrySet()) {
-            keySet.add(f.getKey());
-        }
-        */
         Set keySet = state.entrySet()
                 .stream()
                 .map(Map.Entry::getKey)
@@ -241,7 +235,7 @@ public class DbTable implements Table {
     }
 
     private void readFromDisk() throws IOException {
-        Path signaturePath = tablePath.resolve(StoreableMain.TABLE_SIGNATURE);
+        Path signaturePath = tablePath.resolve(DbTableProvider.TABLE_SIGNATURE);
         if (!signaturePath.toFile().exists()) {
             throw new IllegalArgumentException("Table signature file does not exist");
         }
@@ -253,8 +247,8 @@ public class DbTable implements Table {
                     String[] types = string.trim().split(" ");
                     int i = 0;
                     for (String s : types) {
-                        if (StoreableMain.AVAILABLE_TYPES.containsKey(s)) {
-                            signature.add(i, StoreableMain.AVAILABLE_TYPES.get(s));
+                        if (DbTableProvider.AVAILABLE_TYPES.containsKey(s)) {
+                            signature.add(i, DbTableProvider.AVAILABLE_TYPES.get(s));
                             i += 1;
                         } else {
                             throw new IllegalArgumentException("Table signature is invalid");
@@ -288,7 +282,7 @@ public class DbTable implements Table {
                 }
             }
         } catch (UnsupportedEncodingException e) {
-            throw new IOException("Key or value can't be encoded to " + StoreableMain.ENCODING, e);
+            throw new IOException("Key or value can't be encoded to " + DbTableProvider.ENCODING, e);
         } catch (IllegalArgumentException e) {
             throw new IOException("Key is in a wrong file or directory", e);
         } catch (EOFException e) {
@@ -331,7 +325,7 @@ public class DbTable implements Table {
         int length = in.readInt();
         byte[] word = new byte[length];
         in.read(word, 0, length);
-        return  new String(word, StoreableMain.ENCODING);
+        return  new String(word, DbTableProvider.ENCODING);
     }
 
     private void writeToDisk() throws IOException {
@@ -407,7 +401,7 @@ public class DbTable implements Table {
     }
 
     private void writeWord(DataOutputStream out, String word) throws IOException {
-        byte[] byteWord = word.getBytes(StoreableMain.ENCODING);
+        byte[] byteWord = word.getBytes(DbTableProvider.ENCODING);
         out.writeInt(byteWord.length);
         out.write(byteWord);
         out.flush();
