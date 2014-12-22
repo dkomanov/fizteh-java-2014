@@ -40,9 +40,11 @@ public class StorableTableProviderFactoryTest {
 
     @Test
     public void openProviderWithCreateAfterClose() throws IOException {
-        StorableTableProvider provider = (StorableTableProvider) tableProviderFactory.create(directory.getAbsolutePath());
+        StorableTableProvider provider = (StorableTableProvider) tableProviderFactory
+                .create(directory.getAbsolutePath());
         provider.close();
-        StorableTableProvider provider1 = (StorableTableProvider) tableProviderFactory.create(directory.getAbsolutePath());
+        StorableTableProvider provider1 = (StorableTableProvider) tableProviderFactory
+                .create(directory.getAbsolutePath());
         Assert.assertNotEquals(provider, provider1);
     }
 }

@@ -28,7 +28,8 @@ public class StorableTest {
         directory = folder.newFolder();
 
         tableProvider = new StorableTableProvider(directory);
-        List<Class<?>> typesLine = FileMapUtils.createListOfTypesFromString("int long byte float double boolean String");
+        List<Class<?>> typesLine = FileMapUtils
+                .createListOfTypesFromString("int long byte float double boolean String");
         table = tableProvider.createTable("testTable", typesLine);
         storeable = tableProvider.deserialize(table, "[15, 111111555555, 0, 3.1415, 1.1005001314, true, null]");
     }

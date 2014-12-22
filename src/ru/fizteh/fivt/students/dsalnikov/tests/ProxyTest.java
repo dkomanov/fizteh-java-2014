@@ -52,8 +52,10 @@ public class ProxyTest {
         testProxy.methodMixedArgs("Hello World!", data, list);
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.tests.ProxyInterfaceImpl\" "
                         + "name=\"methodMixedArgs\"><arguments><argument>Hello World!</argument>"
-                        + "<argument>" + data.toString() + "</argument><argument><list><value>1</value><value>2</value>"
-                        + "<value>3</value><value>4</value><value>5</value><value>6</value><value>7</value><value>8</value>"
+                        + "<argument>" + data.toString() + "</argument><argument><list><value>1</value><value>2" +
+                        "</value>"
+                        + "<value>3</value><value>4</value><value>5</value><value>6</value><value>7</value><value>8" +
+                        "</value>"
                         + "<value>9</value><value>0</value></list></argument></arguments>"
                         + "<return>methodMixedArgs result</return></invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
@@ -68,7 +70,8 @@ public class ProxyTest {
         list.add(list);
         testProxy.methodWithCycleReferences(list);
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.tests.ProxyInterfaceImpl\" "
-                        + "name=\"methodWithCycleReferences\"><arguments><argument><list><value><null></null></value><value>"
+                        + "name=\"methodWithCycleReferences\"><arguments><argument><list><value><null></null>" +
+                        "</value><value>"
                         + "<list><value><null></null></value>"
                         + "<value>cyclic</value></list></value></list></argument></arguments>"
                         + "<return>[null, (this Collection)]</return></invoke>",
@@ -97,9 +100,12 @@ public class ProxyTest {
             // exception is ok!
         }
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.tests.ProxyInterfaceImpl\" "
-                        + "name=\"methodThrowsException\"><arguments><argument>Hello World!</argument><argument>1</argument>"
-                        + "<argument><list><value>1</value><value>2</value><value>3</value><value>4</value><value>5</value>"
-                        + "<value>6</value><value>7</value><value>8</value><value>9</value><value>0</value></list></argument>"
+                        + "name=\"methodThrowsException\"><arguments><argument>Hello World!</argument><argument>" +
+                        "1</argument>"
+                        + "<argument><list><value>1</value><value>2</value><value>3</value><value>4</value><value>" +
+                        "5</value>"
+                        + "<value>6</value><value>7</value><value>8</value><value>9</value><value>0</value>" +
+                        "</list></argument>"
                         + "</arguments><thrown>java.lang."
                         + "IllegalStateException: implementation method throws exception: ok!</thrown></invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));

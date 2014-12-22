@@ -68,7 +68,8 @@ public class ProxyDatabaseTest {
         ((Storeable) testProxy).setColumnAt(0, 57);
         Assert.assertEquals("Storable[57,true,]", testProxy.toString());
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.storable.Storable\" "
-                        + "name=\"setColumnAt\"><arguments><argument>0</argument><argument>57</argument></arguments></invoke>",
+                        + "name=\"setColumnAt\"><arguments><argument>0</argument><argument>57</argument></arguments>" +
+                        "</invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
     }
 
@@ -77,7 +78,8 @@ public class ProxyDatabaseTest {
         testProxy = testProxyLoggingFactory.wrap(writer, testRow, Storeable.class);
         ((Storeable) testProxy).getColumnAt(0);
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.storable.Storable\" "
-                        + "name=\"getColumnAt\"><arguments><argument>0</argument></arguments><return>0</return></invoke>",
+                        + "name=\"getColumnAt\"><arguments><argument>0</argument></arguments><return>0</return>" +
+                        "</invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
     }
 
@@ -86,7 +88,8 @@ public class ProxyDatabaseTest {
         testProxy = testProxyLoggingFactory.wrap(writer, testRow, Storeable.class);
         ((Storeable) testProxy).getColumnAt(0);
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.storable.Storable\" "
-                        + "name=\"getColumnAt\"><arguments><argument>0</argument></arguments><return>0</return></invoke>",
+                        + "name=\"getColumnAt\"><arguments><argument>0</argument></arguments><return>0</return>" +
+                        "80gg</invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
     }
 
@@ -95,7 +98,8 @@ public class ProxyDatabaseTest {
         testProxy = testProxyLoggingFactory.wrap(writer, testRow, Storeable.class);
         ((Storeable) testProxy).getColumnAt(1);
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.storable.Storable\" "
-                        + "name=\"getColumnAt\"><arguments><argument>1</argument></arguments><return>true</return></invoke>",
+                        + "name=\"getColumnAt\"><arguments><argument>1</argument></arguments><return>true</return>" +
+                        "</invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
     }
 
@@ -104,7 +108,8 @@ public class ProxyDatabaseTest {
         testProxy = testProxyLoggingFactory.wrap(writer, testRow, Storeable.class);
         ((Storeable) testProxy).getColumnAt(2);
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.storable.Storable\" "
-                        + "name=\"getColumnAt\"><arguments><argument>2</argument></arguments><return><null></null></return>"
+                        + "name=\"getColumnAt\"><arguments><argument>2</argument></arguments><return><null></null>" +
+                        "</return>"
                         + "</invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
     }
@@ -120,7 +125,8 @@ public class ProxyDatabaseTest {
         }
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.storable.Storable\" "
                         + "name=\"getColumnAt\"><arguments><argument>3</argument></arguments>"
-                        + "<thrown>java.lang.IndexOutOfBoundsException: storable index out of bounds exception</thrown></invoke>",
+                        + "<thrown>java.lang.IndexOutOfBoundsException: storable index out of bounds exception" +
+                        "</thrown></invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
         Assert.assertTrue(excWasThrown);
     }
@@ -164,7 +170,8 @@ public class ProxyDatabaseTest {
         ((Table) testProxy).put("four", testProvider.deserialize(testTable, "[4, true, \"fourth\"]"));
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.storable.StorableTable\" "
                         + "name=\"put\"><arguments><argument>four</argument>"
-                        + "<argument>Storable[4,true,fourth]</argument></arguments><return><null></null></return></invoke>",
+                        + "<argument>Storable[4,true,fourth]</argument></arguments><return><null></null></return>" +
+                        "</invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
     }
 
@@ -173,8 +180,8 @@ public class ProxyDatabaseTest {
         testProxy = testProxyLoggingFactory.wrap(writer, testTable, Table.class);
         ((Table) testProxy).remove("one");
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.storable.StorableTable\" "
-                        + "name=\"remove\"><arguments><argument>one</argument></arguments><return>Storable[1,false,first]"
-                        + "</return></invoke>",
+                        + "name=\"remove\"><arguments><argument>one</argument></arguments>" +
+                        "<return>Storable[1,false,first]</return></invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
     }
 
@@ -305,7 +312,8 @@ public class ProxyDatabaseTest {
         Assert.assertEquals("<invoke class=\"ru.fizteh.fivt.students.dsalnikov.storable.StorableTableProvider\" "
                         + "name=\"createFor\"><arguments><argument>StorableTable[" + sandBoxDirectory
                         + "/testTable]</argument>"
-                        + "<argument><list><value>1</value><value>true</value><value>Hello World!</value></list></argument>"
+                        + "<argument><list><value>1</value><value>true</value><value>Hello World!</value>" +
+                        "</list></argument>"
                         + "</arguments><return>Storable[1,true,Hello World!]</return></invoke>",
                 StringUtils.cutTimeStamp(writer.toString()));
     }
