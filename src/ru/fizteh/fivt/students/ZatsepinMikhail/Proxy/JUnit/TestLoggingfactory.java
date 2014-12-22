@@ -66,7 +66,7 @@ public class TestLoggingfactory {
         }
     }
 
-    @Test
+    /*@Test
     public void testStringMethodThrowExceptionOneArgument() {
         try {
             testedLoggedTable.get(null);
@@ -91,7 +91,7 @@ public class TestLoggingfactory {
         } catch (JSONException e) {
             //
         }
-    }
+    }*/
 
     @Test
     public void testMethodTwoArguments() {
