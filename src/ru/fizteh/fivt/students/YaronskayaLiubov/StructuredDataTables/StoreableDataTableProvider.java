@@ -172,6 +172,11 @@ public class StoreableDataTableProvider implements TableProvider {
         return row;
     }
 
+    @Override
+    public List<String> getTableNames() {
+        return null;
+    }
+
     public static Object parseXxx(String value, Class<?> type) throws IOException {
         switch (type.getSimpleName()) {
             case "Integer":
