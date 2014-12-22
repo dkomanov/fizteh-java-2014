@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.PotapovaSofia.storeable.Tests;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.StoreableImpl;
+import ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase.StoreableImpl;
 
 import java.util.ArrayList;
 import java.util.List;
