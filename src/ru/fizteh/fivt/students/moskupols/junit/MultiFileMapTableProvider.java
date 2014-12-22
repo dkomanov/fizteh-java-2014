@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.moskupols.junit;
 
-import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.students.moskupols.multifilehashmap.MultiFileMap;
 import ru.fizteh.fivt.students.moskupols.multifilehashmap.MultiFileMapProvider;
 
@@ -11,7 +10,7 @@ import java.util.List;
 /**
  * Created by moskupols on 17.11.14.
  */
-public class MultiFileMapTableProvider implements TableProvider {
+public class MultiFileMapTableProvider implements KnownDiffTableProvider {
     private final MultiFileMapProvider delegatedProvider;
 
     public MultiFileMapTableProvider(Path dbPath) {
