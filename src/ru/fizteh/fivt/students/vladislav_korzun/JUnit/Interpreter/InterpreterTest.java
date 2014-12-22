@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.vladislav_korzun.JUnit.Interpreter;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.function.BiConsumer;
@@ -47,7 +48,21 @@ public class InterpreterTest {
         };
         inter.run(args);
         assertEquals("test" + System.getProperty("line.separator"), outputStream.toString());
-    }   
+    }
+
+    @Test
+    public void interactiveModeTest() throws Exception {
+        Interpreter interpreter = new Interpreter(null,
+                new Command[] {new Command("test", 0,new BiConsumer<Object, String[]>() {
+                    @Override
+                    public void accept(Object state, String[] args) {
+                        printStream.println("test");
+                    }
+                })},
+                new ByteArrayInputStream(("test").getBytes()), printStream);
+        interpreter.run(new String[]{});
+        assertEquals("test", outputStream.toString());
+    }
    
     
     @Test (expected = Exception.class)

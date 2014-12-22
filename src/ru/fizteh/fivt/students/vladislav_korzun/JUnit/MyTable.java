@@ -16,13 +16,12 @@ public class MyTable implements Table{
     private Map<String, String> bufferMap;
     private int changes;
 
-    public MyTable(Path currentTablePath, String currentTable) {
-        fileMap = new HashMap<>();
+    public MyTable(Path currentTablePath, String currentTable) throws DataBaseException {
         this.path = currentTablePath;
         this.name = currentTable;
-        FileManager filemanager = new FileManager();
-        filemanager.readTable(this.path);
-        this.fileMap = filemanager.fileMap;
+        DataBaseSerializer serializer = new DataBaseSerializer();
+        serializer.readTable(this.path);
+        this.fileMap = new HashMap<>(serializer.getMap());
         this.bufferMap = new HashMap<>(this.fileMap);
         changes = 0;
     }
@@ -64,10 +63,10 @@ public class MyTable implements Table{
     }
 
     @Override
-    public int commit() {
-        FileManager filemanager = new FileManager();
-        filemanager.fileMap = this.fileMap;
-        filemanager.writeTable(path);
+    public int commit() throws DataBaseException {
+        DataBaseSerializer serializer = new DataBaseSerializer();
+        serializer.setMap(this.fileMap);
+        serializer.writeTable(path);
         this.bufferMap = new HashMap<>(this.fileMap);
         changes = 0;
         return 0;
@@ -89,7 +88,7 @@ public class MyTable implements Table{
         return keylist;
     }
 
-    int unsavedChanges() {
+    public int unsavedChanges() {
         return this.changes;
     }
 }

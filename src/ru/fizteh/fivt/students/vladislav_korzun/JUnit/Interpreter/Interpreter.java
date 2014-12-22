@@ -45,15 +45,14 @@ public final class Interpreter {
     
     private void interactiveMode() {
        try (Scanner in = new Scanner(this.in)) {
-            List<String[]> inputString = new LinkedList<String[]>();
-            Parser parser = new Parser();
+            List<String[]> inputString = new LinkedList<>();
             String request = new String();
             String commandName = new String();
             String[] args = null;
             do {
                 this.out.print("$ ");
                 request = in.nextLine();
-                inputString = parser.mainparser(request);
+                inputString = Parser.mainParser(request);
                 for (String[] cmd : inputString) {
                     commandName = cmd[0];
                     args = new String[cmd.length - 1];
@@ -78,14 +77,13 @@ public final class Interpreter {
     }
     
     void batchMode(String[] args) {
-        List<String[]> inputString = new LinkedList<String[]>();
-        Parser parser = new Parser();
+        List<String[]> inputString = new LinkedList<>();
         String request = new String();
         String commandName = new String();
         for (int i = 0; i < args.length; i++) {
             request += args[i] + " ";
         }
-        inputString = parser.mainparser(request);
+        inputString = Parser.mainParser(request);
         for (String[] cmd : inputString) {
             commandName = cmd[0];
             args = new String[cmd.length - 1];
@@ -102,17 +100,18 @@ public final class Interpreter {
 
     }
     
-    class Parser {
-        List<String[]> mainparser(String args) {
+    static class Parser {
+
+        public static List<String[]> mainParser(String args) {
             List<String[]> answer = new LinkedList<String[]>();
-            String[] arg = semicolonparser(args);
+            String[] arg = semicolonParser(args);
             for (int i = 0; i < arg.length; i++) {
-                answer.add(spaceparser(arg[i]));
+                answer.add(spaceParser(arg[i]));
             }
             return answer;
         }
         
-        String[] semicolonparser(final String arg) {
+        private static String[] semicolonParser(final String arg) {
             String[] answer = null;
             String buffer = new String();
             buffer = arg.trim();    
@@ -120,7 +119,7 @@ public final class Interpreter {
             return answer;
         }
         
-        String[] spaceparser(final String arg) {
+        private static String[] spaceParser(final String arg) {
             String[] answer = null;
             String buffer = new String();
             buffer = arg.trim();

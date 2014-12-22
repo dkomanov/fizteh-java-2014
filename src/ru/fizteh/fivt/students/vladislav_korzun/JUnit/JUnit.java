@@ -119,8 +119,12 @@ public class JUnit {
                     public void accept(Object state, String[] args) {
                         Table link = ((TableConnector) state).getUsedTable();
                         if (link != null) {
-                            link.commit();
-                            System.out.println("committed");
+                            try {
+                                link.commit();
+                                System.out.println("committed");
+                            } catch (DataBaseException e) {
+                                System.err.println(e.getMessage());
+                            }
                         } else {
                             System.out.println("no table");
                         }
@@ -142,10 +146,14 @@ public class JUnit {
                     @Override
                     public void accept(Object state, String[] args) {
                         TableProvider manager = ((TableConnector) state).getManager();
-                        if (manager.createTable(args[0]) != null) {
-                            System.out.println("created");
-                        } else {
-                            System.out.println(args[0] + "already exist");
+                        try {
+                            if (manager.createTable(args[0]) != null) {
+                                System.out.println("created");
+                            } else {
+                                System.out.println(args[0] + "already exist");
+                            }
+                        } catch (DataBaseException e) {
+                            e.getMessage();
                         }
                     }
                 }),
@@ -154,19 +162,23 @@ public class JUnit {
                     public void accept(Object state, String[] args) {
                         TableConnector connector = ((TableConnector) state);
                         TableProvider manager = connector.getManager();
-                        Table newTable = manager.getTable(args[0]);
-                        MyTable usedTable = (MyTable) connector.getUsedTable();
-                        if (newTable != null) {
-                            if (usedTable != null && (usedTable.unsavedChanges() > 0)) {
-                                System.out.println(usedTable.unsavedChanges()
-                                        + " unsaved changes");
+                        try {
+                            Table newTable = manager.getTable(args[0]);
+                            MyTable usedTable = (MyTable) connector.getUsedTable();
+                            if (newTable != null) {
+                                if (usedTable != null && (usedTable.unsavedChanges() > 0)) {
+                                    System.out.println(usedTable.unsavedChanges()
+                                            + " unsaved changes");
+                                } else {
+                                   connector.setUsedTable(newTable);
+                                   System.out.println("using " + args[0]);
+                                }
                             } else {
-                               connector.setUsedTable(newTable);
-                               System.out.println("using " + args[0]);
+                                System.out.println(args[0] + "not exist");
                             }
-                        } else {
-                            System.out.println(args[0] + "not exist");
-                        } 
+                        } catch (DataBaseException e) {
+                            e.getMessage();
+                        }
                     }
                 }),
                 new Command("drop", 1, new BiConsumer<Object, String[]>() {
@@ -196,8 +208,12 @@ public class JUnit {
                             Set<String> tableNames = manager.list();
                             System.out.println("table_name row_count");
                             for (String name : tableNames) {
-                                Table curTable = manager.getTable(name);
-                                System.out.println(curTable.getName() + " " + curTable.size());
+                                try {
+                                   Table curTable = manager.getTable(name);
+                                    System.out.println(curTable.getName() + " " + curTable.size());
+                                } catch (DataBaseException e) {
+                                    e.getMessage();
+                                }
                             }
                         } else {
                            System.err.println("Command 'show " + args[0] + "' doesn't supported");

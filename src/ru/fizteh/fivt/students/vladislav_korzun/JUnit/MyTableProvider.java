@@ -14,7 +14,7 @@ public class MyTableProvider implements TableProvider {
     private Set<String> tables;
     private Path rootDir;
     
-    public MyTableProvider(String dir) {
+    public MyTableProvider(String dir) throws DataBaseException {
         rootDir = Paths.get(dir);
         if (!rootDir.toFile().exists()) {
             rootDir.toFile().mkdir();
@@ -37,7 +37,7 @@ public class MyTableProvider implements TableProvider {
     }
 
     @Override
-    public Table getTable(String name) {
+    public Table getTable(String name) throws DataBaseException {
         if (name == null) {
             throw new IllegalArgumentException("Name is null");
         }
@@ -49,7 +49,7 @@ public class MyTableProvider implements TableProvider {
     }
 
     @Override
-    public Table createTable(String name) {
+    public Table createTable(String name) throws DataBaseException {
         if (name == null) {
             throw new IllegalArgumentException("Name is null");
         }
@@ -73,7 +73,7 @@ public class MyTableProvider implements TableProvider {
         if (!this.tables.remove(name)) {
             throw new IllegalStateException("No table with name"  + name);
         } else {
-            removedat(tableDir);
+            removeData(tableDir);
         }
         
     }
@@ -82,7 +82,7 @@ public class MyTableProvider implements TableProvider {
         return this.tables;
     }
 
-    private void removedat(Path tableDir) {
+    private void removeData(Path tableDir) {
         File table = new File(tableDir.toString());
         File[] dirs = table.listFiles();
         for (File dir : dirs) {

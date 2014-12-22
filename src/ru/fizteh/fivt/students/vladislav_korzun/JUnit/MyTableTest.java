@@ -39,18 +39,18 @@ public class MyTableTest {
     }
 
     @Test
-    public void creatingNewTableTest() {
+    public void creatingNewTableTest() throws DataBaseException {
         new MyTable(testDir, tableName);
     } 
     
     @Test
-    public void getNameTest() {
+    public void getNameTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(tableName, test.getName());
     }
     
     @Test
-    public void loadingExistedTableTest() throws IOException {
+    public void loadingExistedTableTest() throws IOException, DataBaseException {
         Path subdirectoryPath = testDir.resolve(subDir);
         subdirectoryPath.toFile().mkdir();
         Path subfilePath = subdirectoryPath.resolve(subFile);
@@ -61,49 +61,54 @@ public class MyTableTest {
             file.writeInt(correctKey.length() + 1 + offsetLength);
             file.write(testValue.getBytes("UTF-8"));
         }
-        new MyTable(testDir, tableName);
+        Table testTable = new MyTable(testDir, tableName);
+        assertEquals(testValue, testTable.get(testKey));
     }
-    
+
     @Test
-    public void putNewTest() {
+    public void commitTest() throws DataBaseException {
+        Table test = new MyTable(testDir, tableName);
+        test.put(testKey, testValue);
+        test.commit();
+        test = new MyTable(testDir, tableName);
+        assertEquals(testValue, test.get(testKey));
+    }
+    @Test
+    public void putNewTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
-        test.commit();
     }
     
     @Test
-    public void putOldTest() {
+    public void putOldTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
         assertEquals(testValue, test.put(testKey, testValue));
-        test.commit();
     }
     
     @Test
-    public void putOldwithCommitTest() {
+    public void putOldwithCommitTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
         test.commit();
         assertEquals(testValue, test.put(testKey, testValue));
-        test.commit();
     } 
 
     @Test
-    public void getExistedTest() {
+    public void getExistedTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
         assertEquals(testValue, test.get(testKey));
     }
     
     @Test(expected = NullPointerException.class)
-    public void getExistedwithCommitTest() {
+    public void getExistedwithCommitTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.get(testKey));
-        test.commit(); 
     }    
 
     @Test
-    public void getNOExistedwithCommitTest() {
+    public void getNOExistedwithCommitTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
         test.commit();
@@ -111,30 +116,28 @@ public class MyTableTest {
     }
     
     @Test
-    public void removingExistedTest() {
+    public void removingExistedTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
         assertEquals(testValue, test.remove(testKey));
-        test.commit();
     }
     
     @Test
-    public void removingExistedwithCommitTest() {
+    public void removingExistedwithCommitTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
         test.commit();
         assertEquals(testValue, test.remove(testKey));
-        test.commit();
     }    
 
     @Test
-    public void emtyListTest() {
+    public void emtyListTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertTrue(test.list().isEmpty());
     }
     
     @Test
-    public void noEmtyListTest() {
+    public void noEmtyListTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
         assertEquals(null, test.put(anotherKey, testValue));
@@ -147,13 +150,13 @@ public class MyTableTest {
     } 
   
     @Test
-    public void emtySizeTest() {
+    public void emtySizeTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(0, test.size());
     }
     
     @Test
-    public void noEmtySizeTest() {
+    public void noEmtySizeTest() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
         assertEquals(null, test.put(anotherKey, testValue));
@@ -162,7 +165,7 @@ public class MyTableTest {
     }    
 
     @Test
-    public void testCommitEmptiedAfterLoadingTable() {
+    public void testCommitEmptiedAfterLoadingTable() throws DataBaseException {
         Table test = new MyTable(testDir, tableName);
         assertEquals(null, test.put(testKey, testValue));
         test.commit();

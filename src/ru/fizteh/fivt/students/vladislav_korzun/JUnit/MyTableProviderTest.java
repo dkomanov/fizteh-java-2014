@@ -26,30 +26,30 @@ public class MyTableProviderTest {
         }
     
         @Test
-        public void createNewDirTableProviderTest() {
+        public void createNewDirTableProviderTest() throws DataBaseException {
             new MyTableProvider(dirPath.toString());
         }
         
         @Test
-        public void createOldDirTableProviderTest() {
+        public void createOldDirTableProviderTest() throws DataBaseException {
             dirPath.toFile().mkdir();
             new MyTableProvider(dirPath.toString());
         }
         
         @Test(expected = IllegalArgumentException.class)
-        public void pathisnotDirTest() throws IOException {
+        public void pathisnotDirTest() throws IOException, DataBaseException {
            dirPath.toFile().createNewFile();
             new MyTableProvider(dirPath.toString());
         }
         
         @Test(expected = IllegalArgumentException.class)
-        public void ivalidPathTest() {
+        public void ivalidPathTest() throws DataBaseException {
             new MyTableProvider("\0");
         }
         
         @Test
         public void creatingTableInsideDirTest()
-                throws IOException {
+                throws IOException, DataBaseException {
             dirPath.toFile().mkdir();
             dirPath.resolve(testTableName).toFile().mkdir();
             TableProvider test = new MyTableProvider(dirPath.toString());
@@ -57,7 +57,7 @@ public class MyTableProviderTest {
         }
        
         @Test(expected = IllegalArgumentException.class)
-        public void createNullTableTest() {
+        public void createNullTableTest() throws DataBaseException {
             TableProvider test = new MyTableProvider(dirPath.toString());
             test.createTable(null);
         }
