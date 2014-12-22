@@ -8,8 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.DbTableProvider;
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.DbTableProviderFactory;
+import ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase.DbTableProvider;
+import ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase.DbTableProviderFactory;
 
 public class DbTableProviderFactoryTest {
     private DbTableProviderFactory factory;
@@ -30,9 +30,10 @@ public class DbTableProviderFactoryTest {
     public final void testOnThrowsExceptionCreatedForInvalidPath() throws IOException {
         factory.create("\0");
     }
-    
+
     @After
     public void tearDown() throws IOException {
         DbTableProvider.recoursiveDelete(testFolder.toFile());
     }
+
 }
