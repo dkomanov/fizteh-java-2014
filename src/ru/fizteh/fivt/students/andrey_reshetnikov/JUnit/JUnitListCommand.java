@@ -11,7 +11,7 @@ public class JUnitListCommand extends JUnitCommand {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
-            list.executeOnTable(base.getUsing().dirtyTable);
+            list.executeOnTable(base.getUsing().getDirtyTable());
         }
     }
 

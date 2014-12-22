@@ -106,24 +106,20 @@ public class Changes {
     public void commit() throws IOException {
         myLock.readLock().lock();
         try {
-            try {
-                for (String delete : deleting) {
-                    origin.remove(delete);
-                }
-                for (Map.Entry<String, String> entry : creating.entrySet()) {
-                    origin.put(entry.getKey(), origin.getProvider().deserialize(origin, entry.getValue()));
-                }
-                for (Map.Entry<String, String> entry : overwriting.entrySet()) {
-                    origin.put(entry.getKey(), origin.getProvider().deserialize(origin, entry.getValue()));
-                }
-                origin.commit();
-            } catch (ParseException e) {
-                throw new IOException(e.getMessage());
-            } finally {
-                myLock.readLock().lock();
-            }
+           for (String delete : deleting) {
+               origin.remove(delete);
+           }
+           for (Map.Entry<String, String> entry : creating.entrySet()) {
+               origin.put(entry.getKey(), origin.getProvider().deserialize(origin, entry.getValue()));
+           }
+           for (Map.Entry<String, String> entry : overwriting.entrySet()) {
+               origin.put(entry.getKey(), origin.getProvider().deserialize(origin, entry.getValue()));
+           }
+               origin.commit();
+           } catch (ParseException e) {
+               throw new IOException(e.getMessage());
         } finally {
-            myLock.readLock().lock();
+          myLock.readLock().lock();
         }
     }
 

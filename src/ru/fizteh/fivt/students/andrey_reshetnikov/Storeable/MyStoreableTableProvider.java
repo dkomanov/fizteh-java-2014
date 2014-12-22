@@ -60,7 +60,7 @@ public class MyStoreableTableProvider implements TableProvider {
             tables = new HashMap<>();
             signatures = new HashMap<>();
             for (Map.Entry<String, HybridTable> entry: unstructuredDbDir.tables.entrySet()) {
-                File signature = new File(entry.getValue().cleanTable.mainDir, "signature.tsv");
+                File signature = new File(entry.getValue().getCleanTable().mainDir, "signature.tsv");
                 if (!signature.exists()) {
                     throw new IOException("No signature file specified in table " + entry.getKey());
                 }

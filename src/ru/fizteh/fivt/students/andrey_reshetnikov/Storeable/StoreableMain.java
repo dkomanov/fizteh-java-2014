@@ -31,7 +31,7 @@ public class StoreableMain {
             do {
                 try {
                     String s = getter.nextCommand();
-                    Command command = Command.fromString(s);
+                    Command command = FromString.fromString(s);
                     command.execute(dbDir);
                 } catch (ExitCommandException e) {
                     exitStatus = true;

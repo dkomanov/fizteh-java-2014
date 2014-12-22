@@ -6,7 +6,7 @@ public class SizeCommand extends JUnitCommand {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
-            System.out.println(base.getUsing().dirtyTable.recordsNumber());
+            System.out.println(base.getUsing().getDirtyTable().recordsNumber());
         }
     }
 

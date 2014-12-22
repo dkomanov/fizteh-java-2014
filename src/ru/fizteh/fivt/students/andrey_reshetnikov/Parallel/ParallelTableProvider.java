@@ -2,17 +2,17 @@ package ru.fizteh.fivt.students.andrey_reshetnikov.Parallel;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.Table;
+import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.andrey_reshetnikov.Storeable.MyStoreableTable;
 import ru.fizteh.fivt.students.andrey_reshetnikov.Storeable.MyStoreableTableProvider;
 import ru.fizteh.fivt.students.andrey_reshetnikov.Storeable.MyStoreableTableProviderFactory;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.text.ParseException;
 
 public class ParallelTableProvider implements TableProvider{
 
@@ -88,12 +88,22 @@ public class ParallelTableProvider implements TableProvider{
 
     @Override
     public Storeable createFor(Table table) {
-        return oldProvider.createFor(((ParallelTable) table).getStructuredTable());
+        myLock.readLock().lock();
+        try {
+            return oldProvider.createFor(((ParallelTable) table).getStructuredTable());
+        } finally {
+            myLock.readLock().lock();
+        }
     }
 
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
-        return oldProvider.createFor(((ParallelTable) table).getStructuredTable(), values);
+        myLock.readLock().lock();
+        try {
+            return oldProvider.createFor(((ParallelTable) table).getStructuredTable(), values);
+        } finally {
+            myLock.readLock().lock();
+        }
     }
 
     @Override

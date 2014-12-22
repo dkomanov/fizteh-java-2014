@@ -32,7 +32,7 @@ public class MyTable implements Table {
         int hashCode = Math.abs(key.hashCode());
         int dir = hashCode % ConstClass.NUM_DIRECTORIES;
         int file = hashCode / ConstClass.NUM_FILES % ConstClass.NUM_FILES;
-        return table.dirtyTable.databases[dir][file].data.get(key);
+        return table.getDirtyTable().databases[dir][file].data.get(key);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class MyTable implements Table {
 
     @Override
     public int size() {
-        return table.dirtyTable.recordsNumber();
+        return table.getDirtyTable().recordsNumber();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class MyTable implements Table {
         List<String> result = new LinkedList<>();
         for (int i = 0; i < ConstClass.NUM_DIRECTORIES; i++) {
             for (int j = 0; j < ConstClass.NUM_FILES; j++) {
-                result.addAll(table.dirtyTable.databases[i][j].data.keySet());
+                result.addAll(table.getDirtyTable().databases[i][j].data.keySet());
             }
         }
         return result;

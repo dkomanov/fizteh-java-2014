@@ -37,7 +37,7 @@ public class XmlSerializer {
                 }
             }
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            //remove lishniy output
+            //remove odd output
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             StringWriter stringWriter = new StringWriter();
             //transform DOM tree to string
