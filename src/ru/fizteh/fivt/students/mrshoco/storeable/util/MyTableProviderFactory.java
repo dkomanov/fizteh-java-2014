@@ -1,8 +1,8 @@
-package junit.util;
+package storeable.util;
 
 import java.io.File;
 
-import junit.strings.*;
+import storeable.structured.*;
 
 public class MyTableProviderFactory implements TableProviderFactory{
     public MyTableProviderFactory() {

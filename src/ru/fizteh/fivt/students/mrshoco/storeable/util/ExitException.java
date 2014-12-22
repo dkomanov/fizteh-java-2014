@@ -1,4 +1,4 @@
-package junit.util;
+package storeable.util;
 
 @SuppressWarnings("serial")
 public class ExitException extends Exception {

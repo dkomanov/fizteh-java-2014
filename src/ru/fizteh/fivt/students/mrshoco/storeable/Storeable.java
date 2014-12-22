@@ -1,12 +1,12 @@
-package junit;
+package storeable;
 
 import java.util.Scanner;
 
-import junit.strings.*;
+import storeable.structured.*;
 
-import junit.util.*;
+import storeable.util.*;
 
-public final class JUnit {
+public final class Storeable {
 
     public static void main(final String[] args) {
         String path = System.getProperty("fizteh.db.dir");

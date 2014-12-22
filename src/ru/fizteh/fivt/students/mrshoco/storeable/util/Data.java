@@ -1,4 +1,4 @@
-package junit.util;
+package storeable.util;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Data {
-    public static HashMap<String, String> load(File fl) throws IllegalArgumentException {
+    public static Map<String, String> load(File fl) throws IllegalArgumentException {
         try {
-            HashMap<String, String> hm = new HashMap<String, String>();
+            Map<String, String> hm = new HashMap<String, String>();
             DataInputStream dis = new DataInputStream(new FileInputStream(fl));
 
             while (dis.available() > 0) {
@@ -44,7 +44,7 @@ public class Data {
         }
     }
 
-    public static void save(File fl, HashMap<String, String> hm) throws 
+    public static void save(File fl, Map<String, String> hm) throws 
                                                         IllegalArgumentException {
         try {
             DataOutputStream dos = new DataOutputStream(new FileOutputStream(fl));
