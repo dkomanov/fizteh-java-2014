@@ -13,12 +13,15 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DataBaseProvider implements TableProvider {
     private Path rootDirectory;
 
     private ArrayList<Table> tables = new ArrayList<>();
     private Map<String, Table> tableNames = new TreeMap<>();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public DataBaseProvider(String directoryPath) throws LoadOrSaveException {
         if (directoryPath == null) {
@@ -38,7 +41,12 @@ public class DataBaseProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("cannot get table: null");
         }
-        return tableNames.get(name);
+        lock.readLock().lock();
+        try {
+            return tableNames.get(name);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
@@ -46,22 +54,27 @@ public class DataBaseProvider implements TableProvider {
         if (name == null || columnTypes == null) {
             throw new IllegalArgumentException("cannot create table");
         }
-        if (tableNames.containsKey(name)) {
-            return null;
-        } else {
-            try {
-                Path newDir = rootDirectory.resolve(name);
-                Files.createDirectory(newDir);
-                writeSignature(newDir, columnTypes);
-            } catch (IOException e) {
-                throw new LoadOrSaveException("can't create directory: " + rootDirectory + File.separator + name);
-            } catch (InvalidPathException e) {
-                throw new LoadOrSaveException("invalid path");
+        lock.writeLock();
+        try {
+            if (tableNames.containsKey(name)) {
+                return null;
+            } else {
+                try {
+                    Path newDir = rootDirectory.resolve(name);
+                    Files.createDirectory(newDir);
+                    writeSignature(newDir, columnTypes);
+                } catch (IOException e) {
+                    throw new LoadOrSaveException("can't create directory: " + rootDirectory + File.separator + name);
+                } catch (InvalidPathException e) {
+                    throw new LoadOrSaveException("invalid path");
+                }
+                DataBaseTable table = new DataBaseTable(name, this);
+                tableNames.put(name, table);
+                tables.add(table);
+                return table;
             }
-            DataBaseTable table = new DataBaseTable(name, this);
-            tableNames.put(name, table);
-            tables.add(table);
-            return table;
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -89,14 +102,18 @@ public class DataBaseProvider implements TableProvider {
         if (name == null) {
             throw new IllegalArgumentException("cannot get table: name should be non-null string");
         }
-
-        DataBaseTable table = (DataBaseTable) tableNames.get(name);
-        if (table == null) {
-            throw new TableNotFoundException();
-        } else {
-            tableNames.remove(name);
-            table.drop();
-            tables.remove(table);
+        lock.writeLock().lock();
+        try {
+            DataBaseTable table = (DataBaseTable) tableNames.get(name);
+            if (table == null) {
+                throw new TableNotFoundException();
+            } else {
+                tableNames.remove(name);
+                table.drop();
+                tables.remove(table);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
