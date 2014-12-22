@@ -345,7 +345,7 @@ public class FileMap implements Table {
         if (!appendFile) {
             try {
                 deleteEmptyFiles(directoryForsave, fileForsave);
-            } catch(BadFileException e) {
+            } catch (BadFileException e) {
                 System.err.println(e.getMessage());
             }
         }
@@ -353,7 +353,7 @@ public class FileMap implements Table {
     }
 
 
-    public void deleteEmptyFiles(Path directory, Path file) throws BadFileException{
+    public void deleteEmptyFiles(Path directory, Path file) throws BadFileException {
         try {
             if (Files.size(file) == 0) {
                 Files.delete(file);
