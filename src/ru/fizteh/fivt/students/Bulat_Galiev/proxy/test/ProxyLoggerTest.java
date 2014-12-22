@@ -1,19 +1,14 @@
 package ru.fizteh.fivt.students.Bulat_Galiev.proxy.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,6 +26,10 @@ public class ProxyLoggerTest {
     private TableProvider provider;
     private Table table;
     private Path testDir;
+    private String correctBeginProvider = "<?xml version=\"1.0\" ?><invoke timestamp=\"\" "
+            + "class=\"ru.fizteh.fivt.students.Bulat_Galiev.proxy.TabledbProvider\" name=";
+    private String correctBeginTable = "<?xml version=\"1.0\" ?><invoke timestamp=\"\" "
+            + "class=\"ru.fizteh.fivt.students.Bulat_Galiev.proxy.Tabledb\" name=";
     private StringWriter writer = new StringWriter();
 
     private String get(final String key) {
@@ -42,24 +41,11 @@ public class ProxyLoggerTest {
         return stringValue.substring(2, stringValue.length() - 2);
     }
 
-    private String put(final String key, final String value)
-            throws ParseException {
-        Storeable storeableValue = table.put(key,
-                provider.deserialize(table, "[\"" + value + "\"]"));
-        if (storeableValue == null) {
-            return null;
-        }
-        String stringValue = provider.serialize(table, storeableValue);
-        return stringValue.substring(2, stringValue.length() - 2);
-    }
-
-    private String remove(final String key) {
-        Storeable storeableValue = table.remove(key);
-        if (storeableValue == null) {
-            return null;
-        }
-        String stringValue = provider.serialize(table, storeableValue);
-        return stringValue.substring(2, stringValue.length() - 2);
+    public final String getAnswer() {
+        String answerString = writer.toString();
+        answerString = answerString.replaceAll("timestamp=\"\\d*\"",
+                "timestamp=\"\"");
+        return answerString.replaceAll("\\[.*\\]", "[]");
     }
 
     @Before
@@ -87,142 +73,72 @@ public class ProxyLoggerTest {
     @Test
     public final void testCreateNormalTable() throws Exception {
         provider.createTable("testTable", typeList);
-        System.out.println(writer.toString());
+        String correct = correctBeginProvider
+                + "\"createTable\">"
+                + "<arguments>"
+                + "<argument>testTable</argument>"
+                + "<argument><list><value>class java.lang.String</value></list></argument>"
+                + "</arguments>" + "<return>Tabledb[]</return>" + "</invoke>";
+        assertEquals(correct, getAnswer());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public final void testRemoveNotExistingTable() throws Exception {
-        provider.removeTable("notExistingTable");
-        System.out.println(writer.toString());
+        String correct = correctBeginProvider
+                + "\"removeTable\">"
+                + "<arguments>"
+                + "<argument>notExistingTable</argument>"
+                + "</arguments>"
+                + "<thrown>java.lang.IllegalStateException: notExistingTable does not exist</thrown>"
+                + "</invoke>";
+        try {
+            provider.removeTable("notExistingTable");
+        } catch (IllegalStateException e) {
+            assertEquals(correct, getAnswer());
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
     public final void testGetTableThrowsExceptionCalledForNullTableName()
             throws IOException {
+        String correct = correctBeginProvider
+                + "\"getTable\">"
+                + "<arguments>"
+                + "<argument><null/></argument>"
+                + "</arguments>"
+                + "<thrown>java.lang.IllegalArgumentException: Null name</thrown>"
+                + "</invoke>";
         try {
             provider.getTable(null);
-        } finally {
-            System.out.println(writer.toString());
+        } catch (IllegalStateException e) {
+            assertEquals(correct, getAnswer());
         }
     }
 
     @Test
-    public final void testSizeCalledForNonEmptyNonCommitedTable()
-            throws IOException, ParseException {
-
-        put("key", "value");
-
-        assertEquals(1, table.size());
-
-        System.out.println(writer.toString());
-    }
-
-    /*
-     * Other.
-     */
-    @Test
     public final void testGetReturnsNullIfKeyIsNotFound() throws IOException {
-
-        assertNull(get("key"));
-
-        System.out.println(writer.toString());
+        String correct = correctBeginTable + "\"get\">" + "<arguments>"
+                + "<argument>key</argument>" + "</arguments>"
+                + "<return><null/></return>" + "</invoke>";
+        get("key");
+        assertEquals(correct, getAnswer());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public final void testGetThrowsIllegalArgumentExceptionCalledForNullKey()
             throws IOException {
+        String correct = correctBeginTable
+                + "\"get\">"
+                + "<arguments>"
+                + "<argument><null/></argument>"
+                + "</arguments>"
+                + "<thrown>java.lang.IllegalArgumentException: Null key</thrown>"
+                + "</invoke>";
         try {
             table.get(null);
         } catch (IllegalArgumentException e) {
-            System.out.println(writer.toString());
-            throw e;
+            assertEquals(correct, getAnswer());
         }
-    }
-
-    @Test
-    public final void testGetCalledForDeletedKeyBeforeCommit()
-            throws IOException, ParseException {
-
-        put("key", "value");
-
-        assertEquals("value", remove("key"));
-
-        assertNull(get("key"));
-
-        System.out.println(writer.toString());
-    }
-
-    @Test
-    public final void testPutReturnsNullIfKeyHasNotBeenWrittenYet()
-            throws IOException, ParseException {
-
-        put("key", "value");
-
-        System.out.println(writer.toString());
-    }
-
-    @Test
-    public final void testCommitReturnsNonZeroChangesPuttingNewRecord()
-            throws IOException, ParseException {
-
-        put("key", "value");
-
-        assertEquals(1, table.commit());
-
-        System.out.println(writer.toString());
-    }
-
-    @Test
-    public final void testRollbackNoChanges() throws IOException,
-            ParseException {
-
-        put("key", "value");
-
-        table.rollback();
-
-        assertEquals(0, table.size());
-
-        assertEquals(0, table.rollback());
-
-        System.out.println(writer.toString());
-    }
-
-    @Test
-    public final void testGetColumnsCount() throws IOException {
-
-        assertEquals(1, table.getColumnsCount());
-
-        System.out.println(writer.toString());
-    }
-
-    @Test
-    public final void testGetColumnType() throws IOException {
-
-        assertEquals(String.class, table.getColumnType(0));
-
-        System.out.println(writer.toString());
-    }
-
-    @Test
-    public final void testListCalledForEmptyTable() throws IOException {
-
-        assertTrue(table.list().isEmpty());
-
-        System.out.println(writer.toString());
-    }
-
-    @Test
-    public final void testListCalledForNonEmptyNewTable() throws IOException,
-            ParseException {
-        put("key", "value");
-        Set<String> expectedKeySet = new HashSet<>();
-        expectedKeySet.add("key");
-        Set<String> tableKeySet = new HashSet<>();
-        tableKeySet.addAll(table.list());
-
-        assertEquals(expectedKeySet, tableKeySet);
-
-        System.out.println(writer.toString());
     }
 
     @After
