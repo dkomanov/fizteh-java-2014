@@ -5,6 +5,6 @@ import java.util.Map;
 
 public class CurrentTable {
     public CurrentTable() {
-        Map currentTable = new HashMap<String, String>();
+        Map  currentTable = new HashMap<String, String>();
     }
 }
