@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.EgorLunichkin.JUnit;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.*;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -71,8 +72,6 @@ public class MyTable implements Table {
 
     @Override
     public int commit() {
-        PrintStream normal = System.out;
-        System.setOut(new PrintStream(new NoWriteOutputStream()));
         int changes = this.unsavedChanges();
         try {
             for (Command command : commands) {
@@ -80,8 +79,6 @@ public class MyTable implements Table {
             }
         } catch (Exception ex) {
             throw new RuntimeException();
-        } finally {
-            System.setOut(normal);
         }
         commands.clear();
         return changes;
@@ -140,5 +137,9 @@ public class MyTable implements Table {
         intersection.retainAll(second.keySet());
         diff += first.size() + second.size() - 2 * intersection.size();
         return diff;
+    }
+
+    public File getTableDir() {
+        return cleanTable.tableDirectory;
     }
 }

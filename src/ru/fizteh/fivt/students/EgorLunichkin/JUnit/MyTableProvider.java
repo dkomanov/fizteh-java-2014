@@ -6,6 +6,7 @@ import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.*;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MyTableProvider implements TableProvider {
     public MyTableProvider(String dbDir) {
@@ -82,5 +83,9 @@ public class MyTableProvider implements TableProvider {
 
     public Table getUsing() {
         return tables.get(using);
+    }
+
+    public Set<String> tableNames() {
+        return tables.keySet();
     }
 }
