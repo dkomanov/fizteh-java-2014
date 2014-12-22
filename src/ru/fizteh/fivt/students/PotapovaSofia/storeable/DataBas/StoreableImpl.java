@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.PotapovaSofia.storeable;
+package ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StoreableImpl implements Storeable{
-    List<Class<?>> signature;
-    List<Object> storage;
+    private List<Class<?>> signature;
+    private List<Object> storage;
 
     public StoreableImpl(List<Class<?>> signature) {
         storage = new ArrayList<>(signature.size());
@@ -46,13 +46,7 @@ public class StoreableImpl implements Storeable{
 
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        Object value = getColumnAt(columnIndex);
-        checkColumnFormat(columnIndex, Byte.class);
-        if (value != null) {
-            return (Byte) value;
-        } else {
-            return null;
-        }
+        return getCastType(columnIndex, Byte.class);
     }
 
     @Override
