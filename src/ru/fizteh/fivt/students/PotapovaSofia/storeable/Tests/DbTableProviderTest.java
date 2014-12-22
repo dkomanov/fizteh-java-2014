@@ -15,17 +15,16 @@ import org.junit.Test;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.DbTable;
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.DbTableProvider;
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.StoreableImpl;
-import ru.fizteh.fivt.students.PotapovaSofia.storeable.StoreableMain;
+import ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase.DbTable;
+import ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase.DbTableProvider;
+import ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase.StoreableImpl;
 
 public class DbTableProviderTest {
 
     private final Path testFolder = Paths.get(System.getProperty("java.io.tmpdir"), "testFolder");
     private final String dirName = "test";
     private final Path dirPath = testFolder.resolve(dirName);
-    private final Path signaturePath = dirPath.resolve(StoreableMain.TABLE_SIGNATURE);
+    private final Path signaturePath = dirPath.resolve(DbTableProvider.TABLE_SIGNATURE);
     private final Path validPath = dirPath.resolve("1.dir");
     private final Path validFile = validPath.resolve("1.dat");
 
@@ -72,10 +71,10 @@ public class DbTableProviderTest {
         dirPath.toFile().mkdir();
         signaturePath.toFile().createNewFile();
         try (RandomAccessFile writeSig = new RandomAccessFile(signaturePath.toString(), "rw")) {
-            String s1 = StoreableMain.AVAILABLE_CLASSES.get(Integer.class) + " ";
+            String s1 = DbTableProvider.AVAILABLE_CLASSES.get(Integer.class) + " ";
             String s2 = ArrayList.class.getSimpleName() + " ";
-            writeSig.write(s1.getBytes(StoreableMain.ENCODING));
-            writeSig.write(s2.getBytes(StoreableMain.ENCODING));
+            writeSig.write(s1.getBytes(DbTableProvider.ENCODING));
+            writeSig.write(s2.getBytes(DbTableProvider.ENCODING));
         }
         new DbTableProvider(testFolder.toString());
     }
@@ -93,8 +92,8 @@ public class DbTableProviderTest {
         dirPath.toFile().mkdir();
         signaturePath.toFile().createNewFile();
         try (RandomAccessFile writeSig = new RandomAccessFile(signaturePath.toString(), "rw")) {
-            String s1 = StoreableMain.AVAILABLE_CLASSES.get(Integer.class) + " ";
-            writeSig.write(s1.getBytes(StoreableMain.ENCODING));
+            String s1 = DbTableProvider.AVAILABLE_CLASSES.get(Integer.class) + " ";
+            writeSig.write(s1.getBytes(DbTableProvider.ENCODING));
         }
         validPath.toFile().mkdir();
         new DbTableProvider(testFolder.toString());
@@ -105,8 +104,8 @@ public class DbTableProviderTest {
         dirPath.toFile().mkdir();
         signaturePath.toFile().createNewFile();
         try (RandomAccessFile writeSig = new RandomAccessFile(signaturePath.toString(), "rw")) {
-            String s1 = StoreableMain.AVAILABLE_CLASSES.get(Integer.class) + " ";
-            writeSig.write(s1.getBytes(StoreableMain.ENCODING));
+            String s1 = DbTableProvider.AVAILABLE_CLASSES.get(Integer.class) + " ";
+            writeSig.write(s1.getBytes(DbTableProvider.ENCODING));
         }
         validPath.toFile().mkdir();
         validFile.toFile().createNewFile();
@@ -118,8 +117,8 @@ public class DbTableProviderTest {
         dirPath.toFile().mkdir();
         signaturePath.toFile().createNewFile();
         DataOutputStream out = new DataOutputStream(new FileOutputStream(signaturePath.toString()));
-        String s = StoreableMain.AVAILABLE_CLASSES.get(Integer.class) + " ";
-        byte[] byteWord = s.getBytes(StoreableMain.ENCODING);
+        String s = DbTableProvider.AVAILABLE_CLASSES.get(Integer.class) + " ";
+        byte[] byteWord = s.getBytes(DbTableProvider.ENCODING);
         out.writeInt(byteWord.length);
         out.write(byteWord);
 
@@ -134,10 +133,10 @@ public class DbTableProviderTest {
         file.toFile().createNewFile();
 
         out = new DataOutputStream(new FileOutputStream(file.toString()));
-        byteWord = key.getBytes(StoreableMain.ENCODING);
+        byteWord = key.getBytes(DbTableProvider.ENCODING);
         out.writeInt(byteWord.length);
         out.write(byteWord);
-        byteWord = value.getBytes(StoreableMain.ENCODING);
+        byteWord = value.getBytes(DbTableProvider.ENCODING);
         out.writeInt(byteWord.length);
         out.write(byteWord);
         new DbTableProvider(testFolder.toString());
@@ -185,7 +184,7 @@ public class DbTableProviderTest {
         test.createTable(testTableName, types);
         Path newTablePath = testFolder.resolve(testTableName);
         assertTrue(newTablePath.toFile().exists() && newTablePath.toFile().isDirectory()
-                        && newTablePath.resolve(StoreableMain.TABLE_SIGNATURE).toFile().exists()
+                        && newTablePath.resolve(DbTableProvider.TABLE_SIGNATURE).toFile().exists()
         );
     }
 
