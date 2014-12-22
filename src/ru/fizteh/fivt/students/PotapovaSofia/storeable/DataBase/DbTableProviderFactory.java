@@ -1,8 +1,7 @@
-package ru.fizteh.fivt.students.PotapovaSofia.storeable;
+package ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase;
 
 import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.storage.structured.TableProviderFactory;
-
 import java.io.IOException;
 
 public class DbTableProviderFactory implements TableProviderFactory{
