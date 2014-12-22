@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces;
+package ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces;
 
 /**
  * Список фиксированной структуры, строка таблицы {@link Table}.

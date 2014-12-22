@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy;
+package ru.fizteh.fivt.students.ilivanov.Telnet;
 
-import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.LoggingProxyFactory;
+import ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces.LoggingProxyFactory;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.Writer;

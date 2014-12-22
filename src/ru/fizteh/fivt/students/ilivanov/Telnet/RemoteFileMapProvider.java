@@ -1,72 +1,99 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy;
+package ru.fizteh.fivt.students.ilivanov.Telnet;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.*;
+import ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces.ColumnFormatException;
+import ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces.RemoteTableProvider;
+import ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces.Storeable;
+import ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces.Table;
 
-import java.io.File;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class FileMapProvider implements TableProvider, AutoCloseable {
-    private File location;
-    private HashMap<String, MultiFileMap> used;
-    private TransactionPool transactionPool;
-    private volatile boolean valid;
+public class RemoteFileMapProvider implements RemoteTableProvider, AutoCloseable {
+    private Socket socket;
+    private BufferedReader reader;
+    private PrintStream writer;
+    private RemoteFileUsing currentActive;
+    private boolean valid;
+    private HashMap<String, RemoteFileUsing> used;
+    private String host;
+    private int port;
 
-    public FileMapProvider(File location) {
-        if (location == null) {
-            throw new IllegalArgumentException("Null location");
-        }
-        this.location = location;
-        used = new HashMap<>();
+    public RemoteFileMapProvider(Socket socket, String host, int port) throws IOException {
+        this.socket = socket;
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        writer = new PrintStream(socket.getOutputStream());
         valid = true;
-        transactionPool = new TransactionPool(5);
+        currentActive = null;
+        used = new HashMap<>();
+        this.port = port;
+        this.host = host;
     }
 
-    private boolean badSymbolCheck(final String string) {
-        String badSymbols = "\\/*:<>\"|?";
-        char[] array = badSymbols.toCharArray();
+    private void checkState() {
+        if (!valid) {
+            throw new IllegalStateException("Provider is closed");
+        }
+    }
+
+    private boolean badSymbolCheck(String string) {
         for (int i = 0; i < string.length(); i++) {
-            for (char ch : array) {
-                if (string.charAt(i) == ch) {
-                    return false;
-                }
+            if (string.charAt(i) <= 31) {
+                return false;
+            }
+            if (string.charAt(i) == '\\') {
+                return false;
+            }
+            if (string.charAt(i) == '/') {
+                return false;
+            }
+            if (string.charAt(i) == '*') {
+                return false;
+            }
+            if (string.charAt(i) == ':') {
+                return false;
+            }
+            if (string.charAt(i) == '<') {
+                return false;
+            }
+            if (string.charAt(i) == '>') {
+                return false;
+            }
+            if (string.charAt(i) == '"') {
+                return false;
+            }
+            if (string.charAt(i) == '|') {
+                return false;
+            }
+            if (string.charAt(i) == '?') {
+                return false;
             }
         }
         return true;
     }
 
-    public boolean isValidLocation() {
+    public String getHost() {
         checkState();
-        return !(!location.exists() || location.exists() && !location.isDirectory());
+        return host;
     }
 
-    public boolean isValidContent() {
+    public int getPort() {
         checkState();
-        if (!isValidLocation()) {
-            return false;
-        }
-        File[] files = location.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (!f.isDirectory()) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return port;
     }
 
-    public TransactionPool getTransactionPool() {
-        checkState();
-        return transactionPool;
-    }
-
-    public synchronized MultiFileMap getTable(String name) {
+    public RemoteFileUsing getTable(String name) {
         checkState();
         if (name == null) {
             throw new IllegalArgumentException("Null name");
@@ -77,32 +104,64 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         if (!badSymbolCheck(name)) {
             throw new RuntimeException("Illegal characters");
         }
-        if (!isValidLocation()) {
-            throw new RuntimeException("Database location is invalid");
+        if (socket.isClosed()) {
+            throw new IllegalStateException("Socket is closed");
         }
-        File dir = new File(location, name);
-        if (!dir.exists()) {
-            return null;
-        }
-        if (dir.exists() && !dir.isDirectory()) {
-            throw new RuntimeException(String.format("%s is not a directory", name));
-        }
-        MultiFileMap newMap = used.get(name);
+        RemoteFileUsing newMap = used.get(name);
         if (newMap != null && !newMap.isClosed()) {
             return newMap;
         } else {
-            newMap = new MultiFileMap(dir, 16, this, transactionPool);
+            writer.println(String.format("describe %s", name));
+            ArrayList<Class<?>> columnTypes = null;
             try {
-                newMap.loadFromDisk();
-            } catch (IOException | ParseException e) {
-                throw new RuntimeException("Error loading from disk:", e);
+                String message = StringUtils.readLine(reader);
+                if (message.equals(String.format("%s not exists", name))) {
+                    return null;
+                }
+                columnTypes = StringUtils.stringToClassList(message);
+            } catch (IOException e) {
+                throw new RuntimeException("Error reading from socket: ", e);
+            }
+            try {
+                newMap = new RemoteFileUsing(name, socket, this, columnTypes);
+            } catch (IOException e) {
+                throw new RuntimeException("Error assigning streams: ", e);
             }
             used.put(name, newMap);
             return newMap;
         }
     }
 
-    public synchronized MultiFileMap createTable(String name, List<Class<?>> columnTypes) throws IOException {
+    public void activate(RemoteFileUsing table) {
+        checkState();
+        if (table == null) {
+            throw new IllegalArgumentException("null table");
+        }
+        if (socket.isClosed()) {
+            throw new IllegalStateException("Socket is closed");
+        }
+        writer.println(String.format("use %s", table.getName()));
+        if (currentActive != null) {
+            currentActive.setActive(false);
+        }
+        try {
+            String message = StringUtils.readLine(reader);
+            if (message.equals(String.format("using %s", table.getName()))) {
+                table.setActive(true);
+                return;
+            } else if (message.equals(String.format("%s not exists", table.getName()))) {
+                throw new IllegalStateException("Table no longer exists");
+            } else if (message.contains("unsaved changes")) {
+                throw new UnsavedChangesException(message);
+            } else {
+                throw new RuntimeException(String.format("Server side exception: %s", message));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading from socket: ", e);
+        }
+    }
+
+    public RemoteFileUsing createTable(String name, List<Class<?>> columnTypes) throws IOException {
         checkState();
         if (name == null) {
             throw new IllegalArgumentException("Null name");
@@ -135,26 +194,34 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         if (!badSymbolCheck(name)) {
             throw new RuntimeException("Illegal characters");
         }
-        if (!isValidLocation()) {
-            throw new RuntimeException("Database location is invalid");
+        if (socket.isClosed()) {
+            throw new IllegalStateException("Socket is closed");
         }
-        File dir = new File(location, name);
-        if (dir.exists() && !dir.isDirectory()) {
-            throw new RuntimeException(String.format("%s is not a directory", name));
+        writer.println(String.format("create %s (%s)", name, StringUtils.classListToString(columnTypes)));
+        try {
+            String message = StringUtils.readLine(reader);
+            if (message.equals(String.format("%s exists", name))) {
+                RemoteFileUsing table = used.get(name);
+                if (table == null || table.isClosed()) {
+                    table = new RemoteFileUsing(name, socket, this, columnTypes);
+                    used.put(name, table);
+                    return table;
+                } else {
+                    return null;
+                }
+            } else if (message.equals("created")) {
+                RemoteFileUsing table = new RemoteFileUsing(name, socket, this, columnTypes);
+                used.put(name, table);
+                return table;
+            } else {
+                throw new RuntimeException(String.format("Server side exception: %s", message));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading from socket: ", e);
         }
-        if (dir.exists()) {
-            return null;
-        }
-        if (!dir.mkdir()) {
-            throw new RuntimeException("Can't create directory for the table");
-        }
-        MultiFileMap result = new MultiFileMap(dir, 16, this, transactionPool, columnTypes);
-        result.writeToDisk();
-        used.put(name, result);
-        return result;
     }
 
-    public synchronized void removeTable(String name) throws IOException {
+    public void removeTable(String name) throws IOException {
         checkState();
         if (name == null) {
             throw new IllegalArgumentException("Null name");
@@ -165,22 +232,24 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         if (!badSymbolCheck(name)) {
             throw new RuntimeException("Illegal characters");
         }
-        if (!isValidLocation()) {
-            throw new RuntimeException("Database location is invalid");
+        if (socket.isClosed()) {
+            throw new IllegalStateException("Socket is closed");
         }
-        File dir = new File(location, name);
-        if (dir.exists() && !dir.isDirectory()) {
-            throw new RuntimeException(String.format("%s is not a directory", name));
-        }
-        if (!dir.exists()) {
-            throw new IllegalStateException("Table doesn't exist");
-        }
-        if (!deleteFileRecursively(dir)) {
-            throw new RuntimeException("Unable to delete some files");
-        }
-        MultiFileMap table = used.remove(name);
+        RemoteFileUsing table = used.get(name);
         if (table != null) {
             table.close();
+            used.remove(name);
+        }
+        writer.println(String.format("drop %s", name));
+        try {
+            String message = StringUtils.readLine(reader);
+            if (message.equals(String.format("%s not exists", name))) {
+                throw new IllegalStateException(String.format("%s not exists", name));
+            } else if (!message.equals("dropped")) {
+                throw new RuntimeException(String.format("Server side exception: %s", message));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading from socket: ", e);
         }
     }
 
@@ -199,23 +268,23 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
             if (columnCount != array.length()) {
                 throw new ParseException("Array size mismatch", 0);
             }
-            Row row = new Row(columnTypes);
+            Row newList = new Row(columnTypes);
             for (int i = 0; i < columnCount; i++) {
                 Object object = array.get(i);
                 if (object.equals(null)) {
-                    row.setColumnAt(i, null);
+                    newList.setColumnAt(i, null);
                 } else if (columnTypes.get(i) == Integer.class) {
                     if (object.getClass() == Integer.class) {
-                        row.setColumnAt(i, object);
+                        newList.setColumnAt(i, object);
                     } else {
                         throw new ParseException(String.format("Type mismatch: %s expected, %s found",
                                 columnTypes.get(i).toString(), object.getClass().toString()), i);
                     }
                 } else if (columnTypes.get(i) == Long.class) {
                     if (object.getClass() == Long.class) {
-                        row.setColumnAt(i, object);
+                        newList.setColumnAt(i, object);
                     } else if (object.getClass() == Integer.class) {
-                        row.setColumnAt(i, Long.valueOf(((Integer) object).longValue()));
+                        newList.setColumnAt(i, Long.valueOf(((Integer) object).longValue()));
                     } else {
                         throw new ParseException(String.format("Type mismatch: %s expected, %s found",
                                 columnTypes.get(i).toString(), object.getClass().toString()), i);
@@ -227,32 +296,32 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
                             throw new ParseException(String.format("Type mismatch: %s expected, %s found",
                                     columnTypes.get(i).toString(), object.getClass().toString()), i);
                         }
-                        row.setColumnAt(i, Byte.valueOf(number.byteValue()));
+                        newList.setColumnAt(i, Byte.valueOf(number.byteValue()));
                     } else {
                         throw new ParseException(String.format("Type mismatch: %s expected, %s found",
                                 columnTypes.get(i).toString(), object.getClass().toString()), i);
                     }
                 } else if (columnTypes.get(i) == Boolean.class) {
                     if (object.getClass() == Boolean.class) {
-                        row.setColumnAt(i, object);
+                        newList.setColumnAt(i, object);
                     } else {
                         throw new ParseException(String.format("Type mismatch: %s expected, %s found",
                                 columnTypes.get(i).toString(), object.getClass().toString()), i);
                     }
                 } else if (columnTypes.get(i) == Float.class) {
                     if (object.getClass() == Double.class) {
-                        row.setColumnAt(i, Float.valueOf(((Double) object).floatValue()));
+                        newList.setColumnAt(i, Float.valueOf(((Double) object).floatValue()));
                     } else if (object.getClass() == Integer.class) {
-                        row.setColumnAt(i, Float.valueOf(((Integer) object).floatValue()));
+                        newList.setColumnAt(i, Float.valueOf(((Integer) object).floatValue()));
                     } else {
                         throw new ParseException(String.format("Type mismatch: %s expected, %s found",
                                 columnTypes.get(i).toString(), object.getClass().toString()), i);
                     }
                 } else if (columnTypes.get(i) == Double.class) {
                     if (object.getClass() == Double.class) {
-                        row.setColumnAt(i, object);
+                        newList.setColumnAt(i, object);
                     } else if (object.getClass() == Integer.class) {
-                        row.setColumnAt(i, Float.valueOf(((Integer) object).floatValue()));
+                        newList.setColumnAt(i, Float.valueOf(((Integer) object).floatValue()));
                     } else {
                         throw new ParseException(String.format("Type mismatch: %s expected, %s found",
                                 columnTypes.get(i).toString(), object.getClass().toString()), i);
@@ -262,11 +331,11 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
                         throw new ParseException(String.format("Type mismatch: %s expected, %s found",
                                 columnTypes.get(i).toString(), object.getClass().toString()), i);
                     } else {
-                        row.setColumnAt(i, object);
+                        newList.setColumnAt(i, object);
                     }
                 }
             }
-            return row;
+            return newList;
         } catch (JSONException e) {
             throw new ParseException(e.getMessage(), 0);
         } catch (RuntimeException e) {
@@ -289,7 +358,7 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         try {
             array = new JSONArray(objects);
         } catch (JSONException e) {
-            throw new ColumnFormatException("JSONArray constructor failed");
+            throw new ColumnFormatException(e.getMessage());
         }
         return array.toString();
     }
@@ -311,64 +380,35 @@ public class FileMapProvider implements TableProvider, AutoCloseable {
         for (int i = 0; i < columnCount; i++) {
             columnTypes.add(table.getColumnType(i));
         }
-        Row row = new Row(columnTypes);
+        Row newList = new Row(columnTypes);
         if (values.size() != columnCount) {
             throw new IndexOutOfBoundsException("Array size mismatch");
         }
         for (int i = 0; i < values.size(); i++) {
-            row.setColumnAt(i, values.get(i));
+            newList.setColumnAt(i, values.get(i));
         }
-        return row;
+        return newList;
     }
 
-    @Override
-    public String toString() {
-        checkState();
-        try {
-            return String.format("%s[%s]", this.getClass().getSimpleName(), location.getCanonicalPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void checkState() {
+    public void close() throws IOException {
         if (!valid) {
-            throw new IllegalStateException("TableProvider is closed");
-        }
-    }
-
-    public synchronized void close() {
-        valid = false;
-        for (MultiFileMap entry : used.values()) {
-            entry.close();
-        }
-        used.clear();
-    }
-
-    public void showTables() {
-        if (!isValidLocation() || !isValidContent()) {
-            System.err.println("show tables: location error");
             return;
         }
-        File[] list = location.listFiles();
-        if (list != null) {
-            for (File file : list) {
-                System.out.println(file.getName());
+        try {
+            for (Map.Entry<String, RemoteFileUsing> entry : used.entrySet()) {
+                entry.getValue().close();
             }
+            used = null;
+            currentActive = null;
+            socket.close();
+        } finally {
+            valid = false;
         }
     }
 
-    private boolean deleteFileRecursively(final File file) {
-        boolean result = true;
-        if (file.isDirectory()) {
-            File[] list = file.listFiles();
-            if (list != null) {
-                for (File f : list) {
-                    result = result && deleteFileRecursively(f);
-                }
-            }
+    public class UnsavedChangesException extends RuntimeException {
+        public UnsavedChangesException(String message) {
+            super(message);
         }
-        return file.delete() && result;
     }
-
 }

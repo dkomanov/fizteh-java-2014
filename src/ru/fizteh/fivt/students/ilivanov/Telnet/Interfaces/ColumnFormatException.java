@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces;
+package ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces;
 
 /**
  * Бросается при попытке извлечь из колонки {@link Storeable} значение не соответствующего типа,

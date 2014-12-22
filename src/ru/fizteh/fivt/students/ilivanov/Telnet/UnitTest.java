@@ -1,9 +1,9 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy;
+package ru.fizteh.fivt.students.ilivanov.Telnet;
 
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
-import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.ColumnFormatException;
-import ru.fizteh.fivt.students.ilivanov.Proxy.Interfaces.Storeable;
+import ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces.ColumnFormatException;
+import ru.fizteh.fivt.students.ilivanov.Telnet.Interfaces.Storeable;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;

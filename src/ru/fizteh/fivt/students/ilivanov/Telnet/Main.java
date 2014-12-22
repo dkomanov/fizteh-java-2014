@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy;
+package ru.fizteh.fivt.students.ilivanov.Telnet;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,8 +15,8 @@ public class Main {
         Shell shell = new Shell(System.out);
         try {
             FileMapProvider provider = new FileMapProviderFactory().create(root);
-            ShellBigBoss database = new ShellBigBoss(provider);
-            database.integrate(shell);
+            ShellFinal serverDatabase = new ShellFinal(provider);
+            serverDatabase.integrate(shell);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             System.exit(-1);

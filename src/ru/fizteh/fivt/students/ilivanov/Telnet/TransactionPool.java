@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ilivanov.Proxy;
+package ru.fizteh.fivt.students.ilivanov.Telnet;
 
 import java.util.HashMap;
 import java.util.LinkedList;
